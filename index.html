@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkBuddy Agents Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat .number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .stat .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .agent-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .agent-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .agent-id {
+            font-size: 0.9em;
+            color: #888;
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .agent-version {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        .agent-description {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .capabilities {
+            margin-bottom: 20px;
+        }
+
+        .capabilities h4 {
+            font-size: 1em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .capability-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #e8eaf6;
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .rating {
+            color: #f39c12;
+        }
+
+        .author {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .author span {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .usage-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .usage-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .quick-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .quick-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 WorkBuddy Agents Marketplace</h1>
+            <p>专业AI Agent市场，加速创新工作</p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="number">1</div>
+                    <div class="label">已发布Agents</div>
+                </div>
+                <div class="stat">
+                    <div class="number">100%</div>
+                    <div class="label">生产就绪</div>
+                </div>
+                <div class="stat">
+                    <div class="number">93%</div>
+                    <div class="label">平均测试通过率</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <h2 class="section-title">📦 已发布的Agents</h2>
+            
+            <div class="agents-grid">
+                <!-- Reveal Specialist Agent Card -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div>
+                            <div class="agent-name">Reveal Specialist - 洞察官</div>
+                            <div class="agent-id">reveal_specialist</div>
+                        </div>
+                        <div class="agent-version">v1.0.0</div>
+                    </div>
+                    
+                    <div class="status-badge">✅ 生产就绪</div>
+                    
+                    <div class="agent-description">
+                        专业的洞察挖掘专家，帮助启动创新项目、进行用户研究、生成深度洞察，为价值创新奠定坚实基础。
+                    </div>
+                    
+                    <div class="capabilities">
+                        <h4>🎯 核心能力</h4>
+                        <div class="capability-tags">
+                            <span class="tag">用户研究</span>
+                            <span class="tag">洞察挖掘</span>
+                            <span class="tag">FIND模型</span>
+                            <span class="tag">利益相关方分析</span>
+                            <span class="tag">POV构建</span>
+                            <span class="tag">Buy Features</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">测试通过率</div>
+                            <div class="metric-value">93%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">质量评分</div>
+                            <div class="metric-value rating">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    
+                    <div class="author">
+                        开发者: <span>习智场景化创新训练</span>
+                    </div>
+                    
+                    <div class="usage-section">
+                        <h4>🚀 快速使用</h4>
+                        <div class="code-block">
+                            使用Reveal Specialist启动项目：[你的需求]
+                        </div>
+                        <button class="quick-start" onclick="copyToClipboard('使用Reveal Specialist启动项目：')">
+                            📋 复制命令
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Coming Soon Card -->
+                <div class="agent-card" style="opacity: 0.6;">
+                    <div class="agent-header">
+                        <div>
+                            <div class="agent-name">Inspire Specialist - 灵感官</div>
+                            <div class="agent-id">inspire_specialist</div>
+                        </div>
+                        <div class="agent-version">⏳ 开发中</div>
+                    </div>
+                    
+                    <div class="agent-description">
+                        创意生成专家，基于用户洞察生成HMW机遇，激发创新思维，引导创意发散。
+                    </div>
+                    
+                    <div class="capabilities">
+                        <h4>🎯 核心能力</h4>
+                        <div class="capability-tags">
+                            <span class="tag">HMW机遇</span>
+                            <span class="tag">创意发散</span>
+                            <span class="tag">机遇评估</span>
+                            <span class="tag">灵感管理</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="agent-card" style="opacity: 0.6;">
+                    <div class="agent-header">
+                        <div>
+                            <div class="agent-name">Imagine Specialist - 想象官</div>
+                            <div class="agent-id">imagine_specialist</div>
+                        </div>
+                        <div class="agent-version">⏳ 开发中</div>
+                    </div>
+                    
+                    <div class="agent-description">
+                        方案设计专家，将创意转化为可验证的原型，设计方案和原型设计。
+                    </div>
+                    
+                    <div class="capabilities">
+                        <h4>🎯 核心能力</h4>
+                        <div class="capability-tags">
+                            <span class="tag">原型设计</span>
+                            <span class="tag">方案设计</span>
+                            <span class="tag">创意验证</span>
+                            <span class="tag">用户测试</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="section-title">📋 如何使用Agents</h2>
+            
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <h3 style="color: #667eea; margin-bottom: 20px;">🎯 简单三步，立即使用</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong style="font-size: 1.2em; color: #667eea;">第一步：</strong>
+                    <p style="margin: 10px 0; margin-left: 20px;">打开WorkBuddy</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong style="font-size: 1.2em; color: #667eea;">第二步：</strong>
+                    <p style="margin: 10px 0; margin-left: 20px;">在对话中输入命令</p>
+                    <div class="code-block" style="margin: 10px 0; margin-left: 20px;">
+                        使用Reveal Specialist启动项目：[你的需求]
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong style="font-size: 1.2em; color: #667eea;">第三步：</strong>
+                    <p style="margin: 10px 0; margin-left: 20px;">等待Agent生成输出</p>
+                </div>
+                
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea; margin-top: 20px;">
+                    <strong>💡 示例：</strong>
+                    <div class="code-block">
+                        使用Reveal Specialist启动项目：我需要解决鞋服零售门店的用户选择困难症
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><strong>开发者：</strong>习智场景化创新训练</p>
+            <p><strong>版本：</strong>v1.0.0</p>
+            <p><strong>更新日期：</strong>2026-03-22</p>
+            <p style="margin-top: 20px;">🚀 欢迎使用WorkBuddy Agents Marketplace！</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('✅ 命令已复制到剪贴板！');
+            }, function(err) {
+                alert('❌ 复制失败，请手动复制');
+            });
+        }
+    </script>
+</body>
+</html>

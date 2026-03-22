@@ -1,0 +1,104 @@
+{
+  "name": "reveal-specialist-agent",
+  "version": "1.0.0",
+  "description": "专业的洞察挖掘专家，帮助启动创新项目、进行用户研究、生成深度洞察",
+  "author": "习智场景化创新训练",
+  "license": "MIT",
+  "keywords": [
+    "innovation",
+    "user-research",
+    "insight-mining",
+    "design-thinking",
+    "eureka",
+    "reveal-specialist"
+  ],
+  "agent": {
+    "id": "reveal_specialist",
+    "name": "Reveal Specialist Agent - 洞察官",
+    "role": "洞察官",
+    "stage": "Reveal (阶段0-1)",
+    "version": "1.0.0"
+  },
+  "capabilities": [
+    "项目启动管理",
+    "用户研究",
+    "洞察挖掘",
+    "需求整合",
+    "POV构建",
+    "利益相关方分析"
+  ],
+  "skills": [
+    {
+      "name": "build_project_brief",
+      "description": "构建项目简报"
+    },
+    {
+      "name": "roleplay_stakeholder",
+      "description": "利益相关方分析和共识"
+    },
+    {
+      "name": "find_insight",
+      "description": "FIND模型洞察挖掘"
+    },
+    {
+      "name": "pov_builder",
+      "description": "构建用户POV"
+    }
+  ],
+  "languages": [
+    "zh-CN",
+    "en-US"
+  ],
+  "category": "Design & Innovation",
+  "maintainers": [
+    {
+      "name": "习智场景化创新训练",
+      "role": "Developer"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/reveal-specialist-agent"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/reveal-specialist-agent/issues"
+  },
+  "homepage": "https://github.com/yourusername/reveal-specialist-agent#readme",
+  "documentation": {
+    "readme": "PUBLIC_README.md",
+    "full_documentation": "AGENT.md",
+    "workflow": "WORKFLOW.md",
+    "examples": "examples/"
+  },
+  "quality": {
+    "test_coverage": "93%",
+    "tested_items": 82,
+    "total_items": 88,
+    "status": "production-ready"
+  },
+  "installation": {
+    "method": "workbuddy-agent",
+    "instructions": "在WorkBuddy中调用 'Reveal Specialist' 即可使用"
+  },
+  "usage": {
+    "quick_start": "在对话中输入: '使用Reveal Specialist启动项目: [你的需求]'",
+    "examples": [
+      "启动一个创新项目，解决用户选择困难症",
+      "从用户访谈数据中挖掘洞察",
+      "构建项目简报和用户POV"
+    ]
+  },
+  "dependencies": {
+    "skills": [
+      "build_project_brief",
+      "roleplay_stakeholder", 
+      "find_insight",
+      "pov_builder"
+    ],
+    "framework": "eureka-value-innovation"
+  },
+  "compatibility": {
+    "workbuddy_version": ">=1.0.0",
+    "platform": ["macOS", "Linux", "Windows"]
+  }
+}
