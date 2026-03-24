@@ -33,6 +33,9 @@
   .hero-sub { font-size: 18px; color: rgba(255,255,255,.8); max-width: 520px; margin: 0 auto 40px; line-height: 1.65; }
   .hero-cta { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--purple-dark); padding: 14px 32px; border-radius: 40px; font-weight: 800; font-size: 15px; text-decoration: none; transition: .2s; box-shadow: 0 8px 32px rgba(0,0,0,.15); }
   .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.2); }
+  .hero-back { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,.15); color: #fff; padding: 14px 32px; border-radius: 40px; font-weight: 700; font-size: 15px; text-decoration: none; transition: .2s; border: 1.5px solid rgba(255,255,255,.35); backdrop-filter: blur(8px); }
+  .hero-back:hover { background: rgba(255,255,255,.25); transform: translateY(-2px); }
+  .hero-btns { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
   .hero-wave { position: absolute; bottom: -1px; left: 0; right: 0; height: 60px; }
 
   /* ── NAV ── */
@@ -213,9 +216,14 @@
   <div class="hero-badge">✦ EUREKA USER GUIDE v1.3</div>
   <h1>从洞察到成果<br><em>全程不迷路</em></h1>
   <p class="hero-sub">一本够用的产品手册——告诉你怎么准备、怎么用、输入什么、得到什么，以及学员整体体验是什么感觉。</p>
-  <a href="#start" class="hero-cta">
-    <span>🚀</span> 开始读
-  </a>
+  <div class="hero-btns">
+    <a href="index.html" class="hero-back">
+      ← 返回仪表板
+    </a>
+    <a href="#start" class="hero-cta">
+      <span>🚀</span> 开始读
+    </a>
+  </div>
   <svg class="hero-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
     <path d="M0 60L1440 60L1440 20C1200 60 960 0 720 20C480 40 240 0 0 20Z" fill="#f0f4ff"/>
   </svg>
@@ -224,6 +232,8 @@
 <!-- ── STICKY NAV ── -->
 <nav class="sticky-nav">
   <div class="nav-inner">
+    <a href="index.html" class="nav-link" style="color:var(--purple-dark); border:1.5px solid #c7d2fe; border-radius:20px; padding:5px 14px; font-weight:700; flex-shrink:0; text-decoration:none;">← 仪表板</a>
+    <span style="width:1px; height:20px; background:var(--border); flex-shrink:0; margin: 0 4px;"></span>
     <button class="nav-link active" onclick="scrollTo('start')">🎯 是什么</button>
     <button class="nav-link" onclick="scrollTo('prep')">📦 准备</button>
     <button class="nav-link" onclick="scrollTo('flow')">🔄 使用流程</button>
