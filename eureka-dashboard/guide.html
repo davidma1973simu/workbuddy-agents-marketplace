@@ -139,6 +139,48 @@
   .faq-item.open .faq-a { max-height: 400px; }
   .faq-a-inner { padding: 0 20px 18px; font-size: 13px; color: var(--muted); line-height: 1.75; border-top: 1px solid var(--border); padding-top: 14px; }
 
+  /* ── SUB-AGENT ── */
+  .agent-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 20px; padding: 36px 40px; color: #fff; margin-top: 32px; position: relative; overflow: hidden; }
+  .agent-hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(102,126,234,.3), transparent 70%); pointer-events: none; }
+  .agent-hero-label { font-size: 11px; font-weight: 800; color: #a5b4fc; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .agent-hero-title { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
+  .agent-hero-desc { font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.7; max-width: 560px; }
+
+  .agent-pipeline { display: flex; align-items: center; gap: 0; margin-top: 28px; overflow-x: auto; padding-bottom: 4px; }
+  .ap-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .ap-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 3px solid rgba(255,255,255,.15); position: relative; }
+  .ap-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.65); text-align: center; }
+  .ap-arrow { font-size: 18px; color: rgba(255,255,255,.25); padding: 0 6px; flex-shrink: 0; margin-bottom: 18px; }
+
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 32px; }
+  .agent-card { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: .2s; }
+  .agent-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+  .ac-hd { padding: 22px 24px 18px; color: #fff; position: relative; overflow: hidden; }
+  .ac-hd::after { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,.08); pointer-events: none; }
+  .ac-agent-name { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: .75; margin-bottom: 6px; }
+  .ac-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .ac-desc { font-size: 12px; opacity: .8; line-height: 1.55; }
+  .ac-bd { background: var(--surface); padding: 18px 24px; }
+  .ac-skill { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .ac-skill:last-child { border-bottom: none; }
+  .ac-skill-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .ac-skill-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .ac-skill-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .ac-trigger { margin-top: 14px; background: #f8faff; border-radius: 10px; padding: 12px 14px; }
+  .ac-trigger-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
+  .ac-trigger-text { font-size: 12px; color: var(--text); line-height: 1.65; font-style: italic; }
+
+  .usage-table { width: 100%; border-collapse: collapse; margin-top: 24px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); font-size: 13px; }
+  .usage-table th { padding: 12px 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; text-align: left; background: #0f172a; color: rgba(255,255,255,.7); }
+  .usage-table td { padding: 13px 16px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  .usage-table tr:hover td { background: #f8faff; }
+  .usage-table code { font-size: 11px; background: #f1f5f9; color: var(--purple-dark); padding: 2px 7px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, monospace; }
+
+  .callout-box { border-radius: 14px; padding: 20px 24px; margin-top: 16px; }
+  .cb-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .cb-body { font-size: 13px; line-height: 1.75; }
+  .cb-body code { font-size: 12px; background: rgba(0,0,0,.06); padding: 2px 8px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, monospace; }
+
   /* ── FOOTER ── */
   .footer { background: var(--text); color: rgba(255,255,255,.5); text-align: center; padding: 32px 24px; font-size: 12px; line-height: 1.8; }
   .footer strong { color: rgba(255,255,255,.85); }
@@ -189,6 +231,7 @@
     <button class="nav-link" onclick="scrollTo('io')">⇄ 输入输出</button>
     <button class="nav-link" onclick="scrollTo('exp')">💫 学员体验</button>
     <button class="nav-link" onclick="scrollTo('tips')">💡 避坑指南</button>
+    <button class="nav-link" onclick="scrollTo('agents')">🤖 Sub-Agent</button>
     <button class="nav-link" onclick="scrollTo('faq')">❓ 常见问题</button>
   </div>
 </nav>
@@ -625,7 +668,347 @@
     </a>
   </div>
 
-  <!-- ⑧ FAQ -->
+  <!-- ⑧ Sub-Agent -->
+  <section class="section fade-in" id="agents">
+    <div class="section-label">🤖 AI Sub-Agent</div>
+    <h2 class="section-title">四大 Sub-Agent，每阶段的 AI 专家</h2>
+    <p class="section-desc">Eureka 不只是一个录入工具——当你需要 AI 协助<strong>生成内容</strong>时，可以在对应阶段唤醒专属 Sub-Agent，让它帮你从零产出结构化成果，再粘贴进仪表板。</p>
+
+    <!-- 总体架构图 -->
+    <div class="agent-hero">
+      <div class="agent-hero-label">⚙️ AI 工作流架构</div>
+      <div class="agent-hero-title">TheArchitect 总调度 → 四阶段专家流水线</div>
+      <div class="agent-hero-desc">一句自然语言描述项目需求，TheArchitect 自动拉起整条流水线，依次激活四个 Specialist，逐阶段产出 JSON 成果，最终汇聚成一页看板。也可以单独唤起任意 Specialist 处理特定阶段。</div>
+      <div class="agent-pipeline" style="margin-top: 28px;">
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#764ba2);">🏗️</div>
+          <div class="ap-label">Build<br>TheArchitect</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">🔍</div>
+          <div class="ap-label">Reveal<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#d97706,#f59e0b);">💡</div>
+          <div class="ap-label">Inspire<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#10b981,#34d399);">🎨</div>
+          <div class="ap-label">Shape<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#ef4444,#f87171);">✅</div>
+          <div class="ap-label">Exam<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#10b981);">🚀</div>
+          <div class="ap-label">Final<br>看板</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 四个 Agent 卡片 -->
+    <div class="agent-grid">
+
+      <!-- Reveal -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">
+          <div class="ac-agent-name">🔍 Reveal Specialist</div>
+          <div class="ac-title">洞察专家</div>
+          <div class="ac-desc">负责用户洞察阶段，从 Project Brief 生成 POV、FIND 洞察和利益相关方分析，帮你看清「用户真正需要什么」。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">👁</div>
+            <div>
+              <div class="ac-skill-name">pov_builder · POV 构建师</div>
+              <div class="ac-skill-desc">将项目简报转化为「用户画像 + 场景触点 + 痛点 + POV 陈述」四维结构。支持 AI 自动生成或 GUI 交互式手动填写。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🔬</div>
+            <div>
+              <div class="ac-skill-name">find_insight · FIND 洞察器</div>
+              <div class="ac-skill-desc">运用 FIND 模型（Facts→Interpret→Need→Design insight）从用户旅程事实中挖掘深层需求，生成精炼洞察卡片。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🎭</div>
+            <div>
+              <div class="ac-skill-name">roleplay_stakeholder · 利益相关方模拟</div>
+              <div class="ac-skill-desc">AI 扮演多个利益相关方角色，模拟各方需求、影响力和潜在冲突，输出关系地图。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「请用 pov_builder 帮我构建针对 20-35 岁都市白领女性购物场景的用户 POV」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspire -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#d97706,#fbbf24);">
+          <div class="ac-agent-name">💡 Inspire Specialist</div>
+          <div class="ac-title">启发专家</div>
+          <div class="ac-desc">负责创意生成阶段，从 POV 出发产出 HMW 机遇、交叉激发创意，并提炼最佳方案，帮你打开「可能性空间」。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">❓</div>
+            <div>
+              <div class="ac-skill-name">HMW_Reframer · HMW 机遇重构器</div>
+              <div class="ac-skill-desc">从 4 个维度重构用户 POV，生成 6-8 个「How Might We...」创新机遇，并按用户价值 × 商业可行双维度筛选最佳 HMW。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">⚡</div>
+            <div>
+              <div class="ac-skill-name">NCO_Crosslinker · 新酷界外交叉激发器</div>
+              <div class="ac-skill-desc">强制从「新（New）/ 酷（Cool）/ 界外（Out of box）」三类生成灵感源，与最佳 HMW 交叉激发 20-30 个全新创意。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">💎</div>
+            <div>
+              <div class="ac-skill-name">Idea_Distiller · 创意提炼师</div>
+              <div class="ac-skill-desc">对创意列表进行评分（可行性/价值性/创新性）、聚类、提炼，选出最有潜力的核心创意并给出「为什么是它」的理由。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 NCO_Crosslinker 对『如何让购物决策更轻松』这个 HMW 进行交叉激发，生成 20 个创意」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shape -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#10b981,#34d399);">
+          <div class="ac-agent-name">🎨 Shape Specialist</div>
+          <div class="ac-title">构建专家</div>
+          <div class="ac-desc">负责方案构建阶段，对最佳创意进行四维压力测试，构建完整概念方案，并写出用户视角六幕体验故事。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🔨</div>
+            <div>
+              <div class="ac-skill-name">Solution_Interrogator · 方案拷问员</div>
+              <div class="ac-skill-desc">从「用户 / 技术 / 商业 / 利益方」四个维度对最佳创意进行压力测试，发现风险与盲点，迫使方案自我完善。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🏗</div>
+            <div>
+              <div class="ac-skill-name">Solution_Build · 方案构建师</div>
+              <div class="ac-skill-desc">整合压力测试结果，构建完整概念方案：概念名称 + 核心功能特性（最多 6 个）+ AHA 价值设计，输出可直接填入仪表板的结构化内容。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🎬</div>
+            <div>
+              <div class="ac-skill-name">Storyboard_Scriptor · 故事脚本师</div>
+              <div class="ac-skill-desc">以用户视角撰写六幕体验故事脚本：用户挑战→POV洞见→接触→使用→分享结果→持续感受，每幕含场景、情感和 AHA 瞬间。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 Solution_Interrogator 从四个维度拷问『AI 智能购物推荐』这个创意方案」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#ef4444,#f87171);">
+          <div class="ac-agent-name">✅ Exam Specialist</div>
+          <div class="ac-title">验证专家</div>
+          <div class="ac-desc">负责验证评估阶段，量化方案的 AHA 和 MAP 价值，撰写电梯演讲，制定迭代计划，完成商业模式画布。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📊</div>
+            <div>
+              <div class="ac-skill-name">AHA_MAP_Evaluator · 价值评估师</div>
+              <div class="ac-skill-desc">汇总测试报告，量化评估 AHA 用户价值（顿悟/高光/进步）和 MAP 商业价值（市场潜力/用户增长/优势壁垒），生成双雷达图数据。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🎤</div>
+            <div>
+              <div class="ac-skill-name">Pitch_Composer · 电梯呈现撰写师</div>
+              <div class="ac-skill-desc">生成 60 秒电梯演讲脚本（五段式：问题/方案/用户/价值/行动），语言精炼有力，适合向投资人或决策者呈现。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📅</div>
+            <div>
+              <div class="ac-skill-name">Project_Iteration · 迭代计划师</div>
+              <div class="ac-skill-desc">制定 30-60-90 天分阶段迭代计划，每个节点包含具体里程碑、成功指标和资源需求。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🖼</div>
+            <div>
+              <div class="ac-skill-name">BusinessModel_Painter · 商业模式画家</div>
+              <div class="ac-skill-desc">完整填写商业模式画布 9 格（价值主张/客户细分/渠道通路/客户关系/收入来源/核心资源/关键业务/重要合作/成本结构）。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 Pitch_Composer 为『智能购物推荐系统』写一段 60 秒电梯演讲」</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 对应关系总表 -->
+    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">📌 仪表板字段 × Sub-Agent 对应关系</h3>
+    <p class="section-desc" style="margin-bottom:0;">在仪表板哪个模块卡壳了，就用哪个 Agent——一一对应，不用猜。</p>
+
+    <table class="usage-table">
+      <thead>
+        <tr>
+          <th>仪表板模块</th>
+          <th>对应 Sub-Agent</th>
+          <th>对应 Skill</th>
+          <th>你需要告诉 AI 的</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>基本信息</strong><br><span style="color:var(--muted);font-size:11px;">项目名/简报/目标用户/场景</span></td>
+          <td>🏗️ TheArchitect</td>
+          <td><code>build_project_brief</code></td>
+          <td>用一句话描述你的项目背景和想解决的问题</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 项目简报</strong><br><span style="color:var(--muted);font-size:11px;">背景/机会/假设/范围/团队</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>build_project_brief</code></td>
+          <td>原始需求描述 + 目标用户群体</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › POV 洞察</strong><br><span style="color:var(--muted);font-size:11px;">用户/痛点/洞见三段式</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>用户画像描述 + 典型场景 + 观察到的困扰</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 用户画像</strong><br><span style="color:var(--muted);font-size:11px;">角色/特征/引语/痛点</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>目标用户群体描述（年龄/职业/行为特征）</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 利益相关者</strong><br><span style="color:var(--muted);font-size:11px;">各方角色/影响力/需求</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>roleplay_stakeholder</code></td>
+          <td>项目名称 + 目标用户 + 你已知的相关方角色</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › HMW</strong><br><span style="color:var(--muted);font-size:11px;">5 个创新机遇</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>HMW_Reframer</code></td>
+          <td>POV 洞察陈述（一句话描述用户核心问题）</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › 创意列表</strong><br><span style="color:var(--muted);font-size:11px;">创意 + 三维评分</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>NCO_Crosslinker</code></td>
+          <td>最佳 HMW 机遇（1-2 条） + 目标用户背景</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › 最佳创意</strong><br><span style="color:var(--muted);font-size:11px;">选择 + 理由</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>Idea_Distiller</code></td>
+          <td>创意列表（可直接粘贴 NCO 输出）</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › 概念方案</strong><br><span style="color:var(--muted);font-size:11px;">名称/描述/功能特性</span></td>
+          <td>🎨 Shape Specialist</td>
+          <td><code>Solution_Build</code></td>
+          <td>最佳创意描述 + 压力测试结果（可选）</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › 体验故事</strong><br><span style="color:var(--muted);font-size:11px;">六幕故事脚本</span></td>
+          <td>🎨 Shape Specialist</td>
+          <td><code>Storyboard_Scriptor</code></td>
+          <td>概念方案 + 目标用户画像</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › MAP 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">M/A/P 三维 1-10</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>AHA_MAP_Evaluator</code></td>
+          <td>概念方案全文 + 目标市场描述</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › AHA 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">A/H/A 三维 1-10</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>AHA_MAP_Evaluator</code></td>
+          <td>用户测试反馈 / 体验故事 + 概念方案</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 电梯呈现</strong><br><span style="color:var(--muted);font-size:11px;">问题/方案/用户/价值/行动</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>Pitch_Composer</code></td>
+          <td>概念方案 + 核心价值主张 + 目标受众</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 迭代计划</strong><br><span style="color:var(--muted);font-size:11px;">30-60-90 天</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>Project_Iteration</code></td>
+          <td>概念方案 + 当前资源条件 + 优先级</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 商业模式画布</strong><br><span style="color:var(--muted);font-size:11px;">9 格全填</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>BusinessModel_Painter</code></td>
+          <td>概念方案 + 电梯呈现 + 目标市场</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 两种使用方式 -->
+    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">🚦 两种调用方式，按需选择</h3>
+    <div class="qa-grid">
+      <div class="qa-card" style="border-color:#c7d2fe;">
+        <div class="qa-icon">⚡</div>
+        <div class="qa-label">全自动模式（推荐新手）</div>
+        <div class="qa-desc">一句话描述项目，TheArchitect 自动执行完整五阶段流水线，所有 JSON 产出落地后，批量粘贴进仪表板。</div>
+        <div style="margin-top:10px; background:#f0f4ff; border-radius:8px; padding:10px 12px; font-size:12px; color:var(--purple-dark); font-family:monospace; line-height:1.7;">
+          「帮我用 Eureka 系统做一个价值创新项目：新零售场景的用户体验提升」
+        </div>
+      </div>
+      <div class="qa-card" style="border-color:#a7f3d0;">
+        <div class="qa-icon">🎯</div>
+        <div class="qa-label">单点调用模式（推荐熟练用户）</div>
+        <div class="qa-desc">针对某个阶段卡壳或需要深化的内容，直接点名对应 Skill，输入上下文，获取精准产出。</div>
+        <div style="margin-top:10px; background:#f0fdf4; border-radius:8px; padding:10px 12px; font-size:12px; color:#15803d; font-family:monospace; line-height:1.7;">
+          「用 Storyboard_Scriptor 给我的 AI 推荐系统概念写六幕体验故事」
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box" style="background:#f0f4ff; border: 1.5px solid #c7d2fe; margin-top:20px;">
+      <div class="cb-title" style="color:var(--purple-dark);">🔄 AI 产出 → 仪表板的标准流程</div>
+      <div class="cb-body" style="color:var(--text);">
+        ① 在对话中告诉 AI 你要用哪个 Skill + 提供输入内容<br>
+        ② AI 产出结构化文本（JSON 或 Markdown 格式）<br>
+        ③ 打开仪表板 → 进入对应编辑器 Tab（如 Shape）<br>
+        ④ 将 AI 产出的内容粘贴 / 填入对应字段<br>
+        ⑤ 点「保存项目」 → 可视化卡片自动渲染
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑨ FAQ -->
+
   <section class="section fade-in" id="faq">
     <div class="section-label">❓ 常见问题</div>
     <h2 class="section-title">遇到问题先看这里</h2>
@@ -716,7 +1099,7 @@
     bar.style.width = (top / height * 100) + '%';
 
     // 更新 nav 活跃状态
-    const sections = ['start','prep','flow','stages','io','exp','tips','faq'];
+    const sections = ['start','prep','flow','stages','io','exp','tips','agents','faq'];
     const links = document.querySelectorAll('.nav-link');
     sections.forEach((id, i) => {
       const el = document.getElementById(id);
