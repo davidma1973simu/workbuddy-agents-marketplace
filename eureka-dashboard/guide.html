@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 使用指南 — 从零到成果</title>
+<style>
+  :root {
+    --purple: #667eea;
+    --purple-dark: #4f46e5;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --bg: #f0f4ff;
+    --surface: #fff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --r: 16px;
+    --rs: 10px;
+    --shadow: 0 4px 24px rgba(102,126,234,.10);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 80px 40px 100px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.3); border-radius: 40px; padding: 6px 18px; font-size: 12px; color: rgba(255,255,255,.9); font-weight: 600; letter-spacing: .5px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, #ffd700, #ffb347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 18px; color: rgba(255,255,255,.8); max-width: 520px; margin: 0 auto 40px; line-height: 1.65; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--purple-dark); padding: 14px 32px; border-radius: 40px; font-weight: 800; font-size: 15px; text-decoration: none; transition: .2s; box-shadow: 0 8px 32px rgba(0,0,0,.15); }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.2); }
+  .hero-wave { position: absolute; bottom: -1px; left: 0; right: 0; height: 60px; }
+
+  /* ── NAV ── */
+  .sticky-nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 24px; height: 56px; overflow-x: auto; scrollbar-width: none; }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; transition: .15s; cursor: pointer; border: none; background: none; }
+  .nav-link:hover, .nav-link.active { background: #f0f4ff; color: var(--purple); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 72px; }
+  .section-label { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; color: var(--purple); background: #f0f4ff; padding: 4px 14px; border-radius: 40px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .section-title { font-size: clamp(24px, 3vw, 32px); font-weight: 900; color: var(--text); line-height: 1.2; margin-bottom: 10px; }
+  .section-desc { font-size: 15px; color: var(--muted); line-height: 1.75; max-width: 640px; }
+
+  /* ── OVERVIEW CARDS ── */
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px; }
+  .ov-card { background: var(--surface); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: .2s; }
+  .ov-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(102,126,234,.15); border-color: #c7d2fe; }
+  .ov-icon { font-size: 32px; margin-bottom: 12px; }
+  .ov-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .ov-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FLOW STEPS ── */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 32px; }
+  .flow-item { display: grid; grid-template-columns: 56px 1fr; gap: 0; position: relative; }
+  .flow-item:not(:last-child) .flow-line { position: absolute; left: 27px; top: 56px; bottom: -16px; width: 2px; background: linear-gradient(180deg, var(--purple), transparent); }
+  .flow-dot { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; z-index: 1; position: relative; box-shadow: 0 4px 16px rgba(102,126,234,.2); }
+  .flow-content { padding: 0 0 40px 20px; }
+  .flow-step { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .flow-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .flow-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+  .flow-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .flow-tag { font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: #f0f4ff; color: var(--purple); }
+
+  /* ── STAGE CARDS ── */
+  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px; }
+  .stage-card { border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); transition: .2s; cursor: pointer; }
+  .stage-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+  .stage-hd { padding: 20px 20px 16px; color: #fff; }
+  .stage-icon { font-size: 28px; margin-bottom: 8px; }
+  .stage-name { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+  .stage-sub { font-size: 12px; opacity: .8; }
+  .stage-bd { background: var(--surface); padding: 16px 20px; }
+  .stage-out-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text); padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+  .stage-out-item:last-child { border-bottom: none; }
+  .stage-bullet { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+  /* ── INPUT/OUTPUT TABLE ── */
+  .io-table { width: 100%; border-collapse: collapse; margin-top: 24px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
+  .io-table th { padding: 14px 18px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; text-align: left; }
+  .io-table td { padding: 14px 18px; font-size: 13px; color: var(--text); border-top: 1px solid var(--border); vertical-align: top; line-height: 1.65; }
+  .io-table tr:hover td { background: #f8faff; }
+  .io-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .io-in { background: #fef3c7; color: #92400e; }
+  .io-out { background: #d1fae5; color: #065f46; }
+  .io-both { background: #e0e7ff; color: #3730a3; }
+
+  /* ── EXPERIENCE JOURNEY ── */
+  .journey { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 24px; }
+  .jn-card { background: var(--surface); border-radius: var(--rs); padding: 16px; box-shadow: var(--shadow); border-top: 3px solid; text-align: center; }
+  .jn-emoji { font-size: 28px; margin-bottom: 8px; }
+  .jn-phase { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
+  .jn-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .jn-feel { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ── TIP BLOCKS ── */
+  .tip { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); margin-top: 16px; border-left: 4px solid; }
+  .tip-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+  .tip-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .tip-purple { border-color: var(--purple); }
+  .tip-green { border-color: var(--green); }
+  .tip-amber { border-color: var(--amber); }
+
+  /* ── QUICK ACTIONS ── */
+  .qa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 24px; }
+  .qa-card { background: var(--surface); border-radius: var(--r); padding: 20px; box-shadow: var(--shadow); border: 1.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; transition: .2s; }
+  .qa-card:hover { border-color: #a5b4fc; transform: translateY(-2px); }
+  .qa-icon { font-size: 28px; }
+  .qa-label { font-size: 13px; font-weight: 800; color: var(--text); }
+  .qa-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+  .qa-shortcut { display: inline-block; font-size: 10px; font-weight: 700; background: #f1f5f9; color: var(--muted); padding: 2px 8px; border-radius: 6px; font-family: monospace; }
+
+  /* ── DEMO BANNER ── */
+  .demo-banner { background: linear-gradient(135deg, #667eea, #10b981); border-radius: 20px; padding: 36px 40px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: 32px; }
+  .demo-left h3 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  .demo-left p { font-size: 14px; opacity: .85; line-height: 1.65; max-width: 400px; }
+  .demo-btn { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--purple-dark); padding: 12px 28px; border-radius: 40px; font-weight: 800; font-size: 14px; text-decoration: none; transition: .2s; white-space: nowrap; flex-shrink: 0; }
+  .demo-btn:hover { transform: scale(1.03); }
+
+  /* ── FAQ ACCORDION ── */
+  .faq-list { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { background: var(--surface); border-radius: var(--rs); border: 1.5px solid var(--border); overflow: hidden; transition: .2s; }
+  .faq-item.open { border-color: #c7d2fe; }
+  .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text); user-select: none; }
+  .faq-q:hover { background: #f8faff; }
+  .faq-arrow { font-size: 18px; transition: .25s; flex-shrink: 0; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s; }
+  .faq-item.open .faq-a { max-height: 400px; }
+  .faq-a-inner { padding: 0 20px 18px; font-size: 13px; color: var(--muted); line-height: 1.75; border-top: 1px solid var(--border); padding-top: 14px; }
+
+  /* ── FOOTER ── */
+  .footer { background: var(--text); color: rgba(255,255,255,.5); text-align: center; padding: 32px 24px; font-size: 12px; line-height: 1.8; }
+  .footer strong { color: rgba(255,255,255,.85); }
+  .footer a { color: #a5b4fc; text-decoration: none; }
+
+  /* ── PROGRESS BAR (reading) ── */
+  .reading-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--green)); z-index: 9999; transition: width .1s; }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .hero { padding: 56px 24px 80px; }
+    .container { padding: 32px 16px 60px; }
+    .demo-banner { padding: 24px; }
+    .io-table { font-size: 12px; }
+    .io-table th, .io-table td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div class="reading-bar" id="readingBar"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">✦ EUREKA USER GUIDE v1.3</div>
+  <h1>从洞察到成果<br><em>全程不迷路</em></h1>
+  <p class="hero-sub">一本够用的产品手册——告诉你怎么准备、怎么用、输入什么、得到什么，以及学员整体体验是什么感觉。</p>
+  <a href="#start" class="hero-cta">
+    <span>🚀</span> 开始读
+  </a>
+  <svg class="hero-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 60L1440 60L1440 20C1200 60 960 0 720 20C480 40 240 0 0 20Z" fill="#f0f4ff"/>
+  </svg>
+</section>
+
+<!-- ── STICKY NAV ── -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <button class="nav-link active" onclick="scrollTo('start')">🎯 是什么</button>
+    <button class="nav-link" onclick="scrollTo('prep')">📦 准备</button>
+    <button class="nav-link" onclick="scrollTo('flow')">🔄 使用流程</button>
+    <button class="nav-link" onclick="scrollTo('stages')">4️⃣ 四阶段</button>
+    <button class="nav-link" onclick="scrollTo('io')">⇄ 输入输出</button>
+    <button class="nav-link" onclick="scrollTo('exp')">💫 学员体验</button>
+    <button class="nav-link" onclick="scrollTo('tips')">💡 避坑指南</button>
+    <button class="nav-link" onclick="scrollTo('faq')">❓ 常见问题</button>
+  </div>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="container">
+
+  <!-- ①  是什么 -->
+  <section class="section fade-in" id="start">
+    <div class="section-label">🎯 产品定位</div>
+    <h2 class="section-title">Eureka 是什么？</h2>
+    <p class="section-desc">Eureka 是一个<strong>创新项目成果仪表板</strong>，帮助团队把设计思维四阶段（Reveal → Inspire → Shape → Exam）的所有过程产出，沉淀成一个可视化、可分享、可导出的在线项目库。</p>
+
+    <div class="overview-grid">
+      <div class="ov-card">
+        <div class="ov-icon">📁</div>
+        <div class="ov-title">项目库</div>
+        <div class="ov-desc">多项目集中管理，状态一目了然，支持搜索/筛选/归档。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">✏️</div>
+        <div class="ov-title">四阶段编辑器</div>
+        <div class="ov-desc">分阶段录入产出——画像、HMW、概念方案、测试报告，结构清晰。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📊</div>
+        <div class="ov-title">可视化看板</div>
+        <div class="ov-desc">甘特图、MAP 雷达、AHA 雷达、商业模式画布，自动渲染。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📤</div>
+        <div class="ov-title">一键导出</div>
+        <div class="ov-desc">PDF 报告 / Markdown 文档 / PPT 幻灯片，三种格式随时交付。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-purple" style="margin-top: 28px;">
+      <span class="tip-icon">✦</span>
+      <div>
+        <div class="tip-title">纯前端，零部署负担</div>
+        <div class="tip-body">所有数据存储在浏览器 localStorage，无需注册账号、无需服务器。打开网页即用，刷新不丢数据。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 准备 -->
+  <section class="section fade-in" id="prep">
+    <div class="section-label">📦 准备</div>
+    <h2 class="section-title">开始前，你需要准备什么？</h2>
+    <p class="section-desc">不需要装任何软件。打开浏览器，30 秒搞定。</p>
+
+    <div class="qa-grid" style="margin-top: 28px;">
+      <div class="qa-card">
+        <div class="qa-icon">🌐</div>
+        <div class="qa-label">现代浏览器</div>
+        <div class="qa-desc">Chrome / Edge / Safari / Firefox 均可。推荐 Chrome，体验最佳。</div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">🔗</div>
+        <div class="qa-label">打开仪表板</div>
+        <div class="qa-desc" style="word-break:break-all; font-size:11px;">
+          <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" style="color:var(--purple);">
+            → 在线访问 Eureka Dashboard
+          </a>
+        </div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">📝</div>
+        <div class="qa-label">项目原始资料</div>
+        <div class="qa-desc">把设计思维过程中的便利贴、文档或照片整理好，录入更高效。</div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">👥</div>
+        <div class="qa-label">团队分工（可选）</div>
+        <div class="qa-desc">每阶段可由不同成员负责录入，最终汇入同一个项目即可。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-amber" style="margin-top: 20px;">
+      <span class="tip-icon">⚠️</span>
+      <div>
+        <div class="tip-title">同一台电脑 = 同一份数据</div>
+        <div class="tip-body">数据存在浏览器本地，换设备或清理浏览器缓存会导致数据丢失。重要项目记得定时「导出 Markdown」备份。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 使用流程 -->
+  <section class="section fade-in" id="flow">
+    <div class="section-label">🔄 全流程</div>
+    <h2 class="section-title">完整使用流程</h2>
+    <p class="section-desc">从建项目到交付成果，共 6 步，平均全程 2–4 小时（取决于内容丰富度）。</p>
+
+    <div class="flow" style="margin-top: 36px;">
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #667eea, #764ba2);">🆕</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 01</div>
+          <div class="flow-title">新建项目</div>
+          <div class="flow-body">点击右上角「＋ 新建项目」，填写项目名称、简报描述、目标用户、适用场景，选择初始状态（草稿/进行中）。<br>系统自动生成唯一 ID，立即出现在左侧项目列表。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">项目名称</span>
+            <span class="flow-tag">目标用户</span>
+            <span class="flow-tag">场景描述</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #7c3aed, #9f67fa);">🔍</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 02</div>
+          <div class="flow-title">录入 Reveal 阶段</div>
+          <div class="flow-body">在编辑器「Reveal」Tab 中，录入项目简报五要素（背景/机会/假设/范围/团队）、POV 洞察三段式、用户画像（最多 4 个）、利益相关者、场景地图触点。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">POV</span>
+            <span class="flow-tag">用户画像</span>
+            <span class="flow-tag">利益相关者</span>
+            <span class="flow-tag">HMW</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">💡</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 03</div>
+          <div class="flow-title">录入 Inspire 阶段</div>
+          <div class="flow-body">在「Inspire」Tab 中添加创意方案（可打分：可行性/价值性/创新性），标记最佳创意并填写选择理由。系统自动生成评估矩阵和高亮最佳方案。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">创意列表</span>
+            <span class="flow-tag">评分矩阵</span>
+            <span class="flow-tag">最佳创意</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #10b981, #34d399);">🎨</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 04</div>
+          <div class="flow-title">录入 Shape 阶段</div>
+          <div class="flow-body">在「Shape」Tab 中填写概念名称 / 全局描述 / 功能特性（最多 6 个）、六幕体验故事，以及 MAP 商业价值雷达分值（市场潜力/用户增长/优势壁垒，1–10）。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">概念方案</span>
+            <span class="flow-tag">功能特性</span>
+            <span class="flow-tag">体验故事</span>
+            <span class="flow-tag">MAP 雷达</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #ef4444, #f87171);">✅</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 05</div>
+          <div class="flow-title">录入 Exam 阶段</div>
+          <div class="flow-body">在「Exam」Tab 中录入 AHA 价值雷达（顿悟/高光/进步）、电梯呈现五段式、30-60-90 天迭代计划，以及商业模式画布九格内容。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">AHA 雷达</span>
+            <span class="flow-tag">电梯呈现</span>
+            <span class="flow-tag">迭代计划</span>
+            <span class="flow-tag">商业画布</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot" style="background: linear-gradient(135deg, #667eea, #10b981);">🚀</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 06</div>
+          <div class="flow-title">导出 & 交付</div>
+          <div class="flow-body">在右侧「可交付资产」区域，根据项目进度解锁：<strong>PDF 报告</strong>（完整打印）、<strong>Markdown</strong>（复制到剪贴板）、<strong>PPT 幻灯片</strong>（下载 HTML 格式）。左上角「📅 项目计划」Tab 可追踪四阶段实际进度和时间线。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">PDF</span>
+            <span class="flow-tag">Markdown</span>
+            <span class="flow-tag">PPT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ 四阶段 -->
+  <section class="section fade-in" id="stages">
+    <div class="section-label">4️⃣ 四阶段详解</div>
+    <h2 class="section-title">每个阶段做什么？</h2>
+    <p class="section-desc">RISE 四阶段是 Eureka 的核心框架，每阶段对应设计思维的一个关键节点。</p>
+
+    <div class="stage-grid">
+      <!-- Reveal -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #7c3aed, #9f67fa);">
+          <div class="stage-icon">🔍</div>
+          <div class="stage-name">Reveal</div>
+          <div class="stage-sub">洞察 · 定义问题</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>项目简报（背景/机会/假设/范围/团队）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>POV 三段式洞察声明</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>用户画像（最多 4 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>利益相关者地图</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>场景地图触点（最多 8 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>HMW 创新机遇（最多 5 个）</div>
+        </div>
+      </div>
+
+      <!-- Inspire -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+          <div class="stage-icon">💡</div>
+          <div class="stage-name">Inspire</div>
+          <div class="stage-sub">启发 · 产生创意</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>创意列表（含评分：可行/价值/创新）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>评估矩阵（自动生成对比表）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>最佳创意 + 选择理由</div>
+        </div>
+      </div>
+
+      <!-- Shape -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #10b981, #34d399);">
+          <div class="stage-icon">🎨</div>
+          <div class="stage-name">Shape</div>
+          <div class="stage-sub">构建 · 塑造方案</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>概念名称 + 全局描述</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>核心功能特性（最多 6 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>六幕体验故事（用户视角）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>MAP 商业价值雷达（M/A/P，1–10）</div>
+        </div>
+      </div>
+
+      <!-- Exam -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+          <div class="stage-icon">✅</div>
+          <div class="stage-name">Exam</div>
+          <div class="stage-sub">验证 · 评估成果</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>AHA 用户价值雷达（A/H/A，1–10）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>电梯呈现（5 要素：问题/方案/用户/价值/行动）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>测试报告（有效/无效/发现/问题）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>30-60-90 天迭代计划</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>商业模式画布（9 格）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ 输入输出 -->
+  <section class="section fade-in" id="io">
+    <div class="section-label">⇄ 输入 / 输出</div>
+    <h2 class="section-title">输入什么？得到什么？</h2>
+    <p class="section-desc">明确每个操作的信息流，帮助你合理安排录入节奏和成果预期。</p>
+
+    <table class="io-table">
+      <thead style="background: #f0f4ff;">
+        <tr>
+          <th style="color: var(--purple);">操作</th>
+          <th style="color: var(--purple);">你输入的</th>
+          <th style="color: var(--green);">你得到的</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>创建项目</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目名、简报、目标用户、场景、状态</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 左侧列表新增卡片，自动生成 ID，进度 0%</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Reveal</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目简报五要素、POV、画像、利益相关者、触点、HMW</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 洞察卡片、POV 引用块、画像卡片、场景横向地图、HMW 列表</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Inspire</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 创意标题、描述、三项评分（1–5）、最佳创意标记与理由</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 可视化评分对比表、最佳创意高亮卡片</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Shape</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 概念名称/描述、功能特性、六幕故事、MAP 三维评分</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 概念卡片、功能 Grid、体验故事六格卡、MAP 三角雷达图</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Exam</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> AHA 三维评分、电梯五段式、测试发现、迭代计划、商业画布九格</td>
+          <td><span class="io-badge io-out">✅ 输出</span> AHA 绿色雷达、电梯呈现卡、测试报告四格、商业模式画布</td>
+        </tr>
+        <tr>
+          <td><strong>设置项目计划</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目起止日期、四阶段开始/结束/实际完成日期</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 真实甘特图（按阶段色块）、整体进度自动推算</td>
+        </tr>
+        <tr>
+          <td><strong>导出 PDF</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「PDF」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 浏览器打印对话框，选择「另存为 PDF」</td>
+        </tr>
+        <tr>
+          <td><strong>导出 Markdown</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「Markdown」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 完整项目文档复制到剪贴板，粘贴即用</td>
+        </tr>
+        <tr>
+          <td><strong>导出 PPT</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「PPT」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 下载 HTML 幻灯片文件，浏览器全屏即为演示</td>
+        </tr>
+        <tr>
+          <td><strong>上传文档</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> TXT / MD / JSON / CSV 文件，选择关联项目</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 文档内容预览，可复制到各字段</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ⑥ 学员体验 -->
+  <section class="section fade-in" id="exp">
+    <div class="section-label">💫 学员体验</div>
+    <h2 class="section-title">学员全程感受什么？</h2>
+    <p class="section-desc">从「我不知道怎么开始」到「哇，我做出来了」，六个情感节点。</p>
+
+    <div class="journey">
+      <div class="jn-card" style="border-top-color: #667eea;">
+        <div class="jn-emoji">😳</div>
+        <div class="jn-phase">Before</div>
+        <div class="jn-title">迷茫期</div>
+        <div class="jn-feel">工作坊结束了，便利贴堆了一桌，不知道怎么整理成报告。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #7c3aed;">
+        <div class="jn-emoji">🤔</div>
+        <div class="jn-phase">Step 1</div>
+        <div class="jn-title">上手期</div>
+        <div class="jn-feel">打开仪表板，新建项目，看到四阶段结构——「哦，原来是这样分的！」</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #f59e0b;">
+        <div class="jn-emoji">⌨️</div>
+        <div class="jn-phase">Step 2–4</div>
+        <div class="jn-title">录入期</div>
+        <div class="jn-feel">逐步把内容填进去，看着卡片一个个出现，有种「我真的做了这些」的成就感。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #10b981;">
+        <div class="jn-emoji">✨</div>
+        <div class="jn-phase">Step 5</div>
+        <div class="jn-title">AHA 时刻</div>
+        <div class="jn-feel">雷达图、甘特图、商业画布自动渲染出来——「这不是 PPT，这是我真实的成果！」</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #667eea;">
+        <div class="jn-emoji">🙌</div>
+        <div class="jn-phase">Step 6</div>
+        <div class="jn-title">交付时刻</div>
+        <div class="jn-feel">一键导出 PDF，发给导师或客户，看到对方「这个很专业」的反应。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #f59e0b;">
+        <div class="jn-emoji">🚀</div>
+        <div class="jn-phase">After</div>
+        <div class="jn-title">持续使用</div>
+        <div class="jn-feel">下次有新项目，主动打开 Eureka，因为「这里有我的创新历史」。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-green" style="margin-top: 28px;">
+      <span class="tip-icon">💬</span>
+      <div>
+        <div class="tip-title">学员常见反馈</div>
+        <div class="tip-body">「填着填着就梳理清楚了」— 录入过程本身就是复盘。<br>「看到雷达图那一刻特别有成就感」— 可视化的反馈非常即时。<br>「终于知道这几天做了什么了」— 系统帮助建立整体认知。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑦ 避坑指南 -->
+  <section class="section fade-in" id="tips">
+    <div class="section-label">💡 避坑指南</div>
+    <h2 class="section-title">这些坑不用踩</h2>
+    <p class="section-desc">基于真实使用场景整理，5 分钟省去 5 小时迷糊。</p>
+
+    <div class="tip tip-purple">
+      <span class="tip-icon">🗑️</span>
+      <div>
+        <div class="tip-title">删除 ≠ 永久消失</div>
+        <div class="tip-body">从项目列表删除会先进入<strong>回收站</strong>（左侧 Tab 切换），可恢复。彻底删除才是真的消失。误删不要慌，先看回收站。</div>
+      </div>
+    </div>
+    <div class="tip tip-amber">
+      <span class="tip-icon">💾</span>
+      <div>
+        <div class="tip-title">每次修改都要点「保存项目」</div>
+        <div class="tip-body">编辑器不会自动保存。每个 Tab 修改后，记得点底部「保存项目」。关闭浏览器前务必保存一次。</div>
+      </div>
+    </div>
+    <div class="tip tip-green">
+      <span class="tip-icon">📱</span>
+      <div>
+        <div class="tip-title">手机可以查看，不建议录入</div>
+        <div class="tip-body">仪表板支持响应式，手机可查看已有项目成果，但大量文字录入建议在桌面端完成，体验更流畅。</div>
+      </div>
+    </div>
+    <div class="tip tip-purple">
+      <span class="tip-icon">📤</span>
+      <div>
+        <div class="tip-title">重要项目导出 Markdown 备份</div>
+        <div class="tip-body">清理浏览器数据会导致 localStorage 清空。建议每次重要更新后「导出 Markdown」，存到云盘作为版本备份。</div>
+      </div>
+    </div>
+    <div class="tip tip-amber">
+      <span class="tip-icon">🎯</span>
+      <div>
+        <div class="tip-title">PPT 导出是 HTML 文件</div>
+        <div class="tip-body">导出的 PPT 是一个 HTML 幻灯片，用浏览器打开后按 F11 全屏即可演示。如需转成真正的 .pptx，可截图后手工整理或告知辅导老师协助。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO BANNER -->
+  <div class="demo-banner fade-in">
+    <div class="demo-left">
+      <h3>👀 先看示范项目</h3>
+      <p>「智能购物推荐系统」是一个完整填写的 Demo 项目，覆盖全部四阶段。打开仪表板后点击它，5 分钟了解所有功能长什么样。</p>
+    </div>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="demo-btn">
+      🚀 立即查看 Demo
+    </a>
+  </div>
+
+  <!-- ⑧ FAQ -->
+  <section class="section fade-in" id="faq">
+    <div class="section-label">❓ 常见问题</div>
+    <h2 class="section-title">遇到问题先看这里</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>刷新页面，数据还在吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">在的。数据存储在浏览器 localStorage，普通刷新不影响。但<strong>清除浏览器数据/缓存</strong>或<strong>换浏览器</strong>会导致数据消失。重要项目请定期导出 Markdown 备份。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>多人协作可以用同一个项目吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">目前不支持实时多人协同（数据在各自浏览器本地）。推荐一人主导录入，其他成员提供素材；或导出 Markdown 后分工编辑，再由一人汇总回 Eureka。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>导出的 PDF 版面乱了怎么办？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">PDF 使用浏览器打印生成。打印设置中调整纸张方向（横向效果更好）、缩放比例（推荐 80%），关闭「页眉页脚」选项。Chrome 效果优于其他浏览器。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>雷达图/甘特图不显示？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">雷达图需要填写对应评分数据才会渲染。甘特图需要在「项目计划」Tab 中设置至少一个阶段的日期。填完保存后刷新页面或重新点击该项目即可。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>可以把项目迁移到另一台电脑吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">可以。在当前电脑导出 Markdown，在新电脑「上传创新文档」（导航栏按钮）导入内容，手工核对后重新保存即可。未来版本将支持 JSON 完整导入导出。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>项目进度是怎么自动计算的？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">系统根据「项目计划」Tab 中各阶段的状态（completed / in_progress / pending）自动推算整体 progress 百分比。状态设置越完整，进度越准确。也可以在基本信息 Tab 手动设置进度。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div><strong>Eureka Dashboard</strong> · v1.3.0 · 2026-03-24</div>
+  <div style="margin-top:6px;">
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank">🔗 打开仪表板</a>
+    &nbsp;·&nbsp;
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/" target="_blank">🏠 主页</a>
+  </div>
+  <div style="margin-top: 8px; opacity: .4; font-size: 11px;">数据存储在浏览器本地，请定期导出备份</div>
+</footer>
+
+<script>
+  // 阅读进度条
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('readingBar');
+    const doc = document.documentElement;
+    const top = doc.scrollTop || document.body.scrollTop;
+    const height = doc.scrollHeight - doc.clientHeight;
+    bar.style.width = (top / height * 100) + '%';
+
+    // 更新 nav 活跃状态
+    const sections = ['start','prep','flow','stages','io','exp','tips','faq'];
+    const links = document.querySelectorAll('.nav-link');
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= 80 && rect.bottom > 80) {
+        links.forEach(l => l.classList.remove('active'));
+        links[i] && links[i].classList.add('active');
+      }
+    });
+  });
+
+  // 导航点击
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - 70;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+
+  // FAQ 展开/收起
+  function toggleFaq(q) {
+    const item = q.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // 滚动淡入动画
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
