@@ -1,1026 +1,2670 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eureka 项目库 & 成果仪表板</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <style>
-    /* 全局样式 */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      color: #333;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* 顶部导航 */
-    .top-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 15px 25px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .nav-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-back {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .nav-back:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .nav-create {
-      background: white;
-      color: #667eea;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 25px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .nav-create:hover {
-      background: #f0f0f0;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    /* 统计卡片区 */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .stat-value {
-      font-size: 36px;
-      font-weight: 800;
-      color: #333;
-    }
-
-    .stat-card:nth-child(1) .stat-value { color: #667eea; }
-    .stat-card:nth-child(2) .stat-value { color: #10b981; }
-    .stat-card:nth-child(3) .stat-value { color: #f59e0b; }
-    .stat-card:nth-child(4) .stat-value { color: #ec4899; }
-
-    /* 主布局 */
-    .main-layout {
-      display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 20px;
-    }
-
-    /* 左侧：项目列表 */
-    .projects-section {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .project-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .project-card:hover {
-      border-color: #667eea;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .card-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .card-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: white;
-    }
-
-    .card-brief {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 16px;
-      line-height: 1.5;
-    }
-
-    .card-meta {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      color: #888;
-    }
-
-    .card-progress-bar {
-      height: 6px;
-      background: #e5e7eb;
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-      transition: width 0.3s;
-    }
-
-    .card-stages {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .stage-badge {
-      padding: 4px 10px;
-      border-radius: 16px;
-      font-size: 11px;
-      font-weight: 600;
-      background: #f3f4f6;
-      color: #9ca3af;
-    }
-
-    .stage-badge.active {
-      background: #667eea;
-      color: white;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .project-card:hover .card-actions {
-      opacity: 1;
-    }
-
-    .btn-icon {
-      background: #f3f4f6;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .btn-icon:hover {
-      background: #e5e7eb;
-    }
-
-    .btn-icon.btn-delete:hover {
-      background: #fee2e2;
-    }
-
-    /* 右侧：产出与资产 */
-    .outputs-section {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .output-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .output-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .output-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .output-item {
-      padding: 12px;
-      background: #f9fafb;
-      border-radius: 8px;
-      font-size: 13px;
-      color: #666;
-      border-left: 3px solid #667eea;
-    }
-
-    /* 按钮样式 */
-    .btn {
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: white;
-      color: #333;
-      border: 1px solid #e5e7eb;
-    }
-
-    .btn-secondary:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
-    }
-
-    /* 项目编辑器容器 */
-    #projectEditor {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    /* 编辑器头部 */
-    .editor-header {
-      border-bottom: 2px solid #f3f4f6;
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-    }
-
-    .editor-header h2 {
-      font-size: 24px;
-      font-weight: 800;
-      color: #333;
-      margin-bottom: 4px;
-    }
-
-    .editor-subtitle {
-      color: #888;
-      font-size: 14px;
-    }
-
-    /* 编辑器区域 */
-    .editor-section {
-      margin-bottom: 32px;
-      padding: 24px;
-      background: #f9fafb;
-      border-radius: 12px;
-    }
-
-    .editor-section h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    .section-desc {
-      color: #888;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
-
-    /* 编辑器操作栏 */
-    .editor-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      padding-top: 24px;
-      border-top: 2px solid #f3f4f6;
-    }
-
-    /* 表单样式 */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #555;
-      margin-bottom: 8px;
-    }
-
-    .form-input,
-    .form-textarea,
-    .form-select {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
-    .form-input:focus,
-    .form-textarea:focus,
-    .form-select:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    /* 模态框 */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal.hidden {
-      display: none;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 24px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .modal-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .btn-close {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      color: #888;
-    }
-
-    .btn-close:hover {
-      color: #333;
-    }
-
-    .modal-body {
-      padding: 24px;
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    /* 提示框 */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 14px;
-      font-weight: 600;
-      opacity: 0;
-      transition: all 0.3s;
-      z-index: 2000;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* 可视化容器 */
-    .aha-radar-container,
-    .map-radar-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 24px 0;
-      padding: 20px;
-      background: #f9fafb;
-      border-radius: 12px;
-    }
-
-    .aha-scores,
-    .map-scores {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .score-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .score-group label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #555;
-    }
-
-    .score-group input[type="range"] {
-      width: 100%;
-      accent-color: #667eea;
-    }
-
-    .score-display {
-      font-size: 18px;
-      font-weight: 700;
-      color: #667eea;
-    }
-
-    .form-hint {
-      font-size: 12px;
-      color: #888;
-      margin-top: 4px;
-    }
-
-    /* 商业画布网格 */
-    .business-canvas-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 12px;
-      min-height: 400px;
-    }
-
-    .canvas-grid-cell {
-      background: #f9fafb;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .canvas-grid-cell[data-row="2"][data-col="2"] {
-      background: #fef3c7;
-      border-color: #f59e0b;
-    }
-
-    .canvas-cell-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #888;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .canvas-cell-content {
-      flex: 1;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.5;
-      overflow-y: auto;
-    }
-
-    /* 项目时间线 */
-    .project-timeline {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      padding: 20px 0;
-    }
-
-    .timeline-item {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-
-    .timeline-dot {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      z-index: 2;
-    }
-
-    .timeline-item.completed .timeline-dot {
-      background: #10b981;
-    }
-
-    .timeline-item.current .timeline-dot {
-      background: #667eea;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .timeline-content {
-      position: absolute;
-      top: 45px;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      text-align: center;
-    }
-
-    .timeline-stage {
-      font-size: 13px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .timeline-status {
-      font-size: 11px;
-      color: #888;
-      margin-top: 2px;
-    }
-
-    .timeline-line {
-      width: 60px;
-      height: 3px;
-      background: #e5e7eb;
-    }
-
-    .timeline-item.completed + .timeline-line {
-      background: #10b981;
-    }
-
-    /* 输出卡片 */
-    .output-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .output-card:hover {
-      border-color: #667eea;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-    }
-
-    .output-icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .output-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #333;
-      margin-bottom: 6px;
-    }
-
-    .output-preview {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-
-    .output-view-btn {
-      background: #f3f4f6;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #667eea;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .output-view-btn:hover {
-      background: #e5e7eb;
-    }
-
-    /* 搜索和筛选栏 */
-    .filter-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .search-input {
-      flex: 1;
-      padding: 10px 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .filter-select {
-      padding: 10px 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      background: white;
-    }
-
-    /* 项目管理操作 */
-    .manager-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* 空状态 */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .empty-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
-
-    .empty-state h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    .empty-state p {
-      color: #888;
-      margin-bottom: 24px;
-    }
-
-    /* 响应式 */
-    @media (max-width: 1024px) {
-      .main-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 640px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .nav-left {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 项目库 & 成果仪表板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#f0f4ff;color:#1e293b;min-height:100vh}
+
+/* ── TOP NAV ── */
+.top-nav{background:linear-gradient(135deg,#667eea,#764ba2);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(102,126,234,.3)}
+.nav-brand{display:flex;align-items:center;gap:12px;color:#fff;font-size:20px;font-weight:700}
+.nav-back{color:rgba(255,255,255,.8);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:20px;margin-right:8px;transition:.2s}
+.nav-back:hover{background:rgba(255,255,255,.2)}
+.nav-actions{display:flex;gap:10px;align-items:center}
+.btn-new{background:#fff;color:#667eea;border:none;padding:9px 22px;border-radius:24px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
+.btn-new:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;transition:.2s}
+.btn-ghost:hover{background:rgba(255,255,255,.25)}
+
+/* ── STATS ── */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 32px 0}
+.stat-card{background:#fff;border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:.2s;cursor:default}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.si-purple{background:rgba(102,126,234,.12);color:#667eea}
+.si-green{background:rgba(16,185,129,.12);color:#10b981}
+.si-orange{background:rgba(245,158,11,.12);color:#f59e0b}
+.si-red{background:rgba(239,68,68,.12);color:#ef4444}
+.stat-num{font-size:28px;font-weight:800;color:#1e293b;line-height:1}
+.stat-label{font-size:13px;color:#64748b;margin-top:4px}
+
+/* ── MAIN LAYOUT ── */
+.main{display:grid;grid-template-columns:360px 1fr;gap:20px;padding:20px 32px 40px}
+
+/* ── LEFT PANEL ── */
+.panel-left{background:#fff;border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 200px);position:sticky;top:20px}
+.panel-hd{padding:20px 20px 14px;border-bottom:1px solid #f1f5f9}
+.panel-title{font-size:16px;font-weight:700;margin-bottom:12px}
+.search-row{display:flex;gap:8px}
+.search-input{flex:1;padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;transition:.2s}
+.search-input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
+.filter-select{padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer;outline:none;background:#fff;color:#374151}
+.project-list{flex:1;overflow-y:auto;padding:10px}
+
+/* ── PROJECT ITEM ── */
+.project-item{padding:14px 16px;border-radius:12px;cursor:pointer;transition:.2s;border:2px solid transparent;margin-bottom:8px}
+.project-item:hover{background:#f8faff;border-color:#e0e7ff}
+.project-item.active{background:#f0f4ff;border-color:#667eea}
+.proj-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.proj-name{font-size:14px;font-weight:600;color:#1e293b;flex:1;margin-right:8px}
+.status-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.s-completed{background:#dcfce7;color:#16a34a}
+.s-in_progress{background:#fef3c7;color:#d97706}
+.s-draft{background:#f1f5f9;color:#64748b}
+.s-archived{background:#e2e8f0;color:#94a3b8}
+.proj-user{font-size:12px;color:#94a3b8;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage-row{display:flex;align-items:center;gap:4px}
+.stg{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700}
+.stg-r{background:#ede9fe;color:#7c3aed}
+.stg-i{background:#fef3c7;color:#b45309}
+.stg-s{background:#dcfce7;color:#15803d}
+.stg-e{background:#fee2e2;color:#b91c1c}
+.stg.dim{opacity:.3}
+.proj-pct{font-size:12px;color:#64748b;margin-left:auto}
+.prog-bar{height:3px;background:#e2e8f0;border-radius:3px;margin-top:6px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#667eea,#10b981);border-radius:3px;transition:.4s}
+
+/* ── RIGHT PANEL ── */
+.panel-right{display:flex;flex-direction:column;gap:16px}
+
+/* ── SECTION CARD ── */
+.sc{background:#fff;border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden}
+.sc-hd{padding:18px 24px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
+.sc-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.sc-body{padding:20px 24px}
+
+/* ── OVERVIEW ── */
+.overview-grid{display:flex;gap:24px;align-items:flex-start}
+.overview-info{flex:1}
+.overview-brief{font-size:14px;color:#475569;line-height:1.7;margin-bottom:12px}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:600}
+.tag-purple{background:#f0f4ff;color:#4f46e5}
+.tag-green{background:#f0fdf4;color:#15803d}
+.tag-yellow{background:#fefce8;color:#a16207}
+.ring-row{display:flex;gap:20px}
+.ring-item{text-align:center}
+.ring-lbl{font-size:11px;color:#64748b;font-weight:600;margin-bottom:6px}
+.ring-wrap{position:relative;width:56px;height:56px;margin:0 auto}
+.ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#1e293b}
+.overview-btns{display:flex;gap:8px;margin-top:14px}
+.ob{padding:7px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.ob-primary{background:#667eea;color:#fff}
+.ob-primary:hover{background:#5a6fd6}
+.ob-danger{background:#fee2e2;color:#ef4444}
+.ob-danger:hover{background:#fecaca}
+.ob-secondary{background:#f1f5f9;color:#475569}
+.ob-secondary:hover{background:#e2e8f0}
+
+/* ── STAGE OUTPUTS ── */
+.stage-out-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stage-out-col{border-left:4px solid;padding:14px 16px;border-radius:0 12px 12px 0}
+.stage-out-name{font-size:12px;font-weight:700;margin-bottom:10px}
+.stage-out-list{list-style:none;padding:0;margin:0}
+.stage-out-list li{font-size:12px;color:#475569;padding:3px 0;display:flex;align-items:flex-start;gap:6px}
+.stage-out-list li::before{content:"✓";font-weight:700;font-size:10px;margin-top:2px;flex-shrink:0}
+
+/* ── GANTT ── */
+.gantt-wrap{overflow-x:auto}
+#ganttCanvas{display:block;width:100%;height:180px}
+
+/* ── RADAR GRID ── */
+.radar-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.radar-box{text-align:center}
+.radar-box h4{font-size:14px;font-weight:700;margin-bottom:3px}
+.radar-box p{font-size:12px;color:#64748b;margin-bottom:8px}
+.radar-scores{display:flex;justify-content:center;gap:20px;margin-top:12px}
+.rs-item{text-align:center}
+.rs-val{font-size:24px;font-weight:800}
+.rs-dim{font-size:11px;color:#64748b;margin-top:2px}
+
+/* ── POV ── */
+.pov-quote-box{background:#f8faff;border-left:4px solid #667eea;border-radius:0 12px 12px 0;padding:16px 18px;font-size:14px;color:#374151;line-height:1.8;font-style:italic;margin-bottom:14px}
+.pov-three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pov-card{border-radius:10px;padding:14px}
+.pov-card-title{font-size:11px;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.pov-card-text{font-size:13px;line-height:1.6}
+
+/* ── JOURNEY MAP ── */
+.journey-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:16px}
+.jm-card{flex:0 0 148px;border:1px solid #e2e8f0;border-radius:10px;padding:12px}
+.jm-num{font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px}
+.jm-tp{font-size:12px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.jm-exp{font-size:11px;color:#475569;margin-bottom:6px;line-height:1.5}
+.jm-emotion{font-size:18px}
+
+/* ── PERSONAS ── */
+.persona-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.persona-card{border:1.5px solid #e2e8f0;border-radius:14px;padding:18px}
+.persona-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.persona-avatar{width:44px;height:44px;border-radius:50%;background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.persona-name{font-size:15px;font-weight:700}
+.persona-role{font-size:12px;color:#64748b}
+.persona-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.p-tag{font-size:11px;padding:2px 10px;border-radius:20px;background:#f1f5f9;color:#475569}
+.persona-quote{background:#f8faff;border-radius:8px;padding:10px 12px;font-size:12px;color:#374151;font-style:italic;border-left:3px solid #667eea;margin-bottom:8px;line-height:1.6}
+.persona-pain{font-size:12px;color:#ef4444;background:#fef2f2;padding:6px 10px;border-radius:8px}
+
+/* ── IDEA TABLE ── */
+.idea-table{width:100%;border-collapse:collapse;font-size:13px}
+.idea-table th{text-align:left;padding:8px 12px;background:#f8faff;font-weight:600;font-size:12px;color:#64748b;border-bottom:2px solid #e2e8f0}
+.idea-table td{padding:10px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.idea-table tr.best td{background:#f0fdf4}
+.score-chip{display:inline-block;min-width:32px;text-align:center;padding:3px 8px;border-radius:20px;font-weight:700;font-size:12px}
+.chip-high{background:#dcfce7;color:#16a34a}
+.chip-mid{background:#fef3c7;color:#d97706}
+.best-reason{margin-top:14px;background:#f0fdf4;border-left:4px solid #10b981;border-radius:0 10px 10px 0;padding:12px 16px}
+.best-reason-title{font-size:12px;font-weight:700;color:#15803d;margin-bottom:4px}
+.best-reason-text{font-size:13px;color:#374151;line-height:1.6}
+
+/* ── STORY ── */
+.story-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.story-act{border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+.story-hd{padding:10px 14px;font-size:12px;font-weight:700}
+.story-bd{padding:12px 14px}
+.story-scene{font-size:12px;color:#1e293b;margin-bottom:6px;line-height:1.5}
+.story-feeling{font-size:12px;color:#64748b;font-style:italic;line-height:1.5}
+.aha-moment{margin-top:8px;background:#fffbeb;border-radius:8px;padding:6px 10px;font-size:11px;color:#b45309;font-weight:600;line-height:1.4}
+
+/* ── ELEVATOR ── */
+.elevator-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.ev-item{background:#f8faff;border-radius:12px;padding:14px}
+.ev-icon{font-size:22px;margin-bottom:8px}
+.ev-label{font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ev-text{font-size:12px;color:#1e293b;line-height:1.6}
+
+/* ── BUSINESS CANVAS ── */
+.canvas-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto auto auto;gap:8px}
+.cv{background:#f8faff;border:1px solid #e2e8f0;border-radius:10px;padding:12px}
+.cv-title{font-size:10px;font-weight:700;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px}
+.cv-text{font-size:12px;color:#374151;line-height:1.5}
+.cv-value{background:#f0f4ff;border-color:#c7d2fe;grid-column:3;grid-row:1/3}
+.cv-value .cv-title{color:#667eea}
+.cv-partners{grid-column:1;grid-row:1/3}
+.cv-customers{grid-column:5;grid-row:1/3}
+.cv-cost{grid-column:1/4;grid-row:3}
+.cv-revenue{grid-column:3/6;grid-row:3}
+
+/* ── ITERATION ── */
+.iter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.iter-card{border-radius:14px;padding:18px}
+.iter-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.iter-icon{font-size:28px}
+.iter-label{font-size:16px;font-weight:800}
+.iter-text{font-size:13px;line-height:1.7}
+
+/* ── DELIVERABLES ── */
+.del-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.del-card{border:1.5px solid #e2e8f0;border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;transition:.2s}
+.del-card:hover{border-color:#a5b4fc;box-shadow:0 2px 10px rgba(102,126,234,.1)}
+.del-card.avail{border-left:4px solid #10b981}
+.del-card.locked{opacity:.6}
+.del-icon{font-size:32px;flex-shrink:0}
+.del-info{flex:1}
+.del-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.del-desc{font-size:12px;color:#64748b;line-height:1.5;margin-bottom:10px}
+.del-btn{padding:6px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
+.db-pdf{background:#667eea;color:#fff}
+.db-pdf:hover{background:#5a6fd6}
+.db-ppt{background:#f59e0b;color:#fff}
+.db-md{background:#10b981;color:#fff}
+.db-view{background:#f1f5f9;color:#475569}
+.db-locked{background:#e2e8f0;color:#94a3b8;cursor:not-allowed}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:12px 26px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:9999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── WELCOME ── */
+.welcome-body{text-align:center;padding:60px 40px}
+.welcome-icon{font-size:72px;margin-bottom:20px}
+.welcome-title{font-size:24px;font-weight:800;color:#1e293b;margin-bottom:10px}
+.welcome-sub{color:#64748b;font-size:15px;margin-bottom:32px;line-height:1.6}
+.welcome-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:14px 36px;border-radius:28px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(102,126,234,.4)}
+.welcome-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.5)}
+
+/* ── GANTT PHASE ── */
+.gantt-phase-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;height:32px;border-radius:10px;overflow:hidden;margin-bottom:16px}
+.gph{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;letter-spacing:.5px;position:relative}
+.gph-done{opacity:1}
+.gph-active{opacity:1;animation:gpulse 1.6s ease-in-out infinite}
+.gph-pending{opacity:.28}
+@keyframes gpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed #c7d2fe;border-radius:14px;padding:28px;text-align:center;transition:.2s;cursor:pointer;background:#f8faff}
+.upload-zone:hover,.upload-zone.drag-over{border-color:#667eea;background:#f0f4ff}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-title{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.upload-sub{font-size:12px;color:#64748b;margin-bottom:14px}
+.upload-btn{background:#667eea;color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.upload-btn:hover{background:#5a6fd6}
+.upload-preview{margin-top:16px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;font-size:12px;color:#374151;max-height:160px;overflow-y:auto;text-align:left;white-space:pre-wrap;line-height:1.6;display:none}
+
+/* ── PROJECT BRIEF ── */
+.brief-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.brief-item{background:#f8faff;border-radius:10px;padding:14px}
+.brief-label{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.brief-text{font-size:13px;color:#374151;line-height:1.65}
+.brief-full{grid-column:1/-1}
+
+/* ── HMW ── */
+.hmw-list{display:flex;flex-direction:column;gap:10px}
+.hmw-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;border:1.5px solid #e0e7ff;background:#f8faff}
+.hmw-cat{font-size:10px;font-weight:700;background:#667eea;color:#fff;padding:2px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.hmw-text{font-size:13px;color:#1e293b;line-height:1.65;font-style:italic}
+
+/* ── CONCEPT OVERVIEW ── */
+.concept-overview{background:linear-gradient(135deg,#f0f4ff,#f8faff);border-radius:14px;padding:20px;margin-bottom:16px;border-left:4px solid #667eea}
+.concept-name{font-size:18px;font-weight:800;color:#4f46e5;margin-bottom:10px}
+.concept-overview-text{font-size:14px;color:#374151;line-height:1.75}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.feat-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;transition:.2s}
+.feat-card:hover{border-color:#a5b4fc;box-shadow:0 2px 10px rgba(102,126,234,.12)}
+.feat-icon{font-size:26px;margin-bottom:8px}
+.feat-name{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.feat-desc{font-size:12px;color:#64748b;line-height:1.55}
+
+/* ── TEST REPORT ── */
+.test-method{background:#f8faff;border-radius:10px;padding:12px 16px;font-size:12px;color:#475569;margin-bottom:16px;border-left:3px solid #667eea;line-height:1.6}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.test-section{border-radius:12px;padding:16px}
+.test-sec-title{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.test-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:12px;line-height:1.55}
+.test-bullet{font-size:14px;flex-shrink:0;margin-top:1px}
+.test-finding{color:#1e293b;font-weight:600}
+.test-evidence{color:#64748b;font-size:11px;margin-top:2px}
+.test-bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.test-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-right:4px;margin-bottom:4px}
+
+/* ── PROCESS OUTPUTS ── */
+.po-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.po-col{border-radius:14px;overflow:hidden}
+.po-col-hd{padding:12px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px}
+.po-col-body{padding:12px 14px}
+.po-specialist{margin-bottom:12px}
+.po-spec-name{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.po-artifact{display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fff;border-radius:8px;margin-bottom:4px;border:1px solid #f1f5f9;font-size:11px;color:#374151;transition:.15s}
+.po-artifact:hover{border-color:#c7d2fe;background:#f8faff}
+.po-artifact-icon{font-size:15px;flex-shrink:0}
+.po-artifact-name{flex:1}
+.po-artifact-type{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700}
+
+/* ── PROJECT EDITOR MODAL ── */
+.editor-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.editor-modal.open{display:flex}
+.editor-panel{background:#fff;border-radius:24px;width:860px;max-width:100%;box-shadow:0 24px 80px rgba(0,0,0,.22);flex-shrink:0;margin:auto}
+.editor-header{padding:24px 28px 0;display:flex;align-items:center;justify-content:space-between}
+.editor-title{font-size:18px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:10px}
+.editor-close{width:36px;height:36px;border-radius:10px;background:#f1f5f9;border:none;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;color:#475569;transition:.2s}
+.editor-close:hover{background:#e2e8f0}
+.editor-tabs{display:flex;gap:4px;padding:16px 28px 0;border-bottom:2px solid #f1f5f9}
+.etab{padding:9px 18px;border-radius:10px 10px 0 0;border:none;background:transparent;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;transition:.2s;position:relative;bottom:-2px}
+.etab:hover{color:#667eea;background:#f8faff}
+.etab.active{color:#667eea;border-bottom:2px solid #667eea;background:#fff}
+.editor-body{padding:24px 28px 28px;max-height:62vh;overflow-y:auto}
+.editor-section{margin-bottom:22px}
+.editor-section-title{font-size:12px;font-weight:700;color:#667eea;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0e7ff}
+.ef-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.ef-row.full{grid-template-columns:1fr}
+.ef-group{display:flex;flex-direction:column;gap:5px}
+.ef-label{font-size:12px;font-weight:600;color:#475569}
+.ef-input,.ef-textarea,.ef-select{width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;color:#1e293b;outline:none;font-family:inherit;transition:.2s;background:#fff}
+.ef-input:focus,.ef-textarea:focus,.ef-select:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
+.ef-textarea{resize:vertical;min-height:72px;line-height:1.6}
+.ef-slider-row{display:flex;align-items:center;gap:10px}
+.ef-slider{flex:1;accent-color:#667eea}
+.ef-slider-val{width:28px;text-align:center;font-weight:700;font-size:13px;color:#667eea}
+.editor-footer{padding:16px 28px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f1f5f9}
+.editor-save-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:11px 32px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;box-shadow:0 4px 14px rgba(102,126,234,.35)}
+.editor-save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,.45)}
+.editor-cancel-btn{background:#f1f5f9;color:#475569;border:none;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
+.editor-cancel-btn:hover{background:#e2e8f0}
+.ef-array-block{background:#f8faff;border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid #e2e8f0;position:relative}
+.ef-array-del{position:absolute;top:10px;right:10px;background:#fee2e2;border:none;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#ef4444;transition:.2s}
+.ef-array-del:hover{background:#fecaca}
+.ef-add-btn{background:#f0f4ff;color:#667eea;border:1.5px dashed #a5b4fc;border-radius:10px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;width:100%;transition:.2s}
+.ef-add-btn:hover{background:#e0e7ff}
+.ef-inline-row{display:grid;gap:8px}
+.ef-note{font-size:11px;color:#94a3b8;margin-top:4px;line-height:1.5}
+/* ── LEFT PANEL TABS ── */
+.panel-tabs{display:flex;border-bottom:1px solid #f1f5f9;padding:0 10px}
+.ptab{flex:1;padding:8px 4px;text-align:center;border:none;background:transparent;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.2s}
+.ptab:hover{color:#667eea}
+.ptab.active{color:#667eea;border-bottom-color:#667eea}
+.trash-item{padding:12px 14px;border-radius:10px;margin-bottom:6px;background:#fef8f8;border:1.5px solid #fee2e2}
+.trash-name{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:4px}
+.trash-meta{font-size:11px;color:#94a3b8;margin-bottom:8px}
+.trash-actions{display:flex;gap:6px}
+.tbtn{padding:4px 12px;border-radius:6px;border:none;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+.tbtn-restore{background:#dcfce7;color:#15803d}
+.tbtn-restore:hover{background:#bbf7d0}
+.tbtn-purge{background:#fee2e2;color:#ef4444}
+.tbtn-purge:hover{background:#fecaca}
+.trash-empty{text-align:center;padding:32px 16px;color:#94a3b8}
+
+/* ── GANTT REAL ── */
+#ganttCanvas{display:block;width:100%;height:auto}
+
+@media(max-width:768px){.ef-row{grid-template-columns:1fr}.editor-panel{border-radius:16px}}
+
+@media(max-width:1100px){.main{grid-template-columns:1fr}.panel-left{max-height:400px;position:static}}
+@media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.radar-grid,.stage-out-grid,.po-grid{grid-template-columns:1fr}.feature-grid,.brief-grid,.test-grid,.test-bottom-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- 顶部导航 -->
-    <div class="top-nav">
-      <div class="nav-left">
-        <a href="../" class="nav-back">← 返回 Agents Marketplace</a>
-        <h1 class="nav-title">📊 Eureka 项目库</h1>
+
+<!-- ── TOP NAV ── -->
+<nav class="top-nav">
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="../" class="nav-back">← Agents Marketplace</a>
+    <span class="nav-brand">📊 Eureka 项目库 &amp; 成果仪表板</span>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
+    <button class="btn-ghost" onclick="importJSON()">⬆️ 导入 JSON</button>
+    <button class="btn-ghost" onclick="exportAllJSON()">⬇️ 导出 JSON</button>
+    <button class="btn-new" onclick="createNewProject()">+ 新建项目</button>
+  </div>
+</nav>
+
+<!-- ── STATS ── -->
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <!-- LEFT -->
+  <div class="panel-left">
+    <div class="panel-hd">
+      <div class="panel-title">📁 项目管理</div>
+      <div class="search-row">
+        <input class="search-input" id="searchInput" placeholder="🔍 搜索项目名称..." oninput="filterProjects()">
+        <select class="filter-select" id="statusFilter" onchange="filterProjects()">
+          <option value="">全部</option>
+          <option value="in_progress">进行中</option>
+          <option value="completed">已完成</option>
+          <option value="draft">草稿</option>
+          <option value="archived">已归档</option>
+        </select>
       </div>
-      <button class="nav-create" onclick="createNewProject()">+ 新建项目</button>
+      <div class="panel-tabs">
+        <button class="ptab active" id="ptab_projects" onclick="switchPanelTab('projects')">📁 我的项目</button>
+        <button class="ptab" id="ptab_trash" onclick="switchPanelTab('trash')">🗑️ 回收站 <span id="trashBadge" style="display:none;background:#ef4444;color:#fff;border-radius:20px;padding:0 6px;font-size:10px;margin-left:4px">0</span></button>
+      </div>
     </div>
+    <div class="project-list" id="projectList"></div>
+    <div class="project-list" id="trashList" style="display:none"></div>
+  </div>
 
-    <!-- 统计卡片区 -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">总项目数</div>
-        <div class="stat-value" id="statTotal">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">已完成</div>
-        <div class="stat-value" id="statCompleted">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">进行中</div>
-        <div class="stat-value" id="statInProgress">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">可交付资产</div>
-        <div class="stat-value" id="statAssets">0</div>
-      </div>
-    </div>
-
-    <!-- 主内容区 -->
-    <div class="main-layout">
-      <!-- 左侧：项目列表 -->
-      <div class="projects-section">
-        <div class="section-header">
-          <h2 class="section-title">我的项目</h2>
-        </div>
-
-        <!-- 项目管理器容器 -->
-        <div id="projectManager"></div>
-
-        <!-- 项目编辑器容器 -->
-        <div id="projectEditor" style="display: none;"></div>
-      </div>
-
-      <!-- 右侧：产出与资产 -->
-      <div class="outputs-section">
-        <div class="output-card">
-          <h3 class="output-title">📁 流程产出总览</h3>
-          <div class="output-list" id="outputList">
-            <div class="output-item">暂无产出</div>
-          </div>
-        </div>
-
-        <div class="output-card">
-          <h3 class="output-title">📦 可交付资产</h3>
-          <div class="output-list" id="deliverablesList">
-            <div class="output-item">暂无资产</div>
-          </div>
-        </div>
-
-        <div class="output-card">
-          <h3 class="output-title">⬇️ 导出</h3>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-secondary" onclick="exportPDF()">📄 导出 PDF</button>
-            <button class="btn btn-secondary" onclick="exportMarkdown()">📝 导出 Markdown</button>
-            <button class="btn btn-secondary" onclick="exportPPT()">📊 导出 PPT</button>
-          </div>
-        </div>
+  <!-- RIGHT -->
+  <div class="panel-right" id="dashRight">
+    <div class="sc">
+      <div class="welcome-body">
+        <div class="welcome-icon">📊</div>
+        <div class="welcome-title">欢迎来到 Eureka 项目库</div>
+        <div class="welcome-sub">点击左侧项目查看完整仪表板内容<br>包含甘特图、价值雷达、流程产出、可交付资产等完整展示</div>
+        <button class="welcome-btn" onclick="loadDemoAndShow()">🚀 加载示范项目，立即查看</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="js/data-schema.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/project-manager.js"></script>
-  <script src="js/reveal-editor.js"></script>
-  <script src="js/inspire-editor.js"></script>
-  <script src="js/shape-editor.js"></script>
-  <script src="js/exam-editor.js"></script>
-  <script src="js/visualizations.js"></script>
-  <script>
-    // 初始化存储
-    const storage = new ProjectStorage();
-    const projectManager = new ProjectManager(storage);
-    let currentEditor = null;
+<!-- ── UPLOAD MODAL ── -->
+<div id="uploadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:8000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:32px;width:560px;max-width:90vw;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <button onclick="closeUploadPanel()" style="position:absolute;top:16px;right:16px;background:#f1f5f9;border:none;border-radius:8px;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#475569">×</button>
+    <div style="font-size:18px;font-weight:800;color:#1e293b;margin-bottom:6px">📂 上传创新文档</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:20px">支持上传 TXT / MD / JSON 格式的创新工作文本文件，系统将解析并关联至当前项目</div>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleFileDrop(event)">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">点击选择或拖拽文件到此处</div>
+      <div class="upload-sub">支持 .txt · .md · .json · .csv 文件，单文件最大 2MB</div>
+      <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">选择文件</button>
+    </div>
+    <input type="file" id="fileInput" accept=".txt,.md,.json,.csv" style="display:none" onchange="handleFileSelect(event)">
+    <div id="uploadPreview" class="upload-preview"></div>
+    <div id="uploadFileName" style="font-size:12px;color:#667eea;font-weight:600;margin-top:8px;display:none"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9">
+      <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px">关联到项目：</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="uploadLinkProjects"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button onclick="closeUploadPanel()" style="background:#f1f5f9;color:#475569;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">取消</button>
+      <button id="uploadSaveBtn" onclick="saveUploadedFile()" style="background:#667eea;color:#fff;border:none;padding:9px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;opacity:.5" disabled>💾 保存并关联</button>
+    </div>
+  </div>
+</div>
 
-    // 页面加载完成
-    document.addEventListener('DOMContentLoaded', () => {
-      initDashboard();
+<!-- ── PROJECT EDITOR MODAL ── -->
+<div class="editor-modal" id="editorModal">
+  <div class="editor-panel">
+    <div class="editor-header">
+      <div class="editor-title" id="editorTitle">✏️ 编辑项目</div>
+      <button class="editor-close" onclick="closeEditor()">×</button>
+    </div>
+    <div class="editor-tabs" id="editorTabs">
+      <button class="etab active" onclick="switchEditorTab('basic',this)">📋 基本信息</button>
+      <button class="etab" onclick="switchEditorTab('plan',this)">📅 项目计划</button>
+      <button class="etab" onclick="switchEditorTab('reveal',this)">🔍 Reveal</button>
+      <button class="etab" onclick="switchEditorTab('inspire',this)">💡 Inspire</button>
+      <button class="etab" onclick="switchEditorTab('shape',this)">🎨 Shape</button>
+      <button class="etab" onclick="switchEditorTab('exam',this)">✅ Exam</button>
+    </div>
+    <div class="editor-body" id="editorBody">
+      <!-- 内容由 JS 动态渲染 -->
+    </div>
+    <div class="editor-footer">
+      <button class="editor-cancel-btn" onclick="closeEditor()">取消</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="editorSaveStatus" style="font-size:12px;color:#10b981;font-weight:600;display:none">✓ 已保存</span>
+        <button class="editor-save-btn" onclick="saveEditor()">💾 保存项目</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════ DEMO DATA ═══════════════
+const DEMO_PROJECT = {
+  id: 'demo-2026',
+  name: '智能购物推荐系统 · 社交链接版',
+  status: 'completed',
+  progress: 100,
+  brief: '为 20-35 岁都市白领女性提供 AI 智能推荐 + 社交分享一体化购物体验，彻底解决鞋服门店选择困难与认知过载问题，同时为门店带来转化增长与品牌传播。',
+  projectBrief: {
+    background: '中国鞋服零售市场面临线下流量下滑与用户决策疲劳双重压力。门店客流虽稳，但转化率持续走低，平均用户进店到离店无购买比例高达43%。社交媒体种草文化崛起，但线下与线上体验严重断裂。',
+    opportunity: '将 AI 个性化推荐与社交分享打通，在门店场景中建立"选购即创作"的全新体验范式，同时为品牌构建低成本社交裂变增长引擎。',
+    hypothesis: '如果为都市白领女性提供 3 款精准 AI 推荐 + 一键社交分享卡片，用户决策时间可缩短 50%，且社交自然传播可带来月均新客增长 30% 以上。',
+    scope: '本项目聚焦鞋服品牌连锁门店场景，覆盖入店、浏览、推荐、购买、分享全链路，不含电商平台及海外市场。',
+    team: 'UX 研究员 × 1、产品设计师 × 2、AI 算法工程师 × 2、品牌运营顾问 × 1、数据分析师 × 1'
+  },
+  targetUser: '20-35岁 都市白领女性 · 有活力与社交展示需求',
+  createdAt: '2026-01-10',
+  updatedAt: '2026-03-20',
+  plan: {
+    start: '2026-01-10',
+    end:   '2026-03-28',
+    phases: {
+      reveal:  { start:'2026-01-10', end:'2026-01-28', doneAt:'2026-01-27', status:'completed' },
+      inspire: { start:'2026-01-28', end:'2026-02-14', doneAt:'2026-02-13', status:'completed' },
+      shape:   { start:'2026-02-14', end:'2026-03-05', doneAt:'2026-03-04', status:'completed' },
+      exam:    { start:'2026-03-05', end:'2026-03-28', doneAt:'2026-03-20', status:'completed' }
+    }
+  },
+  reveal: {
+    pov: {
+      user: '20-35岁都市白领女性，追求时尚与社交认同感',
+      pain: '面对鞋服门店数百款选择时认知过载，平均耗时 2 小时仍无法决策，最终放弃购买',
+      insight: '只需 3 款精准推荐 + 一键社交分享，就能同时满足"买得对"和"被看见"两大核心需求'
+    },
+    personas: [
+      {
+        emoji: '👩‍💼', name: '小雅', role: '28岁，品牌市场专员',
+        tags: ['社交达人','INFJ','周末逛街族','小红书重度用户'],
+        pain: '每次逛街超过 1.5 小时却什么都没买，朋友都说她"选择困难症"',
+        quote: '"我需要有人告诉我这件衣服是否适合我，然后我能拍照发朋友圈收到点赞。"'
+      },
+      {
+        emoji: '👩‍🎨', name: '小雨', role: '25岁，互联网产品运营',
+        tags: ['从众心理','爱晒穿搭','积分控','抖音种草族'],
+        pain: '看到别人穿得好看就冲动想买，到店后找不到同款，浪费大量时间和精力',
+        quote: '"如果推荐的东西跟我喜欢的博主风格一样，我会立刻买单，还会发帖子分享。"'
+      }
+    ],
+    stakeholders: [
+      { name: '终端购物用户', stance: '高度支持', impact: '极高', note: '核心价值接受者，满意度直接决定复购率与 NPS 口碑' },
+      { name: '门店经营者', stance: '支持', impact: '高', note: '关注客流转化率（目标+35%）与客单价提升' },
+      { name: '品牌运营方', stance: '支持', impact: '中高', note: '关注品牌在社交媒体的曝光量与用户留存' },
+      { name: 'AI 技术团队', stance: '中立', impact: '中', note: '负责推荐算法开发与社交 API 对接' }
+    ],
+    journeyMap: [
+      { touchpoint: '进店 / 打开 APP', experience: '看到满墙衣服，不知从哪开始看起', emotion: '😰 迷茫焦虑' },
+      { touchpoint: '浏览搜索', experience: '尝试搜索，结果越看越多越纠结', emotion: '😤 认知过载' },
+      { touchpoint: '触发智能推荐', experience: '系统基于画像推出 3 款，完全符合个人风格', emotion: '😍 惊喜心动' },
+      { touchpoint: '查看评价 / 试穿', experience: '看到真实买家秀 + 社区真实评价，快速决策', emotion: '🤩 信心满满' },
+      { touchpoint: '购买 + 分享', experience: '下单后一键生成精美穿搭卡片并发布朋友圈', emotion: '🎉 满足自豪' },
+      { touchpoint: '会员积分 / 复购', experience: '积分自动累积，下次推送风格延伸新品', emotion: '💕 忠诚依赖' }
+    ]
+  },
+  inspire: {
+    hmw: [
+      { category: '用户体验', statement: '我们如何能让用户在进店后 3 分钟内找到最适合自己的 3 款商品，而不是被数百件商品淹没？' },
+      { category: '社交传播', statement: '我们如何能让每一次购物行为自动转化为用户愿意主动分享的内容，而不需要额外激励？' },
+      { category: '品牌价值', statement: '我们如何能让品牌在不增加获客预算的情况下，通过用户口碑实现月均新客 +30% 的增长目标？' },
+      { category: '数据沉淀', statement: '我们如何能将每次推荐交互转化为更精准的用户风格数据，让下一次推荐更个性化？' },
+      { category: '门店转化', statement: '我们如何能让门店导购从"推销员"转变为"AI 辅助的风格顾问"，提升客单价 35%？' }
+    ],
+    ideas: [
+      {
+        name: 'AI 智能推荐引擎',
+        desc: '基于用户体型、风格偏好、历史行为实时推荐 3 款最优选择，消除认知过载',
+        feasibility: 4, value: 5, innovation: 5
+      },
+      {
+        name: '社交分享穿搭卡片',
+        desc: '购买后自动生成精美穿搭卡（含品牌水印），一键发布微信 / 小红书 / 抖音',
+        feasibility: 5, value: 5, innovation: 4
+      },
+      {
+        name: '会员积分联动体系',
+        desc: '推荐反馈 + 分享行为均可积分，积分换专属折扣或新品优先体验权',
+        feasibility: 5, value: 4, innovation: 3
+      }
+    ],
+    bestIdea: 'AI 智能推荐引擎',
+    reason: '技术可行性高（推荐算法成熟），用户价值最大（直接解决核心痛点），且与社交分享、会员体系形成协同增效，构建完整飞轮。'
+  },
+  shape: {
+    concept: {
+      name: '智选穿搭 · 晒出自我',
+      overview: '一套融合 AI 推荐引擎、社交内容生成与会员积分联动的智能购物系统，让每一次门店购物体验变得「精准、有趣、值得分享」。系统通过三步完成完整购物闭环：扫码入店 → AI 个性推荐 → 购买+一键社交分享，彻底打破传统门店「进来容易、买单难」的困境。',
+      userValue: '3 步完成选购：扫描风格偏好 → AI 精准推荐 → 一键购买+分享。选购时间缩短 50%，购物满意度提升 90%',
+      techPlan: 'AI 推荐算法（协同过滤 + 视觉识别）+ 社交 API（微信/小红书/抖音）+ 会员积分中台统一对接',
+      bizValue: '门店客单价预计提升 35%，用户月活提升 2.8 倍，社交自然传播降低获客成本 40%，年均 GMV 增长预估 2.3 亿',
+      stakeholderValue: '门店获得更高转化率 | 品牌获得社交曝光 | 用户获得满足感与自我表达出口 | 平台获得数据资产',
+      features: [
+        { icon: '🤖', name: 'AI 风格引擎', desc: '基于体型、偏好、历史购买协同过滤，实时输出 3 款精准推荐，冷启动用户 30 秒完成风格标签建立' },
+        { icon: '🎨', name: '穿搭卡片生成器', desc: '购买后 10 秒自动合成品牌水印穿搭卡，支持微信朋友圈、小红书、抖音一键分发，格式自动适配' },
+        { icon: '🏆', name: '智能积分中台', desc: '推荐反馈 (+5)、完成购买 (+20)、社交分享 (+15)、好友跟购 (+50) 全链路积分激励体系' },
+        { icon: '📊', name: '导购辅助面板', desc: '门店店员可查看用户实时偏好标签与推荐理由，将 AI 数据与人工服务无缝结合，提升专业感' },
+        { icon: '🔄', name: '持续学习机制', desc: '每次点击、试穿、退货数据均回流模型，推荐精度随使用频次持续迭代提升，形成数据飞轮' },
+        { icon: '🌐', name: '多平台社交基础设施', desc: '统一接入微信、小红书、抖音 Open API，支持品牌自定义卡片模板与标签文案，营销活动快速配置' }
+      ]
+    },
+    mapValues: { market: 9, adoption: 8, protection: 7 },
+    story: [
+      { act: '① 用户挑战', scene: '小雅是28岁都市白领，每周末逛街平均耗时 2+ 小时，浏览了数百件商品，却总在"买了不合适"与"选不出来"之间反复纠结，最终精疲力竭空手而归。', feeling: '挫败、焦虑、认知过载，对"逛街"产生负面情绪', aha: '🎯 核心矛盾：选择太多反而无从选择' },
+      { act: '② POV 洞见', scene: '研究发现：小雅真正需要的不是"更多选择"，而是"被懂我的人直接告诉我哪 3 件最适合"——同时，她还渴望在买到心仪单品后能立刻向朋友展示这种"被精准满足"的喜悦。', feeling: '研究者的顿悟：精准 + 分享 = 完整满足感', aha: '💡 POV：我们发现她需要「买得对 + 被看见」两个需求同时得到满足' },
+      { act: '③ 接触体验', scene: '周末，小雅扫码入店，APP 弹出欢迎页——「今日为你精选 3 款，基于你的秋冬偏好」。不是推荐墙，只有 3 张卡片，附上真实买家秀和精准尺码建议。', feeling: '惊喜：「只有 3 个？太好了，感觉这是专门为我做的！」', aha: '✨ 从"无从下手"到"一眼锁定"，信息量刚好够' },
+      { act: '④ 使用过程', scene: '小雅点开第 2 张推荐卡，看到与自己体型相近的买家秀，评论区清一色真实反馈。AI 自动显示"你的尺码建议：M码，正常合身"。30 秒完成决策，加入购物车。', feeling: '信任感暴增：「买家秀比模特照真实太多了！数据说 M 码，那就 M 码！」', aha: '🔍 关键时刻：真实数据 > 营销话术，精准信息让决策变得简单' },
+      { act: '⑤ 分享结果', scene: '支付成功后，APP 自动生成小雅专属穿搭卡：她选的外套+品牌水印+「这件适合你」标语。她一键发布朋友圈，3 分钟内收到 12 个点赞，3 位好友私信询问链接。', feeling: '成就感爆棚：「我不只买了衣服，我还帮品牌带了货，感觉自己是 KOL！」', aha: '🌟 购物行为 = 自动生成内容资产，用户成为品牌天然代言人' },
+      { act: '⑥ 持续感受', scene: '两周后，小雅收到 APP 推送：「上次买的外套有新色到货，根据你的偏好特别推荐」。她积分已累积 180 分，离下次 9 折兑换还差 20 分。她主动分享了第二次。', feeling: '依赖感与期待感：「品牌真的很懂我，我愿意长期回来，还会带朋友来！」', aha: '🔄 从偶发购买到品牌忠诚，习惯正在形成，飞轮开始转动' }
+    ]
+  },
+  exam: {
+    ahaValues: { aha: 9, highlight: 8, advancement: 9 },
+    testReport: {
+      method: '可用性测试（5人）+ 问卷调查（120人）+ A/B 对照实验（试点门店 2 家，对照组 2 家），测试周期 30 天',
+      validated: [
+        { finding: 'AI 推荐精准度达 84%（用户评分 ≥4星）', evidence: '120 份问卷中 101 份给出"推荐与我偏好吻合"正向反馈' },
+        { finding: '决策时间从平均 78 分钟缩短至 31 分钟（-60%）', evidence: 'A/B 对照：实验组平均停留时间显著缩短，转化率提升 41%' },
+        { finding: '穿搭卡分享率达 67%（购买后触发）', evidence: '试点门店 2 家，共 312 笔订单中 209 笔触发了社交分享行为' },
+        { finding: '会员积分体系有效提升复购意愿', evidence: '38% 的复购用户表示"积分是再次来店的主要原因之一"' }
+      ],
+      invalidated: [
+        { finding: '语音识别风格输入未获用户接受', evidence: '5 名测试用户中 4 名表示"尴尬，不想在门店说话"，废弃该功能' },
+        { finding: '全身虚拟试穿功能满意度不如预期', evidence: '渲染误差导致 55% 用户认为效果不真实，优先级降低' }
+      ],
+      newFindings: [
+        '男性陪同者（伴侣/朋友）对推荐系统兴趣超出预期，存在潜在扩展用户群',
+        '积分到期提醒推送打开率高达 73%，远超行业均值 18%，说明用户对"损失框架"敏感',
+        '门店导购反映 AI 辅助面板让他们工作效率提升，接受度高于预期'
+      ],
+      newProblems: [
+        '推荐引擎冷启动问题：新用户前 3 次推荐精准度仅 52%，需优化问卷引导流程',
+        '社交卡片样式单一，部分用户反映"不够个性化，看起来像广告"',
+        '积分系统与现有 POS 系统对接存在延迟（平均 8 秒），影响结账体验'
+      ]
+    },
+    elevatorPitch: {
+      problem: '都市白领女性在服装门店面对数百款选择时认知过载，平均耗时 2 小时仍无法决策，43% 最终放弃购买，门店流量利用率极低',
+      solution: 'AI 驱动的「智选穿搭·晒出自我」系统——3 款精准推荐 + 一键生成社交穿搭卡片 + 会员积分联动，打造购物-分享-复购完整闭环',
+      users: '20-35 岁都市白领女性，月均服装支出 800-3000 元，日均社交媒体使用 2 小时以上，高分享意愿与社交认同需求',
+      value: '选购时间缩短 50%，满意度提升 90%，社交分享带来月均新客增长 30%，门店转化率提升 35%，获客成本降低 40%',
+      action: '邀请 5 家品牌旗舰门店参与 90 天试点计划，目标：完成 MVP 验证核心指标，Q3 启动全量推广并完成 Pre-A 轮融资'
+    },
+    iterationPlan: {
+      d30: '完成 AI 推荐引擎 MVP（基于现有历史数据离线训练），接入 2 家试点门店，部署收集 500+ 真实用户反馈，输出推荐精度基线报告',
+      d60: '上线社交分享穿搭卡片功能，完成微信 / 小红书 API 对接，扩展覆盖 10 家门店，推荐精度从基线提升 25%，启动 KOL 合作推广',
+      d90: '全面接入门店会员积分系统，启动 2 个品牌联名合作，完成 A/B 测试并输出商业化 ROI 分析报告，正式启动 Pre-A 轮融资路演'
+    },
+    businessModel: {
+      valueProposition: '3 款精准推荐 + 一键社交分享，让购物「又快又好玩」，同时帮品牌低成本获客并沉淀用户数据资产',
+      customerSegments: '主：都市白领女性（20-35岁，高购买力）\n辅：鞋服零售品牌门店（B端付费方）',
+      channels: 'APP（扫码入店）/ 品牌官方小程序 / 社交媒体自然传播 / KOL 种草合作推广',
+      customerRelationships: '个性化 AI 推荐 + 会员积分体系 + 社群运营 + 专属穿搭顾问 VIP 服务',
+      revenueStreams: '品牌方 SaaS 年费（主营）/ 推荐成交佣金 5% / 社交广告流量分成 / 用户数据洞察报告增值服务',
+      keyResources: 'AI 推荐算法（核心壁垒）/ 用户风格数据库 / 品牌商品数据授权 / 社交平台 API 接口',
+      keyActivities: '算法持续训练迭代 / 品牌方 BD 拓展 / 用户增长精细化运营 / 社交内容生态建设',
+      keyPartners: '鞋服品牌门店（核心渠道）/ 微信·小红书（社交基础设施）/ AI 云服务商（算力支撑）/ KOL MCN 机构',
+      costStructure: 'AI 研发人力 40% / 云服务器算力 20% / 市场推广运营 25% / 行政管理 15%'
+    }
+  }
+};
+
+// ═══════════════ STORAGE ═══════════════
+const SK = 'eureka_v3';
+const TK = 'eureka_trash_v1';   // 回收站 key
+const getAll = () => { try { return JSON.parse(localStorage.getItem(SK)||'[]'); } catch { return []; } };
+const saveAll = (arr) => localStorage.setItem(SK, JSON.stringify(arr));
+const getOne = (id) => getAll().find(p => p.id === id);
+const upsert = (p) => { const a=getAll(); const i=a.findIndex(x=>x.id===p.id); if(i>=0)a[i]=p; else a.unshift(p); saveAll(a); };
+const remove = (id) => saveAll(getAll().filter(p=>p.id!==id));
+
+// 回收站操作
+const getTrash = () => { try { return JSON.parse(localStorage.getItem(TK)||'[]'); } catch { return []; } };
+const saveTrash = (arr) => localStorage.setItem(TK, JSON.stringify(arr));
+const trashCount = () => getTrash().length;
+
+// ═══════════════ STATE ═══════════════
+let activeId = null;
+
+// ═══════════════ STATS ═══════════════
+function renderStats() {
+  const all = getAll();
+  const data = [
+    { cls:'si-purple', icon:'📦', num:all.length, lbl:'总项目数' },
+    { cls:'si-green',  icon:'✅', num:all.filter(p=>p.status==='completed').length, lbl:'已完成' },
+    { cls:'si-orange', icon:'🔄', num:all.filter(p=>p.status==='in_progress').length, lbl:'进行中' },
+    { cls:'si-red',    icon:'🎁', num:all.filter(p=>p.progress>=75).length*3, lbl:'可交付资产' }
+  ];
+  document.getElementById('statsBar').innerHTML = data.map(d=>`
+    <div class="stat-card">
+      <div class="stat-icon ${d.cls}">${d.icon}</div>
+      <div><div class="stat-num">${d.num}</div><div class="stat-label">${d.lbl}</div></div>
+    </div>`).join('');
+}
+
+// ═══════════════ PROJECT LIST ═══════════════
+function statusLabel(s){return{completed:'已完成',in_progress:'进行中',draft:'草稿',archived:'已归档'}[s]||s;}
+function statusCls(s){return{completed:'s-completed',in_progress:'s-in_progress',draft:'s-draft',archived:'s-archived'}[s]||'s-draft';}
+
+function renderList(projects) {
+  const el = document.getElementById('projectList');
+  if (!projects.length) {
+    el.innerHTML='<div style="text-align:center;padding:48px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">📭</div><div style="font-size:14px">暂无项目</div></div>';
+    return;
+  }
+  el.innerHTML = projects.map(p => {
+    const stgs = [
+      {k:'r',cls:'stg-r',label:'R',done:p.progress>=25},
+      {k:'i',cls:'stg-i',label:'I',done:p.progress>=50},
+      {k:'s',cls:'stg-s',label:'S',done:p.progress>=75},
+      {k:'e',cls:'stg-e',label:'E',done:p.progress>=100}
+    ];
+    return `<div class="project-item${p.id===activeId?' active':''}" onclick="selectProject('${p.id}')">
+      <div class="proj-top">
+        <div class="proj-name">${p.name}</div>
+        <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
+      </div>
+      <div class="proj-user">${p.targetUser||'&nbsp;'}</div>
+      <div class="stage-row">
+        ${stgs.map(s=>`<span class="stg ${s.cls}${s.done?'':' dim'}">${s.label}</span>`).join('')}
+        <span class="proj-pct">${p.progress}%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function filterProjects() {
+  const kw = document.getElementById('searchInput').value.toLowerCase();
+  const st = document.getElementById('statusFilter').value;
+  renderList(getAll().filter(p=>
+    (!kw||(p.name||'').toLowerCase().includes(kw)||(p.brief||'').toLowerCase().includes(kw))&&
+    (!st||p.status===st)
+  ));
+}
+
+// ═══════════════ RING SVG ═══════════════
+function ring(pct, color, size=56) {
+  const r=(size-8)/2, c=size/2, circ=2*Math.PI*r, dash=pct/100*circ;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="5"/>
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="5"
+      stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${circ/4}" stroke-linecap="round"/>
+  </svg>`;
+}
+
+// ═══════════════ DASHBOARD RENDER ═══════════════
+function selectProject(id) {
+  activeId = id;
+  renderList(getAll());
+  const p = getOne(id);
+  if (p) renderDashboard(p);
+}
+
+function renderDashboard(p) {
+  const r = document.getElementById('dashRight');
+  r.innerHTML = [
+    htmlOverview(p),
+    htmlStageProgress(p),
+    htmlStageOutputs(p),
+    p.projectBrief ? htmlProjectBrief(p) : '',
+    htmlGantt(),
+    htmlRadar(p),
+    p.reveal ? htmlPOV(p) : '',
+    p.reveal&&p.reveal.personas ? htmlPersonas(p) : '',
+    p.inspire&&p.inspire.hmw ? htmlHMW(p) : '',
+    p.inspire ? htmlIdeas(p) : '',
+    p.shape&&p.shape.concept ? htmlConceptShape(p) : '',
+    p.shape&&p.shape.story ? htmlStory(p) : '',
+    p.exam&&p.exam.testReport ? htmlTestReport(p) : '',
+    p.exam&&p.exam.elevatorPitch ? htmlElevator(p) : '',
+    p.exam&&p.exam.businessModel ? htmlCanvas(p) : '',
+    p.exam&&p.exam.iterationPlan ? htmlIteration(p) : '',
+    htmlDeliverables(p),
+    htmlProcessOutputs(p)
+  ].join('');
+  setTimeout(() => {
+    drawGantt(getAll());
+    if (p.shape&&p.shape.mapValues) drawRadar('mapCanvas', p.shape.mapValues, '#667eea', ['市场潜力','用户增长','优势壁垒']);
+    if (p.exam&&p.exam.ahaValues) drawRadar('ahaCanvas', p.exam.ahaValues, '#10b981', ['顿悟','高光','进步']);
+  }, 60);
+}
+
+function htmlOverview(p) {
+  return `<div class="sc"><div class="sc-hd">
+    <div class="sc-title">🎯 ${p.name}</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
+      <span style="font-size:13px;color:#64748b;font-weight:600">${p.progress}% 完成</span>
+    </div>
+  </div><div class="sc-body">
+    <div class="overview-grid">
+      <div class="overview-info">
+        <div class="overview-brief">${p.brief||''}</div>
+        <div class="tag-row">
+          <span class="tag tag-purple">👤 ${p.targetUser||''}</span>
+          <span class="tag tag-green">📅 创建 ${p.createdAt||''}</span>
+          <span class="tag tag-yellow">🔄 更新 ${p.updatedAt||''}</span>
+        </div>
+        <div class="overview-btns">
+          <button class="ob ob-primary" onclick="openEditor('${p.id}')">✏️ 编辑项目</button>
+          <button class="ob ob-secondary" onclick="exportPDF('${p.id}')">📄 导出报告</button>
+          <button class="ob ob-secondary" onclick="exportMD('${p.id}')">📝 复制 MD</button>
+          <button class="ob ob-secondary" onclick="exportAllJSON()">💾 备份 JSON</button>
+          <button class="ob ob-danger" onclick="moveToTrash('${p.id}')">🗑️ 移入回收站</button>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+// ── 阶段进度条（合并进度条+甘特概念）──
+function htmlStageProgress(p) {
+  const stages = [
+    { key:'R', lbl:'🔍 Reveal', color:'#7c3aed', bg:'#7c3aed', pct: p.progress>=25?100:Math.min(100,p.progress*4), desc:'洞察研究' },
+    { key:'I', lbl:'💡 Inspire', color:'#d97706', bg:'#d97706', pct: p.progress>=50?100:Math.max(0,(p.progress-25)*4), desc:'创意启发' },
+    { key:'S', lbl:'🎨 Shape', color:'#15803d', bg:'#15803d', pct: p.progress>=75?100:Math.max(0,(p.progress-50)*4), desc:'方案构建' },
+    { key:'E', lbl:'✅ Exam', color:'#b91c1c', bg:'#b91c1c', pct: p.progress>=100?100:Math.max(0,(p.progress-75)*4), desc:'测试验证' }
+  ];
+  const activeIdx = stages.findIndex(s=>s.pct>0&&s.pct<100);
+  const doneCount = stages.filter(s=>s.pct===100).length;
+  return `<div class="sc"><div class="sc-hd">
+    <div class="sc-title">📈 项目阶段进度</div>
+    <span style="font-size:12px;color:#94a3b8">${doneCount}/4 阶段已完成 · 整体进度 ${p.progress}%</span>
+  </div><div class="sc-body" style="padding:16px 24px 20px">
+    <div class="gantt-phase-bar">
+      ${stages.map((s,i)=>{
+        const state = s.pct===100?'gph-done':(s.pct>0?'gph-active':'gph-pending');
+        const icon = s.pct===100?'✓':(s.pct>0?'⟳':'○');
+        return `<div class="gph ${state}" style="background:${s.bg};${i===0?'':'border-left:1px solid rgba(255,255,255,.2)'}">
+          <span>${icon} ${s.key} &nbsp;${s.pct}%</span>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      ${stages.map((s,i)=>{
+        const done = s.pct===100;
+        const active = s.pct>0&&s.pct<100;
+        return `<div style="border-radius:12px;padding:12px 14px;background:${done?s.bg+'12':active?s.bg+'08':'#f8faff'};border:1.5px solid ${done?s.bg:active?s.bg+'60':'#e2e8f0'}">
+          <div style="font-size:13px;font-weight:700;color:${done||active?s.color:'#94a3b8'};margin-bottom:4px">${s.lbl}</div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:8px">${s.desc}</div>
+          <div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+            <div style="width:${s.pct}%;height:100%;background:${s.bg};border-radius:3px;transition:.4s"></div>
+          </div>
+          <div style="font-size:11px;color:${done||active?s.color:'#94a3b8'};font-weight:700;margin-top:4px;text-align:right">${s.pct===100?'✓ 完成':s.pct>0?`进行中 ${s.pct}%`:'待开始'}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div></div>`;
+}
+
+function htmlStageOutputs(p) {
+  const stages = [
+    { name:'🔍 Reveal', color:'#7c3aed', bg:'rgba(124,58,237,.06)', outs:
+      p.reveal ? [
+        'POV 三段式洞察',
+        `${(p.reveal.personas||[]).length} 个用户画像`,
+        `${(p.reveal.stakeholders||[]).length} 个利益相关者`,
+        `${(p.reveal.journeyMap||[]).length} 个场景触点`
+      ] : ['暂无产出']
+    },
+    { name:'💡 Inspire', color:'#d97706', bg:'rgba(217,119,6,.06)', outs:
+      p.inspire ? [
+        `${(p.inspire.ideas||[]).length} 个创意方案`,
+        '三维评估矩阵',
+        `最佳创意：${p.inspire.bestIdea||'-'}`
+      ] : ['暂无产出']
+    },
+    { name:'🎨 Shape', color:'#15803d', bg:'rgba(21,128,61,.06)', outs:
+      p.shape ? [
+        '概念全局描述',
+        `${(p.shape.concept&&p.shape.concept.features||[]).length} 项功能特性`,
+        `MAP 雷达（${p.shape.mapValues?Object.values(p.shape.mapValues).join('/'):'–'}）`,
+        `${(p.shape.story||[]).length} 幕体验故事`
+      ] : ['暂无产出']
+    },
+    { name:'✅ Exam', color:'#b91c1c', bg:'rgba(185,28,28,.06)', outs:
+      p.exam ? [
+        `AHA 雷达（${p.exam.ahaValues?Object.values(p.exam.ahaValues).join('/'):'–'}）`,
+        '测试报告（有效/无效/新发现/新问题）',
+        '5 段式电梯呈现',
+        '30-60-90天迭代计划',
+        '9 模块商业模式画布'
+      ] : ['暂无产出']
+    }
+  ];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">📁 流程产出总览</div></div>
+  <div class="sc-body">
+    <div class="stage-out-grid">
+      ${stages.map(s=>`
+        <div style="border-left:4px solid ${s.color};background:${s.bg};border-radius:0 12px 12px 0;padding:14px 16px">
+          <div class="stage-out-name" style="color:${s.color}">${s.name}</div>
+          <ul class="stage-out-list" style="--ck:${s.color}">
+            ${s.outs.map(o=>`<li style="--ck:${s.color}"><span style="color:${s.color}">✓</span>${o}</li>`).join('')}
+          </ul>
+        </div>`).join('')}
+    </div>
+  </div></div>`;
+}
+
+// ── 项目简报 ──
+function htmlProjectBrief(p) {
+  const b = p.projectBrief;
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🔍 Reveal · 项目简报</div><span style="font-size:12px;color:#94a3b8">Project Brief</span></div>
+  <div class="sc-body">
+    <div class="brief-grid">
+      <div class="brief-item brief-full">
+        <div class="brief-label">📋 背景与机会</div>
+        <div class="brief-text">${b.background}</div>
+      </div>
+      <div class="brief-item">
+        <div class="brief-label">🎯 创新机会</div>
+        <div class="brief-text">${b.opportunity}</div>
+      </div>
+      <div class="brief-item">
+        <div class="brief-label">💡 核心假设</div>
+        <div class="brief-text">${b.hypothesis}</div>
+      </div>
+      <div class="brief-item">
+        <div class="brief-label">🔲 项目范围</div>
+        <div class="brief-text">${b.scope}</div>
+      </div>
+      <div class="brief-item">
+        <div class="brief-label">👥 团队组成</div>
+        <div class="brief-text">${b.team}</div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+// ── HMW 创新机遇 ──
+function htmlHMW(p) {
+  const hmwList = p.inspire.hmw||[];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">💡 Inspire · 创新机遇 HMW</div><span style="font-size:12px;color:#94a3b8">How Might We · ${hmwList.length} 个设计机遇</span></div>
+  <div class="sc-body">
+    <div class="hmw-list">
+      ${hmwList.map(h=>`
+        <div class="hmw-item">
+          <span class="hmw-cat">${h.category}</span>
+          <div class="hmw-text">${h.statement}</div>
+        </div>`).join('')}
+    </div>
+  </div></div>`;
+}
+
+// ── Shape 概念方案（全局+功能特性）──
+function htmlConceptShape(p) {
+  const c = p.shape.concept;
+  const features = c.features||[];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🎨 Shape · 概念方案</div><span style="font-size:12px;color:#94a3b8">${c.name}</span></div>
+  <div class="sc-body">
+    <div class="concept-overview">
+      <div class="concept-name">📐 ${c.name}</div>
+      <div class="concept-overview-text">${c.overview||''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px">
+      <div style="background:#f0f4ff;border-radius:10px;padding:14px">
+        <div class="brief-label" style="color:#667eea">🎯 用户价值</div>
+        <div style="font-size:13px;color:#374151;line-height:1.65">${c.userValue}</div>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px">
+        <div class="brief-label" style="color:#15803d">💰 商业价值</div>
+        <div style="font-size:13px;color:#374151;line-height:1.65">${c.bizValue}</div>
+      </div>
+      <div style="background:#fefce8;border-radius:10px;padding:14px">
+        <div class="brief-label" style="color:#a16207">⚙️ 技术方案</div>
+        <div style="font-size:13px;color:#374151;line-height:1.65">${c.techPlan}</div>
+      </div>
+      <div style="background:#fff5f5;border-radius:10px;padding:14px">
+        <div class="brief-label" style="color:#b91c1c">🤝 利益相关者价值</div>
+        <div style="font-size:13px;color:#374151;line-height:1.65">${c.stakeholderValue}</div>
+      </div>
+    </div>
+    ${features.length?`
+    <div style="font-size:14px;font-weight:700;color:#1e293b;margin-bottom:12px">🛠️ 核心功能特性（${features.length} 项）</div>
+    <div class="feature-grid">
+      ${features.map(f=>`
+        <div class="feat-card">
+          <div class="feat-icon">${f.icon}</div>
+          <div class="feat-name">${f.name}</div>
+          <div class="feat-desc">${f.desc}</div>
+        </div>`).join('')}
+    </div>`:''}
+  </div></div>`;
+}
+
+// ── Exam 测试报告 ──
+function htmlTestReport(p) {
+  const tr = p.exam.testReport;
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">✅ Exam · 测试报告</div><span style="font-size:12px;color:#94a3b8">Validation Report</span></div>
+  <div class="sc-body">
+    <div class="test-method">📋 <strong>测试方法：</strong>${tr.method}</div>
+    <div class="test-grid">
+      <div class="test-section" style="background:#f0fdf4;border:1.5px solid #bbf7d0">
+        <div class="test-sec-title" style="color:#15803d">✅ 验证有效（${(tr.validated||[]).length} 项）</div>
+        ${(tr.validated||[]).map(v=>`
+          <div class="test-item">
+            <span class="test-bullet">✓</span>
+            <div><div class="test-finding">${v.finding}</div><div class="test-evidence" style="color:#16a34a">📊 ${v.evidence}</div></div>
+          </div>`).join('')}
+      </div>
+      <div class="test-section" style="background:#fff5f5;border:1.5px solid #fecaca">
+        <div class="test-sec-title" style="color:#b91c1c">❌ 验证无效（${(tr.invalidated||[]).length} 项）</div>
+        ${(tr.invalidated||[]).map(v=>`
+          <div class="test-item">
+            <span class="test-bullet">✗</span>
+            <div><div class="test-finding">${v.finding}</div><div class="test-evidence" style="color:#dc2626">💬 ${v.evidence}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="test-bottom-grid">
+      <div class="test-section" style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:12px;padding:14px">
+        <div class="test-sec-title" style="color:#0369a1">💡 新发现（${(tr.newFindings||[]).length} 项）</div>
+        ${(tr.newFindings||[]).map(f=>`
+          <div class="test-item"><span class="test-bullet">🔍</span><div style="font-size:12px;color:#0c4a6e;line-height:1.6">${f}</div></div>`).join('')}
+      </div>
+      <div class="test-section" style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:14px">
+        <div class="test-sec-title" style="color:#b45309">⚠️ 新问题（${(tr.newProblems||[]).length} 项）</div>
+        ${(tr.newProblems||[]).map(f=>`
+          <div class="test-item"><span class="test-bullet">⚠️</span><div style="font-size:12px;color:#92400e;line-height:1.6">${f}</div></div>`).join('')}
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function htmlGantt() {
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">📊 项目甘特图</div><span style="font-size:12px;color:#94a3b8" id="ganttSubtitle">基于项目计划时间线 · 红线=今天</span></div>
+  <div class="sc-body" style="padding:16px 20px"><div class="gantt-wrap"><canvas id="ganttCanvas"></canvas></div>
+  <div id="ganttLegend" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:#475569"></div>
+  </div></div>`;
+}
+
+function htmlRadar(p) {
+  const mv = p.shape&&p.shape.mapValues||{};
+  const av = p.exam&&p.exam.ahaValues||{};
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🎯 价值雷达图</div></div>
+  <div class="sc-body"><div class="radar-grid">
+    <div class="radar-box">
+      <h4 style="color:#667eea">MAP 商业价值雷达</h4>
+      <p>Shape 阶段 · M=市场潜力 / A=用户增长 / P=优势壁垒</p>
+      <canvas id="mapCanvas" width="240" height="210" style="display:block;margin:0 auto"></canvas>
+      <div class="radar-scores">
+        <div class="rs-item"><div class="rs-val" style="color:#667eea">${mv.market||0}</div><div class="rs-dim">市场潜力</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:#667eea">${mv.adoption||0}</div><div class="rs-dim">用户增长</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:#667eea">${mv.protection||0}</div><div class="rs-dim">优势壁垒</div></div>
+      </div>
+    </div>
+    <div class="radar-box">
+      <h4 style="color:#10b981">AHA 用户价值雷达</h4>
+      <p>Exam 阶段 · A=顿悟 / H=高光 / A=进步</p>
+      <canvas id="ahaCanvas" width="240" height="210" style="display:block;margin:0 auto"></canvas>
+      <div class="radar-scores">
+        <div class="rs-item"><div class="rs-val" style="color:#10b981">${av.aha||0}</div><div class="rs-dim">顿悟</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:#10b981">${av.highlight||0}</div><div class="rs-dim">高光</div></div>
+        <div class="rs-item"><div class="rs-val" style="color:#10b981">${av.advancement||0}</div><div class="rs-dim">进步</div></div>
+      </div>
+    </div>
+  </div></div></div>`;
+}
+
+function htmlPOV(p) {
+  const pov = p.reveal.pov;
+  const jm = p.reveal.journeyMap||[];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🔍 Reveal · POV 洞察 &amp; 场景地图</div></div>
+  <div class="sc-body">
+    <div class="pov-quote-box">"我们发现 <strong>${pov.user}</strong>，有 <strong>${pov.pain}</strong> 的困境；我们相信，<strong>${pov.insight}</strong>"</div>
+    <div class="pov-three">
+      <div class="pov-card" style="background:#f8faff;border-left:3px solid #667eea">
+        <div class="pov-card-title" style="color:#667eea">🎯 目标用户</div>
+        <div class="pov-card-text">${pov.user}</div>
+      </div>
+      <div class="pov-card" style="background:#fff5f5;border-left:3px solid #ef4444">
+        <div class="pov-card-title" style="color:#ef4444">😤 核心痛点</div>
+        <div class="pov-card-text">${pov.pain}</div>
+      </div>
+      <div class="pov-card" style="background:#f0fdf4;border-left:3px solid #10b981">
+        <div class="pov-card-title" style="color:#10b981">💡 关键洞见</div>
+        <div class="pov-card-text">${pov.insight}</div>
+      </div>
+    </div>
+    ${jm.length?`
+    <div style="margin-top:20px;font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px">📍 场景地图（${jm.length} 个触点）</div>
+    <div class="journey-scroll">
+      ${jm.map((j,i)=>`
+        <div class="jm-card">
+          <div class="jm-num">触点 ${i+1}</div>
+          <div class="jm-tp">${j.touchpoint}</div>
+          <div class="jm-exp">${j.experience}</div>
+          <div class="jm-emotion">${j.emotion}</div>
+        </div>`).join('')}
+    </div>`:''
+    }
+  </div></div>`;
+}
+
+function htmlPersonas(p) {
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">👤 Reveal · 用户画像</div><span style="font-size:12px;color:#94a3b8">${p.reveal.personas.length} 个画像</span></div>
+  <div class="sc-body"><div class="persona-grid">
+    ${p.reveal.personas.map(pe=>`
+      <div class="persona-card">
+        <div class="persona-header">
+          <div class="persona-avatar">${pe.emoji}</div>
+          <div><div class="persona-name">${pe.name}</div><div class="persona-role">${pe.role}</div></div>
+        </div>
+        <div class="persona-tags">${pe.tags.map(t=>`<span class="p-tag">${t}</span>`).join('')}</div>
+        <div class="persona-quote">💬 ${pe.quote}</div>
+        <div class="persona-pain">⚠️ ${pe.pain}</div>
+      </div>`).join('')}
+  </div></div></div>`;
+}
+
+function htmlIdeas(p) {
+  const ideas = p.inspire.ideas||[];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">💡 Inspire · 创意评估矩阵</div></div>
+  <div class="sc-body">
+    <table class="idea-table">
+      <thead><tr><th>创意方案</th><th>核心描述</th><th style="text-align:center">可行性</th><th style="text-align:center">价值性</th><th style="text-align:center">创新性</th><th style="text-align:center">总分</th></tr></thead>
+      <tbody>
+        ${ideas.map(idea=>{
+          const tot = idea.feasibility+idea.value+idea.innovation;
+          const best = idea.name===p.inspire.bestIdea;
+          return `<tr${best?' class="best"':''}>
+            <td><strong>${best?'⭐ ':''}${idea.name}</strong>${best?'<br><span style="font-size:11px;color:#16a34a">✓ 最佳创意</span>':''}</td>
+            <td style="color:#475569;font-size:12px">${idea.desc}</td>
+            ${[idea.feasibility,idea.value,idea.innovation].map(v=>`<td style="text-align:center"><span class="score-chip ${v>=4?'chip-high':'chip-mid'}">${v}/5</span></td>`).join('')}
+            <td style="text-align:center"><span class="score-chip chip-high" style="font-size:14px;padding:4px 10px">${tot}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="best-reason">
+      <div class="best-reason-title">✅ 最终选定：${p.inspire.bestIdea}</div>
+      <div class="best-reason-text">${p.inspire.reason}</div>
+    </div>
+  </div></div>`;
+}
+
+function htmlStory(p) {
+  const colors=['#667eea','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4'];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🎬 Shape · 6 幕体验故事</div></div>
+  <div class="sc-body"><div class="story-grid">
+    ${p.shape.story.map((s,i)=>`
+      <div class="story-act">
+        <div class="story-hd" style="background:${colors[i]}18;border-bottom:2px solid ${colors[i]};color:${colors[i]}">${s.act}</div>
+        <div class="story-bd">
+          <div class="story-scene">${s.scene}</div>
+          <div class="story-feeling">感受：${s.feeling}</div>
+          ${s.aha?`<div class="aha-moment">${s.aha}</div>`:''}
+        </div>
+      </div>`).join('')}
+  </div></div></div>`;
+}
+
+function htmlElevator(p) {
+  const ep = p.exam.elevatorPitch;
+  const items=[
+    {icon:'🔴',lbl:'问题',text:ep.problem},
+    {icon:'🟢',lbl:'方案',text:ep.solution},
+    {icon:'👥',lbl:'用户',text:ep.users},
+    {icon:'💎',lbl:'价值',text:ep.value},
+    {icon:'🚀',lbl:'行动',text:ep.action}
+  ];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🎤 Exam · 电梯呈现（60 秒脚本）</div></div>
+  <div class="sc-body"><div class="elevator-grid">
+    ${items.map(it=>`
+      <div class="ev-item">
+        <div class="ev-icon">${it.icon}</div>
+        <div class="ev-label">${it.lbl}</div>
+        <div class="ev-text">${it.text}</div>
+      </div>`).join('')}
+  </div></div></div>`;
+}
+
+function htmlCanvas(p) {
+  const b = p.exam.businessModel;
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🗺️ Exam · 商业模式画布（Business Model Canvas）</div></div>
+  <div class="sc-body">
+    <div class="canvas-grid">
+      <div class="cv cv-partners" style="grid-column:1;grid-row:1/3"><div class="cv-title">🤝 重要合作</div><div class="cv-text">${b.keyPartners}</div></div>
+      <div class="cv" style="grid-column:2;grid-row:1"><div class="cv-title">⚙️ 关键业务</div><div class="cv-text">${b.keyActivities}</div></div>
+      <div class="cv cv-value" style="grid-column:3;grid-row:1/3"><div class="cv-title">💎 价值主张</div><div class="cv-text" style="font-size:13px;font-weight:600;line-height:1.6">${b.valueProposition}</div></div>
+      <div class="cv" style="grid-column:4;grid-row:1"><div class="cv-title">💬 客户关系</div><div class="cv-text">${b.customerRelationships}</div></div>
+      <div class="cv cv-customers" style="grid-column:5;grid-row:1/3"><div class="cv-title">👥 客户细分</div><div class="cv-text">${b.customerSegments}</div></div>
+      <div class="cv" style="grid-column:2;grid-row:2"><div class="cv-title">🏗️ 核心资源</div><div class="cv-text">${b.keyResources}</div></div>
+      <div class="cv" style="grid-column:4;grid-row:2"><div class="cv-title">📢 渠道通路</div><div class="cv-text">${b.channels}</div></div>
+      <div class="cv cv-cost" style="grid-column:1/4;grid-row:3"><div class="cv-title">💸 成本结构</div><div class="cv-text">${b.costStructure}</div></div>
+      <div class="cv cv-revenue" style="grid-column:3/6;grid-row:3"><div class="cv-title">💰 收入来源</div><div class="cv-text">${b.revenueStreams}</div></div>
+    </div>
+  </div></div>`;
+}
+
+function htmlIteration(p) {
+  const it = p.exam.iterationPlan;
+  const phases=[
+    {icon:'🌱',lbl:'第 30 天',color:'#10b981',bg:'rgba(16,185,129,.06)',border:'rgba(16,185,129,.3)',text:it.d30},
+    {icon:'🌿',lbl:'第 60 天',color:'#f59e0b',bg:'rgba(245,158,11,.06)',border:'rgba(245,158,11,.3)',text:it.d60},
+    {icon:'🌳',lbl:'第 90 天',color:'#667eea',bg:'rgba(102,126,234,.06)',border:'rgba(102,126,234,.3)',text:it.d90}
+  ];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">📅 Exam · 30-60-90 天迭代计划</div></div>
+  <div class="sc-body"><div class="iter-grid">
+    ${phases.map(ph=>`
+      <div class="iter-card" style="background:${ph.bg};border:1.5px solid ${ph.border}">
+        <div class="iter-header"><span class="iter-icon">${ph.icon}</span><span class="iter-label" style="color:${ph.color}">${ph.lbl}</span></div>
+        <div class="iter-text">${ph.text}</div>
+      </div>`).join('')}
+  </div></div></div>`;
+}
+
+function htmlDeliverables(p) {
+  const items=[
+    {icon:'📄',title:'完整项目报告 PDF',desc:'包含 RISE 四阶段全部产出的结构化 PDF 文档，适合向决策层汇报',avail:p.progress>=50,act:`exportPDF('${p.id}')`,lbl:'导出 PDF',cls:'db-pdf'},
+    {icon:'📊',title:'演示汇报 PPT',desc:'面向利益相关者精简展示的幻灯片，突出 AHA 和 MAP 价值',avail:p.progress>=75,act:`exportPPT('${p.id}')`,lbl:'导出 PPT',cls:'db-ppt'},
+    {icon:'📝',title:'Markdown 文档',desc:'可直接粘贴到 Notion / 飞书 / 语雀的结构化文档',avail:p.progress>=50,act:`exportMD('${p.id}')`,lbl:'复制 Markdown',cls:'db-md'},
+    {icon:'🗺️',title:'商业模式画布',desc:'9 模块完整商业逻辑可视化',avail:!!(p.exam&&p.exam.businessModel),act:'',lbl:'查看画布',cls:'db-view'},
+    {icon:'💾',title:'项目数据 JSON',desc:'完整项目数据结构，可备份、迁移或导入其他项目库',avail:true,act:'exportAllJSON()',lbl:'下载 JSON',cls:'db-md'},
+    {icon:'📂',title:'上传创新文档',desc:'上传 TXT/MD/JSON 格式的创新研究或工作文档，关联至本项目',avail:true,act:'openUploadPanel()',lbl:'上传文档',cls:'db-view'}
+  ];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">📦 最终可交付资产</div><span style="font-size:12px;color:#94a3b8">${items.filter(i=>i.avail).length}/${items.length} 项可用</span></div>
+  <div class="sc-body"><div class="del-grid">
+    ${items.map(it=>`
+      <div class="del-card ${it.avail?'avail':'locked'}">
+        <div class="del-icon">${it.icon}</div>
+        <div class="del-info">
+          <div class="del-title">${it.title}</div>
+          <div class="del-desc">${it.desc}</div>
+          <button class="del-btn ${it.avail?it.cls:'db-locked'}" onclick="${it.avail&&it.act?it.act:''}" ${!it.avail?'disabled':''}>
+            ${it.avail?it.lbl:'🔒 待完成'}
+          </button>
+        </div>
+      </div>`).join('')}
+  </div></div></div>`;
+}
+
+// ── 各专家过程产出物 ──
+function htmlProcessOutputs(p) {
+  const cols = [
+    {
+      stage: '🔍 Reveal', color: '#7c3aed', bg: '#7c3aed12', border: '#7c3aed40',
+      specialists: [
+        {
+          name: '👩‍🔬 UX 研究员', artifacts: [
+            { icon: '📋', name: '用户访谈记录', type: '原始数据', typeColor: '#7c3aed' },
+            { icon: '📊', name: '亲和图 (Affinity Map)', type: '分析图', typeColor: '#7c3aed' },
+            { icon: '👤', name: '用户画像 Persona', type: '产出物', typeColor: '#15803d' },
+            { icon: '🗺️', name: '用户旅程地图', type: '产出物', typeColor: '#15803d' }
+          ]
+        },
+        {
+          name: '📊 数据分析师', artifacts: [
+            { icon: '📈', name: '用户行为数据报告', type: '分析报告', typeColor: '#d97706' },
+            { icon: '🔢', name: '利益相关者矩阵', type: '分析图', typeColor: '#7c3aed' }
+          ]
+        }
+      ]
+    },
+    {
+      stage: '💡 Inspire', color: '#d97706', bg: '#d9770612', border: '#d9770640',
+      specialists: [
+        {
+          name: '🎨 创意主持人', artifacts: [
+            { icon: '🗒️', name: 'HMW 机遇卡片集', type: '原始产出', typeColor: '#d97706' },
+            { icon: '💡', name: 'Crazy 8 创意草图', type: '创意草稿', typeColor: '#d97706' },
+            { icon: '📊', name: '创意评估矩阵', type: '分析工具', typeColor: '#7c3aed' }
+          ]
+        },
+        {
+          name: '🧠 战略顾问', artifacts: [
+            { icon: '🏆', name: '最佳创意评审报告', type: '决策文档', typeColor: '#15803d' },
+            { icon: '🔍', name: '竞品对标分析', type: '研究报告', typeColor: '#d97706' }
+          ]
+        }
+      ]
+    },
+    {
+      stage: '🎨 Shape', color: '#15803d', bg: '#15803d12', border: '#15803d40',
+      specialists: [
+        {
+          name: '🖥️ 产品设计师', artifacts: [
+            { icon: '📐', name: '概念方案文档', type: '核心产出', typeColor: '#15803d' },
+            { icon: '🎭', name: '用户体验故事板', type: '叙事工具', typeColor: '#d97706' },
+            { icon: '🖼️', name: 'UI 原型线框图', type: '设计稿', typeColor: '#15803d' }
+          ]
+        },
+        {
+          name: '🤖 AI 算法工程师', artifacts: [
+            { icon: '⚙️', name: '技术架构设计文档', type: '技术文档', typeColor: '#7c3aed' },
+            { icon: '📡', name: 'API 对接方案', type: '技术文档', typeColor: '#7c3aed' }
+          ]
+        }
+      ]
+    },
+    {
+      stage: '✅ Exam', color: '#b91c1c', bg: '#b91c1c12', border: '#b91c1c40',
+      specialists: [
+        {
+          name: '🧪 测试负责人', artifacts: [
+            { icon: '📋', name: '可用性测试计划', type: '测试文档', typeColor: '#b91c1c' },
+            { icon: '📊', name: '测试数据记录表', type: '原始数据', typeColor: '#d97706' },
+            { icon: '📝', name: '测试报告（验证/无效/新发现）', type: '核心产出', typeColor: '#15803d' }
+          ]
+        },
+        {
+          name: '📈 商业分析师', artifacts: [
+            { icon: '🎤', name: '电梯呈现脚本', type: '汇报材料', typeColor: '#667eea' },
+            { icon: '🗺️', name: '商业模式画布 BMC', type: '核心产出', typeColor: '#15803d' },
+            { icon: '📅', name: '30-60-90天迭代计划', type: '行动计划', typeColor: '#d97706' }
+          ]
+        }
+      ]
+    }
+  ];
+
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🗂️ 专家过程产出物</div><span style="font-size:12px;color:#94a3b8">各阶段专家产出 · 完整创新过程留存</span></div>
+  <div class="sc-body">
+    <div class="po-grid">
+      ${cols.map(col=>`
+        <div class="po-col" style="border:1.5px solid ${col.border};background:${col.bg}">
+          <div class="po-col-hd" style="background:${col.color}">${col.stage}</div>
+          <div class="po-col-body">
+            ${col.specialists.map(sp=>`
+              <div class="po-specialist">
+                <div class="po-spec-name">${sp.name}</div>
+                ${sp.artifacts.map(a=>`
+                  <div class="po-artifact">
+                    <span class="po-artifact-icon">${a.icon}</span>
+                    <span class="po-artifact-name">${a.name}</span>
+                    <span class="po-artifact-type" style="background:${a.typeColor}18;color:${a.typeColor}">${a.type}</span>
+                  </div>`).join('')}
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+  </div></div>`;
+}
+
+// ═══════════════ CANVAS: GANTT ═══════════════
+function drawGantt(projects) {
+  const canvas = document.getElementById('ganttCanvas');
+  if (!canvas) return;
+
+  // 过滤掉没有计划数据的（回退到旧模式）
+  const planned = projects.filter(p => p.plan && p.plan.start);
+  const legacy  = projects.filter(p => !(p.plan && p.plan.start));
+
+  if (!planned.length && !legacy.length) {
+    const dpr = window.devicePixelRatio||1;
+    canvas.width = (canvas.offsetWidth||600)*dpr;
+    canvas.height = 80*dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,canvas.offsetWidth,80);
+    ctx.fillStyle='#94a3b8'; ctx.font='13px sans-serif';
+    ctx.textAlign='center'; ctx.fillText('暂无项目数据', (canvas.offsetWidth||300)/2, 44);
+    return;
+  }
+
+  // ── 确定时间范围 ──
+  const today = new Date(); today.setHours(0,0,0,0);
+  const parseDate = s => { if(!s) return null; const d=new Date(s); d.setHours(0,0,0,0); return isNaN(d)?null:d; };
+
+  let minDate = new Date(today); minDate.setDate(today.getDate()-7);
+  let maxDate = new Date(today); maxDate.setDate(today.getDate()+14);
+
+  planned.forEach(p => {
+    const s = parseDate(p.plan.start);
+    const e = parseDate(p.plan.end);
+    if (s && s < minDate) minDate = new Date(s);
+    if (e && e > maxDate) maxDate = new Date(e);
+    ['reveal','inspire','shape','exam'].forEach(k => {
+      const ph = p.plan.phases&&p.plan.phases[k];
+      if (!ph) return;
+      const ps = parseDate(ph.start); const pe = parseDate(ph.end);
+      if (ps && ps < minDate) minDate = new Date(ps);
+      if (pe && pe > maxDate) maxDate = new Date(pe);
+    });
+  });
+  // legacy 补充
+  legacy.forEach(p => {
+    const s = parseDate(p.createdAt);
+    if (s && s < minDate) minDate = new Date(s);
+  });
+
+  // 前后各留 3 天 padding
+  minDate.setDate(minDate.getDate()-3);
+  maxDate.setDate(maxDate.getDate()+3);
+  const totalMs = maxDate - minDate;
+
+  // ── Canvas 尺寸 ──
+  const PHASE_KEYS = ['reveal','inspire','shape','exam'];
+  const PHASE_COLORS = { reveal:'#7c3aed', inspire:'#d97706', shape:'#15803d', exam:'#b91c1c' };
+  const PHASE_LABELS = { reveal:'Reveal', inspire:'Inspire', shape:'Shape', exam:'Exam' };
+
+  // 每个 project 占 1 行（包含 4 阶段子条）
+  const rowH = 52;
+  const padL = 170, padR = 50, padT = 40, padB = 28;
+  const totalRows = Math.max(1, planned.length + legacy.length);
+  const H = padT + totalRows * rowH + padB;
+  const dpr = window.devicePixelRatio||1;
+  const W = canvas.offsetWidth || 700;
+  canvas.style.height = H+'px';
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const chartW = W - padL - padR;
+  const toX = (date) => padL + ((date-minDate)/totalMs)*chartW;
+
+  // ── 背景网格（月/周刻度）──
+  ctx.font = '10px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#94a3b8';
+  // 确定合理刻度间隔（天）
+  const totalDays = totalMs/86400000;
+  const tickInterval = totalDays<=30?7:totalDays<=90?14:30;
+  let tickDate = new Date(minDate);
+  tickDate.setDate(tickDate.getDate() + (tickInterval - tickDate.getDate()%tickInterval));
+  while (tickDate <= maxDate) {
+    const x = toX(tickDate);
+    ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,padT-8); ctx.lineTo(x,H-padB); ctx.stroke();
+    ctx.fillStyle='#94a3b8';
+    ctx.fillText(`${tickDate.getMonth()+1}/${tickDate.getDate()}`, x, H-padB+12);
+    tickDate = new Date(tickDate); tickDate.setDate(tickDate.getDate()+tickInterval);
+  }
+
+  // ── 今天竖线 ──
+  const tx = toX(today);
+  if (tx>=padL && tx<=padL+chartW) {
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(tx,padT-10); ctx.lineTo(tx,H-padB); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#ef4444'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('今天', tx, padT-14);
+  }
+
+  // ── 渲染每个有计划的项目 ──
+  planned.forEach((p, pi) => {
+    const y0 = padT + pi * rowH;
+    const ph = p.plan.phases || {};
+
+    // 项目名称
+    ctx.fillStyle='#1e293b'; ctx.font='bold 12px sans-serif'; ctx.textAlign='right';
+    const nm = p.name.length>14 ? p.name.slice(0,14)+'…' : p.name;
+    ctx.fillText(nm, padL-10, y0+10);
+
+    // 整体背景轨道
+    const ps = parseDate(p.plan.start);
+    const pe = parseDate(p.plan.end);
+    if (ps && pe) {
+      const bx = toX(ps), bx2 = toX(pe);
+      ctx.fillStyle='#f1f5f9';
+      roundRect(ctx, bx, y0, Math.max(4,bx2-bx), 10, 4); ctx.fill();
+    }
+
+    // 四阶段条
+    const barH = 14, gapY = 18;
+    PHASE_KEYS.forEach((k, ki) => {
+      const phData = ph[k] || {};
+      const s = parseDate(phData.start);
+      const e = parseDate(phData.end||phData.doneAt);
+      if (!s || !e) return;
+
+      const bx = toX(s), bx2 = toX(e);
+      const barW = Math.max(4, bx2-bx);
+      const by = y0 + gapY + ki*(barH+2);
+      const status = phData.status||'pending';
+      const baseColor = PHASE_COLORS[k];
+
+      // 背景（预估条，半透明）
+      ctx.fillStyle = baseColor+'28';
+      roundRect(ctx, bx, by, barW, barH, 4); ctx.fill();
+
+      // 进度填充
+      if (status === 'completed') {
+        ctx.fillStyle = baseColor;
+        roundRect(ctx, bx, by, barW, barH, 4); ctx.fill();
+        // 勾
+        ctx.fillStyle='#fff'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left';
+        ctx.fillText('✓', bx+4, by+barH-3);
+      } else if (status === 'in_progress') {
+        // 计算已过时间比例
+        const elapsed = Math.max(0, Math.min(today-s, e-s));
+        const pct = (e-s) > 0 ? elapsed/(e-s) : 0.3;
+        ctx.fillStyle = baseColor+'88';
+        roundRect(ctx, bx, by, barW*pct+4, barH, 4); ctx.fill();
+        // 脉冲点
+        ctx.fillStyle = baseColor;
+        ctx.beginPath(); ctx.arc(bx+barW*pct+4, by+barH/2, 4, 0, Math.PI*2); ctx.fill();
+      }
+      // 阶段标签
+      if (barW > 36) {
+        ctx.fillStyle = status==='pending'?baseColor+'88':'#fff';
+        ctx.font = `${status==='pending'?'10':'bold 9'}px sans-serif`;
+        ctx.textAlign='left';
+        ctx.fillText(PHASE_LABELS[k], bx+6, by+barH-3);
+      }
     });
 
-    // 初始化仪表板
-    function initDashboard() {
-      // 渲染项目列表
-      projectManager.init(document.getElementById('projectManager'));
+    // 项目进度 %
+    ctx.fillStyle='#64748b'; ctx.font='11px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(`${p.progress}%`, padL-10+2, y0+10+13);
+  });
 
-      // 更新统计数据
-      updateStats();
+  // ── 渲染 legacy（无计划日期）项目 ──
+  legacy.forEach((p, li) => {
+    const y0 = padT + (planned.length + li) * rowH;
+    ctx.fillStyle='#94a3b8'; ctx.font='12px sans-serif'; ctx.textAlign='right';
+    const nm = p.name.length>14 ? p.name.slice(0,14)+'…' : p.name;
+    ctx.fillText(nm, padL-10, y0+10);
 
-      // 检查 URL hash 是否有项目 ID
-      const hash = window.location.hash;
-      if (hash.startsWith('#project/')) {
-        const projectId = hash.replace('#project/', '');
-        openProject(projectId);
-      }
+    // 以 createdAt 为起点，按进度绘制
+    const s = parseDate(p.createdAt) || today;
+    const totalBarW = 140;
+    const bx = Math.min(toX(s), padL+chartW-totalBarW);
+    const fillW = totalBarW * (p.progress/100);
+    ctx.fillStyle='#f1f5f9';
+    roundRect(ctx, bx, y0+2, totalBarW, 14, 4); ctx.fill();
+    const c = {completed:'#10b981',in_progress:'#f59e0b',draft:'#94a3b8',archived:'#cbd5e1'}[p.status]||'#94a3b8';
+    ctx.fillStyle=c;
+    roundRect(ctx, bx, y0+2, Math.max(4,fillW), 14, 4); ctx.fill();
+    ctx.fillStyle='#475569'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(`${p.progress}%`, bx+fillW+5, y0+13);
+    ctx.fillStyle='#94a3b8'; ctx.font='10px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('(未设计划)', padL-10, y0+10+13);
+  });
+
+  // ── 图例 ──
+  const legend = document.getElementById('ganttLegend');
+  if (legend) {
+    legend.innerHTML = [
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:24px;height:8px;border-radius:3px;background:#10b981;display:inline-block"></span>已完成阶段</span>',
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:24px;height:8px;border-radius:3px;background:#667eea88;display:inline-block"></span>进行中阶段</span>',
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:24px;height:8px;border-radius:3px;background:#f1f5f9;border:1px solid #e2e8f0;display:inline-block"></span>待开始阶段</span>',
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:2px;height:14px;background:#ef4444;display:inline-block"></span>今天</span>',
+    ].join('');
+  }
+}
+
+// 辅助：圆角矩形（兼容）
+function roundRect(ctx, x, y, w, h, r) {
+  if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(x,y,w,h,r); }
+  else {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y, x+w,y+r, r);
+    ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w,y+h, x+w-r,y+h, r);
+    ctx.lineTo(x+r, y+h); ctx.arcTo(x,y+h, x,y+h-r, r);
+    ctx.lineTo(x, y+r); ctx.arcTo(x,y, x+r,y, r);
+    ctx.closePath();
+  }
+}
+
+// ═══════════════ CANVAS: RADAR ═══════════════
+function drawRadar(id, data, color, labels) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio||1;
+  const CW=240, CH=220;
+  canvas.width=CW*dpr; canvas.height=CH*dpr;
+  canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  // center shifted down slightly to give top label more room
+  const cx=CW/2, cy=CH/2+12, R=68;
+  const vals=Object.values(data).map(v=>v/10);
+
+  // grid rings
+  for(let lv=1;lv<=5;lv++){
+    const r=R*lv/5;
+    ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let i=0;i<3;i++){const a=(2*Math.PI/3)*i-Math.PI/2; const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r; i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+    ctx.closePath(); ctx.stroke();
+    // scale number on outermost ring only
+    if(lv===5){
+      ctx.fillStyle='#cbd5e1'; ctx.font='9px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('10', cx, cy-R-8);
     }
+  }
+  // axes
+  for(let i=0;i<3;i++){
+    const a=(2*Math.PI/3)*i-Math.PI/2;
+    ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R); ctx.stroke();
+  }
+  // data polygon
+  ctx.fillStyle=color+'30'; ctx.strokeStyle=color; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const a=(2*Math.PI/3)*i-Math.PI/2; const x=cx+Math.cos(a)*R*v,y=cy+Math.sin(a)*R*v; i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  // data points + value
+  ctx.fillStyle=color;
+  vals.forEach((v,i)=>{
+    const a=(2*Math.PI/3)*i-Math.PI/2;
+    const px=cx+Math.cos(a)*R*v, py=cy+Math.sin(a)*R*v;
+    ctx.beginPath(); ctx.arc(px,py,5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath(); ctx.arc(px,py,2.5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle=color;
+    // value number near point
+    const vx=cx+Math.cos(a)*(R*v+14), vy=cy+Math.sin(a)*(R*v+14);
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(Object.values(data)[i], vx, vy);
+  });
+  // labels at axis tips — small font, hugging axis end
+  labels.forEach((lb,i)=>{
+    const a=(2*Math.PI/3)*i-Math.PI/2;
+    const tipX=cx+Math.cos(a)*R, tipY=cy+Math.sin(a)*R;
+    // push label 18px beyond tip
+    const lx=cx+Math.cos(a)*(R+18), ly=cy+Math.sin(a)*(R+18);
+    // text-align based on position
+    const align = Math.cos(a)>0.2?'left':(Math.cos(a)<-0.2?'right':'center');
+    ctx.fillStyle='#374151'; ctx.font='bold 10px sans-serif';
+    ctx.textAlign=align; ctx.textBaseline='middle';
+    // wrap label if too long
+    ctx.fillText(lb, lx, ly);
+  });
+}
 
-    // 更新统计
-    function updateStats() {
-      const projects = storage.getAll();
-      const completed = projects.filter(p => p.project.status === 'completed').length;
-      const inProgress = projects.filter(p => p.project.status === 'in_progress').length;
+// ═══════════════ UPLOAD PANEL ═══════════════
+let uploadedFileContent = null;
+let uploadedFileName = null;
 
-      let totalAssets = 0;
-      projects.forEach(p => {
-        if (p.reveal.pov.targetUser) totalAssets++;
-        if (p.inspire.ideas.length > 0) totalAssets++;
-        if (p.shape.concept.name) totalAssets++;
-        if (p.exam.elevatorPitch.problem) totalAssets++;
-      });
+function openUploadPanel() {
+  const modal = document.getElementById('uploadModal');
+  modal.style.display = 'flex';
+  // populate project links
+  const container = document.getElementById('uploadLinkProjects');
+  const projects = getAll();
+  container.innerHTML = projects.length
+    ? projects.map(p=>`<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;cursor:pointer;padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8faff">
+        <input type="radio" name="linkProject" value="${p.id}" ${activeId===p.id?'checked':''}> ${p.name}
+      </label>`).join('')
+    : '<span style="font-size:12px;color:#94a3b8">暂无项目可关联</span>';
+}
 
-      document.getElementById('statTotal').textContent = projects.length;
-      document.getElementById('statCompleted').textContent = completed;
-      document.getElementById('statInProgress').textContent = inProgress;
-      document.getElementById('statAssets').textContent = totalAssets;
-    }
+function closeUploadPanel() {
+  document.getElementById('uploadModal').style.display = 'none';
+  uploadedFileContent = null; uploadedFileName = null;
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('uploadFileName').style.display = 'none';
+  document.getElementById('uploadSaveBtn').disabled = true;
+  document.getElementById('uploadSaveBtn').style.opacity = '.5';
+  document.getElementById('fileInput').value = '';
+}
 
-    // 新建项目
-    function createNewProject() {
-      projectManager.createNew();
-    }
+function handleFileSelect(e) {
+  const file = e.target.files[0]; if (!file) return;
+  processUploadFile(file);
+}
 
-    // 打开项目
-    function openProject(projectId) {
-      // 隐藏项目列表
-      document.getElementById('projectManager').style.display = 'none';
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  processUploadFile(file);
+}
 
-      // 显示编辑器
-      const editorContainer = document.getElementById('projectEditor');
-      editorContainer.style.display = 'block';
+function processUploadFile(file) {
+  if (file.size > 2*1024*1024) { toast('⚠️ 文件过大，请选择 2MB 以内的文件'); return; }
+  uploadedFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadedFileContent = ev.target.result;
+    const preview = document.getElementById('uploadPreview');
+    const fnEl = document.getElementById('uploadFileName');
+    preview.textContent = uploadedFileContent.slice(0, 800) + (uploadedFileContent.length>800?'\n...(内容已截断预览)':'');
+    preview.style.display = 'block';
+    fnEl.textContent = `📄 ${file.name}  ·  ${(file.size/1024).toFixed(1)} KB`;
+    fnEl.style.display = 'block';
+    const btn = document.getElementById('uploadSaveBtn');
+    btn.disabled = false; btn.style.opacity = '1';
+  };
+  reader.readAsText(file, 'UTF-8');
+}
 
-      // 初始化编辑器（默认显示 Reveal 阶段）
-      currentEditor = new RevealEditor(storage);
-      currentEditor.init(editorContainer, projectId);
+function saveUploadedFile() {
+  if (!uploadedFileContent) return;
+  const selected = document.querySelector('input[name="linkProject"]:checked');
+  const pid = selected ? selected.value : activeId;
+  if (!pid) { toast('⚠️ 请先选择关联项目'); return; }
+  const p = getOne(pid);
+  if (!p) { toast('⚠️ 项目不存在'); return; }
+  if (!p.attachments) p.attachments = [];
+  p.attachments.push({
+    name: uploadedFileName,
+    content: uploadedFileContent,
+    uploadedAt: new Date().toISOString().slice(0,16)
+  });
+  upsert(p);
+  toast(`✅ 「${uploadedFileName}」已关联到「${p.name}」`);
+  closeUploadPanel();
+}
 
-      // 更新 URL
-      window.location.hash = `#project/${projectId}`;
+// ═══════════════ EXPORT ═══════════════
+function exportPDF(id) {
+  const p=getOne(id); if(!p) return;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${p.name}</title>
+  <style>body{font-family:sans-serif;max-width:860px;margin:40px auto;color:#1e293b;line-height:1.7;font-size:14px}
+  h1{color:#667eea;border-bottom:3px solid #667eea;padding-bottom:10px;margin-bottom:24px}
+  h2{color:#374151;margin-top:36px;border-left:4px solid #667eea;padding-left:12px;margin-bottom:14px}
+  h3{color:#475569;margin:16px 0 8px}
+  .meta{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+  .tag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#f0f4ff;color:#4f46e5}
+  table{width:100%;border-collapse:collapse;margin:12px 0}
+  th{background:#f0f4ff;padding:8px 12px;text-align:left;font-size:12px}
+  td{padding:8px 12px;border-bottom:1px solid #e2e8f0;font-size:13px}
+  .highlight{background:#f0fdf4;border-left:4px solid #10b981;padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+  </style></head><body>
+  <h1>📊 ${p.name}</h1>
+  <div class="meta">
+    <span class="tag">👤 ${p.targetUser||''}</span>
+    <span class="tag">📊 完成度 ${p.progress}%</span>
+    <span class="tag">📅 ${p.createdAt||''}</span>
+  </div>
+  <p>${p.brief||''}</p>
+  <h2>🔍 Reveal · 洞察阶段</h2>
+  ${p.reveal?`<h3>POV 洞察</h3><p><b>目标用户：</b>${p.reveal.pov.user}</p><p><b>核心痛点：</b>${p.reveal.pov.pain}</p><p><b>关键洞见：</b>${p.reveal.pov.insight}</p>`:'暂无数据'}
+  <h2>💡 Inspire · 启发阶段</h2>
+  ${p.inspire?`<div class="highlight"><b>最佳创意：${p.inspire.bestIdea}</b><br>${p.inspire.reason}</div>`:'暂无数据'}
+  <h2>🎨 Shape · 构建阶段</h2>
+  ${p.shape?`<p><b>用户价值：</b>${p.shape.concept.userValue}</p><p><b>技术方案：</b>${p.shape.concept.techPlan}</p><p><b>商业价值：</b>${p.shape.concept.bizValue}</p><p><b>MAP：</b>市场潜力${p.shape.mapValues.market}/用户增长${p.shape.mapValues.adoption}/优势壁垒${p.shape.mapValues.protection}</p>`:'暂无数据'}
+  <h2>✅ Exam · 验证阶段</h2>
+  ${p.exam?`
+  <p><b>AHA：</b>顿悟${p.exam.ahaValues.aha}/高光${p.exam.ahaValues.highlight}/进步${p.exam.ahaValues.advancement}</p>
+  <h3>电梯呈现</h3>
+  <p><b>问题：</b>${p.exam.elevatorPitch.problem}</p>
+  <p><b>方案：</b>${p.exam.elevatorPitch.solution}</p>
+  <p><b>价值：</b>${p.exam.elevatorPitch.value}</p>
+  <h3>迭代计划</h3>
+  <p><b>30天：</b>${p.exam.iterationPlan.d30}</p>
+  <p><b>60天：</b>${p.exam.iterationPlan.d60}</p>
+  <p><b>90天：</b>${p.exam.iterationPlan.d90}</p>`:'暂无数据'}
+  </body></html>`);
+  w.document.close(); w.print();
+}
 
-      // 添加返回按钮
-      addBackButton();
-    }
+function exportPPT(id){ toast('📊 PPT 导出即将上线，请使用 PDF 导出'); }
 
-    // 添加返回按钮
-    function addBackButton() {
-      const existing = document.getElementById('backButton');
-      if (existing) existing.remove();
+function exportMD(id){
+  const p=getOne(id); if(!p) return;
+  const md=[
+    `# ${p.name}\n`,
+    `> ${p.brief}\n`,
+    `**目标用户**：${p.targetUser}  **完成度**：${p.progress}%\n`,
+    p.reveal?`## 🔍 Reveal\n**POV**：${p.reveal.pov.user} | ${p.reveal.pov.pain} | ${p.reveal.pov.insight}\n`:'',
+    p.inspire?`## 💡 Inspire\n**最佳创意**：${p.inspire.bestIdea}\n${p.inspire.reason}\n`:'',
+    p.shape?`## 🎨 Shape\n**用户价值**：${p.shape.concept.userValue}\n**MAP**：市场${p.shape.mapValues.market}/增长${p.shape.mapValues.adoption}/壁垒${p.shape.mapValues.protection}\n`:'',
+    p.exam?`## ✅ Exam\n**AHA**：顿悟${p.exam.ahaValues.aha}/高光${p.exam.ahaValues.highlight}/进步${p.exam.ahaValues.advancement}\n**30天**：${p.exam.iterationPlan.d30}\n**60天**：${p.exam.iterationPlan.d60}\n**90天**：${p.exam.iterationPlan.d90}\n`:''
+  ].join('\n');
+  navigator.clipboard.writeText(md).then(()=>toast('✅ Markdown 已复制')).catch(()=>toast('⚠️ 复制失败，请手动操作'));
+}
 
-      const backButton = document.createElement('button');
-      backButton.id = 'backButton';
-      backButton.className = 'btn btn-secondary';
-      backButton.textContent = '← 返回项目列表';
-      backButton.style.marginBottom = '20px';
-      backButton.onclick = closeProject;
+function exportAllJSON(){
+  const blob=new Blob([JSON.stringify(getAll(),null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='eureka-projects.json'; a.click();
+  toast('💾 JSON 已下载');
+}
 
-      const editorContainer = document.getElementById('projectEditor');
-      editorContainer.insertBefore(backButton, editorContainer.firstChild);
-    }
+function importJSON(){
+  const input=document.createElement('input'); input.type='file'; input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        const arr=Array.isArray(data)?data:[data];
+        arr.forEach(p=>upsert(p));
+        refreshAll(); toast(`✅ 已导入 ${arr.length} 个项目`);
+      }catch{ toast('❌ JSON 格式错误'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
-    // 关闭项目
-    function closeProject() {
-      // 显示项目列表
-      document.getElementById('projectManager').style.display = 'block';
+// ═══════════════ PROJECT MGMT ═══════════════
+function createNewProject(){
+  // 生成空项目后直接打开编辑器
+  const id = 'proj-'+Date.now();
+  const np = {
+    id, name:'新项目', brief:'', targetUser:'', status:'draft', progress:0,
+    createdAt: new Date().toISOString().slice(0,10),
+    updatedAt: new Date().toISOString().slice(0,10)
+  };
+  upsert(np);
+  activeId = id;
+  refreshAll();
+  openEditor(id, true);
+}
 
-      // 隐藏编辑器
-      document.getElementById('projectEditor').style.display = 'none';
+// ═══════════════ PROJECT EDITOR ═══════════════
+let _editorId = null;
+let _editorTab = 'basic';
 
-      // 移除返回按钮
-      const backButton = document.getElementById('backButton');
-      if (backButton) backButton.remove();
+function openEditor(id, isNew=false) {
+  _editorId = id;
+  _editorTab = 'basic';
+  const p = getOne(id);
+  if (!p) return;
+  document.getElementById('editorTitle').textContent = isNew ? '✨ 新建项目' : `✏️ 编辑：${p.name}`;
+  document.getElementById('editorModal').classList.add('open');
+  // reset tabs
+  document.querySelectorAll('.etab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.etab')[0].classList.add('active');
+  renderEditorTab('basic');
+}
 
-      // 更新 URL
-      window.location.hash = '';
+function closeEditor() {
+  document.getElementById('editorModal').classList.remove('open');
+  _editorId = null;
+}
 
-      // 更新统计
-      updateStats();
+function switchEditorTab(tab, btn) {
+  _editorTab = tab;
+  document.querySelectorAll('.etab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderEditorTab(tab);
+}
 
-      // 重新渲染项目列表
-      projectManager.render();
-    }
+function renderEditorTab(tab) {
+  const p = getOne(_editorId);
+  const body = document.getElementById('editorBody');
+  if (!p) return;
+  const fn = {basic:editorTabBasic,plan:editorTabPlan,reveal:editorTabReveal,inspire:editorTabInspire,shape:editorTabShape,exam:editorTabExam}[tab];
+  body.innerHTML = fn ? fn(p) : '';
+}
 
-    // 导出功能（占位）
-    function exportPDF() {
-      showToast('PDF 导出功能开发中...');
-    }
+// ── Tab: 基本信息 ──
+function editorTabBasic(p) {
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title">项目基本信息</div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">项目名称 *</label>
+        <input class="ef-input" id="ef_name" value="${esc(p.name||'')}" placeholder="请输入项目名称">
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">项目状态</label>
+        <select class="ef-select" id="ef_status">
+          ${['draft','in_progress','completed','archived'].map(s=>`<option value="${s}"${p.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">项目简介</label>
+        <textarea class="ef-textarea" id="ef_brief" placeholder="一句话描述项目价值主张">${esc(p.brief||'')}</textarea>
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">目标用户</label>
+        <input class="ef-input" id="ef_targetUser" value="${esc(p.targetUser||'')}" placeholder="例：20-35岁都市白领女性">
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">整体进度（%）</label>
+        <div class="ef-slider-row">
+          <input type="range" class="ef-slider" id="ef_progress" min="0" max="100" step="5" value="${p.progress||0}" oninput="document.getElementById('ef_progress_val').textContent=this.value+'%'">
+          <span class="ef-slider-val" id="ef_progress_val">${p.progress||0}%</span>
+        </div>
+        <div class="ef-note">0–25%=Reveal，26–50%=Inspire，51–75%=Shape，76–100%=Exam</div>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">项目简报 Project Brief</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">项目背景</label>
+        <textarea class="ef-textarea" id="ef_pb_background" placeholder="项目的背景与上下文">${esc(p.projectBrief&&p.projectBrief.background||'')}</textarea>
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">创新机会</label>
+        <textarea class="ef-textarea" id="ef_pb_opportunity" placeholder="洞察到的核心机会">${esc(p.projectBrief&&p.projectBrief.opportunity||'')}</textarea>
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">假设前提</label>
+        <textarea class="ef-textarea" id="ef_pb_hypothesis" placeholder="关键假设条件">${esc(p.projectBrief&&p.projectBrief.hypothesis||'')}</textarea>
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">项目范围</label>
+        <textarea class="ef-textarea" id="ef_pb_scope" placeholder="边界与范围说明">${esc(p.projectBrief&&p.projectBrief.scope||'')}</textarea>
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">团队成员</label>
+        <textarea class="ef-textarea" id="ef_pb_team" placeholder="参与人员与角色">${esc(p.projectBrief&&p.projectBrief.team||'')}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
 
-    function exportMarkdown() {
-      showToast('Markdown 导出功能开发中...');
-    }
+// ── Tab: 项目计划 ──
+function editorTabPlan(p) {
+  const pl = p.plan || {};
+  const phases = [
+    { key:'reveal',  label:'🔍 Reveal',  color:'#7c3aed', hint:'洞察研究阶段' },
+    { key:'inspire', label:'💡 Inspire', color:'#d97706', hint:'创意启发阶段' },
+    { key:'shape',   label:'🎨 Shape',   color:'#15803d', hint:'方案构建阶段' },
+    { key:'exam',    label:'✅ Exam',    color:'#b91c1c', hint:'测试验证阶段' }
+  ];
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title">项目整体时间线</div>
+    <div class="ef-note" style="margin-bottom:14px">设置项目的起点与终点，以及每个阶段的预估时间段。甘特图将自动根据这些日期绘制真实进度条。</div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">🚀 项目起点</label>
+        <input type="date" class="ef-input" id="ef_plan_start" value="${esc(pl.start||'')}">
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">🏁 项目终点（预估）</label>
+        <input type="date" class="ef-input" id="ef_plan_end" value="${esc(pl.end||'')}">
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">四阶段时间计划</div>
+    ${phases.map(ph => {
+      const phData = (pl.phases && pl.phases[ph.key]) || {};
+      return `<div style="border-left:3px solid ${ph.color};border-radius:0 10px 10px 0;background:${ph.color}08;padding:14px 16px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:${ph.color};margin-bottom:10px">${ph.label} <span style="font-size:11px;font-weight:400;color:#94a3b8">· ${ph.hint}</span></div>
+        <div class="ef-row">
+          <div class="ef-group">
+            <label class="ef-label">开始日期</label>
+            <input type="date" class="ef-input" id="ef_plan_${ph.key}_start" value="${esc(phData.start||'')}">
+          </div>
+          <div class="ef-group">
+            <label class="ef-label">预估结束日期</label>
+            <input type="date" class="ef-input" id="ef_plan_${ph.key}_end" value="${esc(phData.end||'')}">
+          </div>
+        </div>
+        <div class="ef-row">
+          <div class="ef-group">
+            <label class="ef-label">实际完成日期（完成后填写）</label>
+            <input type="date" class="ef-input" id="ef_plan_${ph.key}_done" value="${esc(phData.doneAt||'')}">
+          </div>
+          <div class="ef-group">
+            <label class="ef-label">阶段状态</label>
+            <select class="ef-select" id="ef_plan_${ph.key}_status">
+              ${['pending','in_progress','completed'].map(s=>`<option value="${s}"${(phData.status||'pending')===s?' selected':''}>${{pending:'待开始',in_progress:'进行中',completed:'已完成'}[s]}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
 
-    function exportPPT() {
-      showToast('PPT 导出功能开发中...');
-    }
-  </script>
+// ── Tab: Reveal ──
+function editorTabReveal(p) {
+  const rv = p.reveal||{};
+  const pov = rv.pov||{};
+  const personas = rv.personas||[];
+  const stakeholders = rv.stakeholders||[];
+  const journeyMap = rv.journeyMap||[];
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title">POV 三段式洞察</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">用户描述（User）</label>
+        <textarea class="ef-textarea" id="ef_pov_user" placeholder="描述目标用户群体">${esc(pov.user||'')}</textarea>
+      </div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">核心痛点（Pain/Need）</label>
+        <textarea class="ef-textarea" id="ef_pov_pain" placeholder="用户面临的核心问题或需求">${esc(pov.pain||'')}</textarea>
+      </div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">洞察陈述（Insight）</label>
+        <textarea class="ef-textarea" id="ef_pov_insight" placeholder="基于研究得出的深层洞察">${esc(pov.insight||'')}</textarea>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      用户画像 Personas
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddPersona()">+ 添加画像</button>
+    </div>
+    <div id="ef_personas_list">
+      ${personas.map((p,i)=>editorPersonaBlock(p,i)).join('')}
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      利益相关者 Stakeholders
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddStakeholder()">+ 添加</button>
+    </div>
+    <div id="ef_stakeholders_list">
+      ${stakeholders.map((s,i)=>editorStakeholderBlock(s,i)).join('')}
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      用户场景地图 Journey Map
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddJourney()">+ 添加触点</button>
+    </div>
+    <div id="ef_journey_list">
+      ${journeyMap.map((j,i)=>editorJourneyBlock(j,i)).join('')}
+    </div>
+  </div>`;
+}
+
+function editorPersonaBlock(p,i) {
+  return `<div class="ef-array-block" id="ef_persona_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_personas_list','ef_persona_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">姓名</label><input class="ef-input" data-pi="${i}" data-key="name" value="${esc(p.name||'')}" placeholder="画像名称"></div>
+      <div class="ef-group"><label class="ef-label">表情</label><input class="ef-input" data-pi="${i}" data-key="emoji" value="${esc(p.emoji||'👤')}" placeholder="emoji"></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">角色/描述</label><input class="ef-input" data-pi="${i}" data-key="role" value="${esc(p.role||'')}" placeholder="例：28岁，品牌市场专员"></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">核心痛点</label><textarea class="ef-textarea" style="min-height:52px" data-pi="${i}" data-key="pain" placeholder="该用户的主要痛点">${esc(p.pain||'')}</textarea></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">用户引言（Quote）</label><textarea class="ef-textarea" style="min-height:52px" data-pi="${i}" data-key="quote" placeholder="代表性的用户原话">${esc(p.quote||'')}</textarea></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">标签（逗号分隔）</label><input class="ef-input" data-pi="${i}" data-key="tags" value="${esc((p.tags||[]).join(','))}" placeholder="社交达人,INFJ,周末逛街族"></div>
+    </div>
+  </div>`;
+}
+
+function editorStakeholderBlock(s,i) {
+  return `<div class="ef-array-block" id="ef_stakeholder_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_stakeholders_list','ef_stakeholder_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">名称</label><input class="ef-input" data-si="${i}" data-key="name" value="${esc(s.name||'')}" placeholder="利益相关者名称"></div>
+      <div class="ef-group"><label class="ef-label">立场</label><input class="ef-input" data-si="${i}" data-key="stance" value="${esc(s.stance||'')}" placeholder="支持/中立/反对"></div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">影响力</label><input class="ef-input" data-si="${i}" data-key="impact" value="${esc(s.impact||'')}" placeholder="高/中/低"></div>
+      <div class="ef-group"><label class="ef-label">备注</label><input class="ef-input" data-si="${i}" data-key="note" value="${esc(s.note||'')}" placeholder="关键说明"></div>
+    </div>
+  </div>`;
+}
+
+function editorJourneyBlock(j,i) {
+  return `<div class="ef-array-block" id="ef_journey_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_journey_list','ef_journey_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">触点</label><input class="ef-input" data-ji="${i}" data-key="touchpoint" value="${esc(j.touchpoint||'')}" placeholder="例：进店/打开APP"></div>
+      <div class="ef-group"><label class="ef-label">情绪</label><input class="ef-input" data-ji="${i}" data-key="emotion" value="${esc(j.emotion||'')}" placeholder="例：😍 惊喜心动"></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">用户体验</label><textarea class="ef-textarea" style="min-height:52px" data-ji="${i}" data-key="experience" placeholder="在这个触点发生了什么">${esc(j.experience||'')}</textarea></div>
+    </div>
+  </div>`;
+}
+
+function editorAddPersona() {
+  const list = document.getElementById('ef_personas_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorPersonaBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+function editorAddStakeholder() {
+  const list = document.getElementById('ef_stakeholders_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorStakeholderBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+function editorAddJourney() {
+  const list = document.getElementById('ef_journey_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorJourneyBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+function editorDelItem(listId, itemId) {
+  const item = document.getElementById(itemId);
+  if (item) item.remove();
+}
+
+// ── Tab: Inspire ──
+function editorTabInspire(p) {
+  const ins = p.inspire||{};
+  const ideas = ins.ideas||[];
+  const hmw = ins.hmw||[];
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      创新机遇 HMW（How Might We）
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddHMW()">+ 添加</button>
+    </div>
+    <div id="ef_hmw_list">
+      ${hmw.map((h,i)=>editorHMWBlock(h,i)).join('')}
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      创意方案 Ideas
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddIdea()">+ 添加创意</button>
+    </div>
+    <div id="ef_ideas_list">
+      ${ideas.map((idea,i)=>editorIdeaBlock(idea,i)).join('')}
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">最佳创意 Best Idea</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">最佳创意名称</label>
+        <input class="ef-input" id="ef_bestIdea" value="${esc(ins.bestIdea||'')}" placeholder="填写上方列表中选定的最佳创意名称">
+      </div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <label class="ef-label">选择理由</label>
+        <textarea class="ef-textarea" id="ef_bestReason" placeholder="为什么选择这个创意？从可行性、价值、创新性说明">${esc(ins.reason||'')}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function editorHMWBlock(h,i) {
+  return `<div class="ef-array-block" id="ef_hmw_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_hmw_list','ef_hmw_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">分类</label><input class="ef-input" data-hi="${i}" data-key="category" value="${esc(h.category||'')}" placeholder="例：用户体验"></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">HMW 问题陈述</label><textarea class="ef-textarea" style="min-height:60px" data-hi="${i}" data-key="statement" placeholder="我们如何能……">${esc(h.statement||'')}</textarea></div>
+    </div>
+  </div>`;
+}
+
+function editorIdeaBlock(idea,i) {
+  return `<div class="ef-array-block" id="ef_idea_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_ideas_list','ef_idea_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">创意名称</label><input class="ef-input" data-ii="${i}" data-key="name" value="${esc(idea.name||'')}" placeholder="创意名称"></div>
+    </div>
+    <div class="ef-row full">
+      <div class="ef-group"><label class="ef-label">创意描述</label><textarea class="ef-textarea" style="min-height:52px" data-ii="${i}" data-key="desc" placeholder="创意的核心内容和价值">${esc(idea.desc||'')}</textarea></div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">可行性（1-5）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" data-ii="${i}" data-key="feasibility" min="1" max="5" step="1" value="${idea.feasibility||3}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${idea.feasibility||3}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">用户价值（1-5）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" data-ii="${i}" data-key="value" min="1" max="5" step="1" value="${idea.value||3}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${idea.value||3}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">创新度（1-5）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" data-ii="${i}" data-key="innovation" min="1" max="5" step="1" value="${idea.innovation||3}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${idea.innovation||3}</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function editorAddHMW() {
+  const list = document.getElementById('ef_hmw_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorHMWBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+function editorAddIdea() {
+  const list = document.getElementById('ef_ideas_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorIdeaBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+
+// ── Tab: Shape ──
+function editorTabShape(p) {
+  const sh = p.shape||{};
+  const concept = sh.concept||{};
+  const features = concept.features||[];
+  const story = sh.story||[];
+  const mv = sh.mapValues||{market:5,adoption:5,protection:5};
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title">概念方案 Concept</div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">概念名称</label><input class="ef-input" id="ef_concept_name" value="${esc(concept.name||'')}" placeholder="方案名称，例：智选穿搭·晒出自我"></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">概念全局描述</label><textarea class="ef-textarea" id="ef_concept_overview" placeholder="整体方案概述（150字以内）">${esc(concept.overview||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">用户价值</label><textarea class="ef-textarea" style="min-height:52px" id="ef_concept_userValue" placeholder="对用户的核心价值">${esc(concept.userValue||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">技术方案</label><textarea class="ef-textarea" style="min-height:52px" id="ef_concept_techPlan" placeholder="核心技术路径">${esc(concept.techPlan||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">商业价值</label><textarea class="ef-textarea" style="min-height:52px" id="ef_concept_bizValue" placeholder="商业指标与预期回报">${esc(concept.bizValue||'')}</textarea></div></div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      功能特性 Features
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddFeature()">+ 添加特性</button>
+    </div>
+    <div id="ef_features_list">
+      ${features.map((f,i)=>editorFeatureBlock(f,i)).join('')}
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">MAP 商业价值雷达</div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">市场潜力 M（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_map_market" min="1" max="10" step="1" value="${mv.market||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${mv.market||5}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">用户增长 A（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_map_adoption" min="1" max="10" step="1" value="${mv.adoption||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${mv.adoption||5}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">优势壁垒 P（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_map_protection" min="1" max="10" step="1" value="${mv.protection||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${mv.protection||5}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title" style="display:flex;justify-content:space-between;align-items:center">
+      体验故事 Story（6 幕）
+      <button class="ef-add-btn" style="width:auto;padding:4px 12px" onclick="editorAddStoryAct()">+ 添加幕</button>
+    </div>
+    <div class="ef-note" style="margin-bottom:12px">建议 6 幕：用户挑战 → POV洞见 → 接触体验 → 使用过程 → 分享结果 → 持续感受</div>
+    <div id="ef_story_list">
+      ${story.map((s,i)=>editorStoryBlock(s,i)).join('')}
+    </div>
+  </div>`;
+}
+
+function editorFeatureBlock(f,i) {
+  return `<div class="ef-array-block" id="ef_feature_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_features_list','ef_feature_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">图标</label><input class="ef-input" data-fi="${i}" data-key="icon" value="${esc(f.icon||'🔧')}" placeholder="emoji图标"></div>
+      <div class="ef-group"><label class="ef-label">功能名称</label><input class="ef-input" data-fi="${i}" data-key="name" value="${esc(f.name||'')}" placeholder="功能名称"></div>
+    </div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">功能描述</label><textarea class="ef-textarea" style="min-height:52px" data-fi="${i}" data-key="desc" placeholder="该功能的详细说明">${esc(f.desc||'')}</textarea></div></div>
+  </div>`;
+}
+
+function editorStoryBlock(s,i) {
+  return `<div class="ef-array-block" id="ef_story_${i}">
+    <button class="ef-array-del" onclick="editorDelItem('ef_story_list','ef_story_${i}')">×</button>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">幕名称</label><input class="ef-input" data-sti="${i}" data-key="act" value="${esc(s.act||'')}" placeholder="例：① 用户挑战"></div>
+    </div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">场景描述</label><textarea class="ef-textarea" style="min-height:60px" data-sti="${i}" data-key="scene" placeholder="详细场景叙述">${esc(s.scene||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">情感感受</label><textarea class="ef-textarea" style="min-height:48px" data-sti="${i}" data-key="feeling" placeholder="用户的情绪与感受">${esc(s.feeling||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">AHA 时刻</label><input class="ef-input" data-sti="${i}" data-key="aha" value="${esc(s.aha||'')}" placeholder="核心洞见或转折点"></div></div>
+  </div>`;
+}
+
+function editorAddFeature() {
+  const list = document.getElementById('ef_features_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorFeatureBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+function editorAddStoryAct() {
+  const list = document.getElementById('ef_story_list');
+  const i = list.querySelectorAll('.ef-array-block').length;
+  const el = document.createElement('div');
+  el.innerHTML = editorStoryBlock({},i);
+  list.appendChild(el.firstElementChild);
+}
+
+// ── Tab: Exam ──
+function editorTabExam(p) {
+  const ex = p.exam||{};
+  const tr = ex.testReport||{};
+  const ep = ex.elevatorPitch||{};
+  const ip = ex.iterationPlan||{};
+  const bm = ex.businessModel||{};
+  const av = ex.ahaValues||{aha:5,highlight:5,advancement:5};
+  const validated = tr.validated||[];
+  const invalidated = tr.invalidated||[];
+  const newFindings = tr.newFindings||[];
+  const newProblems = tr.newProblems||[];
+  return `
+  <div class="editor-section">
+    <div class="editor-section-title">AHA 价值雷达</div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">顿悟 A（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_aha_aha" min="1" max="10" step="1" value="${av.aha||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${av.aha||5}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">高光 H（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_aha_highlight" min="1" max="10" step="1" value="${av.highlight||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${av.highlight||5}</span></div>
+      </div>
+      <div class="ef-group"><label class="ef-label">进步 A（1-10）</label>
+        <div class="ef-slider-row"><input type="range" class="ef-slider" id="ef_aha_advancement" min="1" max="10" step="1" value="${av.advancement||5}" oninput="this.nextElementSibling.textContent=this.value"><span class="ef-slider-val">${av.advancement||5}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">测试报告 Test Report</div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">测试方法</label><textarea class="ef-textarea" id="ef_tr_method" placeholder="测试方式、人数、周期等">${esc(tr.method||'')}</textarea></div></div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">✅ 有效验证（每行一条）</label>
+        <textarea class="ef-textarea" id="ef_tr_validated" placeholder="已验证的假设或发现">${esc(validated.map(v=>typeof v==='object'?v.finding+(v.evidence?'|'+v.evidence:''):v).join('\n'))}</textarea>
+        <div class="ef-note">格式：发现 | 证据（| 分隔，可选）</div>
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">❌ 无效/推翻（每行一条）</label>
+        <textarea class="ef-textarea" id="ef_tr_invalidated" placeholder="被推翻的假设">${esc(invalidated.map(v=>typeof v==='object'?v.finding+(v.evidence?'|'+v.evidence:''):v).join('\n'))}</textarea>
+      </div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group">
+        <label class="ef-label">🔍 新发现（每行一条）</label>
+        <textarea class="ef-textarea" id="ef_tr_newFindings" placeholder="测试中的意外发现">${esc(newFindings.join('\n'))}</textarea>
+      </div>
+      <div class="ef-group">
+        <label class="ef-label">⚠️ 新问题（每行一条）</label>
+        <textarea class="ef-textarea" id="ef_tr_newProblems" placeholder="新暴露的问题">${esc(newProblems.join('\n'))}</textarea>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">电梯呈现 Elevator Pitch</div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">问题陈述</label><textarea class="ef-textarea" id="ef_ep_problem" placeholder="用户面临的问题">${esc(ep.problem||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">解决方案</label><textarea class="ef-textarea" id="ef_ep_solution" placeholder="你们的解决方案">${esc(ep.solution||'')}</textarea></div></div>
+    <div class="ef-row"><div class="ef-group"><label class="ef-label">目标用户</label><textarea class="ef-textarea" style="min-height:52px" id="ef_ep_users" placeholder="目标用户群体">${esc(ep.users||'')}</textarea></div>
+    <div class="ef-group"><label class="ef-label">核心价值</label><textarea class="ef-textarea" style="min-height:52px" id="ef_ep_value" placeholder="量化的价值指标">${esc(ep.value||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">行动号召 CTA</label><textarea class="ef-textarea" style="min-height:52px" id="ef_ep_action" placeholder="你希望听众做什么">${esc(ep.action||'')}</textarea></div></div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">迭代计划 Iteration Plan</div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">30 天目标</label><textarea class="ef-textarea" id="ef_ip_d30" placeholder="30天内完成的关键里程碑">${esc(ip.d30||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">60 天目标</label><textarea class="ef-textarea" id="ef_ip_d60" placeholder="60天扩展计划">${esc(ip.d60||'')}</textarea></div></div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">90 天目标</label><textarea class="ef-textarea" id="ef_ip_d90" placeholder="90天商业化目标">${esc(ip.d90||'')}</textarea></div></div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">商业模式画布 Business Model Canvas</div>
+    <div class="ef-row full"><div class="ef-group"><label class="ef-label">价值主张</label><textarea class="ef-textarea" id="ef_bm_vp" placeholder="为客户提供的核心价值">${esc(bm.valueProposition||'')}</textarea></div></div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">客户细分</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_cs" placeholder="目标客户群体">${esc(bm.customerSegments||'')}</textarea></div>
+      <div class="ef-group"><label class="ef-label">渠道通路</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_ch" placeholder="触达客户的渠道">${esc(bm.channels||'')}</textarea></div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">客户关系</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_cr" placeholder="与客户的互动方式">${esc(bm.customerRelationships||'')}</textarea></div>
+      <div class="ef-group"><label class="ef-label">收入来源</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_rs" placeholder="盈利模式">${esc(bm.revenueStreams||'')}</textarea></div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">核心资源</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_kr" placeholder="关键资源">${esc(bm.keyResources||'')}</textarea></div>
+      <div class="ef-group"><label class="ef-label">关键活动</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_ka" placeholder="核心业务活动">${esc(bm.keyActivities||'')}</textarea></div>
+    </div>
+    <div class="ef-row">
+      <div class="ef-group"><label class="ef-label">重要合作</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_kp" placeholder="合作伙伴">${esc(bm.keyPartners||'')}</textarea></div>
+      <div class="ef-group"><label class="ef-label">成本结构</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_co" placeholder="主要成本构成">${esc(bm.costStructure||'')}</textarea></div>
+    </div>
+  </div>`;
+}
+
+// ── Save Editor ──
+function saveEditor() {
+  if (!_editorId) return;
+  let p = getOne(_editorId) || {id:_editorId};
+
+  const tab = _editorTab;
+
+  if (tab==='basic') {
+    p.name = v('ef_name') || p.name;
+    p.status = v('ef_status');
+    p.brief = v('ef_brief');
+    p.targetUser = v('ef_targetUser');
+    p.progress = parseInt(document.getElementById('ef_progress')?.value||'0');
+    // project brief
+    p.projectBrief = {
+      background: v('ef_pb_background'),
+      opportunity: v('ef_pb_opportunity'),
+      hypothesis: v('ef_pb_hypothesis'),
+      scope: v('ef_pb_scope'),
+      team: v('ef_pb_team')
+    };
+  }
+
+  if (tab==='plan') {
+    const phaseKeys = ['reveal','inspire','shape','exam'];
+    p.plan = {
+      start: v('ef_plan_start'),
+      end:   v('ef_plan_end'),
+      phases: {}
+    };
+    phaseKeys.forEach(k => {
+      p.plan.phases[k] = {
+        start:  v(`ef_plan_${k}_start`),
+        end:    v(`ef_plan_${k}_end`),
+        doneAt: v(`ef_plan_${k}_done`),
+        status: document.getElementById(`ef_plan_${k}_status`)?.value || 'pending'
+      };
+    });
+    // 根据阶段完成情况自动推算整体进度
+    const doneCount = phaseKeys.filter(k => p.plan.phases[k].status === 'completed').length;
+    const inProgress = phaseKeys.findIndex(k => p.plan.phases[k].status === 'in_progress');
+    if (doneCount === 4) p.progress = 100;
+    else if (doneCount === 3) p.progress = 85;
+    else if (doneCount === 2) p.progress = 60;
+    else if (doneCount === 1) p.progress = 30;
+    else if (inProgress >= 0) p.progress = [10, 35, 60, 80][inProgress];
+    else p.progress = 0;
+  }
+
+  if (tab==='reveal') {
+    if (!p.reveal) p.reveal = {};
+    p.reveal.pov = {
+      user: v('ef_pov_user'),
+      pain: v('ef_pov_pain'),
+      insight: v('ef_pov_insight')
+    };
+    // personas
+    const pBlocks = document.querySelectorAll('#ef_personas_list .ef-array-block');
+    p.reveal.personas = Array.from(pBlocks).map(bl => ({
+      emoji: bl.querySelector('[data-key="emoji"]')?.value||'👤',
+      name: bl.querySelector('[data-key="name"]')?.value||'',
+      role: bl.querySelector('[data-key="role"]')?.value||'',
+      pain: bl.querySelector('[data-key="pain"]')?.value||'',
+      quote: bl.querySelector('[data-key="quote"]')?.value||'',
+      tags: (bl.querySelector('[data-key="tags"]')?.value||'').split(',').map(t=>t.trim()).filter(Boolean)
+    }));
+    // stakeholders
+    const sBlocks = document.querySelectorAll('#ef_stakeholders_list .ef-array-block');
+    p.reveal.stakeholders = Array.from(sBlocks).map(bl => ({
+      name: bl.querySelector('[data-key="name"]')?.value||'',
+      stance: bl.querySelector('[data-key="stance"]')?.value||'',
+      impact: bl.querySelector('[data-key="impact"]')?.value||'',
+      note: bl.querySelector('[data-key="note"]')?.value||''
+    }));
+    // journey map
+    const jBlocks = document.querySelectorAll('#ef_journey_list .ef-array-block');
+    p.reveal.journeyMap = Array.from(jBlocks).map(bl => ({
+      touchpoint: bl.querySelector('[data-key="touchpoint"]')?.value||'',
+      experience: bl.querySelector('[data-key="experience"]')?.value||'',
+      emotion: bl.querySelector('[data-key="emotion"]')?.value||''
+    }));
+  }
+
+  if (tab==='inspire') {
+    if (!p.inspire) p.inspire = {};
+    // HMW
+    const hBlocks = document.querySelectorAll('#ef_hmw_list .ef-array-block');
+    p.inspire.hmw = Array.from(hBlocks).map(bl => ({
+      category: bl.querySelector('[data-key="category"]')?.value||'',
+      statement: bl.querySelector('[data-key="statement"]')?.value||''
+    }));
+    // ideas
+    const iBlocks = document.querySelectorAll('#ef_ideas_list .ef-array-block');
+    p.inspire.ideas = Array.from(iBlocks).map(bl => ({
+      name: bl.querySelector('[data-key="name"]')?.value||'',
+      desc: bl.querySelector('[data-key="desc"]')?.value||'',
+      feasibility: parseInt(bl.querySelector('[data-key="feasibility"]')?.value||'3'),
+      value: parseInt(bl.querySelector('[data-key="value"]')?.value||'3'),
+      innovation: parseInt(bl.querySelector('[data-key="innovation"]')?.value||'3')
+    }));
+    p.inspire.bestIdea = v('ef_bestIdea');
+    p.inspire.reason = v('ef_bestReason');
+  }
+
+  if (tab==='shape') {
+    if (!p.shape) p.shape = {};
+    if (!p.shape.concept) p.shape.concept = {};
+    p.shape.concept.name = v('ef_concept_name');
+    p.shape.concept.overview = v('ef_concept_overview');
+    p.shape.concept.userValue = v('ef_concept_userValue');
+    p.shape.concept.techPlan = v('ef_concept_techPlan');
+    p.shape.concept.bizValue = v('ef_concept_bizValue');
+    // features
+    const fBlocks = document.querySelectorAll('#ef_features_list .ef-array-block');
+    p.shape.concept.features = Array.from(fBlocks).map(bl => ({
+      icon: bl.querySelector('[data-key="icon"]')?.value||'🔧',
+      name: bl.querySelector('[data-key="name"]')?.value||'',
+      desc: bl.querySelector('[data-key="desc"]')?.value||''
+    }));
+    // map values
+    p.shape.mapValues = {
+      market: parseInt(document.getElementById('ef_map_market')?.value||'5'),
+      adoption: parseInt(document.getElementById('ef_map_adoption')?.value||'5'),
+      protection: parseInt(document.getElementById('ef_map_protection')?.value||'5')
+    };
+    // story
+    const stBlocks = document.querySelectorAll('#ef_story_list .ef-array-block');
+    p.shape.story = Array.from(stBlocks).map(bl => ({
+      act: bl.querySelector('[data-key="act"]')?.value||'',
+      scene: bl.querySelector('[data-key="scene"]')?.value||'',
+      feeling: bl.querySelector('[data-key="feeling"]')?.value||'',
+      aha: bl.querySelector('[data-key="aha"]')?.value||''
+    }));
+  }
+
+  if (tab==='exam') {
+    if (!p.exam) p.exam = {};
+    p.exam.ahaValues = {
+      aha: parseInt(document.getElementById('ef_aha_aha')?.value||'5'),
+      highlight: parseInt(document.getElementById('ef_aha_highlight')?.value||'5'),
+      advancement: parseInt(document.getElementById('ef_aha_advancement')?.value||'5')
+    };
+    // test report
+    const parseWithEvidence = (raw) => raw.split('\n').filter(l=>l.trim()).map(l=>{
+      const parts = l.split('|');
+      return parts.length>1 ? {finding:parts[0].trim(), evidence:parts[1].trim()} : {finding:l.trim(), evidence:''};
+    });
+    p.exam.testReport = {
+      method: v('ef_tr_method'),
+      validated: parseWithEvidence(v('ef_tr_validated')||''),
+      invalidated: parseWithEvidence(v('ef_tr_invalidated')||''),
+      newFindings: (v('ef_tr_newFindings')||'').split('\n').filter(l=>l.trim()),
+      newProblems: (v('ef_tr_newProblems')||'').split('\n').filter(l=>l.trim())
+    };
+    // elevator pitch
+    p.exam.elevatorPitch = {
+      problem: v('ef_ep_problem'),
+      solution: v('ef_ep_solution'),
+      users: v('ef_ep_users'),
+      value: v('ef_ep_value'),
+      action: v('ef_ep_action')
+    };
+    // iteration plan
+    p.exam.iterationPlan = { d30: v('ef_ip_d30'), d60: v('ef_ip_d60'), d90: v('ef_ip_d90') };
+    // business model
+    p.exam.businessModel = {
+      valueProposition: v('ef_bm_vp'),
+      customerSegments: v('ef_bm_cs'),
+      channels: v('ef_bm_ch'),
+      customerRelationships: v('ef_bm_cr'),
+      revenueStreams: v('ef_bm_rs'),
+      keyResources: v('ef_bm_kr'),
+      keyActivities: v('ef_bm_ka'),
+      keyPartners: v('ef_bm_kp'),
+      costStructure: v('ef_bm_co')
+    };
+  }
+
+  p.updatedAt = new Date().toISOString().slice(0,10);
+  upsert(p);
+  activeId = p.id;
+  refreshAll();
+  renderDashboard(p);
+
+  // 显示保存成功提示
+  const st = document.getElementById('editorSaveStatus');
+  st.style.display = 'inline';
+  setTimeout(()=>{ st.style.display='none'; },2500);
+  toast('✅ 保存成功！');
+}
+
+// helper: get trimmed value
+function v(id) { const el=document.getElementById(id); return el?el.value.trim():''; }
+// helper: escape HTML
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function confirmDelete(id){
+  const p=getOne(id); if(!p) return;
+  if(!confirm(`确认删除「${p.name}」？此操作不可撤销`)) return;
+  remove(id); activeId=null;
+  document.getElementById('dashRight').innerHTML='<div class="sc"><div class="sc-body" style="text-align:center;padding:48px"><div style="font-size:40px;margin-bottom:12px">🗑️</div><div style="color:#64748b">项目已删除</div></div></div>';
+  refreshAll(); toast('🗑️ 已删除');
+}
+
+// ═══════════════ TRASH ═══════════════
+function moveToTrash(id) {
+  const p = getOne(id); if (!p) return;
+  if (!confirm(`将「${p.name}」移入回收站？可在回收站中恢复。`)) return;
+  // 加入回收站
+  const trash = getTrash();
+  trash.unshift({ ...p, _deletedAt: new Date().toISOString().slice(0,10) });
+  saveTrash(trash);
+  // 从主列表删除
+  remove(id);
+  activeId = null;
+  document.getElementById('dashRight').innerHTML = `<div class="sc"><div class="sc-body" style="text-align:center;padding:48px">
+    <div style="font-size:40px;margin-bottom:12px">🗑️</div>
+    <div style="color:#64748b;margin-bottom:16px">「${p.name}」已移入回收站</div>
+    <button class="ob ob-primary" onclick="switchPanelTab('trash')" style="font-size:13px">查看回收站 →</button>
+  </div></div>`;
+  refreshAll();
+  toast('🗑️ 已移入回收站');
+}
+
+function restoreFromTrash(id) {
+  const trash = getTrash();
+  const idx = trash.findIndex(p => p.id === id);
+  if (idx < 0) return;
+  const p = { ...trash[idx] };
+  delete p._deletedAt;
+  upsert(p);
+  trash.splice(idx, 1);
+  saveTrash(trash);
+  refreshAll();
+  activeId = p.id;
+  renderDashboard(p);
+  toast(`✅ 「${p.name}」已恢复！`);
+}
+
+function purgeFromTrash(id) {
+  const trash = getTrash();
+  const p = trash.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`彻底删除「${p.name}」？此操作不可恢复！`)) return;
+  saveTrash(trash.filter(x => x.id !== id));
+  refreshAll();
+  toast('🗑️ 已彻底删除');
+}
+
+function emptyTrash() {
+  if (!getTrash().length) return;
+  if (!confirm('彻底清空回收站？所有项目将永久删除，不可恢复！')) return;
+  saveTrash([]);
+  refreshAll();
+  toast('🗑️ 回收站已清空');
+}
+
+function renderTrashList() {
+  const el = document.getElementById('trashList');
+  const trash = getTrash();
+  if (!trash.length) {
+    el.innerHTML = '<div class="trash-empty"><div style="font-size:36px;margin-bottom:8px">✨</div><div>回收站为空</div></div>';
+    return;
+  }
+  el.innerHTML = `<div style="padding:8px 10px 4px;display:flex;justify-content:flex-end">
+    <button onclick="emptyTrash()" style="background:#fee2e2;color:#ef4444;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">清空回收站</button>
+  </div>` +
+  trash.map(p => `
+    <div class="trash-item">
+      <div class="trash-name">${p.name}</div>
+      <div class="trash-meta">删除于 ${p._deletedAt||'—'} · ${statusLabel(p.status)} · ${p.progress}%</div>
+      <div class="trash-actions">
+        <button class="tbtn tbtn-restore" onclick="restoreFromTrash('${p.id}')">↩ 恢复</button>
+        <button class="tbtn tbtn-purge" onclick="purgeFromTrash('${p.id}')">× 彻底删除</button>
+      </div>
+    </div>`).join('');
+}
+
+let _panelTab = 'projects';
+function switchPanelTab(tab) {
+  _panelTab = tab;
+  document.getElementById('projectList').style.display = tab==='projects' ? '' : 'none';
+  document.getElementById('trashList').style.display = tab==='trash' ? '' : 'none';
+  document.getElementById('ptab_projects').classList.toggle('active', tab==='projects');
+  document.getElementById('ptab_trash').classList.toggle('active', tab==='trash');
+  if (tab==='trash') renderTrashList();
+}
+
+// ═══════════════ DEMO LOAD ═══════════════
+function loadDemoAndShow(){
+  upsert(DEMO_PROJECT);
+  activeId=DEMO_PROJECT.id;
+  refreshAll();
+  renderDashboard(DEMO_PROJECT);
+  toast('🚀 示范项目已加载！');
+}
+
+// ═══════════════ TOAST ═══════════════
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ═══════════════ INIT ═══════════════
+function refreshAll(){
+  renderStats();
+  filterProjects();
+  // 回收站角标
+  const cnt = trashCount();
+  const badge = document.getElementById('trashBadge');
+  if (badge) { badge.textContent=cnt; badge.style.display=cnt?'inline':'none'; }
+  // 若当前在回收站 tab，刷新列表
+  if (_panelTab==='trash') renderTrashList();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  // Always refresh demo data to pick up schema changes
+  upsert(DEMO_PROJECT);
+  refreshAll();
+  // auto-select demo on first load
+  const demo=getOne(DEMO_PROJECT.id);
+  if(demo){ activeId=demo.id; filterProjects(); renderDashboard(demo); }
+});
+
+window.addEventListener('resize',()=>{
+  if(!activeId) return;
+  const p=getOne(activeId); if(!p) return;
+  if(document.getElementById('ganttCanvas')) drawGantt(getAll());
+  if(p.shape&&document.getElementById('mapCanvas')) drawRadar('mapCanvas',p.shape.mapValues,'#667eea',['市场潜力','用户增长','优势壁垒']);
+  if(p.exam&&document.getElementById('ahaCanvas')) drawRadar('ahaCanvas',p.exam.ahaValues,'#10b981',['顿悟','高光','进步']);
+});
+</script>
 </body>
 </html>

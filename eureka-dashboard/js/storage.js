@@ -1,210 +1,138 @@
 /**
- * Eureka 项目数据存储服务
- * 基于 localStorage 实现
+ * Eureka 项目存储管理
+ * 基于 localStorage 的数据持久化
  */
-
-const STORAGE_KEY = 'eureka_projects';
-const BACKUP_KEY = 'eureka_projects_backup';
 
 class ProjectStorage {
   constructor() {
-    this.projects = this.load();
+    this.storageKey = 'eureka_projects';
   }
 
   /**
-   * 从 localStorage 加载项目数据
+   * 生成项目 ID
    */
-  load() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('加载项目数据失败:', error);
-      return [];
-    }
-  }
-
-  /**
-   * 保存项目数据到 localStorage
-   */
-  save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.projects));
-      return true;
-    } catch (error) {
-      console.error('保存项目数据失败:', error);
-      alert('保存失败，可能因为存储空间不足');
-      return false;
-    }
+  generateId() {
+    return 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
   /**
    * 获取所有项目
    */
   getAll() {
-    return this.projects;
+    const data = localStorage.getItem(this.storageKey);
+    return data ? JSON.parse(data) : [];
   }
 
   /**
    * 根据 ID 获取项目
    */
   getById(id) {
-    return this.projects.find(p => p.project.id === id);
+    const projects = this.getAll();
+    return projects.find(p => p.project.id === id) || null;
   }
 
   /**
    * 创建新项目
    */
-  create(projectData) {
-    const errors = validateProject(projectData);
-    if (errors.length > 0) {
-      throw new Error(errors.join('; '));
-    }
-
-    projectData.project.createdAt = new Date().toISOString();
-    projectData.project.updatedAt = new Date().toISOString();
-    projectData.project.progress = calculateProgress(projectData);
-
-    this.projects.unshift(projectData);
-    this.save();
-
-    return projectData;
+  create(project) {
+    const projects = this.getAll();
+    projects.push(project);
+    this.save(projects);
+    return project;
   }
 
   /**
    * 更新项目
    */
   update(id, updates) {
-    const index = this.projects.findIndex(p => p.project.id === id);
-
+    const projects = this.getAll();
+    const index = projects.findIndex(p => p.project.id === id);
+    
     if (index === -1) {
       throw new Error('项目不存在');
     }
 
-    // 合并更新
-    const merged = deepMerge(this.projects[index], updates);
-    merged.project.updatedAt = new Date().toISOString();
-    merged.project.progress = calculateProgress(merged);
-
-    this.projects[index] = merged;
-    this.save();
-
-    return merged;
+    // 深度合并更新
+    deepMerge(projects[index], updates);
+    this.save(projects);
+    return projects[index];
   }
 
   /**
    * 删除项目
    */
   delete(id) {
-    const index = this.projects.findIndex(p => p.project.id === id);
-
-    if (index === -1) {
-      throw new Error('项目不存在');
-    }
-
-    this.projects.splice(index, 1);
-    this.save();
-  }
-
-  /**
-   * 更新项目状态
-   */
-  updateStatus(id, status) {
-    return this.update(id, {
-      project: { status }
-    });
+    const projects = this.getAll();
+    const filtered = projects.filter(p => p.project.id !== id);
+    this.save(filtered);
   }
 
   /**
    * 归档项目
    */
   archive(id) {
-    return this.updateStatus(id, 'archived');
+    return this.update(id, { 'project.status': 'archived' });
   }
 
   /**
    * 搜索项目
    */
   search(keyword) {
+    const projects = this.getAll();
     const lowerKeyword = keyword.toLowerCase();
-    return this.projects.filter(p =>
-      p.project.name.toLowerCase().includes(lowerKeyword) ||
-      p.project.brief.toLowerCase().includes(lowerKeyword) ||
-      p.project.targetUser.toLowerCase().includes(lowerKeyword)
-    );
+    
+    return projects.filter(p => {
+      const name = p.project.name?.toLowerCase() || '';
+      const brief = p.project.brief?.toLowerCase() || '';
+      return name.includes(lowerKeyword) || brief.includes(lowerKeyword);
+    });
   }
 
   /**
-   * 按状态筛选项目
+   * 按状态筛选
    */
   filterByStatus(status) {
-    if (!status) return this.projects;
-    return this.projects.filter(p => p.project.status === status);
+    const projects = this.getAll();
+    
+    if (!status) {
+      return projects;
+    }
+    
+    return projects.filter(p => p.project.status === status);
   }
 
   /**
-   * 导出所有项目为 JSON
+   * 保存所有项目到 localStorage
+   */
+  save(projects) {
+    localStorage.setItem(this.storageKey, JSON.stringify(projects));
+  }
+
+  /**
+   * 导出为 JSON
    */
   exportJSON() {
-    return JSON.stringify(this.projects, null, 2);
+    const projects = this.getAll();
+    return JSON.stringify(projects, null, 2);
   }
 
   /**
-   * 导入项目数据
+   * 导入 JSON
    */
-  importJSON(jsonString) {
+  importJSON(json) {
     try {
-      const imported = JSON.parse(jsonString);
-      if (!Array.isArray(imported)) {
-        throw new Error('数据格式不正确');
+      const projects = JSON.parse(json);
+      
+      if (!Array.isArray(projects)) {
+        throw new Error('导入数据格式错误');
       }
 
-      // 验证每个项目
-      imported.forEach(project => {
-        const errors = validateProject(project);
-        if (errors.length > 0) {
-          throw new Error(`项目 "${project.project.name}" 数据不完整: ${errors.join('; ')}`);
-        }
-      });
-
-      // 备份当前数据
-      this.backup();
-
-      // 导入新数据
-      this.projects = imported;
-      this.save();
-
+      this.save(projects);
       return true;
     } catch (error) {
       console.error('导入失败:', error);
-      alert(`导入失败: ${error.message}`);
       return false;
     }
-  }
-
-  /**
-   * 备份当前数据
-   */
-  backup() {
-    const timestamp = new Date().toISOString();
-    const backupData = {
-      timestamp,
-      projects: this.projects
-    };
-
-    try {
-      localStorage.setItem(BACKUP_KEY, JSON.stringify(backupData));
-    } catch (error) {
-      console.error('备份失败:', error);
-    }
-  }
-
-  /**
-   * 清空所有项目
-   */
-  clear() {
-    this.projects = [];
-    this.save();
   }
 }
 
@@ -212,38 +140,137 @@ class ProjectStorage {
  * 深度合并对象
  */
 function deepMerge(target, source) {
-  const result = JSON.parse(JSON.stringify(target));
-
   for (const key in source) {
     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      result[key] = deepMerge(result[key] || {}, source[key]);
+      if (!target[key] || typeof target[key] !== 'object') {
+        target[key] = {};
+      }
+      deepMerge(target[key], source[key]);
     } else {
-      result[key] = source[key];
+      target[key] = source[key];
     }
   }
+}
 
-  return result;
+/**
+ * 创建空项目
+ */
+function createEmptyProject() {
+  return {
+    project: {
+      id: '',
+      name: '',
+      brief: '',
+      targetUser: '',
+      targetScenario: '',
+      status: 'draft',
+      progress: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    reveal: {
+      pov: {
+        targetUser: '',
+        painPoint: '',
+        insight: ''
+      },
+      personas: [],
+      stakeholders: [],
+      journeyMap: []
+    },
+    inspire: {
+      ideas: [],
+      selectedIdeaId: '',
+      selectedReason: ''
+    },
+    shape: {
+      concept: {
+        name: '',
+        description: '',
+        userValue: '',
+        techSolution: '',
+        businessValue: '',
+        stakeholderValue: ''
+      },
+      mapValues: {
+        market: 5,
+        adoption: 5,
+        protection: 5
+      },
+      experienceStory: Array(6).fill(null).map(() => ({
+        title: '',
+        description: '',
+        userFeeling: '',
+        ahaMoment: ''
+      }))
+    },
+    exam: {
+      ahaEvaluation: {
+        description: '',
+        aha: 5,
+        highlight: 5,
+        advancement: 5
+      },
+      elevatorPitch: {
+        problem: '',
+        solution: '',
+        targetUser: '',
+        coreValue: '',
+        callToAction: ''
+      },
+      iterationPlan: {
+        day30: { goal: '', milestones: '' },
+        day60: { goal: '', milestones: '' },
+        day90: { goal: '', milestones: '' }
+      },
+      businessCanvas: {
+        valueProposition: '',
+        customerSegments: '',
+        channels: '',
+        customerRelationships: '',
+        revenueStreams: '',
+        keyResources: '',
+        keyActivities: '',
+        keyPartnerships: '',
+        costStructure: ''
+      }
+    }
+  };
 }
 
 /**
  * 格式化日期
  */
-function formatDate(isoString) {
-  const date = new Date(isoString);
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
   const now = new Date();
   const diff = now - date;
-
+  
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
-
+  
   if (minutes < 1) return '刚刚';
-  if (minutes < 60) return `${minutes} 分钟前`;
-  if (hours < 24) return `${hours} 小时前`;
-  if (days < 7) return `${days} 天前`;
-
-  return date.toLocaleDateString('zh-CN');
+  if (minutes < 60) return `${minutes}分钟前`;
+  if (hours < 24) return `${hours}小时前`;
+  if (days < 7) return `${days}天前`;
+  
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 }
+
+/**
+ * 状态颜色映射
+ */
+const STATUS_COLOR = {
+  draft: '#9ca3af',
+  in_progress: '#667eea',
+  completed: '#10b981',
+  archived: '#f59e0b'
+};
 
 /**
  * 状态文本映射
@@ -255,22 +282,14 @@ const STATUS_TEXT = {
   archived: '已归档'
 };
 
-/**
- * 状态颜色映射
- */
-const STATUS_COLOR = {
-  draft: '#9ca3af',
-  in_progress: '#3b82f6',
-  completed: '#10b981',
-  archived: '#6b7280'
-};
-
 // 导出
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     ProjectStorage,
+    deepMerge,
+    createEmptyProject,
     formatDate,
-    STATUS_TEXT,
-    STATUS_COLOR
+    STATUS_COLOR,
+    STATUS_TEXT
   };
 }

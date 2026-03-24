@@ -39,7 +39,18 @@ class ShapeEditor {
     const { shape, inspire } = project;
     const selectedIdea = inspire.ideas.find(i => i.id === inspire.selectedIdeaId);
 
-    this.container.innerHTML = `
+    // 创建阶段导航器容器
+    const stageNavContainer = document.createElement('div');
+    stageNavContainer.id = 'stageNavigator';
+    this.container.innerHTML = '';
+    this.container.appendChild(stageNavContainer);
+
+    // 渲染阶段导航器
+    stageNavigator.render('stageNavigator', 'shape', project);
+
+    // 添加编辑器内容
+    const editorContent = document.createElement('div');
+    editorContent.innerHTML = `
       <div class="shape-editor">
         <div class="editor-header">
           <h2>🎨 Shape · 构建层</h2>
@@ -205,6 +216,7 @@ class ShapeEditor {
       </div>
     `;
 
+    this.container.appendChild(editorContent);
     this.bindEvents();
 
     // 初始化 MAP 雷达图

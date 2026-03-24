@@ -277,15 +277,35 @@ class ProjectManager {
    */
   saveProject(id) {
     const form = document.getElementById('projectForm');
+
+    // 手动验证必填字段
+    const nameInput = form.querySelector('[name="name"]');
+    const briefInput = form.querySelector('[name="brief"]');
+
+    const name = nameInput.value.trim();
+    const brief = briefInput.value.trim();
+
+    if (!name) {
+      alert('项目名称不能为空');
+      nameInput.focus();
+      return;
+    }
+
+    if (!brief) {
+      alert('项目简报不能为空');
+      briefInput.focus();
+      return;
+    }
+
     const formData = new FormData(form);
 
     const updates = {
       project: {
-        name: formData.get('name'),
-        brief: formData.get('brief'),
-        targetUser: formData.get('targetUser'),
-        targetScenario: formData.get('targetScenario'),
-        status: formData.get('status')
+        name: name,
+        brief: brief,
+        targetUser: formData.get('targetUser') || '',
+        targetScenario: formData.get('targetScenario') || '',
+        status: formData.get('status') || 'draft'
       }
     };
 
@@ -312,8 +332,11 @@ class ProjectManager {
    * 打开项目详情
    */
   openProject(id) {
-    // 跳转到项目编辑页面（后续实现）
-    window.location.hash = `#project/${id}`;
+    // 打开项目详情抽屉
+    const project = this.storage.getById(id);
+    if (project) {
+      projectDrawer.open(project);
+    }
   }
 
   /**

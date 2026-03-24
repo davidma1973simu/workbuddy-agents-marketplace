@@ -38,7 +38,18 @@ class RevealEditor {
 
     const { reveal } = project;
 
-    this.container.innerHTML = `
+    // 创建阶段导航器容器
+    const stageNavContainer = document.createElement('div');
+    stageNavContainer.id = 'stageNavigator';
+    this.container.innerHTML = '';
+    this.container.appendChild(stageNavContainer);
+
+    // 渲染阶段导航器
+    stageNavigator.render('stageNavigator', 'reveal', project);
+
+    // 添加编辑器内容
+    const editorContent = document.createElement('div');
+    editorContent.innerHTML = `
       <div class="reveal-editor">
         <div class="editor-header">
           <h2>🔍 Reveal · 洞察层</h2>
@@ -150,6 +161,7 @@ class RevealEditor {
       ${this.renderStakeholderModal()}
     `;
 
+    this.container.appendChild(editorContent);
     this.bindEvents();
   }
 
