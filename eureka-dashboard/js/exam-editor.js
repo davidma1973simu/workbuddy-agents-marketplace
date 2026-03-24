@@ -48,7 +48,7 @@ class ExamEditor {
         <!-- AHA 价值评估部分 -->
         <section class="editor-section">
           <h3>💡 AHA 价值评估</h3>
-          <p class="section-desc">用户第一次感受到核心价值的场景 + 四维价值评分（1-10）</p>
+          <p class="section-desc">AHA 价值雷达图：顿悟(A) + 高光(H) + 进步(A)</p>
 
           <div class="aha-form">
             <div class="form-group">
@@ -61,57 +61,48 @@ class ExamEditor {
               >${exam.ahaEvaluation.description}</textarea>
             </div>
 
+            <div class="aha-radar-container">
+              <canvas id="ahaRadarCanvas" width="300" height="300"></canvas>
+            </div>
+
             <div class="aha-scores">
               <div class="score-group">
-                <label>用户价值</label>
+                <label>顿悟 (A)</label>
                 <input
                   type="range"
                   min="1"
                   max="10"
-                  value="${exam.ahaEvaluation.userValue}"
-                  id="aha_userValue"
-                  oninput="examEditor.updateScore('userValue', this.value)"
+                  value="${exam.ahaEvaluation.aha || 5}"
+                  id="aha_aha"
+                  oninput="examEditor.updateAHAScore('aha', this.value)"
                 />
-                <span class="score-display">${exam.ahaEvaluation.userValue}</span>
+                <span class="score-display">${exam.ahaEvaluation.aha || 5}</span>
               </div>
 
               <div class="score-group">
-                <label>商业价值</label>
+                <label>高光 (H)</label>
                 <input
                   type="range"
                   min="1"
                   max="10"
-                  value="${exam.ahaEvaluation.businessValue}"
-                  id="aha_businessValue"
-                  oninput="examEditor.updateScore('businessValue', this.value)"
+                  value="${exam.ahaEvaluation.highlight || 5}"
+                  id="aha_highlight"
+                  oninput="examEditor.updateAHAScore('highlight', this.value)"
                 />
-                <span class="score-display">${exam.ahaEvaluation.businessValue}</span>
+                <span class="score-display">${exam.ahaEvaluation.highlight || 5}</span>
               </div>
 
               <div class="score-group">
-                <label>技术价值</label>
+                <label>进步 (A)</label>
                 <input
                   type="range"
                   min="1"
                   max="10"
-                  value="${exam.ahaEvaluation.techValue}"
-                  id="aha_techValue"
-                  oninput="examEditor.updateScore('techValue', this.value)"
+                  value="${exam.ahaEvaluation.advancement || 5}"
+                  id="aha_advancement"
+                  oninput="examEditor.updateAHAScore('advancement', this.value)"
                 />
-                <span class="score-display">${exam.ahaEvaluation.techValue}</span>
-              </div>
-
-              <div class="score-group">
-                <label>利益方价值</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value="${exam.ahaEvaluation.stakeholderValue}"
-                  id="aha_stakeholderValue"
-                  oninput="examEditor.updateScore('stakeholderValue', this.value)"
-                />
-                <span class="score-display">${exam.ahaEvaluation.stakeholderValue}</span>
+                <span class="score-display">${exam.ahaEvaluation.advancement || 5}</span>
               </div>
             </div>
           </div>
@@ -314,6 +305,9 @@ class ExamEditor {
     `;
 
     this.bindEvents();
+
+    // 初始化 AHA 雷达图
+    setTimeout(() => this.updateAHARadar(), 100);
   }
 
   /**
@@ -348,10 +342,28 @@ class ExamEditor {
   /**
    * 更新 AHA 评分
    */
-  updateScore(field, value) {
+  updateAHAScore(field, value) {
     const display = document.getElementById(`aha_${field}`).nextElementSibling;
     display.textContent = value;
+
+    // 更新雷达图
+    this.updateAHARadar();
+
     this.save();
+  }
+
+  /**
+   * 更新 AHA 雷达图
+   */
+  updateAHARadar() {
+    const aha = parseInt(document.getElementById('aha_aha').value);
+    const highlight = parseInt(document.getElementById('aha_highlight').value);
+    const advancement = parseInt(document.getElementById('aha_advancement').value);
+
+    EurekaVisualizations.drawAHARadar(
+      { aha, highlight, advancement },
+      'ahaRadarCanvas'
+    );
   }
 
   /**
@@ -434,10 +446,9 @@ class ExamEditor {
 
     project.exam.ahaEvaluation = {
       description: document.getElementById('aha_description').value,
-      userValue: parseInt(document.getElementById('aha_userValue').value),
-      businessValue: parseInt(document.getElementById('aha_businessValue').value),
-      techValue: parseInt(document.getElementById('aha_techValue').value),
-      stakeholderValue: parseInt(document.getElementById('aha_stakeholderValue').value)
+      aha: parseInt(document.getElementById('aha_aha').value),
+      highlight: parseInt(document.getElementById('aha_highlight').value),
+      advancement: parseInt(document.getElementById('aha_advancement').value)
     };
 
     project.exam.elevatorPitch = {

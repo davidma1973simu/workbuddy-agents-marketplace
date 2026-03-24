@@ -130,6 +130,57 @@ class ShapeEditor {
                 rows="3"
               >${shape.concept.stakeholderValue}</textarea>
             </div>
+
+            <!-- MAP 商业价值雷达图 -->
+            <div class="form-group">
+              <label class="form-label">MAP 商业价值雷达图</label>
+              <p class="form-hint">市场潜力(M) + 用户增长(A) + 优势壁垒(P)</p>
+
+              <div class="map-radar-container">
+                <canvas id="mapRadarCanvas" width="300" height="300"></canvas>
+              </div>
+
+              <div class="map-scores">
+                <div class="score-group">
+                  <label>市场潜力 (M)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value="${shape.mapValues?.market || 5}"
+                    id="map_market"
+                    oninput="shapeEditor.updateMAPScore('market', this.value)"
+                  />
+                  <span class="score-display">${shape.mapValues?.market || 5}</span>
+                </div>
+
+                <div class="score-group">
+                  <label>用户增长 (A)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value="${shape.mapValues?.adoption || 5}"
+                    id="map_adoption"
+                    oninput="shapeEditor.updateMAPScore('adoption', this.value)"
+                  />
+                  <span class="score-display">${shape.mapValues?.adoption || 5}</span>
+                </div>
+
+                <div class="score-group">
+                  <label>优势壁垒 (P)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value="${shape.mapValues?.protection || 5}"
+                    id="map_protection"
+                    oninput="shapeEditor.updateMAPScore('protection', this.value)"
+                  />
+                  <span class="score-display">${shape.mapValues?.protection || 5}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -155,6 +206,9 @@ class ShapeEditor {
     `;
 
     this.bindEvents();
+
+    // 初始化 MAP 雷达图
+    setTimeout(() => this.updateMAPRadar(), 100);
   }
 
   /**
@@ -237,6 +291,33 @@ class ShapeEditor {
   }
 
   /**
+   * 更新 MAP 评分
+   */
+  updateMAPScore(field, value) {
+    const display = document.getElementById(`map_${field}`).nextElementSibling;
+    display.textContent = value;
+
+    // 更新雷达图
+    this.updateMAPRadar();
+
+    this.save();
+  }
+
+  /**
+   * 更新 MAP 雷达图
+   */
+  updateMAPRadar() {
+    const market = parseInt(document.getElementById('map_market').value);
+    const adoption = parseInt(document.getElementById('map_adoption').value);
+    const protection = parseInt(document.getElementById('map_protection').value);
+
+    EurekaVisualizations.drawMAPRadar(
+      { market, adoption, protection },
+      'mapRadarCanvas'
+    );
+  }
+
+  /**
    * 保存草稿
    */
   saveDraft() {
@@ -266,6 +347,16 @@ class ShapeEditor {
       techSolution: document.getElementById('concept_techSolution').value,
       businessValue: document.getElementById('concept_businessValue').value,
       stakeholderValue: document.getElementById('concept_stakeholderValue').value
+    };
+
+    // 保存 MAP 值
+    if (!project.shape.mapValues) {
+      project.shape.mapValues = {};
+    }
+    project.shape.mapValues = {
+      market: parseInt(document.getElementById('map_market').value),
+      adoption: parseInt(document.getElementById('map_adoption').value),
+      protection: parseInt(document.getElementById('map_protection').value)
     };
 
     this.storage.update(project.project.id, { shape: project.shape });
