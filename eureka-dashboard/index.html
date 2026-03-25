@@ -287,41 +287,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .po-col-body{padding:12px 14px}
 .po-specialist{margin-bottom:12px}
 .po-spec-name{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.po-artifact{display:flex;align-items:center;gap:8px;padding:7px 8px;background:#fff;border-radius:8px;margin-bottom:5px;border:1px solid #f1f5f9;font-size:11px;color:#374151;transition:.15s;cursor:default}
+.po-artifact{display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fff;border-radius:8px;margin-bottom:4px;border:1px solid #f1f5f9;font-size:11px;color:#374151;transition:.15s}
 .po-artifact:hover{border-color:#c7d2fe;background:#f8faff}
 .po-artifact-icon{font-size:15px;flex-shrink:0}
-.po-artifact-name{flex:1;line-height:1.4}
-.po-artifact-type{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700;flex-shrink:0}
+.po-artifact-name{flex:1}
+.po-artifact-type{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700}
+
+/* ── PROCESS OUTPUTS v2 (状态感知) ── */
+.po-artifact-v2{display:block;padding:8px 10px;background:#fff;border-radius:10px;margin-bottom:6px;border:1px solid #f1f5f9;transition:.15s}
+.po-artifact-v2:hover{border-color:#c7d2fe;background:#f8faff}
+.po-artifact-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.po-artifact-body{padding-left:2px}
+.po-has{border-color:#10b98130}
+.po-empty{border-color:#f1f5f9}
+.po-beta{opacity:.75;border-style:dashed}
 /* 状态徽章 */
-.po-status{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;white-space:nowrap}
-.po-status-done{background:#dcfce7;color:#15803d}
-.po-status-empty{background:#f1f5f9;color:#94a3b8}
-.po-status-beta{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
-/* 操作按钮行 */
-.po-actions{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap}
-.po-btn{font-size:10px;font-weight:700;padding:3px 9px;border-radius:14px;border:none;cursor:pointer;transition:.15s;white-space:nowrap}
-.po-btn-view{background:#ede9fe;color:#6d28d9}
-.po-btn-view:hover{background:#ddd6fe}
-.po-btn-dl{background:#dcfce7;color:#15803d}
-.po-btn-dl:hover{background:#bbf7d0}
-.po-btn-ai{background:linear-gradient(90deg,#667eea,#764ba2);color:#fff}
-.po-btn-ai:hover{opacity:.88}
-.po-btn-edit{background:#e0f2fe;color:#0369a1}
-.po-btn-edit:hover{background:#bae6fd}
-/* 内容摘要展开 */
-.po-snippet{font-size:11px;color:#475569;background:#f8faff;border-radius:6px;padding:6px 8px;margin-top:4px;line-height:1.55;border:1px solid #e0e7ff;display:none}
-/* AI Prompt 弹窗 */
-.po-prompt-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;display:none;align-items:center;justify-content:center}
-.po-prompt-modal.open{display:flex}
-.po-prompt-box{background:#fff;border-radius:20px;padding:28px 28px 24px;width:560px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
-.po-prompt-title{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:4px}
-.po-prompt-sub{font-size:12px;color:#64748b;margin-bottom:14px}
-.po-prompt-label{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px}
-.po-prompt-text{width:100%;min-height:110px;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;color:#1e293b;line-height:1.65;resize:vertical;outline:none;font-family:inherit}
-.po-prompt-text:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
-.po-prompt-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
-.po-prompt-copy{background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;border:none;padding:9px 22px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
-.po-prompt-close{background:#f1f5f9;color:#475569;border:none;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.po-status-badge{font-size:10px;padding:1px 7px;border-radius:12px;font-weight:700;flex-shrink:0;margin-left:auto}
+.po-status-done{background:#10b98118;color:#059669}
+.po-status-empty{background:#f1f5f940;color:#94a3b8;border:1px solid #e2e8f0}
+.po-status-beta{background:#f59e0b18;color:#d97706;border:1px dashed #d97706}
+/* 操作按钮 */
+.po-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.po-btn{border:none;border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-weight:600;transition:.12s}
+.po-btn-down{background:#e0f2fe;color:#0369a1}
+.po-btn-down:hover{background:#bae6fd}
+.po-btn-prompt{background:#f3e8ff;color:#7c3aed}
+.po-btn-prompt:hover{background:#e9d5ff}
+.po-btn-edit{background:#dcfce7;color:#15803d}
+.po-btn-edit:hover{background:#bbf7d0}
+/* 内容摘要 */
+.po-snippet{font-size:11px;color:#64748b;background:#f8faff;border-radius:5px;padding:3px 7px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* 完成度徽章 */
+.po-progress-badge{display:inline-flex;align-items:center;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:2px 10px;font-size:13px}
 
 /* ── PROJECT EDITOR MODAL ── */
 .editor-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
@@ -394,7 +391,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <span class="nav-brand">📊 Eureka 项目库 &amp; 成果仪表板</span>
   </div>
   <div class="nav-actions">
-    <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;">📖 使用说明书</a>
     <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
     <button class="btn-ghost" onclick="importJSON()">⬆️ 导入 JSON</button>
     <button class="btn-ghost" onclick="exportAllJSON()">⬇️ 导出 JSON</button>
@@ -439,21 +435,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
         <div class="welcome-sub">点击左侧项目查看完整仪表板内容<br>包含甘特图、价值雷达、流程产出、可交付资产等完整展示</div>
         <button class="welcome-btn" onclick="loadDemoAndShow()">🚀 加载示范项目，立即查看</button>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── AI PROMPT MODAL ── -->
-<div id="poPromptModal" class="po-prompt-modal">
-  <div class="po-prompt-box">
-    <button onclick="closePoPrompt()" style="position:absolute;top:14px;right:16px;background:#f1f5f9;border:none;border-radius:8px;width:30px;height:30px;font-size:17px;cursor:pointer;color:#475569;display:flex;align-items:center;justify-content:center">×</button>
-    <div class="po-prompt-title" id="poPromptTitle">🤖 AI 生成提示词</div>
-    <div class="po-prompt-sub" id="poPromptSub">复制下方 Prompt，粘贴到 AI 对话中，将产出内容粘贴回对应编辑器字段。</div>
-    <div class="po-prompt-label">📋 Prompt 模板</div>
-    <textarea class="po-prompt-text" id="poPromptText" readonly></textarea>
-    <div class="po-prompt-footer">
-      <button class="po-prompt-close" onclick="closePoPrompt()">关闭</button>
-      <button class="po-prompt-copy" onclick="copyPoPrompt()">📋 复制 Prompt</button>
     </div>
   </div>
 </div>
@@ -1257,228 +1238,503 @@ function htmlDeliverables(p) {
   </div></div></div>`;
 }
 
-// ── 各专家过程产出物 ──
+// ── 各专家过程产出物（状态感知动态版）──
 function htmlProcessOutputs(p) {
+  const rv = p.reveal||{};
+  const ins = p.inspire||{};
+  const sh = p.shape||{};
+  const ex = p.exam||{};
 
-  // ── Prompt 模板库（方案A：复制后粘贴给AI） ──
-  const PROMPTS = {
-    interview:    `你是一名 UX 研究员。请根据以下项目信息，生成一份结构化的用户访谈记录模板，包含：受访者信息、访谈目标、5-8个核心问题、关键观察点和原始引语记录区。\n\n项目名称：${p.name}\n目标用户：${p.targetUser||'（请填写）'}\n项目简报：${p.brief||'（请填写）'}`,
-    affinity:     `你是一名 UX 研究员。请根据以下用户访谈数据或用户画像，生成亲和图（Affinity Map）的分组结构，包含：主题分组名称、每组代表性观点（3-5条）和关键洞察。\n\n项目：${p.name}\nPOV：${p.reveal?.pov?.user||''}${p.reveal?.pov?.pain?'，痛点：'+p.reveal.pov.pain:''}\n用户画像：${(p.reveal?.personas||[]).map(pe=>pe.name||'').filter(Boolean).join('、')||'（请填写）'}`,
-    crazy8:       `你是一名创意主持人。请针对以下 HMW 机遇，运用 Crazy 8 方法快速生成 8 个差异化的创意概念（每个用 2-3 句话描述，强调差异性和创新性）。\n\nHMW 机遇：${(p.reveal?.hmw||[]).map(h=>h.content||h).filter(Boolean).slice(0,2).join('；')||'（请填写 HMW）'}\n最佳创意背景：${p.inspire?.bestIdea||'（请填写）'}`,
-    competitor:   `你是一名战略顾问。请针对以下项目进行竞品对标分析，包含：3-5个核心竞品、各竞品优劣势、差异化机会点和我方独特价值主张。\n\n项目：${p.name}\n目标用户：${p.targetUser||'（请填写）'}\n核心创意：${p.inspire?.bestIdea||'（请填写）'}`,
-    uiproto:      `你是一名产品设计师。请根据以下概念方案，描述关键界面的线框图设计要点，包含：核心页面列表、每个页面的主要元素和交互逻辑（文字描述，可配合ASCII图示）。\n\n概念名称：${p.shape?.concept?.name||p.name}\n核心功能：${p.shape?.concept?.description||'（请填写）'}\n用户价值：${p.shape?.concept?.userValue||'（请填写）'}`,
-    techarch:     `你是一名 AI 算法工程师。请根据以下产品概念，设计技术架构方案，包含：技术栈选型、核心模块划分、数据流设计、AI/算法模块说明和关键技术风险。\n\n概念：${p.shape?.concept?.name||p.name}\n技术方案描述：${p.shape?.concept?.techSolution||'（请填写）'}`,
-    apiplan:      `你是一名后端工程师。请为以下产品设计 API 对接方案，包含：核心 API 端点列表、请求/响应格式、第三方服务集成方案和安全设计。\n\n产品：${p.shape?.concept?.name||p.name}\n技术架构：${p.shape?.concept?.techSolution||'（请填写）'}`,
-    testplan:     `你是一名测试负责人。请根据以下概念方案，制定可用性测试计划，包含：测试目标、受测用户标准（5-8人）、测试任务列表（4-6个）、观察维度和成功指标。\n\n概念：${p.shape?.concept?.name||p.name}\n核心价值：${p.shape?.concept?.userValue||'（请填写）'}`,
-  };
+  // ── 数据存在判断 ──
+  const hasInterview   = !!(rv.interviewNotes && rv.interviewNotes.trim());
+  const hasAffinity    = !!(rv.affinityMap && rv.affinityMap.trim());
+  const hasPersonas    = (rv.personas||[]).length > 0;
+  const hasJourney     = (rv.journeyMap||[]).length > 0;
+  const hasStakeholders= (rv.stakeholders||[]).length > 0;
+  const hasHMW         = (ins.hmw||[]).length > 0;
+  const hasCrazy8      = !!(ins.crazy8 && ins.crazy8.trim());
+  const hasIdeas       = (ins.ideas||[]).length > 0;
+  const hasBestIdea    = !!(ins.bestIdea);
+  const hasConcept     = !!(sh.concept&&sh.concept.name);
+  const hasStory       = (sh.story||[]).some(st=>st.scene||st.act);
+  const hasTestReport  = !!(ex.testReport&&(ex.testReport.method||((ex.testReport.validated||[]).length>0)));
+  const hasPitch       = !!(ex.elevatorPitch&&ex.elevatorPitch.problem);
+  const hasBMC         = !!(ex.businessModel&&ex.businessModel.valueProposition);
+  const hasIteration   = !!(ex.iterationPlan&&(ex.iterationPlan.d30||ex.iterationPlan.d60));
 
-  // ── 抽取数据摘要的辅助函数 ──
-  function snippet(text, len=80) {
-    if (!text) return '';
-    const t = String(text).replace(/\n/g,' ').trim();
-    return t.length > len ? t.slice(0, len) + '…' : t;
+  // 统计完成数（不含 BETA）
+  const statusList = [hasInterview, hasAffinity, hasPersonas, hasJourney, hasStakeholders,
+                      hasHMW, hasCrazy8, hasIdeas, hasBestIdea,
+                      hasConcept, hasStory,
+                      hasTestReport, hasPitch, hasBMC, hasIteration];
+  const doneCount = statusList.filter(Boolean).length;
+  const totalCount = statusList.length;
+
+  // ── 卡片渲染辅助 ──
+  function card(opts) {
+    // opts: { icon, name, type, typeColor, has, key, snippet, beta, editTab, editorHint }
+    const { icon, name, type, typeColor, has, key, snippet, beta, editTab, editorHint } = opts;
+    let statusBadge, actions;
+
+    if (beta) {
+      statusBadge = `<span class="po-status-badge po-status-beta">BETA</span>`;
+      actions = `<span style="font-size:11px;color:#94a3b8;font-style:italic">即将支持</span>`;
+    } else if (has) {
+      statusBadge = `<span class="po-status-badge po-status-done">✓ 已填写</span>`;
+      const snip = snippet ? `<div class="po-snippet">${esc(snippet.slice(0,60))}${snippet.length>60?'…':''}</div>` : '';
+      actions = `${snip}<div class="po-actions">
+        <button class="po-btn po-btn-down" onclick="downloadPoArtifact('${key}',this)" title="下载 MD">⬇ 下载</button>
+        <button class="po-btn po-btn-prompt" onclick="openPoPrompt('${key}')" title="AI 辅助">✨ AI 优化</button>
+        ${editTab?`<button class="po-btn po-btn-edit" onclick="openEditorAtTab('${p.id||''}','${editTab}')" title="编辑">✏ 编辑</button>`:''}
+      </div>`;
+    } else {
+      statusBadge = `<span class="po-status-badge po-status-empty">待填写</span>`;
+      actions = `<div class="po-actions">
+        ${editTab?`<button class="po-btn po-btn-edit" onclick="openEditorAtTab('${p.id||''}','${editTab}')" title="在编辑器中填写">✏ 去填写</button>`:''}
+        <button class="po-btn po-btn-prompt" onclick="openPoPrompt('${key}')" title="AI 辅助生成">✨ AI 生成</button>
+      </div>`;
+    }
+
+    return `<div class="po-artifact po-artifact-v2 ${has?'po-has':'po-empty'} ${beta?'po-beta':''}">
+      <div class="po-artifact-top">
+        <span class="po-artifact-icon">${icon}</span>
+        <span class="po-artifact-name">${name}</span>
+        <span class="po-artifact-type" style="background:${typeColor}18;color:${typeColor}">${type}</span>
+        ${statusBadge}
+      </div>
+      <div class="po-artifact-body">${actions}</div>
+    </div>`;
   }
 
-  // ── 产出物卡片渲染器 ──
-  // mode: 'live' 有真实字段, 'upload' 需上传, 'beta' 虚构产出物
-  function artifact({ icon, name, type, typeColor, mode, hasDatum, snippetText, editTarget, dlKey, promptKey, beta }) {
-    const isBeta = beta === true;
+  const revealCards = `
+    <div class="po-specialist">
+      <div class="po-spec-name">👩‍🔬 UX 研究员</div>
+      ${card({ icon:'📋', name:'用户访谈记录', type:'原始数据', typeColor:'#7c3aed',
+        has:hasInterview, key:'interviewNotes', snippet:rv.interviewNotes,
+        editTab:'reveal', editorHint:'在 Reveal → 用户访谈记录 中填写' })}
+      ${card({ icon:'📊', name:'亲和图 Affinity Map', type:'分析图', typeColor:'#7c3aed',
+        has:hasAffinity, key:'affinityMap', snippet:rv.affinityMap,
+        editTab:'reveal', editorHint:'在 Reveal → 亲和图 中填写' })}
+      ${card({ icon:'👤', name:'用户画像 Persona', type:'产出物', typeColor:'#15803d',
+        has:hasPersonas, key:'personas', snippet:hasPersonas?`${rv.personas.length}个画像：${rv.personas.map(q=>q.name).join('、')}`:null,
+        editTab:'reveal' })}
+      ${card({ icon:'🗺️', name:'用户旅程地图', type:'产出物', typeColor:'#15803d',
+        has:hasJourney, key:'journeyMap', snippet:hasJourney?`${rv.journeyMap.length}个触点`:null,
+        editTab:'reveal' })}
+    </div>
+    <div class="po-specialist">
+      <div class="po-spec-name">📊 数据分析师</div>
+      ${card({ icon:'📈', name:'用户行为数据报告', type:'分析报告', typeColor:'#d97706',
+        beta:true })}
+      ${card({ icon:'🔢', name:'利益相关者矩阵', type:'分析图', typeColor:'#7c3aed',
+        has:hasStakeholders, key:'stakeholders',
+        snippet:hasStakeholders?`${rv.stakeholders.length}位相关者：${rv.stakeholders.map(s=>s.name).join('、')}`:null,
+        editTab:'reveal' })}
+    </div>`;
 
-    // 状态徽章
-    let statusBadge = '';
-    if (isBeta) {
-      statusBadge = `<span class="po-status po-status-beta">BETA</span>`;
-    } else if (mode === 'live') {
-      statusBadge = hasDatum
-        ? `<span class="po-status po-status-done">✓ 已填写</span>`
-        : `<span class="po-status po-status-empty">待填写</span>`;
-    } else if (mode === 'upload') {
-      statusBadge = hasDatum
-        ? `<span class="po-status po-status-done">✓ 已上传</span>`
-        : `<span class="po-status po-status-empty">待上传</span>`;
-    }
+  const inspireCards = `
+    <div class="po-specialist">
+      <div class="po-spec-name">🎨 创意主持人</div>
+      ${card({ icon:'🗒️', name:'HMW 机遇卡片集', type:'原始产出', typeColor:'#d97706',
+        has:hasHMW, key:'hmw',
+        snippet:hasHMW?`${ins.hmw.length}条：${ins.hmw[0]?.statement?.slice(0,30)||''}…`:null,
+        editTab:'inspire' })}
+      ${card({ icon:'💡', name:'Crazy 8 创意草图', type:'创意草稿', typeColor:'#d97706',
+        has:hasCrazy8, key:'crazy8', snippet:ins.crazy8,
+        editTab:'inspire', editorHint:'在 Inspire → Crazy 8 草图 中填写' })}
+      ${card({ icon:'📊', name:'创意评估矩阵', type:'分析工具', typeColor:'#7c3aed',
+        has:hasIdeas, key:'ideas',
+        snippet:hasIdeas?`${ins.ideas.length}个创意：${ins.ideas.map(i=>i.name).join('、')}`:null,
+        editTab:'inspire' })}
+    </div>
+    <div class="po-specialist">
+      <div class="po-spec-name">🧠 战略顾问</div>
+      ${card({ icon:'🏆', name:'最佳创意评审报告', type:'决策文档', typeColor:'#15803d',
+        has:hasBestIdea, key:'bestIdea',
+        snippet:hasBestIdea?`最佳创意：${ins.bestIdea}`:null,
+        editTab:'inspire' })}
+      ${card({ icon:'🔍', name:'竞品对标分析', type:'研究报告', typeColor:'#d97706',
+        beta:true })}
+    </div>`;
 
-    // 内容摘要（仅 live 且有数据时显示）
-    const snippetId = `snip_${Math.random().toString(36).slice(2,8)}`;
-    const snippetHtml = (mode === 'live' && hasDatum && snippetText)
-      ? `<div class="po-snippet" id="${snippetId}">${esc(snippetText)}</div>`
-      : '';
+  const shapeCards = `
+    <div class="po-specialist">
+      <div class="po-spec-name">🖥️ 产品设计师</div>
+      ${card({ icon:'📐', name:'概念方案文档', type:'核心产出', typeColor:'#15803d',
+        has:hasConcept, key:'concept',
+        snippet:hasConcept?`${sh.concept.name}：${(sh.concept.overview||'').slice(0,40)}`:null,
+        editTab:'shape' })}
+      ${card({ icon:'🎭', name:'用户体验故事板', type:'叙事工具', typeColor:'#d97706',
+        has:hasStory, key:'story',
+        snippet:hasStory?`${(sh.story||[]).filter(s=>s.scene||s.act).length}幕故事`:null,
+        editTab:'shape' })}
+      ${card({ icon:'🖼️', name:'UI 原型线框图', type:'设计稿', typeColor:'#15803d',
+        beta:true })}
+    </div>
+    <div class="po-specialist">
+      <div class="po-spec-name">🤖 AI 算法工程师</div>
+      ${card({ icon:'⚙️', name:'技术架构设计文档', type:'技术文档', typeColor:'#7c3aed',
+        beta:true })}
+      ${card({ icon:'📡', name:'API 对接方案', type:'技术文档', typeColor:'#7c3aed',
+        beta:true })}
+    </div>`;
 
-    // 操作按钮
-    let actions = '';
-    if (isBeta) {
-      // BETA 产出物：仅显示 AI 生成按钮（提示词）
-      if (promptKey && PROMPTS[promptKey]) {
-        actions = `<div class="po-actions">
-          <button class="po-btn po-btn-ai" onclick="openPoPrompt('${promptKey}','${esc(name)}')">🤖 AI 生成</button>
-          <button class="po-btn po-btn-edit" onclick="openUploadPanel()">⬆ 上传</button>
-        </div>`;
-      }
-    } else if (mode === 'live') {
-      if (hasDatum) {
-        const toggleSnip = snippetText ? `<button class="po-btn po-btn-view" onclick="togglePoSnippet('${snippetId}')">👁 查看</button>` : '';
-        const dlBtn = dlKey ? `<button class="po-btn po-btn-dl" onclick="downloadPoArtifact('${p.id}','${dlKey}')">⬇ 下载</button>` : '';
-        const editBtn = editTarget ? `<button class="po-btn po-btn-edit" onclick="openEditor('${p.id}');switchEditorTab('${editTarget}')">✏ 编辑</button>` : '';
-        actions = `<div class="po-actions">${toggleSnip}${dlBtn}${editBtn}</div>`;
-      } else {
-        const aiBtn = (promptKey && PROMPTS[promptKey]) ? `<button class="po-btn po-btn-ai" onclick="openPoPrompt('${promptKey}','${esc(name)}')">🤖 AI 生成</button>` : '';
-        const editBtn = editTarget ? `<button class="po-btn po-btn-edit" onclick="openEditor('${p.id}');switchEditorTab('${editTarget}')">✏ 去填写</button>` : '';
-        actions = `<div class="po-actions">${aiBtn}${editBtn}</div>`;
-      }
-    } else if (mode === 'upload') {
-      if (hasDatum) {
-        actions = `<div class="po-actions"><button class="po-btn po-btn-view" onclick="openUploadPanel()">📂 管理</button></div>`;
-      } else {
-        const aiBtn = (promptKey && PROMPTS[promptKey]) ? `<button class="po-btn po-btn-ai" onclick="openPoPrompt('${promptKey}','${esc(name)}')">🤖 AI 生成</button>` : '';
-        actions = `<div class="po-actions">${aiBtn}<button class="po-btn po-btn-edit" onclick="openUploadPanel()">⬆ 上传</button></div>`;
-      }
-    }
+  const examCards = `
+    <div class="po-specialist">
+      <div class="po-spec-name">🧪 测试负责人</div>
+      ${card({ icon:'📋', name:'可用性测试计划', type:'测试文档', typeColor:'#b91c1c',
+        beta:true })}
+      ${card({ icon:'📊', name:'测试数据记录表', type:'原始数据', typeColor:'#d97706',
+        beta:true })}
+      ${card({ icon:'📝', name:'测试报告', type:'核心产出', typeColor:'#15803d',
+        has:hasTestReport, key:'testReport',
+        snippet:hasTestReport?`方法：${ex.testReport.method||'—'}；验证${(ex.testReport.validated||[]).length}条`:null,
+        editTab:'exam' })}
+    </div>
+    <div class="po-specialist">
+      <div class="po-spec-name">📈 商业分析师</div>
+      ${card({ icon:'🎤', name:'电梯呈现脚本', type:'汇报材料', typeColor:'#667eea',
+        has:hasPitch, key:'pitch',
+        snippet:hasPitch?`问题：${(ex.elevatorPitch.problem||'').slice(0,40)}`:null,
+        editTab:'exam' })}
+      ${card({ icon:'🗺️', name:'商业模式画布 BMC', type:'核心产出', typeColor:'#15803d',
+        has:hasBMC, key:'bmc',
+        snippet:hasBMC?`价值主张：${(ex.businessModel.valueProposition||'').slice(0,40)}`:null,
+        editTab:'exam' })}
+      ${card({ icon:'📅', name:'30-60-90天迭代计划', type:'行动计划', typeColor:'#d97706',
+        has:hasIteration, key:'iteration',
+        snippet:hasIteration?`30天：${(ex.iterationPlan.d30||'').slice(0,30)}`:null,
+        editTab:'exam' })}
+    </div>`;
 
-    return `<div class="po-artifact" style="${isBeta?'opacity:.75;':''}">
-      <span class="po-artifact-icon">${icon}</span>
-      <span class="po-artifact-name">${name}${isBeta?'<span style="font-size:9px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;padding:1px 5px;border-radius:10px;margin-left:5px;font-weight:700">BETA</span>':''}</span>
-      ${statusBadge}
-    </div>${snippetHtml}${actions}`;
-  }
-
-  // ── 数据准备 ──
-  const r = p.reveal  || {};
-  const i = p.inspire || {};
-  const s = p.shape   || {};
-  const e = p.exam    || {};
-
-  const hasPOV        = !!(r.pov?.user || r.pov?.targetUser);
-  const hasPersonas   = (r.personas||[]).length > 0;
-  const hasStakeh     = (r.stakeholders||[]).length > 0;
-  const hasJourney    = (r.journeyMap||[]).length > 0;
-  const hasHMW        = (r.hmw||[]).length > 0;
-  const hasIdeas      = (i.ideas||[]).length > 0;
-  const hasBestIdea   = !!(i.bestIdea || i.selectedReason);
-  const hasConcept    = !!(s.concept?.name || s.concept?.description);
-  const hasStory      = (s.experienceStory||[]).some(st=>st.title||st.description);
-  const hasTestReport = !!(e.testReport?.valid || e.testReport?.description);
-  const hasPitch      = !!(e.elevatorPitch?.problem || e.pitch?.problem);
-  const hasIteration  = !!(e.iterationPlan?.day30?.goal || e.iterationPlan?.d30);
-  const hasBMC        = !!(e.businessCanvas?.valueProposition || e.businessModel?.valueProposition);
-
-  // 摘要文本
-  const personaSnip   = hasPersonas ? snippet((r.personas[0]?.name||'')+'：'+( r.personas[0]?.description||r.personas[0]?.quote||'')) : '';
-  const povSnip       = hasPOV ? snippet(`${r.pov.user||r.pov.targetUser} · ${r.pov.pain||r.pov.painPoint||''} · ${r.pov.insight||''}`) : '';
-  const hmwSnip       = hasHMW ? snippet((r.hmw||[]).slice(0,2).map(h=>h.content||h).join('；')) : '';
-  const ideaSnip      = hasIdeas ? snippet((i.ideas||[]).slice(0,2).map(id=>id.title||id.name||'').join('、')) : '';
-  const bestIdeaSnip  = hasBestIdea ? snippet(i.bestIdea||i.selectedReason) : '';
-  const conceptSnip   = hasConcept ? snippet(s.concept.name+' · '+(s.concept.description||'')) : '';
-  const storySnip     = hasStory ? snippet((s.experienceStory||[]).find(st=>st.title)?.title||'') : '';
-  const pitchSnip     = hasPitch ? snippet((e.elevatorPitch||e.pitch||{}).problem||'') : '';
-  const iterSnip      = hasIteration ? snippet((e.iterationPlan?.day30?.goal||e.iterationPlan?.d30)||'') : '';
-  const bmcSnip       = hasBMC ? snippet((e.businessCanvas||e.businessModel||{}).valueProposition||'') : '';
-  const testSnip      = hasTestReport ? snippet(e.testReport?.valid||e.testReport?.description||'') : '';
-
-  const cols = [
-    {
-      stage: '🔍 Reveal', color: '#7c3aed', bg: '#7c3aed0d', border: '#7c3aed35',
-      specialists: [
-        {
-          name: '👩‍🔬 UX 研究员',
-          artifacts: [
-            artifact({ icon:'📋', name:'用户访谈记录',    type:'原始数据',  typeColor:'#7c3aed', mode:'upload', hasDatum:false,       promptKey:'interview' }),
-            artifact({ icon:'📊', name:'亲和图 (Affinity Map)', type:'分析图', typeColor:'#7c3aed', mode:'upload', hasDatum:false,  promptKey:'affinity' }),
-            artifact({ icon:'👤', name:'用户画像 Persona',type:'产出物',   typeColor:'#15803d', mode:'live',   hasDatum:hasPersonas,  snippetText:personaSnip, editTarget:'reveal', dlKey:'personas' }),
-            artifact({ icon:'🗺️', name:'用户旅程地图',   type:'产出物',   typeColor:'#15803d', mode:'live',   hasDatum:hasJourney,   snippetText:'',          editTarget:'reveal' }),
-          ]
-        },
-        {
-          name: '📊 数据分析师',
-          artifacts: [
-            artifact({ icon:'📈', name:'POV 洞察陈述',    type:'分析报告', typeColor:'#d97706', mode:'live',   hasDatum:hasPOV,      snippetText:povSnip,     editTarget:'reveal', dlKey:'pov' }),
-            artifact({ icon:'🔢', name:'利益相关者矩阵',  type:'分析图',   typeColor:'#7c3aed', mode:'live',   hasDatum:hasStakeh,   snippetText:'',          editTarget:'reveal' }),
-          ]
-        }
-      ]
-    },
-    {
-      stage: '💡 Inspire', color: '#d97706', bg: '#d977060d', border: '#d9770635',
-      specialists: [
-        {
-          name: '🎨 创意主持人',
-          artifacts: [
-            artifact({ icon:'🗒️', name:'HMW 机遇卡片集', type:'原始产出', typeColor:'#d97706', mode:'live',   hasDatum:hasHMW,      snippetText:hmwSnip,     editTarget:'reveal',  dlKey:'hmw' }),
-            artifact({ icon:'💡', name:'Crazy 8 创意草图',type:'创意草稿', typeColor:'#d97706', mode:'upload', hasDatum:false,       promptKey:'crazy8' }),
-            artifact({ icon:'📊', name:'创意评估矩阵',   type:'分析工具', typeColor:'#7c3aed', mode:'live',   hasDatum:hasIdeas,    snippetText:ideaSnip,    editTarget:'inspire', dlKey:'ideas' }),
-          ]
-        },
-        {
-          name: '🧠 战略顾问',
-          artifacts: [
-            artifact({ icon:'🏆', name:'最佳创意评审报告',type:'决策文档', typeColor:'#15803d', mode:'live',   hasDatum:hasBestIdea, snippetText:bestIdeaSnip,editTarget:'inspire', dlKey:'bestidea' }),
-            artifact({ icon:'🔍', name:'竞品对标分析',   type:'研究报告', typeColor:'#d97706', mode:'upload', hasDatum:false,       promptKey:'competitor', beta:true }),
-          ]
-        }
-      ]
-    },
-    {
-      stage: '🎨 Shape', color: '#15803d', bg: '#15803d0d', border: '#15803d35',
-      specialists: [
-        {
-          name: '🖥️ 产品设计师',
-          artifacts: [
-            artifact({ icon:'📐', name:'概念方案文档',   type:'核心产出', typeColor:'#15803d', mode:'live',   hasDatum:hasConcept,  snippetText:conceptSnip, editTarget:'shape',   dlKey:'concept' }),
-            artifact({ icon:'🎭', name:'用户体验故事板', type:'叙事工具', typeColor:'#d97706', mode:'live',   hasDatum:hasStory,    snippetText:storySnip,   editTarget:'shape',   dlKey:'story' }),
-            artifact({ icon:'🖼️', name:'UI 原型线框图', type:'设计稿',   typeColor:'#15803d', mode:'upload', hasDatum:false,       promptKey:'uiproto',    beta:true }),
-          ]
-        },
-        {
-          name: '🤖 AI 算法工程师',
-          artifacts: [
-            artifact({ icon:'⚙️', name:'技术架构设计文档',type:'技术文档',typeColor:'#7c3aed', mode:'upload', hasDatum:false,       promptKey:'techarch',   beta:true }),
-            artifact({ icon:'📡', name:'API 对接方案',   type:'技术文档', typeColor:'#7c3aed', mode:'upload', hasDatum:false,       promptKey:'apiplan',    beta:true }),
-          ]
-        }
-      ]
-    },
-    {
-      stage: '✅ Exam', color: '#b91c1c', bg: '#b91c1c0d', border: '#b91c1c35',
-      specialists: [
-        {
-          name: '🧪 测试负责人',
-          artifacts: [
-            artifact({ icon:'📋', name:'可用性测试计划',  type:'测试文档', typeColor:'#b91c1c', mode:'upload', hasDatum:false,       promptKey:'testplan' }),
-            artifact({ icon:'📊', name:'测试数据记录表',  type:'原始数据', typeColor:'#d97706', mode:'upload', hasDatum:false }),
-            artifact({ icon:'📝', name:'测试报告',        type:'核心产出', typeColor:'#15803d', mode:'live',   hasDatum:hasTestReport,snippetText:testSnip,    editTarget:'exam',    dlKey:'testReport' }),
-          ]
-        },
-        {
-          name: '📈 商业分析师',
-          artifacts: [
-            artifact({ icon:'🎤', name:'电梯呈现脚本',   type:'汇报材料', typeColor:'#667eea', mode:'live',   hasDatum:hasPitch,    snippetText:pitchSnip,   editTarget:'exam',    dlKey:'pitch' }),
-            artifact({ icon:'🗺️', name:'商业模式画布 BMC',type:'核心产出',typeColor:'#15803d', mode:'live',   hasDatum:hasBMC,      snippetText:bmcSnip,     editTarget:'exam',    dlKey:'bmc' }),
-            artifact({ icon:'📅', name:'30-60-90天迭代计划',type:'行动计划',typeColor:'#d97706',mode:'live',  hasDatum:hasIteration,snippetText:iterSnip,    editTarget:'exam',    dlKey:'iteration' }),
-          ]
-        }
-      ]
-    }
-  ];
-
-  const doneCount = [hasPOV,hasPersonas,hasStakeh,hasJourney,hasHMW,hasIdeas,hasBestIdea,hasConcept,hasStory,hasTestReport,hasPitch,hasIteration,hasBMC].filter(Boolean).length;
-
-  return `<div class="sc"><div class="sc-hd"><div class="sc-title">🗂️ 专家过程产出物</div><span style="font-size:12px;color:#94a3b8">${doneCount}/13 项已填写 · 各阶段专家产出留存</span></div>
+  return `<div class="sc">
+  <div class="sc-hd">
+    <div class="sc-title">🗂️ 专家过程产出物</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="po-progress-badge">
+        <span style="color:#10b981;font-weight:700">${doneCount}</span>
+        <span style="color:#94a3b8"> / ${totalCount}</span>
+        <span style="color:#64748b;font-size:11px;margin-left:4px">已完成</span>
+      </div>
+      <span style="font-size:12px;color:#94a3b8">各阶段专家产出 · 完整创新过程留存</span>
+    </div>
+  </div>
   <div class="sc-body">
     <div class="po-grid">
-      ${cols.map(col=>`
-        <div class="po-col" style="border:1.5px solid ${col.border};background:${col.bg}">
-          <div class="po-col-hd" style="background:${col.color}">${col.stage}</div>
-          <div class="po-col-body">
-            ${col.specialists.map(sp=>`
-              <div class="po-specialist">
-                <div class="po-spec-name">${sp.name}</div>
-                ${sp.artifacts.join('')}
-              </div>`).join('')}
-          </div>
-        </div>`).join('')}
+      <div class="po-col" style="border:1.5px solid #7c3aed40;background:#7c3aed08">
+        <div class="po-col-hd" style="background:#7c3aed">🔍 Reveal</div>
+        <div class="po-col-body">${revealCards}</div>
+      </div>
+      <div class="po-col" style="border:1.5px solid #d9770640;background:#d9770608">
+        <div class="po-col-hd" style="background:#d97706">💡 Inspire</div>
+        <div class="po-col-body">${inspireCards}</div>
+      </div>
+      <div class="po-col" style="border:1.5px solid #15803d40;background:#15803d08">
+        <div class="po-col-hd" style="background:#15803d">🎨 Shape</div>
+        <div class="po-col-body">${shapeCards}</div>
+      </div>
+      <div class="po-col" style="border:1.5px solid #b91c1c40;background:#b91c1c08">
+        <div class="po-col-hd" style="background:#b91c1c">✅ Exam</div>
+        <div class="po-col-body">${examCards}</div>
+      </div>
     </div>
-  </div></div>`;
+  </div>
+</div>
+
+<!-- AI Prompt 弹窗 -->
+<div id="poPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;width:min(620px,92vw);max-height:80vh;overflow-y:auto;padding:28px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:16px;font-weight:700;color:#f1f5f9">✨ AI Prompt 模板</div>
+      <button onclick="closePoPrompt()" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer">×</button>
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:12px">复制下方 Prompt，粘贴给 AI 助手，将生成内容填入对应编辑器字段。</div>
+    <div id="poPromptContent" style="background:#0f172a;border-radius:10px;padding:16px;font-size:13px;color:#cbd5e1;white-space:pre-wrap;line-height:1.7;max-height:360px;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+      <button onclick="copyPoPrompt()" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer;font-weight:600">📋 复制 Prompt</button>
+      <button onclick="closePoPrompt()" style="background:#334155;color:#cbd5e1;border:none;border-radius:8px;padding:8px 18px;font-size:13px;cursor:pointer">关闭</button>
+    </div>
+  </div>
+</div>`;
 }
 
+// ── 打开编辑器并切换到指定 Tab ──
+function openEditorAtTab(projectId, tab) {
+  if (!projectId) return;
+  openEditor(projectId);
+  setTimeout(() => switchEditorTab(tab), 80);
+}
+
+// ── AI Prompt 弹窗 ──
+function openPoPrompt(key) {
+  const modal = document.getElementById('poPromptModal');
+  if (!modal) return;
+  const content = document.getElementById('poPromptContent');
+  const prompts = buildPoPrompts();
+  content.textContent = prompts[key] || '（暂无此产出物的 Prompt 模板）';
+  modal.style.display = 'flex';
+}
+function closePoPrompt() {
+  const modal = document.getElementById('poPromptModal');
+  if (modal) modal.style.display = 'none';
+}
+function copyPoPrompt() {
+  const content = document.getElementById('poPromptContent');
+  if (!content) return;
+  navigator.clipboard.writeText(content.textContent).then(() => {
+    const btn = document.querySelector('#poPromptModal button');
+    const orig = btn?.textContent;
+    if (btn) { btn.textContent = '✓ 已复制！'; setTimeout(() => btn.textContent = orig, 1500); }
+  });
+}
+function buildPoPrompts() {
+  return {
+    interviewNotes: `你是一位专业的 UX 研究员。请帮我整理用户访谈记录。
+
+背景：[填写你的项目/产品背景]
+访谈对象：[填写受访用户描述]
+访谈问题清单：[可粘贴你的问题列表]
+
+请按以下格式输出结构化访谈记录：
+1. 受访者基本信息（化名、角色、背景）
+2. 核心观点与引言（逐条列出）
+3. 痛点与需求（按重要性排序）
+4. 行为模式与习惯
+5. 情绪反应与关键洞察`,
+
+    affinityMap: `你是一位擅长亲和图分析的 UX 研究员。
+请将以下用户访谈原始笔记整理成结构化的亲和图。
+
+原始笔记：[粘贴你的访谈笔记或观察记录]
+
+请按以下格式输出：
+【聚类主题1：主题名称】
+- 观察点 1
+- 观察点 2
+- 关键洞察
+
+【聚类主题2：主题名称】
+...
+
+最终总结 3-5 条核心洞察。`,
+
+    personas: `你是一位 UX 设计师。请根据以下用户研究数据，创建 2-3 个用户画像。
+
+用户研究数据：[粘贴访谈摘要或亲和图结论]
+
+每个画像请包含：
+- 名字（化名）+ 代表 emoji
+- 职业/角色描述（20字内）
+- 核心痛点（1-2句）
+- 代表性引言（用户原话风格）
+- 行为标签（3-5个）`,
+
+    journeyMap: `你是一位服务设计师。请帮我绘制用户旅程地图。
+
+产品/服务：[描述你的产品]
+目标用户：[描述核心用户群]
+
+请按以下触点设计旅程（每个触点包含用户行为、情绪、机会点）：
+1. 发现需求
+2. 搜索/对比
+3. 决策购买/注册
+4. 首次使用
+5. 持续使用
+6. 分享推荐`,
+
+    hmw: `你是一位创新设计师。请基于以下洞察，生成"我们如何能…（HMW）"问题清单。
+
+核心洞察：[粘贴 POV 或用户研究结论]
+
+请生成 8-10 条 HMW 问题，覆盖以下维度：
+- 用户体验维度
+- 商业价值维度
+- 技术可行性维度
+- 社会影响维度
+
+每条格式：【分类】我们如何能……`,
+
+    crazy8: `你是一位创意设计师，擅长快速发散思维。
+请基于以下挑战，用 Crazy 8 方法生成 8 个创意方向（每个用 2-3 句描述）。
+
+核心挑战 HMW：[填写你的 HMW 问题]
+背景约束：[填写资源/技术/时间约束]
+
+规则：
+1. 每个创意都要显著不同
+2. 包含 1-2 个"疯狂"创意
+3. 每个创意说明核心价值
+
+输出格式：创意1：[名字] — [描述]`,
+
+    ideas: `你是一位创新评估专家。请帮我评估以下创意并排序。
+
+创意列表：[粘贴你的创意]
+评估维度：可行性（技术/资源）、用户价值、创新度、商业潜力
+
+请输出评估矩阵：
+| 创意名称 | 可行性(1-5) | 用户价值(1-5) | 创新度(1-5) | 综合得分 | 推荐理由 |`,
+
+    bestIdea: `你是一位战略顾问。请撰写最佳创意评审报告。
+
+最终选定创意：[填写创意名称和描述]
+备选方案：[简述其他创意]
+选择原因：[填写初步判断]
+
+请生成 300 字的评审报告，包含：
+1. 创意核心价值
+2. 为何优于其他方案（对比分析）
+3. 潜在风险与应对
+4. 建议下一步行动`,
+
+    concept: `你是一位产品经理。请帮我撰写概念方案文档。
+
+创意名称：[填写]
+目标用户：[填写]
+核心 HMW：[填写]
+
+请生成概念方案，包含：
+1. 概念概述（100字）
+2. 用户价值主张
+3. 核心功能清单（6项，每项含图标、名称、描述）
+4. 技术实现路径
+5. 商业价值说明`,
+
+    testReport: `你是一位用户体验研究员。请帮我整理可用性测试报告。
+
+测试方法：[填写测试类型，如：走廊测试/远程测试]
+测试原型：[描述测试的产品/功能]
+测试用户：[N名用户，描述特征]
+
+请按以下格式输出：
+【已验证假设】（每条：发现内容 | 支撑证据）
+【未验证/推翻假设】
+【新发现】（意外洞察）
+【新问题】（需后续研究）`,
+
+    pitch: `你是一位商业沟通专家。请帮我撰写电梯呈现脚本（90秒）。
+
+产品：[填写]
+目标受众：[投资人/客户/管理层]
+
+请按以下结构输出：
+问题陈述（1句）：
+解决方案（1句）：
+目标用户（1句）：
+核心价值（1-2句）：
+行动召唤（1句）：`,
+
+    bmc: `你是一位商业模式设计师。请帮我完善商业模式画布（BMC）。
+
+产品概念：[描述你的产品/服务]
+目标市场：[描述目标用户群]
+
+请填写 BMC 九个模块：
+1. 价值主张：
+2. 客户细分：
+3. 渠道通路：
+4. 客户关系：
+5. 收入来源：
+6. 核心资源：
+7. 关键业务：
+8. 重要伙伴：
+9. 成本结构：`,
+
+    iteration: `你是一位产品经理，擅长敏捷迭代规划。请帮我制定产品迭代路线图。
+
+当前阶段：[描述产品现状]
+验证结论：[粘贴测试报告关键发现]
+资源约束：[团队规模/预算/时间]
+
+请制定 30-60-90 天迭代计划：
+【30天 - 快速验证】具体行动 3-4 条
+【60天 - 深化产品】具体行动 3-4 条
+【90天 - 扩大影响】具体行动 3-4 条`
+  };
+}
+
+// ── 下载产出物为 Markdown ──
+function downloadPoArtifact(key, btnEl) {
+  const id = typeof activeId !== 'undefined' ? activeId : null;
+  const p = id ? getOne(id) : null;
+  if (!p) { alert('请先打开项目'); return; }
+
+  const rv = p.reveal||{}; const ins = p.inspire||{}; const sh = p.shape||{}; const ex = p.exam||{};
+  const pname = p.name || '项目';
+  let md = '', filename = '';
+
+  if (key==='interviewNotes') {
+    md = `# 用户访谈记录\n\n**项目：** ${pname}\n\n${rv.interviewNotes||''}`;
+    filename = 'interview-notes.md';
+  } else if (key==='affinityMap') {
+    md = `# 亲和图 Affinity Map\n\n**项目：** ${pname}\n\n${rv.affinityMap||''}`;
+    filename = 'affinity-map.md';
+  } else if (key==='personas') {
+    md = `# 用户画像 Personas\n\n**项目：** ${pname}\n\n` +
+      (rv.personas||[]).map((q,i)=>`## 画像${i+1}：${q.emoji||'👤'} ${q.name||''}\n- 角色：${q.role||''}\n- 痛点：${q.pain||''}\n- 引言：「${q.quote||''}」\n- 标签：${(q.tags||[]).join('、')}`).join('\n\n');
+    filename = 'personas.md';
+  } else if (key==='journeyMap') {
+    md = `# 用户旅程地图\n\n**项目：** ${pname}\n\n` +
+      (rv.journeyMap||[]).map((j,i)=>`## 触点${i+1}：${j.touchpoint||''}\n- 情绪：${j.emotion||''}\n- 体验：${j.experience||''}`).join('\n\n');
+    filename = 'journey-map.md';
+  } else if (key==='stakeholders') {
+    md = `# 利益相关者矩阵\n\n**项目：** ${pname}\n\n| 名称 | 立场 | 影响力 | 备注 |\n|---|---|---|---|\n` +
+      (rv.stakeholders||[]).map(s=>`| ${s.name||''} | ${s.stance||''} | ${s.impact||''} | ${s.note||''} |`).join('\n');
+    filename = 'stakeholders.md';
+  } else if (key==='hmw') {
+    md = `# HMW 机遇卡片集\n\n**项目：** ${pname}\n\n` +
+      (ins.hmw||[]).map((h,i)=>`${i+1}. 【${h.category||''}】${h.statement||''}`).join('\n');
+    filename = 'hmw-cards.md';
+  } else if (key==='crazy8') {
+    md = `# Crazy 8 创意草图\n\n**项目：** ${pname}\n\n${ins.crazy8||''}`;
+    filename = 'crazy8.md';
+  } else if (key==='ideas') {
+    md = `# 创意评估矩阵\n\n**项目：** ${pname}\n\n| 创意 | 可行性 | 用户价值 | 创新度 | 描述 |\n|---|---|---|---|---|\n` +
+      (ins.ideas||[]).map(i=>`| ${i.name||''} | ${i.feasibility||'-'} | ${i.value||'-'} | ${i.innovation||'-'} | ${i.desc||''} |`).join('\n');
+    filename = 'ideas-matrix.md';
+  } else if (key==='bestIdea') {
+    md = `# 最佳创意评审报告\n\n**项目：** ${pname}\n\n**选定创意：** ${ins.bestIdea||''}\n\n**选择理由：**\n${ins.reason||''}`;
+    filename = 'best-idea-report.md';
+  } else if (key==='concept') {
+    const c = sh.concept||{};
+    md = `# 概念方案文档\n\n**项目：** ${pname}\n\n## ${c.name||'方案名称'}\n\n${c.overview||''}\n\n**用户价值：** ${c.userValue||''}\n\n**技术路径：** ${c.techPlan||''}\n\n**商业价值：** ${c.bizValue||''}\n\n### 核心功能\n` +
+      (c.features||[]).map(f=>`- ${f.icon||''} **${f.name||''}**：${f.desc||''}`).join('\n');
+    filename = 'concept-doc.md';
+  } else if (key==='story') {
+    md = `# 用户体验故事板\n\n**项目：** ${pname}\n\n` +
+      (sh.story||[]).map((s,i)=>`## 第${i+1}幕：${s.act||''}\n**场景：** ${s.scene||''}\n**情感：** ${s.feeling||''}\n**AHA：** ${s.aha||''}`).join('\n\n');
+    filename = 'experience-story.md';
+  } else if (key==='testReport') {
+    const tr = ex.testReport||{};
+    md = `# 可用性测试报告\n\n**项目：** ${pname}\n**测试方法：** ${tr.method||''}\n\n## 已验证\n${(tr.validated||[]).map(x=>`- ${x.finding||x}${x.evidence?' | '+x.evidence:''}`).join('\n')}\n\n## 未验证/推翻\n${(tr.invalidated||[]).map(x=>`- ${x.finding||x}`).join('\n')}\n\n## 新发现\n${(tr.newFindings||[]).map(x=>`- ${x}`).join('\n')}\n\n## 新问题\n${(tr.newProblems||[]).map(x=>`- ${x}`).join('\n')}`;
+    filename = 'test-report.md';
+  } else if (key==='pitch') {
+    const ep = ex.elevatorPitch||{};
+    md = `# 电梯呈现脚本\n\n**项目：** ${pname}\n\n- **问题：** ${ep.problem||''}\n- **方案：** ${ep.solution||''}\n- **用户：** ${ep.users||''}\n- **价值：** ${ep.value||''}\n- **行动：** ${ep.action||''}`;
+    filename = 'elevator-pitch.md';
+  } else if (key==='bmc') {
+    const bm = ex.businessModel||{};
+    md = `# 商业模式画布 BMC\n\n**项目：** ${pname}\n\n| 模块 | 内容 |\n|---|---|\n` +
+      [['价值主张',bm.valueProposition],['客户细分',bm.customerSegments],['渠道通路',bm.channels],
+       ['客户关系',bm.customerRelationships],['收入来源',bm.revenueStreams],['核心资源',bm.keyResources],
+       ['关键业务',bm.keyActivities],['重要伙伴',bm.keyPartners],['成本结构',bm.costStructure]]
+      .map(([k,v])=>`| ${k} | ${v||''} |`).join('\n');
+    filename = 'business-canvas.md';
+  } else if (key==='iteration') {
+    const ip = ex.iterationPlan||{};
+    md = `# 30-60-90天迭代计划\n\n**项目：** ${pname}\n\n## 30天\n${ip.d30||''}\n\n## 60天\n${ip.d60||''}\n\n## 90天\n${ip.d90||''}`;
+    filename = 'iteration-plan.md';
+  } else {
+    alert('暂不支持下载该产出物'); return;
+  }
+
+  const blob = new Blob([md], {type:'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${(pname||'project').replace(/\s+/g,'-')}-${filename}`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
 // ═══════════════ CANVAS: GANTT ═══════════════
 function drawGantt(projects) {
@@ -1837,120 +2093,6 @@ function saveUploadedFile() {
   closeUploadPanel();
 }
 
-// ═══════════════ PROCESS OUTPUTS HELPERS ═══════════════
-
-// AI Prompt 弹窗控制
-let _poPromptKey = null;
-function openPoPrompt(key, artifactName) {
-  _poPromptKey = key;
-  const modal = document.getElementById('poPromptModal');
-  document.getElementById('poPromptTitle').textContent = '🤖 AI 生成：' + artifactName;
-  // 从当前激活项目重新生成 prompt（确保数据最新）
-  const p = getOne(activeId);
-  if (!p) return;
-  const PROMPTS = buildPoPrompts(p);
-  document.getElementById('poPromptText').value = PROMPTS[key] || '（暂无 Prompt 模板）';
-  modal.classList.add('open');
-}
-function closePoPrompt() {
-  document.getElementById('poPromptModal').classList.remove('open');
-  _poPromptKey = null;
-}
-function copyPoPrompt() {
-  const text = document.getElementById('poPromptText').value;
-  navigator.clipboard.writeText(text)
-    .then(() => { toast('✅ Prompt 已复制，粘贴给 AI 即可获得产出内容'); closePoPrompt(); })
-    .catch(() => { toast('⚠️ 复制失败，请手动全选复制'); });
-}
-
-// 构建 Prompt 模板（需要最新 p 数据）
-function buildPoPrompts(p) {
-  const r = p.reveal || {};
-  const i = p.inspire || {};
-  const s = p.shape || {};
-  const e = p.exam || {};
-  return {
-    interview: `你是一名 UX 研究员。请根据以下项目信息，生成一份结构化的用户访谈记录模板，包含：受访者信息、访谈目标、5-8个核心问题、关键观察点和原始引语记录区。\n\n项目名称：${p.name}\n目标用户：${p.targetUser||'（请填写）'}\n项目简报：${p.brief||'（请填写）'}`,
-    affinity:  `你是一名 UX 研究员。请根据以下用户访谈数据或用户画像，生成亲和图（Affinity Map）的分组结构，包含：主题分组名称、每组代表性观点（3-5条）和关键洞察。\n\n项目：${p.name}\nPOV：${r.pov?.user||r.pov?.targetUser||''}${r.pov?.pain||r.pov?.painPoint?'，痛点：'+(r.pov.pain||r.pov.painPoint):''}\n用户画像：${(r.personas||[]).map(pe=>pe.name||'').filter(Boolean).join('、')||'（请填写）'}`,
-    crazy8:    `你是一名创意主持人。请针对以下 HMW 机遇，运用 Crazy 8 方法快速生成 8 个差异化的创意概念（每个用 2-3 句话描述，强调差异性和创新性）。\n\nHMW 机遇：${(r.hmw||[]).slice(0,2).map(h=>h.content||h).filter(Boolean).join('；')||'（请填写 HMW）'}\n最佳创意背景：${i.bestIdea||'（请填写）'}`,
-    competitor:`你是一名战略顾问。请针对以下项目进行竞品对标分析，包含：3-5个核心竞品、各竞品优劣势、差异化机会点和我方独特价值主张。\n\n项目：${p.name}\n目标用户：${p.targetUser||'（请填写）'}\n核心创意：${i.bestIdea||'（请填写）'}`,
-    uiproto:   `你是一名产品设计师。请根据以下概念方案，描述关键界面的线框图设计要点，包含：核心页面列表、每个页面的主要元素和交互逻辑（文字描述，可配合 ASCII 图示）。\n\n概念名称：${s.concept?.name||p.name}\n核心功能：${s.concept?.description||'（请填写）'}\n用户价值：${s.concept?.userValue||'（请填写）'}`,
-    techarch:  `你是一名 AI 算法工程师。请根据以下产品概念，设计技术架构方案，包含：技术栈选型、核心模块划分、数据流设计、AI/算法模块说明和关键技术风险。\n\n概念：${s.concept?.name||p.name}\n技术方案描述：${s.concept?.techSolution||'（请填写）'}`,
-    apiplan:   `你是一名后端工程师。请为以下产品设计 API 对接方案，包含：核心 API 端点列表、请求/响应格式、第三方服务集成方案和安全设计。\n\n产品：${s.concept?.name||p.name}\n技术架构：${s.concept?.techSolution||'（请填写）'}`,
-    testplan:  `你是一名测试负责人。请根据以下概念方案，制定可用性测试计划，包含：测试目标、受测用户标准（5-8人）、测试任务列表（4-6个）、观察维度和成功指标。\n\n概念：${s.concept?.name||p.name}\n核心价值：${s.concept?.userValue||'（请填写）'}`,
-  };
-}
-
-// 摘要展开/折叠
-function togglePoSnippet(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const isOpen = el.style.display === 'block';
-  el.style.display = isOpen ? 'none' : 'block';
-}
-
-// 按产出物类型下载 MD
-function downloadPoArtifact(pid, dlKey) {
-  const p = getOne(pid); if (!p) return;
-  const r = p.reveal || {};
-  const i = p.inspire || {};
-  const s = p.shape || {};
-  const e = p.exam || {};
-  let content = '', filename = '';
-
-  const dl = (text, name) => {
-    const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    a.click();
-    toast('⬇️ 已下载：' + name);
-  };
-
-  switch(dlKey) {
-    case 'pov':
-      content = `# POV 洞察陈述 — ${p.name}\n\n**用户**：${r.pov?.user||r.pov?.targetUser||''}\n\n**痛点**：${r.pov?.pain||r.pov?.painPoint||''}\n\n**洞见**：${r.pov?.insight||''}\n`;
-      dl(content, `${p.name}_POV.md`); break;
-    case 'personas':
-      content = `# 用户画像 — ${p.name}\n\n` + (r.personas||[]).map((pe,idx)=>`## Persona ${idx+1}：${pe.name||''}\n- 年龄/职业：${pe.role||pe.description||''}\n- 核心痛点：${pe.pain||pe.quote||''}\n- 行为特征：${pe.behavior||''}\n`).join('\n');
-      dl(content, `${p.name}_Personas.md`); break;
-    case 'hmw':
-      content = `# HMW 创新机遇 — ${p.name}\n\n` + (r.hmw||[]).map((h,idx)=>`${idx+1}. ${h.content||h}`).join('\n');
-      dl(content, `${p.name}_HMW.md`); break;
-    case 'ideas':
-      content = `# 创意评估矩阵 — ${p.name}\n\n| # | 创意 | 可行性 | 价值性 | 创新性 |\n|---|---|---|---|---|\n` +
-        (i.ideas||[]).map((id,idx)=>`| ${idx+1} | ${id.title||id.name||''} | ${id.feasibility||'-'} | ${id.value||'-'} | ${id.innovation||'-'} |`).join('\n');
-      dl(content, `${p.name}_Ideas.md`); break;
-    case 'bestidea':
-      content = `# 最佳创意 — ${p.name}\n\n**选定创意**：${i.bestIdea||''}\n\n**选定理由**：${i.selectedReason||i.reason||''}\n`;
-      dl(content, `${p.name}_BestIdea.md`); break;
-    case 'concept':
-      content = `# 概念方案 — ${s.concept?.name||p.name}\n\n${s.concept?.description||''}\n\n**用户价值**：${s.concept?.userValue||''}\n**技术方案**：${s.concept?.techSolution||''}\n**商业价值**：${s.concept?.businessValue||''}\n`;
-      dl(content, `${p.name}_Concept.md`); break;
-    case 'story':
-      content = `# 用户体验故事 — ${p.name}\n\n` +
-        (s.experienceStory||[]).map((st,idx)=>`## 第${idx+1}幕：${st.title||''}\n${st.description||''}\n\n*用户感受：${st.userFeeling||''}*\n*AHA时刻：${st.ahaMoment||''}*\n`).join('\n');
-      dl(content, `${p.name}_Story.md`); break;
-    case 'testReport':
-      content = `# 测试报告 — ${p.name}\n\n**有效验证**：${e.testReport?.valid||''}\n**无效假设**：${e.testReport?.invalid||''}\n**新发现**：${e.testReport?.newFindings||''}\n**新问题**：${e.testReport?.newIssues||''}\n`;
-      dl(content, `${p.name}_TestReport.md`); break;
-    case 'pitch':
-      const pit = e.elevatorPitch || e.pitch || {};
-      content = `# 电梯呈现 — ${p.name}\n\n**问题**：${pit.problem||''}\n**方案**：${pit.solution||''}\n**目标用户**：${pit.targetUser||''}\n**核心价值**：${pit.coreValue||''}\n**行动号召**：${pit.callToAction||''}\n`;
-      dl(content, `${p.name}_Pitch.md`); break;
-    case 'iteration':
-      const it = e.iterationPlan || {};
-      content = `# 迭代计划 — ${p.name}\n\n## 30天\n**目标**：${it.day30?.goal||it.d30||''}\n${it.day30?.milestones||''}\n\n## 60天\n**目标**：${it.day60?.goal||it.d60||''}\n${it.day60?.milestones||''}\n\n## 90天\n**目标**：${it.day90?.goal||it.d90||''}\n${it.day90?.milestones||''}\n`;
-      dl(content, `${p.name}_Iteration.md`); break;
-    case 'bmc':
-      const bm = e.businessCanvas || e.businessModel || {};
-      content = `# 商业模式画布 — ${p.name}\n\n| 模块 | 内容 |\n|---|---|\n| 价值主张 | ${bm.valueProposition||''} |\n| 客户细分 | ${bm.customerSegments||''} |\n| 渠道通路 | ${bm.channels||''} |\n| 客户关系 | ${bm.customerRelationships||''} |\n| 收入来源 | ${bm.revenueStreams||''} |\n| 核心资源 | ${bm.keyResources||''} |\n| 关键业务 | ${bm.keyActivities||''} |\n| 重要合作 | ${bm.keyPartnerships||''} |\n| 成本结构 | ${bm.costStructure||''} |\n`;
-      dl(content, `${p.name}_BMC.md`); break;
-    default:
-      toast('⚠️ 暂不支持该产出物的下载');
-  }
-}
-
 // ═══════════════ EXPORT ═══════════════
 function exportPDF(id) {
   const p=getOne(id); if(!p) return;
@@ -2268,6 +2410,24 @@ function editorTabReveal(p) {
     <div id="ef_journey_list">
       ${journeyMap.map((j,i)=>editorJourneyBlock(j,i)).join('')}
     </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">📋 用户访谈记录 Interview Notes</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:6px">粘贴访谈原始笔记、关键引言、观察要点（支持 Markdown 格式）</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <textarea class="ef-textarea" id="ef_interviewNotes" style="min-height:120px;font-family:monospace;font-size:12px" placeholder="## 受访者1：[化名]&#10;- 核心观点：&#10;- 痛点：&#10;- 引言：「」&#10;&#10;## 受访者2：[化名]&#10;...">${esc(rv.interviewNotes||'')}</textarea>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">📊 亲和图 Affinity Map</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:6px">将访谈观察归类整理，每个聚类主题一个段落（支持 Markdown 格式）</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <textarea class="ef-textarea" id="ef_affinityMap" style="min-height:120px;font-family:monospace;font-size:12px" placeholder="## 聚类1：[主题名称]&#10;- 观察点1&#10;- 观察点2&#10;→ 洞察：&#10;&#10;## 聚类2：[主题名称]&#10;...">${esc(rv.affinityMap||'')}</textarea>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -2382,6 +2542,15 @@ function editorTabInspire(p) {
       <div class="ef-group">
         <label class="ef-label">选择理由</label>
         <textarea class="ef-textarea" id="ef_bestReason" placeholder="为什么选择这个创意？从可行性、价值、创新性说明">${esc(ins.reason||'')}</textarea>
+      </div>
+    </div>
+  </div>
+  <div class="editor-section">
+    <div class="editor-section-title">💡 Crazy 8 创意草图</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:6px">8 分钟内产出 8 个创意方向的简要描述（每个 2-3 句话）</div>
+    <div class="ef-row full">
+      <div class="ef-group">
+        <textarea class="ef-textarea" id="ef_crazy8" style="min-height:140px;font-family:monospace;font-size:12px" placeholder="创意1：[名称] — [描述]&#10;&#10;创意2：[名称] — [描述]&#10;&#10;创意3：[名称] — [描述]&#10;&#10;...">${esc(ins.crazy8||'')}</textarea>
       </div>
     </div>
   </div>`;
@@ -2695,6 +2864,9 @@ function saveEditor() {
       experience: bl.querySelector('[data-key="experience"]')?.value||'',
       emotion: bl.querySelector('[data-key="emotion"]')?.value||''
     }));
+    // 新增字段：访谈记录 & 亲和图
+    p.reveal.interviewNotes = v('ef_interviewNotes');
+    p.reveal.affinityMap    = v('ef_affinityMap');
   }
 
   if (tab==='inspire') {
@@ -2716,6 +2888,8 @@ function saveEditor() {
     }));
     p.inspire.bestIdea = v('ef_bestIdea');
     p.inspire.reason = v('ef_bestReason');
+    // 新增字段：Crazy 8
+    p.inspire.crazy8 = v('ef_crazy8');
   }
 
   if (tab==='shape') {
