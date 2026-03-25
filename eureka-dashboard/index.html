@@ -283,42 +283,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 /* ── PROCESS OUTPUTS ── */
 .po-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .po-col{border-radius:14px;overflow:hidden}
-.po-col-hd{padding:12px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px}
-.po-col-body{padding:12px 14px}
-.po-specialist{margin-bottom:12px}
-.po-spec-name{font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.po-artifact{display:flex;align-items:center;gap:8px;padding:6px 8px;background:#fff;border-radius:8px;margin-bottom:4px;border:1px solid #f1f5f9;font-size:11px;color:#374151;transition:.15s}
-.po-artifact:hover{border-color:#c7d2fe;background:#f8faff}
-.po-artifact-icon{font-size:15px;flex-shrink:0}
-.po-artifact-name{flex:1}
-.po-artifact-type{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700}
+.po-col-hd{padding:10px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px}
+.po-col-body{padding:10px 12px 12px}
+.po-specialist{margin-bottom:10px}
+.po-spec-name{
+  font-size:11px;font-weight:800;color:#475569;
+  margin-bottom:6px;padding:3px 0;
+  display:flex;align-items:center;gap:5px;
+  border-bottom:1px dashed #e2e8f0
+}
 
 /* ── PROCESS OUTPUTS v2 (状态感知) ── */
-.po-artifact-v2{display:block;padding:8px 10px;background:#fff;border-radius:10px;margin-bottom:6px;border:1px solid #f1f5f9;transition:.15s}
+.po-artifact-v2{
+  display:block;padding:10px 12px;background:#fff;border-radius:10px;
+  margin-bottom:6px;border:1px solid #f1f5f9;transition:.15s
+}
 .po-artifact-v2:hover{border-color:#c7d2fe;background:#f8faff}
-.po-artifact-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px}
-.po-artifact-body{padding-left:2px}
-.po-has{border-color:#10b98130}
-.po-empty{border-color:#f1f5f9}
-.po-beta{opacity:.75;border-style:dashed}
-/* 状态徽章 */
-.po-status-badge{font-size:10px;padding:1px 7px;border-radius:12px;font-weight:700;flex-shrink:0;margin-left:auto}
-.po-status-done{background:#10b98118;color:#059669}
-.po-status-empty{background:#f1f5f940;color:#94a3b8;border:1px solid #e2e8f0}
-.po-status-beta{background:#f59e0b18;color:#d97706;border:1px dashed #d97706}
-/* 操作按钮 */
-.po-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-.po-btn{border:none;border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-weight:600;transition:.12s}
+/* 第一行：icon + 名称 + 状态徽章（右对齐），不换行 */
+.po-artifact-row1{
+  display:flex;align-items:center;gap:6px;
+  white-space:nowrap;overflow:hidden;min-width:0;margin-bottom:4px
+}
+.po-artifact-icon{font-size:14px;flex-shrink:0;line-height:1}
+.po-artifact-name{
+  flex:1;min-width:0;font-size:12px;font-weight:600;color:#374151;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.po-artifact-status{flex-shrink:0;margin-left:auto}
+/* 第二行：类型标签 */
+.po-artifact-row2{margin-bottom:5px}
+.po-artifact-type{
+  display:inline-block;font-size:10px;padding:1px 8px;border-radius:20px;
+  font-weight:700;white-space:nowrap
+}
+/* 第三行：摘要 */
+.po-snippet{
+  font-size:11px;color:#64748b;background:#f8faff;border-radius:5px;
+  padding:3px 8px;margin-bottom:5px;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;line-height:1.5;word-break:break-all
+}
+/* 第四行：操作按钮 */
+.po-artifact-body{}
+.po-actions{display:flex;gap:5px;flex-wrap:nowrap}
+.po-btn{
+  border:none;border-radius:6px;padding:4px 10px;font-size:11px;
+  cursor:pointer;font-weight:600;transition:.12s;white-space:nowrap
+}
 .po-btn-down{background:#e0f2fe;color:#0369a1}
 .po-btn-down:hover{background:#bae6fd}
 .po-btn-prompt{background:#f3e8ff;color:#7c3aed}
 .po-btn-prompt:hover{background:#e9d5ff}
 .po-btn-edit{background:#dcfce7;color:#15803d}
 .po-btn-edit:hover{background:#bbf7d0}
-/* 内容摘要 */
-.po-snippet{font-size:11px;color:#64748b;background:#f8faff;border-radius:5px;padding:3px 7px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.po-has{border-left:3px solid #10b981;border-color:#10b98130;border-left-color:#10b981}
+.po-empty{border-color:#f1f5f9}
+.po-beta{opacity:.75;border-style:dashed}
+/* 状态徽章 */
+.po-status-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
+.po-status-done{background:#dcfce7;color:#15803d}
+.po-status-empty{background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0}
+.po-status-beta{background:#fef3c7;color:#d97706;border:1px dashed #d97706}
 /* 完成度徽章 */
-.po-progress-badge{display:inline-flex;align-items:center;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:2px 10px;font-size:13px}
+.po-progress-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#f0fdf4;border:1px solid #86efac;border-radius:10px;
+  padding:3px 12px;font-size:13px
+}
 
 /* ── PROJECT EDITOR MODAL ── */
 .editor-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
@@ -1384,12 +1415,14 @@ function htmlProcessOutputs(p) {
       </div>`;
     }
 
-    return `<div class="po-artifact po-artifact-v2 ${has?'po-has':'po-empty'} ${beta?'po-beta':''}">
-      <div class="po-artifact-top">
+    return `<div class="po-artifact-v2 ${has?'po-has':'po-empty'} ${beta?'po-beta':''}">
+      <div class="po-artifact-row1">
         <span class="po-artifact-icon">${icon}</span>
-        <span class="po-artifact-name">${name}</span>
+        <span class="po-artifact-name" title="${name}">${name}</span>
+        <span class="po-artifact-status">${statusBadge}</span>
+      </div>
+      <div class="po-artifact-row2">
         <span class="po-artifact-type" style="background:${typeColor}18;color:${typeColor}">${type}</span>
-        ${statusBadge}
       </div>
       <div class="po-artifact-body">${actions}</div>
     </div>`;

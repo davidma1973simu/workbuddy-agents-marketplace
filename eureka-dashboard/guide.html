@@ -357,12 +357,14 @@
         <div class="flow-content">
           <div class="flow-step">Step 02</div>
           <div class="flow-title">录入 Reveal 阶段</div>
-          <div class="flow-body">在编辑器「Reveal」Tab 中，录入项目简报五要素（背景/机会/假设/范围/团队）、POV 洞察三段式、用户画像（最多 4 个）、利益相关者、场景地图触点。</div>
+          <div class="flow-body">在编辑器「Reveal」Tab 中，录入项目简报五要素（背景/机会/假设/范围/团队）、POV 洞察三段式、用户画像（最多 4 个）、利益相关者、场景地图触点；同时可粘贴<strong>用户访谈记录</strong>原文和<strong>亲和图</strong>聚类分析。</div>
           <div class="flow-tags">
             <span class="flow-tag">POV</span>
             <span class="flow-tag">用户画像</span>
             <span class="flow-tag">利益相关者</span>
             <span class="flow-tag">HMW</span>
+            <span class="flow-tag">访谈记录</span>
+            <span class="flow-tag">亲和图</span>
           </div>
         </div>
       </div>
@@ -373,10 +375,11 @@
         <div class="flow-content">
           <div class="flow-step">Step 03</div>
           <div class="flow-title">录入 Inspire 阶段</div>
-          <div class="flow-body">在「Inspire」Tab 中添加创意方案（可打分：可行性/价值性/创新性），标记最佳创意并填写选择理由。系统自动生成评估矩阵和高亮最佳方案。</div>
+          <div class="flow-body">在「Inspire」Tab 中添加创意方案（可打分：可行性/价值性/创新性），标记最佳创意并填写选择理由；还可录入 <strong>Crazy 8 草图</strong>——用文字描述 8 个快速发散方向，留存头脑风暴过程。系统自动生成评估矩阵和高亮最佳方案。</div>
           <div class="flow-tags">
             <span class="flow-tag">创意列表</span>
             <span class="flow-tag">评分矩阵</span>
+            <span class="flow-tag">Crazy 8</span>
             <span class="flow-tag">最佳创意</span>
           </div>
         </div>
@@ -410,6 +413,22 @@
             <span class="flow-tag">电梯呈现</span>
             <span class="flow-tag">迭代计划</span>
             <span class="flow-tag">商业画布</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #475569, #94a3b8);">🗂️</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 05.5</div>
+          <div class="flow-title">查看专家过程产出物</div>
+          <div class="flow-body">右侧最底部「🗂️ 专家过程产出物」面板，按四阶段列出全部 15 项产出物。每项卡片独占一行：<strong>名称</strong>靠左、<strong>状态徽章</strong>（✓ 已填写 / 待填写 / BETA）靠右；第二行显示产出物类型标签；第三行为内容摘要（2 行截断）；第四行操作按钮：⬇ 下载 MD、✨ AI 优化（Prompt 模板）、✏ 编辑（直跳对应 Tab）。完成度进度条显示在标题右侧（如 11 / 15 已完成）。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">15 项产出物</span>
+            <span class="flow-tag">状态感知</span>
+            <span class="flow-tag">下载 MD</span>
+            <span class="flow-tag">AI Prompt</span>
           </div>
         </div>
       </div>
@@ -451,6 +470,8 @@
           <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>利益相关者地图</div>
           <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>场景地图触点（最多 8 个）</div>
           <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>HMW 创新机遇（最多 5 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#9f67fa;"></span>用户访谈记录（原始素材）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#9f67fa;"></span>亲和图 Affinity Map（洞察聚类）</div>
         </div>
       </div>
 
@@ -465,6 +486,7 @@
           <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>创意列表（含评分：可行/价值/创新）</div>
           <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>评估矩阵（自动生成对比表）</div>
           <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>最佳创意 + 选择理由</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#fbbf24;"></span>Crazy 8 创意草图（8 方向快速发散）</div>
         </div>
       </div>
 
@@ -523,13 +545,13 @@
         </tr>
         <tr>
           <td><strong>录入 Reveal</strong></td>
-          <td><span class="io-badge io-in">✍️ 输入</span> 项目简报五要素、POV、画像、利益相关者、触点、HMW</td>
-          <td><span class="io-badge io-out">✅ 输出</span> 洞察卡片、POV 引用块、画像卡片、场景横向地图、HMW 列表</td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目简报五要素、POV、画像、利益相关者、触点、HMW、用户访谈记录、亲和图</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 洞察卡片、POV 引用块、画像卡片、场景横向地图、HMW 列表；产出物面板显示访谈/亲和图状态</td>
         </tr>
         <tr>
           <td><strong>录入 Inspire</strong></td>
-          <td><span class="io-badge io-in">✍️ 输入</span> 创意标题、描述、三项评分（1–5）、最佳创意标记与理由</td>
-          <td><span class="io-badge io-out">✅ 输出</span> 可视化评分对比表、最佳创意高亮卡片</td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 创意标题、描述、三项评分（1–5）、最佳创意标记与理由、Crazy 8 草图文字描述</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 可视化评分对比表、最佳创意高亮卡片；产出物面板显示 Crazy 8 状态</td>
         </tr>
         <tr>
           <td><strong>录入 Shape</strong></td>
@@ -568,6 +590,52 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- 专家过程产出物专题 -->
+    <div style="margin-top:40px; background:#fff; border-radius:16px; border:1.5px solid #e0e7ff; overflow:hidden; box-shadow:0 4px 24px rgba(102,126,234,.08);">
+      <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">FEATURE SPOTLIGHT</div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">🗂️ 专家过程产出物面板</div>
+        </div>
+        <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;">共 15 项产出物</div>
+      </div>
+      <div style="padding:24px 28px;">
+        <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:20px;">
+          每个项目仪表板底部有一个<strong>「专家过程产出物」</strong>面板，按四阶段（Reveal / Inspire / Shape / Exam）分四列展示全部 15 项创新过程产出。该面板实时感知数据状态，是项目过程留存和 AI 协作的核心入口。
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;">
+          <div style="background:#f8faff;border-radius:12px;padding:16px;border:1.5px solid #e0e7ff;">
+            <div style="font-size:13px;font-weight:800;color:#4f46e5;margin-bottom:8px;">📐 卡片排版结构</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              第 1 行：图标 + 名称（超长省略）+ 状态徽章<br>
+              第 2 行：产出物类型标签（彩色）<br>
+              第 3 行：内容摘要（最多 2 行截断）<br>
+              第 4 行：操作按钮（下载 / AI / 编辑）
+            </div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:12px;padding:16px;border:1.5px solid #a7f3d0;">
+            <div style="font-size:13px;font-weight:800;color:#15803d;margin-bottom:8px;">✓ 三种状态</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              <span style="background:#dcfce7;color:#15803d;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">✓ 已填写</span> 左侧绿色竖线 + 绿色边框<br>
+              <span style="background:#f1f5f9;color:#94a3b8;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">待填写</span> 灰色边框，显示「去填写」按钮<br>
+              <span style="background:#fef3c7;color:#d97706;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">BETA</span> 虚线边框，即将支持
+            </div>
+          </div>
+          <div style="background:#fdf4ff;border-radius:12px;padding:16px;border:1.5px solid #e9d5ff;">
+            <div style="font-size:13px;font-weight:800;color:#7c3aed;margin-bottom:8px;">⚡ 三大操作</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              <strong>⬇ 下载</strong>：将该产出物导出为 Markdown 文件<br>
+              <strong>✨ AI 优化</strong>：弹出专属 Prompt 模板，复制给 AI<br>
+              <strong>✏ 编辑</strong>：直接跳转到对应编辑器 Tab
+            </div>
+          </div>
+        </div>
+        <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:12px;color:#92400e;line-height:1.7;">
+          💡 <strong>小贴士</strong>：每次在编辑器中保存数据后，该面板会自动更新状态。右上角的进度数字（如 <span style="font-weight:700;color:#10b981;">11</span> / 15 已完成）可帮助你追踪整个项目过程的完整度。
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ⑥ 学员体验 -->
@@ -980,6 +1048,24 @@
           <td>✅ Exam Specialist</td>
           <td><code>BusinessModel_Painter</code></td>
           <td>概念方案 + 电梯呈现 + 目标市场</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 用户访谈记录</strong><br><span style="color:var(--muted);font-size:11px;">原始访谈文本</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>受访者角色描述 + 访谈问题 + 关键发现</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 亲和图</strong><br><span style="color:var(--muted);font-size:11px;">洞察聚类分析</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>访谈记录 / 观察便利贴，要求归类为 3–5 个主题</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › Crazy 8 草图</strong><br><span style="color:var(--muted);font-size:11px;">8 方向快速发散</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>NCO_Crosslinker</code></td>
+          <td>HMW 机遇（1–2 条），要求产出 8 个差异化方向</td>
         </tr>
       </tbody>
     </table>
