@@ -281,11 +281,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .test-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-right:4px;margin-bottom:4px}
 
 /* ── PROCESS OUTPUTS ── */
-.po-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.po-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .po-col{border-radius:14px;overflow:hidden}
 .po-col-hd{padding:10px 14px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px}
 .po-col-body{padding:10px 12px 12px}
-.po-specialist{margin-bottom:10px}
+.po-col-inner{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.po-specialist{margin-bottom:0}
 .po-spec-name{
   font-size:11px;font-weight:800;color:#475569;
   margin-bottom:6px;padding:3px 0;
@@ -295,40 +296,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 
 /* ── PROCESS OUTPUTS v2 (状态感知) ── */
 .po-artifact-v2{
-  display:block;padding:10px 12px;background:#fff;border-radius:10px;
-  margin-bottom:6px;border:1px solid #f1f5f9;transition:.15s
+  display:block;padding:8px 10px;background:#fff;border-radius:8px;
+  margin-bottom:5px;border:1px solid #f1f5f9;transition:.15s;min-width:0
 }
 .po-artifact-v2:hover{border-color:#c7d2fe;background:#f8faff}
-/* 第一行：icon + 名称 + 状态徽章（右对齐），不换行 */
+/* 第一行：icon + 名称（弹性截断） + 状态徽章 */
 .po-artifact-row1{
-  display:flex;align-items:center;gap:6px;
-  white-space:nowrap;overflow:hidden;min-width:0;margin-bottom:4px
+  display:flex;align-items:center;gap:5px;
+  margin-bottom:4px;min-width:0;overflow:hidden
 }
-.po-artifact-icon{font-size:14px;flex-shrink:0;line-height:1}
+.po-artifact-icon{font-size:13px;flex-shrink:0;line-height:1}
 .po-artifact-name{
   flex:1;min-width:0;font-size:12px;font-weight:600;color:#374151;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.po-artifact-status{flex-shrink:0;margin-left:auto}
-/* 第二行：类型标签 */
-.po-artifact-row2{margin-bottom:5px}
+.po-artifact-status{flex-shrink:0}
+/* 第二行：类型 + 摘要合行 */
+.po-artifact-row2{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;min-width:0
+}
 .po-artifact-type{
-  display:inline-block;font-size:10px;padding:1px 8px;border-radius:20px;
+  flex-shrink:0;font-size:10px;padding:1px 7px;border-radius:20px;
   font-weight:700;white-space:nowrap
 }
-/* 第三行：摘要 */
-.po-snippet{
-  font-size:11px;color:#64748b;background:#f8faff;border-radius:5px;
-  padding:3px 8px;margin-bottom:5px;
-  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
-  overflow:hidden;line-height:1.5;word-break:break-all
+.po-snippet-inline{
+  flex:1;min-width:0;font-size:11px;color:#94a3b8;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-/* 第四行：操作按钮 */
+/* 操作按钮行 */
 .po-artifact-body{}
-.po-actions{display:flex;gap:5px;flex-wrap:nowrap}
+.po-actions{display:flex;gap:4px;flex-wrap:nowrap;align-items:center}
 .po-btn{
-  border:none;border-radius:6px;padding:4px 10px;font-size:11px;
-  cursor:pointer;font-weight:600;transition:.12s;white-space:nowrap
+  border:none;border-radius:5px;padding:3px 8px;font-size:11px;
+  cursor:pointer;font-weight:600;transition:.12s;white-space:nowrap;flex-shrink:0
 }
 .po-btn-down{background:#e0f2fe;color:#0369a1}
 .po-btn-down:hover{background:#bae6fd}
@@ -336,14 +336,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .po-btn-prompt:hover{background:#e9d5ff}
 .po-btn-edit{background:#dcfce7;color:#15803d}
 .po-btn-edit:hover{background:#bbf7d0}
-.po-has{border-left:3px solid #10b981;border-color:#10b98130;border-left-color:#10b981}
+.po-has{border-left:3px solid #10b981;border-color:#d1fae5;border-left-color:#10b981}
 .po-empty{border-color:#f1f5f9}
-.po-beta{opacity:.75;border-style:dashed}
+.po-beta{opacity:.7;border-style:dashed}
 /* 状态徽章 */
-.po-status-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700}
+.po-status-badge{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;white-space:nowrap}
 .po-status-done{background:#dcfce7;color:#15803d}
-.po-status-empty{background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0}
-.po-status-beta{background:#fef3c7;color:#d97706;border:1px dashed #d97706}
+.po-status-empty{background:#f1f5f9;color:#94a3b8}
+.po-status-beta{background:#fef3c7;color:#d97706}
 /* 完成度徽章 */
 .po-progress-badge{
   display:inline-flex;align-items:center;gap:4px;
@@ -1401,10 +1401,9 @@ function htmlProcessOutputs(p) {
       actions = `<span style="font-size:11px;color:#94a3b8;font-style:italic">即将支持</span>`;
     } else if (has) {
       statusBadge = `<span class="po-status-badge po-status-done">✓ 已填写</span>`;
-      const snip = snippet ? `<div class="po-snippet">${esc(snippet.slice(0,60))}${snippet.length>60?'…':''}</div>` : '';
-      actions = `${snip}<div class="po-actions">
+      actions = `<div class="po-actions">
         <button class="po-btn po-btn-down" onclick="downloadPoArtifact('${key}',this)" title="下载 MD">⬇ 下载</button>
-        <button class="po-btn po-btn-prompt" onclick="openPoPrompt('${key}')" title="AI 辅助">✨ AI 优化</button>
+        <button class="po-btn po-btn-prompt" onclick="openPoPrompt('${key}')" title="AI 辅助">✨ AI</button>
         ${editTab?`<button class="po-btn po-btn-edit" onclick="openEditorAtTab('${p.id||''}','${editTab}')" title="编辑">✏ 编辑</button>`:''}
       </div>`;
     } else {
@@ -1423,6 +1422,7 @@ function htmlProcessOutputs(p) {
       </div>
       <div class="po-artifact-row2">
         <span class="po-artifact-type" style="background:${typeColor}18;color:${typeColor}">${type}</span>
+        ${snippet&&has ? `<span class="po-snippet-inline">${esc(snippet.slice(0,40))}${snippet.length>40?'…':''}</span>` : ''}
       </div>
       <div class="po-artifact-body">${actions}</div>
     </div>`;
@@ -1545,19 +1545,19 @@ function htmlProcessOutputs(p) {
     <div class="po-grid">
       <div class="po-col" style="border:1.5px solid #7c3aed40;background:#7c3aed08">
         <div class="po-col-hd" style="background:#7c3aed">🔍 Reveal</div>
-        <div class="po-col-body">${revealCards}</div>
+        <div class="po-col-body"><div class="po-col-inner">${revealCards}</div></div>
       </div>
       <div class="po-col" style="border:1.5px solid #d9770640;background:#d9770608">
         <div class="po-col-hd" style="background:#d97706">💡 Inspire</div>
-        <div class="po-col-body">${inspireCards}</div>
+        <div class="po-col-body"><div class="po-col-inner">${inspireCards}</div></div>
       </div>
       <div class="po-col" style="border:1.5px solid #15803d40;background:#15803d08">
         <div class="po-col-hd" style="background:#15803d">🎨 Shape</div>
-        <div class="po-col-body">${shapeCards}</div>
+        <div class="po-col-body"><div class="po-col-inner">${shapeCards}</div></div>
       </div>
       <div class="po-col" style="border:1.5px solid #b91c1c40;background:#b91c1c08">
         <div class="po-col-hd" style="background:#b91c1c">✅ Exam</div>
-        <div class="po-col-body">${examCards}</div>
+        <div class="po-col-body"><div class="po-col-inner">${examCards}</div></div>
       </div>
     </div>
   </div>
