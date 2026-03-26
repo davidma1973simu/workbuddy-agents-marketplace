@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persona Lab · 创新虚拟人市场</title>
+<style>
+/* ─────────────────────────────────────────
+   CSS Variables & Reset
+───────────────────────────────────────── */
+:root {
+  --bg:        #0f1117;
+  --bg2:       #161b27;
+  --bg3:       #1e2535;
+  --border:    #2a3347;
+  --text:      #e2e8f0;
+  --text2:     #94a3b8;
+  --text3:     #64748b;
+  --accent:    #6366f1;
+  --accent2:   #818cf8;
+  --green:     #10b981;
+  --orange:    #f59e0b;
+  --red:       #ef4444;
+  --pink:      #ec4899;
+  --teal:      #14b8a6;
+  --radius:    12px;
+  --radius-sm: 8px;
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  --sidebar-w: 220px;
+  --nav-h:     58px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, textarea { font-family: inherit; }
+
+/* ─────────────────────────────────────────
+   Layout
+───────────────────────────────────────── */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* NAV */
+nav {
+  height: var(--nav-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 8px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+.nav-logo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: -0.3px;
+  margin-right: 12px;
+}
+.nav-logo span { color: var(--text2); font-weight: 400; font-size: 13px; margin-left: 6px; }
+.nav-tabs { display: flex; gap: 4px; }
+.nav-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text2);
+  transition: all .2s;
+}
+.nav-tab:hover { background: var(--bg3); color: var(--text); }
+.nav-tab.active { background: var(--accent); color: #fff; }
+.nav-spacer { flex: 1; }
+.nav-btn {
+  padding: 7px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text2);
+  transition: all .2s;
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.nav-btn.primary:hover { background: var(--accent2); }
+
+/* BODY */
+.body-wrap {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+aside {
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 16px 12px;
+}
+.sidebar-section { margin-bottom: 20px; }
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.tag-group { display: flex; flex-direction: column; gap: 2px; }
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .15s;
+  font-size: 13px;
+  color: var(--text2);
+}
+.tag-item:hover { background: var(--bg3); }
+.tag-item input[type=checkbox] {
+  accent-color: var(--accent);
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+}
+.tag-item.checked { color: var(--text); }
+.tag-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 4px 6px;
+}
+.tag-add input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+}
+.tag-add input:focus { border-color: var(--accent); }
+.tag-add button {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  transition: background .15s;
+}
+.tag-add button:hover { background: var(--accent2); }
+
+/* MAIN */
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─────────────────────────────────────────
+   Theme Input Panel
+───────────────────────────────────────── */
+.theme-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.theme-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-panel-title .icon { font-size: 18px; }
+.theme-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.theme-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+}
+.theme-input:focus { border-color: var(--accent); }
+.theme-input::placeholder { color: var(--text3); }
+.theme-textarea {
+  resize: none;
+  height: 60px;
+  line-height: 1.5;
+}
+.generate-btn {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.generate-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,.4); }
+.generate-btn:active { transform: translateY(0); }
+.generate-btn.loading { opacity: .7; pointer-events: none; }
+.generate-btn .spin { animation: spin .8s linear infinite; display: inline-block; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+/* 标签确认区 */
+.tag-confirm {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-top: 10px;
+  display: none;
+}
+.tag-confirm.visible { display: block; }
+.tag-confirm-title {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tag-chips-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.tag-chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.tag-chip.industry { background: rgba(99,102,241,.15); border-color: var(--accent); color: var(--accent2); }
+.tag-chip.scene    { background: rgba(20,184,166,.15); border-color: var(--teal); color: var(--teal); }
+.tag-chip.theme    { background: rgba(245,158,11,.15); border-color: var(--orange); color: var(--orange); }
+.tag-chip .remove { opacity: .6; font-size: 11px; }
+.tag-chip .remove:hover { opacity: 1; }
+.confirm-btns { display: flex; gap: 8px; margin-top: 10px; }
+.confirm-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all .15s;
+}
+.confirm-btn.ok { background: var(--accent); color: #fff; }
+.confirm-btn.ok:hover { background: var(--accent2); }
+.confirm-btn.cancel { background: var(--bg); border: 1px solid var(--border); color: var(--text2); }
+.confirm-btn.cancel:hover { border-color: var(--text2); }
+
+/* ─────────────────────────────────────────
+   Category Tabs
+───────────────────────────────────────── */
+.cat-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg2);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.cat-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text2);
+  text-align: center;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.cat-tab:hover { background: var(--bg3); color: var(--text); }
+.cat-tab.active { background: var(--bg3); color: var(--text); font-weight: 600; }
+.cat-tab .badge {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────
+   Persona Cards Grid
+───────────────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.empty-state .big { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; line-height: 1.6; }
+
+/* ─────────────────────────────────────────
+   Persona Card
+───────────────────────────────────────── */
+.persona-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all .2s;
+  position: relative;
+}
+.persona-card:hover { border-color: #3a4560; transform: translateY(-2px); box-shadow: var(--shadow); }
+
+/* 顶部色带（按类型区分颜色） */
+.card-stripe { height: 4px; }
+.type-target_user      .card-stripe { background: linear-gradient(90deg, var(--accent), #8b5cf6); }
+.type-extreme_user     .card-stripe { background: linear-gradient(90deg, var(--pink), #f97316); }
+.type-stakeholder      .card-stripe { background: linear-gradient(90deg, var(--teal), var(--green)); }
+.type-decision_maker   .card-stripe { background: linear-gradient(90deg, var(--orange), #f97316); }
+.type-resource_provider .card-stripe { background: linear-gradient(90deg, #06b6d4, var(--teal)); }
+
+.card-body { padding: 14px; }
+
+/* 卡片头部 */
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--bg3);
+}
+.card-identity { flex: 1; min-width: 0; }
+.card-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.card-sub  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.card-type-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg3);
+  color: var(--text3);
+  white-space: nowrap;
+}
+.edited-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(245,158,11,.15);
+  color: var(--orange);
+  margin-left: 4px;
+}
+
+/* 卡片模块区 */
+.card-module { margin-bottom: 8px; }
+.card-module-label {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.card-module-content {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.card-module-content.highlight { color: var(--text); }
+
+/* Quote */
+.card-quote {
+  background: var(--bg3);
+  border-left: 3px solid var(--accent);
+  padding: 8px 10px;
+  border-radius: 0 6px 6px 0;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  font-style: italic;
+  margin: 8px 0;
+}
+
+/* 摘要 */
+.card-summary {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+/* 标签行 */
+.card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.card-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg3);
+  color: var(--text3);
+}
+
+/* 影响力/量化指标 */
+.card-metrics { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 60px;
+}
+.metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.metric-value.positive { color: var(--green); }
+.metric-value.negative { color: var(--red); }
+.metric-value.neutral  { color: var(--text3); }
+.metric-value.level1 { color: #94a3b8; }
+.metric-value.level2 { color: var(--orange); }
+.metric-value.level3 { color: var(--green); }
+.metric-label { font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+/* 极端用户连线标识 */
+.extreme-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+.extreme-link .arrow { color: var(--pink); }
+.extreme-link .target-name {
+  color: var(--accent2);
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+/* 卡片底部操作 */
+.card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,.1);
+}
+.card-action-btn {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  transition: all .15s;
+}
+.card-action-btn:hover { border-color: var(--accent); color: var(--accent2); background: rgba(99,102,241,.08); }
+.card-action-btn.add-to-group { background: rgba(99,102,241,.12); border-color: var(--accent); color: var(--accent2); }
+.card-action-btn.added { background: rgba(16,185,129,.12); border-color: var(--green); color: var(--green); }
+.card-action-btn.restore { color: var(--orange); border-color: var(--orange); }
+.card-action-btn.restore:hover { background: rgba(245,158,11,.1); }
+
+/* ─────────────────────────────────────────
+   Detail Drawer
+───────────────────────────────────────── */
+.drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+  display: none;
+  backdrop-filter: blur(2px);
+}
+.drawer-overlay.open { display: block; }
+.drawer {
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  width: 460px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  z-index: 201;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.drawer-title { flex: 1; font-size: 16px; font-weight: 600; }
+.drawer-close {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.drawer-close:hover { background: var(--border); color: var(--text); }
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+.drawer-section { margin-bottom: 20px; }
+.drawer-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.field-label { font-size: 12px; color: var(--text3); }
+.field-value {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  padding: 6px 10px;
+  background: var(--bg3);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color .15s;
+  min-height: 36px;
+  white-space: pre-wrap;
+}
+.field-value:hover { border-color: var(--border); }
+.field-value.editing { border-color: var(--accent); outline: none; background: var(--bg); }
+.field-edit-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  line-height: 1.5;
+  resize: none;
+  font-family: inherit;
+}
+.drawer-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.drawer-footer-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  transition: all .15s;
+}
+.drawer-footer-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.drawer-footer-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.drawer-footer-btn.primary:hover { background: var(--accent2); }
+.drawer-footer-btn.restore { color: var(--orange); border-color: var(--orange); }
+.drawer-footer-btn.restore:hover { background: rgba(245,158,11,.1); }
+
+/* ─────────────────────────────────────────
+   Group Tray (底部角色组托盘)
+───────────────────────────────────────── */
+.group-tray {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  transform: translateY(100%);
+  transition: transform .3s;
+  z-index: 150;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.group-tray.open { transform: translateY(0); }
+.tray-title { font-size: 13px; color: var(--text2); white-space: nowrap; }
+.tray-chips { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; overflow: hidden; max-height: 40px; }
+.tray-chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tray-chip .remove { cursor: pointer; color: var(--text3); }
+.tray-chip .remove:hover { color: var(--red); }
+.tray-actions { display: flex; gap: 8px; }
+.tray-btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tray-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.tray-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tray-btn.primary:hover { background: var(--accent2); }
+
+/* ─────────────────────────────────────────
+   Loading Skeleton
+───────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 50%, var(--bg3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  height: 220px;
+}
+
+/* ─────────────────────────────────────────
+   Responsive
+───────────────────────────────────────── */
+@media (max-width: 768px) {
+  aside { display: none; }
+  .drawer { width: 100%; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  nav { padding: 0 12px; }
+  main { padding: 12px; }
+}
+
+/* ─────────────────────────────────────────
+   Toast Notification
+───────────────────────────────────────── */
+.toast-wrap {
+  position: fixed;
+  top: 70px; right: 20px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  animation: slideIn .2s ease;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toast.success { border-color: var(--green); }
+.toast.error   { border-color: var(--red); }
+@keyframes slideIn { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Persona Lab <span>创新虚拟人市场</span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchMode('generate')" id="tab-generate">✨ AI 生成</button>
+      <button class="nav-tab" onclick="switchMode('browse')" id="tab-browse">🗂 市场浏览</button>
+      <button class="nav-tab" onclick="switchMode('groups')" id="tab-groups">📦 我的角色组</button>
+    </div>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn" onclick="window.open('../eureka-dashboard/','_blank')">← 返回 Eureka</button>
+  </nav>
+
+  <div class="body-wrap">
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">行业</div>
+        <div class="tag-group" id="tag-list-industry"></div>
+        <div class="tag-add">
+          <input type="text" id="input-industry" placeholder="添加行业…" onkeydown="handleTagEnter(event,'industry')">
+          <button onclick="addTag('industry')">+</button>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">场景</div>
+        <div class="tag-group" id="tag-list-scene"></div>
+        <div class="tag-add">
+          <input type="text" id="input-scene" placeholder="添加场景…" onkeydown="handleTagEnter(event,'scene')">
+          <button onclick="addTag('scene')">+</button>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">主题</div>
+        <div class="tag-group" id="tag-list-theme"></div>
+        <div class="tag-add">
+          <input type="text" id="input-theme" placeholder="添加主题…" onkeydown="handleTagEnter(event,'theme')">
+          <button onclick="addTag('theme')">+</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="main-content">
+
+      <!-- 模式B：AI 生成 -->
+      <div id="panel-generate">
+        <div class="theme-panel">
+          <div class="theme-panel-title">
+            <span class="icon">✨</span>
+            输入项目主题，一键生成五类角色组
+          </div>
+          <div class="theme-row">
+            <input class="theme-input" id="input-theme-main"
+              placeholder="项目主题，例如：跨国鞋服零售门店·术语认知过载导致成交率低"
+              onkeydown="if(event.key==='Enter')startGenerate()">
+            <button class="generate-btn" id="generate-btn" onclick="startGenerate()">
+              <span id="generate-icon">✨</span> 一键生成
+            </button>
+          </div>
+          <textarea class="theme-input theme-textarea" id="input-background"
+            placeholder="补充背景（选填）：例如用户入店后面对大量款式术语，导致决策困难、成交率低"></textarea>
+          <textarea class="theme-input theme-textarea" id="input-assumption"
+            placeholder="用户假设（选填）：例如主力人群是25-35岁都市女性，非专业运动需求，兼顾日常穿搭" style="margin-top:8px"></textarea>
+
+          <!-- 标签确认区 -->
+          <div class="tag-confirm" id="tag-confirm-panel">
+            <div class="tag-confirm-title">
+              <span>🏷 AI 识别的标签 · 点击删除，或手动添加</span>
+              <button onclick="confirmTagsAndGenerate()" class="confirm-btn ok" style="padding:3px 12px;font-size:12px">确认并生成角色 →</button>
+            </div>
+            <div id="confirm-tags-row" class="tag-chips-row"></div>
+          </div>
+        </div>
+
+        <!-- 生成结果区 -->
+        <div id="generate-result"></div>
+      </div>
+
+      <!-- 模式A：市场浏览 -->
+      <div id="panel-browse" style="display:none">
+        <div class="cat-tabs">
+          <button class="cat-tab active" onclick="switchCatTab('user')" id="cattab-user">
+            👤 用户类 <span class="badge" id="badge-user">0</span>
+          </button>
+          <button class="cat-tab" onclick="switchCatTab('stakeholder')" id="cattab-stakeholder">
+            🌐 生态类 <span class="badge" id="badge-stakeholder">0</span>
+          </button>
+          <button class="cat-tab" onclick="switchCatTab('decision')" id="cattab-decision">
+            🎯 权力类 <span class="badge" id="badge-decision">0</span>
+          </button>
+          <button class="cat-tab" onclick="switchCatTab('resource')" id="cattab-resource">
+            🔧 资源类 <span class="badge" id="badge-resource">0</span>
+          </button>
+        </div>
+        <div id="browse-cards" class="cards-grid"></div>
+      </div>
+
+      <!-- 模式C：我的角色组 -->
+      <div id="panel-groups" style="display:none">
+        <div id="groups-list"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 详情抽屉 -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="persona-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawer-title">角色详情</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div class="drawer-footer">
+    <button class="drawer-footer-btn restore" id="drawer-restore-btn" onclick="restoreDrawerPersona()" style="display:none">↺ 恢复原版</button>
+    <button class="drawer-footer-btn" onclick="addToGroupFromDrawer()">📦 加入角色组</button>
+    <button class="drawer-footer-btn primary" onclick="closeDrawer()">完成</button>
+  </div>
+</div>
+
+<!-- 角色组托盘 -->
+<div class="group-tray" id="group-tray">
+  <div class="tray-title">📦 角色组</div>
+  <div class="tray-chips" id="tray-chips"></div>
+  <div class="tray-actions">
+    <button class="tray-btn" onclick="clearGroup()">清空</button>
+    <button class="tray-btn" onclick="exportGroup()">导出</button>
+    <button class="tray-btn primary" onclick="syncToEureka()">同步到 Eureka</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Scripts -->
+<script src="js/data-schema.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
