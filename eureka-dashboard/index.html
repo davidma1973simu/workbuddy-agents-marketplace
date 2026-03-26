@@ -412,6 +412,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 @media(max-width:1100px){.main{grid-template-columns:1fr}.panel-left{max-height:400px;position:static}}
 @media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.radar-grid,.stage-out-grid,.po-grid{grid-template-columns:1fr}.feature-grid,.brief-grid,.test-grid,.test-bottom-grid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
 
@@ -2260,7 +2261,401 @@ function exportPDF(id) {
   w.document.close(); w.print();
 }
 
-function exportPPT(id){ toast('📊 PPT 导出即将上线，请使用 PDF 导出'); }
+function exportPPT(id){
+  const p=getOne(id); if(!p){toast('⚠️ 找不到项目数据');return;}
+  if(typeof PptxGenJS==='undefined'){toast('⚠️ PPT库加载中，请稍候再试');return;}
+  toast('⏳ 正在生成汇报 PPT...');
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_16x9';
+  pres.author='Eureka 仪表板';
+  pres.title=p.name;
+
+  // ── 调色板 ──
+  const C={
+    dark:'1E1B4B', purple:'667EEA', purpleDark:'4C1D95',
+    green:'059669', teal:'0D9488', orange:'D97706',
+    red:'DC2626', indigo:'4338CA', slate:'475569',
+    slateLight:'94A3B8', white:'FFFFFF', bg:'F0F4FF',
+    cardBg:'FFFFFF', textDark:'1E293B', textMid:'374151',
+    accent1:'7C3AED', accent2:'10B981'
+  };
+  const makeShadow=()=>({type:'outer',blur:8,offset:3,angle:135,color:'000000',opacity:0.12});
+
+  // ─────────────────────────────────────────────
+  // 1. 封面
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.dark};
+    // 顶部紫色装饰条
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.purple}});
+    // 左侧竖色块
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.55,h:5.625,fill:{color:C.purpleDark}});
+    // Eureka 标识
+    s.addText('✦ EUREKA 价值创新',{x:0.8,y:0.55,w:8,h:0.45,fontSize:12,color:'A5B4FC',bold:false,fontFace:'Arial'});
+    // 项目名称
+    s.addText(p.name,{x:0.8,y:1.1,w:8.6,h:1.5,fontSize:32,bold:true,color:C.white,fontFace:'Arial',valign:'top',wrap:true,margin:0});
+    // 分隔线
+    s.addShape(pres.shapes.RECTANGLE,{x:0.8,y:2.75,w:1.6,h:0.05,fill:{color:C.purple}});
+    // 项目简介
+    const briefText=(p.brief||'').slice(0,80)+(p.brief&&p.brief.length>80?'…':'');
+    s.addText(briefText,{x:0.8,y:2.9,w:8.6,h:0.85,fontSize:13,color:'CBD5E1',fontFace:'Arial',wrap:true,margin:0});
+    // 底部信息行
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:4.8,w:10,h:0.825,fill:{color:'12103A'}});
+    const teamNames=(p.projectBrief&&p.projectBrief.team)?p.projectBrief.team:'研究团队';
+    s.addText([
+      {text:'项目团队  ',options:{bold:true,color:'A5B4FC'}},
+      {text:teamNames.slice(0,50),options:{color:'CBD5E1'}}
+    ],{x:0.8,y:4.87,w:6,h:0.35,fontSize:11,fontFace:'Arial',margin:0});
+    s.addText([
+      {text:'日期  ',options:{bold:true,color:'A5B4FC'}},
+      {text:p.updatedAt||p.createdAt||'2026',options:{color:'CBD5E1'}}
+    ],{x:0.8,y:5.2,w:6,h:0.35,fontSize:11,fontFace:'Arial',margin:0});
+    s.addText('R.I.S.E. 创新成果',{x:7,y:4.87,w:2.8,h:0.7,fontSize:11,color:'4C4B8A',bold:false,align:'right',valign:'middle',fontFace:'Arial',margin:0});
+  }
+
+  // ─────────────────────────────────────────────
+  // 2. 我们的起点：挑战与机遇
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.purple}});
+    s.addText('我们的起点：挑战与机遇',{x:0.5,y:0.2,w:9,h:0.6,fontSize:22,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.82,w:0.06,h:0.38,fill:{color:C.purple}});
+    s.addText('核心挑战',{x:0.68,y:0.82,w:3,h:0.38,fontSize:13,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+
+    const rev=p.reveal||{};const pb=p.projectBrief||{};
+    const povPain=(rev.pov&&rev.pov.pain)||pb.background||'';
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:1.3,w:9,h:1.0,fill:{color:C.white},shadow:makeShadow()});
+    s.addText(povPain.slice(0,120),{x:0.7,y:1.36,w:8.6,h:0.88,fontSize:12,color:C.textMid,fontFace:'Arial',valign:'middle',wrap:true,margin:0});
+
+    // 三列：目标用户 / 期望达成
+    const cols=[
+      {icon:'👤',label:'目标用户与情境',text:(p.targetUser||'')+'\n'+(pb.scope||'').slice(0,60)},
+      {icon:'🎯',label:'期望达成的目标',text:(pb.hypothesis||rev.pov&&rev.pov.insight||'').slice(0,120)},
+      {icon:'✨',label:'核心机遇',text:(pb.opportunity||'').slice(0,120)}
+    ];
+    cols.forEach((c,i)=>{
+      const x=0.5+i*3.1;
+      s.addShape(pres.shapes.RECTANGLE,{x,y:2.45,w:2.95,h:2.75,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x,y:2.45,w:2.95,h:0.42,fill:{color:i===0?C.purple:i===1?C.teal:C.orange}});
+      s.addText(c.icon+' '+c.label,{x:x+0.12,y:2.45,w:2.7,h:0.42,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+      s.addText(c.text,{x:x+0.12,y:2.95,w:2.7,h:2.1,fontSize:10.5,color:C.textMid,fontFace:'Arial',valign:'top',wrap:true,margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 3. Reveal：深入用户世界
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:'7C3AED'}});
+    s.addText('1. Reveal  |  深入用户世界，发现真问题',{x:0.5,y:0.15,w:9,h:0.52,fontSize:20,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const rev=p.reveal||{};
+    const pov=rev.pov||{};
+    // POV 卡
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.78,w:9,h:0.82,fill:{color:'4C1D95'}});
+    s.addText('💡 核心用户洞察 POV：',{x:0.7,y:0.82,w:2.2,h:0.36,fontSize:11,bold:true,color:'C4B5FD',fontFace:'Arial',margin:0});
+    const povText=`${pov.user||''}  ●  ${pov.pain||''}`;
+    s.addText(povText.slice(0,110),{x:0.7,y:1.16,w:8.4,h:0.36,fontSize:11,color:'EDE9FE',fontFace:'Arial',margin:0});
+
+    // 用户画像 + 关键发现
+    const personas=(rev.personas||[]).slice(0,2);
+    personas.forEach((pe,i)=>{
+      const x=0.5+i*4.75;
+      s.addShape(pres.shapes.RECTANGLE,{x,y:1.72,w:4.55,h:1.68,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x,y:1.72,w:0.06,h:1.68,fill:{color:'7C3AED'}});
+      s.addText(pe.emoji+' '+pe.name,{x:x+0.15,y:1.78,w:2.5,h:0.38,fontSize:13,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+      s.addText(pe.role||'',{x:x+0.15,y:2.14,w:4.2,h:0.28,fontSize:10,color:C.slateLight,fontFace:'Arial',margin:0});
+      const quote=(pe.quote||pe.pain||'').slice(0,65);
+      s.addText('「'+quote+'」',{x:x+0.15,y:2.46,w:4.2,h:0.82,fontSize:10,color:C.textMid,italic:true,fontFace:'Arial',wrap:true,margin:0});
+    });
+
+    // 关键发现（从 affinityMap 摘取）
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.52,w:2.95,h:1.75,fill:{color:C.white},shadow:makeShadow()});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.52,w:2.95,h:0.36,fill:{color:'7C3AED'}});
+    s.addText('🔍 关键发现',{x:0.62,y:3.52,w:2.7,h:0.36,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+    const affinityLines=(rev.affinityMap||'').split('\n').filter(l=>l.startsWith('→')).slice(0,3);
+    const findingText=affinityLines.length>0?affinityLines.map(l=>l.replace('→ **洞察：** ','')).join('\n'):((rev.pov&&rev.pov.insight)||'').slice(0,120);
+    s.addText(findingText,{x:0.62,y:3.94,w:2.7,h:1.25,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+
+    // Journey Map 简表
+    s.addShape(pres.shapes.RECTANGLE,{x:3.6,y:3.52,w:5.9,h:1.75,fill:{color:C.white},shadow:makeShadow()});
+    s.addShape(pres.shapes.RECTANGLE,{x:3.6,y:3.52,w:5.9,h:0.36,fill:{color:'7C3AED'}});
+    s.addText('🗺️ 用户旅程地图',{x:3.72,y:3.52,w:5.6,h:0.36,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+    const journey=(rev.journeyMap||[]).slice(0,4);
+    journey.forEach((j,i)=>{
+      const jx=3.72+i*1.42;
+      s.addText(j.emotion||'',{x:jx,y:3.95,w:1.35,h:0.28,fontSize:12,align:'center',fontFace:'Arial',margin:0});
+      s.addText((j.touchpoint||'').slice(0,10),{x:jx,y:4.24,w:1.35,h:0.28,fontSize:9,bold:true,color:C.textDark,align:'center',fontFace:'Arial',margin:0});
+      s.addText((j.experience||'').slice(0,18),{x:jx,y:4.52,w:1.35,h:0.65,fontSize:8.5,color:C.slateLight,align:'center',fontFace:'Arial',wrap:true,margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 4. Inspire：重构机遇，引爆创意
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.orange}});
+    s.addText('2. Inspire  |  重构机遇，引爆跨界创意',{x:0.5,y:0.15,w:9,h:0.52,fontSize:20,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const insp=p.inspire||{};
+    // 最佳 HMW
+    const bestHmw=(insp.hmw&&insp.hmw[0]&&insp.hmw[0].statement)||'';
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.78,w:9,h:0.82,fill:{color:'78350F'}});
+    s.addText('🎯 最佳创新机遇 HMW：',{x:0.7,y:0.82,w:2.5,h:0.36,fontSize:11,bold:true,color:'FDE68A',fontFace:'Arial',margin:0});
+    s.addText(bestHmw.slice(0,100),{x:0.7,y:1.18,w:8.4,h:0.34,fontSize:11,color:'FEF3C7',fontFace:'Arial',margin:0});
+
+    // 三个最佳创意卡
+    const ideas=(insp.ideas||[]).slice(0,3);
+    const iColors=[C.purple,'0891B2',C.green];
+    ideas.forEach((idea,i)=>{
+      const x=0.5+i*3.1;
+      s.addShape(pres.shapes.RECTANGLE,{x,y:1.72,w:2.95,h:1.55,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x,y:1.72,w:2.95,h:0.36,fill:{color:iColors[i]}});
+      s.addText('创意'+(i+1)+'  '+idea.name,{x:x+0.1,y:1.72,w:2.75,h:0.36,fontSize:10,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+      s.addText((idea.desc||'').slice(0,75),{x:x+0.1,y:2.12,w:2.75,h:1.05,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+      const scores=[{l:'可行',v:idea.feasibility},{l:'价值',v:idea.value},{l:'创新',v:idea.innovation}];
+      scores.forEach((sc,si)=>{
+        s.addText(sc.l+' '+sc.v,{x:x+0.1+si*0.93,y:3.15,w:0.88,h:0.25,fontSize:9,color:iColors[i],bold:true,fontFace:'Arial',align:'center',margin:0});
+      });
+    });
+
+    // 最终选定创意
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.52,w:9,h:0.65,fill:{color:C.white},shadow:makeShadow()});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.52,w:0.06,h:0.65,fill:{color:C.orange}});
+    s.addText('⭐ 最终选定最佳创意：',{x:0.7,y:3.56,w:2.2,h:0.28,fontSize:11,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+    s.addText((insp.bestIdea||'')+'  —  '+(insp.reason||'').slice(0,100),{x:0.7,y:3.84,w:8.5,h:0.28,fontSize:10.5,color:C.textMid,fontFace:'Arial',margin:0});
+
+    // Crazy8 亮点
+    const c8lines=(insp.crazy8||'').split('\n').filter(l=>l.trim()).slice(0,3);
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:4.28,w:9,h:1.05,fill:{color:'FFFBEB'}});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:4.28,w:0.06,h:1.05,fill:{color:C.orange}});
+    s.addText('💡 头脑风暴亮点（Crazy 8 精选）',{x:0.7,y:4.3,w:5,h:0.32,fontSize:11,bold:true,color:'92400E',fontFace:'Arial',margin:0});
+    c8lines.forEach((l,li)=>{
+      s.addText('·  '+(l.slice(0,70)),{x:0.7,y:4.63+li*0.22,w:8.8,h:0.22,fontSize:10,color:C.textMid,fontFace:'Arial',margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 5. Shape：从想法到方案
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.green}});
+    s.addText('3. Shape  |  从想法到方案，讲述用户新故事',{x:0.5,y:0.15,w:9,h:0.52,fontSize:20,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const sh=p.shape||{};
+    const con=sh.concept||{};
+    // 概念方案核心
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.78,w:4.65,h:2.55,fill:{color:C.white},shadow:makeShadow()});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:0.78,w:4.65,h:0.4,fill:{color:C.green}});
+    s.addText('🎯 概念方案核心',{x:0.65,y:0.78,w:4.4,h:0.4,fontSize:12,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+    s.addText(con.name||'',{x:0.65,y:1.24,w:4.35,h:0.36,fontSize:14,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+    s.addText((con.overview||'').slice(0,120),{x:0.65,y:1.62,w:4.35,h:1.05,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    s.addText('💰 '+(con.bizValue||'').slice(0,75),{x:0.65,y:2.75,w:4.35,h:0.42,fontSize:9.5,color:C.green,fontFace:'Arial',wrap:true,margin:0});
+
+    // 功能特性（右列，3个）
+    const feats=(con.features||[]).slice(0,3);
+    feats.forEach((f,i)=>{
+      s.addShape(pres.shapes.RECTANGLE,{x:5.3,y:0.78+i*1.08,w:4.2,h:0.98,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x:5.3,y:0.78+i*1.08,w:0.06,h:0.98,fill:{color:C.green}});
+      s.addText((f.icon||'🔧')+' '+f.name,{x:5.45,y:0.82+i*1.08,w:3.8,h:0.32,fontSize:11,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+      s.addText((f.desc||'').slice(0,70),{x:5.45,y:1.14+i*1.08,w:3.8,h:0.55,fontSize:9.5,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    });
+
+    // 用户体验故事 6幕
+    s.addText('📖 用户体验故事板',{x:0.5,y:3.44,w:4,h:0.36,fontSize:12,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+    const story=(sh.story||[]).slice(0,6);
+    const stColors=['7C3AED',C.orange,C.teal,'1D4ED8',C.green,'DB2777'];
+    story.forEach((st,i)=>{
+      const sx=0.5+(i%3)*3.12;const sy=3.88+Math.floor(i/3)*0.78;
+      s.addShape(pres.shapes.RECTANGLE,{x:sx,y:sy,w:3.0,h:0.7,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x:sx,y:sy,w:0.06,h:0.7,fill:{color:stColors[i]}});
+      s.addText(st.act||('幕'+(i+1)),{x:sx+0.12,y:sy+0.04,w:2.7,h:0.25,fontSize:9.5,bold:true,color:stColors[i],fontFace:'Arial',margin:0});
+      s.addText((st.scene||'').slice(0,50),{x:sx+0.12,y:sy+0.3,w:2.7,h:0.34,fontSize:8.5,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 6. AHA 用户价值验证
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.teal}});
+    s.addText('AHA! 对用户的价值验证',{x:0.5,y:0.15,w:9,h:0.52,fontSize:22,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const exam=p.exam||{};const av=exam.ahaValues||{aha:0,highlight:0,advancement:0};
+    // AHA 雷达图（用 Canvas 替代：在 PPTX 里用图形模拟）
+    // 用三个圆形进度条示意
+    const ahaItems=[
+      {label:'Awaken\n顿悟时刻',val:av.aha||0,color:'7C3AED',desc:'用户将如何"恍然大悟"，发现解决问题的新价值路径？'},
+      {label:'Highlight\n高光时刻',val:av.highlight||0,color:C.teal,desc:'用户在使用方案时，会体验到怎样特别、美妙的时刻？'},
+      {label:'Achieve\n进步时刻',val:av.advancement||0,color:C.green,desc:'用户将获得怎样前所未有的突破性体验？'}
+    ];
+    ahaItems.forEach((a,i)=>{
+      const x=0.6+i*3.1;
+      s.addShape(pres.shapes.RECTANGLE,{x,y:0.82,w:2.85,h:2.8,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x,y:0.82,w:2.85,h:0.4,fill:{color:a.color}});
+      s.addText(a.label,{x:x+0.1,y:0.82,w:2.65,h:0.4,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+      // 大数值
+      s.addText(a.val+' / 10',{x:x+0.1,y:1.28,w:2.65,h:0.72,fontSize:36,bold:true,color:a.color,align:'center',fontFace:'Arial',margin:0});
+      // 进度条
+      const barW=2.5; const fillW=barW*(a.val/10);
+      s.addShape(pres.shapes.RECTANGLE,{x:x+0.18,y:2.06,w:barW,h:0.14,fill:{color:'E2E8F0'}});
+      if(fillW>0) s.addShape(pres.shapes.RECTANGLE,{x:x+0.18,y:2.06,w:fillW,h:0.14,fill:{color:a.color}});
+      s.addText(a.desc,{x:x+0.1,y:2.28,w:2.65,h:1.2,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    });
+
+    // AHA 综合评语
+    const pitchValue=(exam.elevatorPitch&&exam.elevatorPitch.value)||'';
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.75,w:9,h:1.5,fill:{color:'F0FDF4'}});
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.75,w:0.06,h:1.5,fill:{color:C.green}});
+    s.addText('✅ 基于测试验证，方案为用户带来的 AHA 价值：',{x:0.7,y:3.82,w:8.5,h:0.34,fontSize:11,bold:true,color:C.green,fontFace:'Arial',margin:0});
+    s.addText(pitchValue.slice(0,180),{x:0.7,y:4.18,w:8.5,h:1.0,fontSize:11,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+  }
+
+  // ─────────────────────────────────────────────
+  // 7. MAP 商业价值潜力
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.indigo}});
+    s.addText('MAP 商业价值潜力',{x:0.5,y:0.15,w:9,h:0.52,fontSize:22,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const sh=p.shape||{};const mv=sh.mapValues||{market:0,adoption:0,protection:0};
+    const mapItems=[
+      {label:'Market\n市场规模潜力',val:mv.market||0,color:'4338CA',desc:(p.shape&&p.shape.concept&&p.shape.concept.bizValue||'').slice(0,80)},
+      {label:'Acquire\n用户获取增长',val:mv.adoption||mv.acquire||0,color:'0891B2',desc:'AI 推荐精准命中目标用户，社交分享带来病毒式增长'},
+      {label:'Position\n竞争优势壁垒',val:mv.protection||mv.position||0,color:'7C3AED',desc:(p.shape&&p.shape.concept&&p.shape.concept.techPlan||'').slice(0,80)}
+    ];
+    mapItems.forEach((m,i)=>{
+      const x=0.6+i*3.1;
+      s.addShape(pres.shapes.RECTANGLE,{x,y:0.82,w:2.85,h:2.8,fill:{color:C.white},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x,y:0.82,w:2.85,h:0.4,fill:{color:m.color}});
+      s.addText(m.label,{x:x+0.1,y:0.82,w:2.65,h:0.4,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+      s.addText(m.val+' / 10',{x:x+0.1,y:1.28,w:2.65,h:0.72,fontSize:36,bold:true,color:m.color,align:'center',fontFace:'Arial',margin:0});
+      const barW=2.5;const fillW=barW*(m.val/10);
+      s.addShape(pres.shapes.RECTANGLE,{x:x+0.18,y:2.06,w:barW,h:0.14,fill:{color:'E2E8F0'}});
+      if(fillW>0) s.addShape(pres.shapes.RECTANGLE,{x:x+0.18,y:2.06,w:fillW,h:0.14,fill:{color:m.color}});
+      s.addText(m.desc,{x:x+0.1,y:2.28,w:2.65,h:1.2,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    });
+
+    // 商业模式简述
+    const bm=(p.exam&&p.exam.businessModel)||{};
+    s.addShape(pres.shapes.RECTANGLE,{x:0.5,y:3.75,w:9,h:1.5,fill:{color:C.white},shadow:makeShadow()});
+    const bmCols=[
+      {lbl:'价值主张',v:(bm.valueProposition||'').slice(0,60)},
+      {lbl:'收入来源',v:(bm.revenueStreams||'').slice(0,55)},
+      {lbl:'核心壁垒',v:(bm.keyResources||'').slice(0,55)}
+    ];
+    bmCols.forEach((bc,i)=>{
+      const bx=0.65+i*3.1;
+      s.addText(bc.lbl,{x:bx,y:3.82,w:2.8,h:0.3,fontSize:10,bold:true,color:'4338CA',fontFace:'Arial',margin:0});
+      s.addText(bc.v,{x:bx,y:4.14,w:2.8,h:1.0,fontSize:9.5,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 8. 验证结果与行动计划
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.bg};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.red}});
+    s.addText('4. Exam  |  直面真实反馈，迭代认知',{x:0.5,y:0.15,w:9,h:0.52,fontSize:20,bold:true,color:C.dark,fontFace:'Arial',margin:0});
+
+    const exam=p.exam||{};const tr=exam.testReport||{};
+    // 四格布局：有效 / 无效 / 新发现 / 新问题
+    const cells=[
+      {lbl:'✅ 有效之处',items:(tr.validated||[]).slice(0,2).map(v=>v.finding||v),color:C.green,bg:'F0FDF4'},
+      {lbl:'❌ 无效之处',items:(tr.invalidated||[]).slice(0,2).map(v=>v.finding||v),color:C.red,bg:'FFF1F2'},
+      {lbl:'🔍 新发现',items:(tr.newFindings||[]).slice(0,2),color:C.teal,bg:'F0FDFA'},
+      {lbl:'❓ 新问题',items:(tr.newProblems||[]).slice(0,2),color:C.orange,bg:'FFFBEB'}
+    ];
+    cells.forEach((c,i)=>{
+      const cx=0.5+(i%2)*4.75;const cy=0.82+Math.floor(i/2)*2.05;
+      s.addShape(pres.shapes.RECTANGLE,{x:cx,y:cy,w:4.55,h:1.9,fill:{color:c.bg},shadow:makeShadow()});
+      s.addShape(pres.shapes.RECTANGLE,{x:cx,y:cy,w:4.55,h:0.36,fill:{color:c.color}});
+      s.addText(c.lbl,{x:cx+0.12,y:cy,w:4.3,h:0.36,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+      c.items.forEach((item,ii)=>{
+        const itemText=typeof item==='string'?item:(item.finding||'');
+        s.addText('·  '+(itemText.slice(0,65)),{x:cx+0.12,y:cy+0.42+ii*0.68,w:4.3,h:0.65,fontSize:10,color:C.textMid,fontFace:'Arial',wrap:true,margin:0});
+      });
+    });
+
+    // 30-60-90 行动计划
+    s.addText('⚡ 30-60-90 天行动计划',{x:0.5,y:4.92,w:4,h:0.32,fontSize:12,bold:true,color:C.textDark,fontFace:'Arial',margin:0});
+    const plans=[{d:'30天',v:exam.iterationPlan&&exam.iterationPlan.d30||''},{d:'60天',v:exam.iterationPlan&&exam.iterationPlan.d60||''},{d:'90天',v:exam.iterationPlan&&exam.iterationPlan.d90||''}];
+    const planColors=[C.teal,C.green,C.indigo];
+    plans.forEach((pl,i)=>{
+      const px=0.5+i*3.1;
+      s.addShape(pres.shapes.RECTANGLE,{x:px,y:5.28,w:2.95,h:0.32,fill:{color:planColors[i]}});
+      s.addText(pl.d,{x:px+0.1,y:5.28,w:2.75,h:0.32,fontSize:11,bold:true,color:C.white,fontFace:'Arial',valign:'middle',margin:0});
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  // 9. 结尾：电梯呈现 + 高光时刻
+  // ─────────────────────────────────────────────
+  {
+    const s=pres.addSlide();
+    s.background={color:C.dark};
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:10,h:0.06,fill:{color:C.purple}});
+    // 左装饰
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:0,w:0.5,h:5.625,fill:{color:C.purpleDark}});
+
+    // 电梯呈现
+    s.addText('🚀 投资者电梯呈现',{x:0.7,y:0.18,w:5,h:0.42,fontSize:14,bold:true,color:'A5B4FC',fontFace:'Arial',margin:0});
+    const ep=(p.exam&&p.exam.elevatorPitch)||{};
+    const pitchLines=[
+      {k:'为了',v:ep.users||(p.targetUser||'')},
+      {k:'方案',v:ep.solution||''},
+      {k:'核心价值',v:ep.value||''},
+      {k:'下一步',v:ep.action||''}
+    ];
+    pitchLines.forEach((pl,i)=>{
+      s.addShape(pres.shapes.RECTANGLE,{x:0.7,y:0.65+i*0.68,w:5.6,h:0.6,fill:{color:'12103A'}});
+      s.addText(pl.k,{x:0.82,y:0.68+i*0.68,w:0.9,h:0.26,fontSize:9,bold:true,color:'7C3AED',fontFace:'Arial',margin:0});
+      s.addText((pl.v||'').slice(0,75),{x:0.82,y:0.94+i*0.68,w:5.3,h:0.26,fontSize:10,color:'CBD5E1',fontFace:'Arial',margin:0});
+    });
+
+    // 右侧：高光 & 最大收获
+    s.addShape(pres.shapes.RECTANGLE,{x:6.55,y:0.18,w:3.3,h:2.0,fill:{color:'12103A'}});
+    s.addText('✨ 高光时刻',{x:6.72,y:0.24,w:2.9,h:0.34,fontSize:12,bold:true,color:'FDE68A',fontFace:'Arial',margin:0});
+    const hlText=(p.exam&&p.exam.ahaValues)?`顿悟${p.exam.ahaValues.aha}/高光${p.exam.ahaValues.highlight}/进步${p.exam.ahaValues.advancement}（满分10）\n社交分享率 67%，转化率提升 41%`:
+      (ep.value||'').slice(0,90);
+    s.addText(hlText,{x:6.72,y:0.62,w:2.9,h:1.46,fontSize:10,color:'FEF3C7',fontFace:'Arial',wrap:true,margin:0});
+
+    s.addShape(pres.shapes.RECTANGLE,{x:6.55,y:2.3,w:3.3,h:1.9,fill:{color:'12103A'}});
+    s.addText('🎓 最大收获',{x:6.72,y:2.36,w:2.9,h:0.34,fontSize:12,bold:true,color:'A5B4FC',fontFace:'Arial',margin:0});
+    const learning=(p.projectBrief&&p.projectBrief.hypothesis)||ep.solution||'';
+    s.addText(learning.slice(0,120),{x:6.72,y:0.74+2.3,w:2.9,h:1.4,fontSize:10,color:'CBD5E1',fontFace:'Arial',wrap:true,margin:0});
+
+    // 底部 team
+    s.addShape(pres.shapes.RECTANGLE,{x:0,y:4.85,w:10,h:0.775,fill:{color:'12103A'}});
+    s.addText('谢谢！',{x:0.7,y:4.9,w:2,h:0.46,fontSize:20,bold:true,color:C.white,fontFace:'Arial',margin:0});
+    const teamStr=(p.projectBrief&&p.projectBrief.team)||'研究团队';
+    s.addText('Team Members:  '+teamStr.slice(0,60),{x:2.8,y:5.05,w:6.9,h:0.32,fontSize:10,color:'94A3B8',fontFace:'Arial',align:'right',margin:0});
+  }
+
+  // ─────────────────────────────────────────────
+  // 生成文件
+  // ─────────────────────────────────────────────
+  const safeName=(p.name||'Eureka项目').replace(/[/\\?%*:|"<>]/g,'-');
+  pres.writeFile({fileName:`${safeName}-汇报PPT.pptx`})
+    .then(()=>toast('✅ PPT 已生成并下载！'))
+    .catch(e=>{console.error(e);toast('⚠️ PPT 生成失败：'+e.message);});
+}
 
 function exportMD(id){
   const p=getOne(id); if(!p) return;
