@@ -1,6 +1,6 @@
 /**
- * Persona Lab - App.js
- * 核心交互逻辑：标签筛选、生成、卡片渲染、编辑、角色组
+ * Persona Lab - App.js  v1.1
+ * 核心交互逻辑：标签筛选、生成、分行渲染、编辑、角色组
  */
 
 // ─────────────────────────────────────────
@@ -8,11 +8,11 @@
 // ─────────────────────────────────────────
 let currentMode = 'generate';
 let currentCatTab = 'user';
-let currentGroup = { personas: [], tags: {} };  // 当前角色组托盘
-let allPersonas = [];   // 当前显示的所有角色
-let drawerPersonaId = null; // 抽屉当前显示的角色ID
+let currentGroup = { personas: [], tags: {} };
+let allPersonas = [];
+let drawerPersonaId = null;
 let selectedTags = { industry: [], scene: [], theme: [] };
-let pendingTags = {};   // 待确认的AI识别标签
+let extremeRowExpanded = false;   // 极端用户默认折叠
 
 // ─────────────────────────────────────────
 // 初始化
@@ -28,10 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function switchMode(mode) {
   currentMode = mode;
   ['generate','browse','groups'].forEach(m => {
-    document.getElementById(`panel-${m}`).style.display = m === mode ? 'flex' : 'none';
-    document.getElementById(`tab-${m}`).classList.toggle('active', m === mode);
+    const el = document.getElementById(`panel-${m}`);
+    if (el) el.style.display = m === mode ? 'block' : 'none';
+    const tab = document.getElementById(`tab-${m}`);
+    if (tab) tab.classList.toggle('active', m === mode);
   });
-  if (mode === 'generate') document.getElementById('panel-generate').style.display = 'block';
   if (mode === 'browse') loadBrowsePersonas();
   if (mode === 'groups') renderGroupsList();
 }
@@ -45,20 +46,26 @@ function switchCatTab(tab) {
 }
 
 // ─────────────────────────────────────────
-// 侧边栏标签渲染
+// 侧边栏标签渲染 + 高亮
 // ─────────────────────────────────────────
-function renderSidebarTags() {
+function renderSidebarTags(highlightTags) {
+  // highlightTags: { industry:[], scene:[], theme:[] }  — 生成后反向高亮用
   const tags = getAllTags();
   ['industry','scene','theme'].forEach(cat => {
     const el = document.getElementById(`tag-list-${cat}`);
-    el.innerHTML = tags[cat].map(tag => `
-      <label class="tag-item ${selectedTags[cat].includes(tag) ? 'checked' : ''}">
-        <input type="checkbox" ${selectedTags[cat].includes(tag) ? 'checked' : ''}
-          onchange="toggleTagFilter('${cat}','${escHtml(tag)}',this.checked)">
-        ${escHtml(tag)}
-      </label>
-    `).join('');
+    if (!el) return;
+    el.innerHTML = tags[cat].map(tag => {
+      const isChecked   = selectedTags[cat].includes(tag);
+      const isHighlight = highlightTags && (highlightTags[cat] || []).includes(tag);
+      return `
+        <label class="tag-item ${isChecked ? 'checked' : ''} ${isHighlight ? 'highlighted' : ''}">
+          <input type="checkbox" ${isChecked ? 'checked' : ''}
+            onchange="toggleTagFilter('${cat}','${escHtml(tag)}',this.checked)">
+          ${escHtml(tag)}
+        </label>`;
+    }).join('');
   });
+  updateSidebarCreateBtn();
 }
 
 function toggleTagFilter(cat, tag, checked) {
@@ -67,6 +74,7 @@ function toggleTagFilter(cat, tag, checked) {
   } else {
     selectedTags[cat] = selectedTags[cat].filter(t => t !== tag);
   }
+  updateSidebarCreateBtn();
   if (currentMode === 'browse') renderBrowseCards();
 }
 
@@ -84,25 +92,96 @@ function handleTagEnter(e, cat) {
   if (e.key === 'Enter') { e.preventDefault(); addTag(cat); }
 }
 
+// 侧边栏「基于当前标签创建」按钮显示逻辑
+function updateSidebarCreateBtn() {
+  const hasSelected = Object.values(selectedTags).some(a => a.length > 0);
+  const btn = document.getElementById('sidebar-create-btn');
+  if (btn) btn.classList.toggle('visible', hasSelected);
+}
+
+// 无主题模式：基于侧边栏标签直接生成
+function generateFromTags() {
+  const tags = {
+    industry: [...selectedTags.industry],
+    scene:    [...selectedTags.scene],
+    theme:    [...selectedTags.theme],
+  };
+  const themeHint = [
+    ...tags.industry.slice(0,1),
+    ...tags.scene.slice(0,1),
+    ...tags.theme.slice(0,1)
+  ].join(' · ') || '未命名场景';
+
+  // 切到生成模式
+  switchMode('generate');
+  // 主题输入框填入提示文本（可编辑）
+  const themeInput = document.getElementById('input-theme-main');
+  if (themeInput && !themeInput.value.trim()) {
+    themeInput.value = themeHint;
+  }
+  _doGenerate(themeInput ? themeInput.value.trim() || themeHint : themeHint, '', '', tags);
+}
+
 // ─────────────────────────────────────────
-// ✨ AI 生成流程
+// ✨ AI 生成流程（直接生成，完成后高亮标签）
 // ─────────────────────────────────────────
 function startGenerate() {
   const theme = document.getElementById('input-theme-main').value.trim();
   if (!theme) { showToast('请先输入项目主题', 'error'); return; }
-
-  // Step 1: 识别标签
-  pendingTags = recognizeTags(theme);
-
-  // 渲染标签确认区
-  const panel = document.getElementById('tag-confirm-panel');
-  panel.classList.add('visible');
-  renderConfirmTags();
+  const bg     = document.getElementById('input-background').value.trim();
+  const assume = document.getElementById('input-assumption').value.trim();
+  // 先识别标签（用于生成数据），直接进入生成
+  const tags = recognizeTags(theme);
+  _doGenerate(theme, bg, assume, tags);
 }
 
-// 本地标签识别逻辑（基于关键词匹配）
+function _doGenerate(theme, bg, assume, tags) {
+  const resultEl = document.getElementById('generate-result');
+  const btn = document.getElementById('generate-btn');
+  if (btn) { btn.classList.add('loading'); btn.innerHTML = '<span class="spin">⟳</span> 生成中…'; }
+
+  // 骨架屏
+  resultEl.innerHTML = `
+    <div class="cards-grid" style="margin-top:4px">
+      ${[1,2,3,4,5].map(() => `
+        <div class="skeleton-card">
+          <div class="skeleton" style="height:16px;width:60%;margin-bottom:10px"></div>
+          <div class="skeleton" style="height:12px;width:90%;margin-bottom:6px"></div>
+          <div class="skeleton" style="height:12px;width:75%;margin-bottom:6px"></div>
+          <div class="skeleton" style="height:12px;width:80%"></div>
+        </div>`).join('')}
+    </div>`;
+
+  setTimeout(() => {
+    if (btn) { btn.classList.remove('loading'); btn.innerHTML = '<span>✨</span> 重新生成'; }
+
+    allPersonas = buildDemoPersonas(theme, tags);
+    saveDraft({ theme, bg, assume, tags, personas: allPersonas });
+
+    // 渲染4类分行
+    resultEl.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 14px">
+        <div style="font-size:14px;color:var(--text2)">
+          已生成 <strong style="color:var(--text)">${allPersonas.length}</strong> 个角色 &nbsp;·&nbsp; <span style="color:var(--text3)">${escHtml(theme)}</span>
+        </div>
+        <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
+      </div>
+      <div class="persona-rows" id="persona-rows">
+        ${renderPersonaRows(allPersonas)}
+      </div>`;
+
+    // 完成后反向高亮左侧标签，并写入标签
+    Object.entries(tags).forEach(([cat, arr]) => arr.forEach(t => addCustomTag(cat, t)));
+    renderSidebarTags(tags);   // 传入高亮标签
+
+    showToast('✅ 角色组生成完成！极端用户可点击展开');
+  }, 1600);
+}
+
+// ─────────────────────────────────────────
+// 本地标签识别
+// ─────────────────────────────────────────
 function recognizeTags(theme) {
-  const tags = getAllTags();
   const result = { industry: [], scene: [], theme: [] };
   const text = theme.toLowerCase();
 
@@ -126,110 +205,74 @@ function recognizeTags(theme) {
   const themeMap = {
     '认知负荷': ['认知','术语','复杂','过载','难懂'],
     '决策辅助': ['决策','选择','成交','购买'],
-    '数字化': ['数字','智能','线上','app'],
+    '数字化':   ['数字','智能','线上','app'],
     '用户满意度': ['满意','满意度','不满'],
   };
 
-  [
-    [industryMap, result.industry],
-    [sceneMap,    result.scene],
-    [themeMap,    result.theme],
-  ].forEach(([map, arr]) => {
-    Object.entries(map).forEach(([tag, keywords]) => {
-      if (keywords.some(k => text.includes(k))) arr.push(tag);
+  [[industryMap, result.industry],[sceneMap, result.scene],[themeMap, result.theme]]
+    .forEach(([map, arr]) => {
+      Object.entries(map).forEach(([tag, kws]) => {
+        if (kws.some(k => text.includes(k))) arr.push(tag);
+      });
     });
-  });
 
-  // 去重 + 最多3个
-  result.industry = [...new Set(result.industry)].slice(0, 3);
-  result.scene    = [...new Set(result.scene)].slice(0, 3);
-  result.theme    = [...new Set(result.theme)].slice(0, 3);
+  result.industry = [...new Set(result.industry)].slice(0,3);
+  result.scene    = [...new Set(result.scene)].slice(0,3);
+  result.theme    = [...new Set(result.theme)].slice(0,3);
   return result;
 }
 
-function renderConfirmTags() {
-  const row = document.getElementById('confirm-tags-row');
-  row.innerHTML = '';
-  Object.entries(pendingTags).forEach(([cat, tags]) => {
-    tags.forEach(tag => {
-      row.innerHTML += `
-        <div class="tag-chip ${cat}" id="ctag-${cat}-${encodeURIComponent(tag)}">
-          ${escHtml(tag)}
-          <span class="remove" onclick="removeConfirmTag('${cat}','${escHtml(tag)}')">✕</span>
-        </div>`;
-    });
-  });
-  // 如果全空，加提示
-  if (!Object.values(pendingTags).some(a => a.length > 0)) {
-    row.innerHTML = '<span style="font-size:12px;color:var(--text3)">未识别到标签，将直接基于主题生成</span>';
+// ─────────────────────────────────────────
+// 4类分行渲染
+// ─────────────────────────────────────────
+const ROW_CONFIG = [
+  { key: 'target_user',       label: '目标用户',       icon: '👤', types: ['target_user'],        expandable: false },
+  { key: 'extreme_user',      label: '极端用户',       icon: '⚡', types: ['extreme_user'],        expandable: true  },
+  { key: 'stakeholder',       label: '利益相关方',     icon: '🌐', types: ['stakeholder','decision_maker'], expandable: false },
+  { key: 'resource_provider', label: '技术与资源提供者', icon: '🔧', types: ['resource_provider'],  expandable: false },
+];
+
+function renderPersonaRows(personas) {
+  return ROW_CONFIG.map(cfg => {
+    const cards = personas.filter(p => cfg.types.includes(p.type));
+    if (cards.length === 0) return '';
+    const isExtreme  = cfg.expandable;
+    const isHidden   = isExtreme && !extremeRowExpanded;
+    const toggleIcon = isExtreme ? (isHidden ? '▶' : '▼') : '';
+    const collapsedClass = isHidden ? 'collapsed' : '';
+
+    return `
+      <div class="persona-row row-${cfg.key}">
+        <div class="row-header" onclick="${isExtreme ? `toggleExtremeRow()` : ''}">
+          <div class="row-accent-bar"></div>
+          <span class="row-type-icon">${cfg.icon}</span>
+          <span class="row-type-label">${cfg.label}</span>
+          <span class="row-count">${cards.length}</span>
+          ${isExtreme ? `
+            <span style="font-size:12px;color:var(--text3);margin-left:4px">（默认折叠，点击展开）</span>
+            <span class="row-toggle ${collapsedClass}">${toggleIcon}</span>
+          ` : ''}
+        </div>
+        <div class="row-cards ${isHidden ? 'hidden' : ''}" id="row-cards-${cfg.key}">
+          ${cards.map(p => renderCard(p)).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleExtremeRow() {
+  extremeRowExpanded = !extremeRowExpanded;
+  const cardsEl  = document.getElementById('row-cards-extreme_user');
+  const toggleEl = cardsEl && cardsEl.closest('.persona-row')?.querySelector('.row-toggle');
+  if (cardsEl) cardsEl.classList.toggle('hidden', !extremeRowExpanded);
+  if (toggleEl) {
+    toggleEl.classList.toggle('collapsed', !extremeRowExpanded);
+    toggleEl.textContent = extremeRowExpanded ? '▼' : '▶';
   }
 }
 
-function removeConfirmTag(cat, tag) {
-  pendingTags[cat] = (pendingTags[cat] || []).filter(t => t !== tag);
-  renderConfirmTags();
-}
-
-function confirmTagsAndGenerate() {
-  // 保存标签到侧边栏
-  Object.entries(pendingTags).forEach(([cat, tags]) => {
-    tags.forEach(tag => addCustomTag(cat, tag));
-  });
-  renderSidebarTags();
-  generatePersonas();
-}
-
 // ─────────────────────────────────────────
-// 生成五类角色（演示数据 + 真实感模拟）
-// ─────────────────────────────────────────
-function generatePersonas() {
-  const theme    = document.getElementById('input-theme-main').value.trim();
-  const bg       = document.getElementById('input-background').value.trim();
-  const assume   = document.getElementById('input-assumption').value.trim();
-  const resultEl = document.getElementById('generate-result');
-
-  // 显示加载状态
-  const btn = document.getElementById('generate-btn');
-  btn.classList.add('loading');
-  btn.innerHTML = '<span class="spin">⟳</span> 生成中…';
-
-  resultEl.innerHTML = `
-    <div class="cards-grid">
-      ${[1,2,3,4,5].map(() => `
-        <div class="skeleton-card">
-          <div class="skeleton" style="height:16px;width:60%;margin-bottom:10px"></div>
-          <div class="skeleton" style="height:12px;width:90%;margin-bottom:6px"></div>
-          <div class="skeleton" style="height:12px;width:75%;margin-bottom:6px"></div>
-          <div class="skeleton" style="height:12px;width:80%"></div>
-        </div>
-      `).join('')}
-    </div>`;
-
-  // 模拟生成延迟
-  setTimeout(() => {
-    btn.classList.remove('loading');
-    btn.innerHTML = '<span>✨</span> 重新生成';
-
-    allPersonas = buildDemoPersonas(theme, pendingTags);
-    saveDraft({ theme, bg, assume, tags: pendingTags, personas: allPersonas });
-
-    resultEl.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:14px;color:var(--text2)">
-          已生成 <strong style="color:var(--text)">${allPersonas.length}</strong> 个角色 · 主题：${escHtml(theme)}
-        </div>
-        <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
-      </div>
-      <div class="cards-grid" id="gen-cards-grid">
-        ${allPersonas.map(p => renderCard(p)).join('')}
-      </div>`;
-
-    showToast('✅ 角色组生成完成！点击卡片可展开详情和编辑');
-  }, 1800);
-}
-
-// ─────────────────────────────────────────
-// 演示数据构建（基于主题关键词定制）
+// 演示数据构建
 // ─────────────────────────────────────────
 function buildDemoPersonas(theme, tags) {
   const industry = (tags.industry && tags.industry[0]) || '零售';
@@ -279,7 +322,7 @@ function buildDemoPersonas(theme, tags) {
     m2: { industryTag: industry, sceneTag: scene, relationTag: '外部合作方' }
   }));
 
-  // ── 决策者
+  // ── 决策者（归入利益相关方行）
   personas.push(createDecisionMaker({
     m1: { coreConcern: '季度成交率提升、培训成本可控、品牌形象不受损', valueSensitivity: 3, innovationDesire: 2 },
     m2: { industryTag: industry, sceneTag: scene, relationTag: '内部决策层' }
@@ -313,10 +356,9 @@ const TYPE_AVATAR = {
 };
 
 function renderCard(p) {
-  const label = TYPE_LABEL[p.type] || p.type;
+  const label  = TYPE_LABEL[p.type] || p.type;
   const avatar = TYPE_AVATAR[p.type] || '👤';
   const edited = p._edited ? '<span class="edited-badge">已编辑</span>' : '';
-
   let inner = '';
 
   if (p.type === 'target_user') {
@@ -352,7 +394,7 @@ function renderCard(p) {
 
   else if (p.type === 'extreme_user') {
     const sideLabel = p.side === 'heavy' ? '🔴 重度端' : '🔵 轻度端';
-    const linkedTu = allPersonas.find(x => x.id === p.m3.linkedTargetUserId);
+    const linkedTu  = allPersonas.find(x => x.id === p.m3.linkedTargetUserId);
     inner = `
       <div class="card-head">
         <div class="card-avatar">${avatar}</div>
@@ -492,7 +534,6 @@ function toggleGroupMembership(personaId) {
   } else {
     currentGroup.personas.push(p);
   }
-  // 更新按钮
   const btn = document.getElementById(`groupbtn-${personaId}`);
   const inGroup = currentGroup.personas.some(x => x.id === personaId);
   if (btn) {
@@ -503,12 +544,9 @@ function toggleGroupMembership(personaId) {
 }
 
 function renderGroupTray() {
-  const tray = document.getElementById('group-tray');
+  const tray  = document.getElementById('group-tray');
   const chips = document.getElementById('tray-chips');
-  if (currentGroup.personas.length === 0) {
-    tray.classList.remove('open');
-    return;
-  }
+  if (currentGroup.personas.length === 0) { tray.classList.remove('open'); return; }
   tray.classList.add('open');
   chips.innerHTML = currentGroup.personas.map(p => {
     const name = p.type === 'target_user' ? p.m1.name
@@ -523,7 +561,6 @@ function renderGroupTray() {
 function clearGroup() {
   currentGroup.personas = [];
   renderGroupTray();
-  // 重置所有按钮
   allPersonas.forEach(p => {
     const btn = document.getElementById(`groupbtn-${p.id}`);
     if (btn) { btn.className = 'card-action-btn add-to-group'; btn.textContent = '+ 角色组'; }
@@ -531,14 +568,14 @@ function clearGroup() {
 }
 
 function saveCurrentGroup() {
-  const theme = document.getElementById('input-theme-main').value.trim();
+  const theme = document.getElementById('input-theme-main')?.value.trim() || '';
   const group = createPersonaGroup({
     projectTheme: theme,
-    tags: pendingTags,
-    targetUsers: allPersonas.filter(p => p.type === 'target_user'),
-    extremeUsers: allPersonas.filter(p => p.type === 'extreme_user'),
-    stakeholders: allPersonas.filter(p => p.type === 'stakeholder'),
-    decisionMakers: allPersonas.filter(p => p.type === 'decision_maker'),
+    tags: {},
+    targetUsers:       allPersonas.filter(p => p.type === 'target_user'),
+    extremeUsers:      allPersonas.filter(p => p.type === 'extreme_user'),
+    stakeholders:      allPersonas.filter(p => p.type === 'stakeholder'),
+    decisionMakers:    allPersonas.filter(p => p.type === 'decision_maker'),
     resourceProviders: allPersonas.filter(p => p.type === 'resource_provider'),
   });
   saveGroup(group);
@@ -563,8 +600,7 @@ function exportPersonasToMarkdown(personas) {
       md += `**基本身份**：${p.m1.name}，${p.m1.age}，${p.m1.occupation}，${p.m1.city}\n\n`;
       md += `**生活方式**：${p.m2.lifestyle}\n**决策风格**：${p.m2.decisionStyle}\n\n`;
       md += `**显性目标**：${p.m3.explicitGoal}\n**隐性需求**：${p.m3.hiddenNeed}\n**核心痛点**：${p.m3.corePain}\n\n`;
-      md += `**Quote**：${p.m4.quote}\n\n`;
-      md += `**综合介绍**：${p.summary}\n\n`;
+      md += `**Quote**：${p.m4.quote}\n\n**综合介绍**：${p.summary}\n\n`;
     } else if (p.type === 'extreme_user') {
       const side = p.side === 'heavy' ? '重度端' : '轻度端';
       md += `**极端类型**：${side} · ${p.m1.extremeTag}\n`;
@@ -593,11 +629,9 @@ function openDrawer(personaId) {
   const p = allPersonas.find(x => x.id === personaId);
   if (!p) return;
   drawerPersonaId = personaId;
-
   document.getElementById('drawer-title').textContent = `${TYPE_AVATAR[p.type]} ${getPersonaTitle(p)} · ${TYPE_LABEL[p.type]}`;
   document.getElementById('drawer-restore-btn').style.display = p._edited ? 'block' : 'none';
   document.getElementById('drawer-body').innerHTML = renderDrawerBody(p);
-
   document.getElementById('drawer-overlay').classList.add('open');
   document.getElementById('persona-drawer').classList.add('open');
 }
@@ -618,7 +652,6 @@ function restoreDrawerPersona() {
   const idx = allPersonas.findIndex(x => x.id === drawerPersonaId);
   if (idx < 0) return;
   allPersonas[idx] = restoreOriginal(allPersonas[idx]);
-  // 重新渲染卡片
   const cardEl = document.getElementById(`card-${drawerPersonaId}`);
   if (cardEl) cardEl.outerHTML = renderCard(allPersonas[idx]);
   openDrawer(drawerPersonaId);
@@ -635,10 +668,10 @@ function restoreCard(personaId) {
 }
 
 function renderDrawerBody(p) {
-  if (p.type === 'target_user') return renderDrawerTargetUser(p);
-  if (p.type === 'extreme_user') return renderDrawerExtremeUser(p);
-  if (p.type === 'stakeholder') return renderDrawerStakeholder(p);
-  if (p.type === 'decision_maker') return renderDrawerDecisionMaker(p);
+  if (p.type === 'target_user')       return renderDrawerTargetUser(p);
+  if (p.type === 'extreme_user')      return renderDrawerExtremeUser(p);
+  if (p.type === 'stakeholder')       return renderDrawerStakeholder(p);
+  if (p.type === 'decision_maker')    return renderDrawerDecisionMaker(p);
   if (p.type === 'resource_provider') return renderDrawerResourceProvider(p);
   return '';
 }
@@ -696,7 +729,7 @@ function renderDrawerTargetUser(p) {
 
 function renderDrawerExtremeUser(p) {
   const sideLabel = p.side === 'heavy' ? '重度端 A' : '轻度/拒绝端 B';
-  const linkedTu = allPersonas.find(x => x.id === p.m3.linkedTargetUserId);
+  const linkedTu  = allPersonas.find(x => x.id === p.m3.linkedTargetUserId);
   return `
     <div class="drawer-section">
       <div class="drawer-section-title">模块一 · 基本身份</div>
@@ -788,13 +821,13 @@ function renderDrawerResourceProvider(p) {
 // 内联字段编辑
 // ─────────────────────────────────────────
 function startFieldEdit(el, personaId, fieldPath) {
-  if (el.querySelector('input,textarea')) return; // 已在编辑
+  if (el.querySelector('input,textarea')) return;
   const current = el.textContent.trim() === '—' ? '' : el.textContent.trim();
   const isMultiline = current.length > 40;
   const input = document.createElement(isMultiline ? 'textarea' : 'input');
   input.className = 'field-edit-input';
   input.value = current;
-  if (isMultiline) { input.rows = 3; }
+  if (isMultiline) input.rows = 3;
   el.innerHTML = '';
   el.appendChild(input);
   input.focus();
@@ -820,10 +853,8 @@ function saveFieldEdit(personaId, fieldPath, value) {
   let obj = p;
   for (let i = 0; i < parts.length - 1; i++) obj = obj[parts[i]];
   obj[parts[parts.length - 1]] = value;
-  // 更新抽屉恢复按钮
   const restoreBtn = document.getElementById('drawer-restore-btn');
   if (restoreBtn) restoreBtn.style.display = 'block';
-  // 更新卡片
   const cardEl = document.getElementById(`card-${personaId}`);
   if (cardEl) cardEl.outerHTML = renderCard(p);
 }
@@ -838,7 +869,6 @@ function loadBrowsePersonas() {
     [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders,
      ...g.decisionMakers, ...g.resourceProviders].forEach(p => personas.push(p));
   });
-  // 如果有草稿里的角色，也放进去
   const draft = loadDraft();
   if (draft && draft.personas) draft.personas.forEach(p => {
     if (!personas.find(x => x.id === p.id)) personas.push(p);
@@ -850,23 +880,21 @@ function loadBrowsePersonas() {
 
 function updateBadges() {
   const count = (type) => allPersonas.filter(p => p.type === type).length;
-  document.getElementById('badge-user').textContent = count('target_user') + count('extreme_user');
-  document.getElementById('badge-stakeholder').textContent = count('stakeholder');
-  document.getElementById('badge-decision').textContent = count('decision_maker');
-  document.getElementById('badge-resource').textContent = count('resource_provider');
+  document.getElementById('badge-user').textContent       = count('target_user') + count('extreme_user');
+  document.getElementById('badge-stakeholder').textContent= count('stakeholder');
+  document.getElementById('badge-decision').textContent   = count('decision_maker');
+  document.getElementById('badge-resource').textContent   = count('resource_provider');
 }
 
 function renderBrowseCards() {
   const typeMap = {
-    user: ['target_user','extreme_user'],
+    user:        ['target_user','extreme_user'],
     stakeholder: ['stakeholder'],
-    decision: ['decision_maker'],
-    resource: ['resource_provider']
+    decision:    ['decision_maker'],
+    resource:    ['resource_provider']
   };
   const types = typeMap[currentCatTab];
   let filtered = allPersonas.filter(p => types.includes(p.type));
-
-  // 应用标签筛选
   const hasSel = Object.values(selectedTags).some(a => a.length > 0);
   if (hasSel) {
     filtered = filtered.filter(p => {
@@ -878,7 +906,6 @@ function renderBrowseCards() {
       );
     });
   }
-
   const el = document.getElementById('browse-cards');
   if (!el) return;
   if (filtered.length === 0) {
@@ -935,15 +962,14 @@ function loadGroupToGenerate(groupId) {
   const g = getGroupById(groupId);
   if (!g) return;
   allPersonas = [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders, ...g.decisionMakers, ...g.resourceProviders];
-  pendingTags = g.tags || {};
   document.getElementById('input-theme-main').value = g.projectTheme;
   switchMode('generate');
   const resultEl = document.getElementById('generate-result');
   resultEl.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <div style="font-size:14px;color:var(--text2)">已加载角色组 · ${escHtml(g.projectTheme)}</div>
     </div>
-    <div class="cards-grid">${allPersonas.map(p => renderCard(p)).join('')}</div>`;
+    <div class="persona-rows">${renderPersonaRows(allPersonas)}</div>`;
 }
 
 function deleteGroupConfirm(groupId) {
@@ -987,5 +1013,9 @@ function showToast(msg, type = 'success') {
   toast.className = `toast ${type}`;
   toast.textContent = msg;
   wrap.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }

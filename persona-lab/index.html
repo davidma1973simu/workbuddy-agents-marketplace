@@ -309,13 +309,132 @@ main {
 }
 
 /* ─────────────────────────────────────────
-   Persona Cards Grid
+   Persona Rows Layout (4类分行)
 ───────────────────────────────────────── */
+.persona-rows { display: flex; flex-direction: column; gap: 0; }
+
+/* 每个类别行 */
+.persona-row {
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* 行标题头部 */
+.row-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+.row-header:hover { filter: brightness(1.05); }
+
+/* 不同类别底色（行标题底色） */
+.row-target_user    { background: rgba(99,102,241,.18); }
+.row-extreme_user   { background: rgba(236,72,153,.14); }
+.row-stakeholder    { background: rgba(20,184,166,.14); }
+.row-decision_maker { background: rgba(245,158,11,.14); }
+.row-resource_provider { background: rgba(6,182,212,.14); }
+
+/* 行标题左侧色条 */
+.row-accent-bar { width: 4px; height: 32px; border-radius: 3px; flex-shrink: 0; }
+.row-target_user    .row-accent-bar { background: linear-gradient(180deg, var(--accent), #8b5cf6); }
+.row-extreme_user   .row-accent-bar { background: linear-gradient(180deg, var(--pink), #f97316); }
+.row-stakeholder    .row-accent-bar { background: linear-gradient(180deg, var(--teal), var(--green)); }
+.row-decision_maker .row-accent-bar { background: linear-gradient(180deg, var(--orange), #f97316); }
+.row-resource_provider .row-accent-bar { background: linear-gradient(180deg, #06b6d4, var(--teal)); }
+
+/* 角色类型标签 — 大字凸显 */
+.row-type-label {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex: 0 0 auto;
+}
+.row-target_user    .row-type-label { color: var(--accent2); }
+.row-extreme_user   .row-type-label { color: var(--pink); }
+.row-stakeholder    .row-type-label { color: var(--teal); }
+.row-decision_maker .row-type-label { color: var(--orange); }
+.row-resource_provider .row-type-label { color: #22d3ee; }
+
+.row-type-icon { font-size: 22px; }
+.row-count {
+  font-size: 12px;
+  color: var(--text3);
+  background: rgba(0,0,0,.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.row-toggle {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--text3);
+  transition: transform .2s;
+}
+.row-toggle.collapsed { transform: rotate(-90deg); }
+
+/* 行内卡片容器 */
+.row-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.row-cards.hidden { display: none; }
+
+/* 卡片类型标签（卡片右上角）— 加大加粗 */
+.card-type-badge {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 3px 10px !important;
+  border-radius: 10px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.type-target_user    .card-type-badge { background: rgba(99,102,241,.2);  color: var(--accent2); border: 1px solid rgba(99,102,241,.4); }
+.type-extreme_user   .card-type-badge { background: rgba(236,72,153,.2);  color: var(--pink);    border: 1px solid rgba(236,72,153,.4); }
+.type-stakeholder    .card-type-badge { background: rgba(20,184,166,.2);  color: var(--teal);    border: 1px solid rgba(20,184,166,.4); }
+.type-decision_maker .card-type-badge { background: rgba(245,158,11,.2);  color: var(--orange);  border: 1px solid rgba(245,158,11,.4); }
+.type-resource_provider .card-type-badge { background: rgba(6,182,212,.2); color: #22d3ee;       border: 1px solid rgba(6,182,212,.4); }
+
+/* 旧的 cards-grid 保留，用于市场浏览 */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 14px;
 }
+
+/* 侧边栏标签高亮（AI生成后反向高亮） */
+.tag-item.highlighted {
+  background: rgba(99,102,241,.15);
+  color: var(--accent2);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+.tag-item.highlighted input[type=checkbox] { accent-color: var(--accent2); }
+
+/* 无主题模式：标签筛选后的创建按钮 */
+.sidebar-create-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 0;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  transition: all .2s;
+  display: none;
+}
+.sidebar-create-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,.4); }
+.sidebar-create-btn.visible { display: block; }
 
 /* 空状态 */
 .empty-state {
@@ -769,6 +888,11 @@ main {
           <button onclick="addTag('theme')">+</button>
         </div>
       </div>
+
+      <!-- 无主题模式：标签选中后出现创建按钮 -->
+      <button class="sidebar-create-btn" id="sidebar-create-btn" onclick="generateFromTags()">
+        ✨ 基于当前标签创建角色
+      </button>
     </aside>
 
     <!-- MAIN -->
@@ -779,7 +903,7 @@ main {
         <div class="theme-panel">
           <div class="theme-panel-title">
             <span class="icon">✨</span>
-            输入项目主题，一键生成五类角色组
+            输入项目主题，直接生成五类角色组
           </div>
           <div class="theme-row">
             <input class="theme-input" id="input-theme-main"
@@ -793,15 +917,6 @@ main {
             placeholder="补充背景（选填）：例如用户入店后面对大量款式术语，导致决策困难、成交率低"></textarea>
           <textarea class="theme-input theme-textarea" id="input-assumption"
             placeholder="用户假设（选填）：例如主力人群是25-35岁都市女性，非专业运动需求，兼顾日常穿搭" style="margin-top:8px"></textarea>
-
-          <!-- 标签确认区 -->
-          <div class="tag-confirm" id="tag-confirm-panel">
-            <div class="tag-confirm-title">
-              <span>🏷 AI 识别的标签 · 点击删除，或手动添加</span>
-              <button onclick="confirmTagsAndGenerate()" class="confirm-btn ok" style="padding:3px 12px;font-size:12px">确认并生成角色 →</button>
-            </div>
-            <div id="confirm-tags-row" class="tag-chips-row"></div>
-          </div>
         </div>
 
         <!-- 生成结果区 -->
