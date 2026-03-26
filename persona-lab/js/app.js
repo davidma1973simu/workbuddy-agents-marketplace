@@ -75,7 +75,10 @@ function toggleTagFilter(cat, tag, checked) {
     selectedTags[cat] = selectedTags[cat].filter(t => t !== tag);
   }
   updateSidebarCreateBtn();
-  if (currentMode === 'browse') renderBrowseCards();
+  if (currentMode === 'browse') {
+    if (currentBrowseView === 'group') renderBrowseGroupView();
+    else renderBrowseCards();
+  }
 }
 
 function addTag(cat) {
@@ -2822,6 +2825,157 @@ const PRESET_PERSONAS = (() => {
 
   return ps;
 })();
+
+// ─────────────────────────────────────────
+// 市场浏览视图切换（按角色类型 / 按项目组）
+// ─────────────────────────────────────────
+let currentBrowseView = 'type';  // 'type' | 'group'
+
+function switchBrowseView(view) {
+  currentBrowseView = view;
+  document.getElementById('browse-view-type').style.display  = view === 'type'  ? '' : 'none';
+  document.getElementById('browse-view-group').style.display = view === 'group' ? '' : 'none';
+  document.getElementById('view-btn-type').classList.toggle('active',  view === 'type');
+  document.getElementById('view-btn-group').classList.toggle('active', view === 'group');
+  if (view === 'group') renderBrowseGroupView();
+}
+
+// 按项目组视图：预置库按10组场景折叠展示，用户自己的按角色组展示
+function renderBrowseGroupView() {
+  const el = document.getElementById('browse-groups-list');
+  if (!el) return;
+
+  // ── 构造预置场景组（与PRESET_PERSONAS对应）
+  const PRESET_GROUPS = [
+    { id: 'pg_tech_elder_ux', label: '科技 × 老龄化 × 体验优化', tags: ['科技','老龄化','体验优化'],
+      ids: ['preset_tu_tech_elder_ux','preset_eu_tech_elder_ux_h','preset_eu_tech_elder_ux_l','preset_sh_tech_elder_ux_1','preset_sh_tech_elder_ux_2','preset_dm_tech_elder_ux','preset_rp_tech_elder_ux'] },
+    { id: 'pg_tech_elder', label: '科技 × 老龄化', tags: ['科技','老龄化'],
+      ids: ['preset_tu_tech_elder','preset_eu_tech_elder_h','preset_eu_tech_elder_l','preset_sh_tech_elder_1','preset_sh_tech_elder_2','preset_dm_tech_elder','preset_rp_tech_elder'] },
+    { id: 'pg_tech_ux', label: '科技 × 体验优化', tags: ['科技','体验优化'],
+      ids: ['preset_tu_tech_ux','preset_dm_tech_ux'] },
+    { id: 'pg_auto_dev', label: '汽车 × 产品研发', tags: ['汽车','产品研发'],
+      ids: ['preset_tu_auto_dev','preset_dm_auto_dev','preset_rp_auto_dev'] },
+    { id: 'pg_med_dev', label: '医疗 × 产品研发', tags: ['医疗','产品研发'],
+      ids: ['preset_tu_med_dev','preset_sh_med_dev','preset_rp_med_dev'] },
+    { id: 'pg_fin_ux', label: '金融 × 体验优化', tags: ['金融','体验优化'],
+      ids: ['preset_tu_fin_ux','preset_dm_fin_ux'] },
+    { id: 'pg_edu_elder', label: '教育 × 老龄化', tags: ['教育','老龄化'],
+      ids: ['preset_tu_edu_elder','preset_rp_edu_elder'] },
+    { id: 'pg_health_elder', label: '健康科技 × 老龄化', tags: ['健康科技','老龄化'],
+      ids: ['preset_tu_health_elder','preset_sh_health_elder','preset_dm_health_elder'] },
+    { id: 'pg_retail_digi', label: '零售 × 数字化转型', tags: ['零售','数字化转型'],
+      ids: ['preset_tu_retail_digi','preset_sh_retail_digi','preset_dm_retail_digi'] },
+    { id: 'pg_travel_elder', label: '出行 × 老龄化', tags: ['出行','老龄化'],
+      ids: ['preset_tu_travel_elder','preset_sh_travel_elder'] },
+  ];
+
+  // 标签筛选
+  const hasSel = Object.values(selectedTags).some(a => a.length > 0);
+  const tagMatchesGroup = (groupTags) => {
+    if (!hasSel) return true;
+    return (
+      (selectedTags.industry.length === 0 || selectedTags.industry.some(t => groupTags.includes(t))) &&
+      (selectedTags.scene.length    === 0 || selectedTags.scene.some(t    => groupTags.includes(t))) &&
+      (selectedTags.theme.length    === 0 || selectedTags.theme.some(t    => groupTags.includes(t)))
+    );
+  };
+
+  let html = '';
+
+  // ── 预置场景组区域
+  const visiblePresetGroups = PRESET_GROUPS.filter(g => tagMatchesGroup(g.tags));
+  if (visiblePresetGroups.length > 0) {
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);opacity:.85">📚 预置场景组</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+        <span style="font-size:11px;color:var(--text3)">${visiblePresetGroups.length} 个场景</span>
+      </div>`;
+
+    visiblePresetGroups.forEach(grp => {
+      const personas = grp.ids.map(id => PRESET_PERSONAS.find(p => p.id === id)).filter(Boolean);
+      const typeCount = {
+        user: personas.filter(p => p.type === 'target_user' || p.type === 'extreme_user').length,
+        stakeholder: personas.filter(p => p.type === 'stakeholder').length,
+        decision: personas.filter(p => p.type === 'decision_maker').length,
+        resource: personas.filter(p => p.type === 'resource_provider').length,
+      };
+      const tagBadges = grp.tags.map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('');
+      html += `
+        <div class="browse-group-block">
+          <div class="browse-group-header" onclick="toggleBrowseGroup('${grp.id}')">
+            <span class="browse-group-toggle" id="toggle-${grp.id}">▶</span>
+            <span class="browse-group-title">${escHtml(grp.label)}</span>
+            <span class="browse-group-meta">
+              ${personas.length} 个角色
+              ${typeCount.user ? ` · 👤${typeCount.user}` : ''}
+              ${typeCount.stakeholder ? ` · 🌐${typeCount.stakeholder}` : ''}
+              ${typeCount.decision ? ` · 🎯${typeCount.decision}` : ''}
+              ${typeCount.resource ? ` · 🔧${typeCount.resource}` : ''}
+            </span>
+            <div style="display:flex;gap:4px;margin-left:8px">${tagBadges}</div>
+          </div>
+          <div class="browse-group-body" id="body-${grp.id}">
+            <div class="cards-grid">${personas.map(p => renderCard(p)).join('')}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ── 用户已保存的角色组区域
+  const savedGroups = getAllGroups();
+  const filteredSaved = savedGroups.filter(g => {
+    if (!hasSel) return true;
+    const gTags = [...(g.tags.industry||[]), ...(g.tags.scene||[]), ...(g.tags.theme||[])];
+    return tagMatchesGroup(gTags);
+  });
+
+  if (filteredSaved.length > 0) {
+    html += `
+      <div style="display:flex;align-items:center;gap:8px;margin:20px 0 10px">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--success,#10b981);opacity:.85">💾 我保存的角色组</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+        <span style="font-size:11px;color:var(--text3)">${filteredSaved.length} 个</span>
+      </div>`;
+
+    filteredSaved.forEach(g => {
+      const allP = [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders, ...g.decisionMakers, ...g.resourceProviders];
+      const tagBadges = [...(g.tags.industry||[]), ...(g.tags.scene||[]), ...(g.tags.theme||[])].map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('');
+      html += `
+        <div class="browse-group-block">
+          <div class="browse-group-header" onclick="toggleBrowseGroup('saved-${g.id}')">
+            <span class="browse-group-toggle" id="toggle-saved-${g.id}">▶</span>
+            <span class="browse-group-title">${escHtml(g.projectTheme)}</span>
+            <span class="browse-group-meta">${allP.length} 个角色 · ${new Date(g.createdAt).toLocaleDateString('zh-CN')}</span>
+            <div style="display:flex;gap:4px;margin-left:8px">${tagBadges}</div>
+          </div>
+          <div class="browse-group-body" id="body-saved-${g.id}">
+            <div class="cards-grid">${allP.map(p => renderCard(p)).join('')}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  if (!html) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="big">🔍</div>
+      <p>当前标签筛选下没有匹配的角色组<br><span style="font-size:12px;color:var(--text3)">试试取消部分标签</span></p>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = html;
+}
+
+// 切换单个角色组折叠/展开
+function toggleBrowseGroup(id) {
+  const toggle = document.getElementById(`toggle-${id}`);
+  const body   = document.getElementById(`body-${id}`);
+  if (!toggle || !body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+}
 
 // ─────────────────────────────────────────
 // 市场浏览
