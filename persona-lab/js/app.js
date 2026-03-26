@@ -96,7 +96,24 @@ function handleTagEnter(e, cat) {
 function updateSidebarCreateBtn() {
   const hasSelected = Object.values(selectedTags).some(a => a.length > 0);
   const btn = document.getElementById('sidebar-create-btn');
-  if (btn) btn.classList.toggle('visible', hasSelected);
+  if (!btn) return;
+  btn.classList.toggle('visible', hasSelected);
+
+  if (hasSelected) {
+    // 检查是否有精准修饰器命中，给出语义化提示
+    const modifier = findBestModifier(selectedTags);
+    if (modifier && modifier.override && modifier.override.targetUser) {
+      const tu = modifier.override.targetUser;
+      btn.innerHTML = `✨ 生成：${tu.avatarTag}`;
+      btn.title = `精准匹配：${[...selectedTags.industry,...selectedTags.scene,...selectedTags.theme].filter(Boolean).join(' × ')}`;
+    } else {
+      const allTags = [...selectedTags.industry,...selectedTags.scene,...selectedTags.theme].filter(Boolean);
+      btn.innerHTML = allTags.length > 0
+        ? `✨ 基于「${allTags.slice(0,2).join('·')}」生成角色`
+        : '✨ 基于当前标签创建角色';
+      btn.title = '';
+    }
+  }
 }
 
 // 一键清除：清除主题输入 + 所有已选标签 + 结果区
@@ -125,11 +142,20 @@ function generateFromTags() {
     scene:    [...selectedTags.scene],
     theme:    [...selectedTags.theme],
   };
-  const themeHint = [
-    ...tags.industry.slice(0,1),
-    ...tags.scene.slice(0,1),
-    ...tags.theme.slice(0,1)
-  ].join(' · ') || '未命名场景';
+
+  // 检查是否有精准修饰器匹配，如果有，给出更语义化的主题提示
+  const modifier = findBestModifier(tags);
+  let themeHint;
+  if (modifier && modifier.override && modifier.override.targetUser) {
+    const tu = modifier.override.targetUser;
+    themeHint = `${tu.avatarTag} · ${[...tags.industry,...tags.scene,...tags.theme].filter(Boolean).join(' · ')}`;
+  } else {
+    themeHint = [
+      ...tags.industry.slice(0,2),
+      ...tags.scene.slice(0,1),
+      ...tags.theme.slice(0,1)
+    ].join(' · ') || '未命名场景';
+  }
 
   // 切到生成模式
   switchMode('generate');
@@ -314,6 +340,266 @@ function toggleExtremeRow() {
     toggleEl.classList.toggle('collapsed', !extremeRowExpanded);
     toggleEl.textContent = extremeRowExpanded ? '▼' : '▶';
   }
+}
+
+// ─────────────────────────────────────────
+// 标签修饰层 v3.0：跨标签语义融合
+// ─────────────────────────────────────────
+
+/**
+ * TAG_MODIFIER_DB：基于标签组合对人物描述进行精准修饰
+ * key: 触发修饰的标签组合（任意一个命中即生效；多个同时命中叠加优先级更高的那个）
+ * value: 覆写/修饰目标用户的哪些字段
+ *
+ * 优先级规则：tag组合越具体越优先；industry+scene+theme三重命中 > 两重命中 > 单重
+ */
+const TAG_MODIFIER_DB = [
+  // ── 科技 × 老龄化：老年人使用科技产品的困境
+  {
+    match: { industry: ['科技'], theme: ['老龄化'] },
+    weight: 30,
+    override: {
+      targetUser: {
+        name: '王淑兰', age: '68岁', occupation: '退休工厂工人', city: '杭州', avatarTag: '被迫数字化的老年人',
+        lifestyle: '独居，子女不在身边，日常靠手机联系家人，但每次操作都要打电话问怎么弄',
+        decisionStyle: '不敢自己决定，所有APP操作都要等子女回家演示一遍',
+        typicalBehavior: '每次用手机支付都紧张，怕按错键扣了钱，宁可多跑一趟银行排队',
+        explicitGoal: '能独立完成手机支付、视频通话、查电费这几件事',
+        hiddenNeed: '我不是笨，就是怕犯错，如果有人能一直在旁边提醒我就好了',
+        corePain: '界面经常更新，上周刚学会的操作这周入口又换了，每次都要重新学',
+        emotionState: '挫败感强，觉得自己跟不上时代，但又不服气',
+        quote: '「我跟孩子学了三遍，还是每次都忘，是不是我太笨了」',
+        personality: '自尊心强、认真但记忆力下降 · 主要受益者',
+        coreValues: '自立、不麻烦子女、被平等对待 · 对适老化设计有极强需求',
+        innerMotivation: '想证明年纪大了也可以用好科技，不想总是拖累孩子',
+      },
+      extremeHeavy: {
+        name: '李大爷（李建国）', ageOccupation: '75岁 · 退休工程师/科技学习者', extremeTag: '老年技术达人',
+        extremeBehavior: '自学了微信、支付宝、短视频，还帮邻居修手机，把每个操作都写成小抄贴在墙上',
+        workaround: '建了老年人科技互助群，遇到问题群里问，把学会的操作录成小视频分享',
+        explicitNeed: '被认可为「有用的人」，持续学习新东西',
+        heavyInsight: '目标用户并非没有能力，而是缺乏「第一次成功」的引导——极端案例说明适老化科技的关键是降低首次使用门槛',
+      },
+      extremeLight: {
+        name: '陈奶奶', ageOccupation: '72岁 · 老年用户', extremeTag: '彻底技术拒绝者',
+        extremeBehavior: '把智能手机当收音机用，坚持用老人机，认为"那些APP都是给年轻人用的"',
+        workaround: '所有涉及手机操作的事全让子女代办，拒绝学任何新功能',
+        explicitNeed: '人工服务、不被强制数字化',
+        lightInsight: '目标用户和这类人面临同样的恐惧——出错代价感知过高。解法是让错误可逆、可纠正，降低心理压力',
+      },
+    }
+  },
+
+  // ── 科技 × 体验优化：科技产品体验问题
+  {
+    match: { industry: ['科技'], scene: ['体验优化'] },
+    weight: 20,
+    override: {
+      targetUser: {
+        name: '方小蕾', age: '30岁', occupation: '产品运营专员', city: '上海', avatarTag: '体验敏感的挑剔用户',
+        lifestyle: '每天使用十几个APP，对细节感知极强，遇到体验问题必然流失或投诉',
+        decisionStyle: '以使用体验为第一标准，功能再强但操作繁琐就换掉',
+        typicalBehavior: '新APP用两分钟就能判断「这个可以用」还是「这个做得太差」，经常截图发朋友圈吐槽',
+        explicitGoal: '在繁忙工作中找到真正好用的效率工具，不要让工具成为新负担',
+        hiddenNeed: '我想要的不是功能最全的，是用起来最顺手的——设计者懂不懂用户，两个操作就能看出来',
+        corePain: '注册成功后发现核心功能藏在第三层菜单，教程弹窗挡住了我要做的事，感觉在被APP强迫',
+        emotionState: '对优秀体验充满期待，对糟糕体验零容忍',
+        quote: '「功能我都不想去探索了，连第一个页面都做得这么乱，这家公司一定不懂用户」',
+      },
+    }
+  },
+
+  // ── 科技 × 老龄化 × 体验优化：三重叠加（最高优先级）
+  {
+    match: { industry: ['科技'], theme: ['老龄化'], scene: ['体验优化'] },
+    weight: 50,
+    override: {
+      targetUser: {
+        name: '赵奶奶（赵秀英）', age: '66岁', occupation: '退休护士', city: '成都', avatarTag: '主动适龄化需求者',
+        lifestyle: '退休后热爱旅游、广场舞、养花，但日常出行、订票、挂号全要靠女儿帮忙操作',
+        decisionStyle: '很想自己掌控生活，但面对复杂界面就退缩，需要专门适老化的产品才能独立完成',
+        typicalBehavior: '每次旅游订酒店都要提前一周让女儿帮订好，不敢自己操作，怕选错房型付了钱取不了',
+        explicitGoal: '能自己用手机完成旅游订票、叫外卖、视频通话这些日常事务',
+        hiddenNeed: '我退休了还有精力做很多事，就是被这些手机操作挡在门外，设计者从来不考虑我们这些人',
+        corePain: '字太小、步骤太多、弹窗广告挡路，每一步都是障碍，年轻人觉得很自然的操作对我来说要花20倍时间',
+        emotionState: '渴望独立自主，对现有产品普遍感到被忽视和排斥',
+        quote: '「我不是不会用，是这些东西压根没想过让我们用——字那么小，按钮那么细，是怕我用吗？」',
+        personality: '自主意识强、学习意愿高、需要适老支持 · 主要受益者',
+        coreValues: '独立尊严、被平等设计对待、家人省心 · 对适老化体验优化有迫切需求',
+        innerMotivation: '想用科技让晚年生活更自由，不是成为子女的负担',
+      },
+      extremeHeavy: {
+        name: '老王（王建民）', ageOccupation: '72岁 · 前工程师/银发科技推广者', extremeTag: '老年体验倡导者',
+        extremeBehavior: '主动测评各类适老化APP，在老年社区发布体验报告，联系产品团队反映老年用户问题',
+        workaround: '自己整理了一份「哪些APP老年人能用」推荐清单，在老年大学课堂上分享',
+        explicitNeed: '推动更多产品真正做好适老化设计，被当作有效用户反馈来源',
+        heavyInsight: '目标用户同样有强烈使用意愿，缺的是被设计者认真对待——这类极端用户在用实际行动告诉产品团队"我们值得被好好设计"',
+      },
+      extremeLight: {
+        name: '刘奶奶', ageOccupation: '70岁 · 农村老人', extremeTag: '数字鸿沟受害者',
+        extremeBehavior: '从未触摸过智能手机，健康码出现后无法出行，只能依靠子女陪同，生活范围越来越窄',
+        workaround: '所有数字化事务全部放弃，靠人情网络和子女的临时帮助维持基本生活',
+        explicitNeed: '有人帮我做，我自己做不了',
+        lightInsight: '目标用户和这类人面临同样的壁垒——数字化设计的排斥是系统性的，不是个人问题，但体验优化可以改变这种现状',
+      },
+      stakeholders: [
+        { identityTag: '产品设计师/UX研究员', coreDemand: '了解真实老年用户行为，避免被年龄歧视指控，让适老化设计有数据支撑', influence: 3, relationTag: '核心设计执行方' },
+        { identityTag: '子女/家属群体', coreDemand: '父母能独立使用基础功能，减少被叫来"帮忙操作"的次数', influence: 2, relationTag: '间接受益者与传播者' },
+        { identityTag: '监管/工信部适老化推进办', coreDemand: '产品通过适老化认证标准，满足强制性政策要求', influence: -2, relationTag: '外部强监管方' },
+        { identityTag: '商务/增长团队', coreDemand: '银发市场用户规模庞大，适老化是新增长点但投入产出比需要验证', influence: 1, relationTag: '内部商业驱动方' },
+      ],
+      decisionMaker: { coreConcern: '银发用户留存率、适老化认证合规、家属NPS、科技普惠的社会价值与商业回报平衡', valueSensitivity: 2, innovationDesire: 3 },
+      resourceProvider: { identityTag: '适老化设计标准机构 + 语音/大字体交互技术供应商（如讯飞语音/华为适老化解决方案）', techMaturity: 2, resourceCompleteness: 2 },
+    }
+  },
+
+  // ── 医疗 × 产品研发：医疗产品研发团队
+  {
+    match: { industry: ['医疗'], scene: ['产品研发'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '刘晓彤', age: '33岁', occupation: '医疗器械产品经理', city: '北京', avatarTag: '夹在临床与技术之间',
+        lifestyle: '每天穿梭于医院、实验室和会议室，被临床医生和工程师双向夹击',
+        decisionStyle: '需要大量临床证据才能推进，每个功能都要考虑医疗合规和准入周期',
+        typicalBehavior: '做用研时要同时满足临床医生、患者、科室主任三方完全不同的需求，需求冲突每周都在发生',
+        explicitGoal: '研发出临床医生真正愿意用、患者也能受益的医疗产品',
+        hiddenNeed: '希望有人帮我把临床观察转化成可落地的产品需求，不是让我再做一个医生不看的管理系统',
+        corePain: '临床医生说"你们不懂医疗"，技术说"你们需求不清晰"，我夹在中间两边都说不通',
+        emotionState: '高压力、价值感时常受挫',
+        quote: '「我既要懂医学，又要懂技术，还要懂商业，但谁来帮我把这三件事连起来？」',
+      },
+    }
+  },
+
+  // ── 金融 × 体验优化：金融产品体验
+  {
+    match: { industry: ['金融'], scene: ['体验优化'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '李明珊', age: '35岁', occupation: '银行零售业务主管', city: '广州', avatarTag: '体验变革推动者',
+        lifestyle: '每天处理客户投诉和业务指标，知道产品体验有问题但推动改变困难重重',
+        corePain: '客户反馈APP填表步骤太多，手机端功能残缺必须去柜台，竞争对手3步完成的操作我们要8步',
+        hiddenNeed: '我想把客户的体验抱怨变成改进需求传递给IT，但总是被"系统暂不支持"挡回来',
+        quote: '「客户体验差不是我们不想改，是每个部门都有自己的优先级，体验总是最后那个」',
+      },
+    }
+  },
+
+  // ── 汽车 × 产品研发：智能汽车产品定义
+  {
+    match: { industry: ['汽车'], scene: ['产品研发'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '张明辉', age: '32岁', occupation: '智驾功能产品经理', city: '上海', avatarTag: '功能定义者',
+        lifestyle: '每天泡在试驾场和研发楼之间，白天跑数据，晚上写PRD，周末还要看竞品发布会',
+        decisionStyle: '用真实驾驶数据支撑决策，但经常被老板的"竞品已经有这个功能了"打断',
+        typicalBehavior: '收集了大量真实车主的智驾误触发投诉，但很难量化成技术团队认可的优先级',
+        explicitGoal: '定义出用户真正需要的智驾功能，不是堆参数，是解决真实场景的问题',
+        hiddenNeed: '我需要的不是更多数据，是能说服技术和老板的清晰洞察——用户到底在哪些场景下信任还是不信任辅助驾驶',
+        corePain: '用户研究方法不系统，访谈结论说不清楚，技术团队说"这不够精确"，老板说"竞品都有了你还在研究什么"',
+        quote: '「我知道用户有问题，但我说不清楚哪个问题最重要、最值得先解决」',
+      },
+    }
+  },
+
+  // ── 教育 × 老龄化：老年教育/终身学习
+  {
+    match: { industry: ['教育'], theme: ['老龄化'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '吴秀华', age: '62岁', occupation: '退休会计 · 老年大学学员', city: '武汉', avatarTag: '终身学习者',
+        lifestyle: '每周两次老年大学，学钢琴和智能手机操作，把学习当成保持活力的方式',
+        corePain: '老年大学课太快，老师教完就走，没有复习材料，下次课忘了大半；在线学习平台字太小、广告太多',
+        hiddenNeed: '希望学习过程有人陪伴，能按我的节奏来，不要总是催着往前走',
+        quote: '「我不是不想学，就是记不住，如果能反复练、慢慢来，我一定学得会」',
+      },
+    }
+  },
+
+  // ── 出行 × 老龄化：老年出行
+  {
+    match: { industry: ['出行'], theme: ['老龄化'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '程大爷（程国华）', age: '70岁', occupation: '退休干部', city: '北京', avatarTag: '独立出行障碍者',
+        lifestyle: '身体尚好，每周去公园下棋，但网约车APP操作困难，地铁扫码也经常出问题',
+        corePain: '手机打车经常卡在地图选点这一步，等了半天才发现没叫成功，在路边急得团团转',
+        hiddenNeed: '我不想一直靠孩子送，但每次自己出门都会碰到各种数字障碍，希望出行工具能多想想老年人',
+        quote: '「我走路还行，就是叫不到车，什么时候出行变得这么复杂？」',
+      },
+    }
+  },
+
+  // ── 零售 × 数字化转型
+  {
+    match: { industry: ['零售'], scene: ['数字化转型'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '曹建国', age: '46岁', occupation: '连锁超市区域总监', city: '郑州', avatarTag: '被迫数字化的传统零售人',
+        lifestyle: '管理20家门店，每天被数据报表和门店突发两件事轮番打击，被老板要求"数字化转型"但不知从哪里下手',
+        corePain: '上了三个数字化系统，员工不会用，数据口径不统一，花了几百万看不到效果，反而增加了很多人工对账工作',
+        hiddenNeed: '我需要的不是更多系统，是有人告诉我哪一个数字化动作能最快改善我的核心问题——货损和缺货',
+        quote: '「数字化我懂，但每个方案商都说自己最好，结果钱花了、人累了，货还是在亏」',
+      },
+    }
+  },
+
+  // ── 健康科技 × 老龄化：老年健康监测
+  {
+    match: { industry: ['健康科技'], theme: ['老龄化'] },
+    weight: 25,
+    override: {
+      targetUser: {
+        name: '林奶奶（林淑贞）', age: '74岁', occupation: '退休教师 · 慢病患者', city: '福州', avatarTag: '被动健康监测者',
+        lifestyle: '高血压、糖尿病，每天测血压血糖，但数据记在本子上，每次复诊让医生一条条看',
+        corePain: '子女给买了智能手环，教了好几遍还是用不明白，最后成了摆设，血压高了还是不知道该怎么办',
+        hiddenNeed: '我不需要很多数字，就告诉我今天身体怎么样、需不需要去医院，这一句话就够',
+        quote: '「数字跳来跳去我看不懂，你直接告诉我「今天正常」或者「今天要注意」就行了」',
+      },
+    }
+  },
+];
+
+/**
+ * 查找最适合当前标签组合的修饰器
+ * 返回权重最高的匹配修饰器，无匹配返回 null
+ */
+function findBestModifier(tags) {
+  let best = null;
+  let bestScore = 0;
+
+  TAG_MODIFIER_DB.forEach(mod => {
+    const mc = mod.match;
+    let matchCount = 0;
+    let totalRequired = 0;
+
+    // 计算匹配度
+    ['industry', 'scene', 'theme'].forEach(cat => {
+      if (mc[cat] && mc[cat].length > 0) {
+        totalRequired++;
+        if (mc[cat].some(t => (tags[cat] || []).includes(t))) {
+          matchCount++;
+        }
+      }
+    });
+
+    // 必须全部命中才生效
+    if (matchCount === totalRequired && totalRequired > 0) {
+      const score = mod.weight * matchCount;
+      if (score > bestScore) {
+        bestScore = score;
+        best = mod;
+      }
+    }
+  });
+
+  return best;
 }
 
 // ─────────────────────────────────────────
@@ -981,115 +1267,148 @@ function matchDomain(theme, tags) {
 }
 
 /**
- * 主生成函数 v2.0：多域融合 + 主题修饰
- * - primary domain 决定目标用户、极端用户核心内容
- * - secondary domain 补充利益相关方（不重复）+ 丰富决策者/资源方描述
- * - 自由文本主题作为修饰词叠加到 summary
+ * 主生成函数 v3.0：多域融合 + 标签修饰层
+ * 优先级：TAG_MODIFIER_DB（标签组合精准匹配）> primary domain > secondary domain
+ * - modifier 命中时：覆写人物的核心字段，让内容与勾选标签真正匹配
+ * - modifier 未命中时：退化到 v2.0 多域融合逻辑
+ * - 卡片标签：始终显示用户实际勾选/输入的标签
  */
 function buildDemoPersonas(theme, tags) {
   const { primary, secondary } = matchDomain(theme, tags);
   const domain  = DOMAIN_DB[primary];
   const domain2 = secondary ? DOMAIN_DB[secondary] : null;
 
-  const industry = (tags.industry && tags.industry[0]) || primary;
-  const scene    = (tags.scene    && tags.scene[0])    || (tags.industry && tags.industry[1]) || domain.keys[0] || '体验优化';
-  const themeTag = (tags.theme    && tags.theme[0])    || domain.keys[1] || '';
+  // ── 确定显示标签（优先用用户勾选的真实标签）
+  const industryDisplay = (tags.industry && tags.industry[0]) || primary;
+  const sceneDisplay    = (tags.scene    && tags.scene[0])    || (tags.industry && tags.industry[1]) || domain.keys[0] || '体验优化';
+  const themeDisplay    = (tags.theme    && tags.theme[0])    || domain.keys[1] || '';
+
   const personas = [];
 
-  const tu_data = domain.targetUser;
+  // ── 查找标签修饰器（标签组合精准匹配）
+  const modifier = findBestModifier(tags);
+  const mod_ov   = modifier ? modifier.override : null;
+
+  // ── 合并目标用户数据（modifier > domain）
+  const tu_base = domain.targetUser;
+  const tu_mod  = mod_ov && mod_ov.targetUser ? mod_ov.targetUser : {};
+  const tu_data = { ...tu_base, ...tu_mod };  // modifier 字段覆盖 domain 字段
 
   // ── 目标用户
   const tu = createTargetUser({
     m1: {
-      name: tu_data.name, age: tu_data.age,
-      occupation: tu_data.occupation, city: tu_data.city,
-      avatarTag: tu_data.avatarTag
+      name:       tu_data.name,
+      age:        tu_data.age,
+      occupation: tu_data.occupation,
+      city:       tu_data.city,
+      avatarTag:  tu_data.avatarTag
     },
     m2: {
-      lifestyle:        tu_data.lifestyle,
-      decisionStyle:    tu_data.decisionStyle,
-      infoSource:       tu_data.infoSource,
-      typicalBehavior:  tu_data.typicalBehavior
+      lifestyle:       tu_data.lifestyle,
+      decisionStyle:   tu_data.decisionStyle,
+      infoSource:      tu_data.infoSource,
+      typicalBehavior: tu_data.typicalBehavior
     },
     m3: {
-      explicitGoal:  tu_data.explicitGoal,
-      hiddenNeed:    tu_data.hiddenNeed,
-      corePain:      tu_data.corePain,
-      emotionState:  tu_data.emotionState
+      explicitGoal: tu_data.explicitGoal,
+      hiddenNeed:   tu_data.hiddenNeed,
+      corePain:     tu_data.corePain,
+      emotionState: tu_data.emotionState
     },
     m4: {
-      personality:      tu_data.personality,
-      coreValues:       tu_data.coreValues,
-      innerMotivation:  tu_data.innerMotivation,
-      quote:            tu_data.quote
+      personality:     tu_data.personality,
+      coreValues:      tu_data.coreValues,
+      innerMotivation: tu_data.innerMotivation,
+      quote:           tu_data.quote
     },
-    m5: { industryTag: industry, sceneTag: scene, themeTag },
+    // 标签：始终显示用户实际勾选的标签
+    m5: { industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
     summary: `${tu_data.name}，${tu_data.age}，${tu_data.occupation}，来自${tu_data.city}。`
            + `核心痛点：${tu_data.corePain}。`
            + `内在渴望：${tu_data.hiddenNeed}。`
            + (theme ? `【项目场景】${theme}` : '')
+           + (modifier ? `【标签组合】${[...tags.industry,...tags.scene,...tags.theme].filter(Boolean).join(' · ')}` : '')
   });
   personas.push(tu);
 
-  // ── 极端用户 A（重度端）
-  const eh = domain.extremeHeavy;
+  // ── 极端用户 A（重度端）— modifier > domain
+  const eh_base = domain.extremeHeavy;
+  const eh      = mod_ov && mod_ov.extremeHeavy ? { ...eh_base, ...mod_ov.extremeHeavy } : eh_base;
   const euA = createExtremeUser({
     side: EXTREME_SIDE.HEAVY,
     m1: { name: eh.name, ageOccupation: eh.ageOccupation, extremeTag: eh.extremeTag },
     m2: { extremeBehavior: eh.extremeBehavior, workaround: eh.workaround },
     m3: { explicitNeed: eh.explicitNeed, linkedTargetUserId: tu.id, inspirationForTarget: eh.heavyInsight },
-    m4: { industryTag: industry, sceneTag: scene, themeTag }
+    m4: { industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay }
   });
   personas.push(euA);
 
-  // ── 极端用户 B（轻度/拒绝端）
-  const el = domain.extremeLight;
+  // ── 极端用户 B（轻度/拒绝端）— modifier > domain
+  const el_base = domain.extremeLight;
+  const el      = mod_ov && mod_ov.extremeLight ? { ...el_base, ...mod_ov.extremeLight } : el_base;
   const euB = createExtremeUser({
     side: EXTREME_SIDE.LIGHT,
     m1: { name: el.name, ageOccupation: el.ageOccupation, extremeTag: el.extremeTag },
     m2: { extremeBehavior: el.extremeBehavior, workaround: el.workaround },
     m3: { explicitNeed: el.explicitNeed, linkedTargetUserId: tu.id, inspirationForTarget: el.lightInsight },
-    m4: { industryTag: industry, sceneTag: scene, themeTag }
+    m4: { industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay }
   });
   euA.linkedExtremeUsers = [euB.id];
   personas.push(euB);
 
-  // ── 利益相关方：primary 全部 + secondary 前1个（去重）
-  const stks = [...(domain.stakeholders || [])];
-  if (domain2 && domain2.stakeholders) {
-    const extraStk = domain2.stakeholders[0];
-    if (extraStk && !stks.some(s => s.identityTag === extraStk.identityTag)) {
-      stks.push({
-        ...extraStk,
-        relationTag: `[${secondary}视角] ` + extraStk.relationTag
-      });
+  // ── 利益相关方：modifier > primary 全部 + secondary 前1个（去重）
+  let stks;
+  if (mod_ov && mod_ov.stakeholders) {
+    stks = mod_ov.stakeholders;
+  } else {
+    stks = [...(domain.stakeholders || [])];
+    if (domain2 && domain2.stakeholders) {
+      const extraStk = domain2.stakeholders[0];
+      if (extraStk && !stks.some(s => s.identityTag === extraStk.identityTag)) {
+        stks.push({
+          ...extraStk,
+          relationTag: `[${secondary}视角] ` + extraStk.relationTag
+        });
+      }
     }
   }
   stks.forEach(s => {
     personas.push(createStakeholder({
       m1: { identityTag: s.identityTag, coreDemand: s.coreDemand, influence: s.influence },
-      m2: { industryTag: industry, sceneTag: scene, relationTag: s.relationTag }
+      m2: { industryTag: industryDisplay, sceneTag: sceneDisplay, relationTag: s.relationTag }
     }));
   });
 
-  // ── 决策者：主域 + secondary 场景补充
-  const dm = domain.decisionMaker;
-  const dmConcern = (secondary && domain2)
-    ? `${dm.coreConcern}；另从「${secondary}」维度关注：${domain2.decisionMaker.coreConcern}`
-    : dm.coreConcern;
+  // ── 决策者：modifier > 主域 + secondary 场景补充
+  let dm, dmConcern;
+  if (mod_ov && mod_ov.decisionMaker) {
+    dm = { ...domain.decisionMaker, ...mod_ov.decisionMaker };
+    dmConcern = dm.coreConcern;
+  } else {
+    dm = domain.decisionMaker;
+    dmConcern = (secondary && domain2)
+      ? `${dm.coreConcern}；另从「${secondary}」维度关注：${domain2.decisionMaker.coreConcern}`
+      : dm.coreConcern;
+  }
   personas.push(createDecisionMaker({
     m1: { coreConcern: dmConcern, valueSensitivity: dm.valueSensitivity, innovationDesire: dm.innovationDesire },
-    m2: { industryTag: industry, sceneTag: scene, relationTag: '内部决策层' }
+    m2: { industryTag: industryDisplay, sceneTag: sceneDisplay, relationTag: '内部决策层' }
   }));
 
-  // ── 资源提供者：主域 + secondary 补充
-  const rp = domain.resourceProvider;
-  const rpIdentity = (secondary && domain2)
-    ? `${rp.identityTag} · 兼顾「${domain2.resourceProvider.identityTag}」`
-    : rp.identityTag;
+  // ── 资源提供者：modifier > 主域 + secondary 补充
+  let rp, rpIdentity;
+  if (mod_ov && mod_ov.resourceProvider) {
+    rp = { ...domain.resourceProvider, ...mod_ov.resourceProvider };
+    rpIdentity = rp.identityTag;
+  } else {
+    rp = domain.resourceProvider;
+    rpIdentity = (secondary && domain2)
+      ? `${rp.identityTag} · 兼顾「${domain2.resourceProvider.identityTag}」`
+      : rp.identityTag;
+  }
   personas.push(createResourceProvider({
     m1: { identityTag: rpIdentity, techMaturity: rp.techMaturity, resourceCompleteness: rp.resourceCompleteness },
-    m2: { industryTag: industry, sceneTag: scene, relationTag: '外部技术合作方' }
+    m2: { industryTag: industryDisplay, sceneTag: sceneDisplay, relationTag: '外部技术合作方' }
   }));
 
   return personas;

@@ -225,6 +225,20 @@ main {
 .generate-btn .spin { animation: spin .8s linear infinite; display: inline-block; }
 @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 
+/* 一键清除按钮 */
+.clear-btn {
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text3);
+  white-space: nowrap;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.clear-btn:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,.05); }
+
 /* 标签确认区 */
 .tag-confirm {
   background: var(--bg3);
@@ -423,7 +437,7 @@ main {
 .sidebar-create-btn {
   width: 100%;
   margin-top: 12px;
-  padding: 9px 0;
+  padding: 10px 0;
   background: linear-gradient(135deg, var(--accent), #8b5cf6);
   color: #fff;
   border-radius: var(--radius-sm);
@@ -432,8 +446,23 @@ main {
   text-align: center;
   transition: all .2s;
   display: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 2px 12px rgba(99,102,241,0.35);
+  position: relative;
+  overflow: hidden;
 }
-.sidebar-create-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,.4); }
+.sidebar-create-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+.sidebar-create-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,.5); }
 .sidebar-create-btn.visible { display: block; }
 
 /* 空状态 */
@@ -476,15 +505,17 @@ main {
   margin-bottom: 10px;
 }
 .card-avatar {
-  width: 40px; height: 40px;
+  width: 60px; height: 60px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
   flex-shrink: 0;
-  background: var(--bg3);
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
 }
+.card-avatar svg { width: 60px; height: 60px; display: block; }
 .card-identity { flex: 1; min-width: 0; }
 .card-name { font-size: 15px; font-weight: 600; color: var(--text); }
 .card-sub  { font-size: 12px; color: var(--text2); margin-top: 2px; }
@@ -907,8 +938,9 @@ main {
           </div>
           <div class="theme-row">
             <input class="theme-input" id="input-theme-main"
-              placeholder="项目主题，例如：跨国鞋服零售门店·术语认知过载导致成交率低"
+              placeholder="项目主题，例如：医疗 · 慢病管理 · 老龄化用户"
               onkeydown="if(event.key==='Enter')startGenerate()">
+            <button class="clear-btn" id="clear-btn" onclick="clearAll()" title="清除主题和标签选择">✕ 清除</button>
             <button class="generate-btn" id="generate-btn" onclick="startGenerate()">
               <span id="generate-icon">✨</span> 一键生成
             </button>
