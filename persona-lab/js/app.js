@@ -1630,6 +1630,7 @@ const TYPE_AVATAR = {
 function renderCard(p) {
   const label  = TYPE_LABEL[p.type] || p.type;
   const edited = p._edited ? '<span class="edited-badge">已编辑</span>' : '';
+  const preset = p._preset ? '<span class="preset-badge">📚 预置</span>' : '';
   const avatarSvg = generateAvatar(p.id, p.type);
   let inner = '';
 
@@ -1638,7 +1639,7 @@ function renderCard(p) {
       <div class="card-head">
         <div class="card-avatar">${avatarSvg}</div>
         <div class="card-identity">
-          <div class="card-name">${escHtml(p.m1.name)} ${edited}</div>
+          <div class="card-name">${escHtml(p.m1.name)} ${edited}${preset}</div>
           <div class="card-sub">${escHtml(p.m1.age)} · ${escHtml(p.m1.occupation)}</div>
           <div class="card-sub">${escHtml(p.m1.city)} · ${escHtml(p.m1.avatarTag)}</div>
         </div>
@@ -1841,9 +1842,14 @@ function clearGroup() {
 
 function saveCurrentGroup() {
   const theme = document.getElementById('input-theme-main')?.value.trim() || '';
+  // Bug fix: 保存当前勾选的标签（之前硬编码为空对象导致标签丢失）
   const group = createPersonaGroup({
     projectTheme: theme,
-    tags: {},
+    tags: {
+      industry: [...selectedTags.industry],
+      scene:    [...selectedTags.scene],
+      theme:    [...selectedTags.theme],
+    },
     targetUsers:       allPersonas.filter(p => p.type === 'target_user'),
     extremeUsers:      allPersonas.filter(p => p.type === 'extreme_user'),
     stakeholders:      allPersonas.filter(p => p.type === 'stakeholder'),
@@ -2132,6 +2138,270 @@ function saveFieldEdit(personaId, fieldPath, value) {
 }
 
 // ─────────────────────────────────────────
+// 预置公共角色库（市场浏览模式的底座）
+// 基于 TAG_MODIFIER_DB 的 10 组标签组合，实例化为真实角色对象
+// 这些角色始终在市场浏览中可见（不依赖用户是否生成过）
+// ─────────────────────────────────────────
+const PRESET_PERSONAS = (() => {
+  const ps = [];
+
+  // 辅助：快速生成标签模块
+  const m5 = (ind, sc, th) => ({ industryTag: ind, sceneTag: sc, themeTag: th });
+  const m4eu = (ind, sc, th) => ({ industryTag: ind, sceneTag: sc, themeTag: th });
+  const m2sh = (ind, sc, rel) => ({ industryTag: ind, sceneTag: sc, relationTag: rel });
+
+  // ── 组 1：科技 × 老龄化 ──────────────────────────
+  ps.push({
+    id: 'preset_tu_tech_elder', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '王淑兰', age: '68岁', occupation: '退休工厂工人', city: '杭州', avatarTag: '被迫数字化的老年人' },
+    m2: { lifestyle: '独居，子女不在身边，靠手机联系家人，每次操作都要电话问怎么弄', decisionStyle: '不敢自决，所有APP操作等子女回家演示', infoSource: '子女口口相传', typicalBehavior: '每次手机支付都紧张，宁可多跑一趟银行排队' },
+    m3: { explicitGoal: '能独立完成手机支付、视频通话、查电费', hiddenNeed: '如果有人能一直在旁边提醒就好了', corePain: '界面经常更新，上周刚学会的操作这周入口又换了', emotionState: '挫败感强，觉得跟不上时代，但不服气' },
+    m4: { personality: '自尊心强、认真但记忆力下降 · 主要受益者', coreValues: '自立、不麻烦子女、被平等对待', innerMotivation: '想证明年纪大了也可以用好科技', quote: '「我跟孩子学了三遍，还是每次都忘，是不是我太笨了」' },
+    m5: m5('科技', '体验优化', '老龄化'),
+    summary: '王淑兰，68岁，退休工人，被迫数字化的老年人。界面每次更新就要重新学，挫败感强但不服气。',
+    linkedExtremeUsers: ['preset_eu_tech_elder_h', 'preset_eu_tech_elder_l'],
+  });
+  ps.push({
+    id: 'preset_eu_tech_elder_h', type: 'extreme_user', side: 'heavy', _preset: true, _edited: false, _original: null,
+    m1: { name: '李建国', ageOccupation: '75岁 · 退休工程师', extremeTag: '老年技术达人' },
+    m2: { extremeBehavior: '自学微信、支付宝、短视频，还帮邻居修手机，操作全写成小抄贴墙上', workaround: '建了老年人科技互助群，把学会的操作录成小视频分享' },
+    m3: { explicitNeed: '被认可为「有用的人」，持续学习新东西', linkedTargetUserId: 'preset_tu_tech_elder', inspirationForTarget: '目标用户并非没有能力，而是缺乏「第一次成功」的引导——关键是降低首次使用门槛' },
+    m4: m4eu('科技', '体验优化', '老龄化'),
+  });
+  ps.push({
+    id: 'preset_eu_tech_elder_l', type: 'extreme_user', side: 'light', _preset: true, _edited: false, _original: null,
+    m1: { name: '陈奶奶', ageOccupation: '72岁 · 老年用户', extremeTag: '彻底技术拒绝者' },
+    m2: { extremeBehavior: '把智能手机当收音机用，坚持用老人机，认为APP都是给年轻人用的', workaround: '所有手机操作全让子女代办，拒绝学任何新功能' },
+    m3: { explicitNeed: '人工服务、不被强制数字化', linkedTargetUserId: 'preset_tu_tech_elder', inspirationForTarget: '目标用户面临同样的恐惧——出错代价感知过高。解法是让错误可逆、可纠正' },
+    m4: m4eu('科技', '体验优化', '老龄化'),
+  });
+  ps.push({
+    id: 'preset_sh_tech_elder_1', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '产品设计师/UX研究员', coreDemand: '了解真实老年用户行为，让适老化设计有数据支撑', influence: 3 },
+    m2: m2sh('科技', '体验优化', '核心设计执行方'),
+  });
+  ps.push({
+    id: 'preset_sh_tech_elder_2', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '子女/家属群体', coreDemand: '父母能独立使用基础功能，减少被叫来「帮忙操作」的次数', influence: 2 },
+    m2: m2sh('科技', '体验优化', '间接受益者与传播者'),
+  });
+  ps.push({
+    id: 'preset_dm_tech_elder', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '银发用户留存率、适老化认证合规、家属NPS、科技普惠的社会价值与商业回报平衡', valueSensitivity: 2, innovationDesire: 3 },
+    m2: m2sh('科技', '体验优化', '内部决策层'),
+  });
+  ps.push({
+    id: 'preset_rp_tech_elder', type: 'resource_provider', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '适老化设计标准机构 + 语音/大字体交互技术供应商（讯飞/华为适老化解决方案）', techMaturity: 2, resourceCompleteness: 2 },
+    m2: m2sh('科技', '体验优化', '外部技术合作方'),
+  });
+
+  // ── 组 2：科技 × 体验优化 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_tech_ux', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '方小蕾', age: '30岁', occupation: '产品运营专员', city: '上海', avatarTag: '体验敏感的挑剔用户' },
+    m2: { lifestyle: '每天使用十几个APP，对细节感知极强，遇到体验问题必然流失或投诉', decisionStyle: '以体验为第一标准，功能再强但操作繁琐就换掉', infoSource: '产品圈/朋友圈口碑', typicalBehavior: '新APP用两分钟就能判断好坏，经常截图吐槽' },
+    m3: { explicitGoal: '找到真正好用的效率工具，不要让工具成为新负担', hiddenNeed: '我要的不是功能最全的，是用起来最顺手的——懂不懂用户，两个操作就能看出来', corePain: '注册成功后发现核心功能藏在第三层菜单，教程弹窗挡住了我要做的事', emotionState: '对优秀体验充满期待，对糟糕体验零容忍' },
+    m4: { personality: '眼光挑剔、表达直接 · 核心体验评判者', coreValues: '效率、简洁、被尊重的设计', innerMotivation: '希望用好工具把时间花在真正有价值的地方', quote: '「连第一个页面都做得这么乱，这家公司一定不懂用户」' },
+    m5: m5('科技', '体验优化', '认知负荷'),
+    summary: '方小蕾，30岁，产品运营，体验敏感的挑剔用户。核心功能藏在第三层菜单，弹窗教程挡路，直接流失。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_dm_tech_ux', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '体验 NPS 与留存率挂钩、设计迭代速度 vs 功能开发优先级博弈', valueSensitivity: 3, innovationDesire: 2 },
+    m2: m2sh('科技', '体验优化', '内部决策层'),
+  });
+
+  // ── 组 3：汽车 × 产品研发 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_auto_dev', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '张明辉', age: '32岁', occupation: '智驾功能产品经理', city: '上海', avatarTag: '功能定义者' },
+    m2: { lifestyle: '白天泡在试驾场和研发楼，晚上写PRD，周末看竞品发布会', decisionStyle: '用驾驶数据支撑决策，但经常被「竞品已有这功能了」打断', infoSource: '驾驶数据/竞品拆解/用户投诉', typicalBehavior: '收集了大量智驾误触发投诉，但很难量化成技术团队认可的优先级' },
+    m3: { explicitGoal: '定义用户真正需要的智驾功能，不是堆参数，是解决真实场景的问题', hiddenNeed: '需要能说服技术和老板的清晰洞察——用户在哪些场景信任或不信任辅助驾驶', corePain: '用户研究方法不系统，访谈结论说不清楚，技术说「不够精确」，老板说「竞品都有了你还研究什么」', emotionState: '高压迫感，价值感容易受挫' },
+    m4: { personality: '数据驱动但受夹击 · 需求翻译者', coreValues: '真实场景洞察、用研的可信度', innerMotivation: '想证明用户研究能带来真实的产品差异化', quote: '「我知道用户有问题，但我说不清楚哪个问题最值得先解决」' },
+    m5: m5('汽车', '产品研发', '智能化体验'),
+    summary: '张明辉，32岁，智驾产品经理，功能定义者。夹在技术和老板之间，需要能说服两边的清晰洞察。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_dm_auto_dev', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '智驾功能上市节奏 vs 安全合规、差异化卖点能否支撑溢价、用户信任积累周期', valueSensitivity: 3, innovationDesire: 3 },
+    m2: m2sh('汽车', '产品研发', '内部决策层'),
+  });
+  ps.push({
+    id: 'preset_rp_auto_dev', type: 'resource_provider', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '激光雷达/芯片供应商（Mobileye/地平线）+ 高精地图数据提供方（四维图新）', techMaturity: 3, resourceCompleteness: 2 },
+    m2: m2sh('汽车', '产品研发', '外部技术合作方'),
+  });
+
+  // ── 组 4：医疗 × 产品研发 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_med_dev', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '刘晓彤', age: '33岁', occupation: '医疗器械产品经理', city: '北京', avatarTag: '夹在临床与技术之间' },
+    m2: { lifestyle: '每天穿梭于医院、实验室和会议室，被临床医生和工程师双向夹击', decisionStyle: '需要大量临床证据才能推进，每个功能都要考虑合规和准入周期', infoSource: '临床观察/学术文献/监管文件', typicalBehavior: '做用研时要同时满足临床医生、患者、科室主任三方完全不同的需求，冲突每周都在发生' },
+    m3: { explicitGoal: '研发出临床医生真正愿意用、患者也能受益的医疗产品', hiddenNeed: '希望有人帮我把临床观察转化成可落地的产品需求，不是再做一个医生不看的管理系统', corePain: '临床说「你们不懂医疗」，技术说「需求不清晰」，我夹在中间两边说不通', emotionState: '高压力，价值感时常受挫' },
+    m4: { personality: '需要同时懂医学、技术、商业 · 三角协调者', coreValues: '临床价值优先、合规底线', innerMotivation: '做出真正改善患者预后的产品', quote: '「我既要懂医学，又要懂技术，还要懂商业，但谁来帮我把这三件事连起来？」' },
+    m5: m5('医疗', '产品研发', '决策辅助'),
+    summary: '刘晓彤，33岁，医疗器械产品经理，夹在临床与技术之间。需求说不清楚，三方冲突每周都有。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_sh_med_dev', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '临床医生/科室主任', coreDemand: '产品符合临床工作流，不增加操作负担，有真实的诊疗价值', influence: 3 },
+    m2: m2sh('医疗', '产品研发', '核心使用方与验收者'),
+  });
+  ps.push({
+    id: 'preset_rp_med_dev', type: 'resource_provider', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: 'NMPA 合规顾问 + 临床数据采集 CRO 机构 + 医院信息系统对接方（HIS/EMR厂商）', techMaturity: 2, resourceCompleteness: 2 },
+    m2: m2sh('医疗', '产品研发', '外部合规与技术支持方'),
+  });
+
+  // ── 组 5：金融 × 体验优化 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_fin_ux', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '李明珊', age: '35岁', occupation: '银行零售业务主管', city: '广州', avatarTag: '体验变革推动者' },
+    m2: { lifestyle: '每天处理客户投诉和业务指标，知道产品体验有问题但推动改变困难重重', decisionStyle: '需要数据和案例同时说服上级和IT部门', infoSource: '客户投诉系统/竞品分析', typicalBehavior: '把客户体验投诉归类整理，反复向IT提需求，被「系统暂不支持」挡回来' },
+    m3: { explicitGoal: '把客户体验抱怨转化成改进需求并真正落地', hiddenNeed: '需要一套让各部门都认可优先级的方法，而不只是靠投诉数量说话', corePain: '客户反馈APP步骤太多，手机端功能残缺必须去柜台，竞品3步完成我们要8步', emotionState: '推动力强但受阻，有时觉得在以卵击石' },
+    m4: { personality: '执行力强、有用户共情 · 内部变革推动者', coreValues: '客户体验就是业务竞争力', innerMotivation: '让银行真的变得好用，不只是完成KPI', quote: '「客户体验差不是我们不想改，是每个部门都有自己的优先级，体验总是最后那个」' },
+    m5: m5('金融', '体验优化', '决策辅助'),
+    summary: '李明珊，35岁，银行零售主管，体验变革推动者。每次提需求都被IT挡回，竞品3步我们要8步。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_dm_fin_ux', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '体验改善与合规监管约束的平衡、IT改造成本 vs 客户流失成本', valueSensitivity: 3, innovationDesire: 2 },
+    m2: m2sh('金融', '体验优化', '内部决策层'),
+  });
+
+  // ── 组 6：教育 × 老龄化 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_edu_elder', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '吴秀华', age: '62岁', occupation: '退休会计 · 老年大学学员', city: '武汉', avatarTag: '终身学习者' },
+    m2: { lifestyle: '每周两次老年大学，学钢琴和智能手机操作，把学习当成保持活力的方式', decisionStyle: '按自己的节奏来，不喜欢被催着往前走', infoSource: '老年大学/子女推荐', typicalBehavior: '认真做笔记，但课后反复练习时常常想不起步骤，回家后需要再自己摸索' },
+    m3: { explicitGoal: '系统学会几个能让生活更便利的数字技能', hiddenNeed: '希望学习过程有人陪伴，能按我的节奏，不要总是催着往前走', corePain: '老年大学课太快，老师教完就走，没有复习材料，下次课忘了大半；在线平台字太小、广告太多', emotionState: '学习热情高，但经常被挫败感打断' },
+    m4: { personality: '认真好学、节奏偏慢 · 潜力学习者', coreValues: '自我成长、生活自立', innerMotivation: '学会新技能能让自己感到没有被时代遗弃', quote: '「我不是不想学，就是记不住，如果能反复练、慢慢来，我一定学得会」' },
+    m5: m5('教育', '服务设计', '老龄化'),
+    summary: '吴秀华，62岁，退休会计，终身学习者。课太快、无复习材料、字太小，学习热情被反复挫败。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_rp_edu_elder', type: 'resource_provider', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '老年大学课程设计专家 + 语音交互学习平台（如讯飞学习机适老版）+ 社区学习志愿者网络', techMaturity: 1, resourceCompleteness: 2 },
+    m2: m2sh('教育', '服务设计', '外部内容与技术支持方'),
+  });
+
+  // ── 组 7：健康科技 × 老龄化 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_health_elder', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '林淑贞', age: '74岁', occupation: '退休教师 · 慢病患者', city: '福州', avatarTag: '被动健康监测者' },
+    m2: { lifestyle: '高血压、糖尿病，每天测血压血糖，数据记在本子上，复诊让医生一条条看', decisionStyle: '高度依赖医生判断，自己不敢做健康决策', infoSource: '医生/子女/病友群', typicalBehavior: '子女买了智能手环，教了好几遍还是用不明白，最后成了摆设，血压高了还是不知道怎么办' },
+    m3: { explicitGoal: '知道今天身体状态是否正常、是否需要去医院', hiddenNeed: '不需要很多数字，就直接告诉我「今天正常」或「今天要注意」这一句话就够', corePain: '手环数字跳来跳去看不懂，微信健康小程序步骤太多，最后还是靠手写本子', emotionState: '对健康高度焦虑，对复杂科技感到无助' },
+    m4: { personality: '谨慎、高健康焦虑 · 关键受益者', coreValues: '健康安全第一、子女放心', innerMotivation: '希望能自己管理好健康，不给孩子增加负担', quote: '「数字跳来跳去我看不懂，你直接告诉我「今天正常」或者「今天要注意」就行了」' },
+    m5: m5('健康科技', '服务设计', '老龄化'),
+    summary: '林淑贞，74岁，退休教师，被动健康监测者。不需要数字，只需要「今天正常/要注意」一句判断。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_sh_health_elder', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '慢病管理科医生/全科医生', coreDemand: '患者数据能自动汇总，复诊时不用手动翻本子，异常数据能提前预警', influence: 3 },
+    m2: m2sh('健康科技', '服务设计', '核心专业使用方'),
+  });
+  ps.push({
+    id: 'preset_dm_health_elder', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '医疗器械合规认证周期 vs 市场进入速度、银发健康市场规模与付费意愿验证', valueSensitivity: 2, innovationDesire: 2 },
+    m2: m2sh('健康科技', '服务设计', '内部决策层'),
+  });
+
+  // ── 组 8：零售 × 数字化转型 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_retail_digi', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '曹建国', age: '46岁', occupation: '连锁超市区域总监', city: '郑州', avatarTag: '被迫数字化的传统零售人' },
+    m2: { lifestyle: '管理20家门店，每天被数据报表和门店突发两件事轮番打击', decisionStyle: '实用主义，要看到真实效果才愿意推广', infoSource: '行业展会/供应商拜访/同行交流', typicalBehavior: '上了三个数字化系统，员工不会用，数据口径不统一，花了几百万看不到效果' },
+    m3: { explicitGoal: '找到能最快改善货损和缺货问题的数字化方案', hiddenNeed: '不是要最多功能的系统，是有人告诉我哪一个数字化动作能最快解决我的核心问题', corePain: '每个方案商都说自己最好，结果钱花了、人累了，还增加了很多人工对账工作', emotionState: '疲惫中带着不甘，既不想放弃也不敢继续盲目投入' },
+    m4: { personality: '务实、风险厌恶 · 传统零售守门人', coreValues: 'ROI 可见、员工可用、货品精准', innerMotivation: '在行业转型中活下去，不被纯线上竞争者淘汰', quote: '「数字化我懂，但每个方案商都说自己最好，结果钱花了、人累了，货还是在亏」' },
+    m5: m5('零售', '数字化转型', '决策辅助'),
+    summary: '曹建国，46岁，连锁超市区域总监，被迫数字化的传统零售人。花了几百万上系统，货损问题一个没解决。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_sh_retail_digi', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '门店店长/一线员工', coreDemand: '系统要简单好上手，不能增加我的工作量，否则我就不用', influence: -2 },
+    m2: m2sh('零售', '数字化转型', '系统实际使用者与阻力来源'),
+  });
+  ps.push({
+    id: 'preset_dm_retail_digi', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '数字化投入 ROI 可见周期、员工培训成本、与现有 ERP/POS 系统兼容性', valueSensitivity: 3, innovationDesire: 1 },
+    m2: m2sh('零售', '数字化转型', '内部决策层'),
+  });
+
+  // ── 组 9：出行 × 老龄化 ─────────────────────────
+  ps.push({
+    id: 'preset_tu_travel_elder', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '程国华', age: '70岁', occupation: '退休干部', city: '北京', avatarTag: '独立出行障碍者' },
+    m2: { lifestyle: '身体尚好，每周去公园下棋，但网约车APP操作困难，地铁扫码也经常出问题', decisionStyle: '习惯独立出行，但遇到数字障碍宁可放弃', infoSource: '子女/棋友口耳相传', typicalBehavior: '打车经常卡在地图选点这一步，等了半天才发现没叫成功，在路边急得团团转' },
+    m3: { explicitGoal: '能自己叫到车，不用每次都麻烦子女', hiddenNeed: '我不想一直靠孩子送，但每次自己出门都会碰到各种数字障碍，希望出行工具多想想老年人', corePain: '手机打车卡在地图选点，网约车来了但显示名字不是真实车牌，不安全感强', emotionState: '自尊受损，不服老但力不从心' },
+    m4: { personality: '自尊心强、独立意识强 · 被数字门槛边缘化', coreValues: '独立自主、安全感、不麻烦人', innerMotivation: '保持和年轻时一样的出行自由度', quote: '「我走路还行，就是叫不到车，什么时候出行变得这么复杂？」' },
+    m5: m5('出行', '服务设计', '老龄化'),
+    summary: '程国华，70岁，退休干部，独立出行障碍者。打车卡在地图选点，等半天发现没叫成功，路边急得团团转。',
+    linkedExtremeUsers: [],
+  });
+  ps.push({
+    id: 'preset_sh_travel_elder', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '网约车平台运营/适老化专项团队', coreDemand: '满足工信部适老化改造要求，扩大银发用户市场规模，降低投诉率', influence: 2 },
+    m2: m2sh('出行', '服务设计', '平台内部改造推动方'),
+  });
+
+  // ── 组 10：科技 × 老龄化 × 体验优化（三重交叉，最高完整度）─────────
+  ps.push({
+    id: 'preset_tu_tech_elder_ux', type: 'target_user', _preset: true, _edited: false, _original: null,
+    m1: { name: '赵秀英', age: '66岁', occupation: '退休护士', city: '成都', avatarTag: '主动适龄化需求者' },
+    m2: { lifestyle: '退休后热爱旅游、广场舞、养花，但日常出行、订票、挂号全要靠女儿帮忙', decisionStyle: '很想自己掌控生活，但面对复杂界面就退缩', infoSource: '女儿/老年社区/电视节目', typicalBehavior: '每次旅游订酒店要提前一周让女儿订好，不敢自己操作，怕选错房型付了钱取不了' },
+    m3: { explicitGoal: '能自己用手机完成旅游订票、叫外卖、视频通话这些日常事务', hiddenNeed: '我退休了还有精力做很多事，就是被手机操作挡在门外，设计者从来不考虑我们这些人', corePain: '字太小、步骤太多、弹窗广告挡路，每一步都是障碍，年轻人觉得自然的操作对我要花20倍时间', emotionState: '渴望独立自主，对现有产品普遍感到被忽视和排斥' },
+    m4: { personality: '自主意识强、学习意愿高 · 适龄化设计的直接受益者', coreValues: '独立尊严、被平等设计对待、家人省心', innerMotivation: '想用科技让晚年生活更自由，不是成为子女的负担', quote: '「我不是不会用，是这些东西压根没想过让我们用——字那么小，按钮那么细，是怕我用吗？」' },
+    m5: m5('科技', '体验优化', '老龄化'),
+    summary: '赵秀英，66岁，退休护士，主动适龄化需求者。字太小步骤太多，年轻人2步完成的操作她要花20倍时间。',
+    linkedExtremeUsers: ['preset_eu_tech_elder_ux_h', 'preset_eu_tech_elder_ux_l'],
+  });
+  ps.push({
+    id: 'preset_eu_tech_elder_ux_h', type: 'extreme_user', side: 'heavy', _preset: true, _edited: false, _original: null,
+    m1: { name: '王建民', ageOccupation: '72岁 · 前工程师/银发科技推广者', extremeTag: '老年体验倡导者' },
+    m2: { extremeBehavior: '主动测评各类适老化APP，在老年社区发布体验报告，联系产品团队反映老年用户问题', workaround: '整理了「哪些APP老年人能用」推荐清单，在老年大学课堂分享' },
+    m3: { explicitNeed: '推动更多产品真正做好适老化设计，被当作有效用户反馈来源', linkedTargetUserId: 'preset_tu_tech_elder_ux', inspirationForTarget: '目标用户同样有强烈使用意愿，缺的是被设计者认真对待——极端用户在用实际行动说「我们值得被好好设计」' },
+    m4: m4eu('科技', '体验优化', '老龄化'),
+  });
+  ps.push({
+    id: 'preset_eu_tech_elder_ux_l', type: 'extreme_user', side: 'light', _preset: true, _edited: false, _original: null,
+    m1: { name: '刘奶奶', ageOccupation: '70岁 · 农村老人', extremeTag: '数字鸿沟受害者' },
+    m2: { extremeBehavior: '从未触摸过智能手机，健康码时代无法出行，只能依靠子女陪同', workaround: '所有数字化事务全部放弃，靠人情网络和子女临时帮助维持基本生活' },
+    m3: { explicitNeed: '有人帮我做，我自己做不了', linkedTargetUserId: 'preset_tu_tech_elder_ux', inspirationForTarget: '数字化设计的排斥是系统性的，体验优化可以改变这种现状——从最难的用户开始设计' },
+    m4: m4eu('科技', '体验优化', '老龄化'),
+  });
+  ps.push({
+    id: 'preset_sh_tech_elder_ux_1', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '产品设计师/UX研究员', coreDemand: '避免被年龄歧视指控，让适老化设计有数据支撑，获得真实老年用户行为洞察', influence: 3 },
+    m2: m2sh('科技', '体验优化', '核心设计执行方'),
+  });
+  ps.push({
+    id: 'preset_sh_tech_elder_ux_2', type: 'stakeholder', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '监管/工信部适老化推进办', coreDemand: '产品通过适老化认证标准，满足强制性政策要求', influence: -2 },
+    m2: m2sh('科技', '体验优化', '外部强监管方'),
+  });
+  ps.push({
+    id: 'preset_dm_tech_elder_ux', type: 'decision_maker', _preset: true, _edited: false, _original: null,
+    m1: { coreConcern: '银发用户留存率、适老化认证合规、家属NPS、科技普惠社会价值与商业回报平衡', valueSensitivity: 2, innovationDesire: 3 },
+    m2: m2sh('科技', '体验优化', '内部决策层'),
+  });
+  ps.push({
+    id: 'preset_rp_tech_elder_ux', type: 'resource_provider', _preset: true, _edited: false, _original: null,
+    m1: { identityTag: '适老化设计标准机构 + 语音/大字体交互技术供应商（讯飞语音/华为适老化）', techMaturity: 2, resourceCompleteness: 2 },
+    m2: m2sh('科技', '体验优化', '外部技术合作方'),
+  });
+
+  return ps;
+})();
+
+// ─────────────────────────────────────────
 // 市场浏览
 // ─────────────────────────────────────────
 function loadBrowsePersonas() {
@@ -2144,6 +2414,10 @@ function loadBrowsePersonas() {
   const draft = loadDraft();
   if (draft && draft.personas) draft.personas.forEach(p => {
     if (!personas.find(x => x.id === p.id)) personas.push(p);
+  });
+  // 合并预置公共角色库（预置角色放在前面，优先展示；不会覆盖同ID的用户角色）
+  PRESET_PERSONAS.forEach(p => {
+    if (!personas.find(x => x.id === p.id)) personas.unshift(p);
   });
   allPersonas = personas;
   updateBadges();
@@ -2166,33 +2440,88 @@ function renderBrowseCards() {
     resource:    ['resource_provider']
   };
   const types = typeMap[currentCatTab];
-  let filtered = allPersonas.filter(p => types.includes(p.type));
+
+  // 分两组：预置库 vs 我的角色（已保存/草稿）
+  const allFiltered = allPersonas.filter(p => types.includes(p.type));
+  const presets  = allFiltered.filter(p => p._preset);
+  const myOwn    = allFiltered.filter(p => !p._preset);
+
+  // 标签筛选（预置库和我的角色均受影响）
   const hasSel = Object.values(selectedTags).some(a => a.length > 0);
-  if (hasSel) {
-    filtered = filtered.filter(p => {
-      const tags = getPersonaTags(p);
+  const applyFilter = (list) => {
+    if (!hasSel) return list;
+    return list.filter(p => {
+      const ptags = getPersonaTags(p);
       return (
-        (selectedTags.industry.length === 0 || selectedTags.industry.some(t => tags.includes(t))) &&
-        (selectedTags.scene.length === 0    || selectedTags.scene.some(t => tags.includes(t))) &&
-        (selectedTags.theme.length === 0    || selectedTags.theme.some(t => tags.includes(t)))
+        (selectedTags.industry.length === 0 || selectedTags.industry.some(t => ptags.includes(t))) &&
+        (selectedTags.scene.length    === 0 || selectedTags.scene.some(t    => ptags.includes(t))) &&
+        (selectedTags.theme.length    === 0 || selectedTags.theme.some(t    => ptags.includes(t)))
       );
     });
-  }
+  };
+
+  const filteredPresets = applyFilter(presets);
+  const filteredOwn     = applyFilter(myOwn);
+
   const el = document.getElementById('browse-cards');
   if (!el) return;
-  if (filtered.length === 0) {
+
+  let html = '';
+
+  // ── 预置角色库区域
+  if (filteredPresets.length > 0) {
+    html += `
+      <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:4px 0 2px">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);opacity:.85">📚 预置角色库</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+        <span style="font-size:11px;color:var(--text3)">${filteredPresets.length} 个</span>
+      </div>`;
+    html += filteredPresets.map(p => renderCard(p)).join('');
+  }
+
+  // ── 我的角色区域
+  if (filteredOwn.length > 0) {
+    html += `
+      <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:16px 0 2px">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--success,#10b981);opacity:.85">💾 我生成的角色</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+        <span style="font-size:11px;color:var(--text3)">${filteredOwn.length} 个</span>
+      </div>`;
+    html += filteredOwn.map(p => renderCard(p)).join('');
+  }
+
+  if (!html) {
+    const hasAnyOwn = myOwn.length > 0;
     el.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <div class="big">🗂</div>
-      <p>暂无角色<br>请先在「AI 生成」模式生成并保存角色组</p>
+      <div class="big">🔍</div>
+      <p>${hasSel
+        ? '当前标签组合下暂无匹配角色<br><span style="font-size:12px;color:var(--text3)">试试取消部分标签筛选，或去「AI 生成」创建新角色</span>'
+        : hasAnyOwn ? '暂无此类型角色<br>切换上方类别 Tab 查看其他类型'
+                    : '你还没有保存过角色<br><span style="font-size:12px;color:var(--text3)">预置库中已有角色可直接使用，也可去「AI 生成」创建属于自己的角色</span>'
+      }</p>
     </div>`;
     return;
   }
-  el.innerHTML = filtered.map(p => renderCard(p)).join('');
+
+  el.innerHTML = html;
 }
 
 function getPersonaTags(p) {
-  const m = p.m5 || p.m4 || p.m2;
-  return [m?.industryTag, m?.sceneTag, m?.themeTag].filter(Boolean);
+  // Bug fix: 各类型的标签模块位置不同，需分别读取
+  // target_user: m5 (industryTag / sceneTag / themeTag)
+  // extreme_user: m4 (industryTag / sceneTag / themeTag)
+  // stakeholder / decision_maker / resource_provider: m2 (industryTag / sceneTag / relationTag)
+  if (p.type === 'target_user') {
+    const m = p.m5 || {};
+    return [m.industryTag, m.sceneTag, m.themeTag].filter(Boolean);
+  }
+  if (p.type === 'extreme_user') {
+    const m = p.m4 || {};
+    return [m.industryTag, m.sceneTag, m.themeTag].filter(Boolean);
+  }
+  // stakeholder / decision_maker / resource_provider
+  const m = p.m2 || {};
+  return [m.industryTag, m.sceneTag, m.relationTag].filter(Boolean);
 }
 
 // ─────────────────────────────────────────
