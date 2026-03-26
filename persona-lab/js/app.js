@@ -2266,6 +2266,31 @@ function exportGroup() {
   showToast('✅ 已导出为 Markdown 文件');
 }
 
+// 导出 group-tray 当前角色为 PDF（临时角色组）
+function exportCurrentGroupPdf() {
+  const personas = currentGroup.personas.length > 0 ? currentGroup.personas : allPersonas;
+  if (personas.length === 0) { showToast('没有可导出的角色', 'error'); return; }
+  const theme = document.getElementById('input-theme-main')?.value.trim() || '未命名角色组';
+  const tagList = [...selectedTags.industry, ...selectedTags.scene, ...selectedTags.theme];
+  // 构造一个临时角色组对象，复用 exportGroupPdf 的逻辑
+  const tempGroup = {
+    id: '_temp',
+    projectTheme: theme,
+    tags: { industry: selectedTags.industry, scene: selectedTags.scene, theme: selectedTags.theme },
+    createdAt: new Date().toISOString(),
+    targetUsers:       personas.filter(p => p.type === 'target_user'),
+    extremeUsers:      personas.filter(p => p.type === 'extreme_user'),
+    stakeholders:      personas.filter(p => p.type === 'stakeholder'),
+    decisionMakers:    personas.filter(p => p.type === 'decision_maker'),
+    resourceProviders: personas.filter(p => p.type === 'resource_provider'),
+  };
+  // 临时注入 getGroupById 可识别的 _temp id
+  _tempGroupForExport = tempGroup;
+  exportGroupPdfDirect(tempGroup);
+}
+
+let _tempGroupForExport = null;
+
 function exportPersonasToMarkdown(personas) {
   const theme = document.getElementById('input-theme-main')?.value || '';
   let md = `# Persona Lab · 角色组\n\n**项目主题**：${theme}\n\n---\n\n`;
@@ -2942,8 +2967,10 @@ function renderGroupsList() {
           <div style="font-size:15px;font-weight:600;color:var(--text)">${escHtml(g.projectTheme)}</div>
           <div style="font-size:12px;color:var(--text3);margin-top:3px">${new Date(g.createdAt).toLocaleDateString('zh-CN')}</div>
         </div>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
           <button class="nav-btn" onclick="loadGroupToGenerate('${g.id}')">查看</button>
+          <button class="nav-btn" onclick="exportGroupMd('${g.id}')">📄 MD</button>
+          <button class="nav-btn" onclick="exportGroupPdf('${g.id}')" style="color:var(--accent);border-color:var(--accent)">🖨 PDF</button>
           <button class="nav-btn" style="color:var(--red);border-color:var(--red)" onclick="deleteGroupConfirm('${g.id}')">删除</button>
         </div>
       </div>
@@ -2975,6 +3002,147 @@ function deleteGroupConfirm(groupId) {
   deleteGroup(groupId);
   renderGroupsList();
   showToast('已删除角色组');
+}
+
+// 导出单个已保存角色组为 Markdown
+function exportGroupMd(groupId) {
+  const g = getGroupById(groupId);
+  if (!g) { showToast('找不到角色组', 'error'); return; }
+  const personas = [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders, ...g.decisionMakers, ...g.resourceProviders];
+  let md = `# Persona Lab · 角色组报告\n\n`;
+  md += `**项目主题**：${g.projectTheme}\n`;
+  const tagList = [...(g.tags.industry||[]), ...(g.tags.scene||[]), ...(g.tags.theme||[])];
+  if (tagList.length) md += `**标签**：${tagList.join('  ·  ')}\n`;
+  md += `**创建时间**：${new Date(g.createdAt).toLocaleDateString('zh-CN')}\n`;
+  md += `**角色总数**：目标用户 ${g.targetUsers.length} · 极端用户 ${g.extremeUsers.length} · 利益相关方 ${g.stakeholders.length} · 决策者 ${g.decisionMakers.length} · 资源方 ${g.resourceProviders.length}\n\n---\n\n`;
+  md += exportPersonasToMarkdown(personas).split('---\n\n').slice(1).join('---\n\n');
+  const fname = `persona-${g.projectTheme.slice(0,12).replace(/\s/g,'-') || 'group'}.md`;
+  downloadText(md, fname);
+  showToast('✅ 已导出 Markdown 文件');
+}
+
+// 导出单个已保存角色组为 PDF（使用打印弹窗）
+function exportGroupPdf(groupId) {
+  const g = getGroupById(groupId);
+  if (!g) { showToast('找不到角色组', 'error'); return; }
+  exportGroupPdfDirect(g);
+}
+
+function exportGroupPdfDirect(g) {
+  const personas = [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders, ...g.decisionMakers, ...g.resourceProviders];
+  const tagList = [...(g.tags.industry||[]), ...(g.tags.scene||[]), ...(g.tags.theme||[])];
+
+  // 构造各角色的 HTML 卡片
+  const personaHtml = personas.map(p => {
+    const label = TYPE_LABEL[p.type] || p.type;
+    const title = getPersonaTitle(p);
+    let body = '';
+    if (p.type === 'target_user') {
+      body = `
+        <tr><td class="field">基本身份</td><td>${escHtml(p.m1.name)}，${escHtml(p.m1.age)}，${escHtml(p.m1.occupation)}，${escHtml(p.m1.city)}</td></tr>
+        <tr><td class="field">角色标签</td><td>${escHtml(p.m1.avatarTag||'')}</td></tr>
+        <tr><td class="field">生活方式</td><td>${escHtml(p.m2?.lifestyle||'')}</td></tr>
+        <tr><td class="field">决策风格</td><td>${escHtml(p.m2?.decisionStyle||'')}</td></tr>
+        <tr><td class="field">典型行为</td><td>${escHtml(p.m2?.typicalBehavior||'')}</td></tr>
+        <tr><td class="field">显性目标</td><td>${escHtml(p.m3?.explicitGoal||'')}</td></tr>
+        <tr><td class="field">隐性需求</td><td>${escHtml(p.m3?.hiddenNeed||'')}</td></tr>
+        <tr><td class="field">核心痛点</td><td>${escHtml(p.m3?.corePain||'')}</td></tr>
+        <tr><td class="field">情绪状态</td><td>${escHtml(p.m3?.emotionState||'')}</td></tr>
+        <tr><td class="field">性格特质</td><td>${escHtml(p.m4?.personality||'')}</td></tr>
+        <tr><td class="field">核心价值观</td><td>${escHtml(p.m4?.coreValues||'')}</td></tr>
+        <tr><td class="field">内在动机</td><td>${escHtml(p.m4?.innerMotivation||'')}</td></tr>
+        <tr><td class="field">代表性引言</td><td class="quote">${escHtml(p.m4?.quote||'')}</td></tr>`;
+    } else if (p.type === 'extreme_user') {
+      const sideLabel = p.side === 'heavy' ? '重度使用者' : '轻度/回避者';
+      body = `
+        <tr><td class="field">姓名 / 身份</td><td>${escHtml(p.m1.name||'')} · ${escHtml(p.m1.ageOccupation||'')} · <strong>${sideLabel}</strong></td></tr>
+        <tr><td class="field">极端行为</td><td>${escHtml(p.m2?.extremeBehavior||'')}</td></tr>
+        <tr><td class="field">变通策略</td><td>${escHtml(p.m2?.workaround||'')}</td></tr>
+        <tr><td class="field">核心需求</td><td>${escHtml(p.m3?.explicitNeed||'')}</td></tr>
+        <tr><td class="field">对目标用户的启示</td><td>${escHtml(p.m3?.heavyInsight || p.m3?.lightInsight||'')}</td></tr>`;
+    } else if (p.type === 'stakeholder') {
+      const inf = p.m1.influence > 0 ? `+${p.m1.influence}（支持）` : p.m1.influence < 0 ? `${p.m1.influence}（阻力）` : '中立';
+      body = `
+        <tr><td class="field">身份</td><td>${escHtml(p.m1.identityTag||'')}</td></tr>
+        <tr><td class="field">核心诉求</td><td>${escHtml(p.m1.coreDemand||'')}</td></tr>
+        <tr><td class="field">影响力</td><td>${inf}</td></tr>
+        <tr><td class="field">关系定位</td><td>${escHtml(p.m2?.relationTag||'')}</td></tr>`;
+    } else if (p.type === 'decision_maker') {
+      body = `
+        <tr><td class="field">核心关切</td><td>${escHtml(p.m1.coreConcern||'')}</td></tr>
+        <tr><td class="field">价值敏感度</td><td>${'★'.repeat(p.m1.valueSensitivity||0)}${'☆'.repeat(3-(p.m1.valueSensitivity||0))}</td></tr>
+        <tr><td class="field">创新渴望度</td><td>${'★'.repeat(p.m1.innovationDesire||0)}${'☆'.repeat(3-(p.m1.innovationDesire||0))}</td></tr>
+        <tr><td class="field">关系定位</td><td>${escHtml(p.m2?.relationTag||'')}</td></tr>`;
+    } else if (p.type === 'resource_provider') {
+      body = `
+        <tr><td class="field">资源提供方</td><td>${escHtml(p.m1.identityTag||'')}</td></tr>
+        <tr><td class="field">技术成熟度</td><td>${'★'.repeat(p.m1.techMaturity||0)}${'☆'.repeat(3-(p.m1.techMaturity||0))}</td></tr>
+        <tr><td class="field">资源完备度</td><td>${'★'.repeat(p.m1.resourceCompleteness||0)}${'☆'.repeat(3-(p.m1.resourceCompleteness||0))}</td></tr>
+        <tr><td class="field">关系定位</td><td>${escHtml(p.m2?.relationTag||'')}</td></tr>`;
+    }
+    const tagsBadge = getPersonaTags(p).map(t => `<span class="tag-badge">${escHtml(t)}</span>`).join(' ');
+    return `
+      <div class="pcard">
+        <div class="pcard-head">
+          <span class="pcard-type">${label}</span>
+          <span class="pcard-name">${escHtml(title)}</span>
+          <span class="pcard-tags">${tagsBadge}</span>
+        </div>
+        <table class="pcard-table">${body}</table>
+      </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Persona Lab - ${escHtml(g.projectTheme)}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif; font-size: 11pt; color: #1a1a2e; background: #fff; padding: 20mm 18mm; }
+  h1 { font-size: 20pt; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; }
+  .meta { font-size: 10pt; color: #666; margin-bottom: 6px; line-height: 1.7; }
+  .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .tag-chip { background: #f0f0ff; border-radius: 12px; padding: 2px 10px; font-size: 9pt; color: #4f46e5; }
+  .divider { border: none; border-top: 2px solid #e0e0f0; margin-bottom: 24px; }
+  .pcard { margin-bottom: 18px; page-break-inside: avoid; border: 1px solid #e0e0f0; border-radius: 8px; overflow: hidden; }
+  .pcard-head { background: #f5f5ff; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+  .pcard-type { background: #4f46e5; color: #fff; font-size: 8pt; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .pcard-name { font-size: 13pt; font-weight: 700; color: #1a1a2e; flex: 1; }
+  .pcard-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .tag-badge { background: rgba(79,70,229,.1); color: #4f46e5; font-size: 8pt; padding: 1px 7px; border-radius: 8px; }
+  .pcard-table { width: 100%; border-collapse: collapse; }
+  .pcard-table tr:nth-child(odd) { background: #fafafe; }
+  .pcard-table td { padding: 6px 14px; vertical-align: top; line-height: 1.55; }
+  .pcard-table td.field { font-weight: 600; color: #4f46e5; white-space: nowrap; width: 7em; font-size: 9.5pt; }
+  .pcard-table td.quote { color: #555; font-style: italic; }
+  .footer { margin-top: 30px; text-align: center; font-size: 9pt; color: #999; border-top: 1px solid #e0e0f0; padding-top: 10px; }
+  @media print {
+    body { padding: 10mm 12mm; }
+    .pcard { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<h1>Persona Lab · 角色组报告</h1>
+<div class="meta">
+  <strong>项目主题：</strong>${escHtml(g.projectTheme)}<br>
+  <strong>创建时间：</strong>${new Date(g.createdAt).toLocaleDateString('zh-CN')}<br>
+  <strong>角色总数：</strong>目标用户 ${g.targetUsers.length} · 极端用户 ${g.extremeUsers.length} · 利益相关方 ${g.stakeholders.length} · 决策者 ${g.decisionMakers.length} · 资源方 ${g.resourceProviders.length}
+</div>
+${tagList.length ? `<div class="tags-row">${tagList.map(t => `<span class="tag-chip">${escHtml(t)}</span>`).join('')}</div>` : ''}
+<hr class="divider">
+${personaHtml}
+<div class="footer">生成自 Persona Lab · 创新虚拟人市场</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 600);
+  showToast('✅ 已打开打印预览，选择「另存为 PDF」');
 }
 
 // ─────────────────────────────────────────
