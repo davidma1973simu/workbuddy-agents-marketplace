@@ -40,10 +40,12 @@ function deleteGroup(id) {
 // ─────────────────────────────────────────
 // 自定义标签管理
 // ─────────────────────────────────────────
+const TAG_CAP = 6;   // 每个类别最多6个标签
+
 const DEFAULT_TAGS = {
-  industry: ['零售', '医疗', '教育', '金融', '制造', '政务', '科技', '餐饮', '出行', '文娱'],
-  scene:    ['流程创新', '服务设计', '产品研发', '商业模式', '体验优化', '组织变革', '数字化转型'],
-  theme:    ['认知负荷', '决策辅助', '老龄化', '数字化', '可持续', '出行', '健康', '情感连接']
+  industry: ['零售', '医疗', '教育', '金融', '汽车', '科技'],   // 6个（新增汽车替换制造）
+  scene:    ['产品研发', '服务设计', '体验优化', '流程创新', '数字化转型', '商业模式'],  // 6个
+  theme:    ['老龄化', '认知负荷', '决策辅助', '可及性', '信任建立', '智能化体验']      // 6个（新增智能化体验）
 };
 
 function getCustomTags() {
@@ -56,19 +58,33 @@ function addCustomTag(category, tag) {
   const custom = getCustomTags();
   if (!custom[category]) custom[category] = [];
   const trimmed = tag.trim();
-  if (trimmed && !custom[category].includes(trimmed)) {
+  if (!trimmed) return custom;
+  // 去重：判断默认标签和自定义标签中都不存在
+  const allExisting = [...(DEFAULT_TAGS[category] || []), ...custom[category]];
+  if (allExisting.includes(trimmed)) return custom;
+  // 每类总数不超过上限（默认+自定义合计）
+  if (allExisting.length >= TAG_CAP) {
+    // 已满，替换最后一个自定义标签
+    if (custom[category].length > 0) custom[category][custom[category].length - 1] = trimmed;
+    // 如果全是默认标签，不添加
+  } else {
     custom[category].push(trimmed);
-    localStorage.setItem(STORAGE_KEYS.CUSTOM_TAGS, JSON.stringify(custom));
   }
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_TAGS, JSON.stringify(custom));
   return custom;
 }
 
 function getAllTags() {
   const custom = getCustomTags();
+  // 合并并去重，每类最多6个
+  const merge = (def, cus) => {
+    const merged = [...new Set([...def, ...cus])];
+    return merged.slice(0, TAG_CAP);
+  };
   return {
-    industry: [...DEFAULT_TAGS.industry, ...custom.industry],
-    scene:    [...DEFAULT_TAGS.scene,    ...custom.scene],
-    theme:    [...DEFAULT_TAGS.theme,    ...custom.theme]
+    industry: merge(DEFAULT_TAGS.industry, custom.industry),
+    scene:    merge(DEFAULT_TAGS.scene,    custom.scene),
+    theme:    merge(DEFAULT_TAGS.theme,    custom.theme)
   };
 }
 
