@@ -396,7 +396,11 @@ function _renderGeneratedPersonas(theme, bg, assume, tags, resultEl, btn, isAI =
         已生成 <strong style="color:var(--text)">${allPersonas.length}</strong> 个角色 &nbsp;·&nbsp; <span style="color:var(--text3)">${escHtml(theme)}</span>
         ${aiLabel}
       </div>
-      <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="addAllToGroup()" class="nav-btn" title="将所有角色加入底部托盘">📦 全部入组</button>
+        <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
+        <button onclick="syncToEureka()" class="nav-btn" style="color:#10b981;border-color:#10b981;font-weight:600" title="将角色组同步到 Eureka 项目">🔗 同步到 Eureka</button>
+      </div>
     </div>
     <div class="persona-rows" id="persona-rows">
       ${renderPersonaRows(allPersonas)}
@@ -2419,6 +2423,21 @@ function clearGroup() {
   });
 }
 
+/** 一键将所有已生成角色加入角色组 */
+function addAllToGroup() {
+  if (allPersonas.length === 0) { showToast('请先生成角色', 'error'); return; }
+  const newOnes = allPersonas.filter(p => !currentGroup.personas.find(x => x.id === p.id));
+  if (newOnes.length === 0) { showToast('所有角色已在角色组中', 'error'); return; }
+  currentGroup.personas.push(...newOnes);
+  renderGroupTray();
+  // 同步更新所有卡片按钮状态
+  allPersonas.forEach(p => {
+    const btn = document.getElementById(`groupbtn-${p.id}`);
+    if (btn) { btn.className = 'card-action-btn added'; btn.textContent = '✓ 已加入'; }
+  });
+  showToast(`✅ 已将全部 ${allPersonas.length} 个角色加入组，底部托盘可同步到 Eureka`);
+}
+
 function saveCurrentGroup() {
   const theme = document.getElementById('input-theme-main')?.value.trim() || '';
   // 优先保存已手动加入角色组托盘的角色；若托盘为空则保存全部生成角色
@@ -2618,6 +2637,61 @@ function syncToEureka() {
     `项目主题：${theme}\n` +
     `包含类型：目标用户 / 极端用户 / 利益相关方 / 决策者 / 资源方\n\n` +
     `点击「确定」跳回 Eureka 并导入到用户画像，「取消」留在当前页面`
+  );
+
+  if (confirmed) {
+    location.href = backUrl;
+  } else {
+    showToast('✅ 角色数据已写入，可随时打开 Eureka 导入');
+  }
+}
+
+/**
+ * 直接同步已保存角色组到 Eureka（从「我的角色组」列表调用）
+ */
+function syncGroupToEureka(groupId) {
+  const g = getGroupById(groupId);
+  if (!g) { showToast('找不到角色组', 'error'); return; }
+
+  const personas = [...g.targetUsers, ...g.extremeUsers, ...g.stakeholders, ...g.decisionMakers, ...g.resourceProviders];
+  if (personas.length === 0) { showToast('此角色组暂无角色', 'error'); return; }
+
+  // 构造与 syncToEureka 相同格式的导出对象
+  const exportPayload = {
+    exportedAt:    new Date().toISOString(),
+    projectTheme:  g.projectTheme,
+    tags:          g.tags || {},
+    sourceProjectId: window._eurekaSourceProjectId || null,
+    personas: personas.map(p => ({
+      id:          p.id,
+      type:        p.type,
+      name:        getPersonaTitle(p),
+      age:         p.m1?.age || '',
+      occupation:  p.m1?.occupation || '',
+      city:        p.m1?.city || '',
+      corePain:    p.m3?.corePain || p.m2?.corePain || '',
+      hiddenNeed:  p.m3?.hiddenNeed || p.m2?.hiddenNeed || '',
+      quote:       p.m4?.quote || p.m2?.quote || '',
+      relation:    p.m2?.relation || '',
+      summary:     p.summary || '',
+      industryTag: p.m5?.industryTag || p.m4?.industryTag || p.m2?.industryTag || '',
+      sceneTag:    p.m5?.sceneTag    || p.m4?.sceneTag    || p.m2?.sceneTag    || '',
+      themeTag:    p.m5?.themeTag    || p.m4?.themeTag    || p.m2?.themeTag    || '',
+    }))
+  };
+
+  localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
+
+  const eurekaBase = '../eureka-dashboard/';
+  const pid = window._eurekaSourceProjectId;
+  const backUrl = pid
+    ? `${eurekaBase}?import_persona=1&projectId=${pid}`
+    : `${eurekaBase}?import_persona=1`;
+
+  const confirmed = confirm(
+    `✅ 角色组「${g.projectTheme}」已准备好\n\n` +
+    `共 ${personas.length} 个角色：目标用户 ${g.targetUsers.length} · 极端用户 ${g.extremeUsers.length} · 利益相关方 ${g.stakeholders.length} · 决策者 ${g.decisionMakers.length} · 资源方 ${g.resourceProviders.length}\n\n` +
+    `点击「确定」跳回 Eureka 并导入到用户画像`
   );
 
   if (confirmed) {
@@ -3432,6 +3506,7 @@ function renderGroupsList() {
           <button class="nav-btn" onclick="loadGroupToGenerate('${g.id}')">查看</button>
           <button class="nav-btn" onclick="exportGroupMd('${g.id}')">📄 MD</button>
           <button class="nav-btn" onclick="exportGroupPdf('${g.id}')" style="color:var(--accent);border-color:var(--accent)">🖨 PDF</button>
+          <button class="nav-btn" onclick="syncGroupToEureka('${g.id}')" style="color:#10b981;border-color:#10b981;font-weight:600" title="将此角色组同步到 Eureka 项目">🔗 同步到 Eureka</button>
           <button class="nav-btn" style="color:var(--red);border-color:var(--red)" onclick="deleteGroupConfirm('${g.id}')">删除</button>
         </div>
       </div>
@@ -3454,6 +3529,11 @@ function loadGroupToGenerate(groupId) {
   resultEl.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <div style="font-size:14px;color:var(--text2)">已加载角色组 · ${escHtml(g.projectTheme)}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="exportGroupMd('${g.id}')" class="nav-btn">📄 MD</button>
+        <button onclick="exportGroupPdf('${g.id}')" class="nav-btn" style="color:var(--accent);border-color:var(--accent)">🖨 PDF</button>
+        <button onclick="syncGroupToEureka('${g.id}')" class="nav-btn" style="color:#10b981;border-color:#10b981;font-weight:600" title="同步此角色组到 Eureka">🔗 同步到 Eureka</button>
+      </div>
     </div>
     <div class="persona-rows">${renderPersonaRows(allPersonas)}</div>`;
 }
