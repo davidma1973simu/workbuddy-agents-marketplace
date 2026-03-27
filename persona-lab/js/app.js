@@ -28,7 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─────────────────────────────────────────
 // 模式切换
 // ─────────────────────────────────────────
+let _generateModePersonas = [];  // 保存 generate 模式下的角色，切换模式时不丢失
+
 function switchMode(mode) {
+  // 离开 generate 模式前，保存当前已生成角色
+  if (currentMode === 'generate' && mode !== 'generate') {
+    _generateModePersonas = [...allPersonas];
+  }
   currentMode = mode;
   ['generate','browse','groups'].forEach(m => {
     const el = document.getElementById(`panel-${m}`);
@@ -38,6 +44,10 @@ function switchMode(mode) {
   });
   if (mode === 'browse') loadBrowsePersonas();
   if (mode === 'groups') renderGroupsList();
+  // 回到 generate 模式时，恢复之前的角色
+  if (mode === 'generate' && _generateModePersonas.length > 0) {
+    allPersonas = _generateModePersonas;
+  }
 }
 
 function switchCatTab(tab) {
@@ -331,8 +341,11 @@ function _convertAIPersonas(aiList, theme, tags) {
     } else if (type === 'extreme_user') {
       const isHeavy = ai.type === 'extreme_user_heavy';
       result.push(createExtremeUser({
-        m1: { name: ai.name, age: ai.age, occupation: ai.occupation, city: ai.city, avatarTag: ai.name?.[0] || '人' },
-        m2: { extremeType: isHeavy ? '重度使用者' : '极度抵触者', corePain: ai.corePain, hiddenNeed: ai.hiddenNeed, quote: ai.quote, industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
+        side: isHeavy ? EXTREME_SIDE.HEAVY : EXTREME_SIDE.LIGHT,
+        m1: { name: ai.name, ageOccupation: [ai.age, ai.occupation].filter(Boolean).join(' · '), extremeTag: ai.name?.[0] || '极' },
+        m2: { extremeType: isHeavy ? '重度使用者' : '极度抵触者', extremeBehavior: ai.lifestyle || '', workaround: '', corePain: ai.corePain, hiddenNeed: ai.hiddenNeed, quote: ai.quote, industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
+        m3: { explicitNeed: ai.explicitGoal || ai.hiddenNeed || '', linkedTargetUserId: '', inspirationForTarget: ai.corePain || '' },
+        m4: { industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
         summary: `${ai.name}，${isHeavy?'重度':'轻度'}极端用户，核心痛点：${ai.corePain}。`,
       }));
     } else if (type === 'stakeholder') {
@@ -2408,7 +2421,9 @@ function clearGroup() {
 
 function saveCurrentGroup() {
   const theme = document.getElementById('input-theme-main')?.value.trim() || '';
-  // Bug fix: 保存当前勾选的标签（之前硬编码为空对象导致标签丢失）
+  // 优先保存已手动加入角色组托盘的角色；若托盘为空则保存全部生成角色
+  const toSave = currentGroup.personas.length > 0 ? currentGroup.personas : allPersonas;
+  if (toSave.length === 0) { showToast('没有可保存的角色，请先生成', 'error'); return; }
   const group = createPersonaGroup({
     projectTheme: theme,
     tags: {
@@ -2416,22 +2431,27 @@ function saveCurrentGroup() {
       scene:    [...selectedTags.scene],
       theme:    [...selectedTags.theme],
     },
-    targetUsers:       allPersonas.filter(p => p.type === 'target_user'),
-    extremeUsers:      allPersonas.filter(p => p.type === 'extreme_user'),
-    stakeholders:      allPersonas.filter(p => p.type === 'stakeholder'),
-    decisionMakers:    allPersonas.filter(p => p.type === 'decision_maker'),
-    resourceProviders: allPersonas.filter(p => p.type === 'resource_provider'),
+    targetUsers:       toSave.filter(p => p.type === 'target_user'),
+    extremeUsers:      toSave.filter(p => p.type === 'extreme_user'),
+    stakeholders:      toSave.filter(p => p.type === 'stakeholder'),
+    decisionMakers:    toSave.filter(p => p.type === 'decision_maker'),
+    resourceProviders: toSave.filter(p => p.type === 'resource_provider'),
   });
   saveGroup(group);
   clearDraft();
-  showToast('✅ 角色组已保存！可在「我的角色组」查看');
+  const cnt = currentGroup.personas.length > 0
+    ? `已选 ${currentGroup.personas.length} 个角色`
+    : `全部 ${toSave.length} 个角色`;
+  showToast(`✅ 角色组已保存（${cnt}）！可在「我的角色组」查看`);
 }
 
 function exportGroup() {
   const personas = currentGroup.personas.length > 0 ? currentGroup.personas : allPersonas;
   if (personas.length === 0) { showToast('没有可导出的角色', 'error'); return; }
   const md = exportPersonasToMarkdown(personas);
-  downloadText(md, 'persona-group.md');
+  const theme = document.getElementById('input-theme-main')?.value.trim() || 'persona-group';
+  const fname = `persona-${theme.slice(0,16).replace(/[\s/\\:*?"<>|]/g,'-') || 'group'}.md`;
+  downloadText(md, fname);
   showToast('✅ 已导出为 Markdown 文件');
 }
 
@@ -2472,9 +2492,12 @@ function exportPersonasToMarkdown(personas) {
       md += `**Quote**：${p.m4.quote}\n\n**综合介绍**：${p.summary}\n\n`;
     } else if (p.type === 'extreme_user') {
       const side = p.side === 'heavy' ? '重度端' : '轻度端';
-      md += `**极端类型**：${side} · ${p.m1.extremeTag}\n`;
-      md += `**极端行为**：${p.m2.extremeBehavior}\n**变通方式**：${p.m2.workaround}\n\n`;
-      md += `**外显需求**：${p.m3.explicitNeed}\n**对目标用户的启发**：${p.m3.inspirationForTarget}\n\n`;
+      const ageOcc = p.m1?.ageOccupation || [p.m1?.age, p.m1?.occupation].filter(Boolean).join(' · ') || '';
+      const insight = p.m3?.inspirationForTarget || p.m3?.heavyInsight || p.m3?.lightInsight || '';
+      md += `**极端类型**：${side} · ${p.m1.extremeTag || ''}\n`;
+      if (ageOcc) md += `**身份**：${p.m1.name || ''} · ${ageOcc}\n`;
+      md += `**极端行为**：${p.m2?.extremeBehavior || p.m2?.extremeType || ''}\n**变通方式**：${p.m2?.workaround || ''}\n\n`;
+      md += `**外显需求**：${p.m3?.explicitNeed || ''}\n**对目标用户的启发**：${insight}\n\n`;
     } else if (p.type === 'stakeholder') {
       md += `**身份**：${p.m1.identityTag}\n**核心诉求**：${p.m1.coreDemand}\n**影响力**：${p.m1.influence}\n\n`;
     } else if (p.type === 'decision_maker') {
@@ -3363,17 +3386,21 @@ function renderBrowseCards() {
 }
 
 function getPersonaTags(p) {
-  // Bug fix: 各类型的标签模块位置不同，需分别读取
+  // 各类型的标签模块位置不同，需分别读取
   // target_user: m5 (industryTag / sceneTag / themeTag)
-  // extreme_user: m4 (industryTag / sceneTag / themeTag)
+  // extreme_user: m4（模板引擎）或 m2（AI生成，兼容）
   // stakeholder / decision_maker / resource_provider: m2 (industryTag / sceneTag / relationTag)
   if (p.type === 'target_user') {
     const m = p.m5 || {};
     return [m.industryTag, m.sceneTag, m.themeTag].filter(Boolean);
   }
   if (p.type === 'extreme_user') {
-    const m = p.m4 || {};
-    return [m.industryTag, m.sceneTag, m.themeTag].filter(Boolean);
+    // 优先读 m4（模板引擎路径），若为空则读 m2（AI 生成路径）
+    const m4 = p.m4 || {};
+    const m2 = p.m2 || {};
+    const fromM4 = [m4.industryTag, m4.sceneTag, m4.themeTag].filter(Boolean);
+    if (fromM4.length > 0) return fromM4;
+    return [m2.industryTag, m2.sceneTag, m2.themeTag].filter(Boolean);
   }
   // stakeholder / decision_maker / resource_provider
   const m = p.m2 || {};
@@ -3488,12 +3515,16 @@ function exportGroupPdfDirect(g) {
         <tr><td class="field">代表性引言</td><td class="quote">${escHtml(p.m4?.quote||'')}</td></tr>`;
     } else if (p.type === 'extreme_user') {
       const sideLabel = p.side === 'heavy' ? '重度使用者' : '轻度/回避者';
+      // 兼容 inspirationForTarget（模板引擎）和 heavyInsight/lightInsight（AI路径）
+      const insight = p.m3?.inspirationForTarget || p.m3?.heavyInsight || p.m3?.lightInsight || '';
+      // 兼容 ageOccupation 字段（模板引擎）和 age+occupation 分开存储（AI路径）
+      const ageOcc = p.m1?.ageOccupation || [p.m1?.age, p.m1?.occupation].filter(Boolean).join(' · ') || '';
       body = `
-        <tr><td class="field">姓名 / 身份</td><td>${escHtml(p.m1.name||'')} · ${escHtml(p.m1.ageOccupation||'')} · <strong>${sideLabel}</strong></td></tr>
-        <tr><td class="field">极端行为</td><td>${escHtml(p.m2?.extremeBehavior||'')}</td></tr>
+        <tr><td class="field">姓名 / 身份</td><td>${escHtml(p.m1.name||'')}${ageOcc ? ' · ' + escHtml(ageOcc) : ''} · <strong>${sideLabel}</strong></td></tr>
+        <tr><td class="field">极端行为</td><td>${escHtml(p.m2?.extremeBehavior||p.m2?.extremeType||'')}</td></tr>
         <tr><td class="field">变通策略</td><td>${escHtml(p.m2?.workaround||'')}</td></tr>
         <tr><td class="field">核心需求</td><td>${escHtml(p.m3?.explicitNeed||'')}</td></tr>
-        <tr><td class="field">对目标用户的启示</td><td>${escHtml(p.m3?.heavyInsight || p.m3?.lightInsight||'')}</td></tr>`;
+        <tr><td class="field">对目标用户的启示</td><td>${escHtml(insight)}</td></tr>`;
     } else if (p.type === 'stakeholder') {
       const inf = p.m1.influence > 0 ? `+${p.m1.influence}（支持）` : p.m1.influence < 0 ? `${p.m1.influence}（阻力）` : '中立';
       body = `
@@ -3632,13 +3663,13 @@ function openAIConfig() {
   document.getElementById('ai-model').value       = cfg.model;
   document.getElementById('ai-endpoint').value    = cfg.endpoint;
   toggleAIEndpoint();
-  document.getElementById('ai-config-modal').style.display = 'flex';
+  document.getElementById('ai-config-modal').classList.add('open');
   // 更新按钮状态
   _updateAIConfigBtn(cfg);
 }
 
 function closeAIConfig() {
-  document.getElementById('ai-config-modal').style.display = 'none';
+  document.getElementById('ai-config-modal').classList.remove('open');
 }
 
 function toggleAIEndpoint() {

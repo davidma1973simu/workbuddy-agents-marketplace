@@ -926,6 +926,20 @@ main {
 .toast.success { border-color: var(--green); }
 .toast.error   { border-color: var(--red); }
 @keyframes slideIn { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ─────────────────────────────────────────
+   Modal Overlay
+───────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
 </style>
 </head>
 <body>
@@ -1085,7 +1099,7 @@ main {
 </div>
 
 <!-- AI 配置模态框 -->
-<div id="ai-config-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center">
+<div id="ai-config-modal" class="modal-overlay" style="display:none">
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:480px;max-width:95vw;padding:28px;box-shadow:var(--shadow)">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h2 style="font-size:17px;font-weight:700">⚙️ AI 大模型配置</h2>

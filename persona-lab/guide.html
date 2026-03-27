@@ -491,12 +491,12 @@ footer {
 <nav class="top-nav">
   <div class="nav-logo">Persona Lab <span>产品使用手册</span></div>
   <div class="nav-links">
-    <button class="nav-link" onclick="scrollTo('intro')">产品介绍</button>
-    <button class="nav-link" onclick="scrollTo('value')">核心价值</button>
-    <button class="nav-link" onclick="scrollTo('scenes')">应用场景</button>
-    <button class="nav-link" onclick="scrollTo('guide')">使用指南</button>
-    <button class="nav-link" onclick="scrollTo('integration')">生态集成</button>
-    <button class="nav-link" onclick="scrollTo('faq')">常见问题</button>
+    <button class="nav-link" onclick="scrollToSection('intro')">产品介绍</button>
+    <button class="nav-link" onclick="scrollToSection('value')">核心价值</button>
+    <button class="nav-link" onclick="scrollToSection('scenes')">应用场景</button>
+    <button class="nav-link" onclick="scrollToSection('guide')">使用指南</button>
+    <button class="nav-link" onclick="scrollToSection('integration')">生态集成</button>
+    <button class="nav-link" onclick="scrollToSection('faq')">常见问题</button>
   </div>
   <div class="nav-spacer"></div>
   <button class="nav-cta" onclick="window.location.href='index.html'">🚀 立即使用</button>
@@ -509,7 +509,7 @@ footer {
   <p class="hero-sub">Persona Lab 是面向创新团队的虚拟人市场，帮助设计师、产品经理和研究者快速构建立体、有温度的用户角色，驱动以人为本的创新决策。</p>
   <div class="hero-btns">
     <button class="btn-primary" onclick="window.location.href='index.html'">🚀 立即体验</button>
-    <button class="btn-secondary" onclick="scrollTo('guide')">📖 查看指南</button>
+    <button class="btn-secondary" onclick="scrollToSection('guide')">📖 查看指南</button>
   </div>
 </section>
 
@@ -978,7 +978,7 @@ footer {
 </footer>
 
 <script>
-function scrollTo(id) {
+function scrollToSection(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
