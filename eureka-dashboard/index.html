@@ -424,6 +424,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
   </div>
   <div class="nav-actions">
     <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px">📖 产品手册</a>
+    <a href="../persona-lab/" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="打开 Persona Lab 虚拟人市场">🎭 Persona Lab</a>
+    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="检测并导入来自 Persona Lab 的角色数据">📥 导入角色</button>
     <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
     <button class="btn-ghost" onclick="importJSON()">⬆️ 导入 JSON</button>
     <button class="btn-ghost" onclick="exportAllJSON()">⬇️ 导出 JSON</button>
@@ -2144,6 +2146,47 @@ function drawRadar(id, data, color, labels) {
 
 // ═══════════════ UPLOAD PANEL ═══════════════
 let uploadedFileContent = null;
+// ──────────────────────────────────────────────────
+// Persona Lab 集成：从顶部导航栏快速导入角色
+// ──────────────────────────────────────────────────
+function checkPersonaLabImport() {
+  const raw = localStorage.getItem('persona_lab_export_v1');
+  if (!raw) {
+    alert('未找到 Persona Lab 数据。\n\n请先：\n1. 打开 Persona Lab\n2. 生成角色组\n3. 点击「🔗 同步到 Eureka」\n4. 再回来点此按钮');
+    return;
+  }
+
+  let payload;
+  try { payload = JSON.parse(raw); } catch(e) {
+    alert('数据格式错误，请重新从 Persona Lab 同步'); return;
+  }
+
+  // 如果当前有打开的项目且有 revealEditor，直接调用
+  if (typeof revealEditor !== 'undefined' && revealEditor && revealEditor.openPersonaLabImport) {
+    revealEditor.openPersonaLabImport();
+    return;
+  }
+
+  // 否则显示简单提示：建议先打开一个项目
+  const personas = payload.personas || [];
+  const targetCount = personas.filter(p => p.type === 'target_user').length;
+  const otherCount  = personas.length - targetCount;
+  const exportedAt  = new Date(payload.exportedAt).toLocaleString('zh-CN');
+
+  const confirmed = confirm(
+    `✅ 检测到 Persona Lab 数据\n\n` +
+    `主题：${payload.projectTheme || '未知'}\n` +
+    `导出时间：${exportedAt}\n` +
+    `共 ${personas.length} 个角色（目标用户 ${targetCount}，其他 ${otherCount}）\n\n` +
+    `请先打开一个 Eureka 项目，再在 Reveal 编辑器里点「📥 从 Persona Lab 导入」\n\n` +
+    `点「确定」清除缓存数据，「取消」保留`
+  );
+  if (confirmed) {
+    localStorage.removeItem('persona_lab_export_v1');
+    showToast('已清除 Persona Lab 缓存数据');
+  }
+}
+
 let uploadedFileName = null;
 
 function openUploadPanel() {

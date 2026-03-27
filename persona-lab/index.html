@@ -940,6 +940,7 @@ main {
       <button class="nav-tab" onclick="switchMode('groups')" id="tab-groups">📦 我的角色组</button>
     </div>
     <div class="nav-spacer"></div>
+    <button class="nav-btn" onclick="openAIConfig()" id="ai-config-btn" title="配置 AI 大模型 API">⚙️ AI 设置</button>
     <button class="nav-btn" onclick="window.open('../eureka-dashboard/','_blank')">← 返回 Eureka</button>
   </nav>
 
@@ -1078,7 +1079,56 @@ main {
     <button class="tray-btn" onclick="clearGroup()">清空</button>
     <button class="tray-btn" onclick="exportGroup()">📄 MD</button>
     <button class="tray-btn" onclick="exportCurrentGroupPdf()">🖨 PDF</button>
-    <button class="tray-btn primary" onclick="syncToEureka()">同步到 Eureka</button>
+    <button class="tray-btn primary" onclick="syncToEureka()" title="将角色组同步回 Eureka 项目">🔗 同步到 Eureka</button>
+  </div>
+</div>
+
+<!-- AI 配置模态框 -->
+<div id="ai-config-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);width:480px;max-width:95vw;padding:28px;box-shadow:var(--shadow)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 style="font-size:17px;font-weight:700">⚙️ AI 大模型配置</h2>
+      <button onclick="closeAIConfig()" style="width:28px;height:28px;border-radius:50%;background:var(--bg3);color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7">
+      配置后可调用真实 AI 大模型生成角色，未配置时使用内置模板引擎。<br>
+      支持 OpenAI 官方 API 及兼容接口（如 Azure OpenAI、DeepSeek、通义千问等）。
+    </div>
+
+    <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <label style="font-size:13px;color:var(--text2);font-weight:600">启用 AI 生成</label>
+      <input type="checkbox" id="ai-enabled" style="width:16px;height:16px;accent-color:var(--accent)">
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:6px">提供商</label>
+      <select id="ai-provider" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px"
+        onchange="toggleAIEndpoint()">
+        <option value="openai">OpenAI（gpt-4o / gpt-4o-mini）</option>
+        <option value="compatible">兼容接口（DeepSeek / 通义千问 / Azure…）</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:6px">API Key</label>
+      <input type="password" id="ai-apikey" placeholder="sk-..." style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:6px">模型名称</label>
+      <input type="text" id="ai-model" placeholder="gpt-4o-mini" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+    </div>
+
+    <div id="ai-endpoint-row" style="margin-bottom:14px;display:none">
+      <label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:6px">API Endpoint（兼容接口地址）</label>
+      <input type="text" id="ai-endpoint" placeholder="https://api.deepseek.com/v1/chat/completions" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px">
+      <button onclick="closeAIConfig()" style="padding:8px 18px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:13px;cursor:pointer">取消</button>
+      <button onclick="saveAIConfigUI()" style="padding:8px 18px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">保存配置</button>
+    </div>
   </div>
 </div>
 

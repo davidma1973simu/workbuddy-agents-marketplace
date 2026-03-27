@@ -114,9 +114,17 @@ class RevealEditor {
             ${reveal.personas.map((p, i) => this.renderPersonaCard(p, i)).join('')}
           </div>
 
-          <button class="btn btn-primary" onclick="revealEditor.addPersona()">
-            + 添加用户画像
-          </button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn btn-primary" onclick="revealEditor.addPersona()">
+              + 手动添加
+            </button>
+            <button class="btn btn-secondary" onclick="revealEditor.openPersonaLabImport()" title="读取上次从 Persona Lab 同步的角色数据">
+              📥 从 Persona Lab 导入
+            </button>
+            <button class="btn btn-secondary" onclick="revealEditor.launchPersonaLab()" title="跳转到 Persona Lab 生成角色组，完成后同步回来">
+              🎭 去 Persona Lab 生成
+            </button>
+          </div>
         </section>
 
         <!-- 利益相关者部分 -->
@@ -603,7 +611,217 @@ class RevealEditor {
    * 绑定事件
    */
   bindEvents() {
-    // 添加其他事件绑定
+    // 检测从 Persona Lab 跳转回来的参数
+    const params = new URLSearchParams(location.search);
+    if (params.get('import_persona') === '1') {
+      // 清掉 URL 参数
+      history.replaceState({}, '', location.pathname);
+      // 延迟弹出导入面板（等待编辑器渲染完成）
+      setTimeout(() => this.openPersonaLabImport(), 400);
+    }
+  }
+
+  // ──────────────────────────────────────────────────
+  // Persona Lab 集成
+  // ──────────────────────────────────────────────────
+
+  /**
+   * 跳转到 Persona Lab，带回项目主题和当前 projectId
+   */
+  launchPersonaLab() {
+    const project = this.getProject();
+    const theme   = encodeURIComponent(project.name || '');
+    const pid     = encodeURIComponent(this.projectId || '');
+    // industry/scene 取项目名简单提取
+    const url = `../persona-lab/?from=eureka&projectId=${pid}&theme=${theme}`;
+    window.open(url, '_blank');
+    showToast('🎭 Persona Lab 已在新标签页打开，生成完成后点击「同步到 Eureka」返回');
+  }
+
+  /**
+   * 打开 Persona Lab 导入面板（读取 localStorage persona_lab_export_v1）
+   */
+  openPersonaLabImport() {
+    const raw = localStorage.getItem('persona_lab_export_v1');
+    if (!raw) {
+      showToast('❌ 未找到 Persona Lab 数据，请先在 Persona Lab 生成并点击「同步到 Eureka」', 'error');
+      return;
+    }
+
+    let payload;
+    try { payload = JSON.parse(raw); }
+    catch (e) {
+      showToast('❌ 数据格式错误，请重新从 Persona Lab 同步', 'error');
+      return;
+    }
+
+    this._renderPersonaLabImportModal(payload);
+  }
+
+  /**
+   * 渲染 Persona Lab 导入模态框
+   */
+  _renderPersonaLabImportModal(payload) {
+    // 若已存在先移除
+    const existing = document.getElementById('plImportModal');
+    if (existing) existing.remove();
+
+    const personas = payload.personas || [];
+    const targetUsers  = personas.filter(p => p.type === 'target_user');
+    const extremeUsers = personas.filter(p => p.type === 'extreme_user');
+    const stakeholders = personas.filter(p => p.type === 'stakeholder');
+    const decisionMakers = personas.filter(p => p.type === 'decision_maker');
+    const resources    = personas.filter(p => p.type === 'resource_provider');
+
+    const TYPE_LABELS = {
+      target_user:       '🎯 目标用户',
+      extreme_user:      '⚡ 极端用户',
+      stakeholder:       '🤝 利益相关方',
+      decision_maker:    '🏛 决策者',
+      resource_provider: '💼 资源方',
+    };
+    const TYPE_COLORS = {
+      target_user:       '#6366f1',
+      extreme_user:      '#f59e0b',
+      stakeholder:       '#10b981',
+      decision_maker:    '#ef4444',
+      resource_provider: '#8b5cf6',
+    };
+
+    const renderGroup = (list) => {
+      if (!list.length) return '';
+      return list.map(p => `
+        <label class="pl-import-row" style="cursor:pointer;display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;transition:.15s"
+          onmouseover="this.style.borderColor='${TYPE_COLORS[p.type]}'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <input type="checkbox" name="pl_persona" value="${p.id}" checked style="margin-top:3px;accent-color:${TYPE_COLORS[p.type]}">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:600;font-size:14px">${p.name}</span>
+              <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${TYPE_COLORS[p.type]}20;color:${TYPE_COLORS[p.type]}">${TYPE_LABELS[p.type] || p.type}</span>
+              ${p.industryTag ? `<span style="font-size:11px;color:#64748b">${p.industryTag}</span>` : ''}
+            </div>
+            <div style="font-size:12px;color:#64748b;margin-top:3px">${p.age ? p.age + ' · ' : ''}${p.occupation || ''}</div>
+            ${p.corePain ? `<div style="font-size:12px;color:#94a3b8;margin-top:2px">痛点：${p.corePain.slice(0,60)}${p.corePain.length>60?'…':''}</div>` : ''}
+          </div>
+        </label>
+      `).join('');
+    };
+
+    const exportedAt = new Date(payload.exportedAt).toLocaleString('zh-CN');
+    const groups = [
+      { label: '🎯 目标用户', list: targetUsers },
+      { label: '⚡ 极端用户', list: extremeUsers },
+      { label: '🤝 利益相关方', list: stakeholders },
+      { label: '🏛 决策者', list: decisionMakers },
+      { label: '💼 资源方', list: resources },
+    ].filter(g => g.list.length > 0);
+
+    const html = `
+      <div id="plImportModal" style="
+        position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;
+        display:flex;align-items:center;justify-content:center;padding:20px">
+        <div style="background:#fff;border-radius:16px;width:100%;max-width:600px;max-height:85vh;
+          display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+          <!-- header -->
+          <div style="padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <h2 style="font-size:18px;font-weight:700;color:#1e293b">从 Persona Lab 导入角色</h2>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px">
+                主题：<strong style="color:#667eea">${payload.projectTheme || '未知'}</strong>
+                &nbsp;·&nbsp; 导出时间：${exportedAt}
+                &nbsp;·&nbsp; 共 ${personas.length} 个角色
+              </div>
+            </div>
+            <button onclick="document.getElementById('plImportModal').remove()"
+              style="width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+          </div>
+          <!-- body -->
+          <div style="padding:20px 24px;overflow-y:auto;flex:1">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <span style="font-size:13px;color:#64748b">选择要导入到「用户画像」和「利益相关者」的角色</span>
+              <div style="display:flex;gap:8px">
+                <button onclick="document.querySelectorAll('#plImportModal input[name=pl_persona]').forEach(c=>c.checked=true)"
+                  style="font-size:12px;color:#667eea;border:none;background:none;cursor:pointer;padding:0">全选</button>
+                <button onclick="document.querySelectorAll('#plImportModal input[name=pl_persona]').forEach(c=>c.checked=false)"
+                  style="font-size:12px;color:#94a3b8;border:none;background:none;cursor:pointer;padding:0">取消</button>
+              </div>
+            </div>
+            ${groups.map(g => `
+              <div style="margin-bottom:14px">
+                <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">${g.label} (${g.list.length})</div>
+                ${renderGroup(g.list)}
+              </div>
+            `).join('')}
+          </div>
+          <!-- footer -->
+          <div style="padding:16px 24px;border-top:1px solid #f1f5f9;display:flex;gap:10px;justify-content:flex-end">
+            <button onclick="document.getElementById('plImportModal').remove()"
+              style="padding:9px 20px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-size:14px">取消</button>
+            <button onclick="revealEditor._confirmPersonaLabImport(${JSON.stringify(personas).replace(/"/g,'&quot;')})"
+              style="padding:9px 20px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;font-size:14px;font-weight:600">
+              ✅ 导入选中角色
+            </button>
+          </div>
+        </div>
+      </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+  }
+
+  /**
+   * 执行导入（将勾选的角色写入项目的 reveal.personas / reveal.stakeholders）
+   */
+  _confirmPersonaLabImport(allPersonas) {
+    const checked = [...document.querySelectorAll('#plImportModal input[name=pl_persona]:checked')]
+      .map(c => c.value);
+    if (!checked.length) {
+      showToast('请至少选择一个角色', 'error');
+      return;
+    }
+
+    const selected = allPersonas.filter(p => checked.includes(p.id));
+    const project  = this.getProject();
+
+    let addedPersona = 0, addedStakeholder = 0;
+
+    selected.forEach(p => {
+      if (p.type === 'target_user' || p.type === 'extreme_user') {
+        // 写入用户画像
+        project.reveal.personas.push({
+          name:       p.name,
+          age:        p.age,
+          occupation: p.occupation,
+          background: `来源：Persona Lab · ${p.industryTag || ''} · ${p.sceneTag || ''}\n${p.summary || ''}`,
+          painPoints: p.corePain,
+          needs:      p.hiddenNeed,
+          scenario:   p.quote || '',
+          _fromPersonaLab: true,
+          _plType: p.type,
+        });
+        addedPersona++;
+      } else {
+        // 利益相关方 / 决策者 / 资源方 → 写入 stakeholders
+        project.reveal.stakeholders.push({
+          name:      p.name,
+          role:      p.occupation || p.relation || '',
+          stance:    p.type === 'decision_maker' ? 'support' : 'neutral',
+          influence: p.type === 'decision_maker' ? '高' : '中',
+          notes:     `来源：Persona Lab · ${p.type}\n${p.corePain || ''}`,
+          _fromPersonaLab: true,
+          _plType: p.type,
+        });
+        addedStakeholder++;
+      }
+    });
+
+    this.saveAndRender();
+    document.getElementById('plImportModal').remove();
+
+    const msg = [
+      addedPersona    ? `${addedPersona} 个画像` : '',
+      addedStakeholder ? `${addedStakeholder} 个利益方` : '',
+    ].filter(Boolean).join(' + ');
+    showToast(`✅ 已导入 ${msg} 到 Reveal 阶段`);
   }
 
   /**

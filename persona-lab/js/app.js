@@ -20,6 +20,9 @@ let extremeRowExpanded = false;   // 极端用户默认折叠
 document.addEventListener('DOMContentLoaded', () => {
   renderSidebarTags();
   loadBrowsePersonas();
+  _updateAIConfigBtn(getAIConfig());
+  // ── 检测 Eureka 跳转参数，自动填充主题并生成
+  _checkEurekaLaunchParams();
 });
 
 // ─────────────────────────────────────────
@@ -205,31 +208,194 @@ function _doGenerate(theme, bg, assume, tags) {
         </div>`).join('')}
     </div>`;
 
-  setTimeout(() => {
-    if (btn) { btn.classList.remove('loading'); btn.innerHTML = '<span>✨</span> 重新生成'; }
+  // ── 判断是否有 AI API Key 配置
+  const cfg = getAIConfig();
+  if (cfg.enabled && cfg.apiKey) {
+    _doGenerateWithAI(theme, bg, assume, tags, cfg, resultEl, btn);
+  } else {
+    // Fallback：模板引擎（原逻辑）
+    setTimeout(() => _renderGeneratedPersonas(theme, bg, assume, tags, resultEl, btn), 1600);
+  }
+}
 
+/**
+ * 使用真实 AI 大模型生成角色组
+ */
+async function _doGenerateWithAI(theme, bg, assume, tags, cfg, resultEl, btn) {
+  const tagStr = [
+    tags.industry.join('/'),
+    tags.scene.join('/'),
+    tags.theme.join('/')
+  ].filter(Boolean).join(' · ');
+
+  const systemPrompt = `你是专业的用户研究专家，擅长生成设计思维中的虚拟人物（Persona）。
+请根据用户提供的项目主题和标签，生成一组完整的角色，严格按 JSON 格式输出，不要任何解释文字。`;
+
+  const userPrompt = `项目主题：${theme}
+${bg ? `背景补充：${bg}` : ''}
+${assume ? `用户假设：${assume}` : ''}
+标签：${tagStr || '无'}
+
+请生成以下 5 类角色（JSON 数组格式），每类各1个：
+1. target_user（目标用户）
+2. extreme_user_heavy（极端用户-重度）
+3. extreme_user_light（极端用户-轻度）
+4. stakeholder（利益相关方）
+5. decision_maker（决策者）
+
+每个角色包含字段：
+{
+  "type": "target_user|extreme_user_heavy|extreme_user_light|stakeholder|decision_maker",
+  "name": "中文姓名",
+  "age": "年龄（如：35岁）",
+  "occupation": "职业",
+  "city": "城市",
+  "lifestyle": "生活方式",
+  "explicitGoal": "显性目标",
+  "hiddenNeed": "隐性需求",
+  "corePain": "核心痛点",
+  "emotionState": "情绪状态",
+  "personality": "性格特点",
+  "quote": "金句（第一人称，真实感受，15字以内）",
+  "relation": "与产品的关系（利益方/决策者用）"
+}
+
+直接输出 JSON 数组，不加任何其他内容。`;
+
+  try {
+    let responseText = '';
+
+    if (cfg.provider === 'openai' || cfg.provider === 'compatible') {
+      const response = await fetch(cfg.endpoint || 'https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${cfg.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: cfg.model || 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userPrompt },
+          ],
+          temperature: 0.85,
+          max_tokens: 2500,
+        }),
+      });
+      if (!response.ok) throw new Error(`API 错误：${response.status} ${response.statusText}`);
+      const data = await response.json();
+      responseText = data.choices?.[0]?.message?.content || '';
+    } else {
+      throw new Error(`未知 AI 提供商：${cfg.provider}`);
+    }
+
+    // 解析 JSON
+    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('AI 返回内容无法解析为 JSON');
+    const aiPersonas = JSON.parse(jsonMatch[0]);
+
+    // 将 AI 返回的数据转换为 Persona Lab 内部格式
+    allPersonas = _convertAIPersonas(aiPersonas, theme, tags);
+    saveDraft({ theme, bg, assume, tags, personas: allPersonas });
+    _renderGeneratedPersonas(theme, bg, assume, tags, resultEl, btn, true);
+
+  } catch (err) {
+    console.warn('[Persona Lab] AI 生成失败，降级到模板引擎：', err.message);
+    showToast(`⚠️ AI 生成失败（${err.message.slice(0,30)}），使用模板引擎`, 'error');
+    setTimeout(() => _renderGeneratedPersonas(theme, bg, assume, tags, resultEl, btn), 500);
+  }
+}
+
+/**
+ * 将 AI 返回的扁平 JSON 转换为内部 Persona 对象格式
+ */
+function _convertAIPersonas(aiList, theme, tags) {
+  const industryDisplay = (tags.industry && tags.industry[0]) || '';
+  const sceneDisplay    = (tags.scene    && tags.scene[0])    || '';
+  const themeDisplay    = (tags.theme    && tags.theme[0])    || '';
+  const result = [];
+
+  aiList.forEach((ai, i) => {
+    const type = ai.type === 'extreme_user_heavy' || ai.type === 'extreme_user_light'
+      ? 'extreme_user' : ai.type;
+
+    if (type === 'target_user') {
+      result.push(createTargetUser({
+        m1: { name: ai.name, age: ai.age, occupation: ai.occupation, city: ai.city, avatarTag: ai.name?.[0] || '人' },
+        m2: { lifestyle: ai.lifestyle, decisionStyle: '', infoSource: '', typicalBehavior: '' },
+        m3: { explicitGoal: ai.explicitGoal, hiddenNeed: ai.hiddenNeed, corePain: ai.corePain, emotionState: ai.emotionState },
+        m4: { personality: ai.personality, coreValues: '', innerMotivation: ai.hiddenNeed, quote: ai.quote },
+        m5: { industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
+        summary: `${ai.name}，${ai.age}，${ai.occupation}，来自${ai.city}。核心痛点：${ai.corePain}。隐性渴望：${ai.hiddenNeed}。`,
+      }));
+    } else if (type === 'extreme_user') {
+      const isHeavy = ai.type === 'extreme_user_heavy';
+      result.push(createExtremeUser({
+        m1: { name: ai.name, age: ai.age, occupation: ai.occupation, city: ai.city, avatarTag: ai.name?.[0] || '人' },
+        m2: { extremeType: isHeavy ? '重度使用者' : '极度抵触者', corePain: ai.corePain, hiddenNeed: ai.hiddenNeed, quote: ai.quote, industryTag: industryDisplay, sceneTag: sceneDisplay, themeTag: themeDisplay },
+        summary: `${ai.name}，${isHeavy?'重度':'轻度'}极端用户，核心痛点：${ai.corePain}。`,
+      }));
+    } else if (type === 'stakeholder') {
+      result.push(createStakeholder({
+        m1: { name: ai.name, age: ai.age, occupation: ai.occupation, city: ai.city, avatarTag: ai.name?.[0] || '人' },
+        m2: { relation: ai.relation || ai.occupation, attitude: 'neutral', influence: '中等', concern: ai.corePain || '', motivation: ai.hiddenNeed || '', industryTag: industryDisplay, sceneTag: sceneDisplay },
+        summary: `${ai.name}，${ai.occupation}，关注：${ai.corePain || ''}。`,
+      }));
+    } else if (type === 'decision_maker') {
+      result.push(createDecisionMaker({
+        m1: { name: ai.name, age: ai.age, occupation: ai.occupation, city: ai.city, avatarTag: ai.name?.[0] || '人' },
+        m2: { relation: ai.relation || ai.occupation, decisionPower: '高', concern: ai.corePain || '', kpi: '', industryTag: industryDisplay, sceneTag: sceneDisplay },
+        summary: `${ai.name}，${ai.occupation}，决策关注：${ai.corePain || ''}。`,
+      }));
+    }
+  });
+
+  // 如果 AI 没返回所有类型，用模板引擎补全
+  const hasTU = result.some(p => p.type === 'target_user');
+  const hasEU = result.some(p => p.type === 'extreme_user');
+  if (!hasTU || !hasEU) {
+    const fallback = buildDemoPersonas(theme, tags);
+    if (!hasTU) result.unshift(...fallback.filter(p => p.type === 'target_user'));
+    if (!hasEU) result.push(...fallback.filter(p => p.type === 'extreme_user').slice(0,2));
+  }
+
+  return result;
+}
+
+/**
+ * 渲染生成结果（AI / 模板公用）
+ */
+function _renderGeneratedPersonas(theme, bg, assume, tags, resultEl, btn, isAI = false) {
+  if (btn) { btn.classList.remove('loading'); btn.innerHTML = '<span>✨</span> 重新生成'; }
+
+  if (!isAI) {
     allPersonas = buildDemoPersonas(theme, tags);
     saveDraft({ theme, bg, assume, tags, personas: allPersonas });
+  }
 
-    // 渲染4类分行
-    resultEl.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 14px">
-        <div style="font-size:14px;color:var(--text2)">
-          已生成 <strong style="color:var(--text)">${allPersonas.length}</strong> 个角色 &nbsp;·&nbsp; <span style="color:var(--text3)">${escHtml(theme)}</span>
-        </div>
-        <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
+  const aiLabel = isAI
+    ? `<span style="font-size:11px;background:#6366f120;color:var(--accent2);padding:2px 8px;border-radius:10px;margin-left:6px">✨ AI 生成</span>`
+    : `<span style="font-size:11px;background:var(--bg3);color:var(--text3);padding:2px 8px;border-radius:10px;margin-left:6px">📋 模板引擎</span>`;
+
+  resultEl.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:0 0 14px">
+      <div style="font-size:14px;color:var(--text2)">
+        已生成 <strong style="color:var(--text)">${allPersonas.length}</strong> 个角色 &nbsp;·&nbsp; <span style="color:var(--text3)">${escHtml(theme)}</span>
+        ${aiLabel}
       </div>
-      <div class="persona-rows" id="persona-rows">
-        ${renderPersonaRows(allPersonas)}
-      </div>`;
+      <button onclick="saveCurrentGroup()" class="nav-btn primary">💾 保存角色组</button>
+    </div>
+    <div class="persona-rows" id="persona-rows">
+      ${renderPersonaRows(allPersonas)}
+    </div>`;
 
-    // 完成后反向高亮左侧标签，并写入标签
-    Object.entries(tags).forEach(([cat, arr]) => arr.forEach(t => addCustomTag(cat, t)));
-    renderSidebarTags(tags);   // 传入高亮标签
+  // 完成后反向高亮左侧标签，并写入标签
+  Object.entries(tags).forEach(([cat, arr]) => arr.forEach(t => addCustomTag(cat, t)));
+  renderSidebarTags(tags);
 
-    showToast('✅ 角色组生成完成！极端用户可点击展开');
-  }, 1600);
+  showToast(isAI ? '✨ AI 角色组生成完成！' : '✅ 角色组生成完成！极端用户可点击展开');
 }
+
 
 // ─────────────────────────────────────────
 // 本地标签识别（扩充词库，去重，每类最多6个）
@@ -2321,9 +2487,123 @@ function exportPersonasToMarkdown(personas) {
   return md;
 }
 
-function syncToEureka() {
-  showToast('🔗 Eureka 同步功能即将上线，当前可通过导出 Markdown 手动导入');
+// ─────────────────────────────────────────
+// Eureka 集成
+// ─────────────────────────────────────────
+
+/**
+ * 检测 Eureka 跳转参数（URL search params）并自动填充、生成
+ * 支持：?from=eureka&theme=xxx&industry=xxx&scene=xxx
+ */
+function _checkEurekaLaunchParams() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('from') !== 'eureka') return;
+
+  const theme    = params.get('theme')    || '';
+  const industry = params.get('industry') || '';
+  const scene    = params.get('scene')    || '';
+  const projectId = params.get('projectId') || '';
+
+  if (!theme) return;
+
+  // 切换到生成模式
+  switchMode('generate');
+
+  // 填充主题
+  const inputEl = document.getElementById('input-theme-main');
+  if (inputEl) inputEl.value = theme;
+
+  // 预填标签（如果有）
+  if (industry) {
+    if (!selectedTags.industry.includes(industry)) {
+      selectedTags.industry.push(industry);
+    }
+  }
+  if (scene) {
+    if (!selectedTags.scene.includes(scene)) {
+      selectedTags.scene.push(scene);
+    }
+  }
+  renderSidebarTags(selectedTags);
+
+  // 如果有 projectId，存起来供同步时使用
+  if (projectId) window._eurekaSourceProjectId = projectId;
+
+  // 显示提示后自动触发生成
+  showToast(`🔗 来自 Eureka 项目，正在生成「${theme}」角色组…`);
+  setTimeout(() => startGenerate(), 800);
+
+  // 清掉 URL 参数，避免刷新重复执行
+  history.replaceState({}, '', location.pathname);
 }
+
+/**
+ * 同步当前角色组到 Eureka（真实实现）
+ * 通过共享 localStorage key: persona_lab_export_v1
+ */
+function syncToEureka() {
+  const personas = currentGroup.personas.length > 0 ? currentGroup.personas : allPersonas;
+  if (personas.length === 0) {
+    showToast('请先生成或选择角色', 'error');
+    return;
+  }
+
+  const theme   = document.getElementById('input-theme-main')?.value.trim() || '未命名';
+  const tagList = {
+    industry: [...selectedTags.industry],
+    scene:    [...selectedTags.scene],
+    theme:    [...selectedTags.theme],
+  };
+
+  // 构造导出对象
+  const exportPayload = {
+    exportedAt:    new Date().toISOString(),
+    projectTheme:  theme,
+    tags:          tagList,
+    sourceProjectId: window._eurekaSourceProjectId || null,
+    personas: personas.map(p => ({
+      id:          p.id,
+      type:        p.type,
+      name:        getPersonaTitle(p),
+      age:         p.m1?.age || '',
+      occupation:  p.m1?.occupation || '',
+      city:        p.m1?.city || '',
+      corePain:    p.m3?.corePain || p.m2?.corePain || '',
+      hiddenNeed:  p.m3?.hiddenNeed || p.m2?.hiddenNeed || '',
+      quote:       p.m4?.quote || p.m2?.quote || '',
+      relation:    p.m2?.relation || '',
+      summary:     p.summary || '',
+      industryTag: p.m5?.industryTag || p.m2?.industryTag || '',
+      sceneTag:    p.m5?.sceneTag    || p.m2?.sceneTag    || '',
+      themeTag:    p.m5?.themeTag    || p.m2?.themeTag    || '',
+    }))
+  };
+
+  // 写入共享 localStorage
+  localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
+
+  // 构建跳转 URL（回到 Eureka 并提示导入）
+  const eurekaBase = '../eureka-dashboard/';
+  const pid = window._eurekaSourceProjectId;
+  const backUrl = pid
+    ? `${eurekaBase}?import_persona=1&projectId=${pid}`
+    : `${eurekaBase}?import_persona=1`;
+
+  // 弹出确认对话框
+  const confirmed = confirm(
+    `✅ 已生成 ${personas.length} 个角色\n\n` +
+    `项目主题：${theme}\n` +
+    `包含类型：目标用户 / 极端用户 / 利益相关方 / 决策者 / 资源方\n\n` +
+    `点击「确定」跳回 Eureka 并导入到用户画像，「取消」留在当前页面`
+  );
+
+  if (confirmed) {
+    location.href = backUrl;
+  } else {
+    showToast('✅ 角色数据已写入，可随时打开 Eureka 导入');
+  }
+}
+
 
 // ─────────────────────────────────────────
 // 详情抽屉
@@ -3339,3 +3619,68 @@ function showToast(msg, type = 'success') {
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
+
+// ─────────────────────────────────────────
+// AI 配置 UI
+// ─────────────────────────────────────────
+
+function openAIConfig() {
+  const cfg = getAIConfig();
+  document.getElementById('ai-enabled').checked   = cfg.enabled;
+  document.getElementById('ai-provider').value    = cfg.provider;
+  document.getElementById('ai-apikey').value      = cfg.apiKey;
+  document.getElementById('ai-model').value       = cfg.model;
+  document.getElementById('ai-endpoint').value    = cfg.endpoint;
+  toggleAIEndpoint();
+  document.getElementById('ai-config-modal').style.display = 'flex';
+  // 更新按钮状态
+  _updateAIConfigBtn(cfg);
+}
+
+function closeAIConfig() {
+  document.getElementById('ai-config-modal').style.display = 'none';
+}
+
+function toggleAIEndpoint() {
+  const provider = document.getElementById('ai-provider').value;
+  document.getElementById('ai-endpoint-row').style.display =
+    provider === 'compatible' ? 'block' : 'none';
+}
+
+function saveAIConfigUI() {
+  const cfg = {
+    enabled:  document.getElementById('ai-enabled').checked,
+    provider: document.getElementById('ai-provider').value,
+    apiKey:   document.getElementById('ai-apikey').value.trim(),
+    model:    document.getElementById('ai-model').value.trim() || 'gpt-4o-mini',
+    endpoint: document.getElementById('ai-endpoint').value.trim(),
+  };
+  if (cfg.enabled && !cfg.apiKey) {
+    showToast('请填写 API Key', 'error');
+    return;
+  }
+  if (cfg.enabled && cfg.provider === 'compatible' && !cfg.endpoint) {
+    showToast('兼容接口需要填写 Endpoint 地址', 'error');
+    return;
+  }
+  saveAIConfig(cfg);
+  _updateAIConfigBtn(cfg);
+  closeAIConfig();
+  showToast(cfg.enabled ? '✅ AI 配置已保存，下次生成将使用真实 AI' : '⚙️ AI 配置已关闭，使用模板引擎');
+}
+
+function _updateAIConfigBtn(cfg) {
+  const btn = document.getElementById('ai-config-btn');
+  if (!btn) return;
+  if (cfg && cfg.enabled && cfg.apiKey) {
+    btn.style.color        = 'var(--accent2)';
+    btn.style.borderColor  = 'var(--accent)';
+    btn.textContent        = '✨ AI 已启用';
+  } else {
+    btn.style.color        = '';
+    btn.style.borderColor  = '';
+    btn.textContent        = '⚙️ AI 设置';
+  }
+}
+
+

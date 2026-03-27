@@ -108,3 +108,33 @@ function loadDraft() {
 function clearDraft() {
   localStorage.removeItem(STORAGE_KEYS.DRAFT);
 }
+
+// ─────────────────────────────────────────
+// AI 配置管理
+// ─────────────────────────────────────────
+const AI_CONFIG_KEY = 'persona_lab_ai_config_v1';
+
+/**
+ * 获取 AI 配置
+ * @returns {{ enabled:boolean, provider:string, apiKey:string, model:string, endpoint:string }}
+ */
+function getAIConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem(AI_CONFIG_KEY) || '{}');
+    return {
+      enabled:  cfg.enabled  || false,
+      provider: cfg.provider || 'openai',  // openai | compatible
+      apiKey:   cfg.apiKey   || '',
+      model:    cfg.model    || 'gpt-4o-mini',
+      endpoint: cfg.endpoint || '',        // 留空 = 官方 OpenAI 端点；自定义兼容接口填 URL
+    };
+  } catch { return { enabled: false, provider: 'openai', apiKey: '', model: 'gpt-4o-mini', endpoint: '' }; }
+}
+
+/**
+ * 保存 AI 配置
+ */
+function saveAIConfig(cfg) {
+  localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(cfg));
+}
+
