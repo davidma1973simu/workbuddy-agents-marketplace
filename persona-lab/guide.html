@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persona Lab · 产品使用手册</title>
+<style>
+:root {
+  --bg:        #0f1117;
+  --bg2:       #161b27;
+  --bg3:       #1e2535;
+  --border:    #2a3347;
+  --text:      #e2e8f0;
+  --text2:     #94a3b8;
+  --text3:     #64748b;
+  --accent:    #6366f1;
+  --accent2:   #818cf8;
+  --green:     #10b981;
+  --orange:    #f59e0b;
+  --red:       #ef4444;
+  --pink:      #ec4899;
+  --teal:      #14b8a6;
+  --radius:    12px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ─── TOP NAV ─── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,17,23,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  height: 56px;
+  gap: 8px;
+}
+.nav-logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent2);
+  margin-right: 16px;
+  white-space: nowrap;
+}
+.nav-logo span { color: var(--text2); font-weight: 400; font-size: 13px; margin-left: 6px; }
+.nav-links { display: flex; gap: 2px; flex: 1; }
+.nav-link {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.nav-link:hover { background: var(--bg3); color: var(--text); }
+.nav-spacer { flex: 1; }
+.nav-cta {
+  padding: 7px 18px;
+  background: var(--accent);
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: background .2s;
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--accent2); }
+
+/* ─── HERO ─── */
+.hero {
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--accent2);
+  margin-bottom: 20px;
+  letter-spacing: 0.4px;
+}
+.hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, #e2e8f0 0%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 17px;
+  color: var(--text2);
+  max-width: 580px;
+  margin: 0 auto 36px;
+}
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-secondary {
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text2);
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ─── SECTION WRAPPER ─── */
+.section {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+.section + .section { padding-top: 0; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent2);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+.section-desc {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 36px;
+  max-width: 640px;
+}
+
+/* ─── VALUE CARDS ─── */
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.value-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  transition: border-color .2s, transform .2s;
+}
+.value-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.value-icon { font-size: 26px; margin-bottom: 12px; }
+.value-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.value-card p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* ─── SCENE CARDS ─── */
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.scene-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.scene-card:hover { border-color: var(--accent2); }
+.scene-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+}
+.scene-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.scene-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+.scene-card p { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+.scene-outcomes { display: flex; flex-direction: column; gap: 5px; }
+.scene-outcome {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text2);
+}
+.scene-outcome::before {
+  content: '✓';
+  color: var(--green);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── PERSONA TYPE CARDS ─── */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+.type-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+}
+.type-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.type-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.type-card h4 { font-size: 14px; font-weight: 600; }
+.type-card p { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* ─── STEP GUIDE ─── */
+.steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-body h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.step-body p { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 10px; }
+.step-body .tip {
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text2);
+}
+.step-body .tip strong { color: var(--accent2); }
+
+/* ─── MODE COMPARE ─── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 600px) { .mode-grid { grid-template-columns: 1fr; } }
+.mode-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+}
+.mode-card.featured { border-color: var(--accent); background: rgba(99,102,241,0.06); }
+.mode-icon { font-size: 28px; margin-bottom: 10px; }
+.mode-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.mode-card p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.mode-label {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 10px;
+  background: var(--accent);
+  border-radius: 12px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ─── INTEGRATION ─── */
+.integration-flow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.flow-node {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 110px;
+}
+.flow-node .sub { font-size: 11px; color: var(--text3); font-weight: 400; margin-top: 2px; }
+.flow-arrow {
+  font-size: 18px;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+.flow-node.highlight { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+
+/* ─── FAQ ─── */
+.faq-list { display: flex; flex-direction: column; gap: 12px; }
+.faq-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: background .15s;
+}
+.faq-q:hover { background: var(--bg3); }
+.faq-q .arrow { transition: transform .2s; color: var(--text3); }
+.faq-item.open .faq-q .arrow { transform: rotate(180deg); }
+.faq-a {
+  display: none;
+  padding: 0 20px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+.faq-item.open .faq-a { display: block; padding-top: 14px; }
+
+/* ─── CTA BANNER ─── */
+.cta-banner {
+  margin: 0 24px 60px;
+  max-width: 836px;
+  margin-left: auto;
+  margin-right: auto;
+  background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(129,140,248,0.08) 100%);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 16px;
+  padding: 48px 40px;
+  text-align: center;
+}
+.cta-banner h2 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.cta-banner p { font-size: 15px; color: var(--text2); margin-bottom: 28px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* ─── DIVIDER ─── */
+.section-divider {
+  max-width: 880px;
+  margin: 0 auto;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── HIGHLIGHT BOX ─── */
+.highlight-box {
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.highlight-box h4 { font-size: 14px; font-weight: 600; color: var(--green); margin-bottom: 8px; }
+.highlight-box p { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+/* ─── AI BADGE ─── */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--accent2);
+  font-weight: 600;
+}
+
+/* ─── STAT ROW ─── */
+.stat-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent2);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label { font-size: 12px; color: var(--text3); }
+
+/* Anchor offset for sticky nav */
+[id] { scroll-margin-top: 72px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-logo">Persona Lab <span>产品使用手册</span></div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="scrollTo('intro')">产品介绍</button>
+    <button class="nav-link" onclick="scrollTo('value')">核心价值</button>
+    <button class="nav-link" onclick="scrollTo('scenes')">应用场景</button>
+    <button class="nav-link" onclick="scrollTo('guide')">使用指南</button>
+    <button class="nav-link" onclick="scrollTo('integration')">生态集成</button>
+    <button class="nav-link" onclick="scrollTo('faq')">常见问题</button>
+  </div>
+  <div class="nav-spacer"></div>
+  <button class="nav-cta" onclick="window.location.href='index.html'">🚀 立即使用</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="intro">
+  <div class="hero-badge">✨ AI 驱动 · 创新设计工具</div>
+  <h1>让每一个「假设的用户」<br>变得真实可感</h1>
+  <p class="hero-sub">Persona Lab 是面向创新团队的虚拟人市场，帮助设计师、产品经理和研究者快速构建立体、有温度的用户角色，驱动以人为本的创新决策。</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="window.location.href='index.html'">🚀 立即体验</button>
+    <button class="btn-secondary" onclick="scrollTo('guide')">📖 查看指南</button>
+  </div>
+</section>
+
+<!-- PRODUCT INTRO -->
+<div class="section" id="what-is">
+  <div class="section-label">产品定位</div>
+  <div class="section-title">Persona Lab 是什么？</div>
+  <p class="section-desc">
+    Persona Lab 是一款专为创新设计流程打造的<strong style="color:var(--text)">虚拟用户角色管理平台</strong>，通过 AI 生成与结构化模板双引擎，帮助团队在项目启动阶段快速建立对目标用户的共同认知。
+  </p>
+
+  <div class="highlight-box">
+    <h4>💡 为什么需要虚拟人？</h4>
+    <p>
+      在传统设计过程中，团队常常基于模糊的「典型用户」做决策——这导致方向偏差、需求误判和大量返工。虚拟人（Persona）将真实调研数据提炼为有名字、有故事、有行为模式的具体角色，让团队在每一个设计决策中都能回答：<strong style="color:var(--text)">「这个用户会怎么想？」</strong>
+    </p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">角色类型</div></div>
+    <div class="stat-item"><div class="stat-num">33+</div><div class="stat-label">预置角色模板</div></div>
+    <div class="stat-item"><div class="stat-num">14</div><div class="stat-label">行业域覆盖</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">使用模式</div></div>
+    <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">自定义角色组</div></div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- CORE VALUE -->
+<div class="section" id="value">
+  <div class="section-label">核心价值</div>
+  <div class="section-title">为创新团队解决真实痛点</div>
+  <p class="section-desc">从「我们的用户大概是这样的人」到「我知道张明这周五的早晨会遇到什么问题」——这就是 Persona Lab 带来的认知跃升。</p>
+
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-icon">⚡</div>
+      <h3>极速启动</h3>
+      <p>从项目主题到完整角色组，最快 30 秒。告别「先做调研再开工」的漫长等待，让创新在Day 1就有清晰的人物图谱。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🎯</div>
+      <h3>精准语义匹配</h3>
+      <p>输入「老年人智慧医疗」即可获得覆盖行业×场景×主题的精准角色。25组标签交叉引擎确保生成结果与你的项目上下文高度契合。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🤖</div>
+      <h3>AI 增强生成</h3>
+      <p>接入 OpenAI、DeepSeek、通义千问等大模型，让 AI 根据你的项目描述生成独一无二的角色，而非简单套模板。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">👥</div>
+      <h3>系统性视角</h3>
+      <p>同时生成目标用户、极端用户、利益相关方、决策者和资源方五类角色，帮助团队看见完整的创新生态系统，而非只关注主流用户。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">📦</div>
+      <h3>角色组管理</h3>
+      <p>将多个生成批次汇聚成角色组，支持 Markdown 和 PDF 导出，让角色成为可复用的团队共同语言，而非一次性文档。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔗</div>
+      <h3>生态无缝集成</h3>
+      <p>与 Eureka 创新项目库双向打通：在 Persona Lab 创建角色，一键同步至 Eureka 项目的 Reveal 阶段，实现流程闭环。</p>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- APPLICATION SCENES -->
+<div class="section" id="scenes">
+  <div class="section-label">市场应用场景</div>
+  <div class="section-title">谁在用，怎么用</div>
+  <p class="section-desc">Persona Lab 已在以下多个领域的创新实践中得到验证，帮助团队在设计启动阶段建立清晰的用户认知。</p>
+
+  <div class="scene-grid">
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(99,102,241,0.15);color:var(--accent2)">🏢 企业创新</div>
+      <h3>产品立项与需求洞察</h3>
+      <p>产品团队在项目立项早期，快速生成目标用户画像，明确核心需求优先级，减少需求蔓延。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">立项文档中有具名用户角色，而非抽象描述</div>
+        <div class="scene-outcome">需求评审时可对照具体用户做决策</div>
+        <div class="scene-outcome">减少跨部门对「目标用户」的认知分歧</div>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(20,184,166,0.15);color:var(--teal)">🎓 设计教育</div>
+      <h3>设计思维课程 / 工作坊</h3>
+      <p>教师和培训师用于设计思维、服务设计课程，让学员在 30 秒内进入用户视角，专注于创意发散而非角色构建。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">工作坊暖场：30秒建立用户共情基础</div>
+        <div class="scene-outcome">支持多行业模板，覆盖各类课程主题</div>
+        <div class="scene-outcome">角色组导出可作为学员参考材料</div>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(236,72,153,0.15);color:var(--pink)">🔬 用户研究</div>
+      <h3>研究假设验证前置</h3>
+      <p>用研团队在田野调研前，用 AI 生成假设性角色，设计访谈提纲和观察框架，让研究更有针对性。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">极端用户类型帮助发现边缘化需求</div>
+        <div class="scene-outcome">21字段结构化信息降低访谈盲区</div>
+        <div class="scene-outcome">研究前置假设与研究后发现对比修正</div>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(245,158,11,0.15);color:var(--orange)">🚀 创业团队</div>
+      <h3>MVP 验证与市场切入</h3>
+      <p>早期创业团队资源有限，用 Persona Lab 快速建立市场认知，识别早期采用者和关键决策者，聚焦冷启动路径。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">决策者角色帮助识别 B 端采购链路</div>
+        <div class="scene-outcome">资源方角色梳理潜在合作伙伴生态</div>
+        <div class="scene-outcome">角色组随业务迭代持续更新</div>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(16,185,129,0.15);color:var(--green)">🏥 公共服务</div>
+      <h3>政务 / 医疗 / 教育数字化</h3>
+      <p>公共部门的数字化项目往往面对多元用户群，包括老年人、低数字素养用户和监管方，Persona Lab 帮助全面覆盖利益相关方。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">老龄化、可及性主题专项模板支持</div>
+        <div class="scene-outcome">极端用户（重度/轻度使用者）双维度</div>
+        <div class="scene-outcome">利益相关方地图助力多方协同</div>
+      </div>
+    </div>
+
+    <div class="scene-card">
+      <div class="scene-tag" style="background:rgba(99,102,241,0.15);color:var(--accent2)">🤝 咨询机构</div>
+      <h3>客户项目快速启动</h3>
+      <p>咨询顾问在客户项目启动会前快速生成行业角色，建立与客户的共同语言，提升方案说服力和专业感。</p>
+      <div class="scene-outcomes">
+        <div class="scene-outcome">覆盖 14 个行业域，快速切换赛道</div>
+        <div class="scene-outcome">PDF 导出可直接嵌入提案文档</div>
+        <div class="scene-outcome">多角色组管理支持多客户并行</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- PERSONA TYPES -->
+<div class="section" id="types">
+  <div class="section-label">角色体系</div>
+  <div class="section-title">五类角色，覆盖完整创新生态</div>
+  <p class="section-desc">Persona Lab 不只关注「主流用户」，而是帮助团队建立对整个创新生态系统的系统性认知。</p>
+
+  <div class="type-grid">
+    <div class="type-card">
+      <div class="type-header">
+        <div class="type-dot" style="background:#6366f1"></div>
+        <h4>🎯 目标用户</h4>
+      </div>
+      <p>核心服务对象。包含 21 个字段、5 个模块的完整画像：基本信息、行为模式、需求与痛点、情感与动机、数字化素养。</p>
+    </div>
+    <div class="type-card">
+      <div class="type-header">
+        <div class="type-dot" style="background:#f59e0b"></div>
+        <h4>⚡ 极端用户</h4>
+      </div>
+      <p>重度使用者 + 轻度使用者双视角。极端用户的需求往往揭示产品的核心张力，是创新灵感的重要来源。</p>
+    </div>
+    <div class="type-card">
+      <div class="type-header">
+        <div class="type-dot" style="background:#10b981"></div>
+        <h4>🤝 利益相关方</h4>
+      </div>
+      <p>影响或被影响产品/服务的间接方。识别他们的诉求，帮助团队在设计中提前规避冲突、建立支持联盟。</p>
+    </div>
+    <div class="type-card">
+      <div class="type-header">
+        <div class="type-dot" style="background:#ec4899"></div>
+        <h4>💼 决策者</h4>
+      </div>
+      <p>B 端采购、组织内部推动者。了解决策者的评估标准和顾虑，是 B2B 产品走向商业成功的关键。</p>
+    </div>
+    <div class="type-card">
+      <div class="type-header">
+        <div class="type-dot" style="background:#14b8a6"></div>
+        <h4>🌐 资源方</h4>
+      </div>
+      <p>合作伙伴、供应商、渠道方。梳理资源方生态，帮助团队在商业模式设计中识别杠杆资源和合作机会。</p>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- USAGE GUIDE -->
+<div class="section" id="guide">
+  <div class="section-label">使用指南</div>
+  <div class="section-title">三步开始你的第一个角色组</div>
+  <p class="section-desc">无需注册、无需安装，打开即用。以下是从零到角色组的完整流程。</p>
+
+  <!-- Three Modes -->
+  <div class="mode-grid" style="margin-bottom:36px">
+    <div class="mode-card featured">
+      <div class="mode-icon">✨</div>
+      <h3>AI 生成模式</h3>
+      <p>输入项目主题，AI 理解语义后自动生成多类角色。支持 OpenAI / DeepSeek / 通义千问等大模型接入。</p>
+      <div class="mode-label">推荐</div>
+    </div>
+    <div class="mode-card">
+      <div class="mode-icon">🗂</div>
+      <h3>市场浏览模式</h3>
+      <p>浏览 33+ 个预置角色，按行业和类型筛选，找到合适的角色直接添加到角色组。</p>
+    </div>
+    <div class="mode-card">
+      <div class="mode-icon">📦</div>
+      <h3>角色组管理</h3>
+      <p>查看和管理所有已保存的角色组，支持重命名、导出为 Markdown / PDF 格式。</p>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>描述你的项目主题</h3>
+        <p>在「✨ AI 生成」模式下，在顶部输入框中用自然语言描述你的项目。无需格式要求，说清楚你在做什么就好。</p>
+        <div class="tip">
+          <strong>示例输入：</strong><br>
+          「面向老年人的智慧医疗健康管理 App」<br>
+          「新能源汽车 4S 店的数字化服务体验优化」<br>
+          「面向 Z 世代的在线职业培训平台」
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>（可选）精细化标签筛选</h3>
+        <p>左侧标签面板提供行业、场景、主题三维度标签。勾选标签可以进一步缩小生成范围，获得更精准的结果。AI 生成模式下标签用于引导语义匹配；市场浏览模式下标签用于过滤预置角色。</p>
+        <div class="tip">
+          <strong>标签维度说明：</strong><br>
+          <strong>行业标签</strong>（14个）：科技、医疗、金融、教育、汽车…<br>
+          <strong>场景标签</strong>（6个）：产品研发、服务设计、体验优化、数字化转型…<br>
+          <strong>主题标签</strong>（6个）：老龄化、认知负荷、决策辅助、可及性…
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>生成并加入角色组</h3>
+        <p>点击「✨ 生成虚拟人」，系统将生成一批角色卡片。查看每张卡片的详情（点击展开抽屉），将满意的角色点击「+ 加入角色组」。</p>
+        <div class="tip">
+          <strong>小技巧：</strong>可以多次生成不同主题或配置不同标签，将多批生成的角色混合加入同一个角色组，形成更多元的人物图谱。
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>命名并保存角色组</h3>
+        <p>右侧角色托盘（Group Tray）显示当前已添加的角色。填入角色组名称，点击「💾 保存角色组」。保存后可在「📦 我的角色组」中随时查看。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>导出或同步到 Eureka</h3>
+        <p>在「我的角色组」中，选择角色组后可以：</p>
+        <ul style="margin: 8px 0 10px 20px; color: var(--text2); font-size: 14px; line-height: 1.8;">
+          <li>📄 导出为 <strong style="color:var(--text)">Markdown</strong> —— 嵌入 Notion / Confluence / 飞书文档</li>
+          <li>🖨 导出为 <strong style="color:var(--text)">PDF</strong> —— 打印或插入 PPT 提案</li>
+          <li>🔗 <strong style="color:var(--text)">同步到 Eureka</strong> —— 一键将角色导入创新项目库的 Reveal 阶段</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- AI CONFIG GUIDE -->
+<div class="section" id="ai-config">
+  <div class="section-label">AI 大模型接入</div>
+  <div class="section-title">让 AI 为你定制专属角色</div>
+  <p class="section-desc">Persona Lab 内置语义模板引擎，即使不配置 AI 也能正常使用。接入大模型后，生成结果将更加个性化和贴合项目上下文。</p>
+
+  <div class="highlight-box" style="border-color:rgba(99,102,241,0.3);background:rgba(99,102,241,0.06)">
+    <h4 style="color:var(--accent2)">🤖 支持的 AI 服务</h4>
+    <p>
+      <strong style="color:var(--text)">OpenAI</strong> (GPT-4o / GPT-4 / GPT-3.5)、
+      <strong style="color:var(--text)">DeepSeek</strong>（deepseek-chat）、
+      <strong style="color:var(--text)">通义千问</strong>（qwen-plus）、
+      <strong style="color:var(--text)">Azure OpenAI</strong> 及其他兼容 OpenAI Chat Completions 格式的接口均可接入。
+    </p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num" style="font-size:13px">⚙️</div>
+      <div class="step-body">
+        <h3>打开 AI 设置面板</h3>
+        <p>点击顶部导航栏右侧的「⚙️ AI 设置」按钮，打开配置面板。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="font-size:13px">🔑</div>
+      <div class="step-body">
+        <h3>填入 API Key 和模型</h3>
+        <p>选择 API 提供商，填入 API Key 和模型名称。如使用国内兼容接口，切换为「兼容接口」模式并填入自定义端点地址。配置信息仅存储在本地浏览器，不会上传至任何服务器。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="font-size:13px">✅</div>
+      <div class="step-body">
+        <h3>生成时自动切换至 AI 模式</h3>
+        <p>保存配置后，生成时将优先调用 AI 接口。如 AI 接口调用失败，系统将自动降级至内置模板引擎，不影响正常使用。角色卡片会标注「✨ AI 生成」或「📋 模板引擎」来源。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- INTEGRATION WITH EUREKA -->
+<div class="section" id="integration">
+  <div class="section-label">生态集成</div>
+  <div class="section-title">与 Eureka 创新项目库无缝协作</div>
+  <p class="section-desc">Persona Lab 与 Eureka 通过共享数据层实现双向联动，支持从「角色生成」到「洞察分析」的创新全流程。</p>
+
+  <div class="integration-flow">
+    <div class="flow-node highlight">
+      <div>Eureka</div>
+      <div class="sub">创新项目库</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div>选择项目</div>
+      <div class="sub">带主题参数跳转</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div>Persona Lab</div>
+      <div class="sub">自动填充主题</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div>生成角色组</div>
+      <div class="sub">保存并同步</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div>Eureka Reveal</div>
+      <div class="sub">角色自动导入</div>
+    </div>
+  </div>
+
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-icon">📥</div>
+      <h3>从 Eureka 启动</h3>
+      <p>在 Eureka 项目的 Reveal 阶段，点击「🎭 去 Persona Lab 生成」，系统自动携带项目名称作为主题参数打开 Persona Lab，无需手动输入。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔗</div>
+      <h3>一键同步回 Eureka</h3>
+      <p>在 Persona Lab 角色组托盘中点击「🔗 同步到 Eureka」，选择目标项目，角色将自动出现在该项目的 Reveal 阶段用户画像区域。</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🔄</div>
+      <h3>双向可迭代</h3>
+      <p>随着研究深入，可以多次返回 Persona Lab 更新角色，再次同步到 Eureka，保持项目中的用户画像与最新认知同步。</p>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- FAQ -->
+<div class="section" id="faq">
+  <div class="section-label">常见问题</div>
+  <div class="section-title">FAQ</div>
+
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Persona Lab 是否需要登录注册？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">不需要。Persona Lab 是纯前端应用，所有数据存储在你的浏览器本地（localStorage）。无需注册、无需服务器，打开即用。<br><br>⚠️ 注意：清除浏览器数据会导致角色组丢失，建议定期导出为 Markdown 或 PDF 备份。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>我的 API Key 安全吗？会被上传吗？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">绝对安全。API Key 仅存储在你的浏览器本地（localStorage key: persona_lab_ai_config_v1），Persona Lab 不与任何后端服务器通信，你的 Key 不会被上传或共享。<br><br>AI 请求是从你的浏览器直接发送至 AI 服务商（OpenAI 等），不经过任何中间服务器。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>不配置 AI 能正常使用吗？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">完全可以。Persona Lab 内置了覆盖 14 个行业的语义模板引擎，无需 AI 即可生成有意义的角色。AI 接入是可选的增强功能，让生成结果更加个性化，但并非必需。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>如何把角色插入到我们的 PPT 或文档中？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">两种方式：<br><br>1. <strong>PDF 导出</strong>：在「我的角色组」中选择角色组，点击「🖨 导出 PDF」，调用浏览器打印功能，保存为 PDF 文件后插入 PPT 或直接作为附件发送。<br><br>2. <strong>Markdown 导出</strong>：导出后可粘贴至 Notion、Confluence、飞书文档等工具，或在 Markdown 编辑器中进一步编辑。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>生成的角色可以修改吗？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">目前角色卡片支持查看详情（点击展开抽屉），直接编辑字段的功能在规划中。当前建议：将角色添加到角色组后，通过 Markdown 导出在外部文档工具中进行个性化修改。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Persona Lab 可以在手机上使用吗？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">可以访问，但界面针对桌面端优化，手机端体验有限。我们计划推出 PWA 版本以改善移动端体验，后续也在评估微信小程序 Viewer 版本（角色卡片只读展示）。</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>33 个预置角色能满足我的行业需求吗？</span>
+        <span class="arrow">▾</span>
+      </div>
+      <div class="faq-a">预置角色覆盖 14 个主要行业域，主要用于快速参考和启发。如果找不到完全匹配的角色，建议使用「AI 生成」模式，输入你的具体项目描述，语义引擎会生成更贴合的定制角色。如需在团队间共享自定义行业模板，欢迎通过产品反馈告知我们。</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CTA BANNER -->
+<div class="cta-banner">
+  <h2>准备好开始了吗？</h2>
+  <p>输入一个项目主题，30 秒后你就会拥有第一批有温度的虚拟用户。</p>
+  <div class="cta-btns">
+    <button class="btn-primary" onclick="window.location.href='index.html'">🚀 打开 Persona Lab</button>
+    <button class="btn-secondary" onclick="window.open('../eureka-dashboard/','_blank')">探索 Eureka 项目库 →</button>
+  </div>
+</div>
+
+<footer>
+  <p>Persona Lab · 创新虚拟人市场 &nbsp;|&nbsp; 版本 v3.3 &nbsp;|&nbsp; 数据本地存储，隐私安全 &nbsp;|&nbsp; 与 Eureka 创新项目库集成</p>
+</footer>
+
+<script>
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>
