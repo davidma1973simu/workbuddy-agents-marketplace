@@ -2625,7 +2625,7 @@ function syncToEureka() {
   localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
 
   // 构建跳转 URL（回到 Eureka 并提示导入）
-  const eurekaBase = '../eureka-dashboard/';
+  const eurekaBase = 'https://eureka-dashboard.edgeone.cool';
   const pid = window._eurekaSourceProjectId;
   const backUrl = pid
     ? `${eurekaBase}?import_persona=1&projectId=${pid}`
@@ -2682,7 +2682,7 @@ function syncGroupToEureka(groupId) {
 
   localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
 
-  const eurekaBase = '../eureka-dashboard/';
+  const eurekaBase = 'https://eureka-dashboard.edgeone.cool';
   const pid = window._eurekaSourceProjectId;
   const backUrl = pid
     ? `${eurekaBase}?import_persona=1&projectId=${pid}`
