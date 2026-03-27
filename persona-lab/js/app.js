@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSidebarTags();
   loadBrowsePersonas();
   _updateAIConfigBtn(getAIConfig());
+  // ── Hero 介绍区块：曾经关闭过则隐藏
+  if (localStorage.getItem('pl_hero_hidden') === '1') {
+    const hero = document.getElementById('hero-intro');
+    if (hero) hero.style.display = 'none';
+  }
   // ── 检测 Eureka 跳转参数，自动填充主题并生成
   _checkEurekaLaunchParams();
 });

@@ -998,6 +998,59 @@ main {
 
       <!-- 模式B：AI 生成 -->
       <div id="panel-generate">
+
+        <!-- ── 产品介绍 Hero ── -->
+        <div id="hero-intro" style="
+          background: linear-gradient(135deg, #0f1117 0%, #1a1f35 60%, #0f1117 100%);
+          border: 1px solid #2a3347;
+          border-radius: 16px;
+          padding: 36px 40px 32px;
+          margin-bottom: 20px;
+          position: relative;
+          overflow: hidden;
+        ">
+          <!-- 背景光晕 -->
+          <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);pointer-events:none"></div>
+          <div style="position:absolute;bottom:-30px;left:60px;width:160px;height:160px;background:radial-gradient(circle,rgba(129,140,248,0.1) 0%,transparent 70%);pointer-events:none"></div>
+
+          <!-- 标签 -->
+          <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:4px 14px;font-size:12px;color:#818cf8;margin-bottom:16px">
+            ✦ AI 驱动 · 创新设计工具
+          </div>
+
+          <!-- 主标题 -->
+          <div style="font-size:clamp(22px,3vw,32px);font-weight:800;line-height:1.3;color:#e2e8f0;letter-spacing:-0.5px;margin-bottom:12px">
+            让每一个「假设的用户」<br>变得<span style="color:#818cf8">真实可感</span>
+          </div>
+
+          <!-- 副标题 -->
+          <div style="font-size:14px;color:#94a3b8;line-height:1.7;max-width:560px;margin-bottom:24px">
+            Persona Lab 是面向创新团队的虚拟人市场，帮助设计师、产品经理和研究者快速构建立体、有温度的用户角色，驱动以人为本的创新决策。
+          </div>
+
+          <!-- 三个价值点 -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;font-size:13px;color:#cbd5e1">
+              <span style="font-size:16px">🎭</span> 5 类角色体系
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;font-size:13px;color:#cbd5e1">
+              <span style="font-size:16px">✨</span> AI 一键生成
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;font-size:13px;color:#cbd5e1">
+              <span style="font-size:16px">🔗</span> 与 Eureka 无缝集成
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 14px;font-size:13px;color:#cbd5e1">
+              <span style="font-size:16px">📄</span> MD / PDF 一键导出
+            </div>
+          </div>
+
+          <!-- 关闭按钮 -->
+          <button onclick="document.getElementById('hero-intro').style.display='none';localStorage.setItem('pl_hero_hidden','1')"
+            style="position:absolute;top:12px;right:14px;background:none;border:none;color:#64748b;font-size:18px;cursor:pointer;line-height:1;padding:4px 6px;border-radius:6px"
+            title="关闭介绍">×</button>
+        </div>
+        <!-- ── /产品介绍 Hero ── -->
+
         <div class="theme-panel">
           <div class="theme-panel-title">
             <span class="icon">✨</span>
