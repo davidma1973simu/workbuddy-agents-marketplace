@@ -15,22 +15,39 @@
       --orange:   #D97706;
       --pink:     #EC4899;
       --dark:     #1E1B4B;
+      --text:     #1e293b;
+      --muted:    #64748b;
+      --bg:       #f8fafc;
+      --card-bg:  #ffffff;
+      --border:   #e2e8f0;
+    }
+
+    /* 深色主题变量 */
+    [data-theme="dark"] {
       --text:     #E2E8F0;
       --muted:    #94A3B8;
+      --bg:       #0F0C29;
+      --card-bg:  rgba(255,255,255,.04);
+      --border:   rgba(255,255,255,.08);
     }
 
     html { scroll-behavior: smooth; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
-      background: #0F0C29;
-      background: linear-gradient(135deg, #0F0C29 0%, #1a1050 40%, #24243e 100%);
+      background: var(--bg);
       min-height: 100vh;
       padding: 32px 20px 48px;
       color: var(--text);
       overflow-x: hidden;
+      transition: background .3s, color .3s;
     }
 
-    /* 背景星点 */
+    /* 深色主题背景 */
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0F0C29 0%, #1a1050 40%, #24243e 100%);
+    }
+
+    /* 背景星点 - 仅在深色主题显示 */
     body::before {
       content: '';
       position: fixed;
@@ -42,6 +59,33 @@
       background-position: 0 0, 12px 12px;
       pointer-events: none;
       z-index: 0;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    [data-theme="dark"] body::before { opacity: 1; }
+
+    /* 主题切换按钮 */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
     }
 
     .container {
@@ -71,15 +115,20 @@
     }
     .badge {
       display: inline-block;
-      background: rgba(102,126,234,.18);
-      border: 1px solid rgba(102,126,234,.4);
-      color: #A5B4FC;
+      background: rgba(102,126,234,.1);
+      border: 1px solid rgba(102,126,234,.3);
+      color: var(--purple);
       font-size: 12px;
       font-weight: 600;
       letter-spacing: .06em;
       padding: 6px 16px;
       border-radius: 99px;
       margin-bottom: 24px;
+    }
+    [data-theme="dark"] .badge {
+      background: rgba(102,126,234,.18);
+      border-color: rgba(102,126,234,.4);
+      color: #A5B4FC;
     }
     .headline {
       font-size: clamp(32px, 5vw, 52px);
@@ -89,10 +138,13 @@
       margin-bottom: 16px;
     }
     .headline .eureka {
-      background: linear-gradient(90deg, #A5B4FC 0%, var(--purple) 50%, #c084fc 100%);
+      background: linear-gradient(90deg, var(--purple) 0%, #764ba2 50%, #9b59b6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+    [data-theme="dark"] .headline .eureka {
+      background: linear-gradient(90deg, #A5B4FC 0%, var(--purple) 50%, #c084fc 100%);
     }
     .subtitle {
       font-size: clamp(16px, 2.2vw, 20px);
@@ -122,11 +174,15 @@
 
     /* ── 营销内容区域 ── */
     .marketing-section {
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 24px;
       padding: 48px 40px;
       margin-bottom: 48px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .marketing-section {
+      box-shadow: none;
     }
     .section-title {
       font-size: 24px;
@@ -160,9 +216,9 @@
       align-items: flex-start;
       gap: 12px;
       padding: 16px 20px;
-      background: rgba(255,255,255,.04);
+      background: var(--bg);
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.06);
+      border: 1px solid var(--border);
     }
     .value-point-icon {
       width: 36px;
@@ -210,8 +266,8 @@
     }
     .card {
       position: relative;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 20px;
       padding: 28px 24px;
       display: flex;
@@ -220,6 +276,10 @@
       color: inherit;
       transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
       overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .card {
+      box-shadow: none;
     }
     .card::before {
       content: '';
@@ -268,7 +328,7 @@
     .card-title {
       font-size: 17px;
       font-weight: 700;
-      color: #F1F5F9;
+      color: var(--text);
       margin-bottom: 8px;
     }
     .card-desc {
@@ -307,12 +367,16 @@
 
     /* ── 留资表单区域 ── */
     .lead-section {
-      background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(118,75,162,.15));
-      border: 1px solid rgba(102,126,234,.3);
+      background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08));
+      border: 1px solid rgba(102,126,234,.2);
       border-radius: 24px;
       padding: 48px 40px;
       margin-bottom: 48px;
       text-align: center;
+    }
+    [data-theme="dark"] .lead-section {
+      background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(118,75,162,.15));
+      border-color: rgba(102,126,234,.3);
     }
     .lead-section h2 {
       font-size: 26px;
@@ -338,18 +402,18 @@
     .form-input {
       flex: 1;
       padding: 14px 18px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.15);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 12px;
       color: var(--text);
       font-size: 15px;
       outline: none;
       transition: border-color .2s, box-shadow .2s;
     }
-    .form-input::placeholder { color: #64748b; }
+    .form-input::placeholder { color: #94a3b8; }
     .form-input:focus {
       border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(102,126,234,.2);
+      box-shadow: 0 0 0 3px rgba(102,126,234,.15);
     }
     .form-submit {
       padding: 14px 32px;
@@ -388,11 +452,15 @@
 
     /* ── 市场活动区域 ── */
     .events-section {
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 24px;
       padding: 48px 40px;
       margin-bottom: 48px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .events-section {
+      box-shadow: none;
     }
     .events-section h2 {
       font-size: 24px;
@@ -417,14 +485,15 @@
       align-items: center;
       gap: 20px;
       padding: 20px 24px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      transition: background .2s, border-color .2s;
+      transition: background .2s, border-color .2s, box-shadow .2s;
     }
     .event-card:hover {
-      background: rgba(255,255,255,.07);
-      border-color: rgba(255,255,255,.15);
+      background: var(--card-bg);
+      border-color: var(--purple);
+      box-shadow: 0 4px 12px rgba(102,126,234,.1);
     }
     .event-date {
       display: flex;
@@ -480,16 +549,16 @@
       padding: 40px;
       color: var(--muted);
       font-size: 14px;
-      background: rgba(255,255,255,.02);
+      background: var(--bg);
       border-radius: 12px;
-      border: 1px dashed rgba(255,255,255,.1);
+      border: 1px dashed var(--border);
     }
 
     /* ── Footer ── */
     .footer {
       text-align: center;
       padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,.08);
+      border-top: 1px solid var(--border);
     }
     .footer p {
       font-size: 13px;
@@ -539,6 +608,9 @@
   </style>
 </head>
 <body>
+
+<!-- 主题切换按钮 -->
+<button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
 
 <div class="container">
 
@@ -766,6 +838,30 @@
       </div>
     `).join('');
   }
+
+  // 主题切换功能
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  
+  // 检查本地存储的主题偏好
+  const savedTheme = localStorage.getItem('eureka_theme');
+  if (savedTheme === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+    themeToggle.textContent = '☀️';
+  }
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = html.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('eureka_theme', 'light');
+      themeToggle.textContent = '🌙';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('eureka_theme', 'dark');
+      themeToggle.textContent = '☀️';
+    }
+  });
 
   // 初始化
   renderEvents();
