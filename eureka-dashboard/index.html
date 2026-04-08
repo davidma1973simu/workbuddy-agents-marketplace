@@ -407,7 +407,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 /* ── GANTT REAL ── */
 #ganttCanvas{display:block;width:100%;height:auto}
 
-@media(max-width:768px){.ef-row{grid-template-columns:1fr}.editor-panel{border-radius:16px}}
+/* ── AI ASSISTANT ── */
+.ai-fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 6px 24px rgba(102,126,234,.45);z-index:9100;display:none;transition:.3s;align-items:center;justify-content:center}
+.ai-fab:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(102,126,234,.6)}
+.ai-fab.show{display:flex}
+.ai-panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:9150;display:none;opacity:0;transition:opacity .25s}
+.ai-panel-overlay.open{display:block;opacity:1}
+.ai-panel{position:fixed;top:0;right:-420px;width:400px;max-width:92vw;height:100vh;background:#fff;box-shadow:-8px 0 40px rgba(0,0,0,.15);z-index:9200;transition:right .3s ease;display:flex;flex-direction:column;overflow:hidden}
+.ai-panel.open{right:0}
+.ai-panel-hd{padding:20px 24px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-panel-title{font-size:16px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:8px}
+.ai-panel-badge{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:700}
+.ai-panel-close{width:32px;height:32px;border-radius:8px;background:#f1f5f9;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:#475569;transition:.2s}
+.ai-panel-close:hover{background:#e2e8f0}
+.ai-panel-body{flex:1;overflow-y:auto;padding:16px 20px}
+.ai-skill-section{margin-bottom:20px}
+.ai-skill-section-title{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.ai-skill-card{background:#f8faff;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.2s;display:flex;align-items:flex-start;gap:12px}
+.ai-skill-card:hover{border-color:#667eea;background:#f0f4ff;box-shadow:0 2px 12px rgba(102,126,234,.15)}
+.ai-skill-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ai-skill-info{flex:1;min-width:0}
+.ai-skill-name{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:3px}
+.ai-skill-desc{font-size:11px;color:#64748b;line-height:1.5}
+.ai-skill-arrow{color:#94a3b8;font-size:14px;flex-shrink:0;margin-top:2px}
+
+/* AI Result Modal */
+.ai-result-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9300;display:none;align-items:center;justify-content:center;padding:20px}
+.ai-result-modal.open{display:flex}
+.ai-result-box{background:#fff;border-radius:20px;width:min(680px,94vw);max-height:82vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.ai-result-hd{padding:20px 24px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-result-title{font-size:15px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px}
+.ai-result-body{flex:1;overflow-y:auto;padding:16px 24px 20px}
+.ai-result-body pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:13px;line-height:1.7;color:#334155;background:#f8fafc;border-radius:10px;padding:16px;border:1px solid #e2e8f0;max-height:50vh;overflow-y:auto}
+.ai-result-ft{padding:14px 24px 20px;border-top:1px solid #f1f5f9;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0}
+.ai-result-btn{padding:9px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.ai-btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+.ai-btn-primary:hover{box-shadow:0 4px 14px rgba(102,126,234,.4)}
+.ai-btn-secondary{background:#f1f5f9;color:#475569}
+.ai-btn-secondary:hover{background:#e2e8f0}
+.ai-btn-copy{background:#f0f4ff;color:#667eea;border:1.5px solid #a5b4fc}
+.ai-btn-copy:hover{background:#e0e7ff}
+.ai-loading{display:flex;align-items:center;gap:8px;padding:16px;color:#64748b;font-size:13px}
+.ai-loading-dots span{width:6px;height:6px;background:#667eea;border-radius:50%;display:inline-block;animation:aiBounce .6s ease infinite}
+.ai-loading-dots span:nth-child(2){animation-delay:.15s}
+.ai-loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes aiBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+@media(max-width:768px){.ef-row{grid-template-columns:1fr}.editor-panel{border-radius:16px}.ai-panel{width:100%;max-width:100%}}
 
 @media(max-width:1100px){.main{grid-template-columns:1fr}.panel-left{max-height:400px;position:static}}
 @media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.radar-grid,.stage-out-grid,.po-grid{grid-template-columns:1fr}.feature-grid,.brief-grid,.test-grid,.test-bottom-grid{grid-template-columns:1fr}}
@@ -1627,6 +1673,48 @@ function htmlProcessOutputs(p) {
   </div>
 </div>
 
+<!-- AI Assistant FAB -->
+<button class="ai-fab" id="aiFab" onclick="toggleAIPanel()" title="AI 智能助手">🤖</button>
+
+<!-- AI Assistant Side Panel Overlay -->
+<div class="ai-panel-overlay" id="aiPanelOverlay" onclick="closeAIPanel()"></div>
+
+<!-- AI Assistant Side Panel -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-hd">
+    <div class="ai-panel-title">
+      🤖 AI 智能助手
+      <span class="ai-panel-badge" id="aiPanelBadge">Reveal</span>
+    </div>
+    <button class="ai-panel-close" onclick="closeAIPanel()">×</button>
+  </div>
+  <div class="ai-panel-body" id="aiPanelBody">
+    <!-- 动态渲染 Skill 卡片 -->
+  </div>
+</div>
+
+<!-- AI Result Modal -->
+<div class="ai-result-modal" id="aiResultModal">
+  <div class="ai-result-box">
+    <div class="ai-result-hd">
+      <div class="ai-result-title" id="aiResultTitle">✨ AI 生成结果</div>
+      <button class="ai-panel-close" onclick="closeAIResult()">×</button>
+    </div>
+    <div class="ai-result-body" id="aiResultBody">
+      <div class="ai-loading" id="aiLoading">
+        <div class="ai-loading-dots"><span></span><span></span><span></span></div>
+        <span>AI 正在思考中...</span>
+      </div>
+      <pre id="aiResultContent" style="display:none"></pre>
+    </div>
+    <div class="ai-result-ft" id="aiResultFt" style="display:none">
+      <button class="ai-result-btn ai-btn-copy" onclick="copyAIResult()">📋 复制结果</button>
+      <button class="ai-result-btn ai-btn-primary" id="aiApplyBtn" onclick="applyAIResult()">✅ 回填到表单</button>
+      <button class="ai-result-btn ai-btn-secondary" onclick="closeAIResult()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <!-- AI Prompt 弹窗 -->
 <div id="poPromptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;width:min(620px,92vw);max-height:80vh;overflow-y:auto;padding:28px">
@@ -1664,6 +1752,366 @@ function closePoPrompt() {
   const modal = document.getElementById('poPromptModal');
   if (modal) modal.style.display = 'none';
 }
+
+// ═══════════════ AI ASSISTANT ═══════════════
+
+// 当前 AI 生成结果 & 对应的 Skill key
+let _aiResultText = '';
+let _aiSkillKey = '';
+
+// 各阶段的 Skill 定义
+const AI_SKILLS = {
+  reveal: [
+    { key:'interviewNotes', name:'📋 整理访谈记录', desc:'将原始访谈素材结构化，提取核心观点、痛点和行为模式', icon:'📝', color:'#6366f1', bg:'#eef2ff', fillField:'ef_interviewNotes' },
+    { key:'affinityMap', name:'📊 亲和图分析', desc:'将访谈笔记聚类整理，发现主题规律和深层洞察', icon:'🧩', color:'#6366f1', bg:'#eef2ff', fillField:'ef_affinityMap' },
+    { key:'personas', name:'👤 生成用户画像', desc:'基于研究数据创建 2-3 个目标用户画像', icon:'🎨', color:'#6366f1', bg:'#eef2ff', fillField:'_personas' },
+    { key:'journeyMap', name:'🗺️ 用户旅程地图', desc:'设计从发现到推荐的完整用户旅程触点', icon:'🗺️', color:'#6366f1', bg:'#eef2ff', fillField:'_journey' },
+    { key:'findInsight', name:'💡 FIND 深度洞察', desc:'运用 FIND 模型（事实→解读→需求→设计洞察）挖掘深层用户需求', icon:'🔍', color:'#6366f1', bg:'#eef2ff', fillField:'ef_pov_insight' },
+    { key:'buildPOV', name:'🎯 POV 构建', desc:'综合用户、痛点、洞察三要素构建完整的 POV 陈述', icon:'🎯', color:'#6366f1', bg:'#eef2ff', fillField:'_pov' }
+  ],
+  inspire: [
+    { key:'hmw', name:'❓ HMW 机遇生成', desc:'将洞察转化为可创新的问题陈述', icon:'💡', color:'#f59e0b', bg:'#fffbeb', fillField:'_hmw' },
+    { key:'crazy8', name:'⚡ Crazy 8 创意发散', desc:'快速生成 8 个创意方向，包含 1-2 个疯狂创意', icon:'🚀', color:'#f59e0b', bg:'#fffbeb', fillField:'_crazy8' },
+    { key:'ideas', name:'📐 创意评估矩阵', desc:'从可行性、用户价值、创新度等维度评估并排序创意', icon:'📊', color:'#f59e0b', bg:'#fffbeb', fillField:'_ideas' },
+    { key:'bestIdea', name:'🏆 最佳创意评审', desc:'撰写选定创意的评审报告，含对比分析和风险评估', icon:'🏆', color:'#f59e0b', bg:'#fffbeb', fillField:'ef_bestIdea' }
+  ],
+  shape: [
+    { key:'concept', name:'📐 概念方案构建', desc:'生成完整的概念方案文档，含功能清单和实现路径', icon:'🏗️', color:'#10b981', bg:'#f0fdf4', fillField:'ef_concept' },
+    { key:'story6', name:'📖 6 幕体验故事', desc:'设计完整的用户体验故事脚本（6幕结构）', icon:'🎬', color:'#10b981', bg:'#f0fdf4', fillField:'ef_story6' },
+    { key:'testReport', name:'🧪 测试报告整理', desc:'整理可用性测试结果，输出验证假设和新发现', icon:'📋', color:'#10b981', bg:'#f0fdf4', fillField:'ef_testReport' }
+  ],
+  exam: [
+    { key:'ahaEvaluate', name:'✨ AHA 价值评估', desc:'评估顿悟时刻、高光体验、进步感知三个维度', icon:'💎', color:'#ef4444', bg:'#fef2f2', fillField:'_aha' },
+    { key:'pitch', name:'🎤 电梯呈现脚本', desc:'撰写 90 秒电梯演讲脚本，精炼价值主张', icon:'🎙️', color:'#ef4444', bg:'#fef2f2', fillField:'ef_pitch' },
+    { key:'iterationPlan', name:'📅 迭代计划', desc:'制定 30-60-90 天迭代计划和里程碑', icon:'🗓️', color:'#ef4444', bg:'#fef2f2', fillField:'ef_iterPlan' },
+    { key:'businessModel', name:'💼 商业模式画布', desc:'填充完整的商业模式画布 9 个模块', icon:'📊', color:'#ef4444', bg:'#fef2f2', fillField:'_bm' }
+  ]
+};
+
+const STAGE_LABELS = { reveal:'Reveal · 洞察', inspire:'Inspire · 启发', shape:'Shape · 构建', exam:'Exam · 验证' };
+
+// 在编辑器打开/关闭/Tab切换时控制 FAB 显示
+function _updateAIFab() {
+  const fab = document.getElementById('aiFab');
+  if (!fab) return;
+  const tab = _editorTab;
+  const isOpen = !!_editorId;
+  const isStageTab = ['reveal','inspire','shape','exam'].includes(tab);
+  fab.classList.toggle('show', isOpen && isStageTab);
+}
+
+// 切换 AI 侧滑面板
+function toggleAIPanel() {
+  const panel = document.getElementById('aiPanel');
+  const overlay = document.getElementById('aiPanelOverlay');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) { closeAIPanel(); return; }
+  openAIPanel();
+}
+
+function openAIPanel() {
+  const panel = document.getElementById('aiPanel');
+  const overlay = document.getElementById('aiPanelOverlay');
+  const badge = document.getElementById('aiPanelBadge');
+  const body = document.getElementById('aiPanelBody');
+  // 设置当前阶段
+  const tab = _editorTab;
+  badge.textContent = STAGE_LABELS[tab] || tab;
+  // 渲染 Skill 卡片
+  const skills = AI_SKILLS[tab] || [];
+  if (!skills.length) {
+    body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#94a3b8">当前阶段暂无 AI 技能</div>';
+  } else {
+    body.innerHTML = `<div class="ai-skill-section"><div class="ai-skill-section-title">可选技能</div>${skills.map(s => `
+      <div class="ai-skill-card" onclick="executeAISkill('${s.key}')">
+        <div class="ai-skill-icon" style="background:${s.bg};color:${s.color}">${s.icon}</div>
+        <div class="ai-skill-info">
+          <div class="ai-skill-name">${s.name}</div>
+          <div class="ai-skill-desc">${s.desc}</div>
+        </div>
+        <div class="ai-skill-arrow">›</div>
+      </div>
+    `).join('')}</div>`;
+  }
+  panel.classList.add('open');
+  overlay.classList.add('open');
+}
+
+function closeAIPanel() {
+  document.getElementById('aiPanel')?.classList.remove('open');
+  document.getElementById('aiPanelOverlay')?.classList.remove('open');
+}
+
+// 执行 AI Skill
+async function executeAISkill(skillKey) {
+  if (!_editorId) return;
+  const tab = _editorTab;
+  const skills = AI_SKILLS[tab] || [];
+  const skill = skills.find(s => s.key === skillKey);
+  if (!skill) return;
+
+  _aiSkillKey = skillKey;
+  _aiResultText = '';
+
+  closeAIPanel();
+
+  // 打开结果弹窗 - 显示加载状态
+  const modal = document.getElementById('aiResultModal');
+  const title = document.getElementById('aiResultTitle');
+  const loading = document.getElementById('aiLoading');
+  const content = document.getElementById('aiResultContent');
+  const ft = document.getElementById('aiResultFt');
+  title.innerHTML = skill.icon + ' ' + skill.name;
+  loading.style.display = 'flex';
+  content.style.display = 'none';
+  ft.style.display = 'none';
+  modal.classList.add('open');
+
+  // 构建上下文（读取当前项目数据）
+  const p = getOne(_editorId);
+  const context = buildAIContext(p, tab, skillKey);
+
+  // 构建 prompt
+  const prompts = buildPoPrompts();
+  let systemPrompt = prompts[skillKey] || '';
+  if (!systemPrompt) {
+    // 为没有预置 prompt 的 skill 生成
+    systemPrompt = buildDynamicPrompt(p, tab, skillKey);
+  }
+
+  // 尝试调用 AI API
+  try {
+    const result = await callAIAPI(systemPrompt, context);
+    _aiResultText = result;
+    loading.style.display = 'none';
+    content.textContent = result;
+    content.style.display = 'block';
+    ft.style.display = 'flex';
+  } catch(e) {
+    loading.style.display = 'none';
+    content.textContent = '⚠️ AI 调用失败：' + e.message + '\n\n你可以复制下方 Prompt 手动粘贴给 AI 助手：\n\n' + systemPrompt + '\n\n--- 上下文 ---\n' + context;
+    content.style.display = 'block';
+    ft.style.display = 'flex';
+    // 调用失败时隐藏回填按钮
+    document.getElementById('aiApplyBtn').style.display = 'none';
+  }
+}
+
+// 构建项目上下文
+function buildAIContext(p, tab, skillKey) {
+  let ctx = '';
+  ctx += `项目名称：${p.name}\n`;
+  ctx += `项目简介：${p.brief || '（未填写）'}\n`;
+  ctx += `目标用户：${p.targetUser || '（未填写）'}\n`;
+
+  if (tab === 'reveal') {
+    const rv = p.reveal || {};
+    const pov = rv.pov || {};
+    if (pov.user) ctx += `\n当前POV-用户：${pov.user}`;
+    if (pov.pain) ctx += `\n当前POV-痛点：${pov.pain}`;
+    if (pov.insight) ctx += `\n当前POV-洞察：${pov.insight}`;
+    if (rv.interviewNotes) ctx += `\n\n访谈记录：\n${rv.interviewNotes}`;
+    if (rv.affinityMap) ctx += `\n\n亲和图：\n${rv.affinityMap}`;
+    if (rv.personas?.length) ctx += `\n\n现有用户画像：${rv.personas.map(x => `${x.emoji||''} ${x.name}（${x.role}）`).join('；')}`;
+  } else if (tab === 'inspire') {
+    const ins = p.inspire || {};
+    const rv = p.reveal || {};
+    const pov = rv.pov || {};
+    if (pov.user) ctx += `\nPOV-用户：${pov.user}`;
+    if (pov.pain) ctx += `\nPOV-痛点：${pov.pain}`;
+    if (pov.insight) ctx += `\nPOV-洞察：${pov.insight}`;
+    if (ins.hmw?.length) ctx += `\n\n现有HMW：${ins.hmw.map(h => h.statement).join('\n')}`;
+    if (ins.ideas?.length) ctx += `\n\n现有创意：${ins.ideas.map(i => i.name + ' - ' + i.description).join('\n')}`;
+  } else if (tab === 'shape') {
+    const sh = p.shape || {};
+    const ins = p.inspire || {};
+    if (ins.bestIdea) ctx += `\n最佳创意：${ins.bestIdea}`;
+    if (sh.concept) ctx += `\n\n现有概念方案：${JSON.stringify(sh.concept, null, 2)}`;
+  } else if (tab === 'exam') {
+    const ex = p.exam || {};
+    const sh = p.shape || {};
+    if (sh.concept) ctx += `\n概念方案：${sh.concept.summary || JSON.stringify(sh.concept)}`;
+    if (ex.testReport) ctx += `\n\n测试报告：${JSON.stringify(ex.testReport)}`;
+  }
+  return ctx;
+}
+
+// 为新增的 skill（无预置 prompt）动态生成 prompt
+function buildDynamicPrompt(p, tab, skillKey) {
+  const rv = p.reveal || {};
+  const pov = rv.pov || {};
+  const prompts = {
+    findInsight: `你是一位资深的用户研究专家。请运用 FIND 模型对以下用户数据进行深度分析：
+
+FIND 模型：
+- F（Facts 事实）：梳理用户旅程中的关键事实和行为
+- I（Interpretation 解读）：解读这些事实背后的含义和模式
+- N（Need 需求）：推导用户的深层需求和渴望
+- D（Design Insight 设计洞察）：生成可指导设计行动的精炼洞察
+
+请按 FIND 四层结构输出分析结果，每层 2-3 条，最终给出 1 条核心赋能命题。`,
+
+    buildPOV: `你是一位创新设计专家。请基于以下数据构建完整的 POV（Point of View）三段式洞察：
+
+POV 格式：[用户描述] 需要 [需求/目标]，因为 [核心洞察]
+
+请输出：
+1. 用户描述（50字内，明确目标用户特征）
+2. 核心痛点（用户面临的具体问题和困境）
+3. 洞察陈述（基于研究的深层发现，而非表面观察）
+4. 完整 POV 一句话`,
+
+    ahaEvaluate: `你是一位价值评估专家。请从三个维度评估概念方案的价值：
+
+1. 顿悟时刻（Aha Moment）：用户第一次体验到价值的那一刻
+2. 高光体验（Highlight）：让用户眼前一亮、愿意分享的极致体验
+3. 进步感知（Advancement）：用户清晰感受到自己变得更好的时刻
+
+请为每个维度评分（1-5分）并说明理由。`,
+
+    iterationPlan: `你是一位项目经理。请基于当前项目进展，制定 30-60-90 天迭代计划：
+
+30天（快速验证期）：确定核心假设和最小验证范围
+60天（迭代优化期）：根据验证结果优化方案
+90天（规模化准备期）：准备推向更广用户
+
+每期包含：目标、关键行动、成功指标、风险点。`,
+
+    businessModel: `你是一位商业策略顾问。请基于当前概念方案，填充商业模式画布 9 个模块：
+
+1. 客户细分 Customer Segments
+2. 价值主张 Value Propositions
+3. 渠道通路 Channels
+4. 客户关系 Customer Relationships
+5. 收入来源 Revenue Streams
+6. 核心资源 Key Resources
+7. 关键业务 Key Activities
+8. 重要合作 Key Partnerships
+9. 成本结构 Cost Structure
+
+每个模块 2-3 句话描述。`,
+
+    story6: `你是一位体验设计师。请设计 6 幕体验故事脚本：
+
+1. 日常（现状）：用户当前的生活/工作日常，引入张力
+2. 触发（契机）：用户遇到特定场景或问题
+3. 发现（相遇）：用户首次接触解决方案
+4. 尝试（体验）：用户使用核心功能的关键瞬间
+5. 转变（顿悟）：用户感受到价值的高光时刻
+6. 新常态（改变）：使用后生活/工作的改善
+
+每幕包含：场景描述、用户情绪、关键对话/旁白。`
+  };
+  return prompts[skillKey] || '请基于以下上下文进行分析和建议：';
+}
+
+// AI API 调用
+async function callAIAPI(systemPrompt, context) {
+  // 读取 AI 配置（复用 Eureka 的 AI 配置 key 或默认的 eureka key）
+  const cfgRaw = localStorage.getItem('rh_ai_config_v1') || localStorage.getItem('persona_lab_ai_config_v1');
+  if (!cfgRaw) throw new Error('未配置 AI 接口。请在 Dashboard 中先配置 AI API Key。');
+  let cfg;
+  try { cfg = JSON.parse(cfgRaw); } catch(e) { throw new Error('AI 配置格式错误，请重新配置。'); }
+
+  const baseUrl = (cfg.baseUrl || cfg.apiBase || '').replace(/\/+$/, '');
+  const apiKey = cfg.apiKey || cfg.key;
+  const model = cfg.model || 'gpt-4o-mini';
+
+  if (!baseUrl || !apiKey) throw new Error('AI 配置不完整，请检查 API 地址和 Key。');
+
+  const endpoint = baseUrl + '/chat/completions';
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: context || '请开始分析。' }
+  ];
+
+  const resp = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 2000 })
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    throw new Error(`API 返回 ${resp.status}：${errText.slice(0, 200)}`);
+  }
+
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || '（AI 未返回内容）';
+}
+
+// 关闭 AI 结果弹窗
+function closeAIResult() {
+  document.getElementById('aiResultModal')?.classList.remove('open');
+  document.getElementById('aiApplyBtn').style.display = '';
+}
+
+// 复制 AI 结果
+function copyAIResult() {
+  if (!_aiResultText) return;
+  navigator.clipboard.writeText(_aiResultText).then(() => {
+    toast('📋 结果已复制到剪贴板');
+  });
+}
+
+// 回填 AI 结果到表单
+function applyAIResult() {
+  if (!_aiResultText || !_editorId) return;
+  const tab = _editorTab;
+  const skills = AI_SKILLS[tab] || [];
+  const skill = skills.find(s => s.key === _aiSkillKey);
+  if (!skill) return;
+
+  const field = skill.fillField;
+  if (!field) return;
+
+  // 简单文本回填
+  if (field.startsWith('ef_')) {
+    const el = document.getElementById(field);
+    if (el) {
+      el.value = _aiResultText;
+      toast('✅ 已回填到「' + skill.name + '」');
+      closeAIResult();
+      return;
+    }
+  }
+
+  // 对于 _pov 类型，解析三段式回填
+  if (field === '_pov') {
+    const lines = _aiResultText.split('\n');
+    let user='', pain='', insight='';
+    lines.forEach(line => {
+      const l = line.trim();
+      if (l.startsWith('用户描述') || l.startsWith('用户') || l.startsWith('User')) {
+        user = l.replace(/^.*?[：:]\s*/, '');
+      } else if (l.startsWith('核心痛点') || l.startsWith('痛点') || l.startsWith('Pain')) {
+        pain = l.replace(/^.*?[：:]\s*/, '');
+      } else if (l.startsWith('洞察陈述') || l.startsWith('洞察') || l.startsWith('Insight')) {
+        insight = l.replace(/^.*?[：:]\s*/, '');
+      }
+    });
+    // 如果解析为空，尝试找包含冒号的行
+    if (!user && !pain && !insight) {
+      const colonLines = lines.filter(l => /[：:]/.test(l));
+      if (colonLines.length >= 2) {
+        user = colonLines[0]?.split(/[：:]/)[1]?.trim() || '';
+        pain = colonLines[1]?.split(/[：:]/)[1]?.trim() || '';
+        insight = colonLines[2]?.split(/[：:]/)[1]?.trim() || '';
+      }
+    }
+    const ef = (id, val) => { const e = document.getElementById(id); if (e && val) e.value = val; };
+    ef('ef_pov_user', user);
+    ef('ef_pov_pain', pain);
+    ef('ef_pov_insight', insight);
+    toast('✅ POV 已回填到表单');
+    closeAIResult();
+    return;
+  }
+
+  // 对于 _personas 类型，提示用户手动复制
+  toast('ℹ️ 该内容需要手动粘贴到对应区域');
+}
+
 function copyPoPrompt() {
   const content = document.getElementById('poPromptContent');
   if (!content) return;
@@ -2828,11 +3276,14 @@ function openEditor(id, isNew=false) {
   document.querySelectorAll('.etab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.etab')[0].classList.add('active');
   renderEditorTab('basic');
+  _updateAIFab();
 }
 
 function closeEditor() {
   document.getElementById('editorModal').classList.remove('open');
   _editorId = null;
+  _updateAIFab();
+  closeAIPanel();
 }
 
 function switchEditorTab(tab, btn) {
@@ -2840,6 +3291,11 @@ function switchEditorTab(tab, btn) {
   document.querySelectorAll('.etab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderEditorTab(tab);
+  _updateAIFab();
+  // 如果 AI 面板已打开，刷新 Skill 列表
+  if (document.getElementById('aiPanel').classList.contains('open')) {
+    openAIPanel();
+  }
 }
 
 function renderEditorTab(tab) {
