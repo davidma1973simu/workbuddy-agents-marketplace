@@ -13,7 +13,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .nav-brand{display:flex;align-items:center;gap:12px;color:#fff;font-size:20px;font-weight:700}
 .nav-back{color:rgba(255,255,255,.8);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:20px;margin-right:8px;transition:.2s}
 .nav-back:hover{background:rgba(255,255,255,.2)}
-.nav-actions{display:flex;gap:10px;align-items:center}
+.nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .btn-new{background:#fff;color:#667eea;border:none;padding:9px 22px;border-radius:24px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
 .btn-new:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;transition:.2s}
@@ -471,12 +471,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <span class="nav-brand">📊 Eureka 项目库 &amp; 成果仪表板</span>
   </div>
   <div class="nav-actions">
-    <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px">📖 产品手册</a>
-    <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="打开 Persona Lab 虚拟人市场">🎭 Persona Lab</a>
-    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="检测并导入来自 Persona Lab 的角色数据">📥 导入角色</button>
-    <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
-    <button class="btn-ghost" onclick="openAIConfigPanel()" title="配置 AI API Key">⚙️ AI 设置</button>
-    <button class="btn-new" onclick="createNewProject()">+ 新建项目</button>
+    <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="产品手册">📖 手册</a>
+    <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="Persona Lab 虚拟人市场">🎭 Persona</a>
+    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入 Persona Lab 角色">📥 导入</button>
+    <button class="btn-ghost" onclick="openUploadPanel()" title="上传创新文档">📂 上传</button>
+    <button class="btn-ghost" onclick="openAIConfigPanel()" title="配置 AI API Key" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5)">⚙️ AI</button>
+    <button class="btn-new" onclick="createNewProject()">+ 新建</button>
   </div>
 </nav>
 
