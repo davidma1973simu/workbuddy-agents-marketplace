@@ -359,6 +359,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .editor-title{font-size:18px;font-weight:800;color:#1e293b;display:flex;align-items:center;gap:10px}
 .editor-close{width:36px;height:36px;border-radius:10px;background:#f1f5f9;border:none;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;color:#475569;transition:.2s}
 .editor-close:hover{background:#e2e8f0}
+.ai-header-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;box-shadow:0 2px 8px rgba(102,126,234,.3)}
+.ai-header-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(102,126,234,.4)}
 .editor-tabs{display:flex;gap:4px;padding:16px 28px 0;border-bottom:2px solid #f1f5f9}
 .etab{padding:9px 18px;border-radius:10px 10px 0 0;border:none;background:transparent;font-size:13px;font-weight:600;cursor:pointer;color:#64748b;transition:.2s;position:relative;bottom:-2px}
 .etab:hover{color:#667eea;background:#f8faff}
@@ -465,7 +467,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 <!-- ── TOP NAV ── -->
 <nav class="top-nav">
   <div style="display:flex;align-items:center;gap:12px">
-    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/" class="nav-back">← Agents Marketplace</a>
+    <a href="https://eureka-dashboard.edgeone.cool/" class="nav-back">← 返回首页</a>
     <span class="nav-brand">📊 Eureka 项目库 &amp; 成果仪表板</span>
   </div>
   <div class="nav-actions">
@@ -615,7 +617,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
   <div class="editor-panel">
     <div class="editor-header">
       <div class="editor-title" id="editorTitle">✏️ 编辑项目</div>
-      <button class="editor-close" onclick="closeEditor()">×</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button id="aiHelperBtn" class="ai-header-btn" onclick="toggleAIPanel()" style="display:none">
+          <span>🤖</span>
+          <span>AI 助手</span>
+        </button>
+        <button class="editor-close" onclick="closeEditor()">×</button>
+      </div>
     </div>
     <div class="editor-tabs" id="editorTabs">
       <button class="etab active" onclick="switchEditorTab('basic',this)">📋 基本信息</button>
@@ -1796,12 +1804,22 @@ let _editorTab = 'basic';
 
 // 在编辑器打开/关闭/Tab切换时控制 FAB 显示
 function _updateAIFab() {
+  // 控制 header 中的 AI 助手按钮显示
+  const headerBtn = document.getElementById('aiHelperBtn');
+  if (headerBtn) {
+    const tab = _editorTab;
+    const isOpen = !!_editorId;
+    const isStageTab = ['reveal','inspire','shape','exam'].includes(tab);
+    headerBtn.style.display = (isOpen && isStageTab) ? 'flex' : 'none';
+  }
+  // 兼容旧的 FAB 按钮（如果存在）
   const fab = document.getElementById('aiFab');
-  if (!fab) return;
-  const tab = _editorTab;
-  const isOpen = !!_editorId;
-  const isStageTab = ['reveal','inspire','shape','exam'].includes(tab);
-  fab.classList.toggle('show', isOpen && isStageTab);
+  if (fab) {
+    const tab = _editorTab;
+    const isOpen = !!_editorId;
+    const isStageTab = ['reveal','inspire','shape','exam'].includes(tab);
+    fab.classList.toggle('show', isOpen && isStageTab);
+  }
 }
 
 // 切换 AI 侧滑面板
