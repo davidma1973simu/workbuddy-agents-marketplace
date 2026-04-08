@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Eureka Icon Generator</title>
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  background: #f0f4ff;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.icon-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 40px;
+}
+.icon-box {
+  text-align: center;
+}
+.icon-box canvas {
+  border-radius: 20%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.icon-box p {
+  margin-top: 10px;
+  color: #64748b;
+  font-size: 14px;
+}
+h1 {
+  color: #667eea;
+  margin-bottom: 10px;
+}
+.instruction {
+  color: #94a3b8;
+  margin-bottom: 30px;
+}
+</style>
+</head>
+<body>
+<h1>🎨 Eureka 图标生成器</h1>
+<p class="instruction">右键点击图标保存，或使用浏览器开发者工具导出</p>
+<div class="icon-container" id="container"></div>
+
+<script>
+const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const container = document.getElementById('container');
+
+function drawIcon(size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  
+  // 圆角矩形背景
+  const radius = size * 0.2;
+  ctx.beginPath();
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(size - radius, 0);
+  ctx.quadraticCurveTo(size, 0, size, radius);
+  ctx.lineTo(size, size - radius);
+  ctx.quadraticCurveTo(size, size, size - radius, size);
+  ctx.lineTo(radius, size);
+  ctx.quadraticCurveTo(0, size, 0, size - radius);
+  ctx.lineTo(0, radius);
+  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.closePath();
+  
+  // 渐变填充
+  const gradient = ctx.createLinearGradient(0, 0, size, size);
+  gradient.addColorStop(0, '#667eea');
+  gradient.addColorStop(1, '#764ba2');
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  
+  // 绘制灯泡图标
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const scale = size / 512;
+  
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 8 * scale;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  // 灯泡玻璃部分
+  ctx.beginPath();
+  ctx.arc(centerX, centerY - 30 * scale, 80 * scale, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // 灯泡底座
+  ctx.fillRect(centerX - 25 * scale, centerY + 40 * scale, 50 * scale, 35 * scale);
+  ctx.fillRect(centerX - 35 * scale, centerY + 75 * scale, 70 * scale, 20 * scale);
+  
+  // 光芒线条
+  ctx.lineWidth = 6 * scale;
+  const rays = [
+    {x: 0, y: -130}, {x: 92, y: -92}, {x: 130, y: 0}, {x: 92, y: 92}
+  ];
+  rays.forEach(ray => {
+    ctx.beginPath();
+    ctx.moveTo(centerX + ray.x * 0.6 * scale, centerY - 30 * scale + ray.y * 0.6 * scale);
+    ctx.lineTo(centerX + ray.x * 0.85 * scale, centerY - 30 * scale + ray.y * 0.85 * scale);
+    ctx.stroke();
+  });
+  
+  return canvas;
+}
+
+sizes.forEach(size => {
+  const box = document.createElement('div');
+  box.className = 'icon-box';
+  
+  const canvas = drawIcon(size);
+  box.appendChild(canvas);
+  
+  const label = document.createElement('p');
+  label.textContent = `${size}x${size}`;
+  box.appendChild(label);
+  
+  container.appendChild(box);
+});
+
+// 添加下载按钮
+const downloadBtn = document.createElement('button');
+downloadBtn.textContent = '💾 下载所有图标 (PNG)';
+downloadBtn.style.cssText = 'margin-top:30px;padding:12px 24px;font-size:16px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;';
+downloadBtn.onclick = () => {
+  sizes.forEach((size, index) => {
+    setTimeout(() => {
+      const canvas = drawIcon(size);
+      const link = document.createElement('a');
+      link.download = `icon-${size}x${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }, index * 200);
+  });
+};
+document.body.appendChild(downloadBtn);
+</script>
+</body>
+</html>

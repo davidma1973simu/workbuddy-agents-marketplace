@@ -3,13 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#667eea">
-<meta name="description" content="创新项目库与成果仪表板 - 管理你的创新项目从洞察到验证的全过程">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Eureka">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192x192.png">
 <title>Eureka 项目库 & 成果仪表板</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -657,67 +650,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════ SECURITY UTILS ═══════════════
-/**
- * HTML 转义函数 - 防止 XSS 攻击
- * 将特殊字符转换为 HTML 实体
- */
-function escapeHtml(text) {
-  if (text == null) return '';
-  const str = String(text);
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-/**
- * 安全地设置元素的 textContent
- * 替代 innerHTML 用于显示用户输入
- */
-function setSafeText(element, text) {
-  if (typeof element === 'string') {
-    element = document.getElementById(element);
-  }
-  if (element) {
-    element.textContent = text;
-  }
-}
-
-/**
- * 创建安全的 DOM 元素
- * 避免使用 innerHTML 拼接 HTML 字符串
- */
-function createSafeElement(tag, attributes = {}, children = []) {
-  const el = document.createElement(tag);
-  
-  Object.entries(attributes).forEach(([key, value]) => {
-    if (key === 'textContent') {
-      el.textContent = value;
-    } else if (key === 'innerHTML' && typeof value === 'string') {
-      // 仅在值是硬编码字符串时使用 innerHTML
-      el.innerHTML = value;
-    } else if (key.startsWith('on') && typeof value === 'function') {
-      el.addEventListener(key.slice(2).toLowerCase(), value);
-    } else if (key === 'className') {
-      el.className = value;
-    } else if (key === 'dataset') {
-      Object.assign(el.dataset, value);
-    } else {
-      el.setAttribute(key, value);
-    }
-  });
-  
-  children.forEach(child => {
-    if (typeof child === 'string') {
-      el.appendChild(document.createTextNode(child));
-    } else if (child instanceof Node) {
-      el.appendChild(child);
-    }
-  });
-  
-  return el;
-}
-
 // ═══════════════ DEMO DATA ═══════════════
 const DEMO_PROJECT = {
   id: 'demo-2026',
@@ -979,183 +911,15 @@ const DEMO_PROJECT = {
 const SK = 'eureka_v3';
 const TK = 'eureka_trash_v1';   // 回收站 key
 const getAll = () => { try { return JSON.parse(localStorage.getItem(SK)||'[]'); } catch { return []; } };
-const saveAll = (arr) => {
-  try {
-    localStorage.setItem(SK, JSON.stringify(arr));
-  } catch (e) {
-    console.error('保存项目数据失败:', e);
-    toast('⚠️ 保存失败：' + (e.name === 'QuotaExceededError' ? '存储空间不足，请删除部分项目' : '数据保存出错'));
-  }
-};
+const saveAll = (arr) => localStorage.setItem(SK, JSON.stringify(arr));
 const getOne = (id) => getAll().find(p => p.id === id);
-const upsert = (p) => {
-  const validated = validateProject(p);
-  if (!validated) {
-    console.error('无效的项目数据:', p);
-    toast('⚠️ 项目数据格式错误，无法保存');
-    return;
-  }
-  const a = getAll();
-  const i = a.findIndex(x => x.id === validated.id);
-  if (i >= 0) a[i] = validated;
-  else a.unshift(validated);
-  saveAll(a);
-};
+const upsert = (p) => { const a=getAll(); const i=a.findIndex(x=>x.id===p.id); if(i>=0)a[i]=p; else a.unshift(p); saveAll(a); };
 const remove = (id) => saveAll(getAll().filter(p=>p.id!==id));
 
 // 回收站操作
 const getTrash = () => { try { return JSON.parse(localStorage.getItem(TK)||'[]'); } catch { return []; } };
-const saveTrash = (arr) => {
-  try {
-    localStorage.setItem(TK, JSON.stringify(arr));
-  } catch (e) {
-    console.error('保存回收站数据失败:', e);
-    toast('⚠️ 回收站保存失败：' + (e.name === 'QuotaExceededError' ? '存储空间不足' : '数据保存出错'));
-  }
-};
+const saveTrash = (arr) => localStorage.setItem(TK, JSON.stringify(arr));
 const trashCount = () => getTrash().length;
-
-// ═══════════════ DATA VALIDATION ═══════════════
-function validateProject(p) {
-  if (!p || typeof p !== 'object') return null;
-  const validated = {
-    id: String(p.id || '').trim() || generateId(),
-    name: String(p.name || '').trim().slice(0, 100) || '未命名项目',
-    brief: String(p.brief || '').trim().slice(0, 500),
-    targetUser: String(p.targetUser || '').trim().slice(0, 100),
-    status: ['draft', 'in_progress', 'completed', 'archived'].includes(p.status) ? p.status : 'draft',
-    progress: Math.min(100, Math.max(0, parseInt(p.progress) || 0)),
-    createdAt: p.createdAt || new Date().toISOString().slice(0, 10),
-    updatedAt: new Date().toISOString().slice(0, 16)
-  };
-  // 保留其他字段但确保基本结构
-  ['reveal', 'inspire', 'shape', 'exam', 'projectBrief', 'assets', 'files'].forEach(key => {
-    if (p[key] !== undefined) validated[key] = p[key];
-  });
-  return validated;
-}
-
-function sanitizeString(str, maxLength = 1000) {
-  if (str == null) return '';
-  return String(str).trim().slice(0, maxLength);
-}
-
-function generateId() {
-  return 'p_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
-}
-
-// ═══════════════ ENCRYPTION ═══════════════
-// 简单的 XOR 加密（用于保护 API Key，防止直接明文存储）
-const ENC_KEY = 'EurekaDashboard_v1'; // 固定密钥（基础保护，非高强度加密）
-
-function xorEncrypt(text, key = ENC_KEY) {
-  if (!text) return '';
-  let result = '';
-  for (let i = 0; i < text.length; i++) {
-    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-  }
-  // 转换为 base64 以便存储
-  return btoa(result);
-}
-
-function xorDecrypt(encrypted, key = ENC_KEY) {
-  if (!encrypted) return '';
-  try {
-    const text = atob(encrypted);
-    let result = '';
-    for (let i = 0; i < text.length; i++) {
-      result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-    }
-    return result;
-  } catch (e) {
-    console.error('解密失败:', e);
-    return '';
-  }
-}
-
-// 加密配置对象
-function encryptConfig(config) {
-  return {
-    ...config,
-    apiKey: xorEncrypt(config.apiKey),
-    _encrypted: true // 标记已加密
-  };
-}
-
-// 解密配置对象
-function decryptConfig(config) {
-  if (!config) return null;
-  if (config._encrypted) {
-    return {
-      ...config,
-      apiKey: xorDecrypt(config.apiKey),
-      _encrypted: undefined
-    };
-  }
-  // 兼容旧版本未加密配置
-  return config;
-}
-
-// ═══════════════ ERROR HANDLING ═══════════════
-// 全局错误处理器
-window.addEventListener('error', (e) => {
-  console.error('全局错误:', e.error);
-  // 避免频繁提示，只在开发模式下显示
-  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-    toast('⚠️ 发生错误：' + (e.message || '未知错误'));
-  }
-});
-
-window.addEventListener('unhandledrejection', (e) => {
-  console.error('未处理的 Promise 错误:', e.reason);
-  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-    toast('⚠️ 异步操作失败：' + (e.reason?.message || '未知错误'));
-  }
-});
-
-// ═══════════════ PWA SERVICE WORKER ═══════════════
-// 注册 Service Worker 实现离线可用
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then((registration) => {
-        console.log('[PWA] Service Worker 注册成功:', registration.scope);
-        
-        // 监听更新
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // 有新版本可用
-              console.log('[PWA] 新版本可用');
-              toast('📦 应用有更新，刷新页面即可使用新版本');
-            }
-          });
-        });
-      })
-      .catch((err) => {
-        console.error('[PWA] Service Worker 注册失败:', err);
-      });
-  });
-  
-  // 监听 Service Worker 消息
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data === 'reload') {
-      window.location.reload();
-    }
-  });
-}
-
-// 用户友好的错误提示函数
-function showError(message, details = '') {
-  console.error('Error:', message, details);
-  toast('❌ ' + message);
-}
-
-function showWarning(message) {
-  console.warn('Warning:', message);
-  toast('⚠️ ' + message);
-}
 
 // ═══════════════ STATE ═══════════════
 let activeId = null;
@@ -1182,75 +946,30 @@ function statusCls(s){return{completed:'s-completed',in_progress:'s-in_progress'
 
 function renderList(projects) {
   const el = document.getElementById('projectList');
-  el.innerHTML = '';
-  
   if (!projects.length) {
-    const emptyDiv = createSafeElement('div', {
-      style: 'text-align:center;padding:48px 20px;color:#94a3b8'
-    }, [
-      createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['📭']),
-      createSafeElement('div', { style: 'font-size:14px' }, ['暂无项目'])
-    ]);
-    el.appendChild(emptyDiv);
+    el.innerHTML='<div style="text-align:center;padding:48px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">📭</div><div style="font-size:14px">暂无项目</div></div>';
     return;
   }
-  
-  projects.forEach(p => {
+  el.innerHTML = projects.map(p => {
     const stgs = [
       {k:'r',cls:'stg-r',label:'R',done:p.progress>=25},
       {k:'i',cls:'stg-i',label:'I',done:p.progress>=50},
       {k:'s',cls:'stg-s',label:'S',done:p.progress>=75},
       {k:'e',cls:'stg-e',label:'E',done:p.progress>=100}
     ];
-    
-    // 创建项目项容器
-    const itemClass = 'project-item' + (p.id === activeId ? ' active' : '');
-    const item = createSafeElement('div', {
-      className: itemClass,
-      dataset: { projectId: p.id }
-    });
-    item.addEventListener('click', () => selectProject(p.id));
-    
-    // 顶部行：项目名称 + 状态
-    const topRow = createSafeElement('div', { className: 'proj-top' });
-    const nameDiv = createSafeElement('div', { className: 'proj-name' }, [p.name]);
-    const statusBadge = createSafeElement('span', {
-      className: 'status-badge ' + statusCls(p.status)
-    }, [statusLabel(p.status)]);
-    topRow.appendChild(nameDiv);
-    topRow.appendChild(statusBadge);
-    
-    // 目标用户
-    const userDiv = createSafeElement('div', { className: 'proj-user' }, [
-      p.targetUser || '\u00A0'
-    ]);
-    
-    // 阶段行
-    const stageRow = createSafeElement('div', { className: 'stage-row' });
-    stgs.forEach(s => {
-      const stgClass = 'stg ' + s.cls + (s.done ? '' : ' dim');
-      const stgSpan = createSafeElement('span', { className: stgClass }, [s.label]);
-      stageRow.appendChild(stgSpan);
-    });
-    const pctSpan = createSafeElement('span', { className: 'proj-pct' }, [p.progress + '%']);
-    stageRow.appendChild(pctSpan);
-    
-    // 进度条
-    const progBar = createSafeElement('div', { className: 'prog-bar' });
-    const progFill = createSafeElement('div', {
-      className: 'prog-fill',
-      style: 'width:' + p.progress + '%'
-    });
-    progBar.appendChild(progFill);
-    
-    // 组装
-    item.appendChild(topRow);
-    item.appendChild(userDiv);
-    item.appendChild(stageRow);
-    item.appendChild(progBar);
-    
-    el.appendChild(item);
-  });
+    return `<div class="project-item${p.id===activeId?' active':''}" onclick="selectProject('${p.id}')">
+      <div class="proj-top">
+        <div class="proj-name">${p.name}</div>
+        <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
+      </div>
+      <div class="proj-user">${p.targetUser||'&nbsp;'}</div>
+      <div class="stage-row">
+        ${stgs.map(s=>`<span class="stg ${s.cls}${s.done?'':' dim'}">${s.label}</span>`).join('')}
+        <span class="proj-pct">${p.progress}%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%"></div></div>
+    </div>`;
+  }).join('');
 }
 
 function filterProjects() {
@@ -1310,66 +1029,30 @@ function renderDashboard(p) {
 }
 
 function htmlOverview(p) {
-  // 使用 DOM 创建避免 XSS
-  const container = createSafeElement('div', { className: 'sc' });
-  
-  // Header
-  const header = createSafeElement('div', { className: 'sc-hd' });
-  const title = createSafeElement('div', { className: 'sc-title' }, ['🎯 ' + p.name]);
-  const statusDiv = createSafeElement('div', { style: 'display:flex;gap:8px;align-items:center' });
-  const statusBadge = createSafeElement('span', { 
-    className: 'status-badge ' + statusCls(p.status) 
-  }, [statusLabel(p.status)]);
-  const progressSpan = createSafeElement('span', { 
-    style: 'font-size:13px;color:#64748b;font-weight:600' 
-  }, [p.progress + '% 完成']);
-  statusDiv.appendChild(statusBadge);
-  statusDiv.appendChild(progressSpan);
-  header.appendChild(title);
-  header.appendChild(statusDiv);
-  
-  // Body
-  const body = createSafeElement('div', { className: 'sc-body' });
-  const grid = createSafeElement('div', { className: 'overview-grid' });
-  const info = createSafeElement('div', { className: 'overview-info' });
-  
-  const brief = createSafeElement('div', { className: 'overview-brief' }, [p.brief || '']);
-  
-  const tagRow = createSafeElement('div', { className: 'tag-row' });
-  const tagUser = createSafeElement('span', { className: 'tag tag-purple' }, ['👤 ' + (p.targetUser || '')]);
-  const tagCreated = createSafeElement('span', { className: 'tag tag-green' }, ['📅 创建 ' + (p.createdAt || '')]);
-  const tagUpdated = createSafeElement('span', { className: 'tag tag-yellow' }, ['🔄 更新 ' + (p.updatedAt || '')]);
-  tagRow.appendChild(tagUser);
-  tagRow.appendChild(tagCreated);
-  tagRow.appendChild(tagUpdated);
-  
-  const btnRow = createSafeElement('div', { className: 'overview-btns' });
-  const btnEdit = createSafeElement('button', { className: 'ob ob-primary' }, ['✏️ 编辑项目']);
-  btnEdit.addEventListener('click', () => openEditor(p.id));
-  const btnPDF = createSafeElement('button', { className: 'ob ob-secondary' }, ['📄 导出报告']);
-  btnPDF.addEventListener('click', () => exportPDF(p.id));
-  const btnMD = createSafeElement('button', { className: 'ob ob-secondary' }, ['📝 复制 MD']);
-  btnMD.addEventListener('click', () => exportMD(p.id));
-  const btnTrash = createSafeElement('button', { className: 'ob ob-danger' }, ['🗑️ 移入回收站']);
-  btnTrash.addEventListener('click', () => moveToTrash(p.id));
-  btnRow.appendChild(btnEdit);
-  btnRow.appendChild(btnPDF);
-  btnRow.appendChild(btnMD);
-  btnRow.appendChild(btnTrash);
-  
-  info.appendChild(brief);
-  info.appendChild(tagRow);
-  info.appendChild(btnRow);
-  grid.appendChild(info);
-  body.appendChild(grid);
-  
-  container.appendChild(header);
-  container.appendChild(body);
-  
-  // 返回 HTML 字符串以保持兼容性
-  const wrapper = createSafeElement('div');
-  wrapper.appendChild(container);
-  return wrapper.innerHTML;
+  return `<div class="sc"><div class="sc-hd">
+    <div class="sc-title">🎯 ${p.name}</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
+      <span style="font-size:13px;color:#64748b;font-weight:600">${p.progress}% 完成</span>
+    </div>
+  </div><div class="sc-body">
+    <div class="overview-grid">
+      <div class="overview-info">
+        <div class="overview-brief">${p.brief||''}</div>
+        <div class="tag-row">
+          <span class="tag tag-purple">👤 ${p.targetUser||''}</span>
+          <span class="tag tag-green">📅 创建 ${p.createdAt||''}</span>
+          <span class="tag tag-yellow">🔄 更新 ${p.updatedAt||''}</span>
+        </div>
+        <div class="overview-btns">
+          <button class="ob ob-primary" onclick="openEditor('${p.id}')">✏️ 编辑项目</button>
+          <button class="ob ob-secondary" onclick="exportPDF('${p.id}')">📄 导出报告</button>
+          <button class="ob ob-secondary" onclick="exportMD('${p.id}')">📝 复制 MD</button>
+          <button class="ob ob-danger" onclick="moveToTrash('${p.id}')">🗑️ 移入回收站</button>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
 }
 
 // ── 阶段进度条（合并进度条+甘特概念）──
@@ -1493,36 +1176,17 @@ function htmlProjectBrief(p) {
 
 // ── HMW 创新机遇 ──
 function htmlHMW(p) {
-  const hmwList = p.inspire.hmw || [];
-  
-  const container = createSafeElement('div', { className: 'sc' });
-  
-  const header = createSafeElement('div', { className: 'sc-hd' });
-  const title = createSafeElement('div', { className: 'sc-title' }, ['💡 Inspire · 创新机遇 HMW']);
-  const count = createSafeElement('span', { style: 'font-size:12px;color:#94a3b8' }, 
-    ['How Might We · ' + hmwList.length + ' 个设计机遇']);
-  header.appendChild(title);
-  header.appendChild(count);
-  
-  const body = createSafeElement('div', { className: 'sc-body' });
-  const list = createSafeElement('div', { className: 'hmw-list' });
-  
-  hmwList.forEach(h => {
-    const item = createSafeElement('div', { className: 'hmw-item' });
-    const cat = createSafeElement('span', { className: 'hmw-cat' }, [h.category]);
-    const text = createSafeElement('div', { className: 'hmw-text' }, [h.statement]);
-    item.appendChild(cat);
-    item.appendChild(text);
-    list.appendChild(item);
-  });
-  
-  body.appendChild(list);
-  container.appendChild(header);
-  container.appendChild(body);
-  
-  const wrapper = createSafeElement('div');
-  wrapper.appendChild(container);
-  return wrapper.innerHTML;
+  const hmwList = p.inspire.hmw||[];
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">💡 Inspire · 创新机遇 HMW</div><span style="font-size:12px;color:#94a3b8">How Might We · ${hmwList.length} 个设计机遇</span></div>
+  <div class="sc-body">
+    <div class="hmw-list">
+      ${hmwList.map(h=>`
+        <div class="hmw-item">
+          <span class="hmw-cat">${h.category}</span>
+          <div class="hmw-text">${h.statement}</div>
+        </div>`).join('')}
+    </div>
+  </div></div>`;
 }
 
 // ── Shape 概念方案（全局+功能特性）──
@@ -1676,54 +1340,19 @@ function htmlPOV(p) {
 }
 
 function htmlPersonas(p) {
-  const container = createSafeElement('div', { className: 'sc' });
-  
-  const header = createSafeElement('div', { className: 'sc-hd' });
-  const title = createSafeElement('div', { className: 'sc-title' }, ['👤 Reveal · 用户画像']);
-  const count = createSafeElement('span', { style: 'font-size:12px;color:#94a3b8' }, 
-    [p.reveal.personas.length + ' 个画像']);
-  header.appendChild(title);
-  header.appendChild(count);
-  
-  const body = createSafeElement('div', { className: 'sc-body' });
-  const grid = createSafeElement('div', { className: 'persona-grid' });
-  
-  p.reveal.personas.forEach(pe => {
-    const card = createSafeElement('div', { className: 'persona-card' });
-    
-    const headerRow = createSafeElement('div', { className: 'persona-header' });
-    const avatar = createSafeElement('div', { className: 'persona-avatar' }, [pe.emoji]);
-    const info = createSafeElement('div');
-    const name = createSafeElement('div', { className: 'persona-name' }, [pe.name]);
-    const role = createSafeElement('div', { className: 'persona-role' }, [pe.role]);
-    info.appendChild(name);
-    info.appendChild(role);
-    headerRow.appendChild(avatar);
-    headerRow.appendChild(info);
-    
-    const tags = createSafeElement('div', { className: 'persona-tags' });
-    (pe.tags || []).forEach(t => {
-      const tag = createSafeElement('span', { className: 'p-tag' }, [t]);
-      tags.appendChild(tag);
-    });
-    
-    const quote = createSafeElement('div', { className: 'persona-quote' }, ['💬 ' + pe.quote]);
-    const pain = createSafeElement('div', { className: 'persona-pain' }, ['⚠️ ' + pe.pain]);
-    
-    card.appendChild(headerRow);
-    card.appendChild(tags);
-    card.appendChild(quote);
-    card.appendChild(pain);
-    grid.appendChild(card);
-  });
-  
-  body.appendChild(grid);
-  container.appendChild(header);
-  container.appendChild(body);
-  
-  const wrapper = createSafeElement('div');
-  wrapper.appendChild(container);
-  return wrapper.innerHTML;
+  return `<div class="sc"><div class="sc-hd"><div class="sc-title">👤 Reveal · 用户画像</div><span style="font-size:12px;color:#94a3b8">${p.reveal.personas.length} 个画像</span></div>
+  <div class="sc-body"><div class="persona-grid">
+    ${p.reveal.personas.map(pe=>`
+      <div class="persona-card">
+        <div class="persona-header">
+          <div class="persona-avatar">${pe.emoji}</div>
+          <div><div class="persona-name">${pe.name}</div><div class="persona-role">${pe.role}</div></div>
+        </div>
+        <div class="persona-tags">${pe.tags.map(t=>`<span class="p-tag">${t}</span>`).join('')}</div>
+        <div class="persona-quote">💬 ${pe.quote}</div>
+        <div class="persona-pain">⚠️ ${pe.pain}</div>
+      </div>`).join('')}
+  </div></div></div>`;
 }
 
 function htmlIdeas(p) {
@@ -2405,7 +2034,7 @@ async function callAIAPI(systemPrompt, context) {
   const cfgRaw = localStorage.getItem('rh_ai_config_v1') || localStorage.getItem('persona_lab_ai_config_v1');
   if (!cfgRaw) throw new Error('未配置 AI 接口。请在 Dashboard 中先配置 AI API Key。');
   let cfg;
-  try { cfg = decryptConfig(JSON.parse(cfgRaw)); } catch(e) { throw new Error('AI 配置格式错误，请重新配置。'); }
+  try { cfg = JSON.parse(cfgRaw); } catch(e) { throw new Error('AI 配置格式错误，请重新配置。'); }
 
   const baseUrl = (cfg.baseUrl || cfg.apiBase || '').replace(/\/+$/, '');
   const apiKey = cfg.apiKey || cfg.key;
@@ -3097,24 +2726,11 @@ function openUploadPanel() {
   // populate project links
   const container = document.getElementById('uploadLinkProjects');
   const projects = getAll();
-  container.innerHTML = '';
-  if (projects.length) {
-    projects.forEach(p => {
-      const label = createSafeElement('label', {
-        style: 'display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;cursor:pointer;padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8faff'
-      });
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'linkProject';
-      radio.value = p.id;
-      if (activeId === p.id) radio.checked = true;
-      label.appendChild(radio);
-      label.appendChild(document.createTextNode(' ' + p.name));
-      container.appendChild(label);
-    });
-  } else {
-    container.innerHTML = '<span style="font-size:12px;color:#94a3b8">暂无项目可关联</span>';
-  }
+  container.innerHTML = projects.length
+    ? projects.map(p=>`<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;cursor:pointer;padding:4px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8faff">
+        <input type="radio" name="linkProject" value="${p.id}" ${activeId===p.id?'checked':''}> ${p.name}
+      </label>`).join('')
+    : '<span style="font-size:12px;color:#94a3b8">暂无项目可关联</span>';
 }
 
 function closeUploadPanel() {
@@ -3636,47 +3252,17 @@ function exportAllJSON(){
 }
 
 function importJSON(){
-  const input=document.createElement('input'); input.type='file'; input.accept='.json,application/json';
+  const input=document.createElement('input'); input.type='file'; input.accept='.json';
   input.onchange=e=>{
     const file=e.target.files[0]; if(!file) return;
-    // 文件大小检查
-    if (file.size > 10 * 1024 * 1024) {
-      toast('⚠️ 文件过大，最大支持 10MB');
-      return;
-    }
     const reader=new FileReader();
     reader.onload=ev=>{
       try{
         const data=JSON.parse(ev.target.result);
         const arr=Array.isArray(data)?data:[data];
-        if (arr.length === 0) {
-          toast('⚠️ 文件中没有找到项目数据');
-          return;
-        }
-        let successCount = 0;
-        let failCount = 0;
-        arr.forEach(p=>{
-          try {
-            upsert(p);
-            successCount++;
-          } catch (err) {
-            console.error('导入项目失败:', p, err);
-            failCount++;
-          }
-        });
-        refreshAll();
-        if (failCount === 0) {
-          toast(`✅ 成功导入 ${successCount} 个项目`);
-        } else {
-          toast(`⚠️ 导入完成：${successCount} 个成功，${failCount} 个失败`);
-        }
-      } catch(err) {
-        console.error('JSON 解析错误:', err);
-        toast('❌ JSON 格式错误：' + (err.message || '无法解析文件'));
-      }
-    };
-    reader.onerror = () => {
-      toast('❌ 文件读取失败，请重试');
+        arr.forEach(p=>upsert(p));
+        refreshAll(); toast(`✅ 已导入 ${arr.length} 个项目`);
+      }catch{ toast('❌ JSON 格式错误'); }
     };
     reader.readAsText(file);
   };
@@ -4499,19 +4085,9 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 
 function confirmDelete(id){
   const p=getOne(id); if(!p) return;
-  const safeName = esc(p.name);
-  if(!confirm(`确认删除「${safeName}」？此操作不可撤销`)) return;
+  if(!confirm(`确认删除「${p.name}」？此操作不可撤销`)) return;
   remove(id); activeId=null;
-  const dashRight = document.getElementById('dashRight');
-  dashRight.innerHTML = '';
-  const sc = createSafeElement('div', { className: 'sc' });
-  const scBody = createSafeElement('div', { className: 'sc-body', style: 'text-align:center;padding:48px' });
-  const icon = createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['🗑️']);
-  const msg = createSafeElement('div', { style: 'color:#64748b' }, ['项目已删除']);
-  scBody.appendChild(icon);
-  scBody.appendChild(msg);
-  sc.appendChild(scBody);
-  dashRight.appendChild(sc);
+  document.getElementById('dashRight').innerHTML='<div class="sc"><div class="sc-body" style="text-align:center;padding:48px"><div style="font-size:40px;margin-bottom:12px">🗑️</div><div style="color:#64748b">项目已删除</div></div></div>';
   refreshAll(); toast('🗑️ 已删除');
 }
 
@@ -4526,19 +4102,11 @@ function moveToTrash(id) {
   // 从主列表删除
   remove(id);
   activeId = null;
-  const dashRight = document.getElementById('dashRight');
-  dashRight.innerHTML = '';
-  const sc = createSafeElement('div', { className: 'sc' });
-  const scBody = createSafeElement('div', { className: 'sc-body', style: 'text-align:center;padding:48px' });
-  const icon = createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['🗑️']);
-  const msg = createSafeElement('div', { style: 'color:#64748b;margin-bottom:16px' }, ['「' + p.name + '」已移入回收站']);
-  const btn = createSafeElement('button', { className: 'ob ob-primary', style: 'font-size:13px' }, ['查看回收站 →']);
-  btn.addEventListener('click', () => switchPanelTab('trash'));
-  scBody.appendChild(icon);
-  scBody.appendChild(msg);
-  scBody.appendChild(btn);
-  sc.appendChild(scBody);
-  dashRight.appendChild(sc);
+  document.getElementById('dashRight').innerHTML = `<div class="sc"><div class="sc-body" style="text-align:center;padding:48px">
+    <div style="font-size:40px;margin-bottom:12px">🗑️</div>
+    <div style="color:#64748b;margin-bottom:16px">「${p.name}」已移入回收站</div>
+    <button class="ob ob-primary" onclick="switchPanelTab('trash')" style="font-size:13px">查看回收站 →</button>
+  </div></div>`;
   refreshAll();
   toast('🗑️ 已移入回收站');
 }
@@ -4578,59 +4146,23 @@ function emptyTrash() {
 
 function renderTrashList() {
   const el = document.getElementById('trashList');
-  el.innerHTML = '';
   const trash = getTrash();
-  
   if (!trash.length) {
-    const emptyDiv = createSafeElement('div', { className: 'trash-empty' }, [
-      createSafeElement('div', { style: 'font-size:36px;margin-bottom:8px' }, ['✨']),
-      createSafeElement('div', {}, ['回收站为空'])
-    ]);
-    el.appendChild(emptyDiv);
+    el.innerHTML = '<div class="trash-empty"><div style="font-size:36px;margin-bottom:8px">✨</div><div>回收站为空</div></div>';
     return;
   }
-  
-  // 清空按钮行
-  const btnRow = createSafeElement('div', {
-    style: 'padding:8px 10px 4px;display:flex;justify-content:flex-end'
-  });
-  const emptyBtn = createSafeElement('button', {
-    style: 'background:#fee2e2;color:#ef4444;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer'
-  }, ['清空回收站']);
-  emptyBtn.addEventListener('click', emptyTrash);
-  btnRow.appendChild(emptyBtn);
-  el.appendChild(btnRow);
-  
-  // 回收站项目列表
-  trash.forEach(p => {
-    const item = createSafeElement('div', { className: 'trash-item' });
-    
-    const nameDiv = createSafeElement('div', { className: 'trash-name' }, [p.name]);
-    
-    const metaText = '删除于 ' + (p._deletedAt || '—') + ' · ' + statusLabel(p.status) + ' · ' + p.progress + '%';
-    const metaDiv = createSafeElement('div', { className: 'trash-meta' }, [metaText]);
-    
-    const actionsDiv = createSafeElement('div', { className: 'trash-actions' });
-    
-    const restoreBtn = createSafeElement('button', {
-      className: 'tbtn tbtn-restore'
-    }, ['↩ 恢复']);
-    restoreBtn.addEventListener('click', () => restoreFromTrash(p.id));
-    
-    const purgeBtn = createSafeElement('button', {
-      className: 'tbtn tbtn-purge'
-    }, ['× 彻底删除']);
-    purgeBtn.addEventListener('click', () => purgeFromTrash(p.id));
-    
-    actionsDiv.appendChild(restoreBtn);
-    actionsDiv.appendChild(purgeBtn);
-    
-    item.appendChild(nameDiv);
-    item.appendChild(metaDiv);
-    item.appendChild(actionsDiv);
-    
-    el.appendChild(item);
-  });
+  el.innerHTML = `<div style="padding:8px 10px 4px;display:flex;justify-content:flex-end">
+    <button onclick="emptyTrash()" style="background:#fee2e2;color:#ef4444;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">清空回收站</button>
+  </div>` +
+  trash.map(p => `
+    <div class="trash-item">
+      <div class="trash-name">${p.name}</div>
+      <div class="trash-meta">删除于 ${p._deletedAt||'—'} · ${statusLabel(p.status)} · ${p.progress}%</div>
+      <div class="trash-actions">
+        <button class="tbtn tbtn-restore" onclick="restoreFromTrash('${p.id}')">↩ 恢复</button>
+        <button class="tbtn tbtn-purge" onclick="purgeFromTrash('${p.id}')">× 彻底删除</button>
+      </div>
+    </div>`).join('');
 }
 
 let _panelTab = 'projects';
@@ -4709,13 +4241,10 @@ function loadAIConfig() {
   const cfgRaw = localStorage.getItem('rh_ai_config_v1') || localStorage.getItem('persona_lab_ai_config_v1');
   if (cfgRaw) {
     try {
-      const cfg = decryptConfig(JSON.parse(cfgRaw));
+      const cfg = JSON.parse(cfgRaw);
       document.getElementById('aiProvider').value = cfg.provider || 'openai';
       document.getElementById('aiModel').value = cfg.model || '';
-      // 显示掩码后的 API Key（只显示后4位）
-      const maskedKey = maskApiKey(cfg.apiKey || '');
-      document.getElementById('aiApiKey').value = maskedKey;
-      document.getElementById('aiApiKey').dataset.fullKey = cfg.apiKey || '';
+      document.getElementById('aiApiKey').value = cfg.apiKey || '';
       document.getElementById('aiBaseUrl').value = cfg.baseUrl || '';
       updateAIStatus('已配置', 'green');
     } catch(e) {
@@ -4724,12 +4253,6 @@ function loadAIConfig() {
   } else {
     updateAIStatus('未配置', 'orange');
   }
-}
-
-// API Key 掩码显示（只显示后4位）
-function maskApiKey(key) {
-  if (!key || key.length < 8) return key;
-  return '••••••••' + key.slice(-4);
 }
 
 function updateAIStatus(text, color) {
@@ -4741,15 +4264,10 @@ function updateAIStatus(text, color) {
 function saveAIConfig() {
   const provider = document.getElementById('aiProvider').value;
   const model = document.getElementById('aiModel').value.trim();
-  let apiKey = document.getElementById('aiApiKey').value.trim();
+  const apiKey = document.getElementById('aiApiKey').value.trim();
   const customBaseUrl = document.getElementById('aiBaseUrl').value.trim();
   
-  // 如果输入的是掩码（••••开头），使用存储的完整密钥
-  if (apiKey.startsWith('••••') && document.getElementById('aiApiKey').dataset.fullKey) {
-    apiKey = document.getElementById('aiApiKey').dataset.fullKey;
-  }
-  
-  if (!apiKey || apiKey.startsWith('••••')) {
+  if (!apiKey) {
     toast('⚠️ 请输入 API Key');
     return;
   }
@@ -4770,11 +4288,8 @@ function saveAIConfig() {
     updatedAt: new Date().toISOString()
   };
   
-  // 加密 API Key 后保存
-  const encryptedConfig = encryptConfig(config);
-  
   // 保存到 localStorage（使用与 Red House 和 Persona Lab 相同的 key）
-  localStorage.setItem('rh_ai_config_v1', JSON.stringify(encryptedConfig));
+  localStorage.setItem('rh_ai_config_v1', JSON.stringify(config));
   
   updateAIStatus('已配置', 'green');
   toast('✅ AI 配置已保存');
@@ -4783,14 +4298,9 @@ function saveAIConfig() {
 
 function testAIConnection() {
   const provider = document.getElementById('aiProvider').value;
-  let apiKey = document.getElementById('aiApiKey').value.trim();
+  const apiKey = document.getElementById('aiApiKey').value.trim();
   
-  // 如果输入的是掩码（••••开头），使用存储的完整密钥
-  if (apiKey.startsWith('••••') && document.getElementById('aiApiKey').dataset.fullKey) {
-    apiKey = document.getElementById('aiApiKey').dataset.fullKey;
-  }
-  
-  if (!apiKey || apiKey.startsWith('••••')) {
+  if (!apiKey) {
     toast('⚠️ 请先输入 API Key');
     return;
   }
@@ -4925,125 +4435,6 @@ function updateAIModelPlaceholder() {
     modelEl.placeholder = 'model-name';
   }
 }
-</script>
-
-<!-- ═══════════════ CLOUD SYNC MODULE ═══════════════ -->
-<script src="js/sync/cloud-sync.js"></script>
-<script>
-// 同步状态UI管理
-const SyncUI = {
-  container: null,
-  
-  // 初始化同步UI
-  init() {
-    this.createSyncButton();
-    this.subscribeToState();
-    
-    // 自动初始化同步（使用腾讯云开发）
-    initSync(SYNC_CONFIG.MODE.TENCENT_CLOUD).then(success => {
-      if (success) {
-        console.log('[SyncUI] Cloud sync initialized');
-        // 首次同步
-        syncNow();
-      }
-    });
-  },
-  
-  // 创建同步按钮
-  createSyncButton() {
-    // 在顶部导航栏添加同步按钮
-    const navActions = document.querySelector('.nav-actions');
-    if (!navActions) return;
-    
-    const syncBtn = document.createElement('button');
-    syncBtn.id = 'sync-btn';
-    syncBtn.className = 'btn-ghost';
-    syncBtn.innerHTML = '☁️ <span id="sync-status-text">同步</span>';
-    syncBtn.style.cssText = 'display:flex;align-items:center;gap:6px;';
-    syncBtn.onclick = () => this.handleSyncClick();
-    
-    // 插入到导航栏开头
-    navActions.insertBefore(syncBtn, navActions.firstChild);
-    this.container = syncBtn;
-  },
-  
-  // 订阅状态变化
-  subscribeToState() {
-    SyncState.subscribe((state) => {
-      this.updateUI(state);
-    });
-  },
-  
-  // 更新UI
-  updateUI(state) {
-    const btn = document.getElementById('sync-btn');
-    const text = document.getElementById('sync-status-text');
-    if (!btn || !text) return;
-    
-    if (state.isSyncing) {
-      btn.innerHTML = '🔄 <span id="sync-status-text">同步中...</span>';
-      btn.disabled = true;
-    } else if (state.mode === SYNC_CONFIG.MODE.OFFLINE) {
-      btn.innerHTML = '⚪ <span id="sync-status-text">离线</span>';
-      btn.disabled = false;
-    } else if (state.lastSyncTime) {
-      const timeStr = this.formatTime(state.lastSyncTime);
-      btn.innerHTML = `☁️ <span id="sync-status-text">已同步 ${timeStr}</span>`;
-      btn.disabled = false;
-    } else {
-      btn.innerHTML = '☁️ <span id="sync-status-text">点击同步</span>';
-      btn.disabled = false;
-    }
-  },
-  
-  // 格式化时间
-  formatTime(timestamp) {
-    const now = Date.now();
-    const diff = now - timestamp;
-    
-    if (diff < 60000) return '刚刚';
-    if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-    if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-    return Math.floor(diff / 86400000) + '天前';
-  },
-  
-  // 处理同步点击
-  async handleSyncClick() {
-    if (SyncState.mode === SYNC_CONFIG.MODE.OFFLINE) {
-      // 尝试重新连接
-      toast('🔄 尝试连接云端...');
-      const success = await initSync(SYNC_CONFIG.MODE.TENCENT_CLOUD);
-      if (success) {
-        toast('✅ 已连接到云端');
-        syncNow();
-      } else {
-        toast('❌ 连接失败，保持离线模式');
-      }
-    } else {
-      // 执行同步
-      toast('🔄 正在同步...');
-      const result = await syncNow(true);
-      if (result.success) {
-        if (result.hasChanges) {
-          toast('✅ 同步完成，数据已更新');
-          // 刷新项目列表
-          if (typeof renderList === 'function') {
-            renderList();
-          }
-        } else {
-          toast('✅ 已是最新数据');
-        }
-      } else {
-        toast('❌ 同步失败：' + (result.reason || '未知错误'));
-      }
-    }
-  }
-};
-
-// 页面加载完成后初始化同步UI
-document.addEventListener('DOMContentLoaded', () => {
-  SyncUI.init();
-});
 </script>
 
 </body>
