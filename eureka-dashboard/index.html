@@ -465,7 +465,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 <!-- ── TOP NAV ── -->
 <nav class="top-nav">
   <div style="display:flex;align-items:center;gap:12px">
-    <a href="https://workbuddy-agents.netlify.app" class="nav-back">← Agents Marketplace</a>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/" class="nav-back">← Agents Marketplace</a>
     <span class="nav-brand">📊 Eureka 项目库 &amp; 成果仪表板</span>
   </div>
   <div class="nav-actions">
@@ -1789,6 +1789,10 @@ const AI_SKILLS = {
 };
 
 const STAGE_LABELS = { reveal:'Reveal · 洞察', inspire:'Inspire · 启发', shape:'Shape · 构建', exam:'Exam · 验证' };
+
+// 编辑器状态变量（必须在 _updateAIFab 之前声明）
+let _editorId = null;
+let _editorTab = 'basic';
 
 // 在编辑器打开/关闭/Tab切换时控制 FAB 显示
 function _updateAIFab() {
@@ -3262,8 +3266,7 @@ function createNewProject(){
 }
 
 // ═══════════════ PROJECT EDITOR ═══════════════
-let _editorId = null;
-let _editorTab = 'basic';
+// 注意：_editorId 和 _editorTab 已在 AI Assistant 区域上方声明
 
 function openEditor(id, isNew=false) {
   _editorId = id;
