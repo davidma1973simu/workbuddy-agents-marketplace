@@ -427,8 +427,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="打开 Persona Lab 虚拟人市场">🎭 Persona Lab</a>
     <button class="btn-ghost" onclick="checkPersonaLabImport()" title="检测并导入来自 Persona Lab 的角色数据">📥 导入角色</button>
     <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
-    <button class="btn-ghost" onclick="importJSON()">⬆️ 导入 JSON</button>
-    <button class="btn-ghost" onclick="exportAllJSON()">⬇️ 导出 JSON</button>
     <button class="btn-new" onclick="createNewProject()">+ 新建项目</button>
   </div>
 </nav>
@@ -995,7 +993,6 @@ function htmlOverview(p) {
           <button class="ob ob-primary" onclick="openEditor('${p.id}')">✏️ 编辑项目</button>
           <button class="ob ob-secondary" onclick="exportPDF('${p.id}')">📄 导出报告</button>
           <button class="ob ob-secondary" onclick="exportMD('${p.id}')">📝 复制 MD</button>
-          <button class="ob ob-secondary" onclick="exportAllJSON()">💾 备份 JSON</button>
           <button class="ob ob-danger" onclick="moveToTrash('${p.id}')">🗑️ 移入回收站</button>
         </div>
       </div>
