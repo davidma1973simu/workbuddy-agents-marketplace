@@ -475,6 +475,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px" title="打开 Persona Lab 虚拟人市场">🎭 Persona Lab</a>
     <button class="btn-ghost" onclick="checkPersonaLabImport()" title="检测并导入来自 Persona Lab 的角色数据">📥 导入角色</button>
     <button class="btn-ghost" onclick="openUploadPanel()">📂 上传创新文档</button>
+    <button class="btn-ghost" onclick="openAIConfigPanel()" title="配置 AI API Key">⚙️ AI 设置</button>
     <button class="btn-new" onclick="createNewProject()">+ 新建项目</button>
   </div>
 </nav>
@@ -4223,6 +4224,210 @@ window.addEventListener('resize',()=>{
   if(p.shape&&document.getElementById('mapCanvas')) drawRadar('mapCanvas',p.shape.mapValues,'#667eea',['市场潜力','用户增长','优势壁垒']);
   if(p.exam&&document.getElementById('ahaCanvas')) drawRadar('ahaCanvas',p.exam.ahaValues,'#10b981',['顿悟','高光','进步']);
 });
+
+// ═══════════════ AI 配置面板 ═══════════════
+function openAIConfigPanel() {
+  const modal = document.getElementById('aiConfigModal');
+  modal.style.display = 'flex';
+  loadAIConfig();
+}
+
+function closeAIConfigPanel() {
+  document.getElementById('aiConfigModal').style.display = 'none';
+}
+
+function loadAIConfig() {
+  // 尝试读取现有配置（兼容 Red House 和 Persona Lab 的配置 key）
+  const cfgRaw = localStorage.getItem('rh_ai_config_v1') || localStorage.getItem('persona_lab_ai_config_v1');
+  if (cfgRaw) {
+    try {
+      const cfg = JSON.parse(cfgRaw);
+      document.getElementById('aiProvider').value = cfg.provider || 'openai';
+      document.getElementById('aiModel').value = cfg.model || '';
+      document.getElementById('aiApiKey').value = cfg.apiKey || '';
+      document.getElementById('aiBaseUrl').value = cfg.baseUrl || '';
+      updateAIStatus('已配置', 'green');
+    } catch(e) {
+      updateAIStatus('配置格式错误', 'red');
+    }
+  } else {
+    updateAIStatus('未配置', 'orange');
+  }
+}
+
+function updateAIStatus(text, color) {
+  const statusEl = document.getElementById('aiStatus');
+  statusEl.textContent = `状态：${text}`;
+  statusEl.style.color = color === 'green' ? '#10b981' : color === 'red' ? '#ef4444' : '#f59e0b';
+}
+
+function saveAIConfig() {
+  const provider = document.getElementById('aiProvider').value;
+  const model = document.getElementById('aiModel').value.trim();
+  const apiKey = document.getElementById('aiApiKey').value.trim();
+  const baseUrl = document.getElementById('aiBaseUrl').value.trim();
+  
+  if (!apiKey) {
+    toast('⚠️ 请输入 API Key');
+    return;
+  }
+  
+  const config = {
+    provider: provider,
+    model: model || (provider === 'openai' ? 'gpt-4o-mini' : provider === 'deepseek' ? 'deepseek-chat' : 'qwen-max'),
+    apiKey: apiKey,
+    baseUrl: baseUrl || '',
+    updatedAt: new Date().toISOString()
+  };
+  
+  // 保存到 localStorage（使用与 Red House 和 Persona Lab 相同的 key）
+  localStorage.setItem('rh_ai_config_v1', JSON.stringify(config));
+  
+  updateAIStatus('已配置', 'green');
+  toast('✅ AI 配置已保存');
+  closeAIConfigPanel();
+}
+
+function testAIConnection() {
+  const provider = document.getElementById('aiProvider').value;
+  const apiKey = document.getElementById('aiApiKey').value.trim();
+  
+  if (!apiKey) {
+    toast('⚠️ 请先输入 API Key');
+    return;
+  }
+  
+  toast('⏳ 正在测试连接...');
+  
+  // 简单的测试调用
+  const testConfig = {
+    provider: provider,
+    model: provider === 'openai' ? 'gpt-4o-mini' : provider === 'deepseek' ? 'deepseek-chat' : 'qwen-max',
+    apiKey: apiKey,
+    baseUrl: document.getElementById('aiBaseUrl').value.trim()
+  };
+  
+  // 构建测试请求
+  let url, headers, body;
+  if (provider === 'openai' || provider === 'deepseek') {
+    url = testConfig.baseUrl ? `${testConfig.baseUrl}/chat/completions` : 
+          provider === 'deepseek' ? 'https://api.deepseek.com/chat/completions' : 'https://api.openai.com/v1/chat/completions';
+    headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    };
+    body = JSON.stringify({
+      model: testConfig.model,
+      messages: [{role: 'user', content: 'Hello'}],
+      max_tokens: 5
+    });
+  } else {
+    // 通义千问
+    url = testConfig.baseUrl || 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation';
+    headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    };
+    body = JSON.stringify({
+      model: testConfig.model,
+      input: {messages: [{role: 'user', content: 'Hello'}]},
+      parameters: {max_tokens: 5}
+    });
+  }
+  
+  fetch(url, {method: 'POST', headers, body})
+    .then(r => {
+      if (r.ok) {
+        toast('✅ 连接测试成功！');
+      } else {
+        toast('❌ 连接测试失败，请检查 API Key 和配置');
+      }
+    })
+    .catch(() => {
+      toast('❌ 连接测试失败，请检查网络或配置');
+    });
+}
+
+function clearAIConfig() {
+  if (confirm('确定要清除 AI 配置吗？')) {
+    localStorage.removeItem('rh_ai_config_v1');
+    document.getElementById('aiApiKey').value = '';
+    updateAIStatus('未配置', 'orange');
+    toast('✅ AI 配置已清除');
+  }
+}
 </script>
+
+<!-- AI 配置面板 -->
+<div id="aiConfigModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #e2e8f0;">
+      <h3 style="font-size:18px;font-weight:700;">⚙️ AI 配置</h3>
+      <button onclick="closeAIConfigPanel()" style="width:36px;height:36px;border-radius:10px;border:none;background:#f1f5f9;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div style="padding:24px;overflow-y:auto;">
+      <div style="margin-bottom:20px;">
+        <div id="aiStatus" style="font-size:13px;font-weight:600;margin-bottom:16px;">状态：未配置</div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">AI 服务商</label>
+          <select id="aiProvider" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;" onchange="updateAIModelPlaceholder()">
+            <option value="openai">OpenAI</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="qwen">通义千问 (阿里云)</option>
+            <option value="custom">自定义 (兼容 OpenAI 接口)</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">模型名称（可选）</label>
+          <input type="text" id="aiModel" placeholder="留空使用默认模型" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;">
+          <div id="modelHint" style="font-size:12px;color:#64748b;margin-top:4px;">默认：gpt-4o-mini</div>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">API Key <span style="color:#ef4444;">*</span></label>
+          <input type="password" id="aiApiKey" placeholder="sk-..." style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;">
+          <div style="font-size:12px;color:#64748b;margin-top:4px;">您的 API Key 仅存储在本地浏览器中</div>
+        </div>
+        
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">自定义 Base URL（可选）</label>
+          <input type="text" id="aiBaseUrl" placeholder="https://api.openai.com/v1" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;">
+          <div style="font-size:12px;color:#64748b;margin-top:4px;">仅在使用代理或自定义接口时需要填写</div>
+        </div>
+      </div>
+      
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button onclick="saveAIConfig()" style="flex:1;min-width:100px;padding:12px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">保存配置</button>
+        <button onclick="testAIConnection()" style="padding:12px 20px;background:#f0f4ff;color:#4f46e5;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">测试连接</button>
+        <button onclick="clearAIConfig()" style="padding:12px 20px;background:#fee2e2;color:#ef4444;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">清除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateAIModelPlaceholder() {
+  const provider = document.getElementById('aiProvider').value;
+  const hintEl = document.getElementById('modelHint');
+  const modelEl = document.getElementById('aiModel');
+  
+  if (provider === 'openai') {
+    hintEl.textContent = '默认：gpt-4o-mini';
+    modelEl.placeholder = 'gpt-4o-mini';
+  } else if (provider === 'deepseek') {
+    hintEl.textContent = '默认：deepseek-chat';
+    modelEl.placeholder = 'deepseek-chat';
+  } else if (provider === 'qwen') {
+    hintEl.textContent = '默认：qwen-max';
+    modelEl.placeholder = 'qwen-max';
+  } else {
+    hintEl.textContent = '请输入模型名称';
+    modelEl.placeholder = 'model-name';
+  }
+}
+</script>
+
 </body>
 </html>

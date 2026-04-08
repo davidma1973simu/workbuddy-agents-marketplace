@@ -232,14 +232,16 @@
     }
     .value-point-text {
       font-size: 14px;
-      color: var(--text);
+      color: #1e293b;
       line-height: 1.5;
+      font-weight: 600;
     }
     .value-point-text small {
       display: block;
-      color: var(--muted);
+      color: #475569;
       font-size: 12px;
       margin-top: 4px;
+      font-weight: 400;
     }
 
     /* ── 产品卡片区域 ── */
@@ -320,10 +322,10 @@
       text-transform: uppercase;
       margin-bottom: 6px;
     }
-    .card-1 .card-label { color: #818CF8; }
-    .card-2 .card-label { color: #2DD4BF; }
-    .card-3 .card-label { color: #FCD34D; }
-    .card-4 .card-label { color: #F9A8D4; }
+    .card-1 .card-label { color: #4F46E5; }
+    .card-2 .card-label { color: #0F766E; }
+    .card-3 .card-label { color: #B45309; }
+    .card-4 .card-label { color: #BE185D; }
 
     .card-title {
       font-size: 17px;
@@ -345,10 +347,10 @@
       font-size: 13px;
       font-weight: 600;
     }
-    .card-1 .card-cta { color: #A5B4FC; }
-    .card-2 .card-cta { color: #2DD4BF; }
-    .card-3 .card-cta { color: #FCD34D; }
-    .card-4 .card-cta { color: #F9A8D4; }
+    .card-1 .card-cta { color: #4F46E5; }
+    .card-2 .card-cta { color: #0F766E; }
+    .card-3 .card-cta { color: #B45309; }
+    .card-4 .card-cta { color: #BE185D; }
     .card:hover .card-cta .arrow { transform: translateX(3px); }
     .arrow {
       display: inline-flex;
@@ -577,6 +579,246 @@
       font-size: 13px;
     }
     .footer-links a:hover { text-decoration: underline; }
+    
+    /* ── 管理后台入口 ── */
+    .admin-trigger {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      opacity: 0.5;
+      transition: opacity .2s, transform .2s;
+    }
+    .admin-trigger:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    /* ── 管理后台弹窗 ── */
+    .admin-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .admin-modal.show { display: flex; }
+    .admin-panel {
+      background: var(--card-bg);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .admin-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .admin-tab.active {
+      background: rgba(102,126,234,.15);
+      color: var(--purple);
+    }
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .admin-section {
+      display: none;
+    }
+    .admin-section.active { display: block; }
+    
+    /* 留资数据表格 */
+    .leads-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .leads-table th,
+    .leads-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .leads-table th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .leads-table tr:hover {
+      background: var(--bg);
+    }
+    .leads-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    
+    /* 活动编辑表单 */
+    .event-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input,
+    .form-group textarea {
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--purple);
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .admin-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--purple), #764ba2);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .admin-btn:hover {
+      transform: translateY(-2px);
+    }
+    .admin-btn.secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    /* 活动列表（后台） */
+    .admin-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .admin-event-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .admin-event-info {
+      flex: 1;
+    }
+    .admin-event-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .admin-event-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .admin-event-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .admin-event-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .admin-event-btn.edit {
+      background: rgba(102,126,234,.15);
+      color: var(--purple);
+    }
+    .admin-event-btn.delete {
+      background: rgba(239,68,68,.15);
+      color: #ef4444;
+    }
 
     /* ── 响应式 ── */
     @media (max-width: 768px) {
@@ -602,6 +844,7 @@
     .hero { animation: fadeUp .6s ease both; }
     .marketing-section { animation: fadeUp .6s ease .1s both; }
     .products-section { animation: fadeUp .6s ease .2s both; }
+    #api-guide { animation: fadeUp .6s ease .25s both; }
     .lead-section { animation: fadeUp .6s ease .3s both; }
     .events-section { animation: fadeUp .6s ease .4s both; }
     .footer { animation: fadeUp .6s ease .5s both; }
@@ -705,13 +948,87 @@
         <div class="card-cta">立即进入 <span class="arrow">→</span></div>
       </a>
       <!-- 4. 产品手册 -->
-      <a class="card card-4" href="https://eureka-dashboard.edgeone.cool/guide.html" target="_blank" rel="noopener">
+      <a class="card card-4" href="https://eureka-dashboard.edgeone.cool/eureka-dashboard/guide.html" target="_blank" rel="noopener">
         <div class="card-icon">📖</div>
         <div class="card-label">Product Guide</div>
         <div class="card-title">产品使用手册</div>
         <div class="card-desc">完整的使用说明书：R.I.S.E. 流程详解、四阶段输入输出、Sub-Agent 使用指南及常见问题。</div>
         <div class="card-cta">立即阅读 <span class="arrow">→</span></div>
       </a>
+    </div>
+  </section>
+
+  <!-- API 配置指南区域 -->
+  <section class="marketing-section" id="api-guide">
+    <h2 class="section-title"><span>⚙️</span> AI 配置与调用指南</h2>
+    <p class="marketing-text">
+      Eureka 的 AI 智能体功能需要配置 API Key 才能使用。支持 OpenAI、DeepSeek、通义千问等主流大模型服务商，也可通过 <strong>WorkBuddy</strong> 直接调用已配置的技能和智能体。
+    </p>
+    
+    <div class="cards" style="margin-top: 32px;">
+      <!-- API 配置方式 -->
+      <div class="card card-1" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🔑</div>
+        <div class="card-label">API 配置</div>
+        <div class="card-title">Dashboard 内配置</div>
+        <div class="card-desc">
+          进入 <a href="https://eureka-dashboard.edgeone.cool/eureka-dashboard/" target="_blank" style="color: #4F46E5; text-decoration: underline;">Eureka Dashboard</a> 后，点击右上角「⚙️ AI 设置」按钮，填写 API Key、选择服务商、设置模型名称即可。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(79,70,229,.08); border-radius: 8px; font-size: 12px; color: #4F46E5;">
+          <strong>支持服务商：</strong>OpenAI · DeepSeek · 通义千问 · 自定义接口
+        </div>
+      </div>
+      
+      <!-- WorkBuddy 调用 -->
+      <div class="card card-2" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🛰️</div>
+        <div class="card-label">WorkBuddy 集成</div>
+        <div class="card-title">直接调用 Skills</div>
+        <div class="card-desc">
+          在 WorkBuddy 中已配置的 Eureka Skills 可直接调用，无需重复设置 API Key。支持 <code>pov_builder</code>、<code>HMW_Reframer</code>、<code>NCO_Crosslinker</code> 等 10+ 个创新技能。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(15,118,110,.08); border-radius: 8px; font-size: 12px; color: #0F766E;">
+          <strong>调用方式：</strong>在 WorkBuddy 聊天框直接输入技能名称或描述需求
+        </div>
+      </div>
+      
+      <!-- Sub-Agent 调用 -->
+      <div class="card card-3" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">Sub-Agent</div>
+        <div class="card-title">四阶段专家智能体</div>
+        <div class="card-desc">
+          Eureka 提供 Reveal / Inspire / Shape / Exam 四个 Specialist Agent，可在 Dashboard 各阶段编辑器中点击「✨ AI 助手」按钮唤醒，自动识别当前上下文并生成结构化产出。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(180,83,9,.08); border-radius: 8px; font-size: 12px; color: #B45309;">
+          <strong>使用场景：</strong>POV 构建 · HMW 重构 · 创意发散 · 概念打磨
+        </div>
+      </div>
+      
+      <!-- 查看手册 -->
+      <a class="card card-4" href="https://eureka-dashboard.edgeone.cool/eureka-dashboard/guide.html#agents" target="_blank" rel="noopener">
+        <div class="card-icon">📖</div>
+        <div class="card-label">详细文档</div>
+        <div class="card-title">Sub-Agent 使用手册</div>
+        <div class="card-desc">
+          查看完整的 Agent 对应关系表、Prompt 示例、API 配置 troubleshooting 及 WorkBuddy 集成最佳实践。
+        </div>
+        <div class="card-cta">查看文档 <span class="arrow">→</span></div>
+      </a>
+    </div>
+    
+    <div style="margin-top: 28px; padding: 20px 24px; background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08)); border-radius: 16px; border: 1.5px solid rgba(102,126,234,.2);">
+      <div style="display: flex; align-items: flex-start; gap: 16px;">
+        <div style="font-size: 24px; flex-shrink: 0;">💡</div>
+        <div>
+          <div style="font-weight: 700; color: #1e293b; margin-bottom: 6px;">快速开始建议</div>
+          <div style="font-size: 14px; color: #64748b; line-height: 1.7;">
+            1. 已有 WorkBuddy 环境的用户 → 直接在 WorkBuddy 中调用 Eureka Skills，无需额外配置<br>
+            2. 独立使用 Dashboard 的用户 → 点击「⚙️ AI 设置」配置自己的 API Key<br>
+            3. 企业/团队用户 → 建议统一配置共享 API Key，确保团队成员体验一致
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -755,11 +1072,77 @@
     <p>Powered by <strong style="color:#818CF8">Eureka 价值创新</strong> · R.I.S.E. Framework</p>
     <p style="font-size: 12px; opacity: .7;">© 2026 习智场景化创新训练. All rights reserved.</p>
     <div class="footer-links">
-      <a href="https://eureka-dashboard.edgeone.cool/guide.html" target="_blank">产品手册</a>
+      <a href="https://eureka-dashboard.edgeone.cool/eureka-dashboard/guide.html" target="_blank">产品手册</a>
       <a href="mailto:contact@eureka-innovation.com">联系我们</a>
     </div>
   </footer>
 
+</div>
+
+<!-- 管理后台入口 -->
+<button class="admin-trigger" id="adminTrigger" title="管理后台">⚙️</button>
+
+<!-- 管理后台弹窗 -->
+<div class="admin-modal" id="adminModal">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h3>🔐 管理后台</h3>
+      <button class="admin-close" id="adminClose">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="leads">留资数据</button>
+      <button class="admin-tab" data-tab="events">活动管理</button>
+    </div>
+    <div class="admin-content">
+      <!-- 留资数据 -->
+      <div class="admin-section active" id="leadsSection">
+        <div id="leadsContainer">
+          <div class="leads-empty">暂无留资数据</div>
+        </div>
+      </div>
+      <!-- 活动管理 -->
+      <div class="admin-section" id="eventsSection">
+        <form class="event-form" id="eventForm">
+          <input type="hidden" id="eventIndex" value="">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>日期（日）</label>
+              <input type="text" id="eventDay" placeholder="例如：15" required>
+            </div>
+            <div class="form-group">
+              <label>月份</label>
+              <input type="text" id="eventMonth" placeholder="例如：APR" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>活动标题</label>
+            <input type="text" id="eventTitle" placeholder="例如：Eureka 创新工作坊 · 线上直播" required>
+          </div>
+          <div class="form-group">
+            <label>活动信息（用逗号分隔）</label>
+            <input type="text" id="eventMeta" placeholder="例如：📅 4月15日 20:00, 👥 线上直播">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>按钮文字</label>
+              <input type="text" id="eventBtnText" placeholder="例如：立即报名" value="立即报名">
+            </div>
+            <div class="form-group">
+              <label>按钮链接</label>
+              <input type="text" id="eventBtnLink" placeholder="例如：https://... 或 #">
+            </div>
+          </div>
+          <div class="admin-actions">
+            <button type="submit" class="admin-btn">保存活动</button>
+            <button type="button" class="admin-btn secondary" id="resetEventForm">重置</button>
+          </div>
+        </form>
+        <div class="admin-events-list" id="adminEventsList">
+          <!-- 活动列表将在这里渲染 -->
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -775,30 +1158,65 @@
       return;
     }
     
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('请输入有效的邮箱地址');
+      return;
+    }
+    
     // 禁用按钮防止重复提交
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span>⏳</span><span>提交中...</span>';
     
-    // 模拟提交（实际使用时替换为真实的 API 调用）
+    // 存储到 localStorage
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    leads.push({
+      name: name,
+      email: email,
+      timestamp: new Date().toISOString(),
+      source: 'eureka_landing_page'
+    });
+    localStorage.setItem('eureka_leads', JSON.stringify(leads));
+    
+    // 模拟提交延迟
     setTimeout(() => {
-      // 存储到 localStorage（实际应该发送到服务器）
-      const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
-      leads.push({
-        name: name,
-        email: email,
-        timestamp: new Date().toISOString(),
-        source: 'eureka_landing_page'
-      });
-      localStorage.setItem('eureka_leads', JSON.stringify(leads));
-      
       // 显示成功信息
       document.getElementById('leadForm').style.display = 'none';
       document.getElementById('formSuccess').classList.add('show');
       
-      // 实际场景：这里应该调用后端 API 发送邮件
+      // 自动下载产品手册 PDF
+      downloadManual();
+      
       console.log('Lead captured:', { name, email });
     }, 1500);
   });
+  
+  // 下载产品手册函数
+  function downloadManual() {
+    // 创建 PDF 内容（使用 data URI 方式生成简单 PDF）
+    // 实际使用时，可以替换为真实的 PDF 文件链接
+    const pdfUrl = './eureka-manual.pdf';
+    
+    // 尝试下载 PDF
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = 'Eureka-产品手册.pdf';
+    link.target = '_blank';
+    
+    // 如果 PDF 不存在，提供一个备用方案
+    fetch(pdfUrl, { method: 'HEAD' }).then(response => {
+      if (response.ok) {
+        link.click();
+      } else {
+        // PDF 不存在，打开在线指南
+        window.open('./eureka-dashboard/guide.html', '_blank');
+      }
+    }).catch(() => {
+      // 网络错误，打开在线指南
+      window.open('./eureka-dashboard/guide.html', '_blank');
+    });
+  }
 
   // 市场活动数据（可通过外部 JS 文件或 API 动态加载）
   // 示例数据结构，后台可以修改这个数组来更新活动
@@ -865,6 +1283,254 @@
 
   // 初始化
   renderEvents();
+
+  // ==================== 管理后台功能 ====================
+  
+  const adminTrigger = document.getElementById('adminTrigger');
+  const adminModal = document.getElementById('adminModal');
+  const adminClose = document.getElementById('adminClose');
+  const adminTabs = document.querySelectorAll('.admin-tab');
+  const adminSections = document.querySelectorAll('.admin-section');
+  
+  // 打开管理后台
+  adminTrigger.addEventListener('click', () => {
+    adminModal.classList.add('show');
+    renderLeads();
+    renderAdminEvents();
+  });
+  
+  // 关闭管理后台
+  adminClose.addEventListener('click', () => {
+    adminModal.classList.remove('show');
+  });
+  
+  // 点击背景关闭
+  adminModal.addEventListener('click', (e) => {
+    if (e.target === adminModal) {
+      adminModal.classList.remove('show');
+    }
+  });
+  
+  // 标签页切换
+  adminTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.dataset.tab;
+      
+      // 更新标签状态
+      adminTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // 更新内容显示
+      adminSections.forEach(s => s.classList.remove('active'));
+      document.getElementById(targetTab + 'Section').classList.add('active');
+      
+      // 刷新数据
+      if (targetTab === 'leads') {
+        renderLeads();
+      } else if (targetTab === 'events') {
+        renderAdminEvents();
+      }
+    });
+  });
+  
+  // 渲染留资数据
+  function renderLeads() {
+    const container = document.getElementById('leadsContainer');
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    
+    if (leads.length === 0) {
+      container.innerHTML = '<div class="leads-empty">暂无留资数据</div>';
+      return;
+    }
+    
+    // 按时间倒序排列
+    const sortedLeads = leads.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    container.innerHTML = `
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>提交时间</th>
+            <th>来源</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedLeads.map(lead => `
+            <tr>
+              <td>${escapeHtml(lead.name)}</td>
+              <td>${escapeHtml(lead.email)}</td>
+              <td>${formatDate(lead.timestamp)}</td>
+              <td>${lead.source || 'eureka_landing_page'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top: 16px; text-align: center;">
+        <button class="admin-btn secondary" onclick="exportLeads()">导出数据 (JSON)</button>
+      </div>
+    `;
+  }
+  
+  // 导出留资数据
+  window.exportLeads = function() {
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    if (leads.length === 0) {
+      alert('暂无数据可导出');
+      return;
+    }
+    
+    const dataStr = JSON.stringify(leads, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `eureka-leads-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+  
+  // 活动表单处理
+  const eventForm = document.getElementById('eventForm');
+  const resetEventForm = document.getElementById('resetEventForm');
+  
+  eventForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const index = document.getElementById('eventIndex').value;
+    const eventData = {
+      day: document.getElementById('eventDay').value.trim(),
+      month: document.getElementById('eventMonth').value.trim(),
+      title: document.getElementById('eventTitle').value.trim(),
+      meta: document.getElementById('eventMeta').value.split(',').map(m => m.trim()).filter(m => m),
+      btnText: document.getElementById('eventBtnText').value.trim() || '立即报名',
+      btnLink: document.getElementById('eventBtnLink').value.trim() || '#'
+    };
+    
+    // 获取现有活动数据
+    let events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    
+    if (index !== '') {
+      // 编辑现有活动
+      events[parseInt(index)] = eventData;
+    } else {
+      // 添加新活动
+      events.push(eventData);
+    }
+    
+    // 保存到 localStorage
+    localStorage.setItem('eureka_events', JSON.stringify(events));
+    
+    // 更新 EVENTS_DATA 并重新渲染
+    EVENTS_DATA.length = 0;
+    EVENTS_DATA.push(...events);
+    renderEvents();
+    renderAdminEvents();
+    
+    // 重置表单
+    resetEventForm.click();
+    
+    alert('活动保存成功！');
+  });
+  
+  resetEventForm.addEventListener('click', () => {
+    eventForm.reset();
+    document.getElementById('eventIndex').value = '';
+  });
+  
+  // 渲染后台活动列表
+  function renderAdminEvents() {
+    const container = document.getElementById('adminEventsList');
+    const events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    
+    if (events.length === 0) {
+      container.innerHTML = '<div class="leads-empty">暂无活动，请在上方添加</div>';
+      return;
+    }
+    
+    container.innerHTML = events.map((event, index) => `
+      <div class="admin-event-item">
+        <div class="event-date" style="width: 56px; height: 56px; border-radius: 10px;">
+          <span class="day" style="font-size: 20px;">${event.day}</span>
+          <span class="month" style="font-size: 10px;">${event.month}</span>
+        </div>
+        <div class="admin-event-info">
+          <div class="admin-event-title">${escapeHtml(event.title)}</div>
+          <div class="admin-event-meta">${event.meta.join(' · ')}</div>
+        </div>
+        <div class="admin-event-actions">
+          <button class="admin-event-btn edit" onclick="editEvent(${index})">编辑</button>
+          <button class="admin-event-btn delete" onclick="deleteEvent(${index})">删除</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  // 编辑活动
+  window.editEvent = function(index) {
+    const events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    const event = events[index];
+    
+    if (!event) return;
+    
+    document.getElementById('eventIndex').value = index;
+    document.getElementById('eventDay').value = event.day;
+    document.getElementById('eventMonth').value = event.month;
+    document.getElementById('eventTitle').value = event.title;
+    document.getElementById('eventMeta').value = event.meta.join(', ');
+    document.getElementById('eventBtnText').value = event.btnText;
+    document.getElementById('eventBtnLink').value = event.btnLink;
+  };
+  
+  // 删除活动
+  window.deleteEvent = function(index) {
+    if (!confirm('确定要删除这个活动吗？')) return;
+    
+    let events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    events.splice(index, 1);
+    localStorage.setItem('eureka_events', JSON.stringify(events));
+    
+    // 更新 EVENTS_DATA 并重新渲染
+    EVENTS_DATA.length = 0;
+    EVENTS_DATA.push(...events);
+    renderEvents();
+    renderAdminEvents();
+  };
+  
+  // 加载保存的活动数据
+  function loadSavedEvents() {
+    const savedEvents = localStorage.getItem('eureka_events');
+    if (savedEvents) {
+      const events = JSON.parse(savedEvents);
+      EVENTS_DATA.length = 0;
+      EVENTS_DATA.push(...events);
+      renderEvents();
+    }
+  }
+  
+  // 工具函数：转义 HTML
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  // 工具函数：格式化日期
+  function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  // 初始化加载保存的活动
+  loadSavedEvents();
 </script>
 
 </body>

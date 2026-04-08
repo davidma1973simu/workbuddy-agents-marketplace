@@ -242,6 +242,7 @@
     <button class="nav-link" onclick="scrollTo('exp')">💫 学员体验</button>
     <button class="nav-link" onclick="scrollTo('tips')">💡 避坑指南</button>
     <button class="nav-link" onclick="scrollTo('agents')">🤖 Sub-Agent</button>
+    <button class="nav-link" onclick="scrollTo('api-config')">🔌 API 配置</button>
     <button class="nav-link" onclick="scrollTo('faq')">❓ 常见问题</button>
   </div>
 </nav>
@@ -1103,8 +1104,138 @@
     </div>
   </section>
 
-  <!-- ⑨ FAQ -->
+  <!-- ⑨ API 配置与 WorkBuddy 集成 -->
+  <section class="section fade-in" id="api-config">
+    <div class="section-label">🔌 API 配置</div>
+    <h2 class="section-title">如何配置 AI 与调用 Sub-Agent</h2>
+    <p class="section-desc">Eureka 支持两种 AI 调用方式：Dashboard 内直接配置 API Key，或通过 WorkBuddy 调用已集成的 Skills。选择适合你的方式开始使用。</p>
 
+    <!-- 方式一：Dashboard API 配置 -->
+    <div style="margin-top: 32px; background: var(--surface); border-radius: var(--r); border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow);">
+      <div style="background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px 28px; color: #fff;">
+        <div style="font-size: 11px; font-weight: 800; opacity: .8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">METHOD 01</div>
+        <div style="font-size: 18px; font-weight: 800;">🔑 在 Dashboard 内配置 API Key</div>
+      </div>
+      <div style="padding: 28px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+          <div style="background: #f8faff; border-radius: 12px; padding: 20px; border: 1.5px solid #e0e7ff;">
+            <div style="font-size: 13px; font-weight: 800; color: #4f46e5; margin-bottom: 12px;">步骤 1：打开 AI 设置</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              进入 <a href="https://eureka-dashboard.edgeone.cool/eureka-dashboard/" target="_blank" style="color: #4f46e5; font-weight: 600;">Eureka Dashboard</a>，点击页面右上角「⚙️ AI 设置」按钮，弹出配置面板。
+            </div>
+          </div>
+          <div style="background: #f0fdf4; border-radius: 12px; padding: 20px; border: 1.5px solid #a7f3d0;">
+            <div style="font-size: 13px; font-weight: 800; color: #15803d; margin-bottom: 12px;">步骤 2：选择服务商</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              支持 OpenAI、DeepSeek、通义千问，或选择「自定义」输入其他兼容 OpenAI 接口格式的服务商。
+            </div>
+          </div>
+          <div style="background: #fffbeb; border-radius: 12px; padding: 20px; border: 1.5px solid #fde68a;">
+            <div style="font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 12px;">步骤 3：填写配置</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              输入 API Key、模型名称（如 gpt-4、deepseek-chat）、Base URL（如使用自定义服务商）。
+            </div>
+          </div>
+          <div style="background: #fdf4ff; border-radius: 12px; padding: 20px; border: 1.5px solid #e9d5ff;">
+            <div style="font-size: 13px; font-weight: 800; color: #7c3aed; margin-bottom: 12px;">步骤 4：测试并保存</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              点击「测试连接」验证 API 可用性，确认无误后点击「保存配置」。配置将存储在浏览器本地。
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; color: #991b1b; line-height: 1.7;">
+            <strong>⚠️ 安全提示：</strong>API Key 仅存储在浏览器 localStorage 中，不会上传到任何服务器。建议个人使用，不要在公共电脑上保存敏感 Key。团队共享场景建议使用 WorkBuddy 集成方式。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方式二：WorkBuddy 集成 -->
+    <div style="margin-top: 28px; background: var(--surface); border-radius: var(--r); border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow);">
+      <div style="background: linear-gradient(135deg, #0f766e, #14b8a6); padding: 20px 28px; color: #fff;">
+        <div style="font-size: 11px; font-weight: 800; opacity: .8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">METHOD 02 · RECOMMENDED</div>
+        <div style="font-size: 18px; font-weight: 800;">🛰️ 通过 WorkBuddy 调用 Skills</div>
+      </div>
+      <div style="padding: 28px;">
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 24px;">
+          如果你已经在使用 WorkBuddy，可以直接调用 Eureka 系列 Skills，无需在 Dashboard 中重复配置 API Key。WorkBuddy 会自动管理 API 调用和上下文传递。
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div style="background: #f0fdfa; border-radius: 12px; padding: 20px; border: 1.5px solid #99f6e4;">
+            <div style="font-size: 20px; margin-bottom: 12px;">✨</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0f766e; margin-bottom: 8px;">直接唤醒 Agent</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              在 WorkBuddy 聊天框输入：<br>
+              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Reveal Specialist</code><br>
+              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Inspire Specialist</code><br>
+              即可直接调用对应阶段的专家智能体。
+            </div>
+          </div>
+          <div style="background: #f0f9ff; border-radius: 12px; padding: 20px; border: 1.5px solid #bae6fd;">
+            <div style="font-size: 20px; margin-bottom: 12px;">🎯</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 8px;">调用具体 Skill</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              使用 Skill 名称精确调用：<br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">pov_builder</code>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">HMW_Reframer</code><br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">NCO_Crosslinker</code>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">Solution_Build</code>
+            </div>
+          </div>
+          <div style="background: #faf5ff; border-radius: 12px; padding: 20px; border: 1.5px solid #e9d5ff;">
+            <div style="font-size: 20px; margin-bottom: 12px;">💬</div>
+            <div style="font-size: 14px; font-weight: 700; color: #7c3aed; margin-bottom: 8px;">自然语言描述</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              直接描述你的需求：<br>
+              <em style="color: #7c3aed;">"帮我为这个产品写一段 POV 洞察"</em><br>
+              <em style="color: #7c3aed;">"基于这个痛点生成 HMW 问题"</em><br>
+              WorkBuddy 会自动匹配最合适的 Skill。
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; color: #166534; line-height: 1.7;">
+            <strong>✅ WorkBuddy 集成优势：</strong>无需管理 API Key · 自动上下文传递 · 支持多轮对话 · 可与其他 Skills 组合使用 · 团队共享配置
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API 配置 Troubleshooting -->
+    <h3 style="font-size: 18px; font-weight: 800; margin: 40px 0 16px; color: var(--text);">🔧 常见问题排查</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ "未配置 AI 接口" 提示</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          表示当前没有可用的 API 配置。点击 Dashboard 右上角「⚙️ AI 设置」进行配置，或切换到 WorkBuddy 环境使用。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ "API 连接失败" 错误</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          检查 API Key 是否正确、是否已过期、是否有足够的余额。自定义 Base URL 时需确保接口兼容 OpenAI 格式。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ 响应缓慢或超时</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          可能是网络问题或模型服务商响应慢。尝试切换模型（如从 gpt-4 切换到 gpt-3.5-turbo）或检查网络连接。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❓ WorkBuddy 中找不到 Eureka Skills</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          确保 WorkBuddy 已更新到最新版本。Skills 列表中搜索 "Eureka" 或 "创新" 即可找到相关技能包。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑩ FAQ -->
   <section class="section fade-in" id="faq">
     <div class="section-label">❓ 常见问题</div>
     <h2 class="section-title">遇到问题先看这里</h2>
@@ -1176,7 +1307,7 @@
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div><strong>Eureka Dashboard</strong> · v1.3.0 · 2026-03-24</div>
+  <div><strong>Eureka Dashboard</strong> · v1.3.1 · 2026-04-08</div>
   <div style="margin-top:6px;">
     <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank">🔗 打开仪表板</a>
     &nbsp;·&nbsp;
@@ -1195,7 +1326,7 @@
     bar.style.width = (top / height * 100) + '%';
 
     // 更新 nav 活跃状态
-    const sections = ['start','prep','flow','stages','io','exp','tips','agents','faq'];
+    const sections = ['start','prep','flow','stages','io','exp','tips','agents','api-config','faq'];
     const links = document.querySelectorAll('.nav-link');
     sections.forEach((id, i) => {
       const el = document.getElementById(id);
