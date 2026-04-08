@@ -4265,18 +4265,26 @@ function saveAIConfig() {
   const provider = document.getElementById('aiProvider').value;
   const model = document.getElementById('aiModel').value.trim();
   const apiKey = document.getElementById('aiApiKey').value.trim();
-  const baseUrl = document.getElementById('aiBaseUrl').value.trim();
+  const customBaseUrl = document.getElementById('aiBaseUrl').value.trim();
   
   if (!apiKey) {
     toast('⚠️ 请输入 API Key');
     return;
   }
   
+  // 根据服务商设置默认 baseUrl
+  const defaultBaseUrls = {
+    openai: 'https://api.openai.com/v1',
+    deepseek: 'https://api.deepseek.com/v1',
+    qwen: 'https://dashscope.aliyuncs.com/compatible-mode/v1'
+  };
+  const baseUrl = customBaseUrl || defaultBaseUrls[provider] || 'https://api.openai.com/v1';
+  
   const config = {
     provider: provider,
     model: model || (provider === 'openai' ? 'gpt-4o-mini' : provider === 'deepseek' ? 'deepseek-chat' : 'qwen-max'),
     apiKey: apiKey,
-    baseUrl: baseUrl || '',
+    baseUrl: baseUrl,
     updatedAt: new Date().toISOString()
   };
   
