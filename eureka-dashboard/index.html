@@ -650,6 +650,67 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════ SECURITY UTILS ═══════════════
+/**
+ * HTML 转义函数 - 防止 XSS 攻击
+ * 将特殊字符转换为 HTML 实体
+ */
+function escapeHtml(text) {
+  if (text == null) return '';
+  const str = String(text);
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/**
+ * 安全地设置元素的 textContent
+ * 替代 innerHTML 用于显示用户输入
+ */
+function setSafeText(element, text) {
+  if (typeof element === 'string') {
+    element = document.getElementById(element);
+  }
+  if (element) {
+    element.textContent = text;
+  }
+}
+
+/**
+ * 创建安全的 DOM 元素
+ * 避免使用 innerHTML 拼接 HTML 字符串
+ */
+function createSafeElement(tag, attributes = {}, children = []) {
+  const el = document.createElement(tag);
+  
+  Object.entries(attributes).forEach(([key, value]) => {
+    if (key === 'textContent') {
+      el.textContent = value;
+    } else if (key === 'innerHTML' && typeof value === 'string') {
+      // 仅在值是硬编码字符串时使用 innerHTML
+      el.innerHTML = value;
+    } else if (key.startsWith('on') && typeof value === 'function') {
+      el.addEventListener(key.slice(2).toLowerCase(), value);
+    } else if (key === 'className') {
+      el.className = value;
+    } else if (key === 'dataset') {
+      Object.assign(el.dataset, value);
+    } else {
+      el.setAttribute(key, value);
+    }
+  });
+  
+  children.forEach(child => {
+    if (typeof child === 'string') {
+      el.appendChild(document.createTextNode(child));
+    } else if (child instanceof Node) {
+      el.appendChild(child);
+    }
+  });
+  
+  return el;
+}
+
 // ═══════════════ DEMO DATA ═══════════════
 const DEMO_PROJECT = {
   id: 'demo-2026',
@@ -946,30 +1007,75 @@ function statusCls(s){return{completed:'s-completed',in_progress:'s-in_progress'
 
 function renderList(projects) {
   const el = document.getElementById('projectList');
+  el.innerHTML = '';
+  
   if (!projects.length) {
-    el.innerHTML='<div style="text-align:center;padding:48px 20px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">📭</div><div style="font-size:14px">暂无项目</div></div>';
+    const emptyDiv = createSafeElement('div', {
+      style: 'text-align:center;padding:48px 20px;color:#94a3b8'
+    }, [
+      createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['📭']),
+      createSafeElement('div', { style: 'font-size:14px' }, ['暂无项目'])
+    ]);
+    el.appendChild(emptyDiv);
     return;
   }
-  el.innerHTML = projects.map(p => {
+  
+  projects.forEach(p => {
     const stgs = [
       {k:'r',cls:'stg-r',label:'R',done:p.progress>=25},
       {k:'i',cls:'stg-i',label:'I',done:p.progress>=50},
       {k:'s',cls:'stg-s',label:'S',done:p.progress>=75},
       {k:'e',cls:'stg-e',label:'E',done:p.progress>=100}
     ];
-    return `<div class="project-item${p.id===activeId?' active':''}" onclick="selectProject('${p.id}')">
-      <div class="proj-top">
-        <div class="proj-name">${p.name}</div>
-        <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
-      </div>
-      <div class="proj-user">${p.targetUser||'&nbsp;'}</div>
-      <div class="stage-row">
-        ${stgs.map(s=>`<span class="stg ${s.cls}${s.done?'':' dim'}">${s.label}</span>`).join('')}
-        <span class="proj-pct">${p.progress}%</span>
-      </div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%"></div></div>
-    </div>`;
-  }).join('');
+    
+    // 创建项目项容器
+    const itemClass = 'project-item' + (p.id === activeId ? ' active' : '');
+    const item = createSafeElement('div', {
+      className: itemClass,
+      dataset: { projectId: p.id }
+    });
+    item.addEventListener('click', () => selectProject(p.id));
+    
+    // 顶部行：项目名称 + 状态
+    const topRow = createSafeElement('div', { className: 'proj-top' });
+    const nameDiv = createSafeElement('div', { className: 'proj-name' }, [p.name]);
+    const statusBadge = createSafeElement('span', {
+      className: 'status-badge ' + statusCls(p.status)
+    }, [statusLabel(p.status)]);
+    topRow.appendChild(nameDiv);
+    topRow.appendChild(statusBadge);
+    
+    // 目标用户
+    const userDiv = createSafeElement('div', { className: 'proj-user' }, [
+      p.targetUser || '\u00A0'
+    ]);
+    
+    // 阶段行
+    const stageRow = createSafeElement('div', { className: 'stage-row' });
+    stgs.forEach(s => {
+      const stgClass = 'stg ' + s.cls + (s.done ? '' : ' dim');
+      const stgSpan = createSafeElement('span', { className: stgClass }, [s.label]);
+      stageRow.appendChild(stgSpan);
+    });
+    const pctSpan = createSafeElement('span', { className: 'proj-pct' }, [p.progress + '%']);
+    stageRow.appendChild(pctSpan);
+    
+    // 进度条
+    const progBar = createSafeElement('div', { className: 'prog-bar' });
+    const progFill = createSafeElement('div', {
+      className: 'prog-fill',
+      style: 'width:' + p.progress + '%'
+    });
+    progBar.appendChild(progFill);
+    
+    // 组装
+    item.appendChild(topRow);
+    item.appendChild(userDiv);
+    item.appendChild(stageRow);
+    item.appendChild(progBar);
+    
+    el.appendChild(item);
+  });
 }
 
 function filterProjects() {
@@ -4146,23 +4252,59 @@ function emptyTrash() {
 
 function renderTrashList() {
   const el = document.getElementById('trashList');
+  el.innerHTML = '';
   const trash = getTrash();
+  
   if (!trash.length) {
-    el.innerHTML = '<div class="trash-empty"><div style="font-size:36px;margin-bottom:8px">✨</div><div>回收站为空</div></div>';
+    const emptyDiv = createSafeElement('div', { className: 'trash-empty' }, [
+      createSafeElement('div', { style: 'font-size:36px;margin-bottom:8px' }, ['✨']),
+      createSafeElement('div', {}, ['回收站为空'])
+    ]);
+    el.appendChild(emptyDiv);
     return;
   }
-  el.innerHTML = `<div style="padding:8px 10px 4px;display:flex;justify-content:flex-end">
-    <button onclick="emptyTrash()" style="background:#fee2e2;color:#ef4444;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">清空回收站</button>
-  </div>` +
-  trash.map(p => `
-    <div class="trash-item">
-      <div class="trash-name">${p.name}</div>
-      <div class="trash-meta">删除于 ${p._deletedAt||'—'} · ${statusLabel(p.status)} · ${p.progress}%</div>
-      <div class="trash-actions">
-        <button class="tbtn tbtn-restore" onclick="restoreFromTrash('${p.id}')">↩ 恢复</button>
-        <button class="tbtn tbtn-purge" onclick="purgeFromTrash('${p.id}')">× 彻底删除</button>
-      </div>
-    </div>`).join('');
+  
+  // 清空按钮行
+  const btnRow = createSafeElement('div', {
+    style: 'padding:8px 10px 4px;display:flex;justify-content:flex-end'
+  });
+  const emptyBtn = createSafeElement('button', {
+    style: 'background:#fee2e2;color:#ef4444;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer'
+  }, ['清空回收站']);
+  emptyBtn.addEventListener('click', emptyTrash);
+  btnRow.appendChild(emptyBtn);
+  el.appendChild(btnRow);
+  
+  // 回收站项目列表
+  trash.forEach(p => {
+    const item = createSafeElement('div', { className: 'trash-item' });
+    
+    const nameDiv = createSafeElement('div', { className: 'trash-name' }, [p.name]);
+    
+    const metaText = '删除于 ' + (p._deletedAt || '—') + ' · ' + statusLabel(p.status) + ' · ' + p.progress + '%';
+    const metaDiv = createSafeElement('div', { className: 'trash-meta' }, [metaText]);
+    
+    const actionsDiv = createSafeElement('div', { className: 'trash-actions' });
+    
+    const restoreBtn = createSafeElement('button', {
+      className: 'tbtn tbtn-restore'
+    }, ['↩ 恢复']);
+    restoreBtn.addEventListener('click', () => restoreFromTrash(p.id));
+    
+    const purgeBtn = createSafeElement('button', {
+      className: 'tbtn tbtn-purge'
+    }, ['× 彻底删除']);
+    purgeBtn.addEventListener('click', () => purgeFromTrash(p.id));
+    
+    actionsDiv.appendChild(restoreBtn);
+    actionsDiv.appendChild(purgeBtn);
+    
+    item.appendChild(nameDiv);
+    item.appendChild(metaDiv);
+    item.appendChild(actionsDiv);
+    
+    el.appendChild(item);
+  });
 }
 
 let _panelTab = 'projects';
