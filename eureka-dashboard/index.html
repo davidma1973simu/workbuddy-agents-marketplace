@@ -1135,30 +1135,66 @@ function renderDashboard(p) {
 }
 
 function htmlOverview(p) {
-  return `<div class="sc"><div class="sc-hd">
-    <div class="sc-title">🎯 ${p.name}</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="status-badge ${statusCls(p.status)}">${statusLabel(p.status)}</span>
-      <span style="font-size:13px;color:#64748b;font-weight:600">${p.progress}% 完成</span>
-    </div>
-  </div><div class="sc-body">
-    <div class="overview-grid">
-      <div class="overview-info">
-        <div class="overview-brief">${p.brief||''}</div>
-        <div class="tag-row">
-          <span class="tag tag-purple">👤 ${p.targetUser||''}</span>
-          <span class="tag tag-green">📅 创建 ${p.createdAt||''}</span>
-          <span class="tag tag-yellow">🔄 更新 ${p.updatedAt||''}</span>
-        </div>
-        <div class="overview-btns">
-          <button class="ob ob-primary" onclick="openEditor('${p.id}')">✏️ 编辑项目</button>
-          <button class="ob ob-secondary" onclick="exportPDF('${p.id}')">📄 导出报告</button>
-          <button class="ob ob-secondary" onclick="exportMD('${p.id}')">📝 复制 MD</button>
-          <button class="ob ob-danger" onclick="moveToTrash('${p.id}')">🗑️ 移入回收站</button>
-        </div>
-      </div>
-    </div>
-  </div></div>`;
+  // 使用 DOM 创建避免 XSS
+  const container = createSafeElement('div', { className: 'sc' });
+  
+  // Header
+  const header = createSafeElement('div', { className: 'sc-hd' });
+  const title = createSafeElement('div', { className: 'sc-title' }, ['🎯 ' + p.name]);
+  const statusDiv = createSafeElement('div', { style: 'display:flex;gap:8px;align-items:center' });
+  const statusBadge = createSafeElement('span', { 
+    className: 'status-badge ' + statusCls(p.status) 
+  }, [statusLabel(p.status)]);
+  const progressSpan = createSafeElement('span', { 
+    style: 'font-size:13px;color:#64748b;font-weight:600' 
+  }, [p.progress + '% 完成']);
+  statusDiv.appendChild(statusBadge);
+  statusDiv.appendChild(progressSpan);
+  header.appendChild(title);
+  header.appendChild(statusDiv);
+  
+  // Body
+  const body = createSafeElement('div', { className: 'sc-body' });
+  const grid = createSafeElement('div', { className: 'overview-grid' });
+  const info = createSafeElement('div', { className: 'overview-info' });
+  
+  const brief = createSafeElement('div', { className: 'overview-brief' }, [p.brief || '']);
+  
+  const tagRow = createSafeElement('div', { className: 'tag-row' });
+  const tagUser = createSafeElement('span', { className: 'tag tag-purple' }, ['👤 ' + (p.targetUser || '')]);
+  const tagCreated = createSafeElement('span', { className: 'tag tag-green' }, ['📅 创建 ' + (p.createdAt || '')]);
+  const tagUpdated = createSafeElement('span', { className: 'tag tag-yellow' }, ['🔄 更新 ' + (p.updatedAt || '')]);
+  tagRow.appendChild(tagUser);
+  tagRow.appendChild(tagCreated);
+  tagRow.appendChild(tagUpdated);
+  
+  const btnRow = createSafeElement('div', { className: 'overview-btns' });
+  const btnEdit = createSafeElement('button', { className: 'ob ob-primary' }, ['✏️ 编辑项目']);
+  btnEdit.addEventListener('click', () => openEditor(p.id));
+  const btnPDF = createSafeElement('button', { className: 'ob ob-secondary' }, ['📄 导出报告']);
+  btnPDF.addEventListener('click', () => exportPDF(p.id));
+  const btnMD = createSafeElement('button', { className: 'ob ob-secondary' }, ['📝 复制 MD']);
+  btnMD.addEventListener('click', () => exportMD(p.id));
+  const btnTrash = createSafeElement('button', { className: 'ob ob-danger' }, ['🗑️ 移入回收站']);
+  btnTrash.addEventListener('click', () => moveToTrash(p.id));
+  btnRow.appendChild(btnEdit);
+  btnRow.appendChild(btnPDF);
+  btnRow.appendChild(btnMD);
+  btnRow.appendChild(btnTrash);
+  
+  info.appendChild(brief);
+  info.appendChild(tagRow);
+  info.appendChild(btnRow);
+  grid.appendChild(info);
+  body.appendChild(grid);
+  
+  container.appendChild(header);
+  container.appendChild(body);
+  
+  // 返回 HTML 字符串以保持兼容性
+  const wrapper = createSafeElement('div');
+  wrapper.appendChild(container);
+  return wrapper.innerHTML;
 }
 
 // ── 阶段进度条（合并进度条+甘特概念）──
@@ -1282,17 +1318,36 @@ function htmlProjectBrief(p) {
 
 // ── HMW 创新机遇 ──
 function htmlHMW(p) {
-  const hmwList = p.inspire.hmw||[];
-  return `<div class="sc"><div class="sc-hd"><div class="sc-title">💡 Inspire · 创新机遇 HMW</div><span style="font-size:12px;color:#94a3b8">How Might We · ${hmwList.length} 个设计机遇</span></div>
-  <div class="sc-body">
-    <div class="hmw-list">
-      ${hmwList.map(h=>`
-        <div class="hmw-item">
-          <span class="hmw-cat">${h.category}</span>
-          <div class="hmw-text">${h.statement}</div>
-        </div>`).join('')}
-    </div>
-  </div></div>`;
+  const hmwList = p.inspire.hmw || [];
+  
+  const container = createSafeElement('div', { className: 'sc' });
+  
+  const header = createSafeElement('div', { className: 'sc-hd' });
+  const title = createSafeElement('div', { className: 'sc-title' }, ['💡 Inspire · 创新机遇 HMW']);
+  const count = createSafeElement('span', { style: 'font-size:12px;color:#94a3b8' }, 
+    ['How Might We · ' + hmwList.length + ' 个设计机遇']);
+  header.appendChild(title);
+  header.appendChild(count);
+  
+  const body = createSafeElement('div', { className: 'sc-body' });
+  const list = createSafeElement('div', { className: 'hmw-list' });
+  
+  hmwList.forEach(h => {
+    const item = createSafeElement('div', { className: 'hmw-item' });
+    const cat = createSafeElement('span', { className: 'hmw-cat' }, [h.category]);
+    const text = createSafeElement('div', { className: 'hmw-text' }, [h.statement]);
+    item.appendChild(cat);
+    item.appendChild(text);
+    list.appendChild(item);
+  });
+  
+  body.appendChild(list);
+  container.appendChild(header);
+  container.appendChild(body);
+  
+  const wrapper = createSafeElement('div');
+  wrapper.appendChild(container);
+  return wrapper.innerHTML;
 }
 
 // ── Shape 概念方案（全局+功能特性）──
@@ -1446,19 +1501,54 @@ function htmlPOV(p) {
 }
 
 function htmlPersonas(p) {
-  return `<div class="sc"><div class="sc-hd"><div class="sc-title">👤 Reveal · 用户画像</div><span style="font-size:12px;color:#94a3b8">${p.reveal.personas.length} 个画像</span></div>
-  <div class="sc-body"><div class="persona-grid">
-    ${p.reveal.personas.map(pe=>`
-      <div class="persona-card">
-        <div class="persona-header">
-          <div class="persona-avatar">${pe.emoji}</div>
-          <div><div class="persona-name">${pe.name}</div><div class="persona-role">${pe.role}</div></div>
-        </div>
-        <div class="persona-tags">${pe.tags.map(t=>`<span class="p-tag">${t}</span>`).join('')}</div>
-        <div class="persona-quote">💬 ${pe.quote}</div>
-        <div class="persona-pain">⚠️ ${pe.pain}</div>
-      </div>`).join('')}
-  </div></div></div>`;
+  const container = createSafeElement('div', { className: 'sc' });
+  
+  const header = createSafeElement('div', { className: 'sc-hd' });
+  const title = createSafeElement('div', { className: 'sc-title' }, ['👤 Reveal · 用户画像']);
+  const count = createSafeElement('span', { style: 'font-size:12px;color:#94a3b8' }, 
+    [p.reveal.personas.length + ' 个画像']);
+  header.appendChild(title);
+  header.appendChild(count);
+  
+  const body = createSafeElement('div', { className: 'sc-body' });
+  const grid = createSafeElement('div', { className: 'persona-grid' });
+  
+  p.reveal.personas.forEach(pe => {
+    const card = createSafeElement('div', { className: 'persona-card' });
+    
+    const headerRow = createSafeElement('div', { className: 'persona-header' });
+    const avatar = createSafeElement('div', { className: 'persona-avatar' }, [pe.emoji]);
+    const info = createSafeElement('div');
+    const name = createSafeElement('div', { className: 'persona-name' }, [pe.name]);
+    const role = createSafeElement('div', { className: 'persona-role' }, [pe.role]);
+    info.appendChild(name);
+    info.appendChild(role);
+    headerRow.appendChild(avatar);
+    headerRow.appendChild(info);
+    
+    const tags = createSafeElement('div', { className: 'persona-tags' });
+    (pe.tags || []).forEach(t => {
+      const tag = createSafeElement('span', { className: 'p-tag' }, [t]);
+      tags.appendChild(tag);
+    });
+    
+    const quote = createSafeElement('div', { className: 'persona-quote' }, ['💬 ' + pe.quote]);
+    const pain = createSafeElement('div', { className: 'persona-pain' }, ['⚠️ ' + pe.pain]);
+    
+    card.appendChild(headerRow);
+    card.appendChild(tags);
+    card.appendChild(quote);
+    card.appendChild(pain);
+    grid.appendChild(card);
+  });
+  
+  body.appendChild(grid);
+  container.appendChild(header);
+  container.appendChild(body);
+  
+  const wrapper = createSafeElement('div');
+  wrapper.appendChild(container);
+  return wrapper.innerHTML;
 }
 
 function htmlIdeas(p) {
