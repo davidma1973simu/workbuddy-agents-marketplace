@@ -5504,9 +5504,15 @@ function closeTplPreview() {
 }
 
 function openWxPayQR(id) {
-  // 替换为你的真实微信收款链接或二维码
-  showToast('💬 请添加微信 eureka_support 完成购买');
-  // 后续可替换为：window.open('https://your-wechat-pay-link', '_blank')
+  const tpl = MARKET_TEMPLATES.find(t => t.id === id);
+  const name = tpl ? tpl.name : '模板';
+  // 复制微信号到剪贴板
+  navigator.clipboard && navigator.clipboard.writeText('sim4wisdom').catch(()=>{});
+  showToast('💬 微信号已复制：sim4wisdom，备注「' + name + '」');
+  // 同时打开微信联系页（移动端可直接跳转）
+  setTimeout(() => {
+    window.open('https://work.weixin.qq.com/kfid/sim4wisdom', '_blank');
+  }, 800);
 }
 
 // ESC 关闭
