@@ -466,6 +466,71 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 
 @media(max-width:1100px){.main{grid-template-columns:1fr}.panel-left{max-height:400px;position:static}}
 @media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.radar-grid,.stage-out-grid,.po-grid{grid-template-columns:1fr}.feature-grid,.brief-grid,.test-grid,.test-bottom-grid{grid-template-columns:1fr}}
+
+/* ── MARKET BUTTON ── */
+.btn-market{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;padding:9px 18px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap;box-shadow:0 2px 8px rgba(245,158,11,.4)}
+.btn-market:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,.5)}
+
+/* ── MARKET OVERLAY ── */
+.market-overlay{position:fixed;inset:0;background:rgba(15,23,42,.65);backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:.3s}
+.market-overlay.open{opacity:1;pointer-events:all}
+.market-modal{background:#fff;border-radius:24px;width:100%;max-width:1100px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.25);overflow:hidden;transform:translateY(20px);transition:.3s}
+.market-overlay.open .market-modal{transform:translateY(0)}
+.market-hd{background:linear-gradient(135deg,#667eea,#764ba2);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.market-hd-left h2{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px}
+.market-hd-left p{font-size:13px;color:rgba(255,255,255,.75)}
+.market-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.market-close:hover{background:rgba(255,255,255,.35)}
+.market-tabs{display:flex;gap:0;padding:0 32px;background:#f8faff;border-bottom:1px solid #e2e8f0;flex-shrink:0}
+.market-tab{padding:14px 20px;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}
+.market-tab.active{color:#667eea;border-bottom-color:#667eea}
+.market-body{flex:1;overflow-y:auto;padding:24px 32px}
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.market-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.market-grid{grid-template-columns:1fr}}
+
+/* ── TEMPLATE CARD ── */
+.tpl-card{border:1.5px solid #e2e8f0;border-radius:16px;overflow:hidden;transition:.25s;cursor:default;display:flex;flex-direction:column}
+.tpl-card:hover{border-color:#a5b4fc;box-shadow:0 6px 24px rgba(102,126,234,.15);transform:translateY(-2px)}
+.tpl-cover{height:120px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
+.tpl-badge{position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.badge-free{background:#dcfce7;color:#16a34a}
+.badge-pro{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#b45309}
+.badge-hot{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#b91c1c}
+.tpl-info{padding:16px;flex:1;display:flex;flex-direction:column}
+.tpl-name{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.tpl-desc{font-size:12px;color:#64748b;line-height:1.6;flex:1;margin-bottom:12px}
+.tpl-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tpl-category{font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;background:#f0f4ff;color:#4f46e5}
+.tpl-uses{font-size:11px;color:#94a3b8}
+.tpl-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tpl-price{font-size:18px;font-weight:800;color:#1e293b}
+.tpl-price.free-price{color:#16a34a;font-size:14px}
+.tpl-price del{font-size:12px;color:#94a3b8;font-weight:400;margin-left:4px}
+.btn-import{background:#667eea;color:#fff;border:none;padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-import:hover{background:#5a6fd6}
+.btn-buy{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-buy:hover{filter:brightness(1.1)}
+
+/* ── MARKET BANNER ── */
+.market-banner{background:linear-gradient(135deg,#f0f4ff,#fef3c7);border-radius:14px;padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #e0e7ff}
+.market-banner-text h3{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:4px}
+.market-banner-text p{font-size:13px;color:#64748b}
+.market-banner-badge{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+
+/* ── TEMPLATE DETAIL (preview) ── */
+.tpl-preview{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:2100;align-items:center;justify-content:center;padding:20px}
+.tpl-preview.open{display:flex}
+.tpl-preview-box{background:#fff;border-radius:20px;max-width:700px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.3)}
+.tpl-preview-hd{padding:24px 28px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.tpl-preview-hd h3{font-size:18px;font-weight:800;color:#1e293b}
+.tpl-preview-body{padding:20px 28px 28px}
+.tpl-section{margin-bottom:18px}
+.tpl-section-title{font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.tpl-section-content{font-size:13px;color:#374151;line-height:1.75}
+.tpl-checklist{list-style:none;padding:0}
+.tpl-checklist li{display:flex;gap:8px;padding:6px 0;font-size:13px;color:#374151;border-bottom:1px solid #f8faff}
+.tpl-checklist li::before{content:"✓";color:#667eea;font-weight:700;flex-shrink:0}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
@@ -478,6 +543,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <span class="nav-brand" style="font-size:18px;white-space:nowrap">📊 Eureka 项目库</span>
   </div>
   <div class="nav-actions">
+    <button class="btn-market" onclick="openMarket()" title="模板市场 - 创新方法模板">🛍️ 模板市场</button>
     <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="产品手册">📖 产品手册</a>
     <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="Persona Lab 虚拟人市场">🎭 Persona Lab</a>
     <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入 Persona Lab 角色" style="white-space:nowrap">📥 导入角色</button>
@@ -5043,6 +5109,412 @@ const SyncUI = {
 // 页面加载完成后初始化同步UI
 document.addEventListener('DOMContentLoaded', () => {
   SyncUI.init();
+});
+</script>
+
+<!-- ══════════════════════════════════════════
+     模板市场 OVERLAY
+══════════════════════════════════════════ -->
+<div class="market-overlay" id="marketOverlay" onclick="closeMarketOnBg(event)">
+  <div class="market-modal">
+    <div class="market-hd">
+      <div class="market-hd-left">
+        <h2>🛍️ 创新方法模板市场</h2>
+        <p>精选创新框架模板，一键导入，开箱即用</p>
+      </div>
+      <button class="market-close" onclick="closeMarket()">✕</button>
+    </div>
+    <div class="market-tabs">
+      <div class="market-tab active" onclick="switchMarketTab(this,'all')">全部模板</div>
+      <div class="market-tab" onclick="switchMarketTab(this,'research')">用户研究</div>
+      <div class="market-tab" onclick="switchMarketTab(this,'strategy')">战略分析</div>
+      <div class="market-tab" onclick="switchMarketTab(this,'validation')">产品验证</div>
+    </div>
+    <div class="market-body">
+      <div class="market-banner">
+        <div class="market-banner-text">
+          <h3>🎁 免费模板每周更新</h3>
+          <p>Pro 版解锁全部付费模板 + AI 自动填充 + 团队协作</p>
+        </div>
+        <span class="market-banner-badge">Pro 即将上线</span>
+      </div>
+      <div class="market-grid" id="marketGrid">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 模板预览弹窗 -->
+<div class="tpl-preview" id="tplPreview">
+  <div class="tpl-preview-box" id="tplPreviewBox">
+    <!-- 由 JS 渲染 -->
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// 模板数据
+// ══════════════════════════════════
+const MARKET_TEMPLATES = [
+  {
+    id: 'user-interview',
+    name: '用户访谈计划模板',
+    desc: '系统化用户访谈框架，涵盖招募标准、问题设计、分析方法，帮你高效挖掘真实用户需求。',
+    emoji: '🎤',
+    bg: 'linear-gradient(135deg,#f0f4ff,#e0e7ff)',
+    category: 'research',
+    categoryLabel: '用户研究',
+    uses: '1.2k 次使用',
+    price: 0,
+    badge: 'free',
+    badgeText: '免费',
+    detail: {
+      overview: '一套完整的用户访谈操作手册，从招募到报告，5步完成用户洞察。',
+      checklist: [
+        '用户招募筛选标准（5大维度）',
+        '开场破冰话术模板',
+        '核心问题库（30+问题）',
+        '追问技巧与反应策略',
+        '访谈记录结构化模板',
+        '亲和图分析工作表',
+      ],
+      stages: ['Reveal 洞察'],
+    },
+    projectData: {
+      name: '用户访谈计划',
+      targetUser: '产品目标用户',
+      brief: '通过结构化访谈，深入理解用户真实需求、行为模式与痛点。',
+      status: 'draft',
+      tags: ['用户研究', '定性调研', '需求洞察'],
+    }
+  },
+  {
+    id: 'competitor-analysis',
+    name: '竞品分析雷达模板',
+    desc: '多维度竞品对标框架，涵盖功能、体验、商业模式、增长策略，快速看清竞争格局。',
+    emoji: '🔭',
+    bg: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+    category: 'strategy',
+    categoryLabel: '战略分析',
+    uses: '863 次使用',
+    price: 0,
+    badge: 'free',
+    badgeText: '免费',
+    detail: {
+      overview: '系统性竞品分析框架，帮你快速建立竞争认知，找到差异化机会窗口。',
+      checklist: [
+        '竞品选取标准与分层（直接/间接/潜在）',
+        '10维评估矩阵（功能/体验/价格/增长等）',
+        'MAP 商业价值雷达分析',
+        '竞品用户评论挖掘模板',
+        '差异化机会点提炼框架',
+        '竞争策略推导工作表',
+      ],
+      stages: ['Reveal 洞察', 'Shape 方案'],
+    },
+    projectData: {
+      name: '竞品分析',
+      targetUser: '竞品目标用户群',
+      brief: '系统分析竞争格局，识别市场空白与差异化机会，为产品方向提供依据。',
+      status: 'draft',
+      tags: ['竞品分析', '战略分析', '差异化'],
+    }
+  },
+  {
+    id: 'pmf-validation',
+    name: 'PMF 验证工作坊模板',
+    desc: '产品市场契合度验证完整套件，包含假设地图、最小验证实验设计、数据解读标准。',
+    emoji: '🎯',
+    bg: 'linear-gradient(135deg,#fef3c7,#fde68a)',
+    category: 'validation',
+    categoryLabel: '产品验证',
+    uses: '2.1k 次使用',
+    price: 2900,
+    originalPrice: 4900,
+    badge: 'hot',
+    badgeText: '🔥 热门',
+    detail: {
+      overview: '从 0 到 PMF 的系统验证框架，帮你用最小成本找到真正的产品市场契合点。',
+      checklist: [
+        '核心假设识别与优先级矩阵',
+        '5种最小验证实验设计方案',
+        'PMF 信号识别标准（定量+定性）',
+        '用户留存分析模板',
+        '40% 测试法操作指南',
+        '迭代决策框架（持续/转向/放弃）',
+      ],
+      stages: ['Exam 验证'],
+    },
+    buyUrl: 'https://work.weixin.qq.com/kfid/kfc_eureka_pmf', // 替换为真实链接
+    projectData: {
+      name: 'PMF 验证项目',
+      targetUser: '早期用户',
+      brief: '通过系统性实验验证产品市场契合度，找到可持续增长的产品方向。',
+      status: 'draft',
+      tags: ['PMF', '产品验证', '增长'],
+    }
+  },
+  {
+    id: 'jobs-to-be-done',
+    name: 'JTBD 任务驱动分析模板',
+    desc: '基于「用户雇佣产品完成任务」的深度需求分析框架，揭示真实购买动机与决策路径。',
+    emoji: '🔑',
+    bg: 'linear-gradient(135deg,#fdf2f8,#fce7f3)',
+    category: 'research',
+    categoryLabel: '用户研究',
+    uses: '745 次使用',
+    price: 1900,
+    originalPrice: 2900,
+    badge: 'pro',
+    badgeText: 'Pro',
+    detail: {
+      overview: 'JTBD 是硅谷顶级产品团队的核心方法论，帮你突破表面需求，发现真正的购买驱动力。',
+      checklist: [
+        'Jobs 识别与分层（功能/情感/社会任务）',
+        '推拉力分析四象限模板',
+        '时间轴访谈法（Timeline Interview）指南',
+        '任务优先级矩阵',
+        '机会评分公式（Outcome-Driven Innovation）',
+        '创新方向推导工作表',
+      ],
+      stages: ['Reveal 洞察', 'Inspire 创意'],
+    },
+    buyUrl: 'https://work.weixin.qq.com/kfid/kfc_eureka_jtbd',
+    projectData: {
+      name: 'JTBD 需求分析',
+      targetUser: '目标用户群',
+      brief: '基于任务驱动理论，深度挖掘用户真实需求与购买动机。',
+      status: 'draft',
+      tags: ['JTBD', '需求分析', '用户动机'],
+    }
+  },
+  {
+    id: 'lean-canvas',
+    name: '精益画布 × 商业模式全套模板',
+    desc: '融合精益创业与商业模式画布的完整创业分析套件，覆盖从问题到盈利的全链路设计。',
+    emoji: '📐',
+    bg: 'linear-gradient(135deg,#f0f4ff,#ede9fe)',
+    category: 'strategy',
+    categoryLabel: '战略分析',
+    uses: '1.8k 次使用',
+    price: 3900,
+    originalPrice: 5900,
+    badge: 'pro',
+    badgeText: 'Pro',
+    detail: {
+      overview: '精益画布 + 商业模式画布双框架融合，一次性完成核心假设定义与商业逻辑设计。',
+      checklist: [
+        '精益画布 9 格完整填写指南',
+        '问题-解决方案契合度验证',
+        '独特价值主张（UVP）写作公式',
+        '不公平优势识别方法',
+        '收入模式设计与定价策略模板',
+        '关键指标（Pirate Metrics）追踪体系',
+        '商业模式画布 AI 自动填充（Pro）',
+      ],
+      stages: ['Shape 方案', 'Exam 验证'],
+    },
+    buyUrl: 'https://work.weixin.qq.com/kfid/kfc_eureka_lean',
+    projectData: {
+      name: '精益创业分析',
+      targetUser: '目标市场用户',
+      brief: '通过精益画布系统性定义核心假设，设计可持续商业模式。',
+      status: 'draft',
+      tags: ['精益画布', '商业模式', '创业'],
+    }
+  },
+];
+
+// ══════════════════════════════════
+// 市场 UI 逻辑
+// ══════════════════════════════════
+let currentMarketTab = 'all';
+
+function openMarket() {
+  const overlay = document.getElementById('marketOverlay');
+  overlay.classList.add('open');
+  renderMarketGrid(currentMarketTab);
+}
+
+function closeMarket() {
+  document.getElementById('marketOverlay').classList.remove('open');
+}
+
+function closeMarketOnBg(e) {
+  if (e.target === document.getElementById('marketOverlay')) closeMarket();
+}
+
+function switchMarketTab(el, tab) {
+  document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentMarketTab = tab;
+  renderMarketGrid(tab);
+}
+
+function renderMarketGrid(tab) {
+  const grid = document.getElementById('marketGrid');
+  const list = tab === 'all' ? MARKET_TEMPLATES : MARKET_TEMPLATES.filter(t => t.category === tab);
+  grid.innerHTML = list.map(t => `
+    <div class="tpl-card">
+      <div class="tpl-cover" style="background:${t.bg}">
+        <span>${t.emoji}</span>
+        <span class="tpl-badge badge-${t.badge}">${t.badgeText}</span>
+      </div>
+      <div class="tpl-info">
+        <div class="tpl-name">${t.name}</div>
+        <div class="tpl-desc">${t.desc}</div>
+        <div class="tpl-meta">
+          <span class="tpl-category">${t.categoryLabel}</span>
+          <span class="tpl-uses">👥 ${t.uses}</span>
+        </div>
+        <div class="tpl-footer">
+          ${t.price === 0
+            ? '<span class="tpl-price free-price">免费</span>'
+            : `<span class="tpl-price">¥${(t.price/100).toFixed(0)} <del>¥${(t.originalPrice/100).toFixed(0)}</del></span>`
+          }
+          <div style="display:flex;gap:6px">
+            <button class="btn-import" style="background:#f1f5f9;color:#475569" onclick="previewTemplate('${t.id}')">预览</button>
+            ${t.price === 0
+              ? `<button class="btn-import" onclick="importTemplate('${t.id}')">导入</button>`
+              : `<button class="btn-buy" onclick="buyTemplate('${t.id}')">获取 →</button>`
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function importTemplate(id) {
+  const tpl = MARKET_TEMPLATES.find(t => t.id === id);
+  if (!tpl) return;
+  const pd = tpl.projectData;
+  const newId = 'proj_' + Date.now();
+  const proj = {
+    id: newId,
+    name: pd.name,
+    targetUser: pd.targetUser,
+    brief: pd.brief,
+    status: pd.status,
+    tags: pd.tags,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    fromTemplate: id,
+    reveal: {}, inspire: {}, shape: {}, exam: {}
+  };
+  const existing = JSON.parse(localStorage.getItem('eureka_projects_v3') || '[]');
+  existing.unshift(proj);
+  localStorage.setItem('eureka_projects_v3', JSON.stringify(existing));
+  if (typeof renderProjectList === 'function') renderProjectList();
+  closeMarket();
+  showToast('✅ 模板已导入，快去填写吧！');
+  setTimeout(() => {
+    if (typeof selectProject === 'function') selectProject(newId);
+  }, 400);
+}
+
+function buyTemplate(id) {
+  const tpl = MARKET_TEMPLATES.find(t => t.id === id);
+  if (!tpl) return;
+  // 打开购买浮层
+  showBuyModal(tpl);
+}
+
+function showBuyModal(tpl) {
+  const box = document.getElementById('tplPreviewBox');
+  box.innerHTML = `
+    <div class="tpl-preview-hd">
+      <div>
+        <div style="font-size:32px;margin-bottom:8px">${tpl.emoji}</div>
+        <h3>${tpl.name}</h3>
+        <div style="font-size:13px;color:#64748b;margin-top:4px">${tpl.categoryLabel}</div>
+      </div>
+      <button class="market-close" style="background:#f1f5f9;color:#64748b" onclick="closeTplPreview()">✕</button>
+    </div>
+    <div class="tpl-preview-body">
+      <div class="tpl-section">
+        <div class="tpl-section-title">模板包含</div>
+        <ul class="tpl-checklist">
+          ${tpl.detail.checklist.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="tpl-section">
+        <div class="tpl-section-title">适用阶段</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${tpl.detail.stages.map(s => `<span class="tpl-category">${s}</span>`).join('')}
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,#f0f4ff,#fef3c7);border-radius:14px;padding:20px;margin-top:8px;text-align:center">
+        <div style="font-size:32px;font-weight:800;color:#1e293b;margin-bottom:4px">¥${(tpl.price/100).toFixed(0)} <span style="font-size:14px;color:#94a3b8;font-weight:400;text-decoration:line-through">¥${(tpl.originalPrice/100).toFixed(0)}</span></div>
+        <div style="font-size:12px;color:#64748b;margin-bottom:16px">买断制，终身有效 · 含后续更新</div>
+        <button class="btn-buy" style="padding:12px 36px;font-size:15px;border-radius:12px" onclick="openWxPayQR('${tpl.id}')">💬 微信联系购买</button>
+        <div style="font-size:11px;color:#94a3b8;margin-top:10px">付款后发送订单截图至客服，24小时内发放模板文件</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('tplPreview').classList.add('open');
+}
+
+function previewTemplate(id) {
+  const tpl = MARKET_TEMPLATES.find(t => t.id === id);
+  if (!tpl) return;
+  const box = document.getElementById('tplPreviewBox');
+  box.innerHTML = `
+    <div class="tpl-preview-hd">
+      <div>
+        <div style="font-size:32px;margin-bottom:8px">${tpl.emoji}</div>
+        <h3>${tpl.name}</h3>
+        <div style="font-size:13px;color:#64748b;margin-top:4px">${tpl.categoryLabel} · ${tpl.uses}</div>
+      </div>
+      <button class="market-close" style="background:#f1f5f9;color:#64748b" onclick="closeTplPreview()">✕</button>
+    </div>
+    <div class="tpl-preview-body">
+      <div class="tpl-section">
+        <div class="tpl-section-title">模板简介</div>
+        <div class="tpl-section-content">${tpl.detail.overview}</div>
+      </div>
+      <div class="tpl-section">
+        <div class="tpl-section-title">包含内容</div>
+        <ul class="tpl-checklist">
+          ${tpl.detail.checklist.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="tpl-section">
+        <div class="tpl-section-title">适用阶段</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${tpl.detail.stages.map(s => `<span class="tpl-category">${s}</span>`).join('')}
+        </div>
+      </div>
+      <div style="padding-top:16px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        ${tpl.price === 0
+          ? `<span style="font-size:16px;font-weight:700;color:#16a34a">免费模板</span>
+             <button class="btn-import" style="padding:10px 28px;font-size:14px" onclick="closeTplPreview();importTemplate('${tpl.id}')">立即导入</button>`
+          : `<div><span style="font-size:28px;font-weight:800;color:#1e293b">¥${(tpl.price/100).toFixed(0)}</span><span style="font-size:12px;color:#94a3b8;margin-left:6px;text-decoration:line-through">¥${(tpl.originalPrice/100).toFixed(0)}</span></div>
+             <button class="btn-buy" style="padding:10px 28px;font-size:14px" onclick="closeTplPreview();buyTemplate('${tpl.id}')">获取模板 →</button>`
+        }
+      </div>
+    </div>
+  `;
+  document.getElementById('tplPreview').classList.add('open');
+}
+
+function closeTplPreview() {
+  document.getElementById('tplPreview').classList.remove('open');
+}
+
+function openWxPayQR(id) {
+  // 替换为你的真实微信收款链接或二维码
+  showToast('💬 请添加微信 eureka_support 完成购买');
+  // 后续可替换为：window.open('https://your-wechat-pay-link', '_blank')
+}
+
+// ESC 关闭
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeTplPreview();
+    closeMarket();
+  }
 });
 </script>
 
