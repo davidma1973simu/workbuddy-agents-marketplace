@@ -467,6 +467,148 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 @media(max-width:1100px){.main{grid-template-columns:1fr}.panel-left{max-height:400px;position:static}}
 @media(max-width:768px){.stats-bar{grid-template-columns:repeat(2,1fr)}.radar-grid,.stage-out-grid,.po-grid{grid-template-columns:1fr}.feature-grid,.brief-grid,.test-grid,.test-bottom-grid{grid-template-columns:1fr}}
 
+/* ── MOBILE RESPONSIVE OPTIMIZATIONS ── */
+@media(max-width:768px){
+  /* Top Navigation */
+  .top-nav{height:auto;padding:12px 16px;flex-wrap:wrap;gap:10px}
+  .nav-brand{font-size:16px}
+  .nav-back{font-size:12px;padding:5px 12px;margin-right:4px}
+  .nav-actions{gap:8px;width:100%;justify-content:flex-start;margin-top:8px}
+  .btn-new,.btn-ghost{font-size:12px;padding:7px 14px}
+  
+  /* Stats Bar */
+  .stats-bar{grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}
+  .stat-card{padding:14px 16px;gap:12px}
+  .stat-icon{width:40px;height:40px;font-size:18px}
+  .stat-num{font-size:22px}
+  .stat-label{font-size:12px}
+  
+  /* Main Layout */
+  .main{padding:12px 16px 24px;gap:12px}
+  .panel-left{border-radius:16px;max-height:350px}
+  .panel-hd{padding:16px}
+  .panel-title{font-size:15px}
+  
+  /* Section Cards */
+  .sc{border-radius:16px}
+  .sc-hd{padding:14px 18px 12px}
+  .sc-title{font-size:14px}
+  .sc-body{padding:16px 18px}
+  
+  /* Overview */
+  .overview-grid{flex-direction:column;gap:16px}
+  .ring-row{justify-content:center;gap:16px}
+  .ring-wrap{width:48px;height:48px}
+  .ring-val{font-size:12px}
+  .overview-btns{flex-wrap:wrap;gap:6px}
+  .ob{padding:6px 12px;font-size:12px}
+  
+  /* Stage Outputs */
+  .stage-out-grid{grid-template-columns:1fr;gap:10px}
+  .stage-out-col{padding:12px 14px}
+  
+  /* Personas */
+  .persona-grid{grid-template-columns:1fr;gap:12px}
+  .persona-card{padding:14px}
+  .persona-avatar{width:40px;height:40px;font-size:18px}
+  .persona-name{font-size:14px}
+  
+  /* Journey Map */
+  .journey-scroll{gap:6px;padding-bottom:8px}
+  .jm-card{flex:0 0 130px;padding:10px}
+  
+  /* Story Grid */
+  .story-grid{grid-template-columns:1fr;gap:10px}
+  
+  /* Elevator Grid */
+  .elevator-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .ev-item{padding:12px}
+  .ev-icon{font-size:18px}
+  
+  /* Business Canvas */
+  .canvas-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:auto;gap:6px}
+  .cv{padding:10px}
+  .cv-value{grid-column:1/3;grid-row:auto}
+  .cv-partners{grid-column:1;grid-row:auto}
+  .cv-customers{grid-column:2;grid-row:auto}
+  .cv-cost{grid-column:1/3;grid-row:auto}
+  .cv-revenue{grid-column:1/3;grid-row:auto}
+  
+  /* Iteration Grid */
+  .iter-grid{grid-template-columns:1fr;gap:12px}
+  .iter-card{padding:14px}
+  
+  /* POV */
+  .pov-three{grid-template-columns:1fr;gap:10px}
+  .pov-card{padding:12px}
+  
+  /* Idea Table */
+  .idea-table{font-size:12px}
+  .idea-table th,.idea-table td{padding:8px}
+  
+  /* Radar Grid */
+  .radar-grid{grid-template-columns:1fr;gap:16px}
+  .radar-scores{gap:16px}
+  .rs-val{font-size:20px}
+  
+  /* Market Modal */
+  .market-modal{border-radius:16px;max-height:95vh}
+  .market-hd{padding:16px 20px}
+  .market-hd-left h2{font-size:18px}
+  .market-tabs{padding:0 16px;overflow-x:auto}
+  .market-tab{padding:12px 16px;font-size:12px}
+  .market-body{padding:16px 20px}
+  
+  /* Template Preview Modal */
+  .tpl-preview-modal{padding:10px}
+  .tpl-preview-content{border-radius:16px;max-height:95vh}
+  .tpl-preview-hd{padding:16px 20px}
+  .tpl-preview-body{padding:16px 20px}
+  
+  /* Editor Panels */
+  .editor-panel{margin:0 10px;border-radius:16px;max-height:95vh}
+  .editor-hd{padding:16px 20px}
+  .editor-body{padding:16px 20px}
+  
+  /* AI Panel */
+  .ai-panel{width:100%;max-width:100%;margin:0 10px;border-radius:16px}
+  .ai-hd{padding:16px 20px}
+  .ai-body{padding:16px 20px}
+  
+  /* Form Elements */
+  .form-input,.form-textarea{padding:10px 14px;font-size:14px}
+  .btn-primary,.btn-secondary{padding:10px 20px;font-size:13px}
+  
+  /* Tags */
+  .tag{font-size:11px;padding:3px 10px}
+  
+  /* Project List */
+  .project-item{padding:12px 14px}
+  .proj-name{font-size:13px}
+  
+  /* Empty States */
+  .empty-state{padding:40px 20px}
+  .empty-state-icon{font-size:48px}
+  .empty-state h3{font-size:16px}
+  
+  /* Toast Notifications */
+  .toast{left:16px;right:16px;transform:none;max-width:none}
+}
+
+@media(max-width:480px){
+  /* Extra small screens */
+  .stats-bar{grid-template-columns:1fr}
+  .elevator-grid{grid-template-columns:1fr}
+  .canvas-grid{grid-template-columns:1fr}
+  .canvas-grid .cv-value,.canvas-grid .cv-partners,.canvas-grid .cv-customers,.canvas-grid .cv-cost,.canvas-grid .cv-revenue{grid-column:1}
+  
+  /* Hide button text on very small screens, show only icons */
+  .nav-actions .btn-text{display:none}
+  .btn-new .btn-icon{display:inline}
+  .nav-actions{gap:6px}
+  .btn-market,.btn-ghost,.btn-new{padding:8px 10px;font-size:14px}
+}
+
 /* ── MARKET BUTTON ── */
 .btn-market{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;padding:9px 18px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap;box-shadow:0 2px 8px rgba(245,158,11,.4)}
 .btn-market:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,.5)}
@@ -543,13 +685,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <span class="nav-brand" style="font-size:18px;white-space:nowrap">📊 Eureka 项目库</span>
   </div>
   <div class="nav-actions">
-    <button class="btn-market" onclick="openMarket()" title="模板市场 - 创新方法模板">🛍️ 模板市场</button>
-    <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="产品手册">📖 产品手册</a>
-    <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="Persona Lab 虚拟人市场">🎭 Persona Lab</a>
-    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入 Persona Lab 角色" style="white-space:nowrap">📥 导入角色</button>
-    <button class="btn-ghost" onclick="openUploadPanel()" title="上传创新文档" style="white-space:nowrap">📂 上传文档</button>
-    <button class="btn-ghost" onclick="openAIConfigPanel()" title="配置 AI API Key" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);white-space:nowrap">⚙️ AI 设置</button>
-    <button class="btn-new" onclick="createNewProject()" style="white-space:nowrap">+ 新建项目</button>
+    <button class="btn-market" onclick="openMarket()" title="模板市场">🛍️ <span class="btn-text">模板市场</span></button>
+    <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="产品手册">📖 <span class="btn-text">手册</span></a>
+    <a href="https://persona-lab.edgeone.dev" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="Persona Lab">🎭 <span class="btn-text">Persona</span></a>
+    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入角色" style="white-space:nowrap">📥 <span class="btn-text">导入</span></button>
+    <button class="btn-ghost" onclick="openUploadPanel()" title="上传文档" style="white-space:nowrap">📂 <span class="btn-text">上传</span></button>
+    <button class="btn-ghost" onclick="openAIConfigPanel()" title="AI 设置" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);white-space:nowrap">⚙️ <span class="btn-text">设置</span></button>
+    <button class="btn-new" onclick="createNewProject()" style="white-space:nowrap"><span class="btn-icon">+</span><span class="btn-text">新建</span></button>
   </div>
 </nav>
 
