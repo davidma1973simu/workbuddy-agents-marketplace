@@ -93,6 +93,15 @@ function toggleTagFilter(cat, tag, checked) {
     selectedTags[cat] = selectedTags[cat].filter(t => t !== tag);
   }
   updateSidebarCreateBtn();
+  
+  // 如果在生成模式且已有生成结果，自动重新生成
+  if (currentMode === 'generate' && allPersonas.length > 0) {
+    // 延迟一点，让用户看到标签变化
+    setTimeout(() => {
+      generateFromTags();
+    }, 300);
+  }
+  
   if (currentMode === 'browse') {
     if (currentBrowseView === 'group') renderBrowseGroupView();
     else renderBrowseCards();
@@ -244,6 +253,16 @@ async function _doGenerateWithAI(theme, bg, assume, tags, cfg, resultEl, btn) {
   ].filter(Boolean).join(' · ');
 
   const systemPrompt = `你是专业的用户研究专家，擅长生成设计思维中的虚拟人物（Persona）。
+
+【核心原则】
+生成的角色必须是「最终价值接收者」——即产品/服务的最终使用者或最终承担结果的人，而不是设计方、研发方或中间环节的角色。
+
+- C端场景：生成终端消费者（车主、患者、家长、学生等）
+- B端场景：生成最终决策/承担结果的人（企业老板、业务负责人），而不是执行层
+- 医疗场景：生成患者或患者家属，而不是医生/护士
+- 汽车场景：生成车主/驾驶员/乘客，而不是产品经理/工程师
+- 企业服务场景：生成面临问题的企业主/高管，而不是采购经理或IT实施人员
+
 请根据用户提供的项目主题和标签，生成一组完整的角色，严格按 JSON 格式输出，不要任何解释文字。`;
 
   const userPrompt = `项目主题：${theme}
@@ -251,24 +270,30 @@ ${bg ? `背景补充：${bg}` : ''}
 ${assume ? `用户假设：${assume}` : ''}
 标签：${tagStr || '无'}
 
+【角色定位要求】
+所有角色必须是「最终价值接收者」：
+- 他们是产品/服务的最终使用者，或最终承担结果的人
+- 不是设计师、产品经理、研发人员、中间商或执行层
+- 他们的痛点来自真实使用场景，而不是工作协同问题
+
 请生成以下 5 类角色（JSON 数组格式），每类各1个：
-1. target_user（目标用户）
-2. extreme_user_heavy（极端用户-重度）
-3. extreme_user_light（极端用户-轻度）
-4. stakeholder（利益相关方）
-5. decision_maker（决策者）
+1. target_user（目标用户）- 最典型的最终使用者
+2. extreme_user_heavy（极端用户-重度）- 高频/深度使用者，需求强烈
+3. extreme_user_light（极端用户-轻度）- 低频/边缘使用者，需求特殊
+4. stakeholder（利益相关方）- 受结果影响的关联方（如患者家属、员工家属）
+5. decision_maker（决策者）- 最终拍板的人（如企业老板、家庭决策者），不是采购执行者
 
 每个角色包含字段：
 {
   "type": "target_user|extreme_user_heavy|extreme_user_light|stakeholder|decision_maker",
   "name": "中文姓名",
   "age": "年龄（如：35岁）",
-  "occupation": "职业",
+  "occupation": "职业/身份",
   "city": "城市",
-  "lifestyle": "生活方式",
-  "explicitGoal": "显性目标",
-  "hiddenNeed": "隐性需求",
-  "corePain": "核心痛点",
+  "lifestyle": "生活方式（描述日常真实场景）",
+  "explicitGoal": "显性目标（想要达成的具体结果）",
+  "hiddenNeed": "隐性需求（深层动机和情感诉求）",
+  "corePain": "核心痛点（在使用/决策过程中的真实困扰）",
   "emotionState": "情绪状态",
   "personality": "性格特点",
   "quote": "金句（第一人称，真实感受，15字以内）",
