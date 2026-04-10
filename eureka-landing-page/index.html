@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eureka · 以用户为中心的价值创新</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:   #667EEA;
+      --purple-d: #4C1D95;
+      --indigo:   #4338CA;
+      --teal:     #0D9488;
+      --orange:   #D97706;
+      --pink:     #EC4899;
+      --dark:     #1E1B4B;
+      --text:     #1e293b;
+      --muted:    #64748b;
+      --bg:       #f8fafc;
+      --card-bg:  #ffffff;
+      --border:   #e2e8f0;
+    }
+
+    /* 深色主题变量 */
+    [data-theme="dark"] {
+      --text:     #E2E8F0;
+      --muted:    #94A3B8;
+      --bg:       #0F0C29;
+      --card-bg:  rgba(255,255,255,.04);
+      --border:   rgba(255,255,255,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 32px 20px 48px;
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    /* 深色主题背景 */
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0F0C29 0%, #1a1050 40%, #24243e 100%);
+    }
+
+    /* 背景星点 - 仅在深色主题显示 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,.10) 1px, transparent 1px);
+      background-size: 48px 48px, 24px 24px;
+      background-position: 0 0, 12px 12px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    [data-theme="dark"] body::before { opacity: 1; }
+
+    /* 主题切换按钮 */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero 区域 ── */
+    .hero {
+      text-align: center;
+      padding: 40px 0 60px;
+    }
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--purple) 0%, #9b59b6 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 20px;
+      box-shadow: 0 12px 40px rgba(102,126,234,.5);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(102,126,234,.1);
+      border: 1px solid rgba(102,126,234,.3);
+      color: var(--purple);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      padding: 6px 16px;
+      border-radius: 99px;
+      margin-bottom: 24px;
+    }
+    [data-theme="dark"] .badge {
+      background: rgba(102,126,234,.18);
+      border-color: rgba(102,126,234,.4);
+      color: #A5B4FC;
+    }
+    .headline {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.01em;
+      margin-bottom: 16px;
+    }
+    .headline .eureka {
+      background: linear-gradient(90deg, var(--purple) 0%, #764ba2 50%, #9b59b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    [data-theme="dark"] .headline .eureka {
+      background: linear-gradient(90deg, #A5B4FC 0%, var(--purple) 50%, #c084fc 100%);
+    }
+    .subtitle {
+      font-size: clamp(16px, 2.2vw, 20px);
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 640px;
+      margin: 0 auto 32px;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--purple), #764ba2);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 30px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(102,126,234,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(102,126,234,.5);
+    }
+
+    /* ── 营销内容区域 ── */
+    .marketing-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      margin-bottom: 48px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .marketing-section {
+      box-shadow: none;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title span {
+      font-size: 28px;
+    }
+    .marketing-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-bottom: 20px;
+    }
+    .marketing-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .value-points {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .value-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .value-point-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .value-point-text {
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+    .value-point-text small {
+      display: block;
+      color: #475569;
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ── 产品卡片区域 ── */
+    .products-section {
+      margin-bottom: 48px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .section-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .section-header p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .card {
+      box-shadow: none;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 20px 20px 0 0;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(0,0,0,.35);
+      background: rgba(255,255,255,.07);
+    }
+    .card-1::before { background: linear-gradient(90deg, #667EEA, #9b59b6); }
+    .card-2::before { background: linear-gradient(90deg, #0D9488, #10B981); }
+    .card-3::before { background: linear-gradient(90deg, #D97706, #F59E0B); }
+    .card-4::before { background: linear-gradient(90deg, #EC4899, #F472B6); }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+    .card-1 .card-icon { background: rgba(102,126,234,.18); }
+    .card-2 .card-icon { background: rgba(13,148,136,.18); }
+    .card-3 .card-icon { background: rgba(217,119,6,.18); }
+    .card-4 .card-icon { background: rgba(236,72,153,.18); }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .card-1 .card-label { color: #4F46E5; }
+    .card-2 .card-label { color: #0F766E; }
+    .card-3 .card-label { color: #B45309; }
+    .card-4 .card-label { color: #BE185D; }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .card-cta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .card-1 .card-cta { color: #4F46E5; }
+    .card-2 .card-cta { color: #0F766E; }
+    .card-3 .card-cta { color: #B45309; }
+    .card-4 .card-cta { color: #BE185D; }
+    .card:hover .card-cta .arrow { transform: translateX(3px); }
+    .arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 12px;
+      transition: transform .18s ease;
+    }
+    .card-1 .arrow { background: rgba(102,126,234,.25); }
+    .card-2 .arrow { background: rgba(13,148,136,.25); }
+    .card-3 .arrow { background: rgba(217,119,6,.25); }
+    .card-4 .arrow { background: rgba(236,72,153,.25); }
+
+    /* ── 留资表单区域 ── */
+    .lead-section {
+      background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08));
+      border: 1px solid rgba(102,126,234,.2);
+      border-radius: 24px;
+      padding: 48px 40px;
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    [data-theme="dark"] .lead-section {
+      background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(118,75,162,.15));
+      border-color: rgba(102,126,234,.3);
+    }
+    .lead-section h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .lead-section > p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+    .lead-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .form-row {
+      display: flex;
+      gap: 16px;
+    }
+    .form-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input::placeholder { color: #94a3b8; }
+    .form-input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(102,126,234,.15);
+    }
+    .form-submit {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--purple), #764ba2);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102,126,234,.4);
+    }
+    .form-submit:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .form-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+    .form-success {
+      display: none;
+      padding: 24px;
+      background: rgba(16,185,129,.15);
+      border: 1px solid rgba(16,185,129,.3);
+      border-radius: 12px;
+      color: #34d399;
+    }
+    .form-success.show { display: block; }
+
+    /* ── 市场活动区域 ── */
+    .events-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      margin-bottom: 48px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+    [data-theme="dark"] .events-section {
+      box-shadow: none;
+    }
+    .events-section h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .events-section > p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .event-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 24px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: background .2s, border-color .2s, box-shadow .2s;
+    }
+    .event-card:hover {
+      background: var(--card-bg);
+      border-color: var(--purple);
+      box-shadow: 0 4px 12px rgba(102,126,234,.1);
+    }
+    .event-date {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--purple), #764ba2);
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .event-date .day {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .event-date .month {
+      font-size: 11px;
+      text-transform: uppercase;
+      opacity: .9;
+      margin-top: 2px;
+    }
+    .event-info { flex: 1; }
+    .event-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .event-meta {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+    }
+    .event-btn {
+      padding: 10px 20px;
+      background: rgba(102,126,234,.2);
+      border: 1px solid rgba(102,126,234,.4);
+      border-radius: 8px;
+      color: #A5B4FC;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .event-btn:hover {
+      background: rgba(102,126,234,.3);
+    }
+    .event-placeholder {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .footer p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .footer-links a {
+      color: #818CF8;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .footer-links a:hover { text-decoration: underline; }
+    
+    /* ── 管理后台入口 ── */
+    .admin-trigger {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      opacity: 0.5;
+      transition: opacity .2s, transform .2s;
+    }
+    .admin-trigger:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    /* ── 管理后台弹窗 ── */
+    .admin-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .admin-modal.show { display: flex; }
+    .admin-panel {
+      background: var(--card-bg);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .admin-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .admin-tab.active {
+      background: rgba(102,126,234,.15);
+      color: var(--purple);
+    }
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .admin-section {
+      display: none;
+    }
+    .admin-section.active { display: block; }
+    
+    /* 留资数据表格 */
+    .leads-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .leads-table th,
+    .leads-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .leads-table th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .leads-table tr:hover {
+      background: var(--bg);
+    }
+    .leads-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    
+    /* 活动编辑表单 */
+    .event-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input,
+    .form-group textarea {
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--purple);
+    }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .admin-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--purple), #764ba2);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .admin-btn:hover {
+      transform: translateY(-2px);
+    }
+    .admin-btn.secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    /* 活动列表（后台） */
+    .admin-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .admin-event-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .admin-event-info {
+      flex: 1;
+    }
+    .admin-event-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .admin-event-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .admin-event-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .admin-event-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .admin-event-btn.edit {
+      background: rgba(102,126,234,.15);
+      color: var(--purple);
+    }
+    .admin-event-btn.delete {
+      background: rgba(239,68,68,.15);
+      color: #ef4444;
+    }
+
+    /* ── 响应式 ── */
+    @media (max-width: 768px) {
+      .cards { grid-template-columns: 1fr; }
+      .value-points { grid-template-columns: 1fr; }
+      .form-row { flex-direction: column; }
+      .marketing-section,
+      .lead-section,
+      .events-section { padding: 32px 24px; }
+      .event-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .event-btn { width: 100%; text-align: center; }
+    }
+
+    /* ── 动画 ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero { animation: fadeUp .6s ease both; }
+    .marketing-section { animation: fadeUp .6s ease .1s both; }
+    .products-section { animation: fadeUp .6s ease .2s both; }
+    #api-guide { animation: fadeUp .6s ease .25s both; }
+    .lead-section { animation: fadeUp .6s ease .3s both; }
+    .events-section { animation: fadeUp .6s ease .4s both; }
+    .footer { animation: fadeUp .6s ease .5s both; }
+  </style>
+</head>
+<body>
+
+<!-- 主题切换按钮 -->
+<button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
+
+<div class="container">
+
+  <!-- Hero 区域 -->
+  <section class="hero">
+    <div class="logo-icon">✦</div>
+    <div class="badge">Value Innovation · 价值创新</div>
+    <h1 class="headline">
+      <span class="eureka">Eureka</span><br>
+      以用户为中心的价值创新
+    </h1>
+    <p class="subtitle">
+      从用户洞察到商业价值，陪伴团队走完完整的 R.I.S.E. 创新旅程。<br>
+      培训与实践一体化平台，让每一次创新都有据可查、有迹可循。
+    </p>
+    <a href="#products" class="hero-cta">
+      <span>🚀</span>
+      <span>立即开始使用</span>
+    </a>
+  </section>
+
+  <!-- 营销内容区域 -->
+  <section class="marketing-section">
+    <h2 class="section-title"><span>💡</span> 为什么选择 Eureka？</h2>
+    <p class="marketing-text">
+      在数字化转型的浪潮中，<strong>真正的竞争优势来自于对用户需求的深度理解和快速响应</strong>。Eureka 基于 R.I.S.E. 创新框架（Reveal 洞察 · Inspire 启发 · Shape 构建 · Exam 验证），为企业提供从创新培训到实战落地的完整解决方案。
+    </p>
+    <p class="marketing-text">
+      不同于传统的创新咨询，Eureka 将 <strong>AI 智能体、虚拟人角色、项目管理系统</strong> 融为一体，让团队在实践中学习，在学习中创新。无论是产品经理、设计师还是业务负责人，都能在这里找到适合的工具和方法。
+    </p>
+    <div class="value-points">
+      <div class="value-point">
+        <div class="value-point-icon" style="background: rgba(102,126,234,.2);">🎯</div>
+        <div class="value-point-text">
+          系统化创新流程
+          <small>R.I.S.E. 四阶段完整覆盖</small>
+        </div>
+      </div>
+      <div class="value-point">
+        <div class="value-point-icon" style="background: rgba(13,148,136,.2);">🤖</div>
+        <div class="value-point-text">
+          AI 智能体辅助
+          <small>24/7 专家级创新顾问</small>
+        </div>
+      </div>
+      <div class="value-point">
+        <div class="value-point-icon" style="background: rgba(217,119,6,.2);">👥</div>
+        <div class="value-point-text">
+          虚拟人角色扮演
+          <small>真实用户场景模拟</small>
+        </div>
+      </div>
+      <div class="value-point">
+        <div class="value-point-icon" style="background: rgba(236,72,153,.2);">📊</div>
+        <div class="value-point-text">
+          可视化成果输出
+          <small>一键生成汇报 PPT</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 产品入口区域 -->
+  <section class="products-section" id="products">
+    <div class="section-header">
+      <h2>🛠️ 产品工具箱</h2>
+      <p>四大核心产品，覆盖创新全流程</p>
+    </div>
+    <div class="cards">
+      <!-- 1. Eureka Dashboard -->
+      <a class="card card-1" href="https://eureka-dashboard.edgeone.dev/eureka-dashboard/" target="_blank" rel="noopener">
+        <div class="card-icon">📊</div>
+        <div class="card-label">Project Dashboard</div>
+        <div class="card-title">Eureka 项目库</div>
+        <div class="card-desc">管理创新项目全生命周期，可视化展示 AHA 用户价值与 MAP 商业价值，一键导出汇报 PPT。</div>
+        <div class="card-cta">立即进入 <span class="arrow">→</span></div>
+      </a>
+      <!-- 2. Persona Lab -->
+      <a class="card card-2" href="https://persona-lab.edgeone.dev/" target="_blank" rel="noopener">
+        <div class="card-icon">👤</div>
+        <div class="card-label">Persona Lab</div>
+        <div class="card-title">虚拟人市场</div>
+        <div class="card-desc">创建和管理用户画像、极端用户、利益相关方等虚拟角色，支持 AI 生成和手动编辑。</div>
+        <div class="card-cta">立即进入 <span class="arrow">→</span></div>
+      </a>
+      <!-- 3. Agent Marketplace -->
+      <a class="card card-3" href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/" target="_blank" rel="noopener">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">Agent Marketplace</div>
+        <div class="card-title">创新智能体市场</div>
+        <div class="card-desc">覆盖 Reveal / Inspire / Shape / Exam 四大阶段的 AI Sub-Agent 专家团队，辅助高质量创新产出。</div>
+        <div class="card-cta">立即进入 <span class="arrow">→</span></div>
+      </a>
+      <!-- 4. 产品手册 -->
+      <a class="card card-4" href="https://eureka-dashboard.edgeone.dev/eureka-dashboard/guide.html" target="_blank" rel="noopener">
+        <div class="card-icon">📖</div>
+        <div class="card-label">Product Guide</div>
+        <div class="card-title">产品使用手册</div>
+        <div class="card-desc">完整的使用说明书：R.I.S.E. 流程详解、四阶段输入输出、Sub-Agent 使用指南及常见问题。</div>
+        <div class="card-cta">立即阅读 <span class="arrow">→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- API 配置指南区域 -->
+  <section class="marketing-section" id="api-guide">
+    <h2 class="section-title"><span>⚙️</span> AI 配置与调用指南</h2>
+    <p class="marketing-text">
+      Eureka 的 AI 智能体功能需要配置 API Key 才能使用。支持 OpenAI、DeepSeek、通义千问等主流大模型服务商，也可通过 <strong>WorkBuddy</strong> 直接调用已配置的技能和智能体。
+    </p>
+    
+    <div class="cards" style="margin-top: 32px;">
+      <!-- API 配置方式 -->
+      <div class="card card-1" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🔑</div>
+        <div class="card-label">API 配置</div>
+        <div class="card-title">Dashboard 内配置</div>
+        <div class="card-desc">
+          进入 <a href="https://eureka-dashboard.edgeone.dev/eureka-dashboard/" target="_blank" style="color: #4F46E5; text-decoration: underline;">Eureka Dashboard</a> 后，点击右上角「⚙️ AI 设置」按钮，填写 API Key、选择服务商、设置模型名称即可。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(79,70,229,.08); border-radius: 8px; font-size: 12px; color: #4F46E5;">
+          <strong>支持服务商：</strong>OpenAI · DeepSeek · 通义千问 · 自定义接口
+        </div>
+      </div>
+      
+      <!-- WorkBuddy 调用 -->
+      <div class="card card-2" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🛰️</div>
+        <div class="card-label">WorkBuddy 集成</div>
+        <div class="card-title">直接调用 Skills</div>
+        <div class="card-desc">
+          在 WorkBuddy 中已配置的 Eureka Skills 可直接调用，无需重复设置 API Key。支持 <code>pov_builder</code>、<code>HMW_Reframer</code>、<code>NCO_Crosslinker</code> 等 10+ 个创新技能。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(15,118,110,.08); border-radius: 8px; font-size: 12px; color: #0F766E;">
+          <strong>调用方式：</strong>在 WorkBuddy 聊天框直接输入技能名称或描述需求
+        </div>
+      </div>
+      
+      <!-- Sub-Agent 调用 -->
+      <div class="card card-3" style="cursor: default; text-decoration: none;">
+        <div class="card-icon">🤖</div>
+        <div class="card-label">Sub-Agent</div>
+        <div class="card-title">四阶段专家智能体</div>
+        <div class="card-desc">
+          Eureka 提供 Reveal / Inspire / Shape / Exam 四个 Specialist Agent，可在 Dashboard 各阶段编辑器中点击「✨ AI 助手」按钮唤醒，自动识别当前上下文并生成结构化产出。
+        </div>
+        <div style="margin-top: 16px; padding: 12px; background: rgba(180,83,9,.08); border-radius: 8px; font-size: 12px; color: #B45309;">
+          <strong>使用场景：</strong>POV 构建 · HMW 重构 · 创意发散 · 概念打磨
+        </div>
+      </div>
+      
+      <!-- 查看手册 -->
+      <a class="card card-4" href="https://eureka-dashboard.edgeone.dev/eureka-dashboard/guide.html#agents" target="_blank" rel="noopener">
+        <div class="card-icon">📖</div>
+        <div class="card-label">详细文档</div>
+        <div class="card-title">Sub-Agent 使用手册</div>
+        <div class="card-desc">
+          查看完整的 Agent 对应关系表、Prompt 示例、API 配置 troubleshooting 及 WorkBuddy 集成最佳实践。
+        </div>
+        <div class="card-cta">查看文档 <span class="arrow">→</span></div>
+      </a>
+    </div>
+    
+    <div style="margin-top: 28px; padding: 20px 24px; background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08)); border-radius: 16px; border: 1.5px solid rgba(102,126,234,.2);">
+      <div style="display: flex; align-items: flex-start; gap: 16px;">
+        <div style="font-size: 24px; flex-shrink: 0;">💡</div>
+        <div>
+          <div style="font-weight: 700; color: #1e293b; margin-bottom: 6px;">快速开始建议</div>
+          <div style="font-size: 14px; color: #64748b; line-height: 1.7;">
+            1. 已有 WorkBuddy 环境的用户 → 直接在 WorkBuddy 中调用 Eureka Skills，无需额外配置<br>
+            2. 独立使用 Dashboard 的用户 → 点击「⚙️ AI 设置」配置自己的 API Key<br>
+            3. 企业/团队用户 → 建议统一配置共享 API Key，确保团队成员体验一致
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 留资表单区域 -->
+  <section class="lead-section">
+    <h2>📥 获取免费产品手册</h2>
+    <p>输入您的姓名和邮箱，即可下载完整版《Eureka 产品手册》PDF</p>
+    <form class="lead-form" id="leadForm">
+      <div class="form-row">
+        <input type="text" class="form-input" id="leadName" placeholder="您的姓名" required>
+        <input type="email" class="form-input" id="leadEmail" placeholder="您的邮箱" required>
+      </div>
+      <button type="submit" class="form-submit" id="submitBtn">
+        <span>🎁</span>
+        <span>立即获取免费手册</span>
+      </button>
+      <p class="form-note">我们尊重您的隐私，邮箱仅用于发送产品手册和相关活动通知</p>
+    </form>
+    <div class="form-success" id="formSuccess">
+      <strong>✅ 提交成功！</strong><br>
+      产品手册已发送至您的邮箱，请查收。<br>
+      <small>如未收到，请检查垃圾邮件文件夹</small>
+    </div>
+  </section>
+
+  <!-- 市场活动/直播区域 -->
+  <section class="events-section">
+    <h2><span>📅</span> 近期活动 & 直播</h2>
+    <p>参与我们的线上沙龙、直播课程和线下工作坊</p>
+    <div class="events-list" id="eventsList">
+      <!-- 后台可编辑区域：默认显示占位符 -->
+      <div class="event-placeholder">
+        🎉 精彩活动即将上线，敬请期待！<br>
+        <small style="opacity: .7;">（此区域可通过后台编辑添加市场活动和直播信息）</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Powered by <strong style="color:#818CF8">Eureka 价值创新</strong> · R.I.S.E. Framework</p>
+    <p style="font-size: 12px; opacity: .7;">© 2026 习智场景化创新训练. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="https://eureka-dashboard.edgeone.dev/eureka-dashboard/guide.html" target="_blank">产品手册</a>
+      <a href="mailto:contact@eureka-innovation.com">联系我们</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- 管理后台入口 -->
+<button class="admin-trigger" id="adminTrigger" title="管理后台">⚙️</button>
+
+<!-- 管理后台弹窗 -->
+<div class="admin-modal" id="adminModal">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h3>🔐 管理后台</h3>
+      <button class="admin-close" id="adminClose">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="leads">留资数据</button>
+      <button class="admin-tab" data-tab="events">活动管理</button>
+    </div>
+    <div class="admin-content">
+      <!-- 留资数据 -->
+      <div class="admin-section active" id="leadsSection">
+        <div id="leadsContainer">
+          <div class="leads-empty">暂无留资数据</div>
+        </div>
+      </div>
+      <!-- 活动管理 -->
+      <div class="admin-section" id="eventsSection">
+        <form class="event-form" id="eventForm">
+          <input type="hidden" id="eventIndex" value="">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>日期（日）</label>
+              <input type="text" id="eventDay" placeholder="例如：15" required>
+            </div>
+            <div class="form-group">
+              <label>月份</label>
+              <input type="text" id="eventMonth" placeholder="例如：APR" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>活动标题</label>
+            <input type="text" id="eventTitle" placeholder="例如：Eureka 创新工作坊 · 线上直播" required>
+          </div>
+          <div class="form-group">
+            <label>活动信息（用逗号分隔）</label>
+            <input type="text" id="eventMeta" placeholder="例如：📅 4月15日 20:00, 👥 线上直播">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>按钮文字</label>
+              <input type="text" id="eventBtnText" placeholder="例如：立即报名" value="立即报名">
+            </div>
+            <div class="form-group">
+              <label>按钮链接</label>
+              <input type="text" id="eventBtnLink" placeholder="例如：https://... 或 #">
+            </div>
+          </div>
+          <div class="admin-actions">
+            <button type="submit" class="admin-btn">保存活动</button>
+            <button type="button" class="admin-btn secondary" id="resetEventForm">重置</button>
+          </div>
+        </form>
+        <div class="admin-events-list" id="adminEventsList">
+          <!-- 活动列表将在这里渲染 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 留资表单处理
+  document.getElementById('leadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('leadName').value.trim();
+    const email = document.getElementById('leadEmail').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (!name || !email) {
+      alert('请填写姓名和邮箱');
+      return;
+    }
+    
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('请输入有效的邮箱地址');
+      return;
+    }
+    
+    // 禁用按钮防止重复提交
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>⏳</span><span>提交中...</span>';
+    
+    // 存储到 localStorage
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    leads.push({
+      name: name,
+      email: email,
+      timestamp: new Date().toISOString(),
+      source: 'eureka_landing_page'
+    });
+    localStorage.setItem('eureka_leads', JSON.stringify(leads));
+    
+    // 模拟提交延迟
+    setTimeout(() => {
+      // 显示成功信息
+      document.getElementById('leadForm').style.display = 'none';
+      document.getElementById('formSuccess').classList.add('show');
+      
+      // 自动下载产品手册 PDF
+      downloadManual();
+      
+      console.log('Lead captured:', { name, email });
+    }, 1500);
+  });
+  
+  // 下载产品手册函数
+  function downloadManual() {
+    // 创建 PDF 内容（使用 data URI 方式生成简单 PDF）
+    // 实际使用时，可以替换为真实的 PDF 文件链接
+    const pdfUrl = './eureka-manual.pdf';
+    
+    // 尝试下载 PDF
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = 'Eureka-产品手册.pdf';
+    link.target = '_blank';
+    
+    // 如果 PDF 不存在，提供一个备用方案
+    fetch(pdfUrl, { method: 'HEAD' }).then(response => {
+      if (response.ok) {
+        link.click();
+      } else {
+        // PDF 不存在，打开在线指南
+        window.open('https://eureka-dashboard.edgeone.dev/eureka-dashboard/guide.html', '_blank');
+      }
+    }).catch(() => {
+      // 网络错误，打开在线指南
+      window.open('https://eureka-dashboard.edgeone.dev/eureka-dashboard/guide.html', '_blank');
+    });
+  }
+
+  // 市场活动数据（可通过外部 JS 文件或 API 动态加载）
+  // 示例数据结构，后台可以修改这个数组来更新活动
+  const EVENTS_DATA = [
+    // {
+    //   day: '15',
+    //   month: 'APR',
+    //   title: 'Eureka 创新工作坊 · 线上直播',
+    //   meta: ['📅 4月15日 20:00', '👥 线上直播'],
+    //   btnText: '立即报名',
+    //   btnLink: '#'
+    // }
+  ];
+
+  // 渲染活动列表
+  function renderEvents() {
+    const container = document.getElementById('eventsList');
+    
+    if (EVENTS_DATA.length === 0) {
+      // 保持默认占位符
+      return;
+    }
+    
+    container.innerHTML = EVENTS_DATA.map(event => `
+      <div class="event-card">
+        <div class="event-date">
+          <span class="day">${event.day}</span>
+          <span class="month">${event.month}</span>
+        </div>
+        <div class="event-info">
+          <div class="event-title">${event.title}</div>
+          <div class="event-meta">
+            ${event.meta.map(m => `<span>${m}</span>`).join('')}
+          </div>
+        </div>
+        <a href="${event.btnLink}" class="event-btn" target="_blank">${event.btnText}</a>
+      </div>
+    `).join('');
+  }
+
+  // 主题切换功能
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  
+  // 检查本地存储的主题偏好
+  const savedTheme = localStorage.getItem('eureka_theme');
+  if (savedTheme === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+    themeToggle.textContent = '☀️';
+  }
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = html.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('eureka_theme', 'light');
+      themeToggle.textContent = '🌙';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('eureka_theme', 'dark');
+      themeToggle.textContent = '☀️';
+    }
+  });
+
+  // 初始化
+  renderEvents();
+
+  // ==================== 管理后台功能 ====================
+  
+  const adminTrigger = document.getElementById('adminTrigger');
+  const adminModal = document.getElementById('adminModal');
+  const adminClose = document.getElementById('adminClose');
+  const adminTabs = document.querySelectorAll('.admin-tab');
+  const adminSections = document.querySelectorAll('.admin-section');
+  
+  // 打开管理后台
+  adminTrigger.addEventListener('click', () => {
+    adminModal.classList.add('show');
+    renderLeads();
+    renderAdminEvents();
+  });
+  
+  // 关闭管理后台
+  adminClose.addEventListener('click', () => {
+    adminModal.classList.remove('show');
+  });
+  
+  // 点击背景关闭
+  adminModal.addEventListener('click', (e) => {
+    if (e.target === adminModal) {
+      adminModal.classList.remove('show');
+    }
+  });
+  
+  // 标签页切换
+  adminTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.dataset.tab;
+      
+      // 更新标签状态
+      adminTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // 更新内容显示
+      adminSections.forEach(s => s.classList.remove('active'));
+      document.getElementById(targetTab + 'Section').classList.add('active');
+      
+      // 刷新数据
+      if (targetTab === 'leads') {
+        renderLeads();
+      } else if (targetTab === 'events') {
+        renderAdminEvents();
+      }
+    });
+  });
+  
+  // 渲染留资数据
+  function renderLeads() {
+    const container = document.getElementById('leadsContainer');
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    
+    if (leads.length === 0) {
+      container.innerHTML = '<div class="leads-empty">暂无留资数据</div>';
+      return;
+    }
+    
+    // 按时间倒序排列
+    const sortedLeads = leads.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    container.innerHTML = `
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>提交时间</th>
+            <th>来源</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedLeads.map(lead => `
+            <tr>
+              <td>${escapeHtml(lead.name)}</td>
+              <td>${escapeHtml(lead.email)}</td>
+              <td>${formatDate(lead.timestamp)}</td>
+              <td>${lead.source || 'eureka_landing_page'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top: 16px; text-align: center;">
+        <button class="admin-btn secondary" onclick="exportLeads()">导出数据 (JSON)</button>
+      </div>
+    `;
+  }
+  
+  // 导出留资数据
+  window.exportLeads = function() {
+    const leads = JSON.parse(localStorage.getItem('eureka_leads') || '[]');
+    if (leads.length === 0) {
+      alert('暂无数据可导出');
+      return;
+    }
+    
+    const dataStr = JSON.stringify(leads, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `eureka-leads-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+  
+  // 活动表单处理
+  const eventForm = document.getElementById('eventForm');
+  const resetEventForm = document.getElementById('resetEventForm');
+  
+  eventForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const index = document.getElementById('eventIndex').value;
+    const eventData = {
+      day: document.getElementById('eventDay').value.trim(),
+      month: document.getElementById('eventMonth').value.trim(),
+      title: document.getElementById('eventTitle').value.trim(),
+      meta: document.getElementById('eventMeta').value.split(',').map(m => m.trim()).filter(m => m),
+      btnText: document.getElementById('eventBtnText').value.trim() || '立即报名',
+      btnLink: document.getElementById('eventBtnLink').value.trim() || '#'
+    };
+    
+    // 获取现有活动数据
+    let events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    
+    if (index !== '') {
+      // 编辑现有活动
+      events[parseInt(index)] = eventData;
+    } else {
+      // 添加新活动
+      events.push(eventData);
+    }
+    
+    // 保存到 localStorage
+    localStorage.setItem('eureka_events', JSON.stringify(events));
+    
+    // 更新 EVENTS_DATA 并重新渲染
+    EVENTS_DATA.length = 0;
+    EVENTS_DATA.push(...events);
+    renderEvents();
+    renderAdminEvents();
+    
+    // 重置表单
+    resetEventForm.click();
+    
+    alert('活动保存成功！');
+  });
+  
+  resetEventForm.addEventListener('click', () => {
+    eventForm.reset();
+    document.getElementById('eventIndex').value = '';
+  });
+  
+  // 渲染后台活动列表
+  function renderAdminEvents() {
+    const container = document.getElementById('adminEventsList');
+    const events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    
+    if (events.length === 0) {
+      container.innerHTML = '<div class="leads-empty">暂无活动，请在上方添加</div>';
+      return;
+    }
+    
+    container.innerHTML = events.map((event, index) => `
+      <div class="admin-event-item">
+        <div class="event-date" style="width: 56px; height: 56px; border-radius: 10px;">
+          <span class="day" style="font-size: 20px;">${event.day}</span>
+          <span class="month" style="font-size: 10px;">${event.month}</span>
+        </div>
+        <div class="admin-event-info">
+          <div class="admin-event-title">${escapeHtml(event.title)}</div>
+          <div class="admin-event-meta">${event.meta.join(' · ')}</div>
+        </div>
+        <div class="admin-event-actions">
+          <button class="admin-event-btn edit" onclick="editEvent(${index})">编辑</button>
+          <button class="admin-event-btn delete" onclick="deleteEvent(${index})">删除</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  // 编辑活动
+  window.editEvent = function(index) {
+    const events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    const event = events[index];
+    
+    if (!event) return;
+    
+    document.getElementById('eventIndex').value = index;
+    document.getElementById('eventDay').value = event.day;
+    document.getElementById('eventMonth').value = event.month;
+    document.getElementById('eventTitle').value = event.title;
+    document.getElementById('eventMeta').value = event.meta.join(', ');
+    document.getElementById('eventBtnText').value = event.btnText;
+    document.getElementById('eventBtnLink').value = event.btnLink;
+  };
+  
+  // 删除活动
+  window.deleteEvent = function(index) {
+    if (!confirm('确定要删除这个活动吗？')) return;
+    
+    let events = JSON.parse(localStorage.getItem('eureka_events') || '[]');
+    events.splice(index, 1);
+    localStorage.setItem('eureka_events', JSON.stringify(events));
+    
+    // 更新 EVENTS_DATA 并重新渲染
+    EVENTS_DATA.length = 0;
+    EVENTS_DATA.push(...events);
+    renderEvents();
+    renderAdminEvents();
+  };
+  
+  // 加载保存的活动数据
+  function loadSavedEvents() {
+    const savedEvents = localStorage.getItem('eureka_events');
+    if (savedEvents) {
+      const events = JSON.parse(savedEvents);
+      EVENTS_DATA.length = 0;
+      EVENTS_DATA.push(...events);
+      renderEvents();
+    }
+  }
+  
+  // 工具函数：转义 HTML
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  // 工具函数：格式化日期
+  function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  // 初始化加载保存的活动
+  loadSavedEvents();
+</script>
+
+</body>
+</html>
