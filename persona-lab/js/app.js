@@ -94,6 +94,9 @@ function toggleTagFilter(cat, tag, checked) {
   }
   updateSidebarCreateBtn();
   
+  // 更新主题输入框：将选中的标签用逗号连接显示
+  updateThemeInputFromTags();
+  
   // 如果在生成模式且已有生成结果，自动重新生成
   if (currentMode === 'generate' && allPersonas.length > 0) {
     // 延迟一点，让用户看到标签变化
@@ -105,6 +108,25 @@ function toggleTagFilter(cat, tag, checked) {
   if (currentMode === 'browse') {
     if (currentBrowseView === 'group') renderBrowseGroupView();
     else renderBrowseCards();
+  }
+}
+
+// 根据选中的标签更新主题输入框
+function updateThemeInputFromTags() {
+  const themeInput = document.getElementById('input-theme-main');
+  if (!themeInput) return;
+  
+  // 按 industry → scene → theme 顺序收集选中的标签
+  const allSelected = [
+    ...selectedTags.industry,
+    ...selectedTags.scene,
+    ...selectedTags.theme
+  ];
+  
+  if (allSelected.length > 0) {
+    themeInput.value = allSelected.join('，');
+  } else {
+    themeInput.value = '';
   }
 }
 
@@ -254,14 +276,26 @@ async function _doGenerateWithAI(theme, bg, assume, tags, cfg, resultEl, btn) {
 
   const systemPrompt = `你是专业的用户研究专家，擅长生成设计思维中的虚拟人物（Persona）。
 
-【核心原则】
-生成的角色必须是「最终价值接收者」——即产品/服务的最终使用者或最终承担结果的人，而不是设计方、研发方或中间环节的角色。
+【绝对核心原则 - 必须严格遵守】
+生成的角色必须是「创新项目的最终使用者或被影响者」——即产品/服务的最终消费者、终端用户，或直接被结果影响的人。
 
-- C端场景：生成终端消费者（车主、患者、家长、学生等）
-- B端场景：生成最终决策/承担结果的人（企业老板、业务负责人），而不是执行层
-- 医疗场景：生成患者或患者家属，而不是医生/护士
-- 汽车场景：生成车主/驾驶员/乘客，而不是产品经理/工程师
-- 企业服务场景：生成面临问题的企业主/高管，而不是采购经理或IT实施人员
+🚫 严禁生成的角色类型：
+- 产品经理、项目经理、研发工程师、设计师等内部从业者
+- 采购经理、IT实施人员、中间商、渠道商
+- 任何「为产品做决策/执行」的内部角色
+
+✅ 必须生成的角色类型：
+- C端场景：终端消费者（车主、患者、家长、学生、普通市民等）
+- B端场景：最终使用产品的业务人员、受影响的终端用户
+- 医疗场景：患者、患者家属、康复者
+- 汽车场景：车主、驾驶员、乘客、潜在购车者
+- 政务场景：办事群众、普通市民、企业主
+- 企业服务场景：使用产品的员工、受服务影响的客户
+
+【关键区分】
+- 不是「设计产品的人」，而是「使用产品的人」
+- 不是「开发功能的人」，而是「被功能影响的人」
+- 痛点必须来自真实生活/工作场景，而非内部协同问题
 
 请根据用户提供的项目主题和标签，生成一组完整的角色，严格按 JSON 格式输出，不要任何解释文字。`;
 
@@ -270,30 +304,40 @@ ${bg ? `背景补充：${bg}` : ''}
 ${assume ? `用户假设：${assume}` : ''}
 标签：${tagStr || '无'}
 
-【角色定位要求】
-所有角色必须是「最终价值接收者」：
-- 他们是产品/服务的最终使用者，或最终承担结果的人
-- 不是设计师、产品经理、研发人员、中间商或执行层
-- 他们的痛点来自真实使用场景，而不是工作协同问题
+【角色定位要求 - 强制约束】
+所有角色必须是「创新项目的最终使用者或被影响者」：
 
-请生成以下 5 类角色（JSON 数组格式），每类各1个：
-1. target_user（目标用户）- 最典型的最终使用者
-2. extreme_user_heavy（极端用户-重度）- 高频/深度使用者，需求强烈
-3. extreme_user_light（极端用户-轻度）- 低频/边缘使用者，需求特殊
-4. stakeholder（利益相关方）- 受结果影响的关联方（如患者家属、员工家属）
-5. decision_maker（决策者）- 最终拍板的人（如企业老板、家庭决策者），不是采购执行者
+1. 目标用户（target_user）：
+   - 必须是产品/服务的最终消费者或终端用户
+   - 例如：车主（不是汽车产品经理）、患者（不是医院院长）、家长（不是教育产品经理）
+
+2. 极端用户（extreme_user_heavy/light）：
+   - 必须是最终用户群体中的极端情况
+   - 例如：每天开车3小时的网约车司机（不是智能驾驶工程师）
+
+3. 利益相关方（stakeholder）：
+   - 必须是受产品结果直接影响的关联方
+   - 例如：患者家属、车主家人、学生家长
+
+4. 决策者（decision_maker）：
+   - 必须是最终消费决策的制定者（从消费者角度）
+   - 例如：家庭购车的决策者、选择医院的患者本人
+   - 不是：采购经理、项目审批人
+
+🚫 绝对禁止：产品经理、工程师、设计师、项目经理、研发人员、内部决策者
+✅ 必须生成：终端消费者、最终使用者、被服务/产品直接影响的人
 
 每个角色包含字段：
 {
   "type": "target_user|extreme_user_heavy|extreme_user_light|stakeholder|decision_maker",
   "name": "中文姓名",
   "age": "年龄（如：35岁）",
-  "occupation": "职业/身份",
+  "occupation": "职业/身份（必须是终端用户的身份，如：车主、患者、家长）",
   "city": "城市",
-  "lifestyle": "生活方式（描述日常真实场景）",
-  "explicitGoal": "显性目标（想要达成的具体结果）",
+  "lifestyle": "生活方式（描述日常真实场景，体现最终用户的真实生活）",
+  "explicitGoal": "显性目标（作为最终用户想要达成的具体结果）",
   "hiddenNeed": "隐性需求（深层动机和情感诉求）",
-  "corePain": "核心痛点（在使用/决策过程中的真实困扰）",
+  "corePain": "核心痛点（在使用/消费过程中的真实困扰，不是工作协同问题）",
   "emotionState": "情绪状态",
   "personality": "性格特点",
   "quote": "金句（第一人称，真实感受，15字以内）",
@@ -2655,22 +2699,46 @@ function syncToEureka() {
   localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
 
   // 构建跳转 URL（回到 Eureka 并提示导入）
-  const eurekaBase = 'https://eureka-dashboard.netlify.app';
+  const eurekaBase = 'https://eureka-dashboard.edgeone.dev/eureka-dashboard/';
   const pid = window._eurekaSourceProjectId;
-  const backUrl = pid
-    ? `${eurekaBase}?import_persona=1&projectId=${pid}`
-    : `${eurekaBase}?import_persona=1`;
 
-  // 弹出确认对话框
-  const confirmed = confirm(
+  // 项目选择/创建逻辑
+  let backUrl;
+  if (pid) {
+    // 有来源项目，询问是否导回原项目
+    const goBack = confirm(
+      `✅ 已生成 ${personas.length} 个角色\n\n` +
+      `项目主题：${theme}\n` +
+      `包含类型：目标用户 / 极端用户 / 利益相关方 / 决策者 / 资源方\n\n` +
+      `点击「确定」导回原 Eureka 项目\n` +
+      `点击「取消」选择其他项目或创建新项目`
+    );
+    if (goBack) {
+      backUrl = `${eurekaBase}?import_persona=1&projectId=${pid}`;
+      location.href = backUrl;
+      return;
+    }
+  }
+
+  // 无来源项目，或用户选择不导回原项目
+  const choice = prompt(
     `✅ 已生成 ${personas.length} 个角色\n\n` +
-    `项目主题：${theme}\n` +
-    `包含类型：目标用户 / 极端用户 / 利益相关方 / 决策者 / 资源方\n\n` +
-    `点击「确定」跳回 Eureka 并导入到用户画像，「取消」留在当前页面`
+    `请选择操作：\n` +
+    `1 - 创建新项目并导入角色\n` +
+    `2 - 导入到现有项目（将跳转到 Eureka 选择）\n\n` +
+    `请输入 1 或 2：`
   );
 
-  if (confirmed) {
+  if (choice === '1') {
+    // 创建新项目
+    backUrl = `${eurekaBase}?import_persona=1&create_project=1&theme=${encodeURIComponent(theme)}`;
     location.href = backUrl;
+  } else if (choice === '2') {
+    // 跳转到 Eureka 选择项目
+    backUrl = `${eurekaBase}?select_project_for_persona=1&return_url=${encodeURIComponent(location.href)}`;
+    location.href = backUrl;
+  } else if (choice !== null) {
+    showToast('无效选择，导出已取消', 'error');
   } else {
     showToast('✅ 角色数据已写入，可随时打开 Eureka 导入');
   }
@@ -2712,20 +2780,45 @@ function syncGroupToEureka(groupId) {
 
   localStorage.setItem('persona_lab_export_v1', JSON.stringify(exportPayload));
 
-  const eurekaBase = 'https://eureka-dashboard.netlify.app';
+  const eurekaBase = 'https://eureka-dashboard.edgeone.dev/eureka-dashboard/';
   const pid = window._eurekaSourceProjectId;
-  const backUrl = pid
-    ? `${eurekaBase}?import_persona=1&projectId=${pid}`
-    : `${eurekaBase}?import_persona=1`;
 
-  const confirmed = confirm(
+  // 项目选择/创建逻辑
+  let backUrl;
+  if (pid) {
+    // 有来源项目，询问是否导回原项目
+    const goBack = confirm(
+      `✅ 角色组「${g.projectTheme}」已准备好\n\n` +
+      `共 ${personas.length} 个角色：目标用户 ${g.targetUsers.length} · 极端用户 ${g.extremeUsers.length} · 利益相关方 ${g.stakeholders.length} · 决策者 ${g.decisionMakers.length} · 资源方 ${g.resourceProviders.length}\n\n` +
+      `点击「确定」导回原 Eureka 项目\n` +
+      `点击「取消」选择其他项目或创建新项目`
+    );
+    if (goBack) {
+      backUrl = `${eurekaBase}?import_persona=1&projectId=${pid}`;
+      location.href = backUrl;
+      return;
+    }
+  }
+
+  // 无来源项目，或用户选择不导回原项目
+  const choice = prompt(
     `✅ 角色组「${g.projectTheme}」已准备好\n\n` +
-    `共 ${personas.length} 个角色：目标用户 ${g.targetUsers.length} · 极端用户 ${g.extremeUsers.length} · 利益相关方 ${g.stakeholders.length} · 决策者 ${g.decisionMakers.length} · 资源方 ${g.resourceProviders.length}\n\n` +
-    `点击「确定」跳回 Eureka 并导入到用户画像`
+    `请选择操作：\n` +
+    `1 - 创建新项目并导入角色\n` +
+    `2 - 导入到现有项目（将跳转到 Eureka 选择）\n\n` +
+    `请输入 1 或 2：`
   );
 
-  if (confirmed) {
+  if (choice === '1') {
+    // 创建新项目
+    backUrl = `${eurekaBase}?import_persona=1&create_project=1&theme=${encodeURIComponent(g.projectTheme)}`;
     location.href = backUrl;
+  } else if (choice === '2') {
+    // 跳转到 Eureka 选择项目
+    backUrl = `${eurekaBase}?select_project_for_persona=1&return_url=${encodeURIComponent(location.href)}`;
+    location.href = backUrl;
+  } else if (choice !== null) {
+    showToast('无效选择，导出已取消', 'error');
   } else {
     showToast('✅ 角色数据已写入，可随时打开 Eureka 导入');
   }
