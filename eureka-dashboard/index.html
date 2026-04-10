@@ -4887,7 +4887,129 @@ window.addEventListener('DOMContentLoaded',()=>{
     const h=document.getElementById('eureka-hero');
     if(h) h.style.display='none';
   }
+  // 处理 Persona Lab 跳转来的项目选择请求
+  checkPersonaLabProjectSelect();
 });
+
+/**
+ * 检查 URL 参数，处理从 Persona Lab 跳转来的项目选择请求
+ * 支持：?select_project_for_persona=1&return_url=xxx
+ */
+function checkPersonaLabProjectSelect() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('select_project_for_persona') !== '1') return;
+
+  const returnUrl = params.get('return_url') || 'https://persona-lab.edgeone.dev/';
+  const exportData = localStorage.getItem('persona_lab_export_v1');
+
+  if (!exportData) {
+    alert('未找到 Persona Lab 角色数据。\n\n请先返回 Persona Lab 生成角色后再试。');
+    return;
+  }
+
+  // 显示项目选择提示
+  setTimeout(() => {
+    const projectCount = getAll().length;
+    const choice = confirm(
+      `🎭 从 Persona Lab 导入角色\n\n` +
+      `检测到 ${projectCount} 个项目。\n\n` +
+      `点击「确定」导入到最后打开的项目\n` +
+      `点击「取消」查看所有项目并手动选择`
+    );
+
+    if (choice && activeId) {
+      // 导入到当前项目
+      importPersonaToProject(activeId);
+    } else {
+      // 显示项目列表供选择
+      showToast('请在左侧项目列表中选择一个项目，然后点击「📥 从 Persona Lab 导入」按钮', 'info');
+      // 高亮项目列表
+      const leftPanel = document.querySelector('.panel-left');
+      if (leftPanel) {
+        leftPanel.style.boxShadow = '0 0 20px rgba(102,126,234,0.5)';
+        setTimeout(() => {
+          leftPanel.style.boxShadow = '';
+        }, 3000);
+      }
+    }
+  }, 500);
+}
+
+/**
+ * 将 Persona Lab 角色导入到指定项目
+ */
+function importPersonaToProject(projectId) {
+  const raw = localStorage.getItem('persona_lab_export_v1');
+  if (!raw) {
+    showToast('未找到 Persona Lab 数据', 'error');
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch (e) {
+    showToast('数据格式错误', 'error');
+    return;
+  }
+
+  const project = getOne(projectId);
+  if (!project) {
+    showToast('项目不存在', 'error');
+    return;
+  }
+
+  // 确保项目有 reveal 阶段
+  if (!project.reveal) project.reveal = {};
+  if (!project.reveal.personas) project.reveal.personas = [];
+
+  // 转换并添加角色
+  const personas = payload.personas || [];
+  let addedCount = 0;
+
+  personas.forEach(p => {
+    // 检查是否已存在（按名称）
+    const exists = project.reveal.personas.some(ep => ep.name === p.name);
+    if (!exists) {
+      project.reveal.personas.push({
+        id: p.id || Date.now() + Math.random(),
+        type: p.type || 'target',
+        name: p.name,
+        age: p.age,
+        occupation: p.occupation,
+        city: p.city,
+        corePain: p.corePain,
+        hiddenNeed: p.hiddenNeed,
+        quote: p.quote,
+        summary: p.summary,
+        industryTag: p.industryTag,
+        sceneTag: p.sceneTag,
+        themeTag: p.themeTag,
+        createdAt: new Date().toISOString()
+      });
+      addedCount++;
+    }
+  });
+
+  // 保存项目
+  upsert(project);
+  refreshAll();
+
+  // 如果当前正在查看该项目，刷新显示
+  if (activeId === projectId) {
+    renderDashboard(project);
+  }
+
+  showToast(`✅ 成功导入 ${addedCount} 个角色到「${project.name}」`, 'success');
+
+  // 清除导入数据
+  localStorage.removeItem('persona_lab_export_v1');
+
+  // 清理 URL 参数
+  if (history.replaceState) {
+    history.replaceState({}, document.title, location.pathname);
+  }
+}
 
 window.addEventListener('resize',()=>{
   if(!activeId) return;
