@@ -4889,6 +4889,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   // 处理 Persona Lab 跳转来的项目选择请求
   checkPersonaLabProjectSelect();
+  // 处理 Persona Lab 创建新项目并导入角色请求
+  checkPersonaLabCreateProject();
 });
 
 /**
@@ -5009,6 +5011,83 @@ function importPersonaToProject(projectId) {
   if (history.replaceState) {
     history.replaceState({}, document.title, location.pathname);
   }
+}
+
+/**
+ * 检查 URL 参数，处理从 Persona Lab 跳转来的创建新项目请求
+ * 支持：?import_persona=1&create_project=1&theme=xxx
+ */
+function checkPersonaLabCreateProject() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('import_persona') !== '1' || params.get('create_project') !== '1') return;
+
+  const theme = params.get('theme') || '新项目';
+  const exportData = localStorage.getItem('persona_lab_export_v1');
+
+  if (!exportData) {
+    alert('未找到 Persona Lab 角色数据。\n\n请先返回 Persona Lab 生成角色后再试。');
+    return;
+  }
+
+  // 延迟执行，等待页面初始化完成
+  setTimeout(() => {
+    // 创建新项目
+    const newProject = createNewProject(theme);
+    if (newProject) {
+      // 导入角色到新项目
+      importPersonaToProject(newProject.id);
+      showToast(`✅ 已创建新项目「${newProject.name}」并导入角色`, 'success');
+    }
+  }, 800);
+}
+
+/**
+ * 创建新项目（用于 Persona Lab 导入）
+ */
+function createNewProject(name) {
+  const id = 'proj_' + Date.now();
+  const project = {
+    id: id,
+    name: name,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'draft',
+    reveal: {
+      pov: '',
+      personas: [],
+      stakeholders: [],
+      scenarios: [],
+      interviewNotes: '',
+      affinityMap: []
+    },
+    inspire: {
+      ideas: [],
+      evaluations: [],
+      bestIdea: null,
+      crazy8: []
+    },
+    shape: {
+      concept: '',
+      story: {},
+      mapValues: [3, 3, 3]
+    },
+    exam: {
+      ahaValues: [3, 3, 3],
+      elevator: '',
+      iterations: [],
+      businessModel: {}
+    }
+  };
+
+  upsert(project);
+  refreshAll();
+
+  // 自动选中新项目
+  activeId = id;
+  filterProjects();
+  renderDashboard(project);
+
+  return project;
 }
 
 window.addEventListener('resize',()=>{
