@@ -633,7 +633,7 @@ class RevealEditor {
     const theme   = encodeURIComponent(project.name || '');
     const pid     = encodeURIComponent(this.projectId || '');
     // industry/scene 取项目名简单提取
-    const url = `https://persona-lab.edgeone.dev/?from=eureka&projectId=${pid}&theme=${theme}`;
+    const url = `https://persona-lab.edgeone.cool/?from=eureka&projectId=${pid}&theme=${theme}`;
     window.open(url, '_blank');
     showToast('🎭 Persona Lab 已在新标签页打开，生成完成后点击「同步到 Eureka」返回');
   }
