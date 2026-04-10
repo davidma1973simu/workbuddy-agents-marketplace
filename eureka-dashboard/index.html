@@ -1552,14 +1552,10 @@ function htmlOverview(p) {
   tagRow.appendChild(tagUpdated);
   
   const btnRow = createSafeElement('div', { className: 'overview-btns' });
-  const btnEdit = createSafeElement('button', { className: 'ob ob-primary' }, ['✏️ 编辑项目']);
-  btnEdit.addEventListener('click', () => openEditor(p.id));
-  const btnPDF = createSafeElement('button', { className: 'ob ob-secondary' }, ['📄 导出报告']);
-  btnPDF.addEventListener('click', () => exportPDF(p.id));
-  const btnMD = createSafeElement('button', { className: 'ob ob-secondary' }, ['📝 复制 MD']);
-  btnMD.addEventListener('click', () => exportMD(p.id));
-  const btnTrash = createSafeElement('button', { className: 'ob ob-danger' }, ['🗑️ 移入回收站']);
-  btnTrash.addEventListener('click', () => moveToTrash(p.id));
+  const btnEdit = createSafeElement('button', { className: 'ob ob-primary', onclick: `openEditor('${p.id}')` }, ['✏️ 编辑项目']);
+  const btnPDF = createSafeElement('button', { className: 'ob ob-secondary', onclick: `exportPDF('${p.id}')` }, ['📄 导出报告']);
+  const btnMD = createSafeElement('button', { className: 'ob ob-secondary', onclick: `exportMD('${p.id}')` }, ['📝 复制 MD']);
+  const btnTrash = createSafeElement('button', { className: 'ob ob-danger', onclick: `moveToTrash('${p.id}')` }, ['🗑️ 移入回收站']);
   btnRow.appendChild(btnEdit);
   btnRow.appendChild(btnPDF);
   btnRow.appendChild(btnMD);
