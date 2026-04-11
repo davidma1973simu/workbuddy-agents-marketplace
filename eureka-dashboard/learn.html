@@ -135,14 +135,30 @@ textarea{min-height:90px}
 .q4 .cell-tag{background:#fce7f3;color:#be185d}
 .matrix-footnote{font-size:11px;color:var(--text3);margin-top:8px;padding:6px 10px;background:#f8faff;border-radius:6px;border-left:2px solid var(--amber)}
 
-/* STAKEHOLDER TABLE */
-.stakeholder-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
-.stakeholder-table th{background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.08));color:var(--text);font-weight:700;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border)}
-.stakeholder-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-.stakeholder-table tr:hover td{background:#f8faff}
-.score-input{width:56px;border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px;text-align:center;color:var(--text);font-family:inherit}
+/* STAKEHOLDER GRID */
+.stakeholder-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:12px}
+@media (max-width:900px){.stakeholder-grid{grid-template-columns:1fr}}
+.stakeholder-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px;transition:all .2s}
+.stakeholder-card:hover{border-color:var(--purple);box-shadow:0 2px 8px rgba(102,126,234,.08)}
+.stakeholder-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.stakeholder-role{font-size:15px;font-weight:700;color:var(--text)}
+.stakeholder-total{font-size:14px;font-weight:700;padding:4px 10px;border-radius:6px}
+.stakeholder-total.valid{background:#dcfce7;color:#15803d}
+.stakeholder-total.invalid{background:#fee2e2;color:#dc2626}
+.stakeholder-needs{display:flex;flex-direction:column;gap:10px}
+.need-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+.need-input-group,.need-score-group{display:flex;flex-direction:column;gap:4px}
+.need-input-group label,.need-score-group label{font-size:11px;color:var(--text3);font-weight:600}
+.need-name-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text);font-family:inherit;background:#fafbfc}
+.need-name-input:focus{outline:none;border-color:var(--purple);background:#fff}
+.need-name-input::placeholder{color:var(--text3);opacity:.6}
+.score-control{display:flex;align-items:center;gap:4px}
+.score-btn{width:28px;height:32px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--text);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.score-btn:hover{border-color:var(--purple);color:var(--purple)}
+.score-btn:active{transform:scale(.95)}
+.score-input{width:48px;height:32px;border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;font-size:14px;text-align:center;color:var(--text);font-family:inherit;font-weight:600}
 .score-input:focus{outline:none;border-color:var(--purple)}
-.score-total{font-size:13px;color:var(--text2);margin-top:8px;padding:8px 12px;background:#f8faff;border-radius:6px}
+.score-total{font-size:13px;color:var(--text2);margin-top:12px;padding:10px 14px;background:#f8faff;border-radius:8px;border-left:3px solid var(--amber)}
 .score-total .over{color:var(--red);font-weight:700}
 .score-total .ok{color:var(--green);font-weight:700}
 
@@ -529,13 +545,21 @@ const TASKS = {
   },
 };
 
-// 利益方行模板
+// 利益方行模板（带推荐需求名称）
 const STAKEHOLDER_TEMPLATE = [
   { role: '业务领导', needs: ['战略一致性', '投入产出比', '执行可行性', '速度和结果'] },
   { role: '技术专家', needs: ['技术可行性', '系统整合度', '扩展性', '维护成本'] },
   { role: '合作伙伴', needs: ['共同价值', '资源投入', '风险分担', '合作条件'] },
   { role: '用户代表', needs: ['解决真实痛点', '使用便捷性', '学习成本', '可见价值'] },
 ];
+
+// 初始化利益方数据结构（包含需求名称和分数）
+function initStakeholderData() {
+  return STAKEHOLDER_TEMPLATE.map(s => ({
+    role: s.role,
+    needs: s.needs.map(n => ({ name: n, score: 3 }))
+  }));
+}
 
 // ────────────────────────────────────────────────
 //  状态
@@ -548,14 +572,14 @@ let state = {
     3: { status: 'pending', data: {} },
   },
   matrixSelected: null,
-  stakeholderScores: null, // [[s1n1,s1n2,s1n3,s1n4],[s2...],[s3...],[s4...]]
+  stakeholderData: null, // [{role, needs:[{name, score},...]},...]
 };
 
 function loadState() {
   const s = localStorage.getItem(STORAGE_KEY);
   if (s) { try { state = JSON.parse(s); } catch(e) {} }
-  if (!state.stakeholderScores) {
-    state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(() => [3,3,3,3]);
+  if (!state.stakeholderData) {
+    state.stakeholderData = initStakeholderData();
   }
 }
 
@@ -774,64 +798,118 @@ function selectMatrix(id) {
 
 // ── 利益方打分表格 ──
 function renderStakeholderTable(f) {
-  if (!state.stakeholderScores) {
-    state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(() => [3,3,3,3]);
+  if (!state.stakeholderData) {
+    state.stakeholderData = initStakeholderData();
   }
-  const rows = STAKEHOLDER_TEMPLATE.map((s, si) => `
-    <tr>
-      <td style="font-weight:700;white-space:nowrap">${s.role}</td>
-      ${s.needs.map((nd, ni) => `
-      <td>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:3px">${nd}</div>
-        <input class="score-input" type="number" min="0" max="12"
-          value="${state.stakeholderScores[si][ni]}"
-          data-si="${si}" data-ni="${ni}"
-          oninput="updateScore(this)">
-      </td>`).join('')}
-      <td id="row-total-${si}" style="font-weight:700;color:var(--text)">
-        ${state.stakeholderScores[si].reduce((a,b)=>a+b,0)}/12
-      </td>
-    </tr>`).join('');
+  
+  // 每个利益方作为一个独立卡片
+  const cards = state.stakeholderData.map((s, si) => {
+    const total = s.needs.reduce((a, n) => a + n.score, 0);
+    const isValid = total === 12;
+    
+    return `
+    <div class="stakeholder-card" data-si="${si}">
+      <div class="stakeholder-header">
+        <span class="stakeholder-role">${s.role}</span>
+        <span class="stakeholder-total ${isValid ? 'valid' : 'invalid'}">${total}/12</span>
+      </div>
+      <div class="stakeholder-needs">
+        ${s.needs.map((need, ni) => `
+        <div class="need-row">
+          <div class="need-input-group">
+            <label>需求 ${ni + 1}</label>
+            <input type="text" class="need-name-input" 
+              value="${need.name}" 
+              placeholder="${STAKEHOLDER_TEMPLATE[si].needs[ni]}"
+              data-si="${si}" data-ni="${ni}"
+              onchange="updateNeedName(this)">
+          </div>
+          <div class="need-score-group">
+            <label>分数</label>
+            <div class="score-control">
+              <button type="button" class="score-btn" onclick="adjustScore(${si}, ${ni}, -1)">−</button>
+              <input type="number" class="score-input" min="0" max="12"
+                value="${need.score}" 
+                data-si="${si}" data-ni="${ni}"
+                onchange="updateScore(this)">
+              <button type="button" class="score-btn" onclick="adjustScore(${si}, ${ni}, 1)">+</button>
+            </div>
+          </div>
+        </div>
+        `).join('')}
+      </div>
+    </div>
+    `;
+  }).join('');
 
   return `
   <div class="form-group">
     <div class="form-label">${f.label} <span class="required">必填</span></div>
     <div class="form-hint">${f.hint}</div>
-    <div style="overflow-x:auto">
-      <table class="stakeholder-table">
-        <thead>
-          <tr>
-            <th>利益方</th>
-            <th>需求 1</th><th>需求 2</th><th>需求 3</th><th>需求 4</th>
-            <th>合计</th>
-          </tr>
-        </thead>
-        <tbody id="stakeholder-body">${rows}</tbody>
-      </table>
+    <div class="stakeholder-grid">
+      ${cards}
     </div>
     <div class="score-total" id="score-total-hint">
-      12分制：每位利益方将 12 分强制分配到 4 个需求中，体现真实优先级。合计须等于 12 分。
+      12分制：每位利益方将 12 分强制分配到 4 个需求中，体现真实优先级。合计必须等于 12 分。
     </div>
   </div>`;
 }
 
 function bindStakeholderInputs() {
-  // inputs 通过 oninput="updateScore(this)" 绑定，已在 HTML 中
+  // 通过 onchange/onclick 绑定，已在 HTML 中
 }
 
+// 更新需求名称
+function updateNeedName(input) {
+  const si = parseInt(input.dataset.si);
+  const ni = parseInt(input.dataset.ni);
+  const val = input.value.trim();
+  if (!state.stakeholderData) state.stakeholderData = initStakeholderData();
+  state.stakeholderData[si].needs[ni].name = val || STAKEHOLDER_TEMPLATE[si].needs[ni];
+  saveState();
+}
+
+// 更新分数（直接输入）
 function updateScore(input) {
   const si = parseInt(input.dataset.si);
   const ni = parseInt(input.dataset.ni);
-  const val = parseInt(input.value) || 0;
-  if (!state.stakeholderScores) state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(()=>[3,3,3,3]);
-  state.stakeholderScores[si][ni] = val;
-  const total = state.stakeholderScores[si].reduce((a,b)=>a+b,0);
-  const rowEl = document.getElementById('row-total-' + si);
-  if (rowEl) {
-    rowEl.textContent = total + '/12';
-    rowEl.style.color = total === 12 ? 'var(--green)' : 'var(--red)';
-  }
+  let val = parseInt(input.value) || 0;
+  // 限制范围 0-12
+  val = Math.max(0, Math.min(12, val));
+  input.value = val;
+  
+  if (!state.stakeholderData) state.stakeholderData = initStakeholderData();
+  state.stakeholderData[si].needs[ni].score = val;
+  updateStakeholderCard(si);
   saveState();
+}
+
+// +/- 调节分数
+function adjustScore(si, ni, delta) {
+  if (!state.stakeholderData) state.stakeholderData = initStakeholderData();
+  const current = state.stakeholderData[si].needs[ni].score;
+  const newVal = Math.max(0, Math.min(12, current + delta));
+  state.stakeholderData[si].needs[ni].score = newVal;
+  
+  // 更新输入框显示
+  const input = document.querySelector(`input[data-si="${si}"][data-ni="${ni}"].score-input`);
+  if (input) input.value = newVal;
+  
+  updateStakeholderCard(si);
+  saveState();
+}
+
+// 更新利益方卡片状态（合计分数显示）
+function updateStakeholderCard(si) {
+  const card = document.querySelector(`.stakeholder-card[data-si="${si}"]`);
+  if (!card) return;
+  
+  const total = state.stakeholderData[si].needs.reduce((a, n) => a + n.score, 0);
+  const totalEl = card.querySelector('.stakeholder-total');
+  if (totalEl) {
+    totalEl.textContent = total + '/12';
+    totalEl.className = 'stakeholder-total ' + (total === 12 ? 'valid' : 'invalid');
+  }
 }
 
 // ── 项目简报预览 ──
@@ -894,9 +972,14 @@ function submitTask() {
   const empty = textFields.filter(f => !data[f.id]);
   if (empty.length > 0) { showToast('请填写所有必填项后再提交'); return; }
   if (n === 1 && !state.matrixSelected) { showToast('请选择主题矩阵象限'); return; }
-  if (n === 3 && state.stakeholderScores) {
-    const invalid = state.stakeholderScores.some(row => row.reduce((a,b)=>a+b,0) !== 12);
+  if (n === 3 && state.stakeholderData) {
+    const invalid = state.stakeholderData.some(s => s.needs.reduce((a, n) => a + n.score, 0) !== 12);
     if (invalid) { showToast('请确保每位利益方的分配总和等于 12 分'); return; }
+  }
+
+  // 任务3额外保存利益方数据
+  if (n === 3 && state.stakeholderData) {
+    data.stakeholder_needs = state.stakeholderData;
   }
 
   state.tasks[n].data = data;
