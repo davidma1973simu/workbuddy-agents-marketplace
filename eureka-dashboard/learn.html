@@ -23,7 +23,7 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-/* ── NAV ── */
+/* NAV */
 .top-nav{background:linear-gradient(135deg,var(--purple),var(--purple2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(102,126,234,.3)}
 .nav-left{display:flex;align-items:center;gap:14px}
 .nav-back{color:rgba(255,255,255,.8);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:20px;transition:.2s;cursor:pointer;background:none}
@@ -33,7 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .nav-right{display:flex;align-items:center;gap:10px}
 .learn-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
 
-/* ── RISE PROGRESS ── */
+/* RISE PROGRESS */
 .rise-bar{background:#fff;border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:0}
 .rise-step{display:flex;align-items:center;flex:1}
 .rise-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:.3s}
@@ -47,12 +47,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .rise-connector.done{background:var(--green)}
 .rise-step.active .rise-label .name{color:var(--purple)}
 
-/* ── LAYOUT ── */
+/* LAYOUT */
 .main{display:flex;gap:24px;padding:24px;max-width:1200px;margin:0 auto}
 .sidebar{width:260px;flex-shrink:0}
 .content{flex:1;min-width:0}
 
-/* ── SIDEBAR: 任务列表 ── */
+/* SIDEBAR */
 .task-nav{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .task-nav-header{padding:16px 20px;border-bottom:1px solid var(--border)}
 .task-nav-header .phase{font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px}
@@ -70,7 +70,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .task-info .task-status{font-size:11px;color:var(--text3);margin-top:3px}
 .task-item.done .task-info .task-status{color:var(--green)}
 
-/* ── LEARNING TIPS ── */
+/* DELIVERABLE TAG */
+.deliverable-tag{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;border:1px solid #86efac;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:6px}
+
+/* TIPS */
 .tips-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:16px;overflow:hidden}
 .tips-header{padding:14px 18px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;gap:8px}
 .tips-header .icon{font-size:16px}
@@ -78,45 +81,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .tips-body{padding:14px 18px}
 .tip-item{font-size:12px;color:var(--text2);line-height:1.6;padding:6px 0;border-bottom:1px solid var(--border)}
 .tip-item:last-child{border-bottom:none}
-.tip-item::before{content:"💡 "}
+.tip-item::before{content:"⚠️ "}
 
-/* ── CONTENT CARD ── */
+/* CONTENT CARD */
 .task-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .task-header{padding:24px 28px;background:linear-gradient(135deg,rgba(102,126,234,.06),rgba(118,75,162,.04));border-bottom:1px solid var(--border)}
 .task-header .step-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px}
 .task-header h2{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px}
-.task-header .objective{font-size:14px;color:var(--text2);line-height:1.7;padding:12px 16px;background:rgba(102,126,234,.06);border-radius:8px;border-left:3px solid var(--purple)}
+.task-header .objective{font-size:14px;color:var(--text2);line-height:1.7;padding:12px 16px;background:rgba(102,126,234,.06);border-radius:8px;border-left:3px solid var(--purple);margin-bottom:10px}
+.task-header .deliverable-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-header .deliverable-label{font-size:12px;color:var(--text3);font-weight:600}
 
-/* ── CONCEPT BOX ── */
+/* CONCEPT */
 .concept-box{padding:20px 28px;border-bottom:1px solid var(--border)}
 .section-label{font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .concept-text{font-size:13px;color:var(--text2);line-height:1.8;background:#f8faff;padding:14px 16px;border-radius:8px}
 
-/* ── STEPS ── */
+/* STEPS */
 .steps-box{padding:20px 28px;border-bottom:1px solid var(--border)}
 .step-list{display:flex;flex-direction:column;gap:10px}
-.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f8faff;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:.15s}
-.step-row:hover{border-color:var(--purple);background:rgba(102,126,234,.04)}
-.step-row.active-step{border-color:var(--purple);background:rgba(102,126,234,.08);box-shadow:0 2px 8px rgba(102,126,234,.15)}
-.step-circle{width:28px;height:28px;border-radius:50%;background:var(--border);color:var(--text2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.step-row.active-step .step-circle{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff}
-.step-row.step-done .step-circle{background:var(--green);color:#fff}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f8faff;border-radius:8px;border:1px solid var(--border)}
+.step-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .step-content .step-title{font-size:13px;font-weight:700;color:var(--text)}
 .step-content .step-hint{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.5}
 
-/* ── FORM AREA ── */
+/* FORM */
 .form-area{padding:20px 28px;border-bottom:1px solid var(--border)}
-.form-group{margin-bottom:18px}
+.form-group{margin-bottom:22px}
 .form-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .form-label .required{color:var(--red);font-size:11px}
 .form-hint{font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#f8faff;border-radius:6px;border-left:2px solid var(--purple)}
-.form-hint .example{color:var(--purple);font-style:italic}
+.form-hint .example{color:var(--purple);font-style:italic;display:block;margin-top:4px}
 textarea,input[type="text"]{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;transition:.2s;background:#fff;line-height:1.7}
 textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 3px rgba(102,126,234,.1)}
 textarea{min-height:90px}
 
-/* ── MATRIX ── */
-.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+/* MATRIX — 2×2，带轴标签 */
+.matrix-wrapper{position:relative;margin-top:8px}
+.matrix-axis-labels{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:4px}
+.axis-label{font-size:11px;font-weight:700;color:var(--text3);text-align:center;padding:2px 0}
+.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .matrix-cell{border:1.5px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;position:relative}
 .matrix-cell:hover{border-color:var(--purple);background:#f8faff}
 .matrix-cell.selected{border-color:var(--purple);background:rgba(102,126,234,.08);box-shadow:0 2px 10px rgba(102,126,234,.2)}
@@ -125,13 +129,31 @@ textarea{min-height:90px}
 .matrix-cell .cell-desc{font-size:11px;color:var(--text2);line-height:1.5}
 .matrix-cell .check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--purple);color:#fff;font-size:11px;display:none;align-items:center;justify-content:center}
 .matrix-cell.selected .check{display:flex}
-/* 4象限颜色 */
 .q1 .cell-tag{background:#dbeafe;color:#1d4ed8}
 .q2 .cell-tag{background:#dcfce7;color:#15803d}
 .q3 .cell-tag{background:#fef9c3;color:#a16207}
 .q4 .cell-tag{background:#fce7f3;color:#be185d}
+.matrix-footnote{font-size:11px;color:var(--text3);margin-top:8px;padding:6px 10px;background:#f8faff;border-radius:6px;border-left:2px solid var(--amber)}
 
-/* ── FEEDBACK ── */
+/* STAKEHOLDER TABLE */
+.stakeholder-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+.stakeholder-table th{background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.08));color:var(--text);font-weight:700;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border)}
+.stakeholder-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.stakeholder-table tr:hover td{background:#f8faff}
+.score-input{width:56px;border:1.5px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px;text-align:center;color:var(--text);font-family:inherit}
+.score-input:focus{outline:none;border-color:var(--purple)}
+.score-total{font-size:13px;color:var(--text2);margin-top:8px;padding:8px 12px;background:#f8faff;border-radius:6px}
+.score-total .over{color:var(--red);font-weight:700}
+.score-total .ok{color:var(--green);font-weight:700}
+
+/* BRIEF PREVIEW */
+.brief-preview{border:2px solid var(--purple);border-radius:12px;padding:20px 24px;background:linear-gradient(135deg,rgba(102,126,234,.03),rgba(118,75,162,.02));margin-top:8px}
+.brief-title{font-size:15px;font-weight:800;color:var(--purple);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.brief-section{margin-bottom:14px}
+.brief-section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.brief-section-content{font-size:13px;color:var(--text);line-height:1.7;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid var(--border);min-height:32px;white-space:pre-wrap}
+
+/* FEEDBACK */
 .feedback-box{padding:20px 28px;border-bottom:1px solid var(--border);display:none}
 .feedback-box.show{display:block}
 .feedback-score{display:flex;align-items:center;gap:16px;margin-bottom:14px}
@@ -147,7 +169,7 @@ textarea{min-height:90px}
 .feedback-item.warn{background:#fffbeb;color:#92400e}
 .feedback-item.bad{background:#fef2f2;color:#b91c1c}
 
-/* ── ACTIONS ── */
+/* ACTIONS */
 .action-bar{padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .btn-primary{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 28px;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,.4)}
@@ -157,13 +179,13 @@ textarea{min-height:90px}
 .btn-ai:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.4)}
 .save-hint{font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px}
 
-/* ── ERROR / WARNING ── */
+/* WARN BOX */
 .misconception-box{padding:20px 28px;border-bottom:1px solid var(--border)}
 .warn-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px}
 .warn-title{font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .warn-items{font-size:12px;color:#a16207;line-height:1.8}
 
-/* ── COMPLETE STATE ── */
+/* COMPLETE */
 .complete-banner{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #86efac;border-radius:12px;padding:20px 24px;margin:20px 28px;display:none}
 .complete-banner.show{display:flex;align-items:center;gap:16px}
 .complete-icon{font-size:36px}
@@ -172,7 +194,7 @@ textarea{min-height:90px}
 .btn-next{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;margin-left:auto;white-space:nowrap}
 .btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(16,185,129,.4)}
 
-/* ── AI MODAL ── */
+/* AI MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
 .ai-panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:75vh;display:flex;flex-direction:column;animation:slideUp .3s ease}
@@ -181,7 +203,7 @@ textarea{min-height:90px}
 .ai-panel-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
 .ai-panel-close{background:var(--border);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--text2)}
 .ai-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
-.ai-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.ai-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;white-space:pre-line}
 .ai-msg.bot{background:#f0f4ff;color:var(--text);border-bottom-left-radius:4px;align-self:flex-start}
 .ai-msg.user{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
 .ai-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px}
@@ -189,7 +211,7 @@ textarea{min-height:90px}
 .ai-input:focus{border-color:var(--purple)}
 .ai-send{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
 
-/* ── TOAST ── */
+/* TOAST */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:2000;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -214,33 +236,33 @@ textarea{min-height:90px}
   </div>
   <div class="nav-right">
     <span class="learn-badge">📚 学习模式</span>
-    <span class="learn-badge" id="save-status">● 已保存</span>
+    <span class="learn-badge" id="save-status">● 自动保存</span>
   </div>
 </nav>
 
-<!-- RISE PROGRESS BAR -->
+<!-- RISE BAR -->
 <div class="rise-bar">
   <div class="rise-step active">
     <div class="rise-dot active">R</div>
     <div class="rise-label">
       <div class="name">Reveal · 揭示</div>
-      <div class="desc">洞察用户真实问题</div>
+      <div class="desc">团队共识与用户洞察</div>
     </div>
   </div>
   <div class="rise-connector"></div>
   <div class="rise-step">
     <div class="rise-dot locked">I</div>
     <div class="rise-label">
-      <div class="name">Inspire · 激发</div>
-      <div class="desc">创意发散与收敛</div>
+      <div class="name">Inspire · 启发</div>
+      <div class="desc">创新机遇与创意想法</div>
     </div>
   </div>
   <div class="rise-connector"></div>
   <div class="rise-step">
     <div class="rise-dot locked">S</div>
     <div class="rise-label">
-      <div class="name">Shape · 塑造</div>
-      <div class="desc">概念方案设计</div>
+      <div class="name">Shape · 构建</div>
+      <div class="desc">方案构建与用户体验</div>
     </div>
   </div>
   <div class="rise-connector"></div>
@@ -248,7 +270,7 @@ textarea{min-height:90px}
     <div class="rise-dot locked">E</div>
     <div class="rise-label">
       <div class="name">Exam · 验证</div>
-      <div class="desc">商业可行性验证</div>
+      <div class="desc">原型构建与价值验证</div>
     </div>
   </div>
 </div>
@@ -286,8 +308,6 @@ textarea{min-height:90px}
         </div>
       </div>
     </div>
-
-    <!-- 学习提示 -->
     <div class="tips-card" id="tips-card">
       <div class="tips-header"><span class="icon">⚠️</span><span class="label">常见误区</span></div>
       <div class="tips-body" id="tips-body"></div>
@@ -295,13 +315,11 @@ textarea{min-height:90px}
   </aside>
 
   <!-- CONTENT -->
-  <main class="content" id="task-content">
-    <!-- 动态渲染 -->
-  </main>
+  <main class="content" id="task-content"></main>
 
 </div>
 
-<!-- AI Coach Modal -->
+<!-- AI MODAL -->
 <div class="modal-overlay" id="ai-modal">
   <div class="ai-panel">
     <div class="ai-panel-header">
@@ -319,109 +337,226 @@ textarea{min-height:90px}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── 数据结构 ──
 const STORAGE_KEY = 'eureka_learn_v1';
 
+// ────────────────────────────────────────────────
+//  任务数据
+// ────────────────────────────────────────────────
 const TASKS = {
+
+  // ── 任务 1：明确创新主题 ──────────────────────
   1: {
     title: '明确创新主题',
     badge: 'Reveal · 任务 1/3',
-    objective: '理解如何从不同的个人挑战中聚类提炼出团队共识方向；掌握使用「创新主题矩阵框架」来评估和筛选「劣构且强需求」的创新问题。',
-    concept: '本任务使用 5 个步骤达成创新选题：个人主题 → 分享聚类 → 主题矩阵框架 → 共识选题 → 具体描述。核心工具是「创新主题矩阵」（结合业务领域与创新类型），帮助团队将发散的个人挑战转化为统一的创新主题，最终用一句话清晰界定：在什么场景下，为谁解决什么问题，达成什么目的。',
+    deliverable: '结构化的创新主题描述',
+    objective: '理解如何从不同成员的个人挑战中聚类提炼出团队共识方向；掌握使用「创新主题矩阵框架」来评估和筛选"劣构且强需求"的创新问题。',
+    concept: '本任务使用 5 个步骤达成创新选题，核心工具是「创新主题矩阵」（横轴：业务主题类别；纵轴：创新类型），帮助团队将发散的个人挑战转化为统一的创新方向。\n\n筛选原则：选择「劣构、强需求」的问题 ——\n• 战略创新（约束强 + 需求强 + 劣构）：为某个商业机遇\n• 需求创新（约束弱 + 需求强 + 劣构）：为某个市场机遇',
     steps: [
-      { title: '个人主题收集', hint: '每位成员写出自己最关心的 1-3 个创新挑战' },
-      { title: '分享与聚类', hint: '团队轮流分享，将相似主题归类合并' },
-      { title: '主题矩阵评估', hint: '用创新主题矩阵评估每个方向的价值与可行性' },
-      { title: '共识选题', hint: '团队投票或讨论，选定最终创新课题' },
-      { title: '一句话主题描述', hint: '用完整结构描述：场景 + 用户 + 问题 + 目的' },
+      { title: '个人主题', hint: '每位成员静默写下自己最想解决的 2-3 个挑战和期待的结果' },
+      { title: '分享和聚类', hint: '小组内轮流分享各自的挑战，将相似主题进行自然归类' },
+      { title: '主题矩阵框架', hint: '使用创新主题矩阵，理解纵轴（创新类型）和横轴（业务领域）的含义' },
+      { title: '共识选题', hint: '小组共识决策，选择一个符合矩阵定位的挑战课题（劣构、强需求）' },
+      { title: '具体描述', hint: '用一句话描述：在什么场景下，为什么客户，解决什么问题，达成什么目的' },
     ],
     misconceptions: [
-      '选择的挑战过于简单明确（良构问题），缺乏创新空间',
+      '选择的挑战过于简单明确（良构问题），导致缺乏创新空间',
       '问题脱离实际业务场景，缺乏真实且强烈的用户需求',
       '团队只是表面上妥协，未达成深层共识',
+      '对某些主题了解不充分，信息不完整就匆忙选题',
     ],
     successStandard: '团队一致选定一个具有挑战性的创新课题，并产出一句结构完整的「主题描述」，清晰涵盖场景、客户群体、核心问题及期望达成的目的。',
     fields: [
-      { id: 'personal_challenges', label: '个人创新挑战', type: 'textarea', hint: '每位成员列出 1-3 个挑战，用逗号或换行分隔', example: '例：销售团队缺乏系统化的客户洞察工具；新员工入职培训周期过长效果差...' },
-      { id: 'topic_matrix', label: '主题矩阵选择', type: 'matrix', hint: '根据团队聚类结果，选择最符合你们挑战的象限' },
-      { id: 'consensus_topic', label: '团队共识课题', type: 'text', hint: '团队最终选定的创新方向（简短标题）', example: '例：企业新员工培训场景化提升方案' },
-      { id: 'topic_description', label: '一句话主题描述', type: 'textarea', hint: '结构：在【场景】下，为【目标用户】解决【核心问题】，达成【期望目的】', example: '例：在新员工入职 90 天内，为基层销售人员解决「知道却做不到」的实战能力断层问题，使其达到独立开单的业务标准。' },
+      {
+        id: 'personal_challenges',
+        label: '步骤 1-2：个人挑战收集与聚类',
+        type: 'textarea',
+        hint: '每位成员写出 1-3 个最关心的挑战，完成后进行聚类归并',
+        example: '例：\n• 张三：新员工入职培训效果差，90天离职率高；客户投诉处理流程混乱\n• 李四：销售团队缺乏统一的谈判话术，成单率低\n→ 聚类：「新人赋能与销售技能培养」方向',
+        rows: 5,
+      },
+      {
+        id: 'topic_matrix',
+        label: '步骤 3-4：创新主题矩阵定位与共识选题',
+        type: 'matrix',
+        hint: '根据聚类结果，在矩阵中定位你们的创新课题类型',
+      },
+      {
+        id: 'consensus_topic',
+        label: '共识课题（标题）',
+        type: 'text',
+        hint: '团队最终选定的创新方向，用简短标题表达',
+        example: '例：企业新员工场景化销售技能实训体系',
+      },
+      {
+        id: 'topic_description',
+        label: '步骤 5：一句话主题描述（产出物）',
+        type: 'textarea',
+        hint: '结构：在【场景/背景】下，为【目标用户】解决【核心问题】，达成【期望目的】',
+        example: '例：在新员工入职 90 天的关键成长期内，为基层销售顾问解决「知道却做不到」的实战技能断层问题，使其达到独立开单的业务标准。',
+        rows: 3,
+      },
     ],
-    coachIntro: '你好！我是你的 Eureka Coach 🤖\n\n这个任务的核心是帮助团队对齐创新方向。有几个关键点：\n\n1. 好的创新主题是「劣构」的 —— 没有标准答案，需要探索\n2. 主题矩阵帮你避免选「伪需求」\n3. 最终那句话要让所有人秒懂\n\n你现在卡在哪一步了？',
+    coachIntro: '你好！我是你的 Eureka Coach 🤖\n\n这个任务的核心是帮团队对齐方向，避免「伪创新」。\n\n记住一个关键原则：好的创新主题是「劣构」的 —— 没有标准答案，需要真正探索。如果你一眼就知道怎么解决，那通常不是创新问题。\n\n你现在卡在哪一步了？是聚类，还是矩阵定位？',
   },
+
+  // ── 任务 2：背景挑战研究 ──────────────────────
   2: {
     title: '背景挑战研究',
     badge: 'Reveal · 任务 2/3',
-    objective: '理解如何细化一句话问题挑战的背景，掌握提炼现状、困难、期望目的和目标用户的方法。',
-    concept: '本任务的核心是使用「背景挑战」结构，将一句话主题展开，明确涵盖核心要素：背景信息、目标用户、挑战和问题、现状描述、期望目的、以及影响和限制要素。',
+    deliverable: '结构化的创新主题背景案例',
+    objective: '理解如何细化一句话问题挑战的背景；掌握提炼现状、困难、期望目的和目标用户的方法，产出一份结构化的背景案例。',
+    concept: '本任务使用「背景挑战」结构，将任务 1 产出的一句话主题展开为完整的背景描述，明确涵盖 6 个核心要素：\n\n① 背景信息  ② 现状描述  ③ 目标用户  ④ 期望目的  ⑤ 挑战和问题  ⑥ 影响和限制要素\n\n这份背景案例是后续「利益方研讨」的基础素材，质量直接影响项目简报的深度。',
     steps: [
-      { title: '描述背景信息', hint: '这个问题发生在什么行业/组织/环境下？' },
-      { title: '界定目标用户', hint: '谁是最直接受影响的人群？越具体越好' },
-      { title: '描述现状与挑战', hint: '现在的情况是什么？为什么这是个问题？' },
-      { title: '明确期望目的', hint: '理想状态下，解决这个问题后会怎样？' },
-      { title: '列出限制要素', hint: '有哪些现实条件会影响解决方案？' },
+      { title: '背景信息', hint: '一句话描述面对的问题挑战所在的行业/组织/业务背景' },
+      { title: '现状描述', hint: '用客观事实（含数据）描述当前的真实情况' },
+      { title: '目标用户', hint: '假设的目标用户是谁？越具体越好（岗位+阶段+特征）' },
+      { title: '期望目的', hint: '理想解决后的状态是什么？预期的改变是什么？' },
+      { title: '挑战和问题', hint: '面对的核心困难和模糊想法是什么？' },
+      { title: '影响和限制要素', hint: '有哪些现实约束？资源、时间、政策、文化...' },
     ],
     misconceptions: [
-      '现状描述过于主观而缺乏事实支撑',
-      '目标人群界定过于宽泛模糊（如「所有员工」）',
+      '现状描述过于主观而缺乏事实支撑（用感受代替数据）',
+      '目标人群界定过于宽泛模糊（如「所有员工」「广大用户」）',
       '完全忽略了现实的限制条件与影响要素',
     ],
-    successStandard: '团队能清晰产出一份结构化的「背景挑战」描述，客观全面地拆解当前的劣构问题，为后续的利益方共识提供扎实的讨论基础。',
+    successStandard: '团队能清晰产出一份结构化的「背景挑战」描述，客观全面地拆解当前的劣构问题，6 个要素完整填写，为后续的利益方共识提供扎实的讨论基础。',
     fields: [
-      { id: 'background_info', label: '背景信息', type: 'textarea', hint: '描述问题所在的行业、组织类型、发展阶段等背景', example: '例：某快消品公司，销售团队约 500 人，近两年因市场竞争加剧，新员工流失率超过 40%...' },
-      { id: 'target_users', label: '目标用户（具体）', type: 'text', hint: '越具体越好，包含岗位、阶段、特征', example: '例：入职 0-6 个月的基层销售顾问，无行业经验，来自应届毕业生' },
-      { id: 'current_situation', label: '现状描述（用数据/事实）', type: 'textarea', hint: '用客观事实描述，尽量有数据支撑', example: '例：目前培训以课堂讲授为主（3天），转化率低，90天内独立开单率仅 15%...' },
-      { id: 'expected_outcome', label: '期望目的', type: 'textarea', hint: '解决问题后的理想状态是什么？', example: '例：新员工 60 天内能独立完成完整销售流程，90 天开单率提升至 40%...' },
-      { id: 'constraints', label: '影响与限制要素', type: 'textarea', hint: '有哪些客观限制？资源、时间、政策、文化...', example: '例：培训预算有限、销售经理带教时间不足、各地区产品差异化大...' },
+      {
+        id: 'background_info',
+        label: '① 背景信息',
+        type: 'textarea',
+        hint: '这个问题发生在什么行业、什么类型的组织、什么发展阶段？',
+        example: '例：某快消品公司，全国销售团队约 500 人，近两年因市场竞争加剧，新员工大量补充，但培训体系建设滞后。',
+        rows: 3,
+      },
+      {
+        id: 'current_situation',
+        label: '② 现状描述（用数据/事实）',
+        type: 'textarea',
+        hint: '尽量包含具体数字。「感觉培训没用」→「培训后 30 天内，独立使用率仅 8%」',
+        example: '例：目前培训以课堂讲授为主（3天集训），以产品知识为核心内容。90天内独立开单率仅 15%，60% 的新员工反映「会背话术但不会用」。',
+        rows: 4,
+      },
+      {
+        id: 'target_users',
+        label: '③ 目标用户（具体）',
+        type: 'textarea',
+        hint: '包含：岗位 + 入职阶段/资历 + 关键特征',
+        example: '例：入职 0-6 个月的基层销售顾问，大多为应届毕业生，无行业经验，分布在全国 20 个城市，需要在 90 天内通过独立开单考核。',
+        rows: 3,
+      },
+      {
+        id: 'expected_outcome',
+        label: '④ 期望目的',
+        type: 'textarea',
+        hint: '解决问题后的理想状态是什么？可以包含具体目标数值',
+        example: '例：新员工 60 天内能独立完成完整销售流程，90 天开单率从 15% 提升至 40%；降低因技能不足导致的早期离职率。',
+        rows: 3,
+      },
+      {
+        id: 'challenges',
+        label: '⑤ 挑战和问题',
+        type: 'textarea',
+        hint: '当前面临的核心难题是什么？可以是多个维度',
+        example: '例：知识培训与实战场景脱节；老员工带教意愿低且方法不统一；不同区域产品线差异大，难以统一培训内容；新员工怕犯错，实战机会少。',
+        rows: 4,
+      },
+      {
+        id: 'constraints',
+        label: '⑥ 影响和限制要素',
+        type: 'textarea',
+        hint: '有哪些客观约束不可绕过？资源、时间、文化、政策...',
+        example: '例：培训预算有限（人均不超过 2000 元）；销售经理带教时间不足（主要精力在业绩）；各地区产品差异化大，难以标准化；新人对培训排斥感强。',
+        rows: 3,
+      },
     ],
-    coachIntro: '太好了，你已经完成了创新主题的选定！\n\n现在要做的是「把模糊的感受变成清晰的事实」。\n\n最常见的问题是：现状描述太主观，比如「大家都觉得培训没用」而不是「培训后 30 天内，独立使用率为 8%」。\n\n你的现状有没有可以量化的数据？',
+    coachIntro: '你已完成创新主题的选定，干得好！\n\n现在要做的是「把模糊的感受变成清晰的事实」。\n\n最常见的陷阱：现状描述太主观。\n「大家都觉得培训没用」→ 这是感受\n「培训后 30 天内，实际使用率 8%」→ 这是事实\n\n你现在手头有哪些数据或具体观察？从这里开始。',
   },
+
+  // ── 任务 3：团队构建共识 ──────────────────────
   3: {
     title: '团队构建共识',
     badge: 'Reveal · 任务 3/3',
-    objective: '理解团队角色的多样性价值，掌握收集各利益方需求并利用「12 分制」进行优先级打分排序的方法，最终整合产出《项目简报（Project Brief）》。',
-    concept: '核心包含两步：①基于认知与长处进行团队角色分工（商业推动者、技术实现者、用户代言人、设计创意者）；②进行项目利益方研讨，整合各方需求与挑战，最终推导出包含愿景和待验证假设的「项目简报」。',
+    deliverable: '《项目简报（Project Brief）》',
+    objective: '理解团队角色的多样性价值；掌握收集各利益方需求并利用「12 分制」进行优先级打分排序的方法；最终整合产出《项目简报》。',
+    concept: '本任务分两步完成：\n\n第一步：团队角色分工\n基于每人的认知背景与长处，分配 4 种角色：商业推动者 / 技术实现者 / 用户代言人 / 设计创意者\n\n第二步：利益方研讨 + 12 分制\n邀请/模拟 4 类利益方（业务领导、技术专家、合作伙伴、前沿用户）各表述需求，每位利益方用 12 分强制分配到 4 个需求维度，明确核心需求。\n\n整合以上，产出《项目简报（Project Brief）》，包含：主题背景、愿景共识、待验证假设。',
     steps: [
-      { title: '团队角色分工', hint: '4 种角色各司其职：商业/技术/用户/创意' },
-      { title: '利益方识别', hint: '列出所有会影响或被影响的关键人/群体' },
-      { title: '各方需求收集', hint: '每个利益方最关心什么？担忧什么？' },
-      { title: '12 分制优先级排序', hint: '每人分配 12 分，给最重要的需求打分' },
-      { title: '产出项目简报', hint: '整合成完整的 Project Brief 文档' },
+      { title: '团队角色分工', hint: '每人自我介绍技能长处，根据背景分配商业/技术/用户/创意 4 种角色' },
+      { title: '利益方识别', hint: '列出项目中的 3-4 个关键利益方（业务领导/技术专家/合作伙伴/用户代表）' },
+      { title: '各方需求研讨', hint: '每个利益方：为什么要解决这个问题？目前有什么解决方案？期望带来什么价值？' },
+      { title: '12 分制优先级排序', hint: '每位利益方把 12 分强制分配到 4 个需求中，明确核心需求' },
+      { title: '产出项目简报', hint: '整合所有信息，形成包含主题背景、愿景共识、待验证假设的《项目简报》' },
     ],
     misconceptions: [
-      '团队角色视角单一（如全员技术思维）',
-      '各利益方需求只做表面妥协而未通过打分机制排定真实优先级',
+      '团队角色视角单一（如全员技术思维），缺乏多元视角',
+      '各利益方需求只做表面妥协，未通过打分机制排定真实优先级',
       '项目简报中缺乏具体、可测试的各维度「待验证假设」',
     ],
-    successStandard: '团队完成明确分工，平衡多方痛点，输出一份完整的《项目简报》，内容清晰涵盖创新主题、背景挑战、预期双重价值，以及用户、技术、商业、利益方等维度的具体待验证假设。',
+    successStandard: '团队完成明确分工，平衡多方痛点，输出一份完整的《项目简报》，内容涵盖：创新主题、背景挑战摘要、预期双重价值，以及用户、技术、商业、利益方等维度的具体待验证假设。',
     fields: [
-      { id: 'team_roles', label: '团队角色分工', type: 'textarea', hint: '列出每位成员及其担任的角色，说明理由', example: '例：张三 - 商业推动者（有销售背景）；李四 - 用户代言人（曾是一线员工）...' },
-      { id: 'stakeholders', label: '利益方清单', type: 'textarea', hint: '列出所有关键利益方及其核心诉求', example: '例：业务负责人（关注投入产出比）；HR 总监（关注留存率）；一线员工（关注实用性）...' },
-      { id: 'priority_scoring', label: '12 分制优先级结果', type: 'textarea', hint: '列出打分结果和最终排名前 3 的核心需求', example: '例：独立开单能力培养 - 42分；减少带教成本 - 28分；提升留存率 - 20分...' },
-      { id: 'project_vision', label: '项目愿景', type: 'text', hint: '一句话描述这个项目成功后的样子', example: '例：打造一套让新员工「边做边学」的场景化销售实训体系' },
-      { id: 'hypotheses', label: '待验证假设（至少 3 条）', type: 'textarea', hint: '用「我们相信...如果...则...」格式，涵盖用户/技术/商业维度', example: '例：\n用户假设：我们相信，如果用真实客户场景替代角色扮演，新员工的技能迁移速度会提升 50%\n商业假设：我们相信，缩短培养周期将使 90 天留存率从 60% 提升至 75%\n技术假设：我们相信，AI 模拟对话能替代 60% 的带教时间...' },
+      {
+        id: 'team_roles',
+        label: '步骤 1：团队角色分工',
+        type: 'textarea',
+        hint: '列出每位成员的姓名、担任角色及理由（基于其技能/背景）',
+        example: '例：\n• 张三（商业推动者）—— 有 3 年销售管理经验，关注 ROI 和推广阻力\n• 李四（用户代言人）—— 曾是一线销售，了解新人痛点\n• 王五（技术实现者）—— IT 背景，了解系统和工具可行性\n• 赵六（设计创意者）—— 善于视觉化和方案构建',
+        rows: 4,
+      },
+      {
+        id: 'stakeholder_scoring',
+        label: '步骤 2-4：利益方 + 12 分制优先级（产出物之一）',
+        type: 'stakeholder',
+        hint: '为每个利益方的 4 个需求分配 12 分（总分必须等于 12）',
+      },
+      {
+        id: 'pb_vision',
+        label: '项目简报：愿景共识',
+        type: 'textarea',
+        hint: '基于所有讨论，重新定义这个挑战：我们的主题、愿景和共识 —— 为谁？解决什么问题？带来什么价值？',
+        example: '例：打造一套让新员工「边做边学」的场景化销售实训体系，让每位新人在真实销售场景中快速积累经验，60 天内具备独立开单能力，同时降低企业带教成本。',
+        rows: 3,
+      },
+      {
+        id: 'pb_hypotheses',
+        label: '项目简报：待验证假设（至少 3 条，产出物之一）',
+        type: 'textarea',
+        hint: '涵盖「用户 / 技术 / 商业 / 利益方」4 个维度，格式：「我们相信...，如果...，则...」',
+        example: '例：\n【用户假设】我们相信，如果用真实客户场景替代角色扮演演练，新员工的技能迁移速度会提升 50%，可通过对比组测试验证。\n【技术假设】我们相信，AI 模拟对话能替代 60% 的带教时间，可通过 4 周试点验证。\n【商业假设】我们相信，缩短培养周期将使 90 天留存率从 60% 提升至 75%，降低招聘成本约 30%。\n【利益方假设】我们相信，销售经理对「减少带教时间」的需求优先级高于「提升开单率」，需通过访谈确认。',
+        rows: 8,
+      },
     ],
-    coachIntro: '最后一个任务了！这是整个 Reveal 阶段的「收口」。\n\n项目简报的质量决定了后续 Inspire 阶段的方向。\n\n最容易出问题的是「待验证假设」—— 很多团队写的是「我们相信用户喜欢这个功能」，这不够具体，要能测量。\n\n你想先从哪个角度开始？',
+    coachIntro: '最后一个任务了！这是整个 Reveal 阶段的「收口」。\n\n项目简报的质量决定了 Inspire 阶段的方向。\n\n最容易出问题的地方是「待验证假设」—— 很多团队写的是「我们相信用户会喜欢」，这不够。\n\n好的假设要能测量：「如果做了 X，则 Y 会变化 Z%」。\n\n你想先聊利益方识别，还是直接看假设怎么写？',
   },
 };
 
-const MATRIX_OPTIONS = [
-  { id: 'q1', quad: 'q1', tag: '🏭 流程优化 × 效率提升', title: '现有业务流程改造', desc: '优化已有的工作流程，降低成本、提升效率', selected: false },
-  { id: 'q2', quad: 'q2', tag: '🚀 新市场 × 价值创造', title: '全新价值主张探索', desc: '开拓新市场或创造新需求，高风险高回报', selected: false },
-  { id: 'q3', quad: 'q3', tag: '👥 用户体验 × 服务升级', title: '用户旅程重新设计', desc: '改善用户体验，提升满意度和粘性', selected: false },
-  { id: 'q4', quad: 'q4', tag: '🔗 生态整合 × 协同价值', title: '跨界合作生态构建', desc: '整合外部资源，建立合作生态网络', selected: false },
+// 利益方行模板
+const STAKEHOLDER_TEMPLATE = [
+  { role: '业务领导', needs: ['战略一致性', '投入产出比', '执行可行性', '速度和结果'] },
+  { role: '技术专家', needs: ['技术可行性', '系统整合度', '扩展性', '维护成本'] },
+  { role: '合作伙伴', needs: ['共同价值', '资源投入', '风险分担', '合作条件'] },
+  { role: '用户代表', needs: ['解决真实痛点', '使用便捷性', '学习成本', '可见价值'] },
 ];
 
-// ── 状态 ──
+// ────────────────────────────────────────────────
+//  状态
+// ────────────────────────────────────────────────
 let state = {
   currentTask: 1,
-  tasks: { 1: { status: 'in_progress', data: {} }, 2: { status: 'pending', data: {} }, 3: { status: 'pending', data: {} } },
+  tasks: {
+    1: { status: 'in_progress', data: {} },
+    2: { status: 'pending', data: {} },
+    3: { status: 'pending', data: {} },
+  },
   matrixSelected: null,
+  stakeholderScores: null, // [[s1n1,s1n2,s1n3,s1n4],[s2...],[s3...],[s4...]]
 };
 
 function loadState() {
   const s = localStorage.getItem(STORAGE_KEY);
   if (s) { try { state = JSON.parse(s); } catch(e) {} }
+  if (!state.stakeholderScores) {
+    state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(() => [3,3,3,3]);
+  }
 }
 
 function saveState() {
@@ -437,7 +572,9 @@ function switchTask(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── RENDER ──
+// ────────────────────────────────────────────────
+//  渲染
+// ────────────────────────────────────────────────
 function renderAll() {
   renderSidebar();
   renderTaskContent();
@@ -449,11 +586,11 @@ function renderSidebar() {
   [1,2,3].forEach(n => {
     const nav = document.getElementById('nav-t' + n);
     const num = document.getElementById('num-t' + n);
-    const st = document.getElementById('status-t' + n);
-    const ts = state.tasks[n].status;
+    const st  = document.getElementById('status-t' + n);
+    const ts  = state.tasks[n].status;
     nav.className = 'task-item' + (state.currentTask === n ? ' active' : '') + (ts === 'done' ? ' done' : '');
     num.textContent = ts === 'done' ? '✓' : n;
-    st.textContent = ts === 'done' ? '✅ 已完成' : (state.currentTask === n ? '进行中' : '未开始');
+    st.textContent  = ts === 'done' ? '✅ 已完成' : (state.currentTask === n ? '进行中' : '未开始');
   });
 }
 
@@ -470,60 +607,71 @@ function renderTips() {
 }
 
 function renderTaskContent() {
-  const task = TASKS[state.currentTask];
-  const data = state.tasks[state.currentTask].data || {};
-  const isDone = state.tasks[state.currentTask].status === 'done';
+  const n    = state.currentTask;
+  const task = TASKS[n];
+  const data = state.tasks[n].data || {};
+  const isDone = state.tasks[n].status === 'done';
 
   let fieldsHtml = '';
   task.fields.forEach(f => {
     const val = data[f.id] || '';
     if (f.type === 'matrix') {
       fieldsHtml += renderMatrix(f, val);
+    } else if (f.type === 'stakeholder') {
+      fieldsHtml += renderStakeholderTable(f);
     } else if (f.type === 'textarea') {
       fieldsHtml += `
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
-        <div class="form-hint">${f.hint}<br><span class="example">${f.example}</span></div>
-        <textarea id="field-${f.id}" placeholder="在这里输入..." ${isDone ? 'readonly' : ''}>${val}</textarea>
+        <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
+        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入..." ${isDone?'readonly':''}>${val}</textarea>
       </div>`;
     } else {
       fieldsHtml += `
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
-        <div class="form-hint">${f.hint}<br><span class="example">${f.example}</span></div>
-        <input type="text" id="field-${f.id}" value="${val}" placeholder="在这里输入..." ${isDone ? 'readonly' : ''}>
+        <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
+        <input type="text" id="field-${f.id}" value="${val}" placeholder="在这里输入..." ${isDone?'readonly':''}>
       </div>`;
     }
   });
+
+  // 任务 3 额外：项目简报预览
+  const briefPreview = n === 3 ? renderBriefPreview(data) : '';
 
   const completeBanner = isDone ? `
   <div class="complete-banner show">
     <div class="complete-icon">🎉</div>
     <div class="complete-text">
-      <div class="title">任务完成！</div>
-      <div class="sub">成功标准：${task.successStandard}</div>
+      <div class="title">任务完成！产出：${task.deliverable}</div>
+      <div class="sub">${task.successStandard}</div>
     </div>
-    ${state.currentTask < 3 ? `<button class="btn-next" onclick="switchTask(${state.currentTask + 1})">下一个任务 →</button>` : `<button class="btn-next" onclick="showModuleComplete()">🎓 完成模块</button>`}
+    ${n < 3 ? `<button class="btn-next" onclick="switchTask(${n+1})">下一个任务 →</button>` : `<button class="btn-next" onclick="showModuleComplete()">🎓 完成模块一</button>`}
   </div>` : '';
 
   document.getElementById('task-content').innerHTML = `
   <div class="task-card">
+
     <div class="task-header">
       <div class="step-badge">📍 ${task.badge}</div>
       <h2>${task.title}</h2>
       <div class="objective">🎯 <strong>教学目标：</strong>${task.objective}</div>
+      <div class="deliverable-row">
+        <span class="deliverable-label">本任务产出：</span>
+        <span class="deliverable-tag">📄 ${task.deliverable}</span>
+      </div>
     </div>
 
     <div class="concept-box">
-      <div class="section-label">📖 核心概念</div>
-      <div class="concept-text">${task.concept}</div>
+      <div class="section-label">📖 核心概念与方法</div>
+      <div class="concept-text" style="white-space:pre-line">${task.concept}</div>
     </div>
 
     <div class="steps-box">
-      <div class="section-label">🪜 5 步完成任务</div>
+      <div class="section-label">🪜 ${task.steps.length} 步完成任务</div>
       <div class="step-list">
-        ${task.steps.map((s, i) => `
-        <div class="step-row" id="step-${i}" onclick="highlightStep(${i})">
+        ${task.steps.map((s,i)=>`
+        <div class="step-row">
           <div class="step-circle">${i+1}</div>
           <div class="step-content">
             <div class="step-title">${s.title}</div>
@@ -534,24 +682,62 @@ function renderTaskContent() {
     </div>
 
     <div class="form-area">
-      <div class="section-label">✍️ 填写你的成果</div>
+      <div class="section-label">✍️ 完成任务并产出成果</div>
       ${fieldsHtml}
     </div>
+
+    ${briefPreview}
 
     <div class="feedback-box" id="feedback-box"></div>
 
     ${completeBanner}
 
     <div class="action-bar">
-      <div class="save-hint">🔒 进度自动保存，随时可以返回继续</div>
+      <div class="save-hint">🔒 进度自动保存，随时可返回继续</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn-ai" onclick="openAI()">💬 AI 辅导</button>
         ${!isDone ? `<button class="btn-secondary" onclick="saveDraft()">保存草稿</button>
         <button class="btn-primary" onclick="submitTask()">✓ 提交完成</button>` : ''}
       </div>
     </div>
+
   </div>`;
+
+  // 重新绑定 stakeholder 分数（防止 DOM 重建后丢失）
+  if (n === 3) bindStakeholderInputs();
 }
+
+// ── 矩阵渲染 ──
+const MATRIX_OPTIONS = [
+  {
+    id: 'q1', quad: 'q1',
+    tag: '产品/功能定义',
+    title: '方案与功能创新',
+    desc: '设计新的产品概念方案或功能，解决明确业务痛点',
+    axis: '需求强 × 约束强（战略创新）'
+  },
+  {
+    id: 'q2', quad: 'q2',
+    tag: '服务/体验设计',
+    title: '用户旅程重新设计',
+    desc: '改善用户从接触到完成目标的全程体验',
+    axis: '需求强 × 约束弱（需求创新）'
+  },
+  {
+    id: 'q3', quad: 'q3',
+    tag: '复杂问题解决',
+    title: '模糊复杂挑战探索',
+    desc: '无标准答案的复杂问题，需要创新路径和框架',
+    axis: '需求强 × 约束强（劣构优先）'
+  },
+  {
+    id: 'q4', quad: 'q4',
+    tag: '业务模式探索',
+    title: '商业模式与生态创新',
+    desc: '探索新的商业模式、跨界合作或生态构建路径',
+    axis: '需求强 × 约束弱（机遇创新）'
+  },
+];
 
 function renderMatrix(f, selected) {
   state.matrixSelected = selected || null;
@@ -559,42 +745,132 @@ function renderMatrix(f, selected) {
   <div class="form-group">
     <div class="form-label">${f.label} <span class="required">必填</span></div>
     <div class="form-hint">${f.hint}</div>
+    <div class="matrix-axis-labels">
+      <div class="axis-label">← 战略驱动（约束强）</div>
+      <div class="axis-label">市场驱动（约束弱） →</div>
+    </div>
     <div class="matrix-grid">
-      ${MATRIX_OPTIONS.map(opt => `
-      <div class="matrix-cell ${opt.quad} ${state.matrixSelected === opt.id ? 'selected' : ''}" onclick="selectMatrix('${opt.id}')">
+      ${MATRIX_OPTIONS.map(opt=>`
+      <div class="matrix-cell ${opt.quad} ${state.matrixSelected===opt.id?'selected':''}" onclick="selectMatrix('${opt.id}')">
         <div class="check">✓</div>
         <div class="cell-tag">${opt.tag}</div>
         <div class="cell-title">${opt.title}</div>
         <div class="cell-desc">${opt.desc}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:6px">${opt.axis}</div>
       </div>`).join('')}
     </div>
+    <div class="matrix-footnote">💡 筛选原则：优先选择「劣构 + 强需求」的象限 —— 没有标准答案，但用户真正需要解决的问题</div>
   </div>`;
 }
 
 function selectMatrix(id) {
   state.matrixSelected = id;
   state.tasks[state.currentTask].data['topic_matrix'] = id;
-  // 重新渲染矩阵部分
-  document.querySelectorAll('.matrix-cell').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.matrix-cell').forEach(el => {
-    if (el.getAttribute('onclick').includes(id)) el.classList.add('selected');
+    el.classList.toggle('selected', el.onclick.toString().includes(`'${id}'`));
   });
   saveState();
 }
 
-function highlightStep(i) {
-  document.querySelectorAll('.step-row').forEach((el, j) => {
-    el.className = 'step-row' + (j === i ? ' active-step' : '');
-  });
+// ── 利益方打分表格 ──
+function renderStakeholderTable(f) {
+  if (!state.stakeholderScores) {
+    state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(() => [3,3,3,3]);
+  }
+  const rows = STAKEHOLDER_TEMPLATE.map((s, si) => `
+    <tr>
+      <td style="font-weight:700;white-space:nowrap">${s.role}</td>
+      ${s.needs.map((nd, ni) => `
+      <td>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:3px">${nd}</div>
+        <input class="score-input" type="number" min="0" max="12"
+          value="${state.stakeholderScores[si][ni]}"
+          data-si="${si}" data-ni="${ni}"
+          oninput="updateScore(this)">
+      </td>`).join('')}
+      <td id="row-total-${si}" style="font-weight:700;color:var(--text)">
+        ${state.stakeholderScores[si].reduce((a,b)=>a+b,0)}/12
+      </td>
+    </tr>`).join('');
+
+  return `
+  <div class="form-group">
+    <div class="form-label">${f.label} <span class="required">必填</span></div>
+    <div class="form-hint">${f.hint}</div>
+    <div style="overflow-x:auto">
+      <table class="stakeholder-table">
+        <thead>
+          <tr>
+            <th>利益方</th>
+            <th>需求 1</th><th>需求 2</th><th>需求 3</th><th>需求 4</th>
+            <th>合计</th>
+          </tr>
+        </thead>
+        <tbody id="stakeholder-body">${rows}</tbody>
+      </table>
+    </div>
+    <div class="score-total" id="score-total-hint">
+      12分制：每位利益方将 12 分强制分配到 4 个需求中，体现真实优先级。合计须等于 12 分。
+    </div>
+  </div>`;
 }
 
-// ── SAVE / SUBMIT ──
+function bindStakeholderInputs() {
+  // inputs 通过 oninput="updateScore(this)" 绑定，已在 HTML 中
+}
+
+function updateScore(input) {
+  const si = parseInt(input.dataset.si);
+  const ni = parseInt(input.dataset.ni);
+  const val = parseInt(input.value) || 0;
+  if (!state.stakeholderScores) state.stakeholderScores = STAKEHOLDER_TEMPLATE.map(()=>[3,3,3,3]);
+  state.stakeholderScores[si][ni] = val;
+  const total = state.stakeholderScores[si].reduce((a,b)=>a+b,0);
+  const rowEl = document.getElementById('row-total-' + si);
+  if (rowEl) {
+    rowEl.textContent = total + '/12';
+    rowEl.style.color = total === 12 ? 'var(--green)' : 'var(--red)';
+  }
+  saveState();
+}
+
+// ── 项目简报预览 ──
+function renderBriefPreview(data) {
+  const t1data = state.tasks[1].data || {};
+  const t2data = state.tasks[2].data || {};
+  return `
+  <div class="form-area" style="border-bottom:1px solid var(--border)">
+    <div class="section-label">📋 项目简报预览（实时生成）</div>
+    <div class="brief-preview">
+      <div class="brief-title">📄 项目简报（Project Brief）</div>
+      <div class="brief-section">
+        <div class="brief-section-title">1 主题背景 · 场景与挑战</div>
+        <div class="brief-section-content">${(t1data.topic_description||'') || '← 来自任务 1：一句话主题描述'}\n\n${(t2data.background_info||'')||'← 来自任务 2：背景信息'}\n现状：${(t2data.current_situation||'')||'← 来自任务 2：现状描述'}</div>
+      </div>
+      <div class="brief-section">
+        <div class="brief-section-title">2 愿景共识</div>
+        <div class="brief-section-content" id="preview-vision">${data.pb_vision || '（填写下方「愿景共识」后自动更新）'}</div>
+      </div>
+      <div class="brief-section">
+        <div class="brief-section-title">3 待验证假设</div>
+        <div class="brief-section-content" id="preview-hypo">${data.pb_hypotheses || '（填写下方「待验证假设」后自动更新）'}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ────────────────────────────────────────────────
+//  保存 / 提交
+// ────────────────────────────────────────────────
 function collectFormData() {
-  const task = TASKS[state.currentTask];
+  const n    = state.currentTask;
+  const task = TASKS[n];
   const data = {};
   task.fields.forEach(f => {
     if (f.type === 'matrix') {
       data[f.id] = state.matrixSelected || '';
+    } else if (f.type === 'stakeholder') {
+      data[f.id] = JSON.stringify(state.stakeholderScores || []);
     } else {
       const el = document.getElementById('field-' + f.id);
       if (el) data[f.id] = el.value.trim();
@@ -611,23 +887,25 @@ function saveDraft() {
 
 function submitTask() {
   const data = collectFormData();
-  // 简单校验：关键字段不能为空
-  const task = TASKS[state.currentTask];
-  const required = task.fields.filter(f => f.type !== 'matrix').map(f => f.id);
-  const empty = required.filter(id => !data[id]);
-  if (empty.length > 0) {
-    showToast('请填写所有必填项后再提交');
-    return;
+  const n    = state.currentTask;
+
+  // 必填校验
+  const textFields = TASKS[n].fields.filter(f => f.type !== 'matrix' && f.type !== 'stakeholder');
+  const empty = textFields.filter(f => !data[f.id]);
+  if (empty.length > 0) { showToast('请填写所有必填项后再提交'); return; }
+  if (n === 1 && !state.matrixSelected) { showToast('请选择主题矩阵象限'); return; }
+  if (n === 3 && state.stakeholderScores) {
+    const invalid = state.stakeholderScores.some(row => row.reduce((a,b)=>a+b,0) !== 12);
+    if (invalid) { showToast('请确保每位利益方的分配总和等于 12 分'); return; }
   }
-  if (state.currentTask === 1 && !state.matrixSelected) {
-    showToast('请选择主题矩阵象限');
-    return;
-  }
-  state.tasks[state.currentTask].data = data;
-  // 评估反馈
+
+  state.tasks[n].data = data;
   showFeedback(data);
 }
 
+// ────────────────────────────────────────────────
+//  即时反馈
+// ────────────────────────────────────────────────
 function showFeedback(data) {
   const n = state.currentTask;
   let score = 80;
@@ -635,34 +913,57 @@ function showFeedback(data) {
 
   if (n === 1) {
     const desc = data.topic_description || '';
-    if (desc.length > 50) { items.push({ type: 'good', text: '主题描述完整，包含足够的上下文信息' }); score += 5; }
-    if (desc.includes('场景') || desc.includes('在') || desc.length > 30) { items.push({ type: 'good', text: '描述结构完整，涵盖了场景要素' }); }
-    if ((data.personal_challenges || '').split('\n').length >= 2) { items.push({ type: 'good', text: '收集了多个个人挑战，聚类基础扎实' }); }
-    else { items.push({ type: 'warn', text: '建议收集更多成员的个人挑战（至少 3 条）' }); score -= 5; }
-    if (!state.matrixSelected) { items.push({ type: 'bad', text: '未选择主题矩阵象限，请补充' }); score -= 10; }
-    else { items.push({ type: 'good', text: '使用了主题矩阵定位创新类型，方向更清晰' }); }
-  } else if (n === 2) {
-    const current = data.current_situation || '';
+    const challenges = data.personal_challenges || '';
+    // 一句话描述结构检查
+    if (desc.length >= 40) { score += 5; items.push({ type:'good', text:'主题描述篇幅充分，包含足够上下文' }); }
+    else { score -= 8; items.push({ type:'warn', text:'主题描述偏短，建议补充场景/用户/目的的细节' }); }
+    const hasStructure = ['场景','背景','为了','解决','达成','目标','目的','问题'].some(w => desc.includes(w));
+    if (hasStructure) { items.push({ type:'good', text:'描述结构良好，涵盖了场景或目的要素' }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议按「场景 + 用户 + 问题 + 目的」结构重新组织描述' }); }
+    const rows = challenges.split('\n').filter(l=>l.trim()).length;
+    if (rows >= 3) { items.push({ type:'good', text:`收集了 ${rows} 条个人挑战，聚类基础扎实` }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议收集更多成员的个人挑战（至少 3 条，每人 1 条）' }); }
+    if (!state.matrixSelected) { score -= 10; items.push({ type:'bad', text:'未选择主题矩阵象限，请补充定位' }); }
+    else { items.push({ type:'good', text:'使用创新主题矩阵完成了方向定位，选题更清晰' }); }
+  }
+
+  else if (n === 2) {
+    const situation = data.current_situation || '';
     const users = data.target_users || '';
-    if (/\d+%|\d+人|\d+天/.test(current)) { items.push({ type: 'good', text: '现状描述包含量化数据，事实更有力' }); score += 8; }
-    else { items.push({ type: 'warn', text: '建议在现状描述中加入具体数字或数据支撑' }); score -= 8; }
-    if (users.length > 15) { items.push({ type: 'good', text: '目标用户描述具体，界定清晰' }); }
-    else { items.push({ type: 'warn', text: '目标用户描述可以更具体（岗位+阶段+特征）' }); score -= 5; }
-    if (data.constraints && data.constraints.length > 10) { items.push({ type: 'good', text: '考虑了限制要素，方案更落地' }); }
-    else { items.push({ type: 'warn', text: '建议补充现实限制条件（资源、时间、政策等）' }); score -= 5; }
-  } else if (n === 3) {
-    const hypo = data.hypotheses || '';
-    const hypoLines = hypo.split('\n').filter(l => l.trim());
-    if (hypoLines.length >= 3) { items.push({ type: 'good', text: `列出了 ${hypoLines.length} 条待验证假设，维度充分` }); score += 5; }
-    else { items.push({ type: 'warn', text: '建议至少列出 3 条假设（用户/技术/商业各一条）' }); score -= 10; }
-    if (hypo.includes('如果') || hypo.includes('则')) { items.push({ type: 'good', text: '假设格式规范，包含条件和预期结果' }); }
-    else { items.push({ type: 'warn', text: '假设格式建议：「我们相信...如果...则...」，更易验证' }); score -= 5; }
-    if (data.priority_scoring) { items.push({ type: 'good', text: '完成了 12 分制优先级排序，决策有依据' }); }
+    const constraints = data.constraints || '';
+    if (/\d+%|\d+人|\d+天|\d+元|\d+月/.test(situation)) {
+      score += 8; items.push({ type:'good', text:'现状描述包含量化数据，事实依据充分' });
+    } else {
+      score -= 8; items.push({ type:'warn', text:'建议在现状描述中加入具体数字（比例、人数、时间、成本等）' });
+    }
+    if (users.length >= 20) { items.push({ type:'good', text:'目标用户描述具体，包含岗位/阶段/特征' }); }
+    else { score -= 5; items.push({ type:'warn', text:'目标用户描述可以更具体，建议包含岗位+阶段+关键特征' }); }
+    if (constraints.length >= 15) { items.push({ type:'good', text:'考虑了现实限制要素，方案更接地气' }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议补充影响和限制要素（资源、时间、文化、政策等）' }); }
+    // 6字段完整性
+    const allFilled = ['background_info','current_situation','target_users','expected_outcome','challenges','constraints'].every(id=>data[id]&&data[id].length>5);
+    if (allFilled) { score += 5; items.push({ type:'good', text:'6 个背景要素全部填写，结构完整' }); }
+    else { score -= 5; items.push({ type:'bad', text:'部分背景要素未填写，请检查 6 个字段是否都有内容' }); }
+  }
+
+  else if (n === 3) {
+    const hypo = data.pb_hypotheses || '';
+    const hypoLines = hypo.split('\n').filter(l=>l.trim().length>5);
+    if (hypoLines.length >= 3) { score += 5; items.push({ type:'good', text:`列出了 ${hypoLines.length} 条待验证假设，维度充分` }); }
+    else { score -= 10; items.push({ type:'warn', text:'建议至少列出 3 条假设，分别涵盖用户/技术/商业维度' }); }
+    const hasFormat = hypo.includes('如果') || hypo.includes('则') || hypo.includes('相信');
+    if (hasFormat) { items.push({ type:'good', text:'假设格式规范，包含条件和预期结果，易于验证' }); }
+    else { score -= 5; items.push({ type:'warn', text:'假设格式建议：「我们相信...，如果...，则...」，便于后续验证' }); }
+    const hasMultiDim = ['用户','技术','商业','利益方'].filter(k=>hypo.includes(k)).length;
+    if (hasMultiDim >= 3) { items.push({ type:'good', text:'假设涵盖多个维度（用户/技术/商业），全面均衡' }); }
+    else { score -= 5; items.push({ type:'warn', text:`假设维度建议更丰富，已覆盖 ${hasMultiDim}/4 个维度` }); }
+    if (data.pb_vision && data.pb_vision.length >= 20) { items.push({ type:'good', text:'项目愿景描述完整，指向清晰' }); }
+    else { score -= 5; items.push({ type:'warn', text:'项目愿景描述偏短，建议说明「为谁、解决什么、带来什么价值」' }); }
   }
 
   score = Math.min(100, Math.max(0, score));
   const level = score >= 85 ? 'high' : score >= 70 ? 'mid' : 'low';
-  const levelText = score >= 85 ? '优秀' : score >= 70 ? '良好' : '需改进';
+  const levelText = score >= 85 ? '优秀' : score >= 70 ? '良好，可继续' : '需改进';
 
   const feedbackBox = document.getElementById('feedback-box');
   feedbackBox.className = 'feedback-box show';
@@ -672,34 +973,36 @@ function showFeedback(data) {
       <div class="score-circle ${level}">${score}<span style="font-size:10px;font-weight:400">/100</span></div>
       <div class="score-info">
         <div class="score-title">${levelText}</div>
-        <div class="score-sub">成功标准：${TASKS[n].successStandard.slice(0,40)}...</div>
+        <div class="score-sub">产出物：${TASKS[n].deliverable}</div>
       </div>
     </div>
     <div class="feedback-items">
-      ${items.map(i => `<div class="feedback-item ${i.type}">${i.type==='good'?'✅':i.type==='warn'?'⚠️':'❌'} ${i.text}</div>`).join('')}
+      ${items.map(i=>`<div class="feedback-item ${i.type}">${i.type==='good'?'✅':i.type==='warn'?'⚠️':'❌'} ${i.text}</div>`).join('')}
     </div>
-    ${score >= 70 ? `<div style="margin-top:14px;display:flex;gap:10px">
-      <button class="btn-primary" onclick="confirmComplete()">✓ 确认完成此任务</button>
-      <button class="btn-secondary" onclick="document.getElementById('feedback-box').className='feedback-box'">修改后再提交</button>
-    </div>` : `<div style="margin-top:14px">
-      <button class="btn-secondary" onclick="document.getElementById('feedback-box').className='feedback-box'">继续修改</button>
-    </div>`}
-  `;
-  feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    <div style="margin-top:14px;display:flex;gap:10px">
+      ${score >= 70
+        ? `<button class="btn-primary" onclick="confirmComplete()">✓ 确认完成，保存产出物</button>
+           <button class="btn-secondary" onclick="document.getElementById('feedback-box').className='feedback-box'">修改后再提交</button>`
+        : `<button class="btn-secondary" onclick="document.getElementById('feedback-box').className='feedback-box'">继续修改</button>`}
+    </div>`;
+  feedbackBox.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
 function confirmComplete() {
+  state.tasks[state.currentTask].data = collectFormData();
   state.tasks[state.currentTask].status = 'done';
   saveState();
   renderAll();
-  showToast('🎉 任务完成！');
+  showToast('🎉 任务完成，产出物已保存！');
 }
 
 function showModuleComplete() {
-  showToast('🎓 恭喜完成 Reveal 阶段 · 模块一！');
+  showToast('🎓 恭喜完成 Reveal 阶段 · 模块一：团队构建共识！');
 }
 
-// ── AI COACH ──
+// ────────────────────────────────────────────────
+//  AI Coach
+// ────────────────────────────────────────────────
 function openAI() {
   const modal = document.getElementById('ai-modal');
   modal.className = 'modal-overlay show';
@@ -728,28 +1031,46 @@ function sendAI() {
   if (!text) return;
   addAIMessage(text, 'user');
   input.value = '';
-  // 模拟响应（真实环境接入 AI API）
   setTimeout(() => {
-    const replies = [
-      '好问题！这正是很多团队卡住的地方。\n\n关键是要问自己：「如果这个问题被完美解决，用户的行为会有什么具体变化？」而不是「这个问题重不重要」。',
-      '我理解你的困惑。试着从一个真实的用户故事开始 —— 一个具体的人，在一个具体的场景里，遇到了什么？\n\n然后再往上归纳，会比直接想大方向更有效。',
-      '这个思路是对的，可以更进一步。你现在写的是「结果」，但我需要看到「为什么会有这个结果」。\n\n能描述一下导致这个现状的 1-2 个根本原因吗？',
-      '注意一个常见误区：你描述的可能是「症状」而不是「问题」。\n\n真正的创新问题往往藏在第 3 次追问「为什么」之后。试着再往深问一层。',
-    ];
-    const r = replies[Math.floor(Math.random() * replies.length)];
-    addAIMessage(r, 'bot');
+    const n = state.currentTask;
+    let reply = '';
+    if (n === 1) {
+      const replies = [
+        '好问题！区分「良构」和「劣构」是关键。\n\n如果你一眼就能说出解决方案，那很可能是良构问题，不太适合创新探索。\n\n劣构问题的特征：每次讨论都能发现新角度，没有唯一正确答案，解决方案取决于视角和假设。\n\n你们目前的主题有这个特征吗？',
+        '聚类的诀窍是找「深层需求」而不是「表面问题」。\n\n比如「培训效果差」和「员工晋升慢」看似不同，但背后可能都指向「技能转化路径不清晰」。\n\n试着问：这些挑战背后，团队真正想解决的是什么？',
+        '矩阵选象限不是找「最准确的」，而是找「最能激发创新的角度」。\n\n如果你们是技术团队，试着从「服务体验」象限看问题；如果是业务团队，试着从「商业模式」角度想想。换个视角往往有惊喜。',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    } else if (n === 2) {
+      const replies = [
+        '现状描述缺乏数据是很普遍的问题。\n\n可以试试这个方法：把你的描述读给一个不了解这个问题的人听，如果他们不理解「有多严重」，说明你需要更多数据。\n\n哪怕是估算也比没有强：「大约 60% 的用户反映...」比「很多用户说...」有力多了。',
+        '目标用户界定太宽是典型的「设计给所有人」陷阱。\n\n试着描述一个具体的人：\n「32 岁的张雪，刚从应届生升为基层销售，在北京工作，每天跑 3-4 个客户，最大的压力是月底的 KPI...」\n这样的具体描述能让团队快速对齐。',
+        '限制条件很重要！它决定了你的解决方案是否真的可落地。\n\n最常被忽视的限制：\n• 时间限制（用户愿意花多少时间学习？）\n• 行为习惯（他们现在是怎么做的？）\n• 文化因素（有哪些「不成文的规则」？）',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    } else {
+      const replies = [
+        '12 分制的精髓在于「强迫选择」。\n\n当一位利益方说「每个需求都很重要」时，12 分制会逼他们表态。\n\n通常，第一轮分数会比较平均（3-3-3-3），但让他们解释每个分数背后的理由，往往会发现真实的优先级。',
+        '待验证假设最容易犯的错误是「写成目标」而不是「写成假设」。\n\n目标：「我们要提升开单率到 40%」\n假设：「我们相信，如果用真实客户场景替代角色扮演，60天开单率会从15%提升到40%，这个假设需要通过 A/B 测试验证」\n\n区别：假设是「我们不确定，但这是我们的猜测」，需要后续验证。',
+        '项目简报不是给外部看的正式文件，而是团队内部的「共同协议」。\n\n写完后，让团队每人独立阅读，然后说出自己理解的「最重要的一件事」。\n\n如果每人说的不一样，说明简报还需要澄清。',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    }
+    addAIMessage(reply, 'bot');
   }, 800);
 }
 
-// ── TOAST ──
+// ────────────────────────────────────────────────
+//  Toast
+// ────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show';
-  setTimeout(() => { t.className = 'toast'; }, 2500);
+  setTimeout(() => { t.className = 'toast'; }, 2800);
 }
 
-// ── INIT ──
+// ── Init ──
 loadState();
 renderAll();
 </script>
