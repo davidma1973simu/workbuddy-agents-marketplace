@@ -298,10 +298,12 @@ textarea{min-height:90px}
   <aside class="sidebar">
     <div class="task-nav">
       <div class="task-nav-header">
-        <div class="phase">Reveal · 模块一</div>
-        <div class="module">团队构建共识</div>
+        <div class="phase">Reveal · 揭示阶段</div>
+        <div class="module">6 个任务 · 团队共识与用户洞察</div>
         <div class="progress-bar"><div class="progress-fill" id="module-progress" style="width:0%"></div></div>
       </div>
+      <!-- 模块一：团队构建共识 -->
+      <div style="padding:10px 20px 6px;font-size:11px;font-weight:700;color:var(--purple);background:#f8faff;border-bottom:1px solid var(--border)">模块一 · 团队构建共识</div>
       <div class="task-item active" id="nav-t1" onclick="switchTask(1)">
         <div class="task-num" id="num-t1">1</div>
         <div class="task-info">
@@ -321,6 +323,29 @@ textarea{min-height:90px}
         <div class="task-info">
           <div class="task-name">团队构建共识</div>
           <div class="task-status" id="status-t3">未开始</div>
+        </div>
+      </div>
+      <!-- 模块二：用户探索洞察 -->
+      <div style="padding:10px 20px 6px;font-size:11px;font-weight:700;color:var(--purple);background:#f8faff;border-bottom:1px solid var(--border);border-top:1px solid var(--border)">模块二 · 用户探索洞察</div>
+      <div class="task-item" id="nav-t4" onclick="switchTask(4)">
+        <div class="task-num" id="num-t4">4</div>
+        <div class="task-info">
+          <div class="task-name">用户共情探索</div>
+          <div class="task-status" id="status-t4">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" id="nav-t5" onclick="switchTask(5)">
+        <div class="task-num" id="num-t5">5</div>
+        <div class="task-info">
+          <div class="task-name">用户旅程发现</div>
+          <div class="task-status" id="status-t5">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" id="nav-t6" onclick="switchTask(6)">
+        <div class="task-num" id="num-t6">6</div>
+        <div class="task-info">
+          <div class="task-name">POV 构建</div>
+          <div class="task-status" id="status-t6">未开始</div>
         </div>
       </div>
     </div>
@@ -492,7 +517,7 @@ const TASKS = {
   // ── 任务 3：团队构建共识 ──────────────────────
   3: {
     title: '团队构建共识',
-    badge: 'Reveal · 任务 3/3',
+    badge: 'Reveal · 任务 3/6',
     deliverable: '《项目简报（Project Brief）》',
     objective: '理解团队角色的多样性价值；掌握收集各利益方需求并利用「12 分制」进行优先级打分排序的方法；最终整合产出《项目简报》。',
     concept: '本任务分两步完成：\n\n第一步：团队角色分工\n基于每人的认知背景与长处，分配 4 种角色：商业推动者 / 技术实现者 / 用户代言人 / 设计创意者\n\n第二步：利益方研讨 + 12 分制\n邀请/模拟 4 类利益方（业务领导、技术专家、合作伙伴、前沿用户）各表述需求，每位利益方用 12 分强制分配到 4 个需求维度，明确核心需求。\n\n整合以上，产出《项目简报（Project Brief）》，包含：主题背景、愿景共识、待验证假设。',
@@ -543,6 +568,166 @@ const TASKS = {
     ],
     coachIntro: '最后一个任务了！这是整个 Reveal 阶段的「收口」。\n\n项目简报的质量决定了 Inspire 阶段的方向。\n\n最容易出问题的地方是「待验证假设」—— 很多团队写的是「我们相信用户会喜欢」，这不够。\n\n好的假设要能测量：「如果做了 X，则 Y 会变化 Z%」。\n\n你想先聊利益方识别，还是直接看假设怎么写？',
   },
+
+  // ═══════════════════════════════════════════════════
+  //  模块二：用户探索洞察（任务 4-6）
+  // ═══════════════════════════════════════════════════
+
+  // ── 任务 4：用户共情探索 ──────────────────────
+  4: {
+    title: '用户共情探索',
+    badge: 'Reveal · 任务 4/6',
+    deliverable: '具象化的「用户画像」+ 完整的「用户任务（JTBD）」',
+    objective: '理解如何通过不同维度还原目标用户的真实处境；掌握运用「询问、观察、体验」三种共情探索卡片收集用户信息，并提炼具象化的「用户画像」与「用户任务（JTBD）」。',
+    concept: '本任务的核心是代入用户视角，在特定场景（时间、地点、目的、行动）下，多维度挖掘用户不仅需要完成的「功能性任务」，还包括深层的「社会情感性任务」和「个人情感性任务」。\n\n使用三种共情探索卡片：\n• 询问卡：通过访谈了解用户的真实想法\n• 观察卡：观察用户的实际行为（而非说的）\n• 体验卡：亲自体验用户的处境和流程\n\nJTBD（Jobs-to-be-Done）框架：\n• 功能性任务：用户需要完成什么具体工作？\n• 社会情感性任务：用户希望别人如何看待自己？\n• 个人情感性任务：用户希望自己感觉如何？',
+    steps: [
+      { title: '确定目标用户', hint: '基于项目简报，明确一个具体的目标用户画像（岗位、阶段、特征）' },
+      { title: '设计探索场景', hint: '确定时间、地点、目的、行动四个维度的具体场景' },
+      { title: '使用共情卡片', hint: '通过询问、观察、体验三种方式收集用户真实信息' },
+      { title: '提炼用户画像', hint: '整合收集的信息，形成具象化的用户画像（含人口统计、行为特征、痛点）' },
+      { title: '定义用户任务 JTBD', hint: '明确功能性、社会情感性、个人情感性三个层次的用户任务' },
+    ],
+    misconceptions: [
+      '仅凭团队主观臆想画像，而非基于真实场景的探索',
+      '只关注表面的功能需求，忽略了用户的社会与情感诉求',
+      '目标受众界定过于宽泛，缺乏真实的特征细节',
+      '把「用户说的」直接当成「用户真正需要的」',
+    ],
+    successStandard: '团队能够系统梳理探索获得的信息，准确输出一份具象化的「用户画像」，并清晰、完整地界定该用户在此场景下的核心「用户任务（JTBD）」。',
+    fields: [
+      {
+        id: 'empathy_scene',
+        label: '步骤 1-2：探索场景定义',
+        type: 'textarea',
+        hint: '描述具体场景：什么时间？什么地点？什么目的？用户采取什么行动？',
+        example: '例：\n时间：新员工入职第 15-30 天\n地点：客户拜访现场（非办公室）\n目的：尝试独立完成第一次客户沟通\n行动：准备话术 → 拜访客户 → 处理异议 → 记录反馈',
+        rows: 5,
+      },
+      {
+        id: 'empathy_cards',
+        label: '步骤 3：共情探索卡片收集（产出物之一）',
+        type: 'textarea',
+        hint: '分别记录询问、观察、体验三种方式获得的信息。注意：观察到的行为往往比说的更真实',
+        example: '例：\n【询问】新人说：「我希望有更多实战机会」\n【观察】实际看到：新人面对客户时频繁看手机找话术，眼神飘忽不自信\n【体验】亲自尝试：用现有培训材料准备 10 分钟，但面对模拟客户时大脑空白',
+        rows: 8,
+      },
+      {
+        id: 'user_persona',
+        label: '步骤 4：用户画像（产出物之一）',
+        type: 'textarea',
+        hint: '具象化描述目标用户，包含：基本信息、行为特征、核心痛点、当前解决方案',
+        example: '例：\n姓名：张雪（代称）\n岗位：基层销售顾问\n入职阶段：入职 3 周\n特征：应届毕业生，无行业经验，性格内向但学习意愿强\n痛点：理论知识丰富但实战时紧张，害怕被客户拒绝，缺乏即时反馈\n现状：依赖老员工带教，但带教时间不固定，质量参差不齐',
+        rows: 6,
+      },
+      {
+        id: 'jtbd',
+        label: '步骤 5：用户任务 JTBD（产出物之一）',
+        type: 'textarea',
+        hint: '按三个层次描述用户任务：\n• 功能性：需要完成什么具体工作？\n• 社会情感性：希望别人如何看待自己？\n• 个人情感性：希望自己感觉如何？',
+        example: '例：\n【功能性任务】在客户拜访中流畅地介绍产品、处理异议、推进成交\n【社会情感性任务】让同事和领导认为自己是「能独当一面的合格销售」\n【个人情感性任务】感觉自己「有能力、有掌控感」，而不是「总是搞砸」',
+        rows: 6,
+      },
+    ],
+    coachIntro: '欢迎来到用户探索阶段！这是从「团队视角」转向「用户视角」的关键转折点。\n\n最重要的原则：你不是用户。即使你也做过销售，现在的你也已经不是那个「入职 3 周、面对第一个客户」的张雪了。\n\n三种卡片中，「观察卡」往往最有价值——人们说的和做的经常不一样。\n\n你想从哪个步骤开始聊？',
+  },
+
+  // ── 任务 5：用户旅程发现 ──────────────────────
+  5: {
+    title: '用户旅程发现',
+    badge: 'Reveal · 任务 5/6',
+    deliverable: '结构化用户旅程（做/感/想）+ 2-4个关键发现',
+    objective: '理解用户在完成任务全过程中的动态体验起伏；掌握构建「用户旅程」的方法，并从中敏锐捕捉反常或矛盾的「关键发现」。',
+    concept: '本任务将用户任务（JTBD）拆解为具体的行为步骤（例如：找、订、等、收、吃、扔），并在这个旅程中记录用户对应的「做（行动）」、「感（情绪）」与「想（思考）」。\n\n关键发现（Key Findings）是旅程中令人惊讶的、全新或矛盾的事实——它们往往是创新的突破口。',
+    steps: [
+      { title: '拆解行为步骤', hint: '将用户完成任务的全过程拆分为 5-8 个具体行为步骤' },
+      { title: '记录做/感/想', hint: '对每个步骤，记录用户做了什么、感受到什么情绪、心里在想什么' },
+      { title: '绘制情绪曲线', hint: '标记情绪高点和低点，识别体验断裂点' },
+      { title: '捕捉关键发现', hint: '找出 2-4 个令人惊讶、矛盾或反直觉的发现' },
+    ],
+    misconceptions: [
+      '旅程梳理的颗粒度过粗导致遗漏触点（如「培训」一步带过，没有拆解具体环节）',
+      '过早地将团队的「预设解决方案」代入用户的当前旅程中',
+      '记录的都是理所当然的常识，未能挖掘出真正具有张力或费解的「关键发现」',
+      '情绪记录流于表面，没有捕捉到真实的情感波动',
+    ],
+    successStandard: '团队绘制出包含「做、感、想」三个维度的结构化用户旅程，并明确从中提炼出 2-4 个存在认知反差、矛盾或痛点的「关键发现」。',
+    fields: [
+      {
+        id: 'journey_steps',
+        label: '步骤 1：行为步骤拆解',
+        type: 'textarea',
+        hint: '列出用户完成任务的 5-8 个具体步骤，用动词开头',
+        example: '例（销售新人首次独立拜访）：\n1. 接收客户线索 → 2. 查找客户资料 → 3. 准备拜访话术 → 4. 前往客户现场 → 5. 进行客户沟通 → 6. 处理客户异议 → 7. 尝试推进成交 → 8. 记录拜访反馈',
+        rows: 5,
+      },
+      {
+        id: 'journey_map',
+        label: '步骤 2-3：用户旅程地图（做/感/想）',
+        type: 'textarea',
+        hint: '对每个关键步骤，记录：做（具体行动）、感（情绪 1-5 分）、想（内心独白）。可用表格或列表格式',
+        example: '例：\n步骤3「准备话术」\n• 做：翻找培训资料，复制话术模板到笔记本\n• 感：3分（有点焦虑，担心记不住）\n• 想：「这些话术听起来很专业，但真的适合我的客户吗？」\n\n步骤5「客户沟通」\n• 做：按话术介绍产品，客户打断提问时卡壳\n• 感：2分（紧张、慌乱）\n• 想：「完了，我没准备这个问题的答案...」',
+        rows: 10,
+      },
+      {
+        id: 'key_findings',
+        label: '步骤 4：关键发现（产出物，2-4条）',
+        type: 'textarea',
+        hint: '找出令人惊讶、矛盾或反直觉的发现。好的发现往往以「奇怪的是...」「令人惊讶的是...」开头',
+        example: '例：\n【发现1】奇怪的是：新人花了 80% 的时间准备话术，但实战中 70% 的客户问题都不在话术范围内\n【发现2】令人惊讶的是：情绪最低谷不是「被客户拒绝」，而是「准备充分但客户没按剧本走」时的失控感\n【发现3】矛盾的是：公司强调「标准化话术」，但优秀销售都说「我从来不按话术讲」',
+        rows: 8,
+      },
+    ],
+    coachIntro: '用户旅程是「看见」的艺术。\n\n最常见的错误是记录「我们认为用户应该怎么做」，而不是「用户实际怎么做」。\n\n关键发现的秘诀：寻找「张力」——\n• 用户说的 vs 用户做的\n• 用户期望的 vs 实际发生的\n• 公司要求的 vs 用户真正需要的\n\n你的旅程中有没有发现这样的张力？',
+  },
+
+  // ── 任务 6：用户需求洞察与POV构建 ──────────────────────
+  6: {
+    title: '用户需求洞察与POV构建',
+    badge: 'Reveal · 任务 6/6',
+    deliverable: '一句清晰的 POV 描述（用户+结果+挑战+深层需求）',
+    objective: '理解表象事实与深层动机的差异；掌握运用 FIND 模型深度剖析关键发现，并最终整合产出精准揭示核心矛盾的《用户视角问题（POV）》。',
+    concept: '本任务使用 FIND 洞察模型：\n\n• F（Fact 事实）：从旅程中抓取的关键发现\n• I（Interpret 解释）：这个现象为什么会发生？背后的原因是什么？\n• N（Need 需求）：用户潜意识里真正需要的是什么？\n• D（Distill 凝练）：整合为一句结构化的 POV\n\nPOV（Point of View）格式：\n【目标用户】需要【达成什么结果】，但因为【什么挑战/限制】，导致【深层需求未被满足】',
+    steps: [
+      { title: '选择关键发现', hint: '从任务 5 的 2-4 个关键发现中，选择最有洞察潜力的 1-2 个深入分析' },
+      { title: 'FIND 分析', hint: '使用 FIND 模型逐层推导：事实 → 解释 → 需求 → 洞察' },
+      { title: '整合 POV', hint: '将 FIND 分析整合为一句结构完整的 POV 描述' },
+      { title: '验证聚焦度', hint: '检查 POV 是否足够具体、有张力，能为后续创意提供明确靶点' },
+    ],
+    misconceptions: [
+      '洞察停留在事实表面，未能推导出用户潜意识里未被满足的需求',
+      '产出的洞察缺乏启发性（不痛不痒，没有「啊哈」时刻）',
+      'POV 的定义模糊，无法为后续产生突破性创意提供聚焦的靶点',
+      '把解决方案混入 POV（POV 应该是问题，不是答案）',
+    ],
+    successStandard: '团队严格通过 FIND 模型完成逻辑推导，最终产出一句清晰的 POV 描述，准确涵盖「目标用户是谁、要达成什么结果、面对什么挑战、以及背后的深层需求与价值是什么」。',
+    fields: [
+      {
+        id: 'find_analysis',
+        label: '步骤 1-2：FIND 模型分析（产出物之一）',
+        type: 'textarea',
+        hint: '选择 1-2 个关键发现，用 FIND 模型逐层分析。格式：\n【发现】...\nF（事实）：...\nI（解释）：...\nN（需求）：...\nD（洞察）：...',
+        example: '例：\n【发现】新人花了 80% 时间准备话术，但实战中 70% 问题不在话术范围内\n\nF（事实）：新人过度依赖标准化话术准备，但真实客户对话高度不可预测\nI（解释）：培训给的是「标准答案思维」，但销售实战需要的是「即兴应对能力」\nN（需求）：新人需要的不是「背更多话术」，而是「面对未知问题时的应对自信」\nD（洞察）：核心矛盾在于「准备充分感」与「实战失控感」之间的落差',
+        rows: 12,
+      },
+      {
+        id: 'pov_statement',
+        label: '步骤 3：POV 描述（核心产出物）',
+        type: 'textarea',
+        hint: '用一句话描述 POV，格式：\n【目标用户】需要【达成什么结果】，但因为【什么挑战/限制】，导致【深层需求未被满足】',
+        example: '例：\n【入职 0-30 天的销售新人】需要在客户沟通中展现专业自信并推进成交，但因为【过度依赖标准化话术导致面对真实客户时缺乏即兴应对能力】，导致【即使在充分准备后仍感到失控和自我怀疑，无法建立销售自信】。',
+        rows: 4,
+      },
+      {
+        id: 'pov_validation',
+        label: '步骤 4：POV 验证检查',
+        type: 'textarea',
+        hint: '对照检查清单回答：\n1. POV 是否包含具体用户群体？\n2. 是否描述了用户想要达成的结果？\n3. 是否指出了真实挑战/限制（而非表面症状）？\n4. 是否揭示了深层需求（情感/社会层面）？\n5. 是否没有包含解决方案？',
+        example: '例：\n1. ✅ 是 — 明确指向「入职 0-30 天销售新人」\n2. ✅ 是 — 「展现专业自信并推进成交」\n3. ✅ 是 — 「过度依赖话术导致缺乏即兴应对能力」\n4. ✅ 是 — 「感到失控和自我怀疑」是情感层面需求\n5. ✅ 是 — 没有提到任何具体解决方案',
+        rows: 8,
+      },
+    ],
+    coachIntro: '这是 Reveal 阶段的最后一个任务，也是最重要的任务。\n\nPOV 的质量直接决定 Inspire 阶段能产出什么样的创意。一个好的 POV 应该让你感到「有点不舒服」—— 因为它揭示了一个你之前没看清的真相。\n\nFIND 模型的关键是：不要跳步。从事实到洞察，每一步都要有逻辑链条。\n\n你现在卡在 FIND 的哪一步？',
+  },
 };
 
 // 利益方行模板（带推荐需求名称）
@@ -570,6 +755,9 @@ let state = {
     1: { status: 'in_progress', data: {} },
     2: { status: 'pending', data: {} },
     3: { status: 'pending', data: {} },
+    4: { status: 'pending', data: {} },
+    5: { status: 'pending', data: {} },
+    6: { status: 'pending', data: {} },
   },
   matrixSelected: null,
   stakeholderData: null, // [{role, needs:[{name, score},...]},...]
@@ -607,7 +795,7 @@ function renderAll() {
 }
 
 function renderSidebar() {
-  [1,2,3].forEach(n => {
+  [1,2,3,4,5,6].forEach(n => {
     const nav = document.getElementById('nav-t' + n);
     const num = document.getElementById('num-t' + n);
     const st  = document.getElementById('status-t' + n);
@@ -619,9 +807,9 @@ function renderSidebar() {
 }
 
 function updateProgress() {
-  const done = [1,2,3].filter(n => state.tasks[n].status === 'done').length;
+  const done = [1,2,3,4,5,6].filter(n => state.tasks[n].status === 'done').length;
   const el = document.getElementById('module-progress');
-  if (el) el.style.width = (done / 3 * 100) + '%';
+  if (el) el.style.width = (done / 6 * 100) + '%';
 }
 
 function renderTips() {
@@ -670,7 +858,7 @@ function renderTaskContent() {
       <div class="title">任务完成！产出：${task.deliverable}</div>
       <div class="sub">${task.successStandard}</div>
     </div>
-    ${n < 3 ? `<button class="btn-next" onclick="switchTask(${n+1})">下一个任务 →</button>` : `<button class="btn-next" onclick="showModuleComplete()">🎓 完成模块一</button>`}
+    ${n < 6 ? `<button class="btn-next" onclick="switchTask(${n+1})">下一个任务 →</button>` : `<button class="btn-next" onclick="showModuleComplete()">🎓 完成 Reveal 阶段</button>`}
   </div>` : '';
 
   document.getElementById('task-content').innerHTML = `
@@ -1044,6 +1232,87 @@ function showFeedback(data) {
     else { score -= 5; items.push({ type:'warn', text:'项目愿景描述偏短，建议说明「为谁、解决什么、带来什么价值」' }); }
   }
 
+  // ── 任务 4：用户共情探索 ──────────────────────
+  else if (n === 4) {
+    const persona = data.user_persona || '';
+    const jtbd = data.jtbd || '';
+    const empathy = data.empathy_cards || '';
+    // 用户画像具象化
+    if (persona.length >= 80) { score += 5; items.push({ type:'good', text:'用户画像描述充分，包含丰富的细节' }); }
+    else { score -= 5; items.push({ type:'warn', text:'用户画像可以更具体，建议包含姓名、岗位、特征、痛点等细节' }); }
+    const hasPersonaDetail = ['岗位','入职','年龄','特征','痛点'].some(w => persona.includes(w));
+    if (hasPersonaDetail) { items.push({ type:'good', text:'用户画像包含关键特征维度' }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议补充用户的岗位、阶段、关键特征等信息' }); }
+    // JTBD 三层次
+    const hasJTBDLevels = ['功能性','社会情感性','个人情感性'].filter(w => jtbd.includes(w)).length;
+    if (hasJTBDLevels >= 3) { score += 5; items.push({ type:'good', text:'JTBD 涵盖功能性、社会情感性、个人情感性三个层次' }); }
+    else { score -= 8; items.push({ type:'warn', text:`JTBD 建议覆盖三个层次，目前 ${hasJTBDLevels}/3` }); }
+    if (jtbd.length >= 60) { items.push({ type:'good', text:'用户任务描述详细，层次清晰' }); }
+    else { score -= 5; items.push({ type:'warn', text:'用户任务描述偏短，建议展开各层次的具体内容' }); }
+    // 共情卡片
+    const hasCards = ['询问','观察','体验'].filter(w => empathy.includes(w)).length;
+    if (hasCards >= 2) { items.push({ type:'good', text:'使用了多种共情探索方式收集信息' }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议尝试使用询问、观察、体验三种卡片收集信息' }); }
+  }
+
+  // ── 任务 5：用户旅程发现 ──────────────────────
+  else if (n === 5) {
+    const steps = data.journey_steps || '';
+    const journey = data.journey_map || '';
+    const findings = data.key_findings || '';
+    // 步骤拆解
+    const stepCount = steps.split(/\d+[\.\、]/).filter(s => s.trim().length > 5).length;
+    if (stepCount >= 5) { score += 5; items.push({ type:'good', text:`旅程拆解为 ${stepCount} 个步骤，颗粒度合适` }); }
+    else { score -= 5; items.push({ type:'warn', text:'建议将旅程拆解为 5-8 个具体步骤' }); }
+    // 做/感/想
+    const hasDo = journey.includes('做') || journey.includes('行动');
+    const hasFeel = journey.includes('感') || journey.includes('情绪');
+    const hasThink = journey.includes('想') || journey.includes('思考');
+    const dimensionCount = [hasDo, hasFeel, hasThink].filter(Boolean).length;
+    if (dimensionCount >= 3) { score += 5; items.push({ type:'good', text:'旅程记录了做、感、想三个维度' }); }
+    else { score -= 5; items.push({ type:'warn', text:`建议补充旅程的「做/感/想」维度，目前 ${dimensionCount}/3` }); }
+    // 关键发现
+    const findingCount = findings.split(/【发现|发现\d|奇怪的是|令人惊讶的是/).filter(s => s.trim().length > 10).length;
+    if (findingCount >= 2) { score += 5; items.push({ type:'good', text:`提炼了 ${findingCount} 个关键发现，有洞察潜力` }); }
+    else { score -= 8; items.push({ type:'warn', text:'建议提炼 2-4 个关键发现，关注矛盾、反常或令人惊讶的事实' }); }
+    const hasSurprise = findings.includes('奇怪') || findings.includes('惊讶') || findings.includes('矛盾') || findings.includes('反直觉');
+    if (hasSurprise) { items.push({ type:'good', text:'关键发现包含令人惊讶或矛盾的元素' }); }
+    else { score -= 3; items.push({ type:'warn', text:'关键发现建议关注「奇怪的是...」「令人惊讶的是...」这类反直觉事实' }); }
+  }
+
+  // ── 任务 6：POV 构建 ──────────────────────
+  else if (n === 6) {
+    const find = data.find_analysis || '';
+    const pov = data.pov_statement || '';
+    const validation = data.pov_validation || '';
+    // FIND 分析
+    const hasF = find.includes('F（') || find.includes('F(') || find.includes('事实');
+    const hasI = find.includes('I（') || find.includes('I(') || find.includes('解释');
+    const hasN = find.includes('N（') || find.includes('N(') || find.includes('需求');
+    const hasD = find.includes('D（') || find.includes('D(') || find.includes('洞察');
+    const findSteps = [hasF, hasI, hasN, hasD].filter(Boolean).length;
+    if (findSteps >= 4) { score += 5; items.push({ type:'good', text:'FIND 分析完整，四个步骤都有覆盖' }); }
+    else { score -= 5; items.push({ type:'warn', text:`FIND 分析建议完整覆盖 F-I-N-D 四个步骤，目前 ${findSteps}/4` }); }
+    // POV 结构
+    const hasUser = pov.includes('用户') || pov.includes('新人') || pov.includes('客户');
+    const hasResult = pov.includes('需要') || pov.includes('达成') || pov.includes('想要');
+    const hasChallenge = pov.includes('因为') || pov.includes('但') || pov.includes('挑战');
+    const hasNeed = pov.includes('导致') || pov.includes('需求') || pov.includes('未被满足');
+    const povParts = [hasUser, hasResult, hasChallenge, hasNeed].filter(Boolean).length;
+    if (povParts >= 4) { score += 5; items.push({ type:'good', text:'POV 结构完整，涵盖用户、结果、挑战、需求四要素' }); }
+    else { score -= 5; items.push({ type:'warn', text:`POV 建议包含「用户+结果+挑战+需求」四要素，目前 ${povParts}/4` }); }
+    if (pov.length >= 40) { items.push({ type:'good', text:'POV 描述充分，表达清晰' }); }
+    else { score -= 5; items.push({ type:'warn', text:'POV 描述偏短，建议更完整地表达核心矛盾' }); }
+    // 验证检查
+    const checkCount = validation.split('✅').length - 1;
+    if (checkCount >= 4) { score += 5; items.push({ type:'good', text:'POV 验证检查通过，质量有保障' }); }
+    else { score -= 3; items.push({ type:'warn', text:'建议完成 POV 验证检查清单' }); }
+    // 检查是否混入解决方案
+    if (pov.includes('解决方案') || pov.includes('产品') || pov.includes('功能') || pov.includes('平台')) {
+      score -= 10; items.push({ type:'bad', text:'⚠️ POV 中似乎包含解决方案，请确保 POV 只描述问题，不包含答案' });
+    }
+  }
+
   score = Math.min(100, Math.max(0, score));
   const level = score >= 85 ? 'high' : score >= 70 ? 'mid' : 'low';
   const levelText = score >= 85 ? '优秀' : score >= 70 ? '良好，可继续' : '需改进';
@@ -1080,7 +1349,7 @@ function confirmComplete() {
 }
 
 function showModuleComplete() {
-  showToast('🎓 恭喜完成 Reveal 阶段 · 模块一：团队构建共识！');
+  showToast('🎓 恭喜完成 Reveal 揭示阶段全部 6 个任务！');
 }
 
 // ────────────────────────────────────────────────
@@ -1131,11 +1400,32 @@ function sendAI() {
         '限制条件很重要！它决定了你的解决方案是否真的可落地。\n\n最常被忽视的限制：\n• 时间限制（用户愿意花多少时间学习？）\n• 行为习惯（他们现在是怎么做的？）\n• 文化因素（有哪些「不成文的规则」？）',
       ];
       reply = replies[Math.floor(Math.random() * replies.length)];
-    } else {
+    } else if (n === 3) {
       const replies = [
         '12 分制的精髓在于「强迫选择」。\n\n当一位利益方说「每个需求都很重要」时，12 分制会逼他们表态。\n\n通常，第一轮分数会比较平均（3-3-3-3），但让他们解释每个分数背后的理由，往往会发现真实的优先级。',
         '待验证假设最容易犯的错误是「写成目标」而不是「写成假设」。\n\n目标：「我们要提升开单率到 40%」\n假设：「我们相信，如果用真实客户场景替代角色扮演，60天开单率会从15%提升到40%，这个假设需要通过 A/B 测试验证」\n\n区别：假设是「我们不确定，但这是我们的猜测」，需要后续验证。',
         '项目简报不是给外部看的正式文件，而是团队内部的「共同协议」。\n\n写完后，让团队每人独立阅读，然后说出自己理解的「最重要的一件事」。\n\n如果每人说的不一样，说明简报还需要澄清。',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    } else if (n === 4) {
+      const replies = [
+        '三种共情卡片中，「观察卡」往往最有价值。\n\n用户说的：「我希望有更多培训」\n用户做的：培训时刷手机，实战时还是不会\n\n差距就是洞察的来源。你观察到了什么与「说的」不一致的行为？',
+        'JTBD 的三个层次是递进关系。\n\n功能性：「我要完成销售任务」\n社会情感性：「让同事觉得我是合格的销售」\n个人情感性：「感觉自己有能力、有掌控感」\n\n最深层的往往是个人情感性任务——这才是真正的驱动力。',
+        '用户画像要具体到一个「人」，而不是一类人。\n\n不要写「销售新人」，要写「张雪，23岁，入职3周，性格内向但学习意愿强，最怕被客户问住」。\n\n具体细节能让团队产生共情，而不是抽象的统计数字。',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    } else if (n === 5) {
+      const replies = [
+        '关键发现的秘诀是寻找「张力」。\n\n三种常见的张力：\n• 用户说的 vs 用户做的\n• 用户期望的 vs 实际发生的\n• 公司要求的 vs 用户真正需要的\n\n你的旅程中有没有发现这样的张力？',
+        '情绪曲线是发现问题的雷达。\n\n不要只关注「痛点」（情绪低谷），也要关注「情绪高点」——为什么某些时刻用户感觉很好？这些时刻有什么共同特征？\n\n有时候，解决方案就藏在情绪高点的原因里。',
+        '好的关键发现往往以「奇怪的是...」开头。\n\n「奇怪的是：新人花了 80% 时间准备话术，但实战中 70% 的问题都不在话术范围内」\n\n这种反直觉的事实，往往是创新的突破口。',
+      ];
+      reply = replies[Math.floor(Math.random() * replies.length)];
+    } else if (n === 6) {
+      const replies = [
+        'FIND 模型不要跳步。每一步都要有逻辑链条：\n\n事实 → 为什么会这样？→ 用户真正需要什么？→ 核心洞察是什么？\n\n最常见的错误是从事实直接跳到洞察，跳过了「解释」和「需求」两步。',
+        'POV 不是解决方案，而是问题。\n\n❌ 不好的 POV：「用户需要一个 AI 助手来练习话术」\n✅ 好的 POV：「用户需要在面对未知问题时保持自信，但因为过度依赖标准答案，导致实战时感到失控」\n\n区别：前者是答案，后者是问题。',
+        '好的 POV 应该让你感到「有点不舒服」。\n\n因为它揭示了一个你之前没看清的真相——可能与你最初的假设相悖，或者比你想的更复杂。\n\n如果你的 POV 让你感觉「这太明显了」，那可能还需要深挖。',
       ];
       reply = replies[Math.floor(Math.random() * replies.length)];
     }
