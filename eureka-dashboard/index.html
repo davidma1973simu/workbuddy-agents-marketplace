@@ -25,6 +25,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .btn-new:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;transition:.2s}
 .btn-ghost:hover{background:rgba(255,255,255,.25)}
+.btn-learn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:9px 20px;border-radius:24px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.btn-learn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(245,158,11,.4)}
 
 /* ── STATS ── */
 .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 32px 0}
@@ -691,6 +693,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
     <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入角色" style="white-space:nowrap">📥 <span class="btn-text">导入</span></button>
     <button class="btn-ghost" onclick="openUploadPanel()" title="上传文档" style="white-space:nowrap">📂 <span class="btn-text">上传</span></button>
     <button class="btn-ghost" onclick="openAIConfigPanel()" title="AI 设置" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);white-space:nowrap">⚙️ <span class="btn-text">设置</span></button>
+    <a href="learn.html" class="btn-learn" title="进入 Eureka 学习模式" style="text-decoration:none;white-space:nowrap">🎓 <span class="btn-text">学习模式</span></a>
     <button class="btn-new" onclick="createNewProject()" style="white-space:nowrap"><span class="btn-icon">+</span><span class="btn-text">新建</span></button>
   </div>
 </nav>
