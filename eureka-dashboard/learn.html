@@ -7205,11 +7205,11 @@ function updateOnboardingUI() {
         </div>
         <div style="margin-bottom:16px">
           <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">🚨 关键风险</div>
-          <textarea id="bv-summary-risks" rows="2" placeholder="基于以上分析，你认为最大的商业风险是什么？（如：市场规模被高估、竞品壁垒太强、用户付费意愿不足等）" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;line-height:1.6;resize:vertical">${state.businessValue?.summary?.keyRisks || ''}</textarea>
+          <textarea id="bv-summary-risks" rows="2" placeholder="基于以上分析，你认为最大的商业风险是什么？（如：市场规模被高估、竞品壁垒太强、用户付费意愿不足等）" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;line-height:1.6;resize:vertical"></textarea>
         </div>
         <div style="margin-bottom:16px">
           <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">🎯 下一步验证计划</div>
-          <textarea id="bv-summary-next" rows="2" placeholder="为了降低风险、验证假设，你计划在接下来的 Inspire/Shape 阶段做什么？" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;line-height:1.6;resize:vertical">${state.businessValue?.summary?.nextSteps || ''}</textarea>
+          <textarea id="bv-summary-next" rows="2" placeholder="为了降低风险、验证假设，你计划在接下来的 Inspire/Shape 阶段做什么？" style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;line-height:1.6;resize:vertical"></textarea>
         </div>
         <div style="display:flex;gap:12px;justify-content:center">
           <button onclick="generateBVSummaryAI()" style="padding:10px 20px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
