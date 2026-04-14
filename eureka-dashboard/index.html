@@ -683,13 +683,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 <!-- ── TOP NAV ── -->
 <nav class="top-nav">
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;overflow:hidden">
-    <a href="https://eureka-landing.zh-cn.edgeone.cool/" class="nav-back">← 返回 Eureka</a>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka.html" class="nav-back">← 返回 Eureka</a>
     <span class="nav-brand" style="font-size:18px;white-space:nowrap">📊 Eureka 项目库</span>
     <span style="color:rgba(255,255,255,.4);margin:0 8px">|</span>
     <button class="btn-tool" onclick="checkPersonaLabImport()" title="导入角色" style="white-space:nowrap;padding:7px 12px;font-size:12px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;color:#fff;border-radius:20px;cursor:pointer;transition:.2s">📥 <span class="btn-text">导入</span></button>
     <button class="btn-tool" onclick="openUploadPanel()" title="上传文档" style="white-space:nowrap;padding:7px 12px;font-size:12px;background:linear-gradient(135deg,#f97316,#ea580c);border:none;color:#fff;border-radius:20px;cursor:pointer;transition:.2s">📂 <span class="btn-text">上传</span></button>
-    <a href="https://persona-lab.edgeone.dev/" target="_blank" class="btn-tool" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:7px 12px;font-size:12px;background:linear-gradient(135deg,#ec4899,#db2777);border:none;color:#fff;border-radius:20px;cursor:pointer;transition:.2s" title="Persona Lab">🎭 <span class="btn-text">Persona Lab</span></a>
-    <button class="btn-ghost" id="offline-btn" onclick="toggleOfflineMode()" title="云端离线模式" style="white-space:nowrap;padding:7px 12px;font-size:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#fff;cursor:pointer;transition:.2s">☁️ <span class="btn-text">云端离线</span></button>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/persona-lab/" target="_blank" class="btn-tool" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:7px 12px;font-size:12px;background:linear-gradient(135deg,#ec4899,#db2777);border:none;color:#fff;border-radius:20px;cursor:pointer;transition:.2s" title="Persona Lab">🎭 <span class="btn-text">Persona Lab</span></a>
   </div>
   <div class="nav-actions">
     <button class="btn-tool" onclick="openMarket()" title="模板市场" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);border:none;padding:9px 18px;border-radius:24px;color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:.2s">🛍️ <span class="btn-text">模板市场</span></button>
@@ -5034,7 +5033,7 @@ function checkPersonaLabProjectSelect() {
   const params = new URLSearchParams(location.search);
   if (params.get('select_project_for_persona') !== '1') return;
 
-  const returnUrl = params.get('return_url') || 'https://persona-lab.edgeone.dev/';
+  const returnUrl = params.get('return_url') || 'https://davidma1973simu.github.io/workbuddy-agents-marketplace/persona-lab/';
   const exportData = localStorage.getItem('persona_lab_export_v1');
 
   if (!exportData) {
