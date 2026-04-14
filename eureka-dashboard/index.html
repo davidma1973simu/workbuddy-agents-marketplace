@@ -675,6 +675,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .tpl-checklist{list-style:none;padding:0}
 .tpl-checklist li{display:flex;gap:8px;padding:6px 0;font-size:13px;color:#374151;border-bottom:1px solid #f8faff}
 .tpl-checklist li::before{content:"✓";color:#667eea;font-weight:700;flex-shrink:0}
+@keyframes modalSlideIn{from{opacity:0;transform:translateY(-20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
@@ -3350,18 +3351,13 @@ function checkPersonaLabImport() {
   const otherCount  = personas.length - targetCount;
   const exportedAt  = new Date(payload.exportedAt).toLocaleString('zh-CN');
 
-  const confirmed = confirm(
-    `✅ 检测到 Persona Lab 数据\n\n` +
-    `主题：${payload.projectTheme || '未知'}\n` +
-    `导出时间：${exportedAt}\n` +
-    `共 ${personas.length} 个角色（目标用户 ${targetCount}，其他 ${otherCount}）\n\n` +
-    `请先打开一个 Eureka 项目，再在 Reveal 编辑器里点「📥 从 Persona Lab 导入」\n\n` +
-    `点「确定」清除缓存数据，「取消」保留`
+  showConfirmModal(
+    '🎭 Persona Lab 数据',
+    `检测到 Persona Lab 导出数据<br>主题：<strong>${payload.projectTheme || '未知'}</strong><br>导出时间：${exportedAt}<br>共 ${personas.length} 个角色（目标用户 ${targetCount}，其他 ${otherCount}）<br><br>点「清除缓存」移除数据，点「取消」保留`,
+    '清除缓存',
+    () => { localStorage.removeItem('persona_lab_export_v1'); showToast('已清除 Persona Lab 缓存数据'); },
+    'linear-gradient(135deg,#667eea,#764ba2)'
   );
-  if (confirmed) {
-    localStorage.removeItem('persona_lab_export_v1');
-    showToast('已清除 Persona Lab 缓存数据');
-  }
 }
 
 let uploadedFileName = null;
@@ -4836,25 +4832,67 @@ function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function confirmDelete(id){
   const p=getOne(id); if(!p) return;
   const safeName = esc(p.name);
-  if(!confirm(`确认删除「${safeName}」？此操作不可撤销`)) return;
-  remove(id); activeId=null;
-  const dashRight = document.getElementById('dashRight');
-  dashRight.innerHTML = '';
-  const sc = createSafeElement('div', { className: 'sc' });
-  const scBody = createSafeElement('div', { className: 'sc-body', style: 'text-align:center;padding:48px' });
-  const icon = createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['🗑️']);
-  const msg = createSafeElement('div', { style: 'color:#64748b' }, ['项目已删除']);
-  scBody.appendChild(icon);
-  scBody.appendChild(msg);
-  sc.appendChild(scBody);
-  dashRight.appendChild(sc);
-  refreshAll(); toast('🗑️ 已删除');
+  showConfirmModal(
+    '🗑️ 删除项目',
+    `确认删除「${safeName}」？<br><strong>此操作不可撤销！</strong>`,
+    '确认删除',
+    () => {
+      remove(id); activeId=null;
+      const dashRight = document.getElementById('dashRight');
+      dashRight.innerHTML = '';
+      const sc = createSafeElement('div', { className: 'sc' });
+      const scBody = createSafeElement('div', { className: 'sc-body', style: 'text-align:center;padding:48px' });
+      const icon = createSafeElement('div', { style: 'font-size:40px;margin-bottom:12px' }, ['🗑️']);
+      const msg = createSafeElement('div', { style: 'color:#64748b' }, ['项目已删除']);
+      scBody.appendChild(icon);
+      scBody.appendChild(msg);
+      sc.appendChild(scBody);
+      dashRight.appendChild(sc);
+      refreshAll(); toast('🗑️ 已删除');
+    },
+    'linear-gradient(135deg,#ef4444,#dc2626)'
+  );
 }
 
 // ═══════════════ TRASH ═══════════════
+
+// 自定义确认 Modal（替代 confirm()，兼容 iframe）
+function showConfirmModal(title, message, confirmText, onConfirm, headerColor) {
+  const modal = document.createElement('div');
+  modal.id = 'confirm-modal-' + Date.now();
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)" id="${modal.id}-bg"></div>
+    <div style="position:relative;background:#fff;max-width:420px;width:90%;border-radius:16px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.3);animation:modalSlideIn 0.3s ease">
+      <div style="background:${headerColor || 'linear-gradient(135deg,#667eea,#764ba2)'};padding:20px 24px">
+        <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff">${title}</h3>
+        <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.9)">${message}</p>
+      </div>
+      <div style="padding:16px 24px;display:flex;gap:12px;justify-content:flex-end;background:#f9fafb;border-top:1px solid #e5e7eb">
+        <button id="${modal.id}-cancel" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:#6b7280;background:#fff;border:1px solid #d1d5db;cursor:pointer">取消</button>
+        <button id="${modal.id}-ok" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;background:${headerColor || 'linear-gradient(135deg,#667eea,#764ba2)'};border:none;cursor:pointer">${confirmText || '确认'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.querySelector(`#${modal.id}-bg`).onclick = () => modal.remove();
+  modal.querySelector(`#${modal.id}-cancel`).onclick = () => modal.remove();
+  modal.querySelector(`#${modal.id}-ok`).onclick = () => { modal.remove(); onConfirm(); };
+}
+
+function deleteProject(id) {
+  const p = getOne(id);
+  if (!p) return;
+  showConfirmModal(
+    '🗑️ 删除项目',
+    `确定要将「${p.name}」移入回收站吗？<br>可在回收站中恢复。`,
+    '移入回收站',
+    () => moveToTrash(id),
+    'linear-gradient(135deg,#ef4444,#dc2626)'
+  );
+}
+
 function moveToTrash(id) {
   const p = getOne(id); if (!p) return;
-  if (!confirm(`将「${p.name}」移入回收站？可在回收站中恢复。`)) return;
   // 加入回收站
   const trash = getTrash();
   trash.unshift({ ...p, _deletedAt: new Date().toISOString().slice(0,10) });
@@ -4898,18 +4936,32 @@ function purgeFromTrash(id) {
   const trash = getTrash();
   const p = trash.find(x => x.id === id);
   if (!p) return;
-  if (!confirm(`彻底删除「${p.name}」？此操作不可恢复！`)) return;
-  saveTrash(trash.filter(x => x.id !== id));
-  refreshAll();
-  toast('🗑️ 已彻底删除');
+  showConfirmModal(
+    '⚠️ 彻底删除',
+    `确定要彻底删除「${p.name}」吗？<br><strong>此操作不可恢复！</strong>`,
+    '彻底删除',
+    () => {
+      saveTrash(trash.filter(x => x.id !== id));
+      refreshAll();
+      toast('🗑️ 已彻底删除');
+    },
+    'linear-gradient(135deg,#ef4444,#dc2626)'
+  );
 }
 
 function emptyTrash() {
   if (!getTrash().length) return;
-  if (!confirm('彻底清空回收站？所有项目将永久删除，不可恢复！')) return;
-  saveTrash([]);
-  refreshAll();
-  toast('🗑️ 回收站已清空');
+  showConfirmModal(
+    '⚠️ 清空回收站',
+    '确定要彻底清空回收站吗？<br><strong>所有项目将永久删除，不可恢复！</strong>',
+    '清空回收站',
+    () => {
+      saveTrash([]);
+      refreshAll();
+      toast('🗑️ 回收站已清空');
+    },
+    'linear-gradient(135deg,#ef4444,#dc2626)'
+  );
 }
 
 function renderTrashList() {
@@ -5044,28 +5096,42 @@ function checkPersonaLabProjectSelect() {
   // 显示项目选择提示
   setTimeout(() => {
     const projectCount = getAll().length;
-    const choice = confirm(
-      `🎭 从 Persona Lab 导入角色\n\n` +
-      `检测到 ${projectCount} 个项目。\n\n` +
-      `点击「确定」导入到最后打开的项目\n` +
-      `点击「取消」查看所有项目并手动选择`
-    );
-
-    if (choice && activeId) {
-      // 导入到当前项目
-      importPersonaToProject(activeId);
-    } else {
-      // 显示项目列表供选择
-      showToast('请在左侧项目列表中选择一个项目，然后点击「📥 从 Persona Lab 导入」按钮', 'info');
-      // 高亮项目列表
-      const leftPanel = document.querySelector('.panel-left');
-      if (leftPanel) {
-        leftPanel.style.boxShadow = '0 0 20px rgba(102,126,234,0.5)';
-        setTimeout(() => {
-          leftPanel.style.boxShadow = '';
-        }, 3000);
-      }
+    if (projectCount === 0) {
+      showConfirmModal(
+        '🎭 从 Persona Lab 导入角色',
+        '当前没有项目。<br>是否创建新项目并导入角色？',
+        '创建新项目',
+        () => {
+          const theme = payload.projectTheme || 'Persona Lab 项目';
+          const newProject = createProjectForImport(theme);
+          if (newProject) {
+            importPersonaToProject(newProject.id);
+            showToast(`✅ 已创建新项目「${newProject.name}」并导入角色`, 'success');
+          }
+        },
+        'linear-gradient(135deg,#667eea,#764ba2)'
+      );
+      return;
     }
+
+    showConfirmModal(
+      '🎭 从 Persona Lab 导入角色',
+      `检测到 ${projectCount} 个项目。<br>点击「导入到最后项目」导入到当前项目<br>点击「取消」查看项目列表手动选择`,
+      '导入到最后项目',
+      () => {
+        if (activeId) {
+          importPersonaToProject(activeId);
+        } else {
+          showToast('请在左侧项目列表中选择一个项目，然后点击「📥 从 Persona Lab 导入」按钮', 'info');
+          const leftPanel = document.querySelector('.panel-left');
+          if (leftPanel) {
+            leftPanel.style.boxShadow = '0 0 20px rgba(102,126,234,0.5)';
+            setTimeout(() => { leftPanel.style.boxShadow = ''; }, 3000);
+          }
+        }
+      },
+      'linear-gradient(135deg,#667eea,#764ba2)'
+    );
   }, 500);
 }
 
@@ -5164,7 +5230,7 @@ function checkPersonaLabCreateProject() {
   // 延迟执行，等待页面初始化完成
   setTimeout(() => {
     // 创建新项目
-    const newProject = createNewProject(theme);
+    const newProject = createProjectForImport(theme);
     if (newProject) {
       // 导入角色到新项目
       importPersonaToProject(newProject.id);
@@ -5176,7 +5242,7 @@ function checkPersonaLabCreateProject() {
 /**
  * 创建新项目（用于 Persona Lab 导入）
  */
-function createNewProject(name) {
+function createProjectForImport(name) {
   const id = 'proj_' + Date.now();
   const project = {
     id: id,
@@ -5384,12 +5450,18 @@ function testAIConnection() {
 }
 
 function clearAIConfig() {
-  if (confirm('确定要清除 AI 配置吗？')) {
-    localStorage.removeItem('rh_ai_config_v1');
-    document.getElementById('aiApiKey').value = '';
-    updateAIStatus('未配置', 'orange');
-    toast('✅ AI 配置已清除');
-  }
+  showConfirmModal(
+    '⚙️ 清除 AI 配置',
+    '确定要清除 AI 配置吗？<br>清除后需要重新填写 API Key。',
+    '清除',
+    () => {
+      localStorage.removeItem('rh_ai_config_v1');
+      document.getElementById('aiApiKey').value = '';
+      updateAIStatus('未配置', 'orange');
+      toast('✅ AI 配置已清除');
+    },
+    'linear-gradient(135deg,#f59e0b,#d97706)'
+  );
 }
 </script>
 
