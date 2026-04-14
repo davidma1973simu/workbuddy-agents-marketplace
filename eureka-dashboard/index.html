@@ -3894,17 +3894,78 @@ function importJSON(){
 
 // ═══════════════ PROJECT MGMT ═══════════════
 function createNewProject(){
-  // 生成空项目后直接打开编辑器
+  // 弹出 Modal 让用户输入项目名称
+  const modalId = 'new-project-modal';
+  const existingModal = document.getElementById(modalId);
+  if (existingModal) existingModal.remove();
+  
+  const modal = document.createElement('div');
+  modal.id = modalId;
+  modal.className = 'modal active';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5)" onclick="closeNewProjectModal()"></div>
+    <div style="position:relative;background:#fff;max-width:420px;width:90%;border-radius:16px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.3);animation:modalSlideIn 0.3s ease">
+      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:24px">
+        <h3 style="margin:0;font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px">
+          <span>✨</span> 新建创新项目
+        </h3>
+        <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.9)">为你的创新想法创建一个项目空间</p>
+      </div>
+      <div style="padding:24px">
+        <div style="margin-bottom:20px">
+          <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px">项目名称</label>
+          <input type="text" id="new-project-name-input" placeholder="例如：智能客服优化方案" style="width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;outline:none;transition:all 0.2s" onkeydown="if(event.key==='Enter')confirmNewProject()">
+          <div id="new-project-error" style="color:#dc2626;font-size:12px;margin-top:6px;display:none">⚠️ 请输入项目名称</div>
+        </div>
+      </div>
+      <div style="padding:16px 24px;display:flex;gap:12px;justify-content:flex-end;background:#f9fafb;border-top:1px solid #e5e7eb">
+        <button onclick="closeNewProjectModal()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:#6b7280;background:#fff;border:1px solid #d1d5db;cursor:pointer;transition:all 0.2s">取消</button>
+        <button onclick="confirmNewProject()" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:#fff;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(245,158,11,0.3)">确认创建</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // 自动聚焦输入框
+  setTimeout(() => {
+    const input = document.getElementById('new-project-name-input');
+    if (input) input.focus();
+  }, 100);
+}
+
+function closeNewProjectModal() {
+  const modal = document.getElementById('new-project-modal');
+  if (modal) modal.remove();
+}
+
+function confirmNewProject() {
+  const input = document.getElementById('new-project-name-input');
+  const errorEl = document.getElementById('new-project-error');
+  const name = input ? input.value.trim() : '';
+  
+  if (!name) {
+    if (errorEl) errorEl.style.display = 'block';
+    if (input) {
+      input.style.borderColor = '#dc2626';
+      input.focus();
+    }
+    return;
+  }
+  
+  // 创建项目
   const id = 'proj-'+Date.now();
   const np = {
-    id, name:'新项目', brief:'', targetUser:'', status:'draft', progress:0,
+    id, name: name, brief:'', targetUser:'', status:'draft', progress:0,
     createdAt: new Date().toISOString().slice(0,10),
     updatedAt: new Date().toISOString().slice(0,10)
   };
   upsert(np);
   activeId = id;
   refreshAll();
+  closeNewProjectModal();
   openEditor(id, true);
+  toast('✅ 项目「' + name + '」创建成功');
 }
 
 // ═══════════════ PROJECT EDITOR ═══════════════
