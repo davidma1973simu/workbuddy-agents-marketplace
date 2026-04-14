@@ -682,19 +682,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 
 <!-- ── TOP NAV ── -->
 <nav class="top-nav">
-  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;overflow:hidden">
     <a href="https://eureka-landing.zh-cn.edgeone.cool/" class="nav-back">← 返回 Eureka</a>
     <span class="nav-brand" style="font-size:18px;white-space:nowrap">📊 Eureka 项目库</span>
+    <span style="color:rgba(255,255,255,.4);margin:0 8px">|</span>
+    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入角色" style="white-space:nowrap;padding:7px 12px;font-size:12px">📥 <span class="btn-text">导入</span></button>
+    <button class="btn-ghost" onclick="openUploadPanel()" title="上传文档" style="white-space:nowrap;padding:7px 12px;font-size:12px">📂 <span class="btn-text">上传</span></button>
+    <a href="https://persona-lab.edgeone.dev/" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:7px 12px;font-size:12px" title="Persona Lab">🎭 <span class="btn-text">Persona Lab</span></a>
+    <button class="btn-ghost" id="offline-btn" onclick="toggleOfflineMode()" title="离线模式" style="white-space:nowrap;padding:7px 12px;font-size:12px">🌐 <span class="btn-text">离线</span></button>
   </div>
   <div class="nav-actions">
     <button class="btn-market" onclick="openMarket()" title="模板市场">🛍️ <span class="btn-text">模板市场</span></button>
     <a href="guide.html" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="产品手册">📖 <span class="btn-text">手册</span></a>
-    <a href="https://persona-lab.edgeone.dev/" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap" title="Persona Lab">🎭 <span class="btn-text">Persona</span></a>
-    <button class="btn-ghost" onclick="checkPersonaLabImport()" title="导入角色" style="white-space:nowrap">📥 <span class="btn-text">导入</span></button>
-    <button class="btn-ghost" onclick="openUploadPanel()" title="上传文档" style="white-space:nowrap">📂 <span class="btn-text">上传</span></button>
-    <button class="btn-ghost" onclick="openAIConfigPanel()" title="AI 设置" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);white-space:nowrap">⚙️ <span class="btn-text">设置</span></button>
     <a href="learn.html" class="btn-learn" title="进入 Eureka 学习模式" style="text-decoration:none;white-space:nowrap">🎓 <span class="btn-text">学习模式</span></a>
     <button class="btn-new" onclick="createNewProject()" style="white-space:nowrap"><span class="btn-icon">+</span><span class="btn-text">新建</span></button>
+    <button class="btn-ghost" onclick="openAIConfigPanel()" title="AI 设置" style="background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);white-space:nowrap">⚙️ <span class="btn-text">AI设置</span></button>
   </div>
 </nav>
 
