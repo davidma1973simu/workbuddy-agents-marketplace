@@ -7516,7 +7516,7 @@ function updateOnboardingUI() {
       const projects = projData.projects || [];
       html += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #334155;color:#fbbf24">📁 项目数: ${projects.length}</div>`;
       projects.forEach((p, i) => {
-        const stateKey = 'eureka_proj_' + p.id;
+        const stateKey = 'eureka_project_' + p.id;
         const stateRaw = localStorage.getItem(stateKey);
         const stateSize = stateRaw ? new Blob([stateRaw]).size : 0;
         // 统计任务完成数
