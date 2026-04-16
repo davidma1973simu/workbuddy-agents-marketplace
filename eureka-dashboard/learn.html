@@ -7464,3 +7464,111 @@ function updateOnboardingUI() {
 
 </body>
 </html>
+
+<!-- ═══════════ 数据恢复工具（v1.4.18 临时添加，确认数据正常后可删除）═══════════ -->
+<div id="data-recovery-panel" style="position:fixed;bottom:12px;right:12px;z-index:99999;background:#1e293b;color:#e2e8f0;padding:14px 18px;border-radius:12px;font-size:12px;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.4);font-family:-apple-system,sans-serif">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <strong style="color:#fbbf24">💾 LocalStorage 数据状态</strong>
+    <button onclick="document.getElementById('data-recovery-panel').style.display='none'" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px">✕</button>
+  </div>
+  <div id="recovery-info" style="line-height:1.8">检测中...</div>
+  <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+    <button onclick="exportAllData()" style="padding:5px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px">📥 导出全部数据</button>
+    <button onclick="showDataDetail()" style="padding:5px 10px;background:#6366f1;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px">🔍 查看详情</button>
+  </div>
+</div>
+
+<script>
+(function checkStorage() {
+  const keys = [
+    { key: 'eureka_learn_projects_v2', label: '项目列表' },
+    { key: 'eureka_learn_current_v2', label: '当前项目ID' },
+    { key: 'eureka_project_data_v1', label: '项目数据' },
+    { key: 'eureka_learn_ai_v1', label: 'AI配置' },
+    { key: 'eureka_ai_config_v1', label: 'AI Key配置' },
+    { key: 'eureka_learn_v1', label: '旧版学习数据' },
+  ];
+  
+  let html = '';
+  let hasData = false;
+  
+  keys.forEach(item => {
+    try {
+      const val = localStorage.getItem(item.key);
+      if (val) {
+        hasData = true;
+        const size = new Blob([val]).size;
+        const preview = val.length > 60 ? val.substring(0, 60) + '...' : val;
+        html += `<div style="margin-bottom:4px"><span style="color:#4ade80">●</span> <b>${item.label}</b>: ${size}B</div>`;
+      } else {
+        html += `<div style="margin-bottom:4px"><span style="color:#ef4444">○</span> ${item.label}: 空</div>`;
+      }
+    } catch(e) {
+      html += `<div style="margin-bottom:4px"><span style="color">#f59e0b">⚠</span> ${item.label}: 读取错误</div>`;
+    }
+  });
+  
+  // 检查项目数量
+  try {
+    const projRaw = localStorage.getItem('eureka_learn_projects_v2');
+    if (projRaw) {
+      const projData = JSON.parse(projRaw);
+      const projects = projData.projects || [];
+      html += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #334155;color:#fbbf24">📁 项目数: ${projects.length}</div>`;
+      projects.forEach((p, i) => {
+        const stateKey = 'eureka_proj_' + p.id;
+        const stateRaw = localStorage.getItem(stateKey);
+        const stateSize = stateRaw ? new Blob([stateRaw]).size : 0;
+        // 统计任务完成数
+        let doneCount = 0;
+        if (stateRaw) {
+          try {
+            const s = JSON.parse(stateRaw);
+            if (s.tasks) {
+              Object.keys(s.tasks).forEach(k => { if (s.tasks[k].status === 'done') doneCount++; });
+            }
+          } catch(e) {}
+        }
+        html += `<div style="margin-left:16px;color:#94a3b8">  ${i+1}. ${p.name} (${stateSize}B) — 完成 ${doneCount}/6 任务</div>`;
+      });
+    }
+  } catch(e) {}
+  
+  document.getElementById('recovery-info').innerHTML = html || '<span style="color:#ef4444">未找到任何 Eureka 数据</span>';
+})();
+
+function exportAllData() {
+  const data = {};
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('eureka_')) allKeys.push(k);
+  }
+  allKeys.forEach(k => { data[k] = localStorage.getItem(k); });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'eureka_backup_' + Date.now() + '.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function showDataDetail() {
+  const allKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('eureka_')) allKeys.push(k);
+  }
+  let content = '';
+  allKeys.forEach(k => {
+    try {
+      const v = JSON.parse(localStorage.getItem(k));
+      content += `\n\n=== ${k} ===\n${JSON.stringify(v, null, 2).substring(0, 2000)}`;
+    } catch(e) {
+      content += `\n\n=== ${k} ===\n${localStorage.getItem(k).substring(0, 500)}`;
+    }
+  });
+  const w = window.open('', '_blank');
+  w.document.write(`<pre style="white-space:pre-wrap;word-break:break-all;padding:20px;font-size:12px">${content}</pre>`);
+  w.document.close();
+}
+</script>
