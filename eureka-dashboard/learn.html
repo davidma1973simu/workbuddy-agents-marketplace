@@ -3125,12 +3125,43 @@ function renderKeyFindingsAI(steps) {
     </div>
     
     <div class="key-findings-actions" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()" style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)"
+      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()" id="btn-generate-findings" style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)"
         ${steps.filter(s => s.step && s.do).length < 3 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
         <span>✨</span> ${hasFindings ? '重新生成关键发现' : 'AI 基于旅程地图生成关键发现'}
       </button>
       ${hasFindings ? `<span class="task4-generated-badge" style="display:flex;align-items:center;gap:6px;background:#f0fdf4;color:#15803d;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #86efac">✓ 已生成，可编辑</span>` : ''}
     </div>
+
+    <script>
+    // 渲染后立即检查 DOM 实时状态来修正按钮可用性
+    (function() {
+      var btn = document.getElementById('btn-generate-findings');
+      if (!btn) return;
+      // 用 setTimeout 确保 DOM 已插入
+      setTimeout(function() {
+        try {
+          var table = document.getElementById('journey-table');
+          if (!table) return;
+          var rows = table.querySelectorAll('tbody tr');
+          var validCount = 0;
+          rows.forEach(function(row) {
+            var step = row.querySelector('[data-field="step"]')?.value || '';
+            var do_ = row.querySelector('[data-field="do"]')?.value || '';
+            if (step.trim() && do_.trim()) validCount++;
+          });
+          if (validCount >= 3 && btn.disabled) {
+            btn.disabled = false;
+            btn.style.opacity = '';
+            btn.style.cursor = 'pointer';
+          } else if (validCount < 3 && !btn.disabled) {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+          }
+        } catch(e) { console.warn('[findings-btn] 检查失败:', e); }
+      }, 100);
+    })();
+    </script>
     
     <div id="key-findings-ai-loading" style="display:none;padding:20px;text-align:center;color:var(--text2)">
       <div style="font-size:24px;margin-bottom:8px">🤖</div>
@@ -3152,25 +3183,32 @@ function renderKeyFindingsAI(steps) {
 
 // AI 生成关键发现
 async function generateKeyFindingsAI() {
+  // 防止重复点击
+  const btn = document.querySelector('.btn-ai-generate');
+  if (btn && btn.disabled) return;
+
   const loadingEl = document.getElementById('key-findings-ai-loading');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
   if (loadingEl) loadingEl.style.display = 'block';
-  
-  const steps = collectJourneyData();
-  
-  // 检查是否有足够的旅程数据
-  const validSteps = steps.filter(s => s.step && s.do);
-  if (validSteps.length < 3) {
-    showToast('请先完成至少 3 个步骤的用户旅程地图');
-    if (loadingEl) loadingEl.style.display = 'none';
-    return;
-  }
-  
-  // 构建旅程描述
-  const journeyDesc = validSteps.map((s, i) => 
-    `步骤 ${i + 1}：${s.step}\n- 做：${s.do}\n- 感：${s.feel || '无'}/5 分\n- 想：${s.think || '无'}`
-  ).join('\n\n');
-  
-  const prompt = `基于以下用户旅程地图，分析并生成 2-4 个关键发现（Key Findings）。
+
+  try {
+    const steps = collectJourneyData();
+    
+    // 检查是否有足够的旅程数据
+    const validSteps = steps.filter(s => s.step && s.do);
+    console.log('[generateKeyFindingsAI] 收集到步骤:', validSteps.length, '/ 总步骤:', steps.length);
+
+    if (validSteps.length < 3) {
+      showToast('⚠️ 请先完成至少 3 个步骤的用户旅程地图（当前仅 ' + validSteps.length + ' 步有内容）');
+      return;
+    }
+
+    // 构建旅程描述
+    const journeyDesc = validSteps.map((s, i) => 
+      `步骤 ${i + 1}：${s.step}\n- 做：${s.do}\n- 感：${s.feel || '无'}/5 分\n- 想：${s.think || '无'}`
+    ).join('\n\n');
+    
+    const prompt = `基于以下用户旅程地图，分析并生成 2-4 个关键发现（Key Findings）。
 
 关键发现的定义：
 - 令人惊讶、矛盾或反直觉的发现
@@ -3187,21 +3225,30 @@ ${journeyDesc}
 
 开头词建议：奇怪的是 / 令人惊讶的是 / 矛盾的是 / 反直觉的是`;
 
-  try {
+    console.log('[generateKeyFindingsAI] 开始调用 AI...');
     const result = await callAIAPI('你是一位用户研究专家，擅长从用户旅程中发现洞察。请基于提供的旅程数据，找出最有价值的矛盾点和反常现象。', prompt);
-    
+    console.log('[generateKeyFindingsAI] AI 返回结果长度:', result?.length || 0);
+
     // 填充到 textarea
     const textarea = document.getElementById('field-key_findings');
-    if (textarea) {
-      textarea.value = result.trim();
+    if (!textarea) {
+      console.error('[generateKeyFindingsAI] 找不到 field-key_findings 元素!');
+      showToast('❌ 系统内部错误：找不到输入框元素');
+      return;
     }
+
+    textarea.value = result.trim() || '';
     
-    showToast('✨ 关键发现已生成，可编辑后保存');
+    // 自动保存
+    saveKeyFindings();
+    showToast('✨ 关键发现已生成并自动保存');
+
   } catch (err) {
-    console.error('AI 生成失败:', err);
-    showToast('❌ AI 生成失败：' + (err.message || '请检查网络或 API 设置'));
+    console.error('[generateKeyFindingsAI] AI 生成失败:', err);
+    showToast('❌ AI 生成失败：' + (err.message || '请检查 AI 配置（右上角 ⚙️ 设置）或网络连接'));
   } finally {
     if (loadingEl) loadingEl.style.display = 'none';
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
   }
 }
 
