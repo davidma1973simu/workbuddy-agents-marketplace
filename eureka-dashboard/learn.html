@@ -3245,6 +3245,7 @@ function addJourneyRow(afterIndex) {
   // 更新隐藏字段并重新渲染
   updateJourneyField(steps);
   refreshJourneyTable(steps);
+  syncJourneyData();
 }
 
 // 删除行
@@ -3257,6 +3258,7 @@ function removeJourneyRow(index) {
   steps.splice(index, 1);
   updateJourneyField(steps);
   refreshJourneyTable(steps);
+  syncJourneyData();
 }
 
 // 收集旅程数据
@@ -3311,10 +3313,14 @@ function refreshJourneyTable(steps) {
   `).join('');
 }
 
-// 同步旅程数据到隐藏字段
+// 同步旅程数据到隐藏字段 + state（实时保存）
 function syncJourneyData() {
   const steps = collectJourneyData();
   updateJourneyField(steps);
+  // 实时同步到 state，确保自动保存不会丢失数据
+  if (!state.tasks[5]) state.tasks[5] = { status: 'in_progress', data: {} };
+  if (!state.tasks[5].data) state.tasks[5].data = {};
+  state.tasks[5].data.journey_table = JSON.stringify(steps);
 }
 
 // 同步情绪评分并更新表情
