@@ -2283,6 +2283,45 @@ function loadState() {
       state = createInitialState();
       saveProjectState(projId, state);
     }
+    
+    // ── 强制迁移：当前项目为空但旧版存储有数据时，自动覆盖 ──
+    if (!hasRealData(state)) {
+      const v3raw = localStorage.getItem('eureka_v3');
+      let forceMigrated = false;
+      if (v3raw) {
+        try {
+          const v3parsed = JSON.parse(v3raw);
+          const migrated = migrateToNewStateFormat(v3parsed, 'eureka_v3');
+          if (migrated && hasRealData(migrated)) {
+            state = migrated;
+            saveProjectState(projId, state);
+            showToast('📦 已从 eureka_v3 自动恢复历史数据（覆盖空项目）');
+            forceMigrated = true;
+          }
+        } catch(e) { /* ignore */ }
+      }
+      // eureka_v3 没有数据时尝试其他源
+      if (!forceMigrated) {
+        const otherSources = [
+          { key: 'eureka_learn_v1', label: 'eureka_learn_v1' },
+          { key: 'eureka_project_data_v1', label: 'eureka_project_data_v1' }
+        ];
+        for (const src of otherSources) {
+          const raw = localStorage.getItem(src.key);
+          if (!raw) continue;
+          try {
+            const parsed = JSON.parse(raw);
+            const migrated = migrateToNewStateFormat(parsed, src.key);
+            if (migrated && hasRealData(migrated)) {
+              state = migrated;
+              saveProjectState(projId, state);
+              showToast('📦 已从 ' + src.label + ' 自动恢复历史数据');
+              break;
+            }
+          } catch(e) { /* ignore */ }
+        }
+      }
+    }
   } else {
     // 没有当前项目，使用第一个
     projId = data.projects[0].id;
