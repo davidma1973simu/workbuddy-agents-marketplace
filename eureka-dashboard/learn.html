@@ -2652,6 +2652,12 @@ async function analyzeTopicsWithAI() {
     return;
   }
 
+  // ⚠️ 先将当前 DOM 数据同步到 state，防止 renderTaskContent 重绘时丢失
+  const n = state.currentTask;
+  const currentData = collectFormData();
+  Object.assign(state.tasks[n].data || {}, currentData);
+  saveState();
+
   // 检查 AI 配置
   const cfg = getAIConfig();
   if (!cfg) {
@@ -3792,10 +3798,11 @@ function collectFormData() {
 function saveDraft() {
   const n = state.currentTask;
   const data = collectFormData();
-  state.tasks[n].data = data;
+  // ⚠️ 合并而非覆盖，防止丢失之前保存的额外字段
+  state.tasks[n].data = Object.assign(state.tasks[n].data || {}, data);
   saveState();
-  syncTaskToProjectData(n, data);
-  showToast('草稿已保存 ✓');
+  syncTaskToProjectData(n, state.tasks[n].data);
+  showToast('💾 草稿已保存');
 }
 
 // 保存草稿带视觉反馈
@@ -4950,8 +4957,14 @@ function downloadBackgroundCase() {
 }
 
 function submitTask() {
-  const data = collectFormData();
   const n    = state.currentTask;
+  
+  // ⚠️ 先将当前 DOM 数据同步到 state，防止用户填了但未点保存
+  const domData = collectFormData();
+  Object.assign(state.tasks[n].data || {}, domData);
+  saveState();
+
+  const data = state.tasks[n].data || {};
 
   // 必填校验
   const textFields = TASKS[n].fields.filter(f => f.type !== 'matrix' && f.type !== 'stakeholder');
@@ -6501,9 +6514,19 @@ document.head.appendChild(aiStyles);
 // ────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show';
-  setTimeout(() => { t.className = 'toast'; }, 2800);
+  if (!t) {
+    // 动态创建 toast（防止 DOM 中缺失）
+    const toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:2000;white-space:nowrap;pointer-events:none';
+    document.body.appendChild(toast);
+  }
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show';
+  // 延长显示时间到 3 秒
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.className = 'toast'; }, 3000);
 }
 
 // ────────────────────────────────────────────────
