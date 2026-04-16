@@ -2116,6 +2116,118 @@ function createInitialState() {
   };
 }
 
+// ── 旧版数据格式迁移 ──────────────────────────────
+// 将各种旧版 localStorage 数据转换为新版 state 格式
+function migrateToNewStateFormat(oldData, sourceKey) {
+  if (!oldData || typeof oldData !== 'object') return null;
+  
+  const newState = createInitialState();
+  
+  // eureka_v3 / eureka_project_data_v1 格式：{ reveal: { module1: { task1, task2, task3 }, module2: { ... } }, ... }
+  // 或直接就是 state 格式（tasks 数组）
+  if (oldData.tasks && typeof oldData.tasks === 'object') {
+    // 已经是新版 state 格式，直接合并
+    return Object.assign(newState, oldData);
+  }
+  
+  // 旧版 reveal 格式映射
+  if (oldData.reveal) {
+    const rev = oldData.reveal;
+    
+    // module1 → tasks 1-3
+    if (rev.module1) {
+      const m1 = rev.module1;
+      if (m1.task1 && Object.keys(m1.task1).length > 0)
+        newState.tasks[1] = { status: 'done', data: flattenTaskData(m1.task1) };
+      if (m1.task2 && Object.keys(m1.task2).length > 0)
+        newState.tasks[2] = { status: 'done', data: flattenTaskData(m1.task2) };
+      if (m1.task3 && Object.keys(m1.task3).length > 0)
+        newState.tasks[3] = { status: 'done', data: flattenTaskData(m1.task3) };
+    }
+    
+    // module2 → tasks 4-6
+    if (rev.module2) {
+      const m2 = rev.module2;
+      if (m2.task4 && Object.keys(m2.task4).length > 0)
+        newState.tasks[4] = { status: 'done', data: flattenTaskData(m2.task4) };
+      if (m2.task5 && Object.keys(m2.task5).length > 0)
+        newState.tasks[5] = { status: 'done', data: flattenTaskData(m2.task5) };
+      if (m2.task6 && Object.keys(m2.task6).length > 0)
+        newState.tasks[6] = { status: 'done', data: flattenTaskData(m2.task6) };
+    }
+    
+    // 迁移 findData / povData / businessValue（如果存在）
+    if (oldData.findData) newState.findData = Object.assign(newState.findData, oldData.findData);
+    if (oldData.povData) newState.povData = Object.assign(newState.povData, oldData.povData);
+    if (oldData.businessValue) newState.businessValue = deepMerge(newState.businessValue, oldData.businessValue);
+  }
+  
+  // 如果旧数据本身就是扁平的 tasks 结构
+  for (let i = 1; i <= 6; i++) {
+    if (oldData['task' + i] && Object.keys(oldData['task' + i]).length > 0) {
+      newState.tasks[i] = { status: 'done', data: flattenTaskData(oldData['task' + i]) };
+    }
+  }
+  
+  return newState;
+}
+
+// 将嵌套的任务数据展平为一层 key-value
+function flattenTaskData(data) {
+  if (!data || typeof data !== 'object') return {};
+  const flat = {};
+  for (const [k, v] of Object.entries(data)) {
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      // 嵌套对象继续展平
+      for (const [sk, sv] of Object.entries(v)) {
+        flat[k + '_' + sk] = (typeof sv === 'string') ? sv : JSON.stringify(sv);
+      }
+    } else {
+      flat[k] = (typeof v === 'string') ? v : JSON.stringify(v);
+    }
+  }
+  return flat;
+}
+
+// 检查迁移后的 state 是否包含真实用户数据
+function hasRealData(s) {
+  if (!s || !s.tasks) return false;
+  for (let i = 1; i <= 6; i++) {
+    if (s.tasks[i] && s.tasks[i].data && Object.keys(s.tasks[i].data).length > 0) {
+      // 检查是否有非空内容
+      for (const val of Object.values(s.tasks[i].data)) {
+        if (val && String(val).trim().length > 2) return true;
+      }
+    }
+  }
+  // 也检查其他字段
+  if (s.findData) {
+    for (const k of ['f','i','n','d']) {
+      if (s.findData[k] && s.findData[k].value && s.findData[k].value.trim().length > 2) return true;
+    }
+  }
+  if (s.povData) {
+    for (const v of Object.values(s.povData)) {
+      if (v && String(v).trim().length > 2) return true;
+    }
+  }
+  return false;
+}
+
+// 深度合并对象（只合并一层）
+function deepMerge(target, source) {
+  if (!source) return target;
+  const result = Object.assign({}, target);
+  for (const [k, v] of Object.entries(source)) {
+    if (v && typeof v === 'object' && !Array.isArray(v) && result[k] && typeof result[k] === 'object') {
+      result[k] = Object.assign({}, result[k], v);
+    } else {
+      result[k] = v;
+    }
+  }
+  return result;
+}
+
 // 加载状态（多项目版本）
 function loadState() {
   // 获取当前项目ID
@@ -2135,18 +2247,28 @@ function loadState() {
     data.projects.push(defaultProject);
     saveProjectsData(data);
     
-    // 尝试从旧版存储迁移数据
-    const oldState = localStorage.getItem('eureka_learn_v1');
-    if (oldState) {
+    // 尝试从旧版存储迁移数据（优先级：eureka_v3 > eureka_learn_v1 > eureka_project_data_v1）
+    let migrated = false;
+    const migrateSources = [
+      { key: 'eureka_v3', label: 'eureka_v3 (历史数据)' },
+      { key: 'eureka_learn_v1', label: 'eureka_learn_v1 (旧版学习数据)' },
+      { key: 'eureka_project_data_v1', label: 'eureka_project_data_v1 (项目数据)' }
+    ];
+    for (const src of migrateSources) {
+      const raw = localStorage.getItem(src.key);
+      if (!raw) continue;
       try {
-        state = JSON.parse(oldState);
-        saveProjectState('proj_default', state);
-        showToast('📦 已迁移旧版数据到新项目系统');
-      } catch(e) {
-        state = createInitialState();
-        saveProjectState('proj_default', state);
-      }
-    } else {
+        const parsed = JSON.parse(raw);
+        state = migrateToNewStateFormat(parsed, src.key);
+        if (state && hasRealData(state)) {
+          saveProjectState('proj_default', state);
+          showToast('📦 已从 ' + src.label + ' 迁移数据到新项目系统');
+          migrated = true;
+          break;
+        }
+      } catch(e) { /* 解析失败，跳过 */ }
+    }
+    if (!migrated) {
       state = createInitialState();
       saveProjectState('proj_default', state);
     }
