@@ -800,18 +800,6 @@ textarea{min-height:90px}
         </div>
       </div>
     </div>
-    <!-- 项目产出文档入口 -->
-    <div id="output-summary-card" onclick="openOutputPanel()" style="margin:16px 20px;padding:12px 16px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:12px;cursor:pointer;transition:all .2s;border:1px solid #8b5cf6;position:relative;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:18px">📋</span>
-          <span style="font-size:13px;font-weight:700;color:#5b21b6">项目产出文档</span>
-        </div>
-        <span id="output-summary-badge" style="font-size:11px;padding:3px 8px;border-radius:10px;background:#fff;color:#5b21b6;font-weight:600">0/6</span>
-      </div>
-      <div style="font-size:12px;color:#6d28d9;line-height:1.5">全程跟进本模块的所有产出物，一键查看或下载</div>
-      <div style="position:absolute;top:0;right:0;width:40px;height:40px;background:rgba(255,255,255,.3);border-radius:0 0 0 40px"></div>
-    </div>
     <!-- 商业价值汇总入口 -->
     <div class="bv-summary-card" id="bv-summary-card" onclick="openBVSummaryPanel()" style="margin:16px 20px;padding:12px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;cursor:pointer;transition:all .2s;border:1px solid #f59e0b;position:relative;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -845,7 +833,7 @@ textarea{min-height:90px}
     <div class="onboarding-header">
       <div class="onboarding-icon">🎯</div>
       <h2>欢迎来到 Eureka 实训系统</h2>
-      <p>设计思维创新方法论 · Reveal 揭示阶段</p>
+      <p>价值创新方法论 · Reveal 揭示阶段</p>
     </div>
     <div class="onboarding-body">
       <div class="onboarding-progress">
@@ -869,7 +857,7 @@ textarea{min-height:90px}
         <div class="onboarding-slide active" data-slide="1">
           <div class="slide-visual">🔍</div>
           <h3>Reveal 揭示阶段</h3>
-          <p>这是设计思维的第一阶段，目标是<strong>深入理解问题</strong>，而不是急于寻找解决方案。</p>
+          <p>这是价值创新的第一阶段，目标是<strong>深入理解问题</strong>，而不是急于寻找解决方案。</p>
           <ul class="slide-list">
             <li>明确创新主题和方向</li>
             <li>研究背景挑战和限制</li>
@@ -2271,7 +2259,6 @@ function renderSidebar() {
     num.textContent = ts === 'done' ? '✓' : n;
     st.textContent  = ts === 'done' ? '✅ 已完成' : (state.currentTask === n ? '进行中' : '未开始');
   });
-  updateOutputBadge();
 }
 
 function updateProgress() {
@@ -2312,15 +2299,11 @@ function renderTaskContent() {
     } else if (f.type === 'pov_builder') {
       fieldsHtml += renderPOVBuilder(f, val);
     } else if (f.type === 'textarea') {
-      // 任务3的愿景共识和待验证假设：添加实时预览更新
-      const oninputHandler = (n === 3 && (f.id === 'pb_vision' || f.id === 'pb_hypotheses'))
-        ? ` oninput="updateBriefPreview()"`
-        : '';
       fieldsHtml += `
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
         <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
-        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入..."${oninputHandler}>${val}</textarea>
+        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入...">${val}</textarea>
       </div>`;
     } else {
       fieldsHtml += `
@@ -2668,12 +2651,6 @@ async function analyzeTopicsWithAI() {
     showToast('请先填写「个人挑战收集与聚类」内容');
     return;
   }
-
-  // ⚠️ 先将当前 DOM 数据同步到 state，防止 renderTaskContent 重绘时丢失
-  const n = state.currentTask;
-  const currentData = collectFormData();
-  Object.assign(state.tasks[n].data || {}, currentData);
-  saveState();
 
   // 检查 AI 配置
   const cfg = getAIConfig();
@@ -3125,43 +3102,12 @@ function renderKeyFindingsAI(steps) {
     </div>
     
     <div class="key-findings-actions" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()" id="btn-generate-findings" style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)"
+      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()" style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)"
         ${steps.filter(s => s.step && s.do).length < 3 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
         <span>✨</span> ${hasFindings ? '重新生成关键发现' : 'AI 基于旅程地图生成关键发现'}
       </button>
       ${hasFindings ? `<span class="task4-generated-badge" style="display:flex;align-items:center;gap:6px;background:#f0fdf4;color:#15803d;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #86efac">✓ 已生成，可编辑</span>` : ''}
     </div>
-
-    <script>
-    // 渲染后立即检查 DOM 实时状态来修正按钮可用性
-    (function() {
-      var btn = document.getElementById('btn-generate-findings');
-      if (!btn) return;
-      // 用 setTimeout 确保 DOM 已插入
-      setTimeout(function() {
-        try {
-          var table = document.getElementById('journey-table');
-          if (!table) return;
-          var rows = table.querySelectorAll('tbody tr');
-          var validCount = 0;
-          rows.forEach(function(row) {
-            var step = row.querySelector('[data-field="step"]')?.value || '';
-            var do_ = row.querySelector('[data-field="do"]')?.value || '';
-            if (step.trim() && do_.trim()) validCount++;
-          });
-          if (validCount >= 3 && btn.disabled) {
-            btn.disabled = false;
-            btn.style.opacity = '';
-            btn.style.cursor = 'pointer';
-          } else if (validCount < 3 && !btn.disabled) {
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.style.cursor = 'not-allowed';
-          }
-        } catch(e) { console.warn('[findings-btn] 检查失败:', e); }
-      }, 100);
-    })();
-    </script>
     
     <div id="key-findings-ai-loading" style="display:none;padding:20px;text-align:center;color:var(--text2)">
       <div style="font-size:24px;margin-bottom:8px">🤖</div>
@@ -3183,32 +3129,25 @@ function renderKeyFindingsAI(steps) {
 
 // AI 生成关键发现
 async function generateKeyFindingsAI() {
-  // 防止重复点击
-  const btn = document.querySelector('.btn-ai-generate');
-  if (btn && btn.disabled) return;
-
   const loadingEl = document.getElementById('key-findings-ai-loading');
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
   if (loadingEl) loadingEl.style.display = 'block';
-
-  try {
-    const steps = collectJourneyData();
-    
-    // 检查是否有足够的旅程数据
-    const validSteps = steps.filter(s => s.step && s.do);
-    console.log('[generateKeyFindingsAI] 收集到步骤:', validSteps.length, '/ 总步骤:', steps.length);
-
-    if (validSteps.length < 3) {
-      showToast('⚠️ 请先完成至少 3 个步骤的用户旅程地图（当前仅 ' + validSteps.length + ' 步有内容）');
-      return;
-    }
-
-    // 构建旅程描述
-    const journeyDesc = validSteps.map((s, i) => 
-      `步骤 ${i + 1}：${s.step}\n- 做：${s.do}\n- 感：${s.feel || '无'}/5 分\n- 想：${s.think || '无'}`
-    ).join('\n\n');
-    
-    const prompt = `基于以下用户旅程地图，分析并生成 2-4 个关键发现（Key Findings）。
+  
+  const steps = collectJourneyData();
+  
+  // 检查是否有足够的旅程数据
+  const validSteps = steps.filter(s => s.step && s.do);
+  if (validSteps.length < 3) {
+    showToast('请先完成至少 3 个步骤的用户旅程地图');
+    if (loadingEl) loadingEl.style.display = 'none';
+    return;
+  }
+  
+  // 构建旅程描述
+  const journeyDesc = validSteps.map((s, i) => 
+    `步骤 ${i + 1}：${s.step}\n- 做：${s.do}\n- 感：${s.feel || '无'}/5 分\n- 想：${s.think || '无'}`
+  ).join('\n\n');
+  
+  const prompt = `基于以下用户旅程地图，分析并生成 2-4 个关键发现（Key Findings）。
 
 关键发现的定义：
 - 令人惊讶、矛盾或反直觉的发现
@@ -3225,30 +3164,28 @@ ${journeyDesc}
 
 开头词建议：奇怪的是 / 令人惊讶的是 / 矛盾的是 / 反直觉的是`;
 
-    console.log('[generateKeyFindingsAI] 开始调用 AI...');
-    const result = await callAIAPI('你是一位用户研究专家，擅长从用户旅程中发现洞察。请基于提供的旅程数据，找出最有价值的矛盾点和反常现象。', prompt);
-    console.log('[generateKeyFindingsAI] AI 返回结果长度:', result?.length || 0);
-
+  try {
+    const systemPrompt = '你是一位用户研究专家，擅长从用户旅程地图的做/感/想数据中发现洞察。你的任务是找出令人惊讶、矛盾或反直觉的关键发现（Key Findings），每个发现以「奇怪的是...」「令人惊讶的是...」「矛盾的是...」「反直觉的是...」开头。输出 2-4 条发现，格式：【发现N】[开头词]：[具体描述]。只输出发现本身，不要额外解释。';
+    const result = await callAIAPI(systemPrompt, prompt);
+    
     // 填充到 textarea
     const textarea = document.getElementById('field-key_findings');
-    if (!textarea) {
-      console.error('[generateKeyFindingsAI] 找不到 field-key_findings 元素!');
-      showToast('❌ 系统内部错误：找不到输入框元素');
-      return;
+    if (textarea) {
+      textarea.value = result.trim();
     }
-
-    textarea.value = result.trim() || '';
     
     // 自动保存
-    saveKeyFindings();
+    if (!state.tasks[5].data) state.tasks[5].data = {};
+    state.tasks[5].data.key_findings = result.trim();
+    saveState();
+    syncTaskToProjectData(5, state.tasks[5].data);
+    
     showToast('✨ 关键发现已生成并自动保存');
-
   } catch (err) {
-    console.error('[generateKeyFindingsAI] AI 生成失败:', err);
-    showToast('❌ AI 生成失败：' + (err.message || '请检查 AI 配置（右上角 ⚙️ 设置）或网络连接'));
+    console.error('AI 生成失败:', err);
+    showToast('❌ AI 生成失败：' + (err.message || '请检查网络或 API 设置'));
   } finally {
     if (loadingEl) loadingEl.style.display = 'none';
-    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
   }
 }
 
@@ -3476,21 +3413,6 @@ function renderBriefPreview(data) {
   </div>`;
 }
 
-// ── 实时更新项目简报预览（当用户在愿景共识/待验证假设 textarea 输入时） ──
-function updateBriefPreview() {
-  const visionEl = document.getElementById('field-pb_vision');
-  const hypoEl = document.getElementById('field-pb_hypotheses');
-  const previewVision = document.getElementById('preview-vision');
-  const previewHypo = document.getElementById('preview-hypo');
-  
-  if (visionEl && previewVision) {
-    previewVision.textContent = visionEl.value || '（填写下方「愿景共识」后自动更新）';
-  }
-  if (hypoEl && previewHypo) {
-    previewHypo.textContent = hypoEl.value || '（填写下方「待验证假设」后自动更新）';
-  }
-}
-
 // ── 商业价值评估 · 任务3：市场假设 ──
 function renderBusinessValueMarket() {
   const bv = state.businessValue || {};
@@ -3562,16 +3484,9 @@ function renderBusinessValueMarket() {
       </div>
 
       <div class="bv-actions">
-        <button class="bv-btn-ai" onclick="generateBVMarketAI()">
-          <span>✨</span> AI 辅助生成市场假设
-        </button>
         <button class="bv-btn-save" onclick="saveBVMarketWithFeedback()">
           <span>💾</span> 保存市场假设
         </button>
-      </div>
-
-      <div id="bv-market-ai-loading" style="display:none;padding:16px;text-align:center;color:var(--text2);font-size:13px">
-        <div style="font-size:20px;margin-bottom:6px">🤖</div>AI 正在基于项目背景生成市场规模假设和竞争分析...
       </div>
     </div>
   </div>`;
@@ -3884,13 +3799,10 @@ function collectFormData() {
 function saveDraft() {
   const n = state.currentTask;
   const data = collectFormData();
-  // ⚠️ 合并而非覆盖，防止丢失之前保存的额外字段
-  state.tasks[n].data = Object.assign(state.tasks[n].data || {}, data);
+  state.tasks[n].data = data;
   saveState();
-  syncTaskToProjectData(n, state.tasks[n].data);
-  // 任务3：保存后更新项目简报预览
-  if (n === 3) updateBriefPreview();
-  showToast('💾 草稿已保存');
+  syncTaskToProjectData(n, data);
+  showToast('草稿已保存 ✓');
 }
 
 // 保存草稿带视觉反馈
@@ -4987,7 +4899,7 @@ D（洞察）：${fd.d.value}
     const aiConfig = getAIConfig();
     let result;
 
-    if (!aiConfig || !(aiConfig.apiKey || aiConfig.key)) {
+    if (!aiConfig) {
       // 模拟数据
       await sleep(1500);
       result = `目标用户：入职 0-30 天的销售新人，缺乏实战经验的应届毕业生
@@ -4995,7 +4907,7 @@ D（洞察）：${fd.d.value}
 挑战限制：过度依赖标准化话术，面对真实客户时缺乏即兴应对能力
 深层需求：即使在充分准备后仍感到失控和自我怀疑，无法建立销售自信`;
     } else {
-      result = await callAIAPI('你是一位用户洞察专家，擅长从用户旅程中发现深层需求和动机。请严格按照格式生成 POV 内容。', prompt);
+      result = await callAIAPI('你是一位用户研究专家和 POV 分析师，基于用户提供的数据生成结构化的 POV 四要素。只输出以下四行内容：\n目标用户：[描述]\n用户任务：[描述]\n挑战限制：[描述]\n深层需求：[描述]', prompt);
     }
 
     // 解析结果
@@ -5045,14 +4957,8 @@ function downloadBackgroundCase() {
 }
 
 function submitTask() {
+  const data = collectFormData();
   const n    = state.currentTask;
-  
-  // ⚠️ 先将当前 DOM 数据同步到 state，防止用户填了但未点保存
-  const domData = collectFormData();
-  Object.assign(state.tasks[n].data || {}, domData);
-  saveState();
-
-  const data = state.tasks[n].data || {};
 
   // 必填校验
   const textFields = TASKS[n].fields.filter(f => f.type !== 'matrix' && f.type !== 'stakeholder');
@@ -5495,7 +5401,7 @@ function saveBVMarket(showToast = false) {
     _expanded: state.businessValue.market?._expanded || false
   };
   saveBusinessValue();
-  if (showToast) showToast('💾 市场假设已保存');
+  if (showToast) showToastNotification('市场假设已保存', 'success');
 }
 
 // ── 商业价值评估 · 保存用户商业假设 ──
@@ -5510,7 +5416,7 @@ function saveBVUser(showToast = false) {
     _expanded: state.businessValue.user?._expanded || false
   };
   saveBusinessValue();
-  if (showToast) showToast('💾 用户商业假设已保存');
+  if (showToast) showToastNotification('用户商业假设已保存', 'success');
 }
 
 // ── 商业价值评估 · 选择需求强度 ──
@@ -5568,7 +5474,7 @@ async function generateBVMarketAI() {
 3. 保持简洁，每段100字以内`;
 
   try {
-    const result = await callAIAPI('你是一位商业分析专家，擅长基于项目背景生成市场假设和规模估算。', prompt);
+    const result = await callAIAPI('你是一位市场分析专家，基于项目背景估算市场规模和竞争格局。请严格输出 JSON 格式，不要包含其他文字说明。', prompt);
     if (result) {
       try {
         const data = JSON.parse(result.replace(/```json\n?|```\n?/g, '').trim());
@@ -5578,13 +5484,13 @@ async function generateBVMarketAI() {
         if (document.getElementById('bv-competitors')) document.getElementById('bv-competitors').value = data.competitors || '';
         if (document.getElementById('bv-strategic')) document.getElementById('bv-strategic').value = data.strategicFit || '';
         saveBVMarket();
-        showToast('✨ AI 已生成市场假设');
+        showToastNotification('AI 已生成市场假设', 'success');
       } catch (e) {
-        showToast('❌ AI 返回格式错误，请手动填写');
+        showToastNotification('AI 返回格式错误，请手动填写', 'error');
       }
     }
   } catch (err) {
-    showToast('❌ AI 生成失败：' + (err.message || '请检查AI配置或网络'));
+    showToastNotification('AI 生成失败，请手动填写', 'error');
   } finally {
     if (loading) loading.style.display = 'none';
   }
@@ -5617,7 +5523,7 @@ JTBD（用户任务）：${task4Data.jtbd || '未填写'}
 3. 如果信息不足，标注"待进一步调研"`;
 
   try {
-    const result = await callAIAPI('你是一位商业价值分析专家，擅长基于用户洞察评估商业潜力。', prompt);
+    const result = await callAIAPI('你是一位用户研究专家，基于用户画像和JTBD分析用户需求强度和付费意愿。请严格输出 JSON 格式，不要包含其他文字说明。', prompt);
     if (result) {
       try {
         const data = JSON.parse(result.replace(/```json\n?|```\n?/g, '').trim());
@@ -5631,13 +5537,13 @@ JTBD（用户任务）：${task4Data.jtbd || '未填写'}
         selectNeedIntensity(intensity);
 
         saveBVUser();
-        showToast('✨ AI 已生成用户商业假设');
+        showToastNotification('AI 已生成用户商业假设', 'success');
       } catch (e) {
-        showToast('❌ AI 返回格式错误，请手动填写');
+        showToastNotification('AI 返回格式错误，请手动填写', 'error');
       }
     }
   } catch (err) {
-    showToast('❌ AI 生成失败：' + (err.message || '请检查AI配置或网络'));
+    showToastNotification('AI 生成失败，请手动填写', 'error');
   } finally {
     if (loading) loading.style.display = 'none';
   }
@@ -6602,141 +6508,9 @@ document.head.appendChild(aiStyles);
 // ────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
-  if (!t) {
-    // 动态创建 toast（防止 DOM 中缺失）
-    const toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:2000;white-space:nowrap;pointer-events:none';
-    document.body.appendChild(toast);
-  }
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show';
-  // 延长显示时间到 3 秒
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => { el.className = 'toast'; }, 3000);
-}
-
-// ────────────────────────────────────────────────
-//  项目产出文档面板
-// ────────────────────────────────────────────────
-const TASK_NAMES = { 1:'明确创新主题', 2:'背景挑战研究', 3:'团队构建共识', 4:'用户共情探索', 5:'用户旅程发现', 6:'POV构建' };
-
-function updateOutputBadge() {
-  const done = [1,2,3,4,5,6].filter(n => state.tasks[n]?.status === 'done').length;
-  const badge = document.getElementById('output-summary-badge');
-  if (badge) badge.textContent = done + '/6';
-}
-
-function openOutputPanel() {
-  const modal = document.getElementById('output-panel-modal');
-  if (modal) { renderOutputPanelData(); modal.classList.add('active'); }
-}
-
-function closeOutputPanel() {
-  const modal = document.getElementById('output-panel-modal');
-  if (modal) modal.classList.remove('active');
-}
-
-function renderOutputPanelData() {
-  const body = document.getElementById('output-panel-body');
-  if (!body) return;
-
-  const taskIcons = { 1:'🎯', 2:'📖', 3:'🤝', 4:'👤', 5:'🗺️', 6:'💡' };
-  const taskColors = { 1:'#7c3aed', 2:'#2563eb', 3:'#059669', 4:'#d97706', 5:'#dc2626', 6:'#db2777' };
-
-  let html = '';
-  for (let n = 1; n <= 6; n++) {
-    const task = TASKS[n];
-    const data = state.tasks[n]?.data || {};
-    const isDone = state.tasks[n]?.status === 'done';
-    const color = taskColors[n];
-
-    // 获取该任务的关键产出字段值摘要
-    let summaryParts = [];
-    task.fields.forEach(f => {
-      if (f.type === 'matrix') {
-        const q = state.matrixSelected || data.topic_matrix;
-        if (q) summaryParts.push(f.label + '：' + getQuadrantLabel(q));
-      } else {
-        const val = data[f.id];
-        if (val && val.trim && val.trim()) {
-          const short = val.trim().substring(0, 60) + (val.trim().length > 60 ? '...' : '');
-          summaryParts.push(`<b>${f.label}</b>：${short.replace(/\n/g, ' ')}`);
-        }
-      }
-    });
-
-    html += `
-    <div style="border:1px solid ${isDone ? color : '#e5e7eb'};border-radius:12px;margin-bottom:12px;overflow:hidden;opacity:${isDone ? 1 : 0.5};transition:.2s">
-      <div style="padding:12px 16px;background:${isDone ? color+'10' : '#f9fafb'};display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid ${isDone ? color+'20' : '#e5e7eb'}">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:18px">${taskIcons[n]}</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:${isDone ? color : '#94a3b8'}">任务 ${n}：${task.title}</div>
-            <div style="font-size:11px;color:#94a3b8;margin-top:2px">产出：${task.deliverable}</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          ${isDone ? '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#dcfce7;color:#15803d;font-weight:600">✓ 已完成</span>' : '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#f1f5f9;color:#94a3b8;font-weight:600">未完成</span>'}
-          ${isDone ? `<button onclick="downloadTaskOutput(${n})" style="padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;color:${color};background:#fff;border:1px solid ${color};cursor:pointer;transition:.2s">📥 下载</button>` : ''}
-        </div>
-      </div>
-      ${summaryParts.length > 0 ? `<div style="padding:12px 16px;font-size:12px;color:#475569;line-height:1.8">${summaryParts.join('<br>')}</div>` : `<div style="padding:12px 16px;font-size:12px;color:#94a3b8;font-style:italic">暂无数据</div>`}
-    </div>`;
-  }
-
-  body.innerHTML = html;
-}
-
-function downloadAllOutputs() {
-  // 合并所有任务产出到一个文件
-  const lines = [];
-  lines.push('═══════════════════════════════════════');
-  lines.push('  Eureka Reveal 阶段 · 项目产出文档');
-  lines.push('  生成日期：' + new Date().toLocaleDateString('zh-CN'));
-  lines.push('═══════════════════════════════════════');
-  lines.push('');
-
-  const pd = getProjectData();
-  const projName = pd?.name || '未命名项目';
-  lines.push(`项目名称：${projName}`);
-  lines.push('');
-
-  for (let n = 1; n <= 6; n++) {
-    const isDone = state.tasks[n]?.status === 'done';
-    const data = state.tasks[n]?.data || {};
-    lines.push('───────────────────────────────────────');
-    lines.push(`任务 ${n}：${TASK_NAMES[n]}  ${isDone ? '✓ 已完成' : '✗ 未完成'}`);
-    lines.push(`产出：${TASKS[n].deliverable}`);
-    lines.push('───────────────────────────────────────');
-
-    if (!isDone && !Object.keys(data).length) {
-      lines.push('（暂无数据）');
-    } else {
-      TASKS[n].fields.forEach(f => {
-        if (f.type === 'matrix') {
-          const q = state.matrixSelected || data.topic_matrix;
-          lines.push(`\n【${f.label}】\n${q ? getQuadrantLabel(q) : '（未选择）'}`);
-        } else {
-          const val = data[f.id];
-          lines.push(`\n【${f.label}】\n${val && val.trim ? val.trim() : '（未填写）'}`);
-        }
-      });
-    }
-    lines.push('');
-  }
-
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Reveal产出文档_${projName}_${new Date().toISOString().split('T')[0]}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('📥 全部产出文档已下载');
+  t.textContent = msg;
+  t.className = 'toast show';
+  setTimeout(() => { t.className = 'toast'; }, 2800);
 }
 
 // ────────────────────────────────────────────────
@@ -6906,7 +6680,7 @@ async function generateBVSummaryAI() {
 }`;
 
   try {
-    const result = await callAIAPI('你是一个商业分析师，擅长评估创新项目的商业潜力。请基于已有数据给出客观、务实的评估。', prompt);
+    const result = await callAIAPI('你是一个商业分析师，擅长评估创新项目的商业潜力。请基于已有数据给出客观、务实的评估。严格输出 JSON 格式，不要包含其他文字说明。', prompt);
     
     // 尝试解析 JSON
     let parsed;
@@ -7011,34 +6785,20 @@ ${t3data.pb_vision || '（未填写）'}
 
   try {
     const aiConfig = getAIConfig();
-    if (!aiConfig || !(aiConfig.apiKey || aiConfig.key)) {
-      showToast('请先配置 AI API 密钥（点击右上角 ⚙️ 设置）');
+    if (!aiConfig || !aiConfig.key) {
+      showToast('请先配置 AI API 密钥');
       if (loadingEl) loadingEl.style.display = 'none';
-      // 延迟打开设置面板
-      setTimeout(() => openAISettings(), 500);
       return;
     }
 
-    const baseUrl = (aiConfig.baseUrl || aiConfig.apiBase || '').replace(/\/+$/, '');
-    const apiKey = aiConfig.apiKey || aiConfig.key;
-    const model = aiConfig.model || 'gpt-4o-mini';
-
-    if (!baseUrl || !apiKey) {
-      showToast('AI 配置不完整，请检查 API 地址和 Key');
-      if (loadingEl) loadingEl.style.display = 'none';
-      setTimeout(() => openAISettings(), 500);
-      return;
-    }
-
-    const endpoint = baseUrl + '/chat/completions';
-    const response = await fetch(endpoint, {
+    const response = await fetch(aiConfig.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${aiConfig.key}`
       },
       body: JSON.stringify({
-        model: model,
+        model: aiConfig.model || 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -7359,27 +7119,6 @@ function updateOnboardingUI() {
   }
 }
 </script>
-
-<!-- 项目产出文档面板 Modal -->
-<div class="modal" id="output-panel-modal">
-  <div class="modal-overlay" onclick="closeOutputPanel()"></div>
-  <div style="position:relative;z-index:1;width:90%;max-width:700px;max-height:85vh;background:#fff;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column">
-    <div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff">📋 项目产出文档</h3>
-        <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.8)">Reveal 阶段全部任务产出物</p>
-      </div>
-      <button onclick="closeOutputPanel()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;transition:.2s">✕</button>
-    </div>
-    <div id="output-panel-body" style="flex:1;overflow-y:auto;padding:20px 24px">
-      <!-- 动态渲染 -->
-    </div>
-    <div style="padding:16px 24px;border-top:1px solid #e5e7eb;display:flex;gap:12px;justify-content:flex-end;background:#f9fafb">
-      <button onclick="downloadAllOutputs()" style="padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px">📥 下载全部产出</button>
-      <button onclick="closeOutputPanel()" style="padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;color:#6b7280;background:#fff;border:1px solid #d1d5db;cursor:pointer">关闭</button>
-    </div>
-  </div>
-</div>
 
 <!-- 商业价值汇总面板 Modal -->
 <div class="modal" id="bv-summary-modal">
