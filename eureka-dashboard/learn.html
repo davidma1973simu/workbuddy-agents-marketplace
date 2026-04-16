@@ -2312,11 +2312,15 @@ function renderTaskContent() {
     } else if (f.type === 'pov_builder') {
       fieldsHtml += renderPOVBuilder(f, val);
     } else if (f.type === 'textarea') {
+      // 任务3的愿景共识和待验证假设：添加实时预览更新
+      const oninputHandler = (n === 3 && (f.id === 'pb_vision' || f.id === 'pb_hypotheses'))
+        ? ` oninput="updateBriefPreview()"`
+        : '';
       fieldsHtml += `
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
         <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
-        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入...">${val}</textarea>
+        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入..."${oninputHandler}>${val}</textarea>
       </div>`;
     } else {
       fieldsHtml += `
@@ -3184,7 +3188,7 @@ ${journeyDesc}
 开头词建议：奇怪的是 / 令人惊讶的是 / 矛盾的是 / 反直觉的是`;
 
   try {
-    const result = await callAI(prompt, '你是一位用户研究专家，擅长从用户旅程中发现洞察。请基于提供的旅程数据，找出最有价值的矛盾点和反常现象。');
+    const result = await callAIAPI('你是一位用户研究专家，擅长从用户旅程中发现洞察。请基于提供的旅程数据，找出最有价值的矛盾点和反常现象。', prompt);
     
     // 填充到 textarea
     const textarea = document.getElementById('field-key_findings');
@@ -3425,6 +3429,21 @@ function renderBriefPreview(data) {
   </div>`;
 }
 
+// ── 实时更新项目简报预览（当用户在愿景共识/待验证假设 textarea 输入时） ──
+function updateBriefPreview() {
+  const visionEl = document.getElementById('field-pb_vision');
+  const hypoEl = document.getElementById('field-pb_hypotheses');
+  const previewVision = document.getElementById('preview-vision');
+  const previewHypo = document.getElementById('preview-hypo');
+  
+  if (visionEl && previewVision) {
+    previewVision.textContent = visionEl.value || '（填写下方「愿景共识」后自动更新）';
+  }
+  if (hypoEl && previewHypo) {
+    previewHypo.textContent = hypoEl.value || '（填写下方「待验证假设」后自动更新）';
+  }
+}
+
 // ── 商业价值评估 · 任务3：市场假设 ──
 function renderBusinessValueMarket() {
   const bv = state.businessValue || {};
@@ -3496,9 +3515,16 @@ function renderBusinessValueMarket() {
       </div>
 
       <div class="bv-actions">
+        <button class="bv-btn-ai" onclick="generateBVMarketAI()">
+          <span>✨</span> AI 辅助生成市场假设
+        </button>
         <button class="bv-btn-save" onclick="saveBVMarketWithFeedback()">
           <span>💾</span> 保存市场假设
         </button>
+      </div>
+
+      <div id="bv-market-ai-loading" style="display:none;padding:16px;text-align:center;color:var(--text2);font-size:13px">
+        <div style="font-size:20px;margin-bottom:6px">🤖</div>AI 正在基于项目背景生成市场规模假设和竞争分析...
       </div>
     </div>
   </div>`;
@@ -3815,6 +3841,8 @@ function saveDraft() {
   state.tasks[n].data = Object.assign(state.tasks[n].data || {}, data);
   saveState();
   syncTaskToProjectData(n, state.tasks[n].data);
+  // 任务3：保存后更新项目简报预览
+  if (n === 3) updateBriefPreview();
   showToast('💾 草稿已保存');
 }
 
@@ -4405,7 +4433,7 @@ ${fd.f.value}
 
   try {
     // 调用 AI
-    const response = await callAI(prompt, '你是一位严谨的用户研究分析师，擅长基于事实进行逻辑推导。请严格按照要求生成内容。');
+    const response = await callAIAPI('你是一位严谨的用户研究分析师，擅长基于事实进行逻辑推导。请严格按照要求生成内容。', prompt);
     const recs = response.split('\n').filter(r => r.trim()).slice(0, 3);
     state.findData[step].recommendations = recs;
 
@@ -4912,7 +4940,7 @@ D（洞察）：${fd.d.value}
     const aiConfig = getAIConfig();
     let result;
 
-    if (!aiConfig) {
+    if (!aiConfig || !(aiConfig.apiKey || aiConfig.key)) {
       // 模拟数据
       await sleep(1500);
       result = `目标用户：入职 0-30 天的销售新人，缺乏实战经验的应届毕业生
@@ -4920,7 +4948,7 @@ D（洞察）：${fd.d.value}
 挑战限制：过度依赖标准化话术，面对真实客户时缺乏即兴应对能力
 深层需求：即使在充分准备后仍感到失控和自我怀疑，无法建立销售自信`;
     } else {
-      result = await callAI(prompt, aiConfig);
+      result = await callAIAPI('你是一位用户洞察专家，擅长从用户旅程中发现深层需求和动机。请严格按照格式生成 POV 内容。', prompt);
     }
 
     // 解析结果
@@ -5420,7 +5448,7 @@ function saveBVMarket(showToast = false) {
     _expanded: state.businessValue.market?._expanded || false
   };
   saveBusinessValue();
-  if (showToast) showToastNotification('市场假设已保存', 'success');
+  if (showToast) showToast('💾 市场假设已保存');
 }
 
 // ── 商业价值评估 · 保存用户商业假设 ──
@@ -5435,7 +5463,7 @@ function saveBVUser(showToast = false) {
     _expanded: state.businessValue.user?._expanded || false
   };
   saveBusinessValue();
-  if (showToast) showToastNotification('用户商业假设已保存', 'success');
+  if (showToast) showToast('💾 用户商业假设已保存');
 }
 
 // ── 商业价值评估 · 选择需求强度 ──
@@ -5493,7 +5521,7 @@ async function generateBVMarketAI() {
 3. 保持简洁，每段100字以内`;
 
   try {
-    const result = await callAI(prompt, '市场假设生成');
+    const result = await callAIAPI('你是一位商业分析专家，擅长基于项目背景生成市场假设和规模估算。', prompt);
     if (result) {
       try {
         const data = JSON.parse(result.replace(/```json\n?|```\n?/g, '').trim());
@@ -5503,13 +5531,13 @@ async function generateBVMarketAI() {
         if (document.getElementById('bv-competitors')) document.getElementById('bv-competitors').value = data.competitors || '';
         if (document.getElementById('bv-strategic')) document.getElementById('bv-strategic').value = data.strategicFit || '';
         saveBVMarket();
-        showToastNotification('AI 已生成市场假设', 'success');
+        showToast('✨ AI 已生成市场假设');
       } catch (e) {
-        showToastNotification('AI 返回格式错误，请手动填写', 'error');
+        showToast('❌ AI 返回格式错误，请手动填写');
       }
     }
   } catch (err) {
-    showToastNotification('AI 生成失败，请手动填写', 'error');
+    showToast('❌ AI 生成失败：' + (err.message || '请检查AI配置或网络'));
   } finally {
     if (loading) loading.style.display = 'none';
   }
@@ -5542,7 +5570,7 @@ JTBD（用户任务）：${task4Data.jtbd || '未填写'}
 3. 如果信息不足，标注"待进一步调研"`;
 
   try {
-    const result = await callAI(prompt, '用户商业假设生成');
+    const result = await callAIAPI('你是一位商业价值分析专家，擅长基于用户洞察评估商业潜力。', prompt);
     if (result) {
       try {
         const data = JSON.parse(result.replace(/```json\n?|```\n?/g, '').trim());
@@ -5556,13 +5584,13 @@ JTBD（用户任务）：${task4Data.jtbd || '未填写'}
         selectNeedIntensity(intensity);
 
         saveBVUser();
-        showToastNotification('AI 已生成用户商业假设', 'success');
+        showToast('✨ AI 已生成用户商业假设');
       } catch (e) {
-        showToastNotification('AI 返回格式错误，请手动填写', 'error');
+        showToast('❌ AI 返回格式错误，请手动填写');
       }
     }
   } catch (err) {
-    showToastNotification('AI 生成失败，请手动填写', 'error');
+    showToast('❌ AI 生成失败：' + (err.message || '请检查AI配置或网络'));
   } finally {
     if (loading) loading.style.display = 'none';
   }
@@ -6831,7 +6859,7 @@ async function generateBVSummaryAI() {
 }`;
 
   try {
-    const result = await callAI(prompt, '你是一个商业分析师，擅长评估创新项目的商业潜力。请基于已有数据给出客观、务实的评估。');
+    const result = await callAIAPI('你是一个商业分析师，擅长评估创新项目的商业潜力。请基于已有数据给出客观、务实的评估。', prompt);
     
     // 尝试解析 JSON
     let parsed;
@@ -6936,20 +6964,34 @@ ${t3data.pb_vision || '（未填写）'}
 
   try {
     const aiConfig = getAIConfig();
-    if (!aiConfig || !aiConfig.key) {
-      showToast('请先配置 AI API 密钥');
+    if (!aiConfig || !(aiConfig.apiKey || aiConfig.key)) {
+      showToast('请先配置 AI API 密钥（点击右上角 ⚙️ 设置）');
       if (loadingEl) loadingEl.style.display = 'none';
+      // 延迟打开设置面板
+      setTimeout(() => openAISettings(), 500);
       return;
     }
 
-    const response = await fetch(aiConfig.url, {
+    const baseUrl = (aiConfig.baseUrl || aiConfig.apiBase || '').replace(/\/+$/, '');
+    const apiKey = aiConfig.apiKey || aiConfig.key;
+    const model = aiConfig.model || 'gpt-4o-mini';
+
+    if (!baseUrl || !apiKey) {
+      showToast('AI 配置不完整，请检查 API 地址和 Key');
+      if (loadingEl) loadingEl.style.display = 'none';
+      setTimeout(() => openAISettings(), 500);
+      return;
+    }
+
+    const endpoint = baseUrl + '/chat/completions';
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${aiConfig.key}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: aiConfig.model || 'gpt-4o',
+        model: model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
