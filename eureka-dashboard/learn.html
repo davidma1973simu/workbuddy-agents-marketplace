@@ -2223,7 +2223,7 @@ function syncFieldToState(fieldId) {
   if (!n || !TASKS[n]) return;
   const el = document.getElementById('field-' + fieldId);
   if (!el) return;
-  if (!state.tasks[n]) state.tasks[n] = { status: in_progress, data: {} };
+  if (!state.tasks[n]) state.tasks[n] = { status: 'in_progress', data: {} };
   if (!state.tasks[n].data) state.tasks[n].data = {};
   state.tasks[n].data[fieldId] = el.value.trim();
 }
