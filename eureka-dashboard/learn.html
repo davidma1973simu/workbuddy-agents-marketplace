@@ -2217,6 +2217,17 @@ function saveState() {
   if (el) { el.textContent = '✓ 已保存'; setTimeout(() => { el.textContent = '● 自动保存'; }, 2000); }
 }
 
+// ─── 通用字段实时同步（解决任务1-3输入不持久化的系统性缺陷）───
+function syncFieldToState(fieldId) {
+  const n = state.currentTask;
+  if (!n || !TASKS[n]) return;
+  const el = document.getElementById('field-' + fieldId);
+  if (!el) return;
+  if (!state.tasks[n]) state.tasks[n] = { status: in_progress, data: {} };
+  if (!state.tasks[n].data) state.tasks[n].data = {};
+  state.tasks[n].data[fieldId] = el.value.trim();
+}
+
 // 启动自动保存
 function startAutoSave() {
   if (autoSaveTimer) clearInterval(autoSaveTimer);
@@ -2316,14 +2327,14 @@ function renderTaskContent() {
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
         <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
-        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入...">${val}</textarea>
+        <textarea id="field-${f.id}" rows="${f.rows||4}" placeholder="在这里输入..." oninput="syncFieldToState('${f.id}')">${val}</textarea>
       </div>`;
     } else {
       fieldsHtml += `
       <div class="form-group">
         <div class="form-label">${f.label} <span class="required">必填</span></div>
         <div class="form-hint">${f.hint}<span class="example">${f.example}</span></div>
-        <input type="text" id="field-${f.id}" value="${val}" placeholder="在这里输入...">
+        <input type="text" id="field-${f.id}" value="${val}" placeholder="在这里输入..." oninput="syncFieldToState('${f.id}')">
       </div>`;
     }
   });
@@ -2624,6 +2635,8 @@ function selectAIRecommend(title, quadrant) {
   const input = document.getElementById('field-consensus_topic');
   if (input) {
     input.value = title;
+    // 同步到 state（避免只存 DOM 导致刷新丢失）
+    syncFieldToState('consensus_topic');
     // 如果提供了象限，同时更新矩阵选择
     if (quadrant && ['q1', 'q2', 'q3', 'q4'].includes(quadrant)) {
       selectMatrix(quadrant);
