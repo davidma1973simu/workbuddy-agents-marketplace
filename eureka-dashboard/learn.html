@@ -800,6 +800,18 @@ textarea{min-height:90px}
         </div>
       </div>
     </div>
+    <!-- 项目产出文档入口 -->
+    <div id="output-summary-card" onclick="openOutputPanel()" style="margin:16px 20px;padding:12px 16px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-radius:12px;cursor:pointer;transition:all .2s;border:1px solid #8b5cf6;position:relative;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">📋</span>
+          <span style="font-size:13px;font-weight:700;color:#5b21b6">项目产出文档</span>
+        </div>
+        <span id="output-summary-badge" style="font-size:11px;padding:3px 8px;border-radius:10px;background:#fff;color:#5b21b6;font-weight:600">0/6</span>
+      </div>
+      <div style="font-size:12px;color:#6d28d9;line-height:1.5">全程跟进本模块的所有产出物，一键查看或下载</div>
+      <div style="position:absolute;top:0;right:0;width:40px;height:40px;background:rgba(255,255,255,.3);border-radius:0 0 0 40px"></div>
+    </div>
     <!-- 商业价值汇总入口 -->
     <div class="bv-summary-card" id="bv-summary-card" onclick="openBVSummaryPanel()" style="margin:16px 20px;padding:12px 16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;cursor:pointer;transition:all .2s;border:1px solid #f59e0b;position:relative;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -2259,6 +2271,7 @@ function renderSidebar() {
     num.textContent = ts === 'done' ? '✓' : n;
     st.textContent  = ts === 'done' ? '✅ 已完成' : (state.currentTask === n ? '进行中' : '未开始');
   });
+  updateOutputBadge();
 }
 
 function updateProgress() {
@@ -6530,6 +6543,128 @@ function showToast(msg) {
 }
 
 // ────────────────────────────────────────────────
+//  项目产出文档面板
+// ────────────────────────────────────────────────
+const TASK_NAMES = { 1:'明确创新主题', 2:'背景挑战研究', 3:'团队构建共识', 4:'用户共情探索', 5:'用户旅程发现', 6:'POV构建' };
+
+function updateOutputBadge() {
+  const done = [1,2,3,4,5,6].filter(n => state.tasks[n]?.status === 'done').length;
+  const badge = document.getElementById('output-summary-badge');
+  if (badge) badge.textContent = done + '/6';
+}
+
+function openOutputPanel() {
+  const modal = document.getElementById('output-panel-modal');
+  if (modal) { renderOutputPanelData(); modal.classList.add('active'); }
+}
+
+function closeOutputPanel() {
+  const modal = document.getElementById('output-panel-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function renderOutputPanelData() {
+  const body = document.getElementById('output-panel-body');
+  if (!body) return;
+
+  const taskIcons = { 1:'🎯', 2:'📖', 3:'🤝', 4:'👤', 5:'🗺️', 6:'💡' };
+  const taskColors = { 1:'#7c3aed', 2:'#2563eb', 3:'#059669', 4:'#d97706', 5:'#dc2626', 6:'#db2777' };
+
+  let html = '';
+  for (let n = 1; n <= 6; n++) {
+    const task = TASKS[n];
+    const data = state.tasks[n]?.data || {};
+    const isDone = state.tasks[n]?.status === 'done';
+    const color = taskColors[n];
+
+    // 获取该任务的关键产出字段值摘要
+    let summaryParts = [];
+    task.fields.forEach(f => {
+      if (f.type === 'matrix') {
+        const q = state.matrixSelected || data.topic_matrix;
+        if (q) summaryParts.push(f.label + '：' + getQuadrantLabel(q));
+      } else {
+        const val = data[f.id];
+        if (val && val.trim && val.trim()) {
+          const short = val.trim().substring(0, 60) + (val.trim().length > 60 ? '...' : '');
+          summaryParts.push(`<b>${f.label}</b>：${short.replace(/\n/g, ' ')}`);
+        }
+      }
+    });
+
+    html += `
+    <div style="border:1px solid ${isDone ? color : '#e5e7eb'};border-radius:12px;margin-bottom:12px;overflow:hidden;opacity:${isDone ? 1 : 0.5};transition:.2s">
+      <div style="padding:12px 16px;background:${isDone ? color+'10' : '#f9fafb'};display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid ${isDone ? color+'20' : '#e5e7eb'}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">${taskIcons[n]}</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:${isDone ? color : '#94a3b8'}">任务 ${n}：${task.title}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:2px">产出：${task.deliverable}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${isDone ? '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#dcfce7;color:#15803d;font-weight:600">✓ 已完成</span>' : '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#f1f5f9;color:#94a3b8;font-weight:600">未完成</span>'}
+          ${isDone ? `<button onclick="downloadTaskOutput(${n})" style="padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;color:${color};background:#fff;border:1px solid ${color};cursor:pointer;transition:.2s">📥 下载</button>` : ''}
+        </div>
+      </div>
+      ${summaryParts.length > 0 ? `<div style="padding:12px 16px;font-size:12px;color:#475569;line-height:1.8">${summaryParts.join('<br>')}</div>` : `<div style="padding:12px 16px;font-size:12px;color:#94a3b8;font-style:italic">暂无数据</div>`}
+    </div>`;
+  }
+
+  body.innerHTML = html;
+}
+
+function downloadAllOutputs() {
+  // 合并所有任务产出到一个文件
+  const lines = [];
+  lines.push('═══════════════════════════════════════');
+  lines.push('  Eureka Reveal 阶段 · 项目产出文档');
+  lines.push('  生成日期：' + new Date().toLocaleDateString('zh-CN'));
+  lines.push('═══════════════════════════════════════');
+  lines.push('');
+
+  const pd = getProjectData();
+  const projName = pd?.name || '未命名项目';
+  lines.push(`项目名称：${projName}`);
+  lines.push('');
+
+  for (let n = 1; n <= 6; n++) {
+    const isDone = state.tasks[n]?.status === 'done';
+    const data = state.tasks[n]?.data || {};
+    lines.push('───────────────────────────────────────');
+    lines.push(`任务 ${n}：${TASK_NAMES[n]}  ${isDone ? '✓ 已完成' : '✗ 未完成'}`);
+    lines.push(`产出：${TASKS[n].deliverable}`);
+    lines.push('───────────────────────────────────────');
+
+    if (!isDone && !Object.keys(data).length) {
+      lines.push('（暂无数据）');
+    } else {
+      TASKS[n].fields.forEach(f => {
+        if (f.type === 'matrix') {
+          const q = state.matrixSelected || data.topic_matrix;
+          lines.push(`\n【${f.label}】\n${q ? getQuadrantLabel(q) : '（未选择）'}`);
+        } else {
+          const val = data[f.id];
+          lines.push(`\n【${f.label}】\n${val && val.trim ? val.trim() : '（未填写）'}`);
+        }
+      });
+    }
+    lines.push('');
+  }
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Reveal产出文档_${projName}_${new Date().toISOString().split('T')[0]}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 全部产出文档已下载');
+}
+
+// ────────────────────────────────────────────────
 //  商业价值汇总面板
 // ────────────────────────────────────────────────
 function openBVSummaryPanel() {
@@ -7135,6 +7270,27 @@ function updateOnboardingUI() {
   }
 }
 </script>
+
+<!-- 项目产出文档面板 Modal -->
+<div class="modal" id="output-panel-modal">
+  <div class="modal-overlay" onclick="closeOutputPanel()"></div>
+  <div style="position:relative;z-index:1;width:90%;max-width:700px;max-height:85vh;background:#fff;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);overflow:hidden;display:flex;flex-direction:column">
+    <div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h3 style="margin:0;font-size:18px;font-weight:700;color:#fff">📋 项目产出文档</h3>
+        <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.8)">Reveal 阶段全部任务产出物</p>
+      </div>
+      <button onclick="closeOutputPanel()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;transition:.2s">✕</button>
+    </div>
+    <div id="output-panel-body" style="flex:1;overflow-y:auto;padding:20px 24px">
+      <!-- 动态渲染 -->
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #e5e7eb;display:flex;gap:12px;justify-content:flex-end;background:#f9fafb">
+      <button onclick="downloadAllOutputs()" style="padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px">📥 下载全部产出</button>
+      <button onclick="closeOutputPanel()" style="padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;color:#6b7280;background:#fff;border:1px solid #d1d5db;cursor:pointer">关闭</button>
+    </div>
+  </div>
+</div>
 
 <!-- 商业价值汇总面板 Modal -->
 <div class="modal" id="bv-summary-modal">
