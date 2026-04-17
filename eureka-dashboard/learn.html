@@ -7321,69 +7321,7 @@ ${t3data.pb_vision || '（未填写）'}
 请基于以上信息，生成完整的用户画像和 JTBD 分析。`;
 
   try {
-    const aiConfig = getAIConfig();
-    console.log('[generateTask4AI] getAIConfig() 返回:', JSON.stringify(aiConfig));
-    console.log('[generateTask4AI] AI配置:', aiConfig ? { url: aiConfig.url, hasKey: !!aiConfig.key, keyLen: (aiConfig.key || '').length, model: aiConfig.model } : '(无)');
-    
-    // 诊断：打印所有可能的 AI 配置来源
-    ['eureka_learn_ai_v1', 'rh_ai_config_v1', 'persona_lab_ai_config_v1', 'eureka_ai_config_v1'].forEach(k => {
-      const v = localStorage.getItem(k);
-      if (v) console.log(`[DIAG] ${k} =`, v.slice(0, 200));
-      else console.log(`[DIAG] ${k} = (空)`);
-    });
-    
-    if (!aiConfig || !aiConfig.key) {
-      // fallback: 尝试从所有已知 key 读取
-      let fallbackCfg = null;
-      const allKeys = ['eureka_learn_ai_v1', 'rh_ai_config_v1', 'persona_lab_ai_config_v1', 'eureka_ai_config_v1'];
-      for (const k of allKeys) {
-        const raw = localStorage.getItem(k);
-        if (raw) {
-          console.log(`[generateTask4AI] fallback 找到 ${k}:`, raw.slice(0, 100));
-          try {
-            const parsed = JSON.parse(raw);
-            const k2 = parsed.key || parsed.apiKey;
-            if (k2) { fallbackCfg = { url: parsed.url || parsed.baseUrl || '', key: k2, model: parsed.model || 'gpt-4o' }; break; }
-          } catch(e) {}
-        }
-      }
-      
-      if (!fallbackCfg || !fallbackCfg.key) {
-        console.warn('[generateTask4AI] 无 AI 配置或缺少 key，所有来源均失败');
-        showToast('请先配置 AI API 密钥');
-        if (loadingEl) loadingEl.style.display = 'none';
-        return;
-      }
-      // 用 fallback 配置继续
-      var aiConfig = fallbackCfg;
-      console.log('[generateTask4AI] 使用 fallback 配置:', { url: aiConfig.url, hasKey: !!aiConfig.key });
-    }
-
-    console.log('[generateTask4AI] 发起 fetch 请求到:', aiConfig.url);
-    const endpoint = aiConfig.url.replace(/\/+$/, '') + '/chat/completions';
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${aiConfig.key}`
-      },
-      body: JSON.stringify({
-        model: aiConfig.model || 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`API 错误: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const aiContent = result.choices?.[0]?.message?.content || '';
+    const aiContent = await callAIAPI(systemPrompt, userPrompt);
 
     // 解析 AI 返回的内容
     const parsed = parseTask4AIResponse(aiContent);
