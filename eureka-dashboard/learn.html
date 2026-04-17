@@ -2296,8 +2296,10 @@ function loadState() {
   if (!state.stakeholderData) {
     state.stakeholderData = initStakeholderData();
   }
-  // 加载商业价值数据
-  loadBusinessValue();
+  // 注意：不再调用 loadBusinessValue()
+  // 该函数从 eureka_project_data_v1（旧存储）读取数据覆盖 state，
+  // 在多项目环境下会导致当前项目的 tasks 数据被意外影响
+  // 商业价值数据已随 state 一并保存在 eureka_project_{projId} 中
   if (!state.findData) {
     state.findData = {
       f: { value: '', confirmed: false, recommendations: [] },
@@ -2327,6 +2329,11 @@ function loadState() {
   
   // 启动自动保存
   startAutoSave();
+  
+  // 加载完成后立即保存一次
+  // 目的：如果上述初始化逻辑（如 businessValue 默认值填充）修改了 state，
+  // 确保修改后的完整 state 被持久化，避免刷新时数据回滚
+  saveState();
 }
 
 // 保存状态（多项目版本）
@@ -3967,6 +3974,8 @@ function saveDraft() {
   state.tasks[n].data = data;
   saveState();
   syncTaskToProjectData(n, data);
+  // 双重保存确认：300ms 后再保存一次，防止浏览器/存储时序问题导致数据丢失
+  setTimeout(() => { saveState(); }, 300);
   showToast('草稿已保存 ✓');
 }
 
@@ -5150,6 +5159,9 @@ function submitTask() {
 
   // 3. 同步到项目级存储（独立 key）
   syncTaskToProjectData(n, data);
+
+  // 双重保存确认：300ms 后再保存一次，防止存储时序问题
+  setTimeout(() => { saveState(); }, 300);
 
   showToast(state.tasks[n].status === 'done' ? '✅ 已更新保存！' : '🎉 任务完成，产出已保存！');
   
