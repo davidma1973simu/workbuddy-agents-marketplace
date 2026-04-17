@@ -2280,6 +2280,25 @@ function loadState() {
     const loaded = loadProjectState(projId);
     if (loaded) {
       state = loaded;
+      // 关键检查：如果加载到的数据没有真实内容（tasks 全空），
+      // 尝试从其他已存在的项目中找到有数据的那一个
+      if (!hasRealData(state)) {
+        console.log('⚠️ 项目 ' + projId + ' 无数据，尝试查找有数据的其他项目');
+        const allProjects = getProjectsData().projects;
+        let found = false;
+        for (const p of allProjects) {
+          if (p.id === projId) continue;  // 跳过当前空项目
+          const otherState = loadProjectState(p.id);
+          if (otherState && hasRealData(otherState)) {
+            console.log('✅ 找到有数据的项目: ' + p.id);
+            state = otherState;
+            setCurrentProjectId(p.id);  // 切换到有数据的项目
+            found = true;
+            break;
+          }
+        }
+        if (!found) console.log('❌ 所有项目都没有数据');
+      }
     } else {
       state = createInitialState();
       saveProjectState(projId, state);
