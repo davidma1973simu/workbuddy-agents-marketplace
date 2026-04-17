@@ -7179,6 +7179,7 @@ async function generateBVSummaryAI() {
 
 // ── 任务 4：AI 生成用户画像和 JTBD ──
 async function generateTask4AI() {
+  console.log('[generateTask4AI] 按钮被点击，开始执行...');
   const loadingEl = document.getElementById('task4-ai-loading');
   const resultEl = document.getElementById('task4-ai-result');
 
@@ -7190,6 +7191,12 @@ async function generateTask4AI() {
   const t1data = state.tasks[1]?.data || {};
   const t2data = state.tasks[2]?.data || {};
   const t3data = state.tasks[3]?.data || {};
+  
+  console.log('[generateTask4AI] 任务数据:', {
+    t1: Object.keys(t1data),
+    t2: Object.keys(t2data),
+    t3: Object.keys(t3data)
+  });
 
   // 构建 AI 提示词
   const systemPrompt = `你是一位专业的用户研究专家，擅长基于项目背景信息生成具象化的用户画像和 JTBD（Jobs-to-be-Done）分析。
@@ -7242,12 +7249,16 @@ ${t3data.pb_vision || '（未填写）'}
 
   try {
     const aiConfig = getAIConfig();
+    console.log('[generateTask4AI] AI配置:', aiConfig ? { url: aiConfig.url, hasKey: !!aiConfig.key, model: aiConfig.model } : '(无)');
+    
     if (!aiConfig || !aiConfig.key) {
+      console.warn('[generateTask4AI] 无 AI 配置或缺少 key');
       showToast('请先配置 AI API 密钥');
       if (loadingEl) loadingEl.style.display = 'none';
       return;
     }
 
+    console.log('[generateTask4AI] 发起 fetch 请求到:', aiConfig.url);
     const response = await fetch(aiConfig.url, {
       method: 'POST',
       headers: {
