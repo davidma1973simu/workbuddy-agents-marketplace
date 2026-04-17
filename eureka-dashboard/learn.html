@@ -2330,6 +2330,15 @@ function loadState() {
   // 启动自动保存
   startAutoSave();
   
+  // ═══ 诊断日志：加载完成后输出 state 关键信息到 console ═══
+  console.log('=== EUREKA DIAGNOSTIC: loadState() 完成 ===');
+  console.log('当前项目ID:', currentProjectId);
+  console.log('state.currentTask:', state.currentTask);
+  console.log('state.tasks[1] status/data keys:', state.tasks[1]?.status, Object.keys(state.tasks[1]?.data || {}));
+  console.log('state.tasks[2] status/data keys:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
+  console.log('state.tasks[2].data 完整内容:', JSON.stringify(state.tasks[2]?.data || {}));
+  console.log('=== END DIAGNOSTIC ===');
+  
   // 加载完成后立即保存一次
   // 目的：如果上述初始化逻辑（如 businessValue 默认值填充）修改了 state，
   // 确保修改后的完整 state 被持久化，避免刷新时数据回滚
@@ -2440,6 +2449,18 @@ function renderTaskContent() {
   const task = TASKS[n];
   const data = state.tasks[n].data || {};
   const isDone = state.tasks[n].status === 'done';
+
+  // ═══ 诊断：渲染时输出当前任务的 data ═══
+  console.log('=== RENDER DIAGNOSTIC (任务' + n + ') ===');
+  console.log('data keys:', Object.keys(data));
+  console.log('data content:', JSON.stringify(data));
+  if (n === 2) {
+    // 任务2额外检查每个字段
+    ['background_info','current_situation','target_users','expected_outcome','challenges','constraints'].forEach(k => {
+      console.log('  ' + k + ':', JSON.stringify(data[k] || '(空)'));
+    });
+  }
+  // ═══ END DIAGNOSTIC ═══
 
   let fieldsHtml = '';
   task.fields.forEach(f => {
