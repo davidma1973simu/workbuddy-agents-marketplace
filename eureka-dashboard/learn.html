@@ -483,11 +483,12 @@ textarea{min-height:90px}
 .journey-legend{font-size:12px;color:var(--text2);margin-top:10px;padding:8px 12px;background:#f8faff;border-radius:8px}
 
 /* BRIEF PREVIEW */
-.brief-preview{border:2px solid var(--purple);border-radius:12px;padding:20px 24px;background:linear-gradient(135deg,rgba(102,126,234,.03),rgba(118,75,162,.02));margin-top:8px}
-.brief-title{font-size:15px;font-weight:800;color:var(--purple);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.brief-section{margin-bottom:14px}
-.brief-section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.brief-section-content{font-size:13px;color:var(--text);line-height:1.7;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid var(--border);min-height:32px;white-space:pre-wrap}
+.brief-preview{border:2px solid var(--purple);border-radius:12px;padding:16px 20px;background:linear-gradient(135deg,rgba(102,126,234,.03),rgba(118,75,162,.02));margin-top:8px}
+.brief-title{font-size:15px;font-weight:800;color:var(--purple);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.brief-columns{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:12px;align-items:stretch}
+.brief-section{display:flex;flex-direction:column;margin-bottom:0}
+.brief-section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;white-space:nowrap}
+.brief-section-content{font-size:12.5px;color:var(--text);line-height:1.65;background:#fff;padding:8px 11px;border-radius:6px;border:1px solid var(--border);min-height:80px;white-space:pre-wrap;flex:1}
 
 /* FEEDBACK */
 .feedback-box{padding:20px 28px;border-bottom:1px solid var(--border);display:none}
@@ -2387,6 +2388,14 @@ function syncFieldToState(fieldId) {
   if (!state.tasks[n]) state.tasks[n] = { status: 'in_progress', data: {} };
   if (!state.tasks[n].data) state.tasks[n].data = {};
   state.tasks[n].data[fieldId] = el.value.trim();
+  // 实时同步项目简报预览（任务3专属）
+  if (fieldId === 'pb_vision') {
+    const pv = document.getElementById('preview-vision');
+    if (pv) pv.textContent = el.value.trim() || '（填写「愿景共识」后自动更新）';
+  } else if (fieldId === 'pb_hypotheses') {
+    const ph = document.getElementById('preview-hypo');
+    if (ph) ph.textContent = el.value.trim() || '（填写「待验证假设」后自动更新）';
+  }
 }
 
 // 启动自动保存
@@ -3590,17 +3599,19 @@ function renderBriefPreview(data) {
     <div class="section-label">📋 项目简报预览（实时生成）</div>
     <div class="brief-preview">
       <div class="brief-title">📄 项目简报（Project Brief）</div>
-      <div class="brief-section">
-        <div class="brief-section-title">1 主题背景 · 场景与挑战</div>
-        <div class="brief-section-content">${(t1data.topic_description||'') || '← 来自任务 1：一句话主题描述'}\n\n${(t2data.background_info||'')||'← 来自任务 2：背景信息'}\n现状：${(t2data.current_situation||'')||'← 来自任务 2：现状描述'}</div>
-      </div>
-      <div class="brief-section">
-        <div class="brief-section-title">2 愿景共识</div>
-        <div class="brief-section-content" id="preview-vision">${vision || '（填写下方「愿景共识」后自动更新）'}</div>
-      </div>
-      <div class="brief-section">
-        <div class="brief-section-title">3 待验证假设</div>
-        <div class="brief-section-content" id="preview-hypo">${hypotheses || '（填写下方「待验证假设」后自动更新）'}</div>
+      <div class="brief-columns">
+        <div class="brief-section">
+          <div class="brief-section-title">1 主题背景 · 场景与挑战</div>
+          <div class="brief-section-content">${(t1data.topic_description||'') || '← 来自任务 1：一句话主题描述'}\n\n${(t2data.background_info||'')||'← 来自任务 2：背景信息'}\n现状：${(t2data.current_situation||'')||'← 来自任务 2：现状描述'}</div>
+        </div>
+        <div class="brief-section">
+          <div class="brief-section-title">2 愿景共识</div>
+          <div class="brief-section-content" id="preview-vision">${vision || '（填写下方「愿景共识」后自动更新）'}</div>
+        </div>
+        <div class="brief-section">
+          <div class="brief-section-title">3 待验证假设</div>
+          <div class="brief-section-content" id="preview-hypo">${hypotheses || '（填写下方「待验证假设」后自动更新）'}</div>
+        </div>
       </div>
     </div>
   </div>`;
