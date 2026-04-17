@@ -2386,6 +2386,23 @@ function loadState() {
   console.log('state.tasks[1] status/data keys:', state.tasks[1]?.status, Object.keys(state.tasks[1]?.data || {}));
   console.log('state.tasks[2] status/data keys:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
   console.log('state.tasks[2].data 完整内容:', JSON.stringify(state.tasks[2]?.data || {}));
+  
+  // ═══ 关键修复：如果当前项目没有真实数据，尝试查找其他有数据的项目 ═══
+  if (!hasRealData(state) && data.projects.length > 0) {
+    console.log('⚠️ 当前项目无数据，开始查找其他项目...');
+    for (const p of data.projects) {
+      if (p.id === projId) continue;
+      const otherState = loadProjectState(p.id);
+      if (otherState && hasRealData(otherState)) {
+        console.log('✅ 切换到项目 ' + p.id + '（有数据）');
+        state = otherState;
+        setCurrentProjectId(p.id);
+        break;
+      }
+    }
+    console.log('切换后 state.tasks[2]:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
+  }
+  
   console.log('=== END DIAGNOSTIC ===');
   
   // 加载完成后立即保存一次
