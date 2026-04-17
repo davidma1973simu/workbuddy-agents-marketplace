@@ -1688,8 +1688,17 @@ function updateProjectStats() {
   const project = data.projects.find(p => p.id === currentProjectId);
   if (!project) return;
 
-  project.taskCount = state.tasks ? state.tasks.length : 0;
-  project.completedCount = state.tasks ? state.tasks.filter(t => t.status === 'done').length : 0;
+  // tasks 可能是对象（{1:{}, 2:{}}）或数组（[{id:1},{id:2}]）
+  const tasksObj = state.tasks || {};
+  if (Array.isArray(tasksObj)) {
+    project.taskCount = tasksObj.length;
+    project.completedCount = tasksObj.filter(t => t.status === 'done').length;
+  } else {
+    // 对象格式：遍历 key
+    const taskKeys = Object.keys(tasksObj);
+    project.taskCount = taskKeys.length;
+    project.completedCount = taskKeys.filter(k => tasksObj[k].status === 'done').length;
+  }
   project.updatedAt = new Date().toISOString();
 
   saveProjectsData(data);
@@ -2440,8 +2449,10 @@ function saveState() {
   const activeProjId = currentProjectId || localStorage.getItem('eureka_learn_current_v2');
   if (activeProjId) {
     saveProjectState(activeProjId, state);
-    updateProjectStats();
     lastSavedState = JSON.stringify(state); // 更新上次保存状态
+    try { updateProjectStats(); } catch(e) {
+      console.warn('[saveState] updateProjectStats 失败（不影响数据保存）:', e.message);
+    }
   } else {
     console.warn('[saveState] 无活跃项目ID (变量:', currentProjectId, ' localStorage:', activeProjId + ') — 数据未保存！');
   }
