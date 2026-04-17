@@ -6891,47 +6891,99 @@ function updateSidebar() {
 // ────────────────────────────────────────────────
 //  项目产出文档面板
 // ────────────────────────────────────────────────
+function getTaskOutputInfo(n) {
+  // 返回每个任务的产出物名称、内容预览、完整内容
+  const data = state.tasks[n]?.data || {};
+  const isDone = state.tasks[n]?.status === 'done';
+  let outputName = '';
+  let preview = '';
+  let fullContent = '';
+
+  if (n === 1) {
+    outputName = '创新主题描述';
+    const topic = data.consensus_topic || data.topic_description || '';
+    const matrix = data.topic_matrix || '';
+    const challenges = data.personal_challenges || '';
+    preview = topic ? `共识选题：${topic.substring(0, 60)}` : '（未填写）';
+    fullContent = `【创新主题描述】\n\n共识选题：${topic || '（未填写）'}\n\n矩阵定位：${matrix || '（未填写）'}\n\n个人挑战与聚类：\n${challenges || '（未填写）'}`;
+  } else if (n === 2) {
+    outputName = '背景挑战描述';
+    const bg = data.background_info || '';
+    const current = data.current_situation || '';
+    const target = data.target_users || '';
+    const goal = data.expected_outcome || '';
+    const challenges = data.challenges || '';
+    const constraints = data.constraints || '';
+    preview = bg ? `背景：${bg.substring(0, 60)}` : '（未填写）';
+    fullContent = `【背景挑战描述】\n\n背景信息：\n${bg || '（未填写）'}\n\n现状描述：\n${current || '（未填写）'}\n\n目标用户：\n${target || '（未填写）'}\n\n期望目的：\n${goal || '（未填写）'}\n\n核心挑战：\n${challenges || '（未填写）'}\n\n限制要素：\n${constraints || '（未填写）'}`;
+  } else if (n === 3) {
+    outputName = '《项目简报》';
+    const vision = data.pb_vision || '';
+    const hypo = data.pb_hypotheses || '';
+    const sd = state.stakeholderData || [];
+    const t2data = state.tasks[2]?.data || {};
+    const t1data = state.tasks[1]?.data || {};
+    preview = vision ? `愿景：${vision.substring(0, 60)}` : '（未填写）';
+    let stakeholderSection = '';
+    if (sd.length > 0) {
+      stakeholderSection = '\n\n【利益相关方需求分析】\n';
+      sd.forEach(s => {
+        stakeholderSection += `\n▎${s.role}\n`;
+        (s.needs || []).forEach(need => {
+          stakeholderSection += `  ● ${need.name}：${need.score}/5\n`;
+        });
+      });
+    }
+    fullContent = `═══════════════════════════════════════\n         项 目 简 报\n       Project Brief\n═══════════════════════════════════════\n\n【创新主题】\n${t1data.consensus_topic || t1data.topic_description || '（未填写）'}\n\n【背景挑战摘要】\n背景：${t2data.background_info || '（未填写）'}\n现状：${t2data.current_situation || '（未填写）'}\n目标用户：${t2data.target_users || '（未填写）'}\n期望目的：${t2data.expected_outcome || '（未填写）'}\n核心挑战：${t2data.challenges || '（未填写）'}\n限制要素：${t2data.constraints || '（未填写）'}${stakeholderSection}\n\n【愿景共识】\n${vision || '（未填写）'}\n\n【待验证假设】\n${hypo || '（未填写）'}`;
+  } else if (n === 4) {
+    outputName = '用户画像 & JTBD';
+    const persona = data.user_persona || data.persona_basic || '';
+    const jtbd = data.jtbd || '';
+    preview = persona ? `画像：${persona.substring(0, 60)}` : '（未填写）';
+    fullContent = `【用户画像】\n\n${data.persona_basic ? `基本信息：\n${data.persona_basic}\n\n行为特征：\n${data.persona_behavior || ''}\n\n核心痛点：\n${data.persona_pain || ''}\n\n个性和价值观：\n${data.persona_values || ''}\n\n对当前方案的喜恶：\n${data.persona_attitude || ''}` : persona || '（未填写）'}\n\n${'─'.repeat(40)}\n\n【JTBD 用户任务分析】\n\n${data.jtbd_functional ? `功能性任务：\n${data.jtbd_functional}\n\n社会情感性任务：\n${data.jtbd_social || ''}\n\n个人情感性任务：\n${data.jtbd_emotional || ''}` : jtbd || '（未填写）'}`;
+  } else if (n === 5) {
+    outputName = '用户旅程地图 & 关键发现';
+    const findings = data.key_findings || '';
+    preview = findings ? `发现：${findings.substring(0, 60)}` : '（未填写）';
+    let journeySection = '';
+    try {
+      const steps = JSON.parse(data.journey_table || '[]');
+      if (Array.isArray(steps) && steps.length > 0) {
+        journeySection = '\n【用户旅程地图】\n\n';
+        steps.forEach((s, i) => {
+          journeySection += `步骤 ${i+1}「${s.step || '未命名'}」\n`;
+          journeySection += `  做：${s.do || '-'}\n  想：${s.think || '-'}\n  感受：${s.feel || '-'}${s.feel ? '/5' : ''}\n\n`;
+        });
+      }
+    } catch(e) {}
+    fullContent = `【用户旅程地图 & 关键发现】\n${journeySection}\n【关键发现】\n${findings || '（未填写）'}`;
+  } else if (n === 6) {
+    outputName = 'POV 洞察陈述';
+    const pd = state.povData || {};
+    const pov = data.pov_statement || '';
+    const fVal = state.findData?.f?.value || '';
+    const iVal = state.findData?.i?.value || '';
+    const nVal = state.findData?.n?.value || '';
+    const dVal = state.findData?.d?.value || '';
+    preview = pov ? `POV：${pov.substring(0, 60)}` : (fVal ? `FIND：${fVal.substring(0, 40)}` : '（未填写）');
+    fullContent = `【FIND 洞察推导】\n\nF - 事实（Fact）：\n${fVal || '（未填写）'}\n\nI - 解释（Interpretation）：\n${iVal || '（未填写）'}\n\nN - 需求（Need）：\n${nVal || '（未填写）'}\n\nD - 洞察（Design Insight）：\n${dVal || '（未填写）'}\n\n${'─'.repeat(40)}\n\n【POV 洞察陈述】\n${pov || `目标用户「${pd.targetUser || '...'}」需要「${pd.jtbd || '...'}」，但因为「${pd.challenge || '...'}」，导致「${pd.insight || '...'}」`}`;
+  }
+
+  return { n, outputName, preview, fullContent, isDone };
+}
+
 function openOutputPanel() {
   const existing = document.getElementById('output-modal');
   if (existing) { existing.remove(); }
 
-  const done = [1,2,3,4,5,6].filter(n => state.tasks[n].status === 'done').length;
-
-  // 收集每个任务的产出摘要
-  const outputs = [1,2,3,4,5,6].map(n => {
-    const task = TASKS[n];
-    const data = state.tasks[n]?.data || {};
-    const isDone = state.tasks[n]?.status === 'done';
-    let summary = '';
-
-    if (n === 1) {
-      summary = data.consensus_topic || data.topic_description || '（未填写）';
-    } else if (n === 2) {
-      summary = data.personal_challenges || data.challenge_research || '（未填写）';
-    } else if (n === 3) {
-      const sd = state.stakeholderData;
-      summary = sd && sd.length > 0 ? `${sd.length} 个利益相关方已录入` : '（未填写）';
-    } else if (n === 4) {
-      summary = data.user_persona || data.persona_basic || '（未填写）';
-    } else if (n === 5) {
-      try {
-        const steps = JSON.parse(data.journey_table || '[]');
-        summary = Array.isArray(steps) && steps.length > 0
-          ? `${steps.filter(s=>s.step||s.do).length} 个旅程步骤`
-          : (data.key_findings || data.journey_map || '（未填写）');
-      } catch(e) { summary = data.journey_map || '（未填写）'; }
-    } else if (n === 6) {
-      summary = data.pov_statement || (state.povData?.targetUser || '') || '（未填写）';
-    }
-
-    return { n, title: task.title, isDone, summary: summary.substring(0, 80) };
-  });
+  const done = [1,2,3,4,5,6].filter(n => state.tasks[n]?.status === 'done').length;
+  const outputs = [1,2,3,4,5,6].map(n => getTaskOutputInfo(n));
 
   const modal = document.createElement('div');
   modal.id = 'output-modal';
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal-content" style="max-width:600px;max-height:80vh;overflow-y:auto">
+    <div class="modal-content" style="max-width:720px;max-height:85vh;overflow-y:auto">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--border)">
         <div>
           <div style="font-size:18px;font-weight:700;color:var(--purple)">📋 项目产出文档</div>
@@ -6940,97 +6992,61 @@ function openOutputPanel() {
         <button onclick="this.closest('.modal-overlay').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--text2);padding:4px">&times;</button>
       </div>
 
-      <div id="output-task-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
         ${outputs.map(o => {
           const bg = o.isDone ? '#f0fdf4' : '#f8fafc';
           const border = o.isDone ? '#86efac' : 'var(--border)';
-          const dotBg = o.isDone ? '#22c55e' : 'var(--border)';
-          const dotColor = o.isDone ? '#fff' : 'var(--text2)';
-          const tagBg = o.isDone ? '#dcfce7' : '#f1f5f9';
-          const tagColor = o.isDone ? '#15803d' : 'var(--text2)';
-          const dotText = o.isDone ? '✓' : o.n;
-          const tagText = o.isDone ? '✅ 已完成' : '⬜ 未完成';
+          const dotBg = o.isDone ? '#22c55e' : '#e2e8f0';
+          const dotColor = o.isDone ? '#fff' : '#94a3b8';
+          const hasContent = o.fullContent && o.fullContent.indexOf('（未填写）') === -1 && o.fullContent.indexOf('未命名') === -1;
           return `
-          <div class="output-item" style="padding:12px 14px;background:${bg};border-radius:10px;border:1px solid ${border};cursor:pointer" onclick="switchTask(${o.n});document.getElementById('output-modal').remove()">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <span style="width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:${dotBg};color:${dotColor}">${dotText}</span>
-              <span style="font-size:13px;font-weight:600">${o.title}</span>
-              <span style="margin-left:auto;font-size:11px;padding:2px 8px;border-radius:10px;background:${tagBg};color:${tagColor};font-weight:600">${tagText}</span>
+          <div style="background:${bg};border-radius:12px;border:1px solid ${border};overflow:hidden">
+            <div style="padding:14px 16px;display:flex;align-items:center;gap:10px">
+              <span style="width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:${dotBg};color:${dotColor};flex-shrink:0">${o.isDone ? '✓' : o.n}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:600">任务${o.n}：${TASKS[o.n].title}</div>
+                <div style="font-size:12px;color:var(--purple);font-weight:600;margin-top:1px">📦 ${o.outputName}</div>
+              </div>
+              ${hasContent ? `<button onclick="downloadTaskOutput(${o.n})" style="padding:5px 12px;background:var(--purple);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">📥 下载</button>` : ''}
             </div>
-            <div style="font-size:12px;color:var(--text2);line-height:1.4;padding-left:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.summary || '（暂无数据）'}</div>
+            <div style="padding:0 16px 14px 52px">
+              <div style="font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow-y:auto;background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #f1f5f9">${o.preview || '（暂无产出数据）'}</div>
+            </div>
           </div>`;
         }).join('')}
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:14px">
-        <button onclick="downloadSingleOutput()" style="padding:8px 18px;border:1px solid var(--purple);background:#fff;color:var(--purple);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📄 下载当前任务</button>
         <button onclick="downloadAllOutputs()" style="padding:8px 24px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">📦 全部一键下载</button>
       </div>
     </div>`;
   document.body.appendChild(modal);
 }
 
-// 下载当前任务产出
-function downloadSingleOutput() {
-  const n = state.currentTask;
-  downloadTaskOutput(n);
+// 下载单个任务产出
+function downloadTaskOutput(taskNum) {
+  const info = getTaskOutputInfo(taskNum);
+  const content = info.fullContent + `\n\n${'─'.repeat(40)}\n导出时间：${new Date().toLocaleString('zh-CN')}\n来源：Eureka Learn · Reveal 阶段`;
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Eureka_Reveal_任务${taskNum}_${TASKS[taskNum].title}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`📥 已下载：任务${taskNum} ${info.outputName}`);
 }
 
 // 下载全部任务产出
 function downloadAllOutputs() {
   for (let n = 1; n <= 6; n++) {
-    downloadTaskOutput(n);
+    const info = getTaskOutputInfo(n);
+    if (info.fullContent && info.fullContent.indexOf('（未填写）') === -1) {
+      downloadTaskOutput(n);
+    }
   }
-  showToast('📦 全部产出已下载');
-}
-
-// 单个任务产出下载
-function downloadTaskOutput(taskNum) {
-  const task = TASKS[taskNum];
-  const data = state.tasks[taskNum]?.data || {};
-  let content = `【${task.title}】产出物\n${'='.repeat(40)}\n\n`;
-
-  if (taskNum === 1) {
-    content += `共识选题：${data.consensus_topic || '(空)'}\n`;
-    content += `主题描述：${data.topic_description || '(空)'}\n`;
-    content += `矩阵象限：${data.topic_matrix || '(空)'}\n`;
-    content += `个人挑战：${data.personal_challenges || '(空)'}`;
-  } else if (taskNum === 2) {
-    content += `挑战研究：${data.personal_challenges || '(空)'}\n`;
-    content += `调研记录：${data.challenge_research || '(空)'}`;
-  } else if (taskNum === 3) {
-    content += `利益相关方分析：\n`;
-    const sd = state.stakeholderData || [];
-    sd.forEach(s => {
-      content += `\n【${s.role}】\n`;
-      s.needs?.forEach(n_ => { content += `  - ${n_.name}: ${n_.score}/5\n`; });
-    });
-  } else if (taskNum === 4) {
-    content += `用户画像：\n${data.user_persona || data.persona_basic || '(空)'}\n\n`;
-    content += `JTBD：\n${data.jtbd || '(空)'}`;
-  } else if (taskNum === 5) {
-    content += `用户旅程地图：\n`;
-    try {
-      const steps = JSON.parse(data.journey_table || '[]');
-      if (Array.isArray(steps)) steps.forEach((s,i) => {
-        content += `\n步骤${i+1}「${s.step||'未命名'}」\n`;
-        content += `  做：${s.do||'-'} | 感：${s.feel||'-'}/5 | 想：${s.think||'-'}\n`;
-      }); else content += '(无数据)';
-    } catch(e) { content += data.journey_map || '(解析失败)'; }
-    content += `\n\n关键发现：\n${data.key_findings || '(未生成)'}`;
-  } else if (taskNum === 6) {
-    const pd = state.povData || {};
-    content += `FIND 分析：\n  F(事实)：${state.findData?.f?.value||'(空)'}\n  I(解释)：${state.findData?.i?.value||'(空)'}\n  N(需求)：${state.findData?.n?.value||'(空)'}\n  D(洞察)：${state.findData?.d?.value||'(空)'}\n\n`;
-    content += `POV 描述：\n${data.pov_statement || `(目标用户：${pd.targetUser||'...'} 需要 ${pd.jtbd||'...'}，但因为 ${pd.challenge||'...'}，导致 ${pd.insight||'...'})`}`;
-  }
-
-  content += `\n\n--- 导出时间：${new Date().toLocaleString('zh-CN')} ---`;
-
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `Eureka_Reveal_任务${taskNum}_${task.title}.txt`;
-  a.click(); URL.revokeObjectURL(url);
+  showToast('📦 全部已填写的产出已下载');
 }
 
 // 更新产出面板进度徽章
@@ -7785,111 +7801,3 @@ function updateOnboardingUI() {
 
 </body>
 </html>
-
-<!-- ═══════════ 数据恢复工具（v1.4.18 临时添加，确认数据正常后可删除）═══════════ -->
-<div id="data-recovery-panel" style="position:fixed;bottom:12px;right:12px;z-index:99999;background:#1e293b;color:#e2e8f0;padding:14px 18px;border-radius:12px;font-size:12px;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.4);font-family:-apple-system,sans-serif">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-    <strong style="color:#fbbf24">💾 LocalStorage 数据状态</strong>
-    <button onclick="document.getElementById('data-recovery-panel').style.display='none'" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px">✕</button>
-  </div>
-  <div id="recovery-info" style="line-height:1.8">检测中...</div>
-  <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-    <button onclick="exportAllData()" style="padding:5px 10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px">📥 导出全部数据</button>
-    <button onclick="showDataDetail()" style="padding:5px 10px;background:#6366f1;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px">🔍 查看详情</button>
-  </div>
-</div>
-
-<script>
-(function checkStorage() {
-  const keys = [
-    { key: 'eureka_learn_projects_v2', label: '项目列表' },
-    { key: 'eureka_learn_current_v2', label: '当前项目ID' },
-    { key: 'eureka_project_data_v1', label: '项目数据' },
-    { key: 'eureka_learn_ai_v1', label: 'AI配置' },
-    { key: 'eureka_ai_config_v1', label: 'AI Key配置' },
-    { key: 'eureka_learn_v1', label: '旧版学习数据' },
-  ];
-  
-  let html = '';
-  let hasData = false;
-  
-  keys.forEach(item => {
-    try {
-      const val = localStorage.getItem(item.key);
-      if (val) {
-        hasData = true;
-        const size = new Blob([val]).size;
-        const preview = val.length > 60 ? val.substring(0, 60) + '...' : val;
-        html += `<div style="margin-bottom:4px"><span style="color:#4ade80">●</span> <b>${item.label}</b>: ${size}B</div>`;
-      } else {
-        html += `<div style="margin-bottom:4px"><span style="color:#ef4444">○</span> ${item.label}: 空</div>`;
-      }
-    } catch(e) {
-      html += `<div style="margin-bottom:4px"><span style="color">#f59e0b">⚠</span> ${item.label}: 读取错误</div>`;
-    }
-  });
-  
-  // 检查项目数量
-  try {
-    const projRaw = localStorage.getItem('eureka_learn_projects_v2');
-    if (projRaw) {
-      const projData = JSON.parse(projRaw);
-      const projects = projData.projects || [];
-      html += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #334155;color:#fbbf24">📁 项目数: ${projects.length}</div>`;
-      projects.forEach((p, i) => {
-        const stateKey = 'eureka_project_' + p.id;
-        const stateRaw = localStorage.getItem(stateKey);
-        const stateSize = stateRaw ? new Blob([stateRaw]).size : 0;
-        // 统计任务完成数
-        let doneCount = 0;
-        if (stateRaw) {
-          try {
-            const s = JSON.parse(stateRaw);
-            if (s.tasks) {
-              Object.keys(s.tasks).forEach(k => { if (s.tasks[k].status === 'done') doneCount++; });
-            }
-          } catch(e) {}
-        }
-        html += `<div style="margin-left:16px;color:#94a3b8">  ${i+1}. ${p.name} (${stateSize}B) — 完成 ${doneCount}/6 任务</div>`;
-      });
-    }
-  } catch(e) {}
-  
-  document.getElementById('recovery-info').innerHTML = html || '<span style="color:#ef4444">未找到任何 Eureka 数据</span>';
-})();
-
-function exportAllData() {
-  const data = {};
-  const allKeys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith('eureka_')) allKeys.push(k);
-  }
-  allKeys.forEach(k => { data[k] = localStorage.getItem(k); });
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'eureka_backup_' + Date.now() + '.json';
-  a.click(); URL.revokeObjectURL(url);
-}
-
-function showDataDetail() {
-  const allKeys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith('eureka_')) allKeys.push(k);
-  }
-  let content = '';
-  allKeys.forEach(k => {
-    try {
-      const v = JSON.parse(localStorage.getItem(k));
-      content += `\n\n=== ${k} ===\n${JSON.stringify(v, null, 2).substring(0, 2000)}`;
-    } catch(e) {
-      content += `\n\n=== ${k} ===\n${localStorage.getItem(k).substring(0, 500)}`;
-    }
-  });
-  const w = window.open('', '_blank');
-  w.document.write(`<pre style="white-space:pre-wrap;word-break:break-all;padding:20px;font-size:12px">${content}</pre>`);
-  w.document.close();
-}
-</script>
