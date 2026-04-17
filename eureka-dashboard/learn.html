@@ -6815,6 +6815,48 @@ function showToast(msg) {
   setTimeout(() => { t.className = 'toast'; }, 2800);
 }
 
+// 增强版 Toast（支持 success/error 类型）
+// 修复：原代码多处引用此函数但从未定义，导致 ReferenceError
+function showToastNotification(msg, type = 'info') {
+  const colors = { success: '#22c55e', error: '#ef4444', warning: '#f59e0b', info: '#6366f1' };
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  
+  // 复用已有的 toast 元素
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = (icons[type] || '') + ' ' + msg;
+    t.style.background = colors[type] || colors.info;
+    t.className = 'toast show';
+    setTimeout(() => { 
+      t.style.background = ''; 
+      t.className = 'toast'; 
+    }, 3000);
+  } else {
+    // fallback: 用 console + alert
+    console.log('[Toast]', type.toUpperCase(), msg);
+  }
+}
+
+// 更新侧边栏任务状态显示
+// 修复：submitTaskWithFeedback() 调用了此函数但从未定义
+function updateSidebar() {
+  // 遍历侧边栏的任务列表项，更新完成状态样式
+  document.querySelectorAll('.task-item').forEach(item => {
+    const taskNum = parseInt(item.dataset?.task || item.getAttribute('data-task') || '0');
+    if (!taskNum || !state.tasks[taskNum]) return;
+    
+    const taskState = state.tasks[taskNum];
+    // 根据状态更新 UI
+    if (taskState.status === 'done') {
+      item.classList.add('task-done');
+      item.classList.remove('task-current');
+    } else if (state.currentTask === taskNum) {
+      item.classList.add('task-current');
+      item.classList.remove('task-done');
+    }
+  });
+}
+
 // ────────────────────────────────────────────────
 //  项目产出文档面板
 // ────────────────────────────────────────────────
