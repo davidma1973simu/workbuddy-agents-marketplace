@@ -5706,6 +5706,25 @@ function saveBVMarket(showToast = false) {
   if (showToast) showToastNotification('市场假设已保存', 'success');
 }
 
+// 保存市场假设（带按钮视觉反馈）
+function saveBVMarketWithFeedback() {
+  saveBVMarket(true);
+  const btn = document.querySelector('.bv-btn-save');
+  if (btn) {
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span>✅</span> 已保存';
+    btn.style.background = '#22c55e';
+    btn.style.color = '#fff';
+    btn.style.borderColor = '#22c55e';
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  }
+}
+
 // ── 商业价值评估 · 保存用户商业假设 ──
 function saveBVUser(showToast = false) {
   state.businessValue = state.businessValue || {};
@@ -6301,8 +6320,9 @@ function openAISettings() {
   if (cfg) {
     // 尝试匹配 provider
     let matchedProvider = '';
+    const configUrl = cfg.url || cfg.baseUrl;
     for (const [key, p] of Object.entries(AI_PROVIDERS)) {
-      if (cfg.baseUrl && cfg.baseUrl.includes(p.baseUrl.replace('/v1', ''))) {
+      if (configUrl && configUrl.includes(p.baseUrl.replace('/v1', ''))) {
         matchedProvider = key;
         break;
       }
@@ -6314,13 +6334,13 @@ function openAISettings() {
       if (cfg.model) {
         document.getElementById('ai-model-select').value = cfg.model;
       }
-    } else if (cfg.baseUrl) {
+    } else if (configUrl) {
       document.getElementById('ai-provider').value = 'custom';
       onProviderChange();
-      document.getElementById('ai-custom-url').value = cfg.baseUrl;
+      document.getElementById('ai-custom-url').value = configUrl;
     }
 
-    document.getElementById('ai-api-key').value = cfg.apiKey || cfg.key || '';
+    document.getElementById('ai-api-key').value = cfg.key || cfg.apiKey || '';
   }
 }
 
@@ -6459,7 +6479,7 @@ function getAIConfig() {
   const ownConfig = localStorage.getItem(AI_CONFIG_KEY);
   if (ownConfig) {
     try {
-      return JSON.parse(ownConfig);
+      return normalizeAIConfig(JSON.parse(ownConfig));
     } catch (e) {
       // 解析失败，继续检查其他配置
     }
@@ -6474,15 +6494,26 @@ function getAIConfig() {
         const cfg = JSON.parse(raw);
         // 处理加密配置
         if (cfg.encrypted && cfg.data) {
-          return decryptConfig(cfg);
+          return normalizeAIConfig(decryptConfig(cfg));
         }
-        return cfg;
+        return normalizeAIConfig(cfg);
       } catch (e) {
         continue;
       }
     }
   }
   return null;
+}
+
+// 标准化 AI 配置字段名（统一为 url/key/model 格式）
+function normalizeAIConfig(cfg) {
+  if (!cfg) return null;
+  return {
+    url: cfg.url || cfg.baseUrl || '',
+    key: cfg.key || cfg.apiKey || '',
+    model: cfg.model || 'gpt-4o',
+    provider: cfg.provider || ''
+  };
 }
 
 // 简单的解密函数（兼容 Eureka 的加密格式）
@@ -7291,17 +7322,46 @@ ${t3data.pb_vision || '（未填写）'}
 
   try {
     const aiConfig = getAIConfig();
-    console.log('[generateTask4AI] AI配置:', aiConfig ? { url: aiConfig.url, hasKey: !!aiConfig.key, model: aiConfig.model } : '(无)');
+    console.log('[generateTask4AI] getAIConfig() 返回:', JSON.stringify(aiConfig));
+    console.log('[generateTask4AI] AI配置:', aiConfig ? { url: aiConfig.url, hasKey: !!aiConfig.key, keyLen: (aiConfig.key || '').length, model: aiConfig.model } : '(无)');
+    
+    // 诊断：打印所有可能的 AI 配置来源
+    ['eureka_learn_ai_v1', 'rh_ai_config_v1', 'persona_lab_ai_config_v1', 'eureka_ai_config_v1'].forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v) console.log(`[DIAG] ${k} =`, v.slice(0, 200));
+      else console.log(`[DIAG] ${k} = (空)`);
+    });
     
     if (!aiConfig || !aiConfig.key) {
-      console.warn('[generateTask4AI] 无 AI 配置或缺少 key');
-      showToast('请先配置 AI API 密钥');
-      if (loadingEl) loadingEl.style.display = 'none';
-      return;
+      // fallback: 尝试从所有已知 key 读取
+      let fallbackCfg = null;
+      const allKeys = ['eureka_learn_ai_v1', 'rh_ai_config_v1', 'persona_lab_ai_config_v1', 'eureka_ai_config_v1'];
+      for (const k of allKeys) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          console.log(`[generateTask4AI] fallback 找到 ${k}:`, raw.slice(0, 100));
+          try {
+            const parsed = JSON.parse(raw);
+            const k2 = parsed.key || parsed.apiKey;
+            if (k2) { fallbackCfg = { url: parsed.url || parsed.baseUrl || '', key: k2, model: parsed.model || 'gpt-4o' }; break; }
+          } catch(e) {}
+        }
+      }
+      
+      if (!fallbackCfg || !fallbackCfg.key) {
+        console.warn('[generateTask4AI] 无 AI 配置或缺少 key，所有来源均失败');
+        showToast('请先配置 AI API 密钥');
+        if (loadingEl) loadingEl.style.display = 'none';
+        return;
+      }
+      // 用 fallback 配置继续
+      var aiConfig = fallbackCfg;
+      console.log('[generateTask4AI] 使用 fallback 配置:', { url: aiConfig.url, hasKey: !!aiConfig.key });
     }
 
     console.log('[generateTask4AI] 发起 fetch 请求到:', aiConfig.url);
-    const response = await fetch(aiConfig.url, {
+    const endpoint = aiConfig.url.replace(/\/+$/, '') + '/chat/completions';
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
