@@ -2231,8 +2231,10 @@ function deepMerge(target, source) {
 
 // 加载状态（多项目版本）
 function loadState() {
-  // 获取当前项目ID
-  let projId = getCurrentProjectId();
+  // ═══ 获取当前项目ID（直接读 localStorage，不依赖 getCurrentProjectId 函数）═══
+  const rawProjId = localStorage.getItem('eureka_learn_current_v2');
+  let projId = rawProjId;  // 直接用原始值
+  console.log('[loadState] 原始 projId from localStorage:', rawProjId, '(type:', typeof rawProjId + ')');
   
   // 如果没有项目，创建默认项目
   const data = getProjectsData();
