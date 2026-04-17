@@ -2285,8 +2285,35 @@ function loadState() {
       saveProjectState(projId, state);
     }
   } else {
-    // 没有当前项目，使用第一个
-    projId = data.projects[0].id;
+    // 没有当前项目ID（eureka_learn_current_v2 缺失或为空）
+    // 策略：从项目列表中找到最近更新的、且有实际数据的项目的
+    let bestProjId = data.projects.length > 0 ? data.projects[0].id : null;
+    
+    // 如果项目列表里有多个项目，找最近有数据的一个
+    if (data.projects.length > 0) {
+      // 优先用 eureka_learn_current_v2 的残留值（如果有的话）
+      const fallbackId = localStorage.getItem(CURRENT_PROJECT_KEY);
+      if (fallbackId) {
+        const fallbackData = loadProjectState(fallbackId);
+        if (fallbackData && hasRealData(fallbackData)) {
+          bestProjId = fallbackId;
+        }
+      }
+      // 如果还是没有，遍历所有项目找有数据的
+      if (!bestProjId || !hasRealData(loadProjectState(bestProjId))) {
+        for (const p of data.projects) {
+          const pd = loadProjectState(p.id);
+          if (pd && hasRealData(pd)) {
+            bestProjId = p.id;
+            break;
+          }
+        }
+      }
+      // 最后兜底：用第一个项目
+      if (!bestProjId) bestProjId = data.projects[0].id;
+    }
+    
+    projId = bestProjId;
     setCurrentProjectId(projId);
     const loaded = loadProjectState(projId);
     state = loaded || createInitialState();
@@ -2332,7 +2359,8 @@ function loadState() {
   
   // ═══ 诊断日志：加载完成后输出 state 关键信息到 console ═══
   console.log('=== EUREKA DIAGNOSTIC: loadState() 完成 ===');
-  console.log('当前项目ID:', currentProjectId);
+  console.log('当前项目ID (currentProjectId):', currentProjectId);
+  console.log('localStorage eureka_learn_current_v2:', localStorage.getItem('eureka_learn_current_v2'));
   console.log('state.currentTask:', state.currentTask);
   console.log('state.tasks[1] status/data keys:', state.tasks[1]?.status, Object.keys(state.tasks[1]?.data || {}));
   console.log('state.tasks[2] status/data keys:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
