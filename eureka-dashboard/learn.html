@@ -6479,7 +6479,7 @@ function getAIConfig() {
   const ownConfig = localStorage.getItem(AI_CONFIG_KEY);
   if (ownConfig) {
     try {
-      return normalizeAIConfig(JSON.parse(ownConfig));
+      return normalizeAIConfig(decryptConfig(JSON.parse(ownConfig)));
     } catch (e) {
       // 解析失败，继续检查其他配置
     }
@@ -6492,11 +6492,8 @@ function getAIConfig() {
     if (raw) {
       try {
         const cfg = JSON.parse(raw);
-        // 处理加密配置
-        if (cfg.encrypted && cfg.data) {
-          return normalizeAIConfig(decryptConfig(cfg));
-        }
-        return normalizeAIConfig(cfg);
+        // 统一经过 decryptConfig 处理（兼容 _encrypted / encrypted / 明文格式）
+        return normalizeAIConfig(decryptConfig(cfg));
       } catch (e) {
         continue;
       }
@@ -6516,20 +6513,50 @@ function normalizeAIConfig(cfg) {
   };
 }
 
-// 简单的解密函数（兼容 Eureka 的加密格式）
-function decryptConfig(encryptedObj) {
-  // 如果已经是明文配置，直接返回
-  if (encryptedObj.apiKey || encryptedObj.key) {
-    return encryptedObj;
+// XOR 加解密（与 Eureka Dashboard / Red House / Persona Lab 保持一致）
+const ENC_KEY = 'EurekaDashboard_v1';
+function xorEncrypt(text, key = ENC_KEY) {
+  if (!text) return '';
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
   }
-  // 如果有 data 字段，尝试解析
-  if (encryptedObj.data) {
+  return btoa(result);
+}
+function xorDecrypt(encrypted, key = ENC_KEY) {
+  if (!encrypted) return '';
+  try {
+    const text = atob(encrypted);
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return result;
+  } catch (e) {
+    return encrypted;
+  }
+}
+
+// 解密函数（兼容所有加密格式）
+function decryptConfig(encryptedObj) {
+  if (!encryptedObj) return null;
+  // 格式1：index.html / Red House / Persona Lab — _encrypted 标记 + XOR 加密
+  if (encryptedObj._encrypted) {
+    return {
+      ...encryptedObj,
+      apiKey: xorDecrypt(encryptedObj.apiKey),
+      _encrypted: undefined
+    };
+  }
+  // 格式2：base64 data 字段
+  if (encryptedObj.encrypted && encryptedObj.data) {
     try {
       return JSON.parse(atob(encryptedObj.data));
     } catch (e) {
       return encryptedObj;
     }
   }
+  // 格式3：已经是明文
   return encryptedObj;
 }
 
