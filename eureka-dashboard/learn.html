@@ -2980,9 +2980,9 @@ ${personalChallenges}
   "commonalities": ["共性主题1", "共性主题2", "共性主题3"]
 }`;
 
-    const classifyResp = await fetchWithTimeout(cfg.baseUrl + '/chat/completions', {
+    const classifyResp = await fetchWithTimeout((cfg.url || cfg.baseUrl || '') + '/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || cfg.apiKey || '') },
       body: JSON.stringify({
         model: cfg.model,
         messages: [{ role: 'user', content: classifyPrompt }],
@@ -3040,9 +3040,9 @@ ${personalChallenges}
   ]
 }`;
 
-    const recommendResp = await fetchWithTimeout(cfg.baseUrl + '/chat/completions', {
+    const recommendResp = await fetchWithTimeout((cfg.url || cfg.baseUrl || '') + '/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (cfg.key || cfg.apiKey || '') },
       body: JSON.stringify({
         model: cfg.model,
         messages: [{ role: 'user', content: recommendPrompt }],
@@ -6540,8 +6540,8 @@ async function callAIAPI(systemPrompt, userPrompt) {
     throw new Error('未配置 AI 接口。请先配置 AI API Key（在 Dashboard 设置中）。');
   }
 
-  const baseUrl = (cfg.baseUrl || cfg.apiBase || '').replace(/\/+$/, '');
-  const apiKey = cfg.apiKey || cfg.key;
+  const baseUrl = (cfg.url || cfg.baseUrl || cfg.apiBase || '').replace(/\/+$/, '');
+  const apiKey = cfg.key || cfg.apiKey || '';
   const model = cfg.model || 'gpt-4o-mini';
 
   if (!baseUrl || !apiKey) {
