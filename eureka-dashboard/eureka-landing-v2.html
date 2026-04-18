@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka · 个人价值创新资产盒子</title>
+<meta name="description" content="Eureka 是你的个人价值创新资产盒子——用 RISE 四阶段框架，把每次创新的全过程变成可复用的项目档案，一键导出PDF/PPT。完全免费，无需注册。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --purple:#667eea;--purple2:#764ba2;
+  --navy:#0f172a;--navy2:#1e293b;
+  --bg:#f8f7ff;--card:#fff;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--r:16px;
+  --amber:#f59e0b;--green:#10b981;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#0f172a 100%);padding:80px 24px 110px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(102,126,234,.25),transparent 70%);pointer-events:none}
+.hero-brand{display:inline-flex;align-items:center;gap:8px;background:rgba(165,180,252,.12);border:1px solid rgba(165,180,252,.25);border-radius:40px;padding:6px 18px;font-size:12px;color:#a5b4fc;font-weight:700;letter-spacing:.5px;margin-bottom:24px}
+.hero h1{font-size:clamp(38px,6vw,68px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:18px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(15px,2vw,19px);color:rgba(255,255,255,.7);line-height:1.8;max-width:560px;margin:0 auto 44px}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;padding:16px 36px;border-radius:40px;font-weight:800;font-size:16px;text-decoration:none;transition:.2s;box-shadow:0 8px 32px rgba(102,126,234,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(102,126,234,.5)}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);color:#e2e8f0;padding:16px 28px;border-radius:40px;font-weight:700;font-size:15px;text-decoration:none;border:1.5px solid rgba(255,255,255,.2);transition:.2s}
+.btn-outline:hover{background:rgba(255,255,255,.16)}
+.hero-note{margin-top:18px;font-size:12px;color:rgba(255,255,255,.35)}
+.hero-wave{position:absolute;bottom:-1px;left:0;right:0;line-height:0}
+
+/* ── STATS ── */
+.stats{background:#fff;padding:28px 24px;border-bottom:1px solid var(--border)}
+.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{text-align:center;padding:14px}
+.stat-num{font-size:30px;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--purple2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-label{font-size:12px;color:var(--text3);margin-top:5px;font-weight:600}
+@media(max-width:600px){.stats-inner{grid-template-columns:repeat(2,1fr)}}
+
+/* ── SECTION ── */
+.section{padding:64px 24px;max-width:960px;margin:0 auto}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:#f0f4ff;color:var(--purple);font-size:11px;font-weight:800;padding:4px 14px;border-radius:40px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.section-title{font-size:clamp(24px,3.5vw,36px);font-weight:900;color:var(--text);line-height:1.2;margin-bottom:10px}
+.section-sub{font-size:16px;color:var(--text2);line-height:1.7;max-width:620px}
+
+/* ── PAIN POINTS ── */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+@media(max-width:700px){.pain-grid{grid-template-columns:1fr}}
+.pain-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:28px 24px;position:relative;overflow:hidden}
+.pain-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--purple2))}
+.pain-icon{font-size:32px;margin-bottom:12px}
+.pain-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px}
+.pain-body{font-size:14px;color:var(--text2);line-height:1.65}
+
+/* ── RISE FLOW ── */
+.rise-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;position:relative}
+@media(max-width:700px){.rise-flow{grid-template-columns:1fr 1fr}}
+.rise-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:24px 20px;text-align:center;position:relative;transition:.2s}
+.rise-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.rise-num{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1px;margin-bottom:10px}
+.rise-icon{font-size:36px;margin-bottom:10px}
+.rise-name{font-size:18px;font-weight:900;margin-bottom:4px}
+.rise-name.r{color:#667eea}
+.rise-name.i{color:#f59e0b}
+.rise-name.s{color:#10b981}
+.rise-name.e{color:#ef4444}
+.rise-sub{font-size:13px;color:var(--text2);line-height:1.5}
+.rise-tags{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.rise-tag{font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600}
+.rise-tag.r{background:#eff0ff;color:#667eea}
+.rise-tag.i{background:#fffbeb;color:#d97706}
+.rise-tag.s{background:#ecfdf5;color:#059669}
+.rise-tag.e{background:#fef2f2;color:#dc2626}
+
+/* ── FEATURES ── */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+@media(max-width:700px){.feat-grid{grid-template-columns:1fr 1fr}}
+.feat{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:24px;transition:.2s}
+.feat:hover{box-shadow:0 8px 28px rgba(0,0,0,.07)}
+.feat-emoji{font-size:28px;margin-bottom:10px}
+.feat-title{font-size:15px;font-weight:800;margin-bottom:6px}
+.feat-body{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ── COMPARE ── */
+.compare-wrap{margin-top:36px;overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+.compare{width:100%;border-collapse:collapse;background:#fff}
+.compare th,.compare td{padding:14px 18px;text-align:left;font-size:14px;border-bottom:1px solid var(--border)}
+.compare th{background:#f8faff;font-weight:800;color:var(--text2);font-size:12px;letter-spacing:.3px}
+.compare .col-eureka{background:#f5f3ff;font-weight:700;color:var(--purple)}
+.compare td:first-child{color:var(--text2)}
+.compare .yes{color:#10b981;font-weight:700}
+.compare .no{color:#94a3b8}
+.compare .maybe{color:#f59e0b;font-weight:600}
+
+/* ── TESTIMONIALS ── */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+@media(max-width:700px){.testi-grid{grid-template-columns:1fr}}
+.testi{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:28px 24px}
+.testi-body{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:20px;font-style:italic}
+.testi-body::before{content:'"';font-size:32px;color:var(--purple);opacity:.4;line-height:0;vertical-align:-12px;margin-right:4px}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.testi-name{font-size:14px;font-weight:700}
+.testi-role{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* ── FREE CTA ── */
+.free-section{background:linear-gradient(135deg,#1e1b4b,#0f172a);padding:72px 24px;text-align:center}
+.free-inner{max-width:700px;margin:0 auto}
+.free-title{font-size:clamp(28px,4vw,44px);font-weight:900;color:#fff;margin-bottom:16px}
+.free-sub{font-size:16px;color:rgba(255,255,255,.7);line-height:1.75;margin-bottom:32px}
+.free-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:36px}
+.free-tag{background:rgba(165,180,252,.15);color:#a5b4fc;border:1px solid rgba(165,180,252,.3);border-radius:30px;padding:6px 18px;font-size:13px;font-weight:700}
+.btn-white{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--purple2);padding:16px 40px;border-radius:40px;font-weight:800;font-size:16px;text-decoration:none;transition:.2s;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 14px 42px rgba(0,0,0,.3)}
+
+/* ── CONTACT ── */
+.contact-section{padding:72px 24px;max-width:900px;margin:0 auto}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;align-items:start}
+@media(max-width:700px){.contact-grid{grid-template-columns:1fr}}
+.contact-info h3{font-size:20px;font-weight:800;margin-bottom:20px}
+.contact-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.contact-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.contact-label{font-size:12px;color:var(--text3);font-weight:600;margin-bottom:4px}
+.contact-value{font-size:15px;font-weight:700;color:var(--text)}
+.contact-value a{color:var(--purple);text-decoration:none}
+.contact-value a:hover{text-decoration:underline}
+.contact-social{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.social-link{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;text-decoration:none;transition:.2s;color:var(--text)}
+.social-link:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.15)}
+.social-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.social-platform{font-size:12px;color:var(--text3);font-weight:600}
+.social-handle{font-size:15px;font-weight:700}
+
+/* ── QR CARD ── */
+.qr-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px;text-align:center}
+.qr-card h4{font-size:16px;font-weight:800;margin-bottom:6px}
+.qr-card p{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.55}
+.qr-img-wrap{background:#f8f9fa;border-radius:16px;padding:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
+.qr-img-wrap img{width:280px;height:280px;object-fit:contain;border-radius:8px}
+.qr-name{font-size:14px;font-weight:700;color:var(--text)}
+.qr-sub{font-size:12px;color:var(--text3);margin-top:4px}
+.qr-tip{display:inline-flex;align-items:center;gap:6px;background:#f0f4ff;color:var(--purple);font-size:12px;font-weight:700;padding:6px 16px;border-radius:30px;margin-top:14px}
+
+/* ── FAQ ── */
+.faq{display:flex;flex-direction:column;gap:1px;margin-top:32px;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.faq-item{background:#fff}
+.faq-q{padding:18px 24px;font-size:15px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.15s}
+.faq-q:hover{background:#f8f7ff}
+.faq-arrow{font-size:18px;color:var(--text3);transition:transform .25s;flex-shrink:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-a-inner{padding:0 24px 18px;font-size:14px;color:var(--text2);line-height:1.75}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-item.open .faq-a{max-height:200px}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:rgba(255,255,255,.55);text-align:center;padding:40px 24px;font-size:13px;line-height:2}
+footer a{color:rgba(255,255,255,.55);text-decoration:none}
+footer a:hover{color:#fff}
+footer strong{color:rgba(255,255,255,.9)}
+
+/* ── ANIMATION ── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-brand">🔬 Eureka · 个人价值创新资产盒子</div>
+  <h1>你的创新资产<br><em>值得被好好收藏</em></h1>
+  <p class="hero-sub">每次创新项目结束后，洞察、创意、方案都去哪了？<br>Eureka 帮你用 RISE 四阶段框架，把创新全过程变成可复用的个人资产。</p>
+  <div class="hero-btns">
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="btn-primary">🚀 免费开始使用</a>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/guide.html" target="_blank" class="btn-outline">📖 查看使用手册</a>
+  </div>
+  <p class="hero-note">完全免费 · 无需注册 · 数据留在本地 · 支持导出PDF/PPT</p>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#f8f7ff"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">RISE 阶段框架</div></div>
+    <div class="stat"><div class="stat-num">20+</div><div class="stat-label">结构化字段</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">项目数量无上限</div></div>
+    <div class="stat"><div class="stat-num">0元</div><div class="stat-label">完全免费使用</div></div>
+  </div>
+</div>
+
+<!-- ── PAIN POINTS ── -->
+<section class="section fade-up">
+  <div class="section-badge">😩 痛点</div>
+  <h2 class="section-title">工作坊之后，成果消失了</h2>
+  <p class="section-sub">每一次创新工作坊，团队都付出了巨大努力。但通常三周后，大多数洞察都遗失在便利贴和脑图截图里。</p>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-icon">🗒️</div>
+      <div class="pain-title">成果四散，找不到</div>
+      <div class="pain-body">PPT 在某人电脑里，便利贴照片在钉钉群里，调研笔记在飞书文档里。下次要用，翻半天也找不齐。</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📉</div>
+      <div class="pain-title">无法向上汇报</div>
+      <div class="pain-body">高层问"这次创新有什么产出"，你只能给一份千行PPT——没有可视化，没有数据，难以说服人。</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">🔄</div>
+      <div class="pain-title">重复踩坑，没有沉淀</div>
+      <div class="pain-body">新项目开始，之前发现的用户洞察、验证过的假设都没有记录，同样的弯路一走再走。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RISE FLOW ── -->
+<section class="section fade-up" style="background:#fff;max-width:100%;padding:64px 24px">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="section-badge">✦ RISE 框架</div>
+    <h2 class="section-title">四个阶段，全程留痕</h2>
+    <p class="section-sub">从用户洞察到方案验证，每一步都有结构化记录，不再遗漏任何重要发现。</p>
+    <div class="rise-flow">
+      <div class="rise-card">
+        <div class="rise-num">STAGE 01</div>
+        <div class="rise-icon">🔍</div>
+        <div class="rise-name r">Reveal</div>
+        <div class="rise-sub">发现用户真实需求</div>
+        <div class="rise-tags">
+          <span class="rise-tag r">POV</span>
+          <span class="rise-tag r">用户画像</span>
+          <span class="rise-tag r">场景地图</span>
+        </div>
+      </div>
+      <div class="rise-card">
+        <div class="rise-num">STAGE 02</div>
+        <div class="rise-icon">💡</div>
+        <div class="rise-name i">Inspire</div>
+        <div class="rise-sub">激发创意，评估筛选</div>
+        <div class="rise-tags">
+          <span class="rise-tag i">Crazy 8</span>
+          <span class="rise-tag i">创意矩阵</span>
+          <span class="rise-tag i">最佳方向</span>
+        </div>
+      </div>
+      <div class="rise-card">
+        <div class="rise-num">STAGE 03</div>
+        <div class="rise-icon">🛠️</div>
+        <div class="rise-name s">Shape</div>
+        <div class="rise-sub">打磨方案，可视化价值</div>
+        <div class="rise-tags">
+          <span class="rise-tag s">体验故事</span>
+          <span class="rise-tag s">MAP雷达图</span>
+          <span class="rise-tag s">商业价值</span>
+        </div>
+      </div>
+      <div class="rise-card">
+        <div class="rise-num">STAGE 04</div>
+        <div class="rise-icon">🎯</div>
+        <div class="rise-name e">Exam</div>
+        <div class="rise-sub">验证假设，迭代规划</div>
+        <div class="rise-tags">
+          <span class="rise-tag e">AHA雷达</span>
+          <span class="rise-tag e">电梯呈现</span>
+          <span class="rise-tag e">迭代计划</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="section fade-up">
+  <div class="section-badge">⚡ 功能</div>
+  <h2 class="section-title">让成果可视，让汇报有力</h2>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-emoji">📊</div>
+      <div class="feat-title">自动生成雷达图</div>
+      <div class="feat-body">MAP 商业价值雷达、AHA 价值验证雷达，填完字段即刻可视化，不用手动画图。</div>
+    </div>
+    <div class="feat">
+      <div class="feat-emoji">📅</div>
+      <div class="feat-title">项目甘特图</div>
+      <div class="feat-body">项目计划一键转甘特图，进度一目了然，向上汇报不再手忙脚乱。</div>
+    </div>
+    <div class="feat">
+      <div class="feat-emoji">🤖</div>
+      <div class="feat-title">AI 辅助生成</div>
+      <div class="feat-body">支持 DeepSeek / 通义千问 / OpenAI，AI 帮你写洞察、生成创意、润色方案。</div>
+    </div>
+    <div class="feat">
+      <div class="feat-emoji">📄</div>
+      <div class="feat-title">一键导出 PDF / PPT</div>
+      <div class="feat-body">9张标准幻灯片，从项目概览到商业画布，导出即可汇报，无需重新排版。</div>
+    </div>
+    <div class="feat">
+      <div class="feat-emoji">🧑‍🤝‍🧑</div>
+      <div class="feat-title">Persona Lab 集成</div>
+      <div class="feat-body">与虚拟人市场深度集成，用户画像直接同步到创新项目，无缝衔接。</div>
+    </div>
+    <div class="feat">
+      <div class="feat-emoji">🔒</div>
+      <div class="feat-title">数据完全本地</div>
+      <div class="feat-body">所有项目数据存在你的浏览器中，不经过任何服务器，安全可控，随时导出备份。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPARE ── -->
+<section class="section fade-up" style="background:#fff;max-width:100%;padding:64px 24px">
+  <div style="max-width:960px;margin:0 auto">
+    <div class="section-badge">🆚 对比</div>
+    <h2 class="section-title">为什么不用其他工具？</h2>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>功能</th>
+            <th class="col-eureka">✦ Eureka</th>
+            <th>Miro</th>
+            <th>Notion</th>
+            <th>PPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>设计思维专属结构</td><td class="col-eureka yes">✓ 原生支持</td><td class="maybe">需自建模板</td><td class="maybe">需自建模板</td><td class="no">✗</td></tr>
+          <tr><td>自动生成雷达图</td><td class="col-eureka yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="maybe">手动</td></tr>
+          <tr><td>一键导出PPT</td><td class="col-eureka yes">✓ 9张成品</td><td class="maybe">需付费</td><td class="no">✗</td><td class="yes">✓</td></tr>
+          <tr><td>AI 辅助填写</td><td class="col-eureka yes">✓ 内置</td><td class="no">✗</td><td class="maybe">需插件</td><td class="no">✗</td></tr>
+          <tr><td>完全免费</td><td class="col-eureka yes">✓ 永久</td><td class="no">基础版受限</td><td class="no">空间受限</td><td class="maybe">买断费</td></tr>
+          <tr><td>无需注册账号</td><td class="col-eureka yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="yes">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="section fade-up">
+  <div class="section-badge">💬 用户反馈</div>
+  <h2 class="section-title">他们是这样说的</h2>
+  <div class="testi-grid">
+    <div class="testi">
+      <p class="testi-body">以前做完工作坊，我只能给客户一堆截图。现在直接给 Eureka 里的项目，他们看到有雷达图、完整洞察、可下载PPT，第一反应是"这次工作坊真的有留下东西"。</p>
+      <div class="testi-author">
+        <div class="testi-avatar">L</div>
+        <div><div class="testi-name">Lisa W.</div><div class="testi-role">企业创新培训师 · 5年</div></div>
+      </div>
+    </div>
+    <div class="testi">
+      <p class="testi-body">我们团队用 Eureka 做了6个创新项目的全程记录。最有价值的是：每个项目的洞察和失败经验都沉淀下来了，新人入职可以直接看到"上次这个方向为什么没走通"。</p>
+      <div class="testi-author">
+        <div class="testi-avatar">M</div>
+        <div><div class="testi-name">Mark C.</div><div class="testi-role">创新负责人 · 互联网公司</div></div>
+      </div>
+    </div>
+    <div class="testi">
+      <p class="testi-body">设计思维课结课作业，以前大家交的PPT格式五花八门。用 Eureka 之后，产出结构一致，老师改起来轻松很多，学生作业质量肉眼可见地提高了。</p>
+      <div class="testi-author">
+        <div class="testi-avatar">R</div>
+        <div><div class="testi-name">Rachel Z.</div><div class="testi-role">高校创新创业课讲师</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FREE CTA ── -->
+<div class="free-section fade-up">
+  <div class="free-inner">
+    <h2 class="free-title">永久免费，现在就开始</h2>
+    <p class="free-sub">不需要信用卡，不需要注册账号。打开浏览器，30秒后你的第一个创新项目就建好了。</p>
+    <div class="free-tags">
+      <span class="free-tag">✓ 完全免费</span>
+      <span class="free-tag">✓ 无需注册</span>
+      <span class="free-tag">✓ 数据本地</span>
+      <span class="free-tag">✓ 导出PDF/PPT</span>
+      <span class="free-tag">✓ AI辅助</span>
+    </div>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="btn-white">🚀 免费开始使用 →</a>
+  </div>
+</div>
+
+<!-- ── CONTACT ── -->
+<section class="contact-section fade-up">
+  <div class="section-badge">📬 联系我们</div>
+  <h2 class="section-title">想聊聊？我们在这里</h2>
+  <p class="section-sub">无论是工具使用问题、合作洽谈，还是设计思维工作坊咨询，欢迎随时联系。</p>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h3>找到我们</h3>
+      <div class="contact-item">
+        <div class="contact-icon">💼</div>
+        <div>
+          <div class="contact-label">品牌</div>
+          <div class="contact-value">Eureka · 个人价值创新资产盒子</div>
+        </div>
+      </div>
+      <div class="contact-social">
+        <a href="https://www.xiaohongshu.com/user/profile/4401276995" target="_blank" class="social-link">
+          <div class="social-icon">📕</div>
+          <div>
+            <div class="social-platform">小红书</div>
+            <div class="social-handle">@4401276995</div>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--text3)">→ 关注</div>
+        </a>
+        <a href="https://space.bilibili.com/shanghaidama" target="_blank" class="social-link">
+          <div class="social-icon">📺</div>
+          <div>
+            <div class="social-platform">B站</div>
+            <div class="social-handle">@shanghaidama</div>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--text3)">→ 关注</div>
+        </a>
+        <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="social-link">
+          <div class="social-icon">🌐</div>
+          <div>
+            <div class="social-platform">产品主页</div>
+            <div class="social-handle">Eureka 个人价值创新资产盒子</div>
+          </div>
+          <div style="margin-left:auto;font-size:12px;color:var(--text3)">→ 访问</div>
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="qr-card">
+        <h4>🤝 扫码加企业微信</h4>
+        <p>工作坊设计、创新方法论落地<br>工具使用咨询，欢迎聊聊</p>
+        <div class="qr-img-wrap">
+          <img src="images/qrcode-work-wechat.png" alt="企业微信二维码 - Eureka" 
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+               style="width:280px;height:280px;object-fit:contain;border-radius:8px">
+          <div style="display:none;width:280px;height:280px;border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;text-align:center;padding:12px">
+            <div style="font-size:32px">💬</div>
+            <div style="font-weight:700">企业微信</div>
+            <div style="opacity:.8">Eureka 个人价值创新资产盒子</div>
+          </div>
+        </div>
+        <div class="qr-name">小智 · Eureka 个人价值创新资产盒子</div>
+        <div class="qr-sub">企业微信 · 扫码即可联系</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="section fade-up" id="faq" style="padding-top:0">
+  <div class="section-badge">❓ 常见问题</div>
+  <h2 class="section-title">你可能还想知道</h2>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">Eureka 真的完全免费吗？以后会收费吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">完全免费，没有付费功能，没有付费计划。AI 辅助功能需要你自己提供 API Key，但 Eureka 本身永久免费。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">我的项目数据安全吗？会上传到服务器吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">所有数据都存储在你的浏览器 localStorage 中，不会上传到任何服务器。建议定期用 JSON 导出功能备份。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">我不懂设计思维，也能用好 Eureka 吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">完全可以。每个字段都有清晰的填写说明，AI 也会帮你生成内容。即使是第一次接触设计思维，也能顺畅完成整个流程。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">AI 辅助功能如何使用？需要额外付费吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">需要你自己提供 API Key，支持 OpenAI / DeepSeek / 通义千问等兼容接口。DeepSeek 的调用成本极低，通常几分钱就能完成一次分析。Eureka 本身零费用。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">换了电脑/浏览器，数据还在吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">数据存在本地浏览器，换设备后不会自动同步。建议用"导出JSON"功能定期备份，新设备通过"导入JSON"恢复即可。</div></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">可以用于企业团队或培训课程吗？<span class="faq-arrow">⌄</span></div>
+      <div class="faq-a"><div class="faq-a-inner">完全可以。许多培训师和企业创新团队已在使用 Eureka 沉淀工作坊成果。如需定制化合作或工作坊设计支持，欢迎联系我们。</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div><strong>✦ Eureka 个人价值创新资产盒子</strong></div>
+  <div style="margin:6px 0">基于 RISE 框架 · 完全免费 · 开源</div>
+  <div>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank">立即使用</a>
+    &nbsp;·&nbsp;
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/guide.html" target="_blank">使用手册</a>
+    &nbsp;·&nbsp;
+    <a href="https://www.xiaohongshu.com/user/profile/4401276995" target="_blank">小红书</a>
+    &nbsp;·&nbsp;
+    <a href="https://space.bilibili.com/shanghaidama" target="_blank">B站</a>
+  </div>
+  <div style="margin-top:14px;font-size:11px;opacity:.5">数据存储在本地浏览器，不上传任何服务器 · © 2026 Eureka 个人价值创新资产盒子</div>
+</footer>
+
+<script>
+// Scroll animation
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') });
+}, {threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-item .faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
