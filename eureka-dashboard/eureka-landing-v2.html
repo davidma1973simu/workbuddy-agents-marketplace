@@ -165,9 +165,46 @@ footer strong{color:rgba(255,255,255,.9)}
 /* ── ANIMATION ── */
 .fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
 .fade-up.visible{opacity:1;transform:none}
+
+/* ── STICKY NAV ── */
+.sticky-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px}
+.nav-logo{font-size:17px;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--purple2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:4px}
+.nav-link{font-size:13px;font-weight:600;color:var(--text2);padding:6px 12px;border-radius:8px;text-decoration:none;transition:.15s}
+.nav-link:hover{background:#f0f4ff;color:var(--purple)}
+.nav-cta{background:var(--purple);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;transition:.2s}
+.nav-cta:hover{background:var(--purple2)}
+@media(max-width:600px){.nav-links{display:none}}
+
+/* ── FLOATING UPDATE BUTTON ── */
+.fab-wrap{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.fab-menu{display:none;flex-direction:column;gap:6px;background:#fff;border-radius:16px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid var(--border)}
+.fab-menu.show{display:flex}
+.fab-menu-item{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:.15s;white-space:nowrap;text-decoration:none}
+.fab-menu-item:hover{background:#f0f4ff;color:var(--purple)}
+.fab-btn{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(102,126,234,.4);display:flex;align-items:center;justify-content:center;transition:.2s}
+.fab-btn:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(102,126,234,.5)}
+.fab-btn.active{transform:rotate(45deg)}
 </style>
 </head>
 <body>
+
+<!-- ── STICKY NAV ── -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <div class="nav-logo">✦ Eureka</div>
+    <div class="nav-links">
+      <a href="#pain" class="nav-link">痛点</a>
+      <a href="#flow" class="nav-link">怎么用</a>
+      <a href="#features" class="nav-link">功能</a>
+      <a href="#compare" class="nav-link">对比</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#contact" class="nav-link">联系</a>
+    </div>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="nav-cta">免费使用 →</a>
+  </div>
+</nav>
 
 <!-- ── HERO ── -->
 <section class="hero">
@@ -197,31 +234,36 @@ footer strong{color:rgba(255,255,255,.9)}
 </div>
 
 <!-- ── PAIN POINTS ── -->
-<section class="section fade-up">
-  <div class="section-badge">😩 痛点</div>
-  <h2 class="section-title">工作坊之后，成果消失了</h2>
-  <p class="section-sub">每一次创新工作坊，团队都付出了巨大努力。但通常三周后，大多数洞察都遗失在便利贴和脑图截图里。</p>
-  <div class="pain-grid">
-    <div class="pain-card">
-      <div class="pain-icon">🗒️</div>
-      <div class="pain-title">成果四散，找不到</div>
-      <div class="pain-body">PPT 在某人电脑里，便利贴照片在钉钉群里，调研笔记在飞书文档里。下次要用，翻半天也找不齐。</div>
+<section class="section fade-up" id="pain">
+  <div class="section-badge">😤 真实痛点</div>
+  <h2 class="section-title">听起来很熟悉？</h2>
+  <p class="section-sub">每一个做过创新项目的人，都遇到过这些问题。Eureka 就是为了解决这些而生的。</p>
+  <div class="pain-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+    <div class="pain-card" style="border-left:4px solid #ef4444">
+      <div class="pain-emoji" style="font-size:28px;margin-bottom:12px">🧭</div>
+      <div class="pain-title" style="font-size:15px;font-weight:800;margin-bottom:8px">创新项目缺少全局引导</div>
+      <div class="pain-body" style="font-size:13px;color:var(--text2);line-height:1.65">个人和组织在创新项目中，往往缺少系统化的框架和方法论引导，不知道从哪里开始、下一步该做什么，导致项目推进缓慢甚至半途而废。</div>
     </div>
-    <div class="pain-card">
-      <div class="pain-icon">📉</div>
-      <div class="pain-title">无法向上汇报</div>
-      <div class="pain-body">高层问"这次创新有什么产出"，你只能给一份千行PPT——没有可视化，没有数据，难以说服人。</div>
+    <div class="pain-card" style="border-left:4px solid #ef4444">
+      <div class="pain-emoji" style="font-size:28px;margin-bottom:12px">📚</div>
+      <div class="pain-title" style="font-size:15px;font-weight:800;margin-bottom:8px">价值创新方法论难以掌握</div>
+      <div class="pain-body" style="font-size:13px;color:var(--text2);line-height:1.65">设计思维、价值创新等方法的书籍和课程很多，但学完之后依然不知道怎么落地实践，理论和方法之间缺少桥梁。</div>
     </div>
-    <div class="pain-card">
-      <div class="pain-icon">🔄</div>
-      <div class="pain-title">重复踩坑，没有沉淀</div>
-      <div class="pain-body">新项目开始，之前发现的用户洞察、验证过的假设都没有记录，同样的弯路一走再走。</div>
+    <div class="pain-card" style="border-left:4px solid #ef4444">
+      <div class="pain-emoji" style="font-size:28px;margin-bottom:12px">💾</div>
+      <div class="pain-title" style="font-size:15px;font-weight:800;margin-bottom:8px">创新过程数据无法保留</div>
+      <div class="pain-body" style="font-size:13px;color:var(--text2);line-height:1.65">工作坊和创新实践中的洞察、创意、方案散落在便利贴、截图、Word文档里，缺乏统一沉淀和整合，下次项目又要从零开始。</div>
+    </div>
+    <div class="pain-card" style="border-left:4px solid #ef4444">
+      <div class="pain-emoji" style="font-size:28px;margin-bottom:12px">🤖</div>
+      <div class="pain-title" style="font-size:15px;font-weight:800;margin-bottom:8px">AI和商业价值验证缺位</div>
+      <div class="pain-body" style="font-size:13px;color:var(--text2);line-height:1.65">在创新学习和实践中，没有有效利用 AI 来辅助分析和加速迭代；同时缺乏系统的商业价值验证手段，创新成果难以量化说服决策者。</div>
     </div>
   </div>
 </section>
 
 <!-- ── RISE FLOW ── -->
-<section class="section fade-up" style="background:#fff;max-width:100%;padding:64px 24px">
+<section class="section fade-up" id="flow" style="background:#fff;max-width:100%;padding:64px 24px">
   <div style="max-width:960px;margin:0 auto">
     <div class="section-badge">✦ RISE 框架</div>
     <h2 class="section-title">四个阶段，全程留痕</h2>
@@ -276,7 +318,7 @@ footer strong{color:rgba(255,255,255,.9)}
 </section>
 
 <!-- ── FEATURES ── -->
-<section class="section fade-up">
+<section class="section fade-up" id="features">
   <div class="section-badge">⚡ 功能</div>
   <h2 class="section-title">让成果可视，让汇报有力</h2>
   <div class="feat-grid">
@@ -314,7 +356,7 @@ footer strong{color:rgba(255,255,255,.9)}
 </section>
 
 <!-- ── COMPARE ── -->
-<section class="section fade-up" style="background:#fff;max-width:100%;padding:64px 24px">
+<section class="section fade-up" id="compare" style="background:#fff;max-width:100%;padding:64px 24px">
   <div style="max-width:960px;margin:0 auto">
     <div class="section-badge">🆚 对比</div>
     <h2 class="section-title">为什么不用其他工具？</h2>
@@ -388,7 +430,7 @@ footer strong{color:rgba(255,255,255,.9)}
 </div>
 
 <!-- ── CONTACT ── -->
-<section class="contact-section fade-up">
+<section class="contact-section fade-up" id="contact">
   <div class="section-badge">📬 联系我们</div>
   <h2 class="section-title">想聊聊？我们在这里</h2>
   <p class="section-sub">无论是工具使用问题、合作洽谈，还是设计思维工作坊咨询，欢迎随时联系。</p>
@@ -497,6 +539,18 @@ footer strong{color:rgba(255,255,255,.9)}
   </div>
   <div style="margin-top:14px;font-size:11px;opacity:.5">数据存储在本地浏览器，不上传任何服务器 · © 2026 Eureka 个人价值创新资产盒子</div>
 </footer>
+
+<!-- ── FLOATING UPDATE BUTTON ── -->
+<div class="fab-wrap">
+  <div class="fab-menu" id="fabMenu">
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="fab-menu-item">🚀 打开 Eureka</a>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/guide.html" target="_blank" class="fab-menu-item">📖 使用手册</a>
+    <a href="https://www.xiaohongshu.com/user/profile/4401276995" target="_blank" class="fab-menu-item">📕 小红书</a>
+    <a href="https://space.bilibili.com/shanghaidama" target="_blank" class="fab-menu-item">📺 B站</a>
+    <div class="fab-menu-item" onclick="document.getElementById('fabMenu').classList.remove('show');document.getElementById('fabBtn').classList.remove('active')">✕ 关闭</div>
+  </div>
+  <button class="fab-btn" id="fabBtn" onclick="this.classList.toggle('active');document.getElementById('fabMenu').classList.toggle('show')">✦</button>
+</div>
 
 <script>
 // Scroll animation
