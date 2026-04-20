@@ -537,8 +537,11 @@ function drawEmptyState(ctx, width, height, message) {
  * 初始化所有可视化组件
  */
 function initVisualizations(project) {
+  // 创建 ProjectStorage 实例
+  const storage = new ProjectStorage();
+  
   // 绘制甘特图
-  const projects = ProjectStorage.getAllProjects();
+  const projects = storage.getAll();
   drawGanttChart('gantt-chart', projects);
   
   // 绘制雷达图
@@ -558,10 +561,11 @@ function initVisualizations(project) {
 
 // 监听窗口大小变化，重新绘制图表
 window.addEventListener('resize', () => {
-  const projects = ProjectStorage.getAllProjects();
+  const storage = new ProjectStorage();
+  const projects = storage.getAll();
   drawGanttChart('gantt-chart', projects);
   
-  const currentProject = ProjectStorage.getProject(window.currentProjectId);
+  const currentProject = storage.getById(window.currentProjectId);
   if (currentProject) {
     if (currentProject.shape && currentProject.shape.mapValues) {
       drawMAPRadar('map-radar-chart', currentProject.shape.mapValues);

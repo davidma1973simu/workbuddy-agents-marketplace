@@ -581,7 +581,14 @@ class RevealEditor {
   saveAndNext() {
     this.saveData();
     showToast('保存成功，准备进入 Inspire 阶段');
-    // TODO: 跳转到 Inspire 编辑器
+    // 跳转到 Inspire 编辑器
+    if (typeof stageNavigator !== 'undefined') {
+      stageNavigator.navigateTo('inspire');
+    } else {
+      // fallback: 触发 stageChange 事件
+      const event = new CustomEvent('stageChange', { detail: { stage: 'inspire' } });
+      document.dispatchEvent(event);
+    }
   }
 
   /**
@@ -757,7 +764,7 @@ class RevealEditor {
           <div style="padding:16px 24px;border-top:1px solid #f1f5f9;display:flex;gap:10px;justify-content:flex-end">
             <button onclick="document.getElementById('plImportModal').remove()"
               style="padding:9px 20px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-size:14px">取消</button>
-            <button onclick="revealEditor._confirmPersonaLabImport(${JSON.stringify(personas).replace(/"/g,'&quot;')})"
+            <button id="plImportConfirmBtn"
               style="padding:9px 20px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;font-size:14px;font-weight:600">
               ✅ 导入选中角色
             </button>
@@ -766,6 +773,14 @@ class RevealEditor {
       </div>`;
 
     document.body.insertAdjacentHTML('beforeend', html);
+    
+    // 安全绑定事件（避免 XSS）
+    const confirmBtn = document.getElementById('plImportConfirmBtn');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        this._confirmPersonaLabImport(personas);
+      });
+    }
   }
 
   /**

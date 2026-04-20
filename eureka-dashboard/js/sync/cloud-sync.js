@@ -405,9 +405,10 @@ class SyncEngine {
     SyncState.update({ isSyncing: true });
     
     try {
-      // 1. 获取本地数据
-      const localProjects = getAll ? getAll() : [];
-      const localTrash = getTrash ? getTrash() : [];
+      // 1. 获取本地数据（使用 ProjectStorage 或空数组）
+      const storage = typeof ProjectStorage !== 'undefined' ? new ProjectStorage() : null;
+      const localProjects = storage ? storage.getAll() : [];
+      const localTrash = [];
       const localTimestamp = Date.now();
       
       // 2. 下载云端数据

@@ -1990,14 +1990,7 @@ const TASKS = {
         type: 'journey_table',
         hint: '在下方表格中填写每个步骤的用户行为、情绪评分和内心想法',
       },
-      {
-        id: 'key_findings',
-        label: '步骤 4：关键发现（产出物，2-4条）',
-        type: 'textarea',
-        hint: '找出令人惊讶、矛盾或反直觉的发现。好的发现往往以「奇怪的是...」「令人惊讶的是...」开头',
-        example: '例：\n【发现1】奇怪的是：新人花了 80% 的时间准备话术，但实战中 70% 的客户问题都不在话术范围内\n【发现2】令人惊讶的是：情绪最低谷不是「被客户拒绝」，而是「准备充分但客户没按剧本走」时的失控感\n【发现3】矛盾的是：公司强调「标准化话术」，但优秀销售都说「我从来不按话术讲」',
-        rows: 8,
-      },
+
     ],
     coachIntro: '用户旅程是「看见」的艺术。\n\n最常见的错误是记录「我们认为用户应该怎么做」，而不是「用户实际怎么做」。\n\n关键发现的秘诀：寻找「张力」——\n• 用户说的 vs 用户做的\n• 用户期望的 vs 实际发生的\n• 公司要求的 vs 用户真正需要的\n\n你的旅程中有没有发现这样的张力？',
   },
@@ -2038,12 +2031,17 @@ const TASKS = {
         example: '卡片式构建：填写四个关键要素，系统自动组装成完整POV',
       },
       {
-        id: 'pov_validation',
+        id: 'pov_check',
         label: '步骤 4：POV 验证检查',
-        type: 'textarea',
-        hint: '对照检查清单回答：\n1. POV 是否包含具体用户群体？\n2. 是否描述了用户想要达成的结果？\n3. 是否指出了真实挑战/限制（而非表面症状）？\n4. 是否揭示了深层需求（情感/社会层面）？\n5. 是否没有包含解决方案？',
-        example: '例：\n1. ✅ 是 — 明确指向「入职 0-30 天销售新人」\n2. ✅ 是 — 「展现专业自信并推进成交」\n3. ✅ 是 — 「过度依赖话术导致缺乏即兴应对能力」\n4. ✅ 是 — 「感到失控和自我怀疑」是情感层面需求\n5. ✅ 是 — 没有提到任何具体解决方案',
-        rows: 8,
+        type: 'pov_checklist',
+        hint: '对照检查清单，逐项确认你的 POV 是否满足以下标准。',
+        checklistItems: [
+          { key: 'item1', text: '是否包含具体用户群体？' },
+          { key: 'item2', text: '是否描述了用户想要达成的结果？' },
+          { key: 'item3', text: '是否指出了真实挑战/限制（而非表面症状）？' },
+          { key: 'item4', text: '是否揭示了深层需求（情感/社会层面）？' },
+          { key: 'item5', text: '是否没有包含解决方案？' },
+        ],
       },
     ],
     coachIntro: '这是 Reveal 阶段的最后一个任务，也是最重要的任务。\n\nPOV 的质量直接决定 Inspire 阶段能产出什么样的创意。一个好的 POV 应该让你感到「有点不舒服」—— 因为它揭示了一个你之前没看清的真相。\n\nFIND 模型的关键是：不要跳步。从事实到洞察，每一步都要有逻辑链条。\n\n你现在卡在 FIND 的哪一步？',
@@ -2243,7 +2241,6 @@ function loadState() {
   // ═══ 获取当前项目ID（直接读 localStorage，不依赖 getCurrentProjectId 函数）═══
   const rawProjId = localStorage.getItem('eureka_learn_current_v2');
   let projId = rawProjId;  // 直接用原始值
-  console.log('[loadState] 原始 projId from localStorage:', rawProjId, '(type:', typeof rawProjId + ')');
   
   // 如果没有项目，创建默认项目
   const data = getProjectsData();
@@ -2297,21 +2294,18 @@ function loadState() {
       // 关键检查：如果加载到的数据没有真实内容（tasks 全空），
       // 尝试从其他已存在的项目中找到有数据的那一个
       if (!hasRealData(state)) {
-        console.log('⚠️ 项目 ' + projId + ' 无数据，尝试查找有数据的其他项目');
         const allProjects = getProjectsData().projects;
         let found = false;
         for (const p of allProjects) {
           if (p.id === projId) continue;  // 跳过当前空项目
           const otherState = loadProjectState(p.id);
           if (otherState && hasRealData(otherState)) {
-            console.log('✅ 找到有数据的项目: ' + p.id);
             state = otherState;
             setCurrentProjectId(p.id);  // 切换到有数据的项目
             found = true;
             break;
           }
         }
-        if (!found) console.log('❌ 所有项目都没有数据');
       }
     } else {
       state = createInitialState();
@@ -2390,51 +2384,22 @@ function loadState() {
   // 启动自动保存
   startAutoSave();
   
-  // ═══ 诊断日志：加载完成后输出 state 关键信息到 console ═══
-  console.log('=== EUREKA DIAGNOSTIC: loadState() 完成 ===');
-  console.log('当前项目ID (currentProjectId):', currentProjectId);
-  console.log('localStorage eureka_learn_current_v2:', localStorage.getItem('eureka_learn_current_v2'));
-  console.log('state.currentTask:', state.currentTask);
-  console.log('state.tasks[1] status/data keys:', state.tasks[1]?.status, Object.keys(state.tasks[1]?.data || {}));
-  console.log('state.tasks[2] status/data keys:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
-  console.log('state.tasks[2].data 完整内容:', JSON.stringify(state.tasks[2]?.data || {}));
-  
   // ═══ 关键修复：如果当前项目的 tasks[2] 为空，尝试查找其他有数据的项目 ═══
   // 注意：hasRealData() 只要有任意任务有数据就返回 true，但我们要的是 tasks[2] 有数据
   const t2HasData = state.tasks[2]?.data && Object.keys(state.tasks[2].data).length > 0;
   
-  // ═══ 诊断：列出 localStorage 中所有项目存储的 tasks[2] 状态 ═══
-  console.log('📦 扫描所有 localStorage 项目存储...');
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith('eureka_project_') && !key.includes('data_v1')) {
-      try {
-        const raw = JSON.parse(localStorage.getItem(key));
-        const t2Keys = raw?.tasks ? Object.keys(raw.tasks[2]?.data || {}) : '(无tasks字段)';
-        console.log('  ' + key + ' → tasks[2].data keys:', t2Keys);
-      } catch(e) { console.log('  ' + key + ': (解析失败)'); }
-    }
-  }
-  
   if (!t2HasData && data.projects.length > 0) {
-    console.log('⚠️ 当前项目 tasks[2] 为空，开始查找其他项目...');
     for (const p of data.projects) {
       if (p.id === projId) continue;
       const otherState = loadProjectState(p.id);
       const otherT2HasData = otherState?.tasks[2]?.data && Object.keys(otherState.tasks[2].data).length > 0;
       if (otherT2HasData) {
-        console.log('✅ 切换到项目 ' + p.id + '（tasks[2] 有数据）');
         state = otherState;
         setCurrentProjectId(p.id);
         break;
       }
     }
-    console.log('切换后 state.tasks[2]:', state.tasks[2]?.status, Object.keys(state.tasks[2]?.data || {}));
-  } else {
-    console.log('✓ 当前项目 tasks[2] 已有数据，无需切换');
   }
-  
-  console.log('=== END DIAGNOSTIC ===');
   
   // 加载完成后立即保存一次
   // 目的：如果上述初始化逻辑（如 businessValue 默认值填充）修改了 state，
@@ -2554,18 +2519,6 @@ function renderTaskContent() {
   const data = state.tasks[n].data || {};
   const isDone = state.tasks[n].status === 'done';
 
-  // ═══ 诊断：渲染时输出当前任务的 data ═══
-  console.log('=== RENDER DIAGNOSTIC (任务' + n + ') ===');
-  console.log('data keys:', Object.keys(data));
-  console.log('data content:', JSON.stringify(data));
-  if (n === 2) {
-    // 任务2额外检查每个字段
-    ['background_info','current_situation','target_users','expected_outcome','challenges','constraints'].forEach(k => {
-      console.log('  ' + k + ':', JSON.stringify(data[k] || '(空)'));
-    });
-  }
-  // ═══ END DIAGNOSTIC ═══
-
   let fieldsHtml = '';
   task.fields.forEach(f => {
     const val = data[f.id] || '';
@@ -2585,6 +2538,8 @@ function renderTaskContent() {
       fieldsHtml += renderFindAnalysis(f, val);
     } else if (f.type === 'pov_builder') {
       fieldsHtml += renderPOVBuilder(f, val);
+    } else if (f.type === 'pov_checklist') {
+      fieldsHtml += renderPOVChecklist(f, val);
     } else if (f.type === 'textarea') {
       fieldsHtml += `
       <div class="form-group">
@@ -3282,6 +3237,39 @@ function bindStakeholderInputs() {
 const DEFAULT_JOURNEY_STEPS = 6;
 
 function renderJourneyTable(f, savedData) {
+  // ── 读取任务4数据（用户画像 + JTBD）──
+  const t4data = state.tasks[4]?.data || {};
+  
+  // 拼装用户画像摘要
+  let personaSummary = '';
+  if (t4data.persona_basic || t4data.persona_behavior || t4data.persona_pain) {
+    const parts = [];
+    if (t4data.persona_basic)    parts.push(t4data.persona_basic);
+    if (t4data.persona_behavior) parts.push('行为特征：' + t4data.persona_behavior);
+    if (t4data.persona_pain)     parts.push('核心痛点：' + t4data.persona_pain);
+    personaSummary = parts.join('\n');
+  } else if (t4data.user_persona) {
+    personaSummary = t4data.user_persona;
+  }
+
+  // 拼装 JTBD 摘要
+  let jtbdSummary = '';
+  if (t4data.jtbd_functional || t4data.jtbd_social || t4data.jtbd_emotional) {
+    const parts = [];
+    if (t4data.jtbd_functional) parts.push('【功能性】' + t4data.jtbd_functional);
+    if (t4data.jtbd_social)     parts.push('【社会情感性】' + t4data.jtbd_social);
+    if (t4data.jtbd_emotional)  parts.push('【个人情感性】' + t4data.jtbd_emotional);
+    jtbdSummary = parts.join('\n');
+  } else if (t4data.jtbd) {
+    jtbdSummary = t4data.jtbd;
+  }
+
+  const hasT4Data = personaSummary || jtbdSummary;
+
+  // ── 场景挑战（来自任务4的 empathy_scene，或可手动覆盖）──
+  const t5data = state.tasks[5]?.data || {};
+  const savedScene = t5data.journey_scenario || t4data.empathy_scene || '';
+
   // 解析已保存的数据
   let steps = [];
   try {
@@ -3301,6 +3289,43 @@ function renderJourneyTable(f, savedData) {
       steps.push({ step: '', do: '', feel: '', think: '' });
     }
   }
+
+  // ── 任务4来源信息卡（若有数据则显示）──
+  const t4Card = hasT4Data ? `
+  <div style="background:linear-gradient(135deg,rgba(102,126,234,.06),rgba(139,92,246,.04));border:1px solid rgba(102,126,234,.2);border-radius:12px;padding:16px 20px;margin-bottom:16px">
+    <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      <span>📋</span> 来自任务4的参考信息（自动带入，只读）
+    </div>
+    ${personaSummary ? `
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px">👤 用户画像</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7;white-space:pre-wrap;background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0">${escapeHtml(personaSummary)}</div>
+    </div>` : ''}
+    ${jtbdSummary ? `
+    <div>
+      <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px">🎯 用户任务（JTBD）</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7;white-space:pre-wrap;background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0">${escapeHtml(jtbdSummary)}</div>
+    </div>` : ''}
+  </div>` : `
+  <div style="background:#fef9c3;border:1px solid #fde047;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400e">
+    ⚠️ 未检测到任务4的用户画像/JTBD数据，请先完成任务4，或在下方手动填写场景。
+  </div>`;
+
+  // ── 场景挑战输入区（手动填写）──
+  const sceneInputHtml = `
+  <div style="margin-bottom:20px">
+    <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+      <span>🗺️</span> 步骤 1：场景挑战（时间 · 地点 · 目标 · 行动）
+      <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:4px">旅程图的背景设定</span>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px 0 0 4px;border-left:3px solid var(--purple);padding:0 0 0 4px">
+    <textarea id="field-journey_scenario"
+      rows="4"
+      placeholder="描述具体场景，例：&#10;时间：新员工入职第15-30天&#10;地点：客户拜访现场&#10;目标：独立完成第一次客户沟通&#10;行动：准备话术 → 拜访客户 → 处理异议 → 记录反馈"
+      style="width:100%;padding:12px 14px;border:none;border-radius:8px;font-size:13px;line-height:1.8;resize:vertical;background:transparent;outline:none;color:#374151"
+      oninput="saveJourneyScenario(this.value)">${escapeHtml(savedScene)}</textarea>
+    </div>
+  </div>`;
 
   // 生成表格行
   const rows = steps.map((s, i) => `
@@ -3328,6 +3353,13 @@ function renderJourneyTable(f, savedData) {
   <div class="form-group">
     <div class="form-label">${f.label} <span class="required">必填</span></div>
     <div class="form-hint">${f.hint}</div>
+    
+    ${t4Card}
+    ${sceneInputHtml}
+    
+    <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      <span>📊</span> 步骤 2：旅程地图（做 / 感 / 想）
+    </div>
     <div class="journey-table-wrapper" id="journey-table-wrapper">
       <table class="journey-table" id="journey-table">
         <thead>
@@ -3376,7 +3408,6 @@ function renderKeyFindingsAI(steps) {
   <div class="form-group" style="margin-top:24px;padding-top:24px;border-top:2px dashed var(--border)">
     <div class="form-label" style="color:var(--purple);font-size:15px">
       <span style="margin-right:6px">🔍</span>步骤 4：关键发现（产出物，2-4条）
-      <span class="required">必填</span>
     </div>
     <div class="form-hint" style="background:rgba(102,126,234,.08);padding:12px 16px;border-radius:8px;border-left:3px solid var(--purple);margin:12px 0">
       基于上方用户旅程地图的<strong>做/感/想</strong>分析，找出令人惊讶、矛盾或反直觉的发现。<br>
@@ -3391,7 +3422,8 @@ function renderKeyFindingsAI(steps) {
     </div>
     
     <div class="key-findings-actions" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()" style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)" ${steps.filter(s => s.step && s.do).length < 3 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
+      <button class="btn-ai-generate" onclick="generateKeyFindingsAI()"
+        style="background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(102,126,234,.3)">
         <span>✨</span> ${hasFindings ? '重新生成关键发现' : 'AI 基于旅程地图生成关键发现'}
       </button>
       ${hasFindings ? `<span class="task4-generated-badge" style="display:flex;align-items:center;gap:6px;background:#f0fdf4;color:#15803d;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid #86efac">✓ 已生成，可编辑</span>` : ''}
@@ -3430,20 +3462,54 @@ async function generateKeyFindingsAI() {
     return;
   }
   
+  // 读取任务4上下文（用户画像、JTBD）
+  const t4data = state.tasks[4]?.data || {};
+  const t5data = state.tasks[5]?.data || {};
+
+  let personaSummary = '';
+  if (t4data.persona_basic || t4data.persona_behavior || t4data.persona_pain) {
+    const parts = [];
+    if (t4data.persona_basic)    parts.push(t4data.persona_basic);
+    if (t4data.persona_behavior) parts.push('行为特征：' + t4data.persona_behavior);
+    if (t4data.persona_pain)     parts.push('核心痛点：' + t4data.persona_pain);
+    personaSummary = parts.join('\n');
+  } else if (t4data.user_persona) {
+    personaSummary = t4data.user_persona;
+  }
+
+  let jtbdSummary = '';
+  if (t4data.jtbd_functional || t4data.jtbd_social || t4data.jtbd_emotional) {
+    const parts = [];
+    if (t4data.jtbd_functional) parts.push('【功能性】' + t4data.jtbd_functional);
+    if (t4data.jtbd_social)     parts.push('【社会情感性】' + t4data.jtbd_social);
+    if (t4data.jtbd_emotional)  parts.push('【个人情感性】' + t4data.jtbd_emotional);
+    jtbdSummary = parts.join('\n');
+  } else if (t4data.jtbd) {
+    jtbdSummary = t4data.jtbd;
+  }
+
+  const scenarioDesc = t5data.journey_scenario || t4data.empathy_scene || '';
+
   // 构建旅程描述
   const journeyDesc = validSteps.map((s, i) => 
     `步骤 ${i + 1}：${s.step}\n- 做：${s.do}\n- 感：${s.feel || '无'}/5 分\n- 想：${s.think || '无'}`
   ).join('\n\n');
   
-  const prompt = `基于以下用户旅程地图，分析并生成 2-4 个关键发现（Key Findings）。
+  const contextSection = [
+    personaSummary ? `【目标用户】\n${personaSummary}` : '',
+    jtbdSummary    ? `【用户任务 JTBD】\n${jtbdSummary}` : '',
+    scenarioDesc   ? `【场景背景】\n${scenarioDesc}` : '',
+  ].filter(Boolean).join('\n\n');
+
+  const prompt = `基于以下信息，分析用户旅程地图并生成 2-4 个关键发现（Key Findings）。
+
+${contextSection ? contextSection + '\n\n' : ''}【用户旅程地图（做/感/想）】
+${journeyDesc}
 
 关键发现的定义：
 - 令人惊讶、矛盾或反直觉的发现
 - 好的发现往往以「奇怪的是...」「令人惊讶的是...」「矛盾的是...」开头
 - 关注情绪起伏大的地方、行为与想法不一致的地方、用户期望与实际体验的落差
-
-用户旅程地图：
-${journeyDesc}
 
 请输出 2-4 个关键发现，格式如下：
 【发现1】[开头词]：[具体发现描述]
@@ -3479,7 +3545,7 @@ ${journeyDesc}
 
 // 保存关键发现
 function saveKeyFindings() {
-  const textarea = document.getElementById('field-key_findings');
+  const textarea = document.getElementById('field-ai-key_findings');
   if (!textarea) return;
   
   if (!state.tasks[5].data) state.tasks[5].data = {};
@@ -3566,6 +3632,14 @@ function collectJourneyData() {
   });
 
   return steps;
+}
+
+// 保存场景挑战到 state
+function saveJourneyScenario(value) {
+  if (!state.tasks[5]) state.tasks[5] = { status: 'active', data: {} };
+  if (!state.tasks[5].data) state.tasks[5].data = {};
+  state.tasks[5].data.journey_scenario = value;
+  saveState();
 }
 
 // 更新隐藏字段
@@ -4814,6 +4888,112 @@ function autoFillPOVFromPreviousTasks() {
   }
 }
 
+// 格式化 POV 检查结果为可读文本（用于项目数据弹窗）
+function formatPovCheckDisplay(povCheck) {
+  if (!povCheck) return '（未填写）';
+  if (typeof povCheck === 'string' && !povCheck.startsWith('{')) {
+    // 旧文本格式直接返回
+    return povCheck;
+  }
+  // 新 JSON 格式格式化显示
+  try {
+    const obj = typeof povCheck === 'string' ? JSON.parse(povCheck) : povCheck;
+    const labels = ['用户群体', '达成结果', '真实挑战', '深层需求', '无解决方案'];
+    const keys = ['item1', 'item2', 'item3', 'item4', 'item5'];
+    const parts = keys.map((k, i) => `${labels[i]}：${obj[k] ? '✅' : '❌'}`);
+    return parts.join(' | ');
+  } catch (e) {
+    return '（格式异常）';
+  }
+}
+
+// 渲染 POV 验证检查列表（checkbox 形式）
+function renderPOVChecklist(f, savedData) {
+  // 支持 JSON 格式（新）和旧文本格式兼容
+  let saved = {};
+  if (typeof savedData === 'string' && savedData.startsWith('{')) {
+    try { saved = JSON.parse(savedData); } catch (e) { saved = {}; }
+  } else if (typeof savedData === 'object' && savedData !== null) {
+    saved = savedData;
+  }
+  const items = f.checklistItems || [];
+  const checkedCount = items.filter(i => saved[i.key]).length;
+  const allChecked = checkedCount === items.length;
+
+  const checklistHtml = items.map((item, idx) => `
+    <label class="check-item" for="povcheck-${item.key}" style="padding:12px 16px;background:#f8faff;border-radius:8px;border:1px solid var(--border);margin-bottom:8px">
+      <input type="checkbox" id="povcheck-${item.key}" ${saved[item.key] ? 'checked' : ''}
+        onchange="savePOVCheckItem('${item.key}', this.checked)">
+      <span style="font-weight:600;color:#374151;min-width:22px">${idx + 1}.</span>
+      <span style="color:#475569">${item.text}</span>
+      <span class="check-status" id="status-${item.key}" style="margin-left:auto;font-size:13px;font-weight:600;color:${saved[item.key] ? '#16a34a' : '#94a3b8'}">
+        ${saved[item.key] ? '✅ 已确认' : '⏳ 待确认'}
+      </span>
+    </label>`).join('');
+
+  const summaryColor = allChecked ? '#16a34a' : checkedCount >= 3 ? '#d97706' : '#94a3b8';
+  const summaryText = allChecked
+    ? '🎉 POV 通过全部检查，质量有保障！'
+    : checkedCount >= 3
+    ? `⚠️ 已完成 ${checkedCount}/${items.length} 项，建议完善剩余项目后再进入下一阶段`
+    : `📋 已完成 ${checkedCount}/${items.length} 项，请逐项确认`;
+
+  return `
+  <div class="form-group">
+    <div class="form-label">${f.label} <span style="font-weight:400;color:#94a3b8;font-size:13px">✓ 逐项打勾确认</span></div>
+    <div class="form-hint">${f.hint}</div>
+    <div class="slide-checklist" style="margin-top:12px">
+      ${checklistHtml}
+    </div>
+    <div style="margin-top:16px;padding:12px 16px;background:#f0fdf4;border-radius:8px;border-left:3px solid ${summaryColor};display:flex;align-items:center;gap:8px">
+      <span id="pov-check-summary" style="font-size:14px;font-weight:600;color:${summaryColor}">${summaryText}</span>
+    </div>
+  </div>`;
+}
+
+// 保存 POV 检查项到 state
+function savePOVCheckItem(key, checked) {
+  const n = 6;
+  if (!state.tasks[n]) state.tasks[n] = { status: 'in_progress', data: {} };
+  if (!state.tasks[n].data) state.tasks[n].data = {};
+
+  // 读取现有 checklist 数据
+  let povValidation = state.tasks[n].data.pov_check;
+  if (typeof povValidation === 'string' && povValidation.startsWith('{')) {
+    povValidation = JSON.parse(povValidation);
+  } else if (!povValidation || typeof povValidation !== 'object') {
+    povValidation = {};
+  }
+  povValidation[key] = checked;
+  state.tasks[n].data.pov_check = JSON.stringify(povValidation);
+
+  // 更新状态标签
+  const statusEl = document.getElementById('status-' + key);
+  if (statusEl) {
+    statusEl.textContent = checked ? '✅ 已确认' : '⏳ 待确认';
+    statusEl.style.color = checked ? '#16a34a' : '#94a3b8';
+  }
+
+  // 更新汇总
+  const items = [
+    { key: 'item1' }, { key: 'item2' }, { key: 'item3' },
+    { key: 'item4' }, { key: 'item5' },
+  ];
+  const checkedCount = items.filter(i => povValidation[i.key]).length;
+  const allChecked = checkedCount === items.length;
+  const summaryEl = document.getElementById('pov-check-summary');
+  if (summaryEl) {
+    summaryEl.textContent = allChecked
+      ? '🎉 POV 通过全部检查，质量有保障！'
+      : checkedCount >= 3
+      ? `⚠️ 已完成 ${checkedCount}/${items.length} 项，建议完善剩余项目后再进入下一阶段`
+      : `📋 已完成 ${checkedCount}/${items.length} 项，请逐项确认`;
+    summaryEl.style.color = allChecked ? '#16a34a' : checkedCount >= 3 ? '#d97706' : '#94a3b8';
+  }
+
+  saveState();
+}
+
 // 渲染 POV 卡片构建器
 function renderPOVBuilder(f, savedData) {
   // 从 savedData 或 state 中恢复数据
@@ -5490,7 +5670,7 @@ function showFeedback(data) {
   else if (n === 6) {
     const find = data.find_analysis || '';
     const pov = data.pov_statement || '';
-    const validation = data.pov_validation || '';
+    const validation = data.pov_check || '';
     // FIND 分析
     const hasF = find.includes('F（') || find.includes('F(') || find.includes('事实');
     const hasI = find.includes('I（') || find.includes('I(') || find.includes('解释');
@@ -5509,10 +5689,19 @@ function showFeedback(data) {
     else { score -= 5; items.push({ type:'warn', text:`POV 建议包含「用户+结果+挑战+需求」四要素，目前 ${povParts}/4` }); }
     if (pov.length >= 40) { items.push({ type:'good', text:'POV 描述充分，表达清晰' }); }
     else { score -= 5; items.push({ type:'warn', text:'POV 描述偏短，建议更完整地表达核心矛盾' }); }
-    // 验证检查
-    const checkCount = validation.split('✅').length - 1;
+    // 验证检查（支持新旧两种格式）
+    let checkCount = 0;
+    if (typeof validation === 'string' && validation.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(validation);
+        checkCount = Object.values(parsed).filter(Boolean).length;
+      } catch (e) { checkCount = 0; }
+    } else {
+      // 旧格式：按 ✅ 计数
+      checkCount = (validation.split('✅').length || 1) - 1;
+    }
     if (checkCount >= 4) { score += 5; items.push({ type:'good', text:'POV 验证检查通过，质量有保障' }); }
-    else { score -= 3; items.push({ type:'warn', text:'建议完成 POV 验证检查清单' }); }
+    else { score -= 3; items.push({ type:'warn', text:`POV 验证检查已完成 ${checkCount}/5 项，建议完善全部项目` }); }
     // 检查是否混入解决方案
     if (pov.includes('解决方案') || pov.includes('产品') || pov.includes('功能') || pov.includes('平台')) {
       score -= 10; items.push({ type:'bad', text:'⚠️ POV 中似乎包含解决方案，请确保 POV 只描述问题，不包含答案' });
@@ -6108,7 +6297,7 @@ function renderProjectData(phase) {
           <div class="pd-task-content">
             <div class="pd-field"><span class="pd-label">FIND分析：</span><span class="pd-value">${trunc(d6.findAnalysis, 80)}</span></div>
             <div class="pd-field"><span class="pd-label">POV描述：</span><span class="pd-value">${trunc(d6.povStatement, 80)}</span></div>
-            <div class="pd-field"><span class="pd-label">验证检查：</span><span class="pd-value">${trunc(d6.povCheck, 80)}</span></div>
+            <div class="pd-field"><span class="pd-label">验证检查：</span><span class="pd-value">${trunc(formatPovCheckDisplay(d6.povCheck), 80)}</span></div>
           </div>
         </div>
       </div>
@@ -6189,7 +6378,7 @@ function downloadTaskOutput(taskNum) {
       content = `【${taskName}】\n\n用户旅程地图：\n${journeyDisplay}\n\n关键发现：\n${taskData.key_findings || pd.reveal?.module2?.task5?.keyFindings || '（未填写）'}`;
       break;
     case 6:
-      content = `【${taskName}】\n\nFIND分析：\n${taskData.find_analysis || pd.reveal?.module2?.task6?.findAnalysis || '（未填写）'}\n\nPOV描述：\n${taskData.pov_statement || pd.reveal?.module2?.task6?.povStatement || '（未填写）'}\n\n验证检查：\n${taskData.pov_check || pd.reveal?.module2?.task6?.povCheck || '（未填写）'}`;
+      content = `【${taskName}】\n\nFIND分析：\n${taskData.find_analysis || pd.reveal?.module2?.task6?.findAnalysis || '（未填写）'}\n\nPOV描述：\n${taskData.pov_statement || pd.reveal?.module2?.task6?.povStatement || '（未填写）'}\n\n验证检查：\n${formatPovCheckDisplay(taskData.pov_check || pd.reveal?.module2?.task6?.povCheck || '')}`;
       break;
     default:
       content = '任务数据不存在';
