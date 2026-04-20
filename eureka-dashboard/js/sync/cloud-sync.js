@@ -215,32 +215,55 @@ class TencentCloudAdapter extends CloudStorageAdapter {
   }
   
   async upload(data) {
-    const { userId, projects, trash, timestamp } = data;
-    
+    // data 可以是项目数组或包含 projects 的对象
+    let projects = [];
+    let timestamp = Date.now();
+
+    if (Array.isArray(data)) {
+      // 传入的是项目数组
+      projects = data;
+    } else if (data && typeof data === 'object') {
+      // 传入的是包含 projects 的对象
+      projects = data.projects || [];
+      timestamp = data.timestamp || timestamp;
+    }
+
     try {
-      await this.db.collection('eureka_projects').doc(userId).set({
-        projects,
-        trash,
+      await this.db.collection('eureka_projects').doc(SyncState.userId).set({
+        projects: projects,
         updatedAt: timestamp,
-        _syncVersion: 1
-      });
-      
-      console.log('[Sync] Tencent Cloud upload success:', { userId, projectCount: projects.length });
+        _syncVersion: 2,
+        _device: 'web'
+      }, { upsert: true }); // 使用 upsert 确保创建或更新
+
+      console.log('[Sync] Tencent Cloud upload success:', { userId: SyncState.userId, projectCount: projects.length });
       return { success: true, timestamp };
     } catch (err) {
       console.error('[Sync] Tencent Cloud upload failed:', err);
       throw err;
     }
   }
-  
+
   async download() {
+    if (!SyncState.userId) {
+      console.warn('[Sync] No userId, cannot download');
+      return null;
+    }
+
     try {
-      const { data } = await this.db.collection('eureka_projects')
+      const result = await this.db.collection('eureka_projects')
         .doc(SyncState.userId)
         .get();
-      
-      console.log('[Sync] Tencent Cloud download:', data ? 'found' : 'not found');
-      return data || null;
+
+      const data = result.data;
+      if (data && data.projects) {
+        console.log('[Sync] Tencent Cloud download success:', { projectCount: data.projects.length });
+        return {
+          projects: data.projects,
+          timestamp: data.updatedAt || 0
+        };
+      }
+      return null;
     } catch (err) {
       console.error('[Sync] Tencent Cloud download failed:', err);
       return null;
@@ -423,18 +446,13 @@ class SyncEngine {
       // 4. 如果有变更，上传合并后的数据
       if (merged.hasChanges || force) {
         await this.adapter.upload({
-          userId: SyncState.userId,
           projects: merged.projects,
-          trash: merged.trash,
           timestamp: localTimestamp
         });
-        
+
         // 更新本地数据
-        if (saveAll && merged.projects !== localProjects) {
-          saveAll(merged.projects);
-        }
-        if (saveTrash && merged.trash !== localTrash) {
-          saveTrash(merged.trash);
+        if (storage && merged.projects !== localProjects) {
+          storage.save(merged.projects);
         }
       }
       
@@ -461,40 +479,37 @@ class SyncEngine {
     }
   }
   
-  // 合并数据（冲突解决）
+  // 合并数据（冲突解决）- 简化版：本地优先，有变更则上传
   mergeData(local, cloud) {
     // 如果云端没有数据，直接上传本地
-    if (!cloud) {
+    if (!cloud || !cloud.projects) {
       return {
-        projects: local.projects,
-        trash: local.trash,
+        projects: local.projects || [],
         hasChanges: true
       };
     }
-    
-    // 使用时间戳策略：新的覆盖旧的
+
+    // 获取本地最后更新时间
     const localTime = local.timestamp || 0;
-    const cloudTime = cloud.updatedAt || 0;
-    
+    const cloudTime = cloud.timestamp || cloud.updatedAt || 0;
+
+    // 使用时间戳策略：新的覆盖旧的
     if (localTime > cloudTime) {
-      // 本地更新，上传本地
+      // 本地更新，需要上传
       return {
-        projects: local.projects,
-        trash: local.trash,
+        projects: local.projects || [],
         hasChanges: true
       };
     } else if (cloudTime > localTime) {
-      // 云端更新，下载云端
+      // 云端更新，需要下载
       return {
         projects: cloud.projects || [],
-        trash: cloud.trash || [],
         hasChanges: true
       };
     } else {
-      // 时间相同，无需同步
+      // 时间相同，数据相同，无需同步
       return {
-        projects: local.projects,
-        trash: local.trash,
+        projects: local.projects || [],
         hasChanges: false
       };
     }
@@ -560,7 +575,7 @@ function goOffline() {
   syncEngine.goOffline();
 }
 
-// 导出
+// 导出全局
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     SyncEngine,
@@ -568,6 +583,7 @@ if (typeof module !== 'undefined' && module.exports) {
     SYNC_CONFIG,
     CloudStorageAdapter,
     WechatCloudAdapter,
+    TencentCloudAdapter,
     MockCloudAdapter,
     syncEngine,
     initSync,

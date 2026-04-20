@@ -6195,5 +6195,33 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+<!-- TCB 云同步 -->
+<script src="https://imgcache.qq.com/qcloud/tcbjs/1.10.10/tcb.js"></script>
+<script src="js/sync/cloud-sync.js"></script>
+<script src="js/sync/tcb-init.js"></script>
+<script>
+(function initTCB() {
+  var envId = 'eureka-8g0iymqr969c1b32';
+  if (typeof tcb === 'undefined') {
+    console.warn('[TCB] SDK 未加载，跳过云同步');
+    return;
+  }
+  var app = tcb.init({ env: envId });
+  var auth = app.auth();
+  auth.signInAnonymously().then(function() {
+    console.log('[TCB] 匿名登录成功');
+    var nav = document.querySelector('.nav-actions');
+    if (nav) {
+      var ind = document.createElement('div');
+      ind.style = 'display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,.2);border-radius:20px;font-size:12px;color:#fff;';
+      ind.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#10b981"></span><span>云端已连接</span>';
+      nav.appendChild(ind);
+    }
+  }).catch(function(e) {
+    console.warn('[TCB] 登录失败:', e);
+  });
+})();
+</script>
+<style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}</style>
 </body>
 </html>
