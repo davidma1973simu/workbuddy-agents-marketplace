@@ -4372,8 +4372,8 @@ function renderFindAnalysis(f, savedData) {
   if (fd.d.confirmed) activeStep = 'd';
 
   let html = `
-  <div class="form-group">
-    <div class="form-label">${f.label} <span class="required">必填</span></div>
+  <div class="form-group" id="find-analysis-section">
+    <div class="form-label">${f.label}</div>
     <div class="form-hint">${f.hint}</div>
 
     <div class="find-analysis-wrapper">
@@ -4686,7 +4686,7 @@ function updateFindAnalysisField() {
 
 // 刷新 FIND 分析组件
 function refreshFindAnalysis() {
-  const container = document.querySelector('.find-analysis-wrapper');
+  const container = document.getElementById('find-analysis-section');
   if (container) {
     const f = { id: 'find_analysis', label: '步骤 1-2：FIND 模型分析（产出物之一）', type: 'find_analysis' };
     const savedData = document.getElementById('field-find_analysis')?.value || '';
@@ -5036,7 +5036,7 @@ function renderPOVBuilder(f, savedData) {
 
   return `
   <div class="form-group">
-    <div class="form-label">${f.label} <span class="required">必填</span></div>
+    <div class="form-label">${f.label}</div>
     <div class="form-hint">${f.hint}</div>
 
     <div class="pov-builder-wrapper">
@@ -5438,8 +5438,9 @@ function submitTask() {
   const data = collectFormData();
   const n    = state.currentTask;
 
-  // 必填校验
-  const textFields = TASKS[n].fields.filter(f => f.type !== 'matrix' && f.type !== 'stakeholder');
+  // 必填校验（排除自定义渲染类型：matrix/stakeholder/find_analysis/pov_builder/pov_checklist）
+  const SKIP_TYPES = new Set(['matrix', 'stakeholder', 'find_analysis', 'pov_builder', 'pov_checklist']);
+  const textFields = TASKS[n].fields.filter(f => !SKIP_TYPES.has(f.type));
   const empty = textFields.filter(f => !data[f.id]);
   if (empty.length > 0) { showToast('请填写所有必填项后再提交'); return; }
   if (n === 1 && !state.matrixSelected) { showToast('请选择主题矩阵象限'); return; }
