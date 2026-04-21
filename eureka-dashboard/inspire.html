@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 实训系统 · Inspire 启发阶段</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --o:#f97316;--o2:#ea580c;--g:#10b981;--r:#ef4444;
+  --bg:#fff8f0;--card:#fff;--t:#1e293b;--t2:#64748b;--t3:#94a3b8;
+  --bd:#e2e8f0;--rad:14px;--sh:0 4px 24px rgba(249,115,22,.1);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+/* NAV */
+.top-nav{background:linear-gradient(135deg,var(--o),var(--o2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(249,115,22,.3)}
+.nav-left{display:flex;align-items:center;gap:14px}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;cursor:pointer;background:none;transition:.2s}
+.nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
+.nav-title{color:#fff;font-size:17px;font-weight:700}
+.nav-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+.ai-settings-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.ai-settings-btn:hover{background:rgba(255,255,255,.25)}
+/* RISE BAR */
+.rise-bar{background:#fff;border-bottom:1px solid var(--bd);padding:16px 24px;display:flex;align-items:center}
+.rise-step{display:flex;align-items:center;flex:1}
+.rise-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:.3s}
+.rise-dot.active{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.rise-dot.locked{background:var(--bd);color:var(--t3)}
+.rise-dot.done{background:var(--g);color:#fff}
+.rise-label{margin-left:8px}
+.rise-label .name{font-size:13px;font-weight:600;color:var(--t)}
+.rise-label .desc{font-size:11px;color:var(--t3)}
+.rise-conn{flex:1;height:2px;background:var(--bd);margin:0 8px;max-width:60px}
+.rise-conn.done{background:var(--g)}
+.rise-step.active .rise-label .name{color:var(--o)}
+/* LAYOUT */
+.main{display:flex;gap:24px;padding:24px;max-width:1200px;margin:0 auto}
+.sidebar{width:260px;flex-shrink:0}
+.content{flex:1;min-width:0}
+/* SIDEBAR */
+.task-nav{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+.task-nav-hdr{padding:16px 20px;border-bottom:1px solid var(--bd)}
+.task-nav-hdr .phase{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.5px}
+.task-nav-hdr .module{font-size:14px;font-weight:700;margin-top:3px}
+.task-nav-hdr .pbar{height:4px;background:var(--bd);border-radius:2px;margin-top:10px;overflow:hidden}
+.task-nav-hdr .pfill{height:100%;background:linear-gradient(90deg,var(--o),var(--o2));border-radius:2px;transition:.5s}
+.task-item{padding:14px 20px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:12px}
+.task-item:last-child{border-bottom:none}
+.task-item:hover{background:#fff8f0}
+.task-item.active{background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(234,88,12,.05));border-left:3px solid var(--o)}
+.task-item.active .t-num{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff}
+.task-item.done .t-num{background:var(--g);color:#fff}
+.t-num{width:26px;height:26px;border-radius:50%;background:var(--bd);color:var(--t2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.t-info .t-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.4}
+.t-info .t-stat{font-size:11px;color:var(--t3);margin-top:3px}
+.task-item.done .t-info .t-stat{color:var(--g)}
+.mod-sep{padding:8px 20px;background:linear-gradient(135deg,#fff8f0,#fff3e0);font-size:11px;font-weight:700;color:var(--o2);letter-spacing:.5px;border-bottom:1px solid var(--bd)}
+.dlv-tag{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;border:1px solid #86efac;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:6px}
+/* SIDEBAR CARDS */
+.s-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);margin-top:16px;overflow:hidden}
+.s-card-hdr{padding:14px 18px;display:flex;align-items:center;gap:8px}
+.s-card-hdr .icon{font-size:16px}
+.s-card-hdr .lbl{font-size:13px;font-weight:700}
+.s-card-body{padding:14px 18px}
+.s-card-item{font-size:12px;color:var(--t2);line-height:1.6;padding:6px 0;border-bottom:1px solid var(--bd)}
+.s-card-item:last-child{border-bottom:none}
+.tips-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.tips-hdr .lbl{color:#92400e}
+.pitfalls-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+.pitfalls-hdr .lbl{color:#b91c1c}
+.tips-item::before{content:"⚠️  "}
+.reveal-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.reveal-hdr .lbl{color:#1e40af}
+.reveal-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block}
+.reveal-val{font-size:12px;color:#334155;margin-top:2px;line-height:1.5}
+/* CONTENT */
+.task-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+.task-hdr{padding:24px 28px;background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(234,88,12,.04));border-bottom:1px solid var(--bd)}
+.step-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.task-hdr h2{font-size:22px;font-weight:800;color:var(--t);margin-bottom:8px}
+.task-hdr .obj{font-size:14px;color:var(--t2);line-height:1.7;padding:12px 16px;background:rgba(249,115,22,.06);border-radius:8px;border-left:3px solid var(--o);margin-bottom:10px}
+.task-hdr .dlv-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-hdr .dlv-label{font-size:12px;color:var(--t3);font-weight:600}
+.concept-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.sec-label{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.concept-text{font-size:13px;color:var(--t2);line-height:1.8;background:#fff8f0;padding:14px 16px;border-radius:8px}
+.steps-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#fff8f0;border-radius:8px;border:1px solid var(--bd)}
+.s-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-title{font-size:13px;font-weight:700;color:var(--t)}
+.s-hint{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.5}
+/* FORM */
+.form-area{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.form-group{margin-bottom:22px}
+.form-label{font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.form-hint{font-size:12px;color:var(--t3);margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#fff8f0;border-radius:6px;border-left:2px solid var(--o)}
+textarea,input[type="text"]{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--t);font-family:inherit;resize:vertical;transition:.2s;background:#fff;line-height:1.7}
+textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+textarea{min-height:90px}
+/* POV CONTEXT */
+.pov-ctx{padding:14px 28px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+.pov-ctx-title{font-size:12px;font-weight:700;color:#1e40af;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pov-ctx-content{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border-left:3px solid #3b82f6}
+.pov-ctx-empty{font-size:12px;color:#64748b;font-style:italic;padding:10px;background:#f1f5f9;border-radius:6px}
+/* POV DECOMPOSE */
+.pov-decomp{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+@media(max-width:900px){.pov-decomp{grid-template-columns:1fr}}
+.pov-col{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;transition:.2s}
+.pov-col:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(249,115,22,.1)}
+.pov-col-hdr{padding:12px 16px;display:flex;align-items:center;gap:8px}
+.pov-col-icon{font-size:18px}
+.pov-col-title{font-size:13px;font-weight:700;color:#fff}
+.pov-col-sub{font-size:11px;color:rgba(255,255,255,.85);margin-top:2px}
+.pov-col-user .pov-col-hdr{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.pov-col-trouble .pov-col-hdr{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.pov-col-goal .pov-col-hdr{background:linear-gradient(135deg,#10b981,#059669)}
+.pov-col-body{padding:14px}
+.pov-col-body textarea{min-height:100px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;padding:10px 12px;resize:vertical}
+.pov-col-body textarea:focus{border-color:var(--o);outline:none}
+.pov-ai-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--o);background:none;border:none;cursor:pointer;padding:5px 0;font-weight:600}
+.pov-ai-btn:hover{text-decoration:underline}
+/* POV PREVIEW */
+.pov-preview{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:12px;padding:18px;margin-top:16px}
+.pov-preview-title{font-size:13px;font-weight:700;color:var(--o2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pov-preview-content{font-size:14px;color:#1e293b;line-height:1.8;background:#fff;padding:14px 16px;border-radius:8px;border-left:3px solid var(--o)}
+.pov-preview-placeholder{color:#94a3b8;font-style:italic;font-size:13px}
+/* HMW DIMS */
+.hmw-dims{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.hmw-dim{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
+.hmw-dim-hdr{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:.15s}
+.hmw-dim-hdr:hover{background:#f8faff}
+.hmw-dim-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dim-pos .hmw-dim-icon{background:#dcfce7;color:#16a34a}
+.dim-neg .hmw-dim-icon{background:#fee2e2;color:#dc2626}
+.dim-asum .hmw-dim-icon{background:#dbeafe;color:#2563eb}
+.dim-wild .hmw-dim-icon{background:#fce7f3;color:#be185d}
+.hmw-dim-title{font-size:13px;font-weight:700;color:var(--t);flex:1}
+.hmw-dim-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.hmw-dim-cnt{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.dim-pos .hmw-dim-cnt{background:#dcfce7;color:#16a34a}
+.dim-neg .hmw-dim-cnt{background:#fee2e2;color:#dc2626}
+.dim-asum .hmw-dim-cnt{background:#dbeafe;color:#2563eb}
+.dim-wild .hmw-dim-cnt{background:#fce7f3;color:#be185d}
+.hmw-dim-body{padding:0 18px 16px;display:none}
+.hmw-dim-body.open{display:block;animation:fadeIn .2s ease}
+.hmw-items{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.hmw-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--bd);transition:.15s}
+.hmw-item.ai-gen{border-color:#bae6fd;background:#f0f9ff}
+.hmw-item-text{flex:1;font-size:13px;color:var(--t);line-height:1.6}
+.hmw-item-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;flex-shrink:0;transition:.15s}
+.hmw-item-del:hover{background:#fee2e2;color:var(--r)}
+.hmw-add-row{display:flex;gap:8px;margin-top:8px}
+.hmw-add-row input{flex:1;border:1.5px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:13px}
+.hmw-add-row input:focus{border-color:var(--o);outline:none}
+.hmw-add-btn{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.hmw-ai-gen{display:flex;align-items:center;gap:6px;width:100%;padding:10px 14px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:var(--o2);font-size:13px;font-weight:600;cursor:pointer;justify-content:center;transition:.2s;margin-bottom:10px}
+.hmw-ai-gen:hover{background:#ffedd5;border-color:var(--o)}
+.hmw-ai-gen:disabled{opacity:.6;cursor:not-allowed}
+/* HMW SUMMARY */
+.hmw-list{display:flex;flex-direction:column;gap:8px}
+.hmw-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;transition:.2s}
+.hmw-row:hover{border-color:var(--o);background:#fff8f0}
+.dim-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.tag-pos{background:#dcfce7;color:#16a34a}
+.tag-neg{background:#fee2e2;color:#dc2626}
+.tag-asum{background:#dbeafe;color:#2563eb}
+.tag-wild{background:#fce7f3;color:#be185d}
+.hmw-row-text{font-size:13px;color:var(--t);flex:1;line-height:1.6}
+/* SCORING TABLE */
+.score-wrap{overflow-x:auto}
+.score-tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;min-width:580px}
+.score-tbl th{padding:10px 12px;background:linear-gradient(135deg,#fff8f0,#fff3e0);text-align:left;font-size:11px;font-weight:700;color:var(--o2);border-bottom:2px solid var(--bd)}
+.score-tbl td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.score-tbl tr:last-child td{border-bottom:none}
+.score-tbl tr:hover td{background:#fff8f0}
+.sc-ctrl{display:flex;align-items:center;gap:4px}
+.sc-btn{width:26px;height:26px;border:1.5px solid var(--bd);border-radius:6px;background:#fff;color:var(--t);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.sc-btn:hover{background:var(--o);border-color:var(--o);color:#fff}
+.sc-val{width:28px;text-align:center;font-size:14px;font-weight:700;color:var(--t)}
+.sc-tot{font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;display:inline-block}
+.sc-h{background:#dcfce7;color:#16a34a}
+.sc-m{background:#fef3c7;color:#92400e}
+.sc-l{background:#fee2e2;color:#dc2626}
+.hmw-sel{width:18px;height:18px;accent-color:var(--o);cursor:pointer}
+.sel-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+/* DESIGN BRIEF */
+.brief-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
+.brief-hdr{padding:16px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;display:flex;align-items:center;gap:10px}
+.brief-hdr h3{font-size:15px;font-weight:700}
+.brief-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.brief-sec-lbl{font-size:11px;font-weight:700;color:var(--o2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.brief-val{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #fed7aa;min-height:44px}
+.brief-val[contenteditable="true"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+/* NCO */
+.nco-type-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.nco-badge{font-size:13px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:.5px}
+.nco-new{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff}
+.nco-cool{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff}
+.nco-out{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
+.nco-type-sub{font-size:12px;color:var(--t3)}
+.nco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+@media(max-width:900px){.nco-grid{grid-template-columns:1fr}}
+.nco-card{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;position:relative}
+.nco-card:hover{border-color:var(--o);transform:translateY(-2px);box-shadow:0 4px 12px rgba(249,115,22,.12)}
+.nco-card.sel{border-color:var(--o);background:#fff8f0}
+.nco-chk{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--o);color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700}
+.nco-card.sel .nco-chk{display:flex}
+.nco-ind{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#f1f5f9;color:var(--t3);display:inline-block;margin-bottom:6px}
+.nco-title{font-size:13px;font-weight:700;color:var(--t);margin-bottom:5px;line-height:1.4}
+.nco-desc{font-size:12px;color:var(--t2);line-height:1.6}
+.nco-ins{font-size:11px;color:var(--o2);background:#fff8f0;padding:6px 8px;border-radius:6px;margin-top:8px;border-left:2px solid var(--o)}
+/* IDEA GRID */
+.idea-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+@media(max-width:900px){.idea-grid{grid-template-columns:1fr}}
+.idea-card{background:#fff;border:1.5px solid var(--bd);border-radius:10px;overflow:hidden;transition:.2s}
+.idea-card:hover{border-color:var(--o)}
+.idea-hdr{padding:8px 12px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--o2)}
+.idea-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.idea-body{padding:10px 12px}
+.idea-body textarea{min-height:72px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-size:13px;resize:vertical}
+.idea-body textarea:focus{border-color:var(--o);outline:none}
+/* IDEA SCORE */
+.idea-score-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.idea-score-row{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;transition:.2s}
+.idea-score-row.best{border-color:var(--o);background:#fff8f0}
+.i-row-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.i-row-text{flex:1;font-size:13px;color:var(--t);line-height:1.6}
+.best-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;white-space:nowrap;flex-shrink:0}
+.i-dims{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.i-dim{display:flex;align-items:center;gap:6px;font-size:12px}
+.i-dim-lbl{font-weight:600;color:var(--t);font-size:11px}
+.star-row{display:flex;gap:3px}
+.star{font-size:16px;cursor:pointer;line-height:1;transition:.1s;user-select:none}
+/* AHA */
+.aha-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
+.aha-hdr{padding:16px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;display:flex;align-items:center;gap:10px}
+.aha-hdr h3{font-size:15px;font-weight:700}
+.aha-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.aha-dim{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden}
+.aha-dim-hdr{padding:12px 16px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:10px}
+.aha-dim-icon{font-size:20px}
+.aha-dim-title{font-size:13px;font-weight:700;color:#1e293b}
+.aha-dim-sub{font-size:11px;color:var(--t3)}
+.aha-dim-body{padding:14px 16px}
+.aha-dim-body textarea{min-height:72px;border:1px solid #fed7aa;border-radius:8px;padding:10px 12px;font-size:13px}
+.aha-dim-body textarea:focus{border-color:var(--o);outline:none}
+.aha-ai-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--o);background:none;border:none;cursor:pointer;font-weight:600;margin-top:6px;padding:4px 0}
+.aha-ai-btn:hover{text-decoration:underline}
+/* AI GENERATE */
+.ai-gen{margin:16px 0;padding:16px;background:#fff8f0;border-radius:10px;border:1.5px dashed #fdba74}
+.ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-gen-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.35)}
+.ai-gen-btn:disabled{opacity:.6;cursor:not-allowed}
+.ai-gen-hint{margin-top:10px;font-size:12px;color:var(--o2);text-align:center}
+.ai-res-box{margin-top:12px;padding:14px;background:#fff;border-radius:8px;border:1.5px solid #fed7aa;display:none}
+.ai-res-box.show{display:block;animation:fadeIn .3s ease}
+.ai-res-title{font-size:12px;font-weight:700;color:var(--o2);margin-bottom:8px}
+.ai-res-item{padding:10px 12px;margin-bottom:8px;background:#fff8f0;border-radius:8px;border-left:3px solid var(--o);font-size:13px;color:#334155;line-height:1.6;cursor:pointer;transition:.2s}
+.ai-res-item:hover{background:#ffedd5;border-left-color:var(--o2)}
+.ai-res-item:last-child{margin-bottom:0}
+.ai-res-apply{font-size:11px;color:var(--o);margin-top:4px}
+/* ACTION BAR */
+.action-bar{padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.save-hint{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px}
+.btn-ai{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.btn-ai:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.4)}
+.btn-sec{padding:10px 20px;background:#f1f5f9;border:1.5px solid var(--bd);border-radius:24px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:.2s}
+.btn-sec:hover{background:#e2e8f0}
+.btn-pri{padding:10px 24px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.done-banner{margin:16px 28px 0;padding:14px 18px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:10px;display:flex;align-items:center;gap:10px}
+.done-banner .icon{font-size:20px}
+.done-banner .msg{font-size:13px;font-weight:600;color:#15803d}
+.done-banner .sub{font-size:12px;color:#16a34a;margin-top:2px}
+/* TOAST */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:12px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* AI COACH PANEL */
+.ai-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:.3s}
+.ai-overlay.active{opacity:1;pointer-events:all}
+.ai-panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:75vh;display:flex;flex-direction:column;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(40px)}to{transform:translateY(0)}}
+.ai-panel-hdr{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.ai-panel-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ai-panel-close{background:var(--bd);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);transition:.2s}
+.ai-panel-close:hover{background:#e2e8f0}
+.ai-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:88%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.ai-msg.bot{background:#f8fafc;border:1px solid var(--bd);align-self:flex-start}
+.ai-msg.user{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;align-self:flex-end}
+.ai-input-row{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:8px}
+.ai-input{flex:1;border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit}
+.ai-input:focus{outline:none;border-color:var(--o)}
+.ai-send{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-send:disabled{opacity:.6;cursor:not-allowed}
+/* SETTINGS MODAL */
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:.3s}
+.m-overlay.active{opacity:1;pointer-events:all}
+.m-box{background:#fff;border-radius:20px;padding:28px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.96);transition:.3s}
+.m-overlay.active .m-box{transform:scale(1)}
+.m-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.m-sub{font-size:13px;color:var(--t3);margin-bottom:20px}
+.m-lbl{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px;display:block}
+.m-input{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;font-family:inherit}
+.m-input:focus{outline:none;border-color:var(--o)}
+.m-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+/* UTILS */
+.loading-dots{display:inline-flex;gap:4px}
+.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--o);animation:bounce .8s infinite}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease}
+
+/* PROJECT OUTPUTS SIDEBAR */
+.out-hdr{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.out-hdr .lbl{color:#6d28d9}
+.out-items{display:flex;flex-direction:column;gap:8px}
+.out-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:8px;border:1px solid var(--bd);cursor:pointer;transition:.15s;font-size:12px}
+.out-item:hover{background:#ede9fe;border-color:#c4b5fd}
+.out-item.done{border-color:#86efac;background:#f0fdf4}
+.out-item-icon{font-size:14px;flex-shrink:0}
+.out-item-info{flex:1;min-width:0}
+.out-item-name{font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.out-item-desc{font-size:10px;color:var(--t3);margin-top:1px}
+.out-item.done .out-item-name{color:#15803d}
+.out-item.done .out-item-icon{color:#10b981}
+.out-dlv-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:#ede9fe;color:#6d28d9;white-space:nowrap}
+.out-item.done .out-dlv-badge{background:#dcfce7;color:#15803d}
+.out-download-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:none;border-radius:8px;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.out-download-btn:hover{background:linear-gradient(135deg,#ddd6fe,#c4b5fd)}
+
+/* BUSINESS EVAL SIDEBAR */
+.biz-hdr{background:linear-gradient(135deg,#fff8f0,#ffedd5)}
+.biz-hdr .lbl{color:#ea580c}
+.biz-empty{font-size:12px;color:var(--t3);text-align:center;padding:12px;font-style:italic;background:#f8fafc;border-radius:8px}
+.biz-card{margin-top:10px;background:#fff;border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden}
+.biz-card-hdr{padding:10px 14px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#ea580c;border-bottom:1px solid #fed7aa}
+.biz-card-body{padding:12px 14px}
+.biz-map-row{display:flex;gap:6px;margin-top:6px}
+.biz-map-item{flex:1;padding:8px 6px;background:#fff8f0;border-radius:8px;text-align:center;border:1px solid #fed7aa}
+.biz-map-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
+.biz-map-val{font-size:11px;color:#334155;font-weight:600}
+.biz-aha-item{padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
+.biz-aha-item:last-child{border-bottom:none}
+.biz-aha-item .biz-aha-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
+.biz-aha-item .biz-aha-val{color:#334155;line-height:1.5}
+.biz-ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;margin-top:10px}
+.biz-ai-gen-btn:hover{background:#ffedd5;border-color:#f97316}
+.biz-complete-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto}
+
+/* MAP SCORING (task11 inline) */
+.map-scoring-row{background:#fff8f0;border:1.5px solid #fed7aa;border-radius:10px;padding:14px;margin-top:12px}
+.map-scoring-title{font-size:12px;font-weight:700;color:#ea580c;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.map-scoring-hint{font-size:11px;color:#92400e;margin-bottom:10px;background:#fff;border:1px solid #fed7aa;padding:6px 10px;border-radius:6px;line-height:1.5}
+.map-dim-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #fef3c7}
+.map-dim-row:last-child{border-bottom:none}
+.map-dim-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.map-dim-info{flex:1}
+.map-dim-name{font-size:13px;font-weight:700;color:#1e293b}
+.map-dim-q{font-size:11px;color:#64748b;margin-top:2px}
+.map-btn-row{display:flex;gap:4px}
+.map-btn{width:30px;height:30px;border:1.5px solid #fed7aa;border-radius:6px;background:#fff;color:#ea580c;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.map-btn:hover{background:#f97316;border-color:#f97316;color:#fff}
+.map-btn.active{background:#f97316;border-color:#f97316;color:#fff}
+.map-score-display{font-size:14px;font-weight:800;color:#ea580c;width:24px;text-align:center}
+.map-summary{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.map-summary-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.map-chip-high{background:#dcfce7;color:#16a34a}
+.map-chip-mid{background:#fef3c7;color:#92400e}
+.map-chip-low{background:#fee2e2;color:#dc2626}
+.map-chip-none{background:#f1f5f9;color:#64748b}
+
+/* BIZ MAPPING (商业映射) */
+.biz-mapping-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid #f97316;border-radius:12px;margin-top:16px;overflow:hidden}
+.biz-mapping-hdr{padding:14px 18px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;display:flex;align-items:center;gap:10px}
+.biz-mapping-hdr h3{font-size:14px;font-weight:700}
+.biz-mapping-body{padding:16px 18px}
+.biz-mapping-q{background:#fff;border:1px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.biz-mapping-q:last-child{margin-bottom:0}
+.biz-mapping-q-label{font-size:11px;font-weight:700;color:#ea580c;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.biz-mapping-q textarea{min-height:64px;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;resize:vertical;width:100%;margin-top:4px}
+.biz-mapping-q textarea:focus{border-color:#f97316;outline:none}
+.biz-mapping-ai{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:4px}
+.biz-mapping-ai:hover{background:#ffedd5;border-color:#f97316}
+
+/* OUTPUTS MODAL */
+#outputs-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center}
+#outputs-modal-overlay.hidden{display:none}
+.outputs-modal{background:#fff;border-radius:16px;width:640px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.outputs-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-bottom:1px solid #e9d5ff}
+.outputs-modal-hdr h2{font-size:16px;font-weight:700;color:#6d28d9;margin:0}
+.outputs-modal-close{width:32px;height:32px;border:none;border-radius:8px;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#6d28d9;flex-shrink:0}
+.outputs-modal-body{flex:1;overflow-y:auto;padding:20px 24px}
+.out-doc-section{margin-bottom:14px;border:1.5px solid #e9d5ff;border-radius:12px;overflow:hidden}
+.out-doc-section-header{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#f5f3ff;cursor:pointer;user-select:none}
+.out-doc-section-header:hover{background:#ede9fe}
+.out-doc-task-badge{font-size:11px;font-weight:700;color:#7c3aed;background:#ede9fe;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.out-doc-task-name{font-size:13px;font-weight:700;color:#4c1d95;flex:1}
+.out-doc-task-done{font-size:12px;color:#16a34a;font-weight:600}
+.out-doc-task-pending{font-size:12px;color:#94a3b8}
+.out-doc-section-body{padding:0}
+.out-doc-section-body.open .out-doc-content{min-height:60px;max-height:180px;overflow-y:auto;border-top:1px solid #e9d5ff;padding:10px 14px;font-size:13px;color:#334155;line-height:1.6;background:#fafafa;white-space:pre-wrap}
+.out-doc-empty{text-align:center;padding:40px 0;color:#94a3b8;font-size:14px}
+.outputs-modal-footer{padding:16px 24px;border-top:1px solid #e9d5ff}
+.out-download-all{flex:1;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;text-align:center}
+.out-download-all:hover{opacity:.9}
+
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <a class="nav-back" href="learn.html">← Reveal</a>
+    <div>
+      <div class="nav-title">💡 Inspire · 启发阶段</div>
+      <div class="nav-sub">重构创新机遇 · 跨界创意突破</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge" id="progress-badge">0/5 任务</span>
+    <button class="ai-settings-btn" onclick="openSettings()">
+      <span>⚙️</span> AI 设置
+    </button>
+  </div>
+</nav>
+
+<!-- RISE BAR -->
+<div class="rise-bar">
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='learn.html'" title="返回 Reveal 揭示阶段">
+    <div class="rise-dot done">R</div>
+    <div class="rise-label"><div class="name">Reveal</div><div class="desc">揭示阶段 ←</div></div>
+    <div class="rise-conn done"></div>
+  </div>
+  <div class="rise-step active">
+    <div class="rise-dot active">I</div>
+    <div class="rise-label"><div class="name">Inspire</div><div class="desc">启发阶段</div></div>
+    <div class="rise-conn"></div>
+  </div>
+  <div class="rise-step">
+    <div class="rise-dot locked">S</div>
+    <div class="rise-label"><div class="name">Shape</div><div class="desc">塑型阶段</div></div>
+    <div class="rise-conn"></div>
+  </div>
+  <div class="rise-step">
+    <div class="rise-dot locked">E</div>
+    <div class="rise-label"><div class="name">Exam</div><div class="desc">验证阶段</div></div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- REVEAL DATA CARD — 放在子模块1上方 -->
+    <div class="s-card" id="reveal-data-card">
+      <div class="s-card-hdr reveal-hdr">
+        <span class="icon">📌</span>
+        <span class="lbl">来自 Reveal 的关键输入</span>
+      </div>
+      <div class="s-card-body" id="reveal-data-body">
+        <div style="font-size:12px;color:#94a3b8;font-style:italic">加载中...</div>
+      </div>
+    </div>
+
+    <!-- 空行分隔 -->
+    <div style="height:12px"></div>
+
+    <div class="task-nav">
+      <div class="task-nav-hdr">
+        <div class="phase">Inspire · 启发阶段</div>
+        <div class="module">创新机遇 &amp; 创意突破</div>
+        <div class="pbar"><div class="pfill" id="sidebar-progress" style="width:0%"></div></div>
+      </div>
+      <div class="mod-sep">子模块 1 · 重构创新机遇</div>
+      <div class="task-item active" onclick="switchTask(7)" id="task-item-7">
+        <div class="t-num">7</div>
+        <div class="t-info">
+          <div class="t-name">用户问题拆解</div>
+          <div class="t-stat" id="stat-7">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" onclick="switchTask(8)" id="task-item-8">
+        <div class="t-num">8</div>
+        <div class="t-info">
+          <div class="t-name">创新机遇重构 HMW</div>
+          <div class="t-stat" id="stat-8">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" onclick="switchTask(9)" id="task-item-9">
+        <div class="t-num">9</div>
+        <div class="t-info">
+          <div class="t-name">机遇筛选细化</div>
+          <div class="t-stat" id="stat-9">未开始</div>
+          <div class="dlv-tag">📄 设计简报</div>
+        </div>
+      </div>
+      <div class="mod-sep">子模块 2 · 跨界创意突破</div>
+      <div class="task-item" onclick="switchTask(10)" id="task-item-10">
+        <div class="t-num">10</div>
+        <div class="t-info">
+          <div class="t-name">灵感启发创意</div>
+          <div class="t-stat" id="stat-10">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" onclick="switchTask(11)" id="task-item-11">
+        <div class="t-num">11</div>
+        <div class="t-info">
+          <div class="t-name">创意筛选与价值发展</div>
+          <div class="t-stat" id="stat-11">未开始</div>
+          <div class="dlv-tag">✨ AHA 价值假设</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPS CARD 已移到 sidebar 底部 -->
+
+    <!-- PROJECT OUTPUTS CARD -->
+    <div class="s-card" id="outputs-card" onclick="openOutputsModal()" style="cursor:pointer">
+      <div class="s-card-hdr out-hdr">
+        <span class="icon">📋</span>
+        <span class="lbl">项目产出文档</span>
+        <span style="margin-left:auto;font-size:11px;color:#7c3aed;opacity:.6">点击查看 →</span>
+      </div>
+      <div class="s-card-body">
+        <div class="out-items" id="out-items-list"></div>
+      </div>
+    </div>
+
+    <!-- BUSINESS EVALUATION CARD -->
+    <div class="s-card" id="biz-eval-card">
+      <div class="s-card-hdr biz-hdr">
+        <span class="icon">💰</span>
+        <span class="lbl">商业价值评估</span>
+      </div>
+      <div class="s-card-body" id="biz-eval-body">
+        <div class="biz-empty">完成任务 11 后，评估结果将显示在此</div>
+      </div>
+    </div>
+
+    <!-- COMMON PITFALLS CARD — 放在最下方（由 tips-card 迁移） -->
+    <div class="s-card" id="tips-card"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="task-card">
+      <div id="task-content"><!-- rendered by JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUTS MODAL -->
+<div id="outputs-modal-overlay" class="hidden">
+  <div class="outputs-modal">
+    <div class="outputs-modal-hdr">
+      <h2>📋 项目产出文档</h2>
+      <button class="outputs-modal-close" onclick="closeOutputsModal()">✕</button>
+    </div>
+    <div class="outputs-modal-body" id="outputs-modal-body">
+      <div class="out-doc-empty">正在加载...</div>
+    </div>
+    <div class="outputs-modal-footer">
+      <button class="out-download-all" onclick="downloadInspireDoc()">⬇️ 下载完整产出文档</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI COACH MODAL -->
+<div class="ai-overlay" id="ai-overlay">
+  <div class="ai-panel">
+    <div class="ai-panel-hdr">
+      <div class="ai-panel-title">🤖 Eureka Coach · AI 辅导</div>
+      <button class="ai-panel-close" onclick="closeAI()">✕</button>
+    </div>
+    <div class="ai-messages" id="ai-messages"></div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="ai-input" placeholder="输入问题，或直接描述你的困惑…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}">
+      <button class="ai-send" id="ai-send-btn" onclick="sendAI()">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="m-overlay" id="m-overlay">
+  <div class="m-box">
+    <div class="m-title">⚙️ AI 设置</div>
+    <div class="m-sub">配置 AI 接口，解锁智能生成与辅导功能</div>
+    <label class="m-lbl">API 地址</label>
+    <input class="m-input" id="s-api-url" placeholder="https://api.openai.com/v1/chat/completions">
+    <label class="m-lbl">API Key</label>
+    <input class="m-input" id="s-api-key" type="password" placeholder="sk-...">
+    <label class="m-lbl">模型名称</label>
+    <input class="m-input" id="s-model" placeholder="gpt-4o / deepseek-chat / qwen-plus">
+    <div class="m-footer">
+      <button class="btn-sec" onclick="closeSettings()">取消</button>
+      <button class="btn-pri" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================================================
+// STATE
+// ===================================================
+const INSPIRE_KEY = 'eureka_inspire_v1';
+const CROSS_MODULE_KEY = 'eureka_project_data_v1';
+const AI_CFG_KEY = 'eureka_ai_config';
+
+const state = {
+  currentTask: 7,
+  tasks: {},       // task data keyed by taskId
+  hmwItems: { pos:[], neg:[], asum:[], wild:[] },
+  ncoCards: {},    // generated NCO cards
+  ideaScores: {},  // idea star scores {id:{user:n,impl:n}}
+  ahaData: {}      // {eureka:'',highlight:'',progress:''}
+};
+
+// ===================================================
+// OUTPUTS MODAL
+// ===================================================
+function openOutputsModal() {
+  var overlay = document.getElementById('outputs-modal-overlay');
+  var body = document.getElementById('outputs-modal-body');
+  if (!overlay || !body) return;
+  var tasks = [
+    { id: 7,  name: '用户问题拆解',       tag: 'POV',        key: 'povData',    label: 'POV 洞察' },
+    { id: 8,  name: '创新机遇重构 HMW',   tag: 'HMW',        key: 'hmwData',    label: 'HMW 问句' },
+    { id: 9,  name: '机遇筛选细化',       tag: '设计简报',   key: 'briefData',  label: '设计简报' },
+    { id: 10, name: '灵感启发创意',       tag: '跨界创意',   key: 'ideasData',  label: '跨界灵感' },
+    { id: 11, name: '创意筛选与价值发展', tag: 'AHA+MAP',    key: 'ahaData',    label: 'AHA 价值假设' },
+  ];
+  var html = '';
+  tasks.forEach(function(t) {
+    var done = state[t.key] && state[t.key].done;
+    var content = '';
+    if (done && state[t.key]) {
+      if (t.id === 7 && state.povData && state.povData.pov) content = state.povData.pov;
+      else if (t.id === 8 && state.hmwData && state.hmwData.selected) content = state.hmwData.selected;
+      else if (t.id === 9 && state.briefData && state.briefData.brief) content = state.briefData.brief;
+      else if (t.id === 10 && state.ideasData && state.ideasData.ideas) content = state.ideasData.ideas.join('\n');
+      else if (t.id === 11 && state.ahaData) {
+        var lines = [];
+        if (state.ahaData.eureka) lines.push('顿悟：' + state.ahaData.eureka);
+        if (state.ahaData.highlight) lines.push('高光：' + state.ahaData.highlight);
+        if (state.ahaData.progress) lines.push('成就：' + state.ahaData.progress);
+        content = lines.join('\n');
+      }
+    }
+    html += '<div class="out-doc-section">' +
+      '<div class="out-doc-section-header" onclick="toggleOutSection(this)">' +
+      '<span class="out-doc-task-badge">' + t.tag + '</span>' +
+      '<span class="out-doc-task-name">任务 ' + t.id + ' · ' + t.name + '</span>' +
+      '<span class="' + (done ? 'out-doc-task-done' : 'out-doc-task-pending') + '">' +
+      (done ? '✓ 已完成' : '○ 待完成') + '</span>' +
+      '</div>' +
+      '<div class="out-doc-section-body' + (done ? ' open' : '') + '">' +
+      (done && content ? '<div class="out-doc-content">' + escHtml(content) + '</div>' :
+       (!done ? '<div class="out-doc-content" style="color:#94a3b8;font-style:italic">此任务尚未完成，无产出文档</div>' :
+        '<div class="out-doc-content" style="color:#94a3b8;font-style:italic">此任务无文本产出</div>')) +
+      '</div></div>';
+  });
+  body.innerHTML = html;
+  overlay.classList.remove('hidden');
+}
+
+function closeOutputsModal() {
+  var overlay = document.getElementById('outputs-modal-overlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function toggleOutSection(header) {
+  var body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===================================================
+// TASKS CONFIG
+// ===================================================
+const TASKS = {
+  7: {
+    title: '用户问题拆解',
+    badge: 'Inspire · 任务 7/11',
+    deliverable: '结构化 POV 问题描述',
+    objective: '基于 Reveal 阶段 task6 产出的 POV，将复杂的用户视角问题精准拆解为【用户】【麻烦】【目标】三要素，为下一步的 HMW 创新机遇重构提供清晰靶点。',
+    concept: '本任务的核心是使用"POV 用户问题"拆解框架，从纠缠交错的信息中梳理并清晰界定三大核心要素：\n\n👤 用户：我们究竟在为谁解决问题（越具体越好）\n⚡ 麻烦：场景中的任务、体验痛点、真实挑战\n🎯 目标：期望达成的结果、需求满足、改变',
+    steps: [
+      { title: '读取并审视 POV', hint: '仔细阅读 Reveal 阶段产出的 POV 陈述，识别哪些是用户，哪些是麻烦，哪些是期望目标' },
+      { title: '逐列填写拆解', hint: '分别在【用户】【麻烦】【目标】三列中提炼关键信息，避免混淆' },
+      { title: '检验完整性', hint: '确认三要素无遗漏、无混淆，为 HMW 重构提供唯一清晰的靶点' },
+    ],
+    misconceptions: [
+      '目标用户界定模糊（如"大家""用户"），未明确具体角色',
+      '把表面现象当成核心麻烦，未触及真实痛点和 Reveal 阶段的深层洞察',
+      '设定的"目标"掺杂了预设解决方案，而非用户的真实期望',
+    ],
+    coachIntro: '👋 你好！我是 Eureka Coach。\n\n任务 7 是把 Reveal 阶段的 POV（用户视角问题）解剖成三个清晰的要素：用户、麻烦、目标。\n\n最容易踩的坑：\n· 把"行政人员"写成"用户"——太宽泛了，具体到谁，在什么场景，什么阶段？\n· 把"系统慢"写成"麻烦"——这是现象，不是体验痛点，再问一层"然后呢？"\n\n你现在卡在哪里了？',
+  },
+  8: {
+    title: '创新机遇重构 HMW',
+    badge: 'Inspire · 任务 8/11',
+    deliverable: '6-8 条 HMW 创新机遇',
+    objective: '从"用户视角问题 (POV)"切换到"团队视角的创新机遇"，运用四维重构方法将挑战转化为 HMW（我们如何才能…？）句式，产出具有探索空间的创新机遇靶点。',
+    concept: '本任务使用 HMW 四维重构框架，从四个维度对 POV 进行视角切换：\n\n✅ 发挥积极：将问题的负面要素转换成正面目标\n❌ 移除否定：假设阻碍因素不存在，能做什么？\n🔄 假设转换：颠覆核心假设，从反面或中间思考\n🚀 脑洞大开：夸张化、极端化、完全异想天开',
+    steps: [
+      { title: '回顾 POV 三要素', hint: '把任务 7 的【用户】【麻烦】【目标】放在眼前，作为重构的出发点' },
+      { title: '逐维度产出 HMW', hint: '每个维度产出 1-2 条，优先开放、不判断，哪怕荒唐的也写下来' },
+      { title: '检验 HMW 质量', hint: '每条 HMW 需包含"帮助（用户）解决（问题）/满足（需求），达成（价值）"的结构' },
+    ],
+    misconceptions: [
+      '提出的 HMW 过于宽泛（如"我们如何提升用户满意度"），后续脑暴无法聚焦',
+      '过于狭窄，直接包含了预设解决方案，限制了探索空间',
+      '仅做字面句式转换，没有真正带来思维视角的破局',
+    ],
+    coachIntro: '🚀 任务 8 开始了！\n\n HMW（我们如何才能…）的神奇之处在于：它把"问题"变成了"机会"。\n\n好的 HMW 有三个特征：\n① 足够宽：不包含解决方案，留有探索空间\n② 足够聚：明确了用户 + 核心问题\n③ 令人兴奋：读完让人想马上去想解法\n\n四个维度建议从"发挥积极"和"脑洞大开"入手，最容易突破。\n\n你现在开始了哪个维度？',
+  },
+  9: {
+    title: '机遇筛选细化',
+    badge: 'Inspire · 任务 9/11',
+    deliverable: '设计简报（Design Brief）',
+    objective: '综合评估 HMW 创新机遇的用户价值、商业价值和可行性，通过打分和团队投票筛选出 1-2 个最佳 HMW，并结合 Reveal 阶段的用户画像和场景洞察，生成指导后续创意的《设计简报》。',
+    concept: '本任务包含两步：\n\n① 机遇评估矩阵：对每条 HMW 进行三维打分（用户价值 1-5 分 + 商业价值 1-5 分 + 可行性 1-5 分）\n② 设计简报生成：将最佳 HMW 与用户画像、场景挑战整合，AI 辅助生成可编辑的《设计简报》',
+    steps: [
+      { title: '打分评估 HMW', hint: '对每条 HMW 三维打分：用户价值（对用户有多重要）、商业价值（对业务有多大潜力）、可行性（短期内可实现程度）' },
+      { title: '锁定最佳 HMW', hint: '勾选 1-2 个最终入选的 HMW。注意：不要只看总分，高用户价值的颠覆性选项可能比高分的平庸选项更值得选' },
+      { title: 'AI 生成设计简报', hint: '点击"AI 生成简报草稿"，在此基础上编辑完善' },
+    ],
+    misconceptions: [
+      '盲目追求最高综合得分，错杀高用户价值但短期可行性低的颠覆性机遇',
+      '设计简报的目标价值描述过于空洞，缺乏具体评估路径',
+    ],
+    coachIntro: '📊 进入任务 9 了！\n\n筛选的目的不是找最"安全"的选项，而是找最有潜力的。\n\n一个有用的思路：\n· 高用户价值 + 低可行性 → 颠覆性机遇，值得深入探索\n· 高商业价值 + 低用户价值 → 警惕，可能是团队自嗨\n· 三维均衡高分 → 稳健选择，但不一定是突破性的\n\n你们团队现在倾向哪个方向？',
+  },
+  10: {
+    title: '灵感启发创意',
+    badge: 'Inspire · 任务 10/11',
+    deliverable: '8+ 条跨界创意想法',
+    objective: '运用三类 NCO 外部灵感源（New 新、Cool 酷、Outside 外）对设计简报和最佳 HMW 进行跨界启发，催生突破常规边界的大量原始创意想法。',
+    concept: '本任务的核心是使用 AI 产出的 NCO 灵感，通过强制交叉（将已有问题与完全无关的跨界灵感结合），强迫团队跳出固有边界：\n\n🆕 New（新兴趋势）：新技术、新商业模式、新社会现象\n😎 Cool（酷炫体验）：令人印象深刻的产品体验和设计\n🌍 Outside（跨界领域）：完全不同行业的解决逻辑',
+    steps: [
+      { title: 'AI 生成 NCO 灵感卡', hint: '基于你的设计简报，AI 会生成 9 张跨界灵感卡（每类 3 张），选择最有启发性的' },
+      { title: '强制交叉创意', hint: '选取 1-3 张灵感卡，将灵感与你的 HMW 强制结合，产出创意想法（不判断，不批评）' },
+      { title: '记录所有想法', hint: '在下方 8 个创意格中尽量填满，想法互相独立，越荒唐越好' },
+    ],
+    misconceptions: [
+      '过度追求逻辑和确定性，不敢提出荒唐的想法——这正是突破的来源',
+      '直接排斥跨界素材，认为与本行业无关——强制交叉是这个方法的核心',
+    ],
+    coachIntro: '🌈 任务 10 是最有趣的环节！\n\n重要原则：此刻严禁批判，任何想法都是有效的。\n\n使用 NCO 灵感的诀窍：\n不要问"这个灵感和我的问题有什么关系"\n而是问"如果把这个灵感强行应用到我的场景里，会发生什么疯狂的事情？"\n\n最荒唐的想法，往往隐藏着最有价值的内核。\n\n选了哪几张灵感卡？',
+  },
+  11: {
+    title: '创意筛选与价值发展',
+    badge: 'Inspire · 任务 11/11',
+    deliverable: 'AHA 价值假设',
+    objective: '使用 2x2 矩阵（用户价值 vs 可实现性）评估收敛最佳创意，并为其构建 AHA 价值假设——预判该创意将如何让用户产生"顿悟、高光、进步"三重体验飞跃。',
+    concept: '本任务包含两步：\n\n① 2x2 打分筛选：对每个创意在"用户价值"和"可实现性"两个维度进行 5 星评分，锁定 1-2 个最佳创意\n② AHA 价值假设：\n  💡 顿悟（Eureka）：用户获得"原来还可以这样"的新认知\n  ✨ 高光（Highlight）：用户产生"这感觉太棒了"的情感高峰\n  🚀 进步（Progress）：用户实现"这改变了我的生活"的真实改变',
+    steps: [
+      { title: '对所有创意打分', hint: '给每个创意分别评定用户价值（⭐1-5）和可实现性（⭐1-5）' },
+      { title: '选定最佳创意', hint: '综合打分锁定 1-2 个最佳创意——注意不要只选"安全"的，保留有潜力的颠覆性选项' },
+      { title: '构建 AHA 价值假设', hint: '为最佳创意逐一填写三重 AHA，用具体、生动的语言描述用户的体验飞跃' },
+    ],
+    misconceptions: [
+      '筛选时变成安全牌淘汰赛，错杀高用户价值的颠覆性点子',
+      'AHA 停留在产品功能描述，未能触及用户的真实情绪触发和成就感',
+    ],
+    coachIntro: '🏆 最后冲刺！任务 11 是把好想法变成"令人信服的价值故事"。\n\nAHA 的关键不是描述产品功能，而是描述用户的内心体验：\n· 不要写："用户可以更快完成任务"\n· 要写："当他第一次只用 30 秒完成了以往需要 2 小时的工作，他愣了 3 秒，然后倒吸一口凉气"\n\n感受到区别了吗？\n\n你们选出最佳创意了吗？',
+  },
+};
+
+// ===================================================
+// STORAGE
+// ===================================================
+function loadState() {
+  try {
+    const raw = localStorage.getItem(INSPIRE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state.tasks = saved.tasks || {};
+      state.hmwItems = saved.hmwItems || { pos:[], neg:[], asum:[], wild:[] };
+      state.ncoCards = saved.ncoCards || {};
+      state.ideaScores = saved.ideaScores || {};
+      state.ahaData = saved.ahaData || {};
+    }
+  } catch(e) { console.warn('loadState err', e); }
+}
+
+function saveState() {
+  localStorage.setItem(INSPIRE_KEY, JSON.stringify({
+    tasks: state.tasks,
+    hmwItems: state.hmwItems,
+    ncoCards: state.ncoCards,
+    ideaScores: state.ideaScores,
+    ahaData: state.ahaData,
+    updatedAt: new Date().toISOString()
+  }));
+  updateProgressUI();
+}
+
+function getTaskData(n) { return state.tasks[n] || {}; }
+function setTaskData(n, data) {
+  state.tasks[n] = { ...(state.tasks[n]||{}), ...data };
+  saveState();
+}
+function isTaskDone(n) { return (state.tasks[n]||{}).status === 'done'; }
+
+// Cross-module: read Reveal data
+function getRevealData() {
+  try {
+    const raw = localStorage.getItem(CROSS_MODULE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // fallback: try to read from eureka_learn_state keys
+  try {
+    const stateKey6 = 'eureka_learn_state_' + (localStorage.getItem('eureka_learn_current_v2') || 'default');
+    const raw6 = localStorage.getItem(stateKey6);
+    if (raw6) {
+      const s = JSON.parse(raw6);
+      return { reveal: { tasks: s.tasks || {} } };
+    }
+  } catch(e) {}
+  return null;
+}
+
+function getPOVFromReveal() {
+  try {
+    const d = getRevealData();
+    if (!d) return null;
+    // try eureka_project_data_v1 structure
+    if (d.reveal && d.reveal.module2 && d.reveal.module2.task6) {
+      const t6 = d.reveal.module2.task6;
+      return t6.pov_statement || t6.pov || null;
+    }
+    // try flat tasks structure
+    if (d.reveal && d.reveal.tasks) {
+      const t6data = d.reveal.tasks[6] || d.reveal.tasks['6'];
+      if (t6data) return t6data.pov_statement || t6data.pov || null;
+    }
+    // try reading eureka_learn_state directly
+    const learnKey = localStorage.getItem('eureka_learn_current_v2');
+    if (learnKey) {
+      const stateRaw = localStorage.getItem('eureka_learn_state_' + learnKey);
+      if (stateRaw) {
+        const s = JSON.parse(stateRaw);
+        const t6 = (s.tasks || {})[6] || (s.tasks || {})['6'];
+        if (t6) return t6.pov_statement || t6.pov || null;
+      }
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ===================================================
+// UI HELPERS
+// ===================================================
+function showToast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function updateProgressUI() {
+  const done = [7,8,9,10,11].filter(n => isTaskDone(n)).length;
+  document.getElementById('progress-badge').textContent = done + '/5 任务';
+  document.getElementById('sidebar-progress').style.width = (done/5*100) + '%';
+  [7,8,9,10,11].forEach(n => {
+    const st = document.getElementById('stat-' + n);
+    const item = document.getElementById('task-item-' + n);
+    if (!st || !item) return;
+    const isDone = isTaskDone(n);
+    const isActive = state.currentTask === n;
+    st.textContent = isDone ? '✅ 已完成' : (isActive ? '进行中' : '未开始');
+    item.classList.toggle('done', isDone);
+    item.classList.toggle('active', isActive && !isDone);
+  });
+}
+
+function renderRevealDataCard() {
+  const body = document.getElementById('reveal-data-body');
+  const pov = getPOVFromReveal();
+  if (!pov) {
+    body.innerHTML = '<div style="font-size:12px;color:#94a3b8;font-style:italic">未找到 Reveal 数据，<a href="learn.html" style="color:#3b82f6">先完成 Reveal 阶段</a></div>';
+    return;
+  }
+  body.innerHTML = `
+    <div class="s-card-item">
+      <span class="reveal-lbl">Task6 POV</span>
+      <div class="reveal-val">${esc(pov.substring(0,120))}${pov.length>120?'…':''}</div>
+    </div>`;
+}
+
+function renderTipsCard(n) {
+  const el = document.getElementById('tips-card');
+  const task = TASKS[n];
+  if (!task || !task.misconceptions || task.misconceptions.length === 0) { el.innerHTML=''; return; }
+  el.innerHTML = `
+    <div class="s-card-hdr tips-hdr"><span class="icon">⚠️</span><span class="lbl">常见误区</span></div>
+    <div class="s-card-body">${task.misconceptions.map(m=>`<div class="s-card-item tips-item">${esc(m)}</div>`).join('')}</div>`;
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ===================================================
+// TASK SWITCHING
+// ===================================================
+function switchTask(n) {
+  state.currentTask = n;
+  updateProgressUI();
+  renderRevealDataCard();
+  renderTipsCard(n);
+  renderTaskContent(n);
+  // reset AI coach messages
+  document.getElementById('ai-messages').innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================================================
+// TASK RENDERER (dispatcher)
+// ===================================================
+function renderTaskContent(n) {
+  const el = document.getElementById('task-content');
+  const task = TASKS[n];
+  const data = getTaskData(n);
+  const isDone = isTaskDone(n);
+
+  let inner = '';
+  // header
+  inner += `
+  <div class="task-hdr">
+    <div class="step-badge">${task.badge}</div>
+    <h2>📋 ${task.title}</h2>
+    <div class="obj">${task.objective}</div>
+    <div class="dlv-row">
+      <span class="dlv-label">📦 产出物：</span>
+      <span class="dlv-tag">✅ ${task.deliverable}</span>
+    </div>
+  </div>`;
+
+  // concept
+  inner += `
+  <div class="concept-box">
+    <div class="sec-label">💡 关键概念</div>
+    <div class="concept-text">${esc(task.concept).replace(/\\n/g,'<br>')}</div>
+  </div>`;
+
+  // steps
+  inner += `
+  <div class="steps-box">
+    <div class="sec-label">📌 操作步骤</div>
+    <div class="step-list">${task.steps.map((s,i)=>`
+    <div class="step-row">
+      <div class="s-circle">${i+1}</div>
+      <div><div class="s-title">${esc(s.title)}</div><div class="s-hint">${esc(s.hint)}</div></div>
+    </div>`).join('')}</div>
+  </div>`;
+
+  // task-specific form
+  if (n === 7) inner += renderTask7Form(data, isDone);
+  else if (n === 8) inner += renderTask8Form(data, isDone);
+  else if (n === 9) inner += renderTask9Form(data, isDone);
+  else if (n === 10) inner += renderTask10Form(data, isDone);
+  else if (n === 11) inner += renderTask11Form(data, isDone);
+
+  // done banner
+  if (isDone) {
+    inner += `<div class="done-banner"><span class="icon">🎉</span><div><div class="msg">任务已完成！</div><div class="sub">你可以随时返回修改，进度会自动保存</div></div></div>`;
+  }
+
+  // action bar
+  inner += `
+  <div class="action-bar">
+    <div class="save-hint">🔒 进度自动保存，随时可返回继续</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-ai" onclick="openAI()">💬 AI 辅导</button>
+      <button class="btn-sec" onclick="saveDraft(${n})">保存草稿</button>
+      <button class="btn-pri" onclick="submitTask(${n})">${isDone ? '✓ 更新保存' : '✓ 提交完成'}</button>
+    </div>
+  </div>`;
+
+  el.innerHTML = inner;
+  bindTaskEvents(n);
+}
+
+// ===================================================
+// TASK 7: POV DECOMPOSE
+// ===================================================
+function renderTask7Form(data, isDone) {
+  const pov = getPOVFromReveal() || '';
+  const d = data;
+  return `
+  <div class="pov-ctx">
+    <div class="pov-ctx-title">📎 来自 Reveal · Task6 的 POV</div>
+    ${pov
+      ? `<div class="pov-ctx-content">${esc(pov)}</div>`
+      : `<div class="pov-ctx-empty">未找到 Reveal 数据，请先完成 Reveal 阶段，或在下方手动输入 POV</div>`
+    }
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">手动输入 / 补充 POV <span style="font-size:11px;color:#94a3b8;font-weight:400">（若上方已自动读取，可留空）</span></div>
+      <textarea id="f7-pov-manual" rows="3" placeholder="如需修改或补充 POV，在此输入…">${esc(d.povManual||'')}</textarea>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">POV 三要素拆解</div>
+      <div class="form-hint">将 POV 拆解为三个清晰要素，为 HMW 重构提供唯一靶点</div>
+      <div class="pov-decomp">
+        <div class="pov-col pov-col-user">
+          <div class="pov-col-hdr">
+            <span class="pov-col-icon">👤</span>
+            <div>
+              <div class="pov-col-title">用户（User）</div>
+              <div class="pov-col-sub">我们在为谁解决问题</div>
+            </div>
+          </div>
+          <div class="pov-col-body">
+            <textarea id="f7-user" rows="4" placeholder="具体的目标用户是谁？包含角色、场景、阶段特征…">${esc(d.user||'')}</textarea>
+            <button class="pov-ai-btn" onclick="aiSuggestDecomp('user')">✨ AI 建议</button>
+          </div>
+        </div>
+        <div class="pov-col pov-col-trouble">
+          <div class="pov-col-hdr">
+            <span class="pov-col-icon">⚡</span>
+            <div>
+              <div class="pov-col-title">麻烦（Challenge）</div>
+              <div class="pov-col-sub">真实的体验痛点和挑战</div>
+            </div>
+          </div>
+          <div class="pov-col-body">
+            <textarea id="f7-trouble" rows="4" placeholder="核心的体验痛点是什么？不要只写表面现象…">${esc(d.trouble||'')}</textarea>
+            <button class="pov-ai-btn" onclick="aiSuggestDecomp('trouble')">✨ AI 建议</button>
+          </div>
+        </div>
+        <div class="pov-col pov-col-goal">
+          <div class="pov-col-hdr">
+            <span class="pov-col-icon">🎯</span>
+            <div>
+              <div class="pov-col-title">目标（Goal）</div>
+              <div class="pov-col-sub">期望的改变和需求满足</div>
+            </div>
+          </div>
+          <div class="pov-col-body">
+            <textarea id="f7-goal" rows="4" placeholder="用户真正期望达成什么？满足什么需求？（不要包含解决方案）">${esc(d.goal||'')}</textarea>
+            <button class="pov-ai-btn" onclick="aiSuggestDecomp('goal')">✨ AI 建议</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pov-structured-preview" class="pov-preview" style="${(d.user||d.trouble||d.goal)?'':'display:none'}">
+      <div class="pov-preview-title">📝 结构化 POV 预览</div>
+      <div class="pov-preview-content" id="pov-preview-text">${buildPOVPreview(d)}</div>
+    </div>
+  </div>`;
+}
+
+function buildPOVPreview(d) {
+  if (!d.user && !d.trouble && !d.goal) return '';
+  const user = d.user || '___';
+  const trouble = d.trouble || '___';
+  const goal = d.goal || '___';
+  return `我们的目标用户是 <strong>${esc(user)}</strong>，他们在面对 <strong>${esc(trouble)}</strong> 时感到困扰，他们真正需要的是 <strong>${esc(goal)}</strong>。`;
+}
+
+// ===================================================
+// TASK 8: HMW REBUILD
+// ===================================================
+const HMW_DIMS = [
+  { key:'pos', cls:'dim-pos', icon:'✅', title:'发挥积极', desc:'将问题的负面要素转换成正面目标来追求' },
+  { key:'neg', cls:'dim-neg', icon:'❌', title:'移除否定', desc:'假设阻碍因素不存在，我们能做什么？' },
+  { key:'asum', cls:'dim-asum', icon:'🔄', title:'假设转换', desc:'颠覆核心假设，从反向或全新角度重构' },
+  { key:'wild', cls:'dim-wild', icon:'🚀', title:'脑洞大开', desc:'极端化、夸张化、异想天开，没有边界' },
+];
+
+const TAG_MAP = { pos:'tag-pos', neg:'tag-neg', asum:'tag-asum', wild:'tag-wild' };
+const TAG_LABEL = { pos:'发挥积极', neg:'移除否定', asum:'假设转换', wild:'脑洞大开' };
+
+function renderTask8Form(data, isDone) {
+  const d7 = getTaskData(7);
+  const povContext = d7.user
+    ? `👤 ${d7.user || '—'} | ⚡ ${d7.trouble || '—'} | 🎯 ${d7.goal || '—'}`
+    : (getPOVFromReveal() || '请先完成任务 7');
+
+  const totalCount = Object.values(state.hmwItems).reduce((s,arr)=>s+arr.length,0);
+
+  return `
+  <div class="pov-ctx">
+    <div class="pov-ctx-title">🔗 基于任务7的 POV 拆解</div>
+    <div class="pov-ctx-content" style="font-size:13px">${esc(povContext)}</div>
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">HMW 四维重构 <span style="font-size:11px;font-weight:400;color:#64748b">已产出 ${totalCount} 条</span></div>
+      <div class="form-hint">点击各维度展开，AI 生成建议或手动添加 HMW。目标：每个维度 1-2 条，总计 6-8 条。</div>
+      <div class="hmw-dims" id="hmw-dims-container">
+        ${HMW_DIMS.map(dim => renderHMWDim(dim)).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">所有 HMW 汇总（${totalCount} 条）</div>
+      <div class="hmw-list" id="hmw-all-list">
+        ${renderAllHMW()}
+      </div>
+      ${totalCount === 0 ? '<div style="font-size:13px;color:#94a3b8;padding:12px;background:#f8fafc;border-radius:8px;text-align:center">请在上方四个维度中各添加 1-2 条 HMW</div>' : ''}
+    </div>
+  </div>`;
+}
+
+function renderHMWDim(dim) {
+  const items = state.hmwItems[dim.key] || [];
+  const open = items.length > 0;
+  return `
+  <div class="hmw-dim ${dim.cls}" id="hmw-dim-${dim.key}">
+    <div class="hmw-dim-hdr" onclick="toggleHMWDim('${dim.key}')">
+      <div class="hmw-dim-icon">${dim.icon}</div>
+      <div style="flex:1">
+        <div class="hmw-dim-title">${dim.title}</div>
+        <div class="hmw-dim-sub">${dim.desc}</div>
+      </div>
+      <span class="hmw-dim-cnt">${items.length} 条</span>
+    </div>
+    <div class="hmw-dim-body ${open?'open':''}" id="hmw-dim-body-${dim.key}">
+      <button class="hmw-ai-gen" onclick="generateHMWDim('${dim.key}')" id="hmw-ai-btn-${dim.key}">
+        ✨ AI 生成该维度的 HMW 建议
+      </button>
+      <div class="hmw-items" id="hmw-items-${dim.key}">
+        ${items.map((it,i) => renderHMWItem(it, dim.key, i)).join('')}
+      </div>
+      <div class="hmw-add-row">
+        <input type="text" id="hmw-input-${dim.key}" placeholder="我们如何才能…？（手动输入）" onkeydown="if(event.key==='Enter'){addHMWItem('${dim.key}')}">
+        <button class="hmw-add-btn" onclick="addHMWItem('${dim.key}')">+ 添加</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHMWItem(text, key, idx) {
+  return `<div class="hmw-item fade-in" id="hmw-item-${key}-${idx}">
+    <span class="hmw-item-text">${esc(text)}</span>
+    <button class="hmw-item-del" onclick="deleteHMWItem('${key}',${idx})">✕</button>
+  </div>`;
+}
+
+function renderAllHMW() {
+  let html = '';
+  HMW_DIMS.forEach(dim => {
+    (state.hmwItems[dim.key]||[]).forEach(text => {
+      html += `<div class="hmw-row">
+        <span class="dim-tag ${TAG_MAP[dim.key]}">${TAG_LABEL[dim.key]}</span>
+        <span class="hmw-row-text">${esc(text)}</span>
+      </div>`;
+    });
+  });
+  return html;
+}
+
+// ===================================================
+// TASK 9: SCORING + DESIGN BRIEF
+// ===================================================
+function renderTask9Form(data, isDone) {
+  const allHMW = [];
+  HMW_DIMS.forEach(dim => {
+    (state.hmwItems[dim.key]||[]).forEach(text => {
+      allHMW.push({ text, dim: dim.key });
+    });
+  });
+  const scores = data.scores || {};
+  const selected = data.selected || [];
+
+  if (allHMW.length === 0) {
+    return `<div class="form-area"><div style="padding:24px;text-align:center;color:#94a3b8">
+      <div style="font-size:32px;margin-bottom:12px">⏮️</div>
+      <div style="font-size:14px">请先完成任务 8，产出 HMW 创新机遇后再来筛选</div>
+      <button class="btn-pri" style="margin-top:16px" onclick="switchTask(8)">前往任务 8</button>
+    </div></div>`;
+  }
+
+  return `
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">HMW 评估打分矩阵</div>
+      <div class="form-hint">对每条 HMW 进行三维打分（1-5分）。勾选最终入选的 1-2 个最佳 HMW。注意：不要只看总分，高用户价值的颠覆性选项也值得入选。</div>
+      <div class="score-wrap">
+        <table class="score-tbl">
+          <thead>
+            <tr>
+              <th>✓</th><th>HMW 创新机遇</th>
+              <th>👤 用户价值</th><th>💰 商业价值</th><th>⚙️ 可行性</th><th>Σ 总分</th>
+            </tr>
+          </thead>
+          <tbody id="score-tbody">
+            ${allHMW.map((item,i) => renderScoreRow(item, i, scores, selected)).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">最佳 HMW 已选定 <span id="sel-count" style="font-size:11px;font-weight:400;color:#64748b">(${selected.length}/2)</span></div>
+      <div id="selected-hmw-display">
+        ${selected.length > 0
+          ? selected.map(i => `<div style="margin-bottom:6px"><span class="sel-badge">✓ 最佳 HMW</span> <span style="font-size:13px;margin-left:8px">${esc((allHMW[i]||{}).text||'')}</span></div>`).join('')
+          : '<div style="font-size:13px;color:#94a3b8;padding:8px">请在上方表格中勾选 1-2 个最佳 HMW</div>'
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">📄 设计简报（Design Brief）</div>
+      <div class="form-hint">AI 将基于你的 POV、最佳 HMW 和 Reveal 数据生成简报草稿，你可以直接编辑完善。</div>
+      <div class="ai-gen">
+        <button class="ai-gen-btn" onclick="generateDesignBrief()" id="gen-brief-btn">
+          ✨ AI 生成设计简报草稿
+        </button>
+        <div class="ai-gen-hint">将整合任务7的 POV 拆解 + 最佳 HMW + Reveal 阶段洞察</div>
+      </div>
+      <div class="brief-box" id="design-brief-box" style="${data.brief ? '' : 'display:none'}">
+        <div class="brief-hdr"><span style="font-size:20px">📄</span><h3>设计简报 · Design Brief</h3></div>
+        <div class="brief-body" id="brief-body">
+          ${data.brief ? renderBriefContent(data.brief) : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderScoreRow(item, i, scores, selected) {
+  const sc = scores[i] || { u:3, b:3, f:3 };
+  const total = sc.u + sc.b + sc.f;
+  const cls = total >= 12 ? 'sc-h' : total >= 8 ? 'sc-m' : 'sc-l';
+  const checked = selected.includes(i);
+  return `<tr>
+    <td><input type="checkbox" class="hmw-sel" ${checked?'checked':''} onchange="toggleHMWSelect(${i})" /></td>
+    <td style="max-width:280px;word-break:break-word">
+      <span class="dim-tag ${TAG_MAP[item.dim]}" style="margin-bottom:4px">${TAG_LABEL[item.dim]}</span><br>
+      <span style="font-size:13px">${esc(item.text)}</span>
+    </td>
+    <td>${renderScoreCtrl(i,'u',sc.u)}</td>
+    <td>${renderScoreCtrl(i,'b',sc.b)}</td>
+    <td>${renderScoreCtrl(i,'f',sc.f)}</td>
+    <td><span class="sc-tot ${cls}" id="sc-tot-${i}">${total}</span></td>
+  </tr>`;
+}
+
+function renderScoreCtrl(rowIdx, dim, val) {
+  return `<div class="sc-ctrl">
+    <button class="sc-btn" onclick="adjustScore(${rowIdx},'${dim}',-1)">−</button>
+    <span class="sc-val" id="sc-${rowIdx}-${dim}">${val}</span>
+    <button class="sc-btn" onclick="adjustScore(${rowIdx},'${dim}',1)">+</button>
+  </div>`;
+}
+
+function renderBriefContent(brief) {
+  const sections = [
+    { key:'targetUser', label:'目标用户' },
+    { key:'scenarioChallenge', label:'场景挑战' },
+    { key:'coreHMW', label:'核心创新机遇 HMW' },
+    { key:'valueGoal', label:'目标价值路径' },
+    { key:'constraints', label:'设计约束与考量' },
+  ];
+  return sections.map(s => `
+    <div class="brief-sec">
+      <div class="brief-sec-lbl">${s.label}</div>
+      <div class="brief-val" contenteditable="true" id="brief-${s.key}" oninput="updateBriefField('${s.key}')" data-key="${s.key}">${esc(brief[s.key]||'')}</div>
+    </div>`).join('');
+}
+
+// ===================================================
+// TASK 10: NCO INSPIRATION
+// ===================================================
+const NCO_TYPES = [
+  { key:'new', badge:'nco-new', label:'N · New（新兴趋势）', desc:'新技术、新商业模式、新社会现象' },
+  { key:'cool', badge:'nco-cool', label:'C · Cool（酷炫体验）', desc:'令人印象深刻的产品体验和设计' },
+  { key:'out', badge:'nco-out', label:'O · Outside（跨界领域）', desc:'完全不同行业的解决逻辑' },
+];
+
+function renderTask10Form(data, isDone) {
+  const hasNCO = data.ncoCards && Object.keys(data.ncoCards).length > 0;
+  return `
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">步骤 1：生成 NCO 跨界灵感卡</div>
+      <div class="form-hint">AI 将基于你的设计简报和最佳 HMW，生成 9 张跨界灵感卡（每类 3 张）。选择最有启发性的卡片。</div>
+      <div class="ai-gen">
+        <button class="ai-gen-btn" onclick="generateNCOCards()" id="gen-nco-btn">
+          ✨ AI 生成 NCO 灵感卡
+        </button>
+        <div class="ai-gen-hint">基于你的设计简报，生成来自 New / Cool / Outside 三个维度的跨界灵感</div>
+      </div>
+    </div>
+
+    <div id="nco-cards-container">
+      ${hasNCO ? renderNCOCards(data.ncoCards, data.selectedNCO||[]) : ''}
+    </div>
+
+    <div class="form-group" style="margin-top:16px">
+      <div class="form-label">步骤 2：强制交叉创意</div>
+      <div class="form-hint">结合选中的灵感卡与你的最佳 HMW，产出 8 个互相独立的创意想法。不评判，不批判，越荒唐越好。</div>
+      <div class="idea-grid" id="idea-grid-container">
+        ${renderIdeaGrid(data.ideas || [])}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderNCOCards(cards, selected) {
+  let html = '';
+  NCO_TYPES.forEach(type => {
+    const typeCards = (cards[type.key] || []);
+    if (typeCards.length === 0) return;
+    html += `
+    <div style="margin-bottom:20px">
+      <div class="nco-type-hdr">
+        <span class="nco-badge ${type.badge}">${type.label}</span>
+        <span class="nco-type-sub">${type.desc}</span>
+      </div>
+      <div class="nco-grid">
+        ${typeCards.map((card,i) => {
+          const id = type.key + '-' + i;
+          const isSel = selected.includes(id);
+          return `<div class="nco-card ${isSel?'sel':''}" onclick="toggleNCO('${id}')" id="nco-${id}">
+            <div class="nco-chk">✓</div>
+            <div class="nco-ind">${esc(card.industry||type.label)}</div>
+            <div class="nco-title">${esc(card.title)}</div>
+            <div class="nco-desc">${esc(card.desc)}</div>
+            <div class="nco-ins">💡 启发：${esc(card.insight)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function renderIdeaGrid(ideas) {
+  let html = '';
+  for (let i = 0; i < 8; i++) {
+    html += `<div class="idea-card">
+      <div class="idea-hdr"><div class="idea-num">${i+1}</div>创意想法 ${i+1}</div>
+      <div class="idea-body">
+        <textarea id="idea-${i}" rows="3" placeholder="${i<4?'基于灵感卡强制交叉…':'继续发散…'}" oninput="autoSaveIdea(${i})">${esc(ideas[i]||'')}</textarea>
+      </div>
+    </div>`;
+  }
+  return html;
+}
+
+// ===================================================
+// TASK 11: 2x2 SCORING + AHA
+// ===================================================
+function renderTask11Form(data, isDone) {
+  const ideas = (getTaskData(10).ideas || []).filter(t => t && t.trim());
+  const scores = state.ideaScores || {};
+  const bestIdeas = data.bestIdeas || [];
+
+  if (ideas.length === 0) {
+    return `<div class="form-area"><div style="padding:24px;text-align:center;color:#94a3b8">
+      <div style="font-size:32px;margin-bottom:12px">⏮️</div>
+      <div style="font-size:14px">请先完成任务 10，产出创意想法后再来筛选</div>
+      <button class="btn-pri" style="margin-top:16px" onclick="switchTask(10)">前往任务 10</button>
+    </div></div>`;
+  }
+
+  return `
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">步骤 1：2x2 矩阵打分筛选</div>
+      <div class="form-hint">对每个创意分别评定"用户价值"和"可实现性"（1-5星）。综合评估后勾选 1-2 个最佳创意。</div>
+      <div class="idea-score-list" id="idea-score-list">
+        ${ideas.map((text,i) => renderIdeaScoreRow(text, i, scores, bestIdeas, state.mapScores)).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">步骤 2：AHA 价值假设</div>
+      <div class="form-hint">为最佳创意构建三重 AHA 价值假设。用具体、生动的语言描述用户的体验飞跃——不是功能，是感受。</div>
+      <div class="aha-box" id="aha-box">
+        <div class="aha-hdr"><span style="font-size:20px">✨</span><h3>AHA 价值假设</h3></div>
+        <div class="aha-body">
+          <div class="form-group" style="margin-bottom:10px">
+            <div style="font-size:12px;color:#64748b;margin-bottom:6px">针对哪个最佳创意？</div>
+            <input type="text" id="aha-idea-ref" placeholder="简述最佳创意标题…" value="${esc(state.ahaData.ideaRef||'')}" oninput="updateAHA('ideaRef',this.value)">
+          </div>
+          ${renderAHADims()}
+          <div class="ai-gen" style="margin-top:0">
+            <button class="ai-gen-btn" onclick="generateAHA()" id="gen-aha-btn">
+              ✨ AI 生成 AHA 价值假设建议
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">步骤 3：商业映射 · 价值变现</div>
+      <div class="form-hint">当用户获得 AHA 体验飞跃后，商业价值如何变现？回答以下三个问题，形成完整的"用户价值 → 商业价值"闭环。</div>
+      <div class="biz-mapping-box" id="biz-mapping-box">
+        <div class="biz-mapping-hdr"><span style="font-size:18px">💸</span><h3>商业映射 · 价值变现</h3></div>
+        <div class="biz-mapping-body">
+          <div class="biz-mapping-q">
+            <div class="biz-mapping-q-label">💵 价值变现</div>
+            <textarea id="biz-q1" rows="3" placeholder="当用户体验到前所未有的"高光时刻"时，他们愿意为此支付更高的溢价吗？能转化为真实的商业利润吗？" oninput="updateBizMapping('q1',this.value)">${esc(state.bizMapping.q1||'')}</textarea>
+          </div>
+          <div class="biz-mapping-q">
+            <div class="biz-mapping-q-label">📣 口碑传播</div>
+            <textarea id="biz-q2" rows="3" placeholder="他们会主动传播和显摆自己获得的价值吗？能形成用户自发的口碑效应吗？" oninput="updateBizMapping('q2',this.value)">${esc(state.bizMapping.q2||'')}</textarea>
+          </div>
+          <div class="biz-mapping-q">
+            <div class="biz-mapping-q-label">🚀 增长引擎</div>
+            <textarea id="biz-q3" rows="3" placeholder="综合 MAP + 商业映射，这个创意能否成为我们业务的持续增长引擎？说说你的判断和理由。" oninput="updateBizMapping('q3',this.value)">${esc(state.bizMapping.q3||'')}</textarea>
+          </div>
+          <button class="biz-mapping-ai" onclick="generateBizMapping()">✨ AI 辅助商业映射分析</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderIdeaScoreRow(text, i, scores, bestIdeas, mapScores) {
+  const sc = scores[i] || { user:3, impl:3 };
+  const isBest = bestIdeas.includes(i);
+  const mp = mapScores[i] || { m:3, a:3, p:3 };
+  return `<div class="idea-score-row ${isBest?'best':''}" id="idea-row-${i}">
+    <div class="i-row-top">
+      <span class="i-row-text">${esc(text)}</span>
+      ${isBest ? '<span class="best-badge">⭐ 最佳创意</span>' : ''}
+    </div>
+    <div class="i-dims">
+      <div class="i-dim">
+        <span class="i-dim-lbl">👤 用户价值</span>
+        <div class="star-row" id="stars-user-${i}">
+          ${renderStars('user', i, sc.user)}
+        </div>
+      </div>
+      <div class="i-dim">
+        <span class="i-dim-lbl">⚙️ 可实现性</span>
+        <div class="star-row" id="stars-impl-${i}">
+          ${renderStars('impl', i, sc.impl)}
+        </div>
+      </div>
+      <div>
+        <input type="checkbox" class="hmw-sel" ${isBest?'checked':''} onchange="toggleBestIdea(${i})" title="选为最佳创意">
+        <span style="font-size:12px;color:#64748b;margin-left:4px">选为最佳</span>
+      </div>
+    </div>
+    ${isBest ? renderMAPScoring(i, mp) : ''}
+  </div>`;
+}
+
+function renderMAPScoring(i, mp) {
+  const dims = [
+    { key:'m', icon:'📈', name:'M 市场潜力', q:'打开全新细分大市场，还是只能吸引一小撮猎奇者？' },
+    { key:'a', icon:'📣', name:'A 用户获取', q:'够"酷"或"新"吗？能否自带传播话题，降低获客成本？' },
+    { key:'p', icon:'🛡️', name:'P 竞争优势', q:'从"界外"借来的点子，现有竞争对手能否短期内看懂并复制？' },
+  ];
+  return `
+  <div class="map-scoring-row">
+    <div class="map-scoring-title">💰 MAP 商业价值评分（针对最佳创意）</div>
+    <div class="map-scoring-hint">🎯 M、A、P 各 1-5 分，评估这个创意的商业价值潜力。分数越高代表商业价值越大。</div>
+    ${dims.map(d => `
+    <div class="map-dim-row">
+      <div class="map-dim-icon">${d.icon}</div>
+      <div class="map-dim-info">
+        <div class="map-dim-name">${d.name}</div>
+        <div class="map-dim-q">${d.q}</div>
+      </div>
+      <div class="map-btn-row">
+        ${[1,2,3,4,5].map(s => `<button class="map-btn ${mp[d.key]===s?'active':''}" onclick="setMapScore(${i},'${d.key}',${s})">${s}</button>`).join('')}
+      </div>
+      <div class="map-score-display">${mp[d.key]||'-'}</div>
+    </div>`).join('')}
+    <div class="map-summary">
+      ${['m','a','p'].map(k => {
+        const v = mp[k]||0;
+        const cls = v>=4?'map-chip-high':v>=3?'map-chip-mid':v>=1?'map-chip-low':'map-chip-none';
+        const label = {m:'市场潜力',a:'用户获取',p:'竞争优势'}[k];
+        return `<span class="map-summary-chip ${cls}">${label}: ${v||'-'}</span>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderStars(dim, rowIdx, val) {
+  let html = '';
+  for (let s = 1; s <= 5; s++) {
+    html += `<span class="star" onclick="setStar('${dim}',${rowIdx},${s})">${s <= val ? '⭐' : '☆'}</span>`;
+  }
+  return html;
+}
+
+function renderAHADims() {
+  const AHA = [
+    { key:'eureka', icon:'💡', title:'顿悟（Eureka）', sub:'"原来还可以这样"——用户获得的新认知和视角转变' },
+    { key:'highlight', icon:'✨', title:'高光（Highlight）', sub:'"这感觉太棒了"——用户的情感高峰和愉悦瞬间' },
+    { key:'progress', icon:'🚀', title:'进步（Progress）', sub:'"这改变了我的生活"——用户实现的真实改变和成就感' },
+  ];
+  return AHA.map(dim => `
+  <div class="aha-dim">
+    <div class="aha-dim-hdr">
+      <span class="aha-dim-icon">${dim.icon}</span>
+      <div>
+        <div class="aha-dim-title">${dim.title}</div>
+        <div class="aha-dim-sub">${dim.sub}</div>
+      </div>
+    </div>
+    <div class="aha-dim-body">
+      <textarea id="aha-${dim.key}" rows="3" placeholder="具体描述用户的体验飞跃，用第一人称或场景化语言…" oninput="updateAHA('${dim.key}',this.value)">${esc(state.ahaData[dim.key]||'')}</textarea>
+      <button class="aha-ai-btn" onclick="generateAHADim('${dim.key}')">✨ AI 补充建议</button>
+    </div>
+  </div>`).join('');
+}
+
+// ===================================================
+// MAP & BIZ MAPPING
+// ===================================================
+function setMapScore(ideaIdx, key, val) {
+  state.mapScores[ideaIdx] = state.mapScores[ideaIdx] || { m:3, a:3, p:3 };
+  state.mapScores[ideaIdx][key] = val;
+  // Re-render just the map scoring row
+  const row = document.getElementById('idea-row-' + ideaIdx);
+  if (row) {
+    const mapRow = row.querySelector('.map-scoring-row');
+    if (mapRow) {
+      mapRow.outerHTML = renderMAPScoring(ideaIdx, state.mapScores[ideaIdx]);
+    }
+  }
+  saveInspireData();
+  renderSidebarBizEval();
+}
+
+function updateBizMapping(key, val) {
+  state.bizMapping[key] = val;
+  saveInspireData();
+  renderSidebarBizEval();
+}
+
+// ===================================================
+// SIDEBAR: Project Outputs
+// ===================================================
+function renderSidebarOutputs() {
+  const el = document.getElementById('out-items-list');
+  if (!el) return;
+  const TASKS_INFO = [
+    { n:7, name:'用户问题拆解', dlv:'POV 问题陈述', icon:'📝' },
+    { n:8, name:'HMW 重构', dlv:'HMW 句式列表', icon:'🔄' },
+    { n:9, name:'机遇筛选细化', dlv:'📄 设计简报', icon:'📊' },
+    { n:10, name:'灵感启发创意', dlv:'创意想法', icon:'💡' },
+    { n:11, name:'创意筛选与价值发展', dlv:'✨ AHA + 💰 MAP', icon:'🏆' },
+  ];
+  el.innerHTML = TASKS_INFO.map(t => {
+    const done = isTaskDone(t.n);
+    return `<div class="out-item ${done?'done':''}" onclick="switchTask(${t.n})">
+      <div class="out-item-icon">${t.icon}</div>
+      <div class="out-item-info">
+        <div class="out-item-name">T${t.n} ${t.name}</div>
+        <div class="out-item-desc">${done?'已完成':'未完成'}</div>
+      </div>
+      <span class="out-dlv-badge">${t.dlv}</span>
+      ${done?'<span style="color:#10b981;font-size:13px">✓</span>':''}
+    </div>`;
+  }).join('');
+}
+
+function renderSidebarBizEval() {
+  const el = document.getElementById('biz-eval-body');
+  if (!el) return;
+  const t11 = getTask11Data();
+  const isDone = isTaskDone(11);
+  const hasAHA = t11.ahaData && (t11.ahaData.eureka || t11.ahaData.highlight || t11.ahaData.progress);
+  const hasMAP = t11.mapScores && (t11.mapScores.m || t11.mapScores.a || t11.mapScores.p);
+  const hasBiz = t11.bizMapping && (t11.bizMapping.q1 || t11.bizMapping.q2 || t11.bizMapping.q3);
+
+  if (!isDone || (!hasAHA && !hasMAP)) {
+    el.innerHTML = '<div class="biz-empty">完成任务 11 后，评估结果将显示在此</div>';
+    return;
+  }
+
+  let html = '';
+  if (t11.ahaData.ideaRef) {
+    html += `<div style="font-size:12px;font-weight:700;color:#ea580c;margin-bottom:6px">🏆 最佳创意：${esc(t11.ahaData.ideaRef)}</div>`;
+  }
+
+  if (hasMAP) {
+    const mp = t11.mapScores;
+    const total = (mp.m||0)+(mp.a||0)+(mp.p||0);
+    html += `<div class="biz-card">
+      <div class="biz-card-hdr">💰 MAP 商业价值卡 <span class="biz-complete-badge">总分 ${total}</span></div>
+      <div class="biz-card-body">
+        <div class="biz-map-row">
+          ${[{k:'m',icon:'📈',name:'M 市场潜力'},{k:'a',icon:'📣',name:'A 用户获取'},{k:'p',icon:'🛡️',name:'P 竞争优势'}].map(d => {
+            const v = mp[d.k]||0;
+            const cls = v>=4?'map-chip-high':v>=3?'map-chip-mid':v>=1?'map-chip-low':'map-chip-none';
+            return `<div class="biz-map-item">
+              <div class="biz-map-key">${d.icon} ${d.name}</div>
+              <div class="biz-map-val"><span class="map-summary-chip ${cls}" style="font-size:14px;font-weight:800">${v||'-'}</span>/5</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#64748b;text-align:center">
+          ${total>=12?'🌟 高商业价值 — 极具增长潜力' : total>=8?'⚡ 中等商业价值 — 需结合市场验证' : '⚠️ 需进一步探索商业化路径'}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (hasAHA) {
+    const AHA = [{k:'eureka',i:'💡',n:'顿悟 Eureka'},{k:'highlight',i:'✨',n:'高光 Highlight'},{k:'progress',i:'🚀',n:'进步 Progress'}];
+    html += `<div class="biz-card" style="margin-top:10px">
+      <div class="biz-card-hdr">✨ AHA 价值假设卡</div>
+      <div class="biz-card-body">
+        ${AHA.map(d => t11.ahaData[d.k] ? `<div class="biz-aha-item">
+          <div class="biz-aha-key">${d.i} ${d.n}</div>
+          <div class="biz-aha-val">${esc(t11.ahaData[d.k])}</div>
+        </div>` : '').join('')}
+      </div>
+    </div>`;
+  }
+
+  if (hasBiz) {
+    const bq = [{k:'q1',i:'💵',n:'价值变现'},{k:'q2',i:'📣',n:'口碑传播'},{k:'q3',i:'🚀',n:'增长引擎'}];
+    html += `<div class="biz-card" style="margin-top:10px">
+      <div class="biz-card-hdr">💸 商业映射摘要</div>
+      <div class="biz-card-body">
+        ${bq.map(d => t11.bizMapping[d.k] ? `<div class="biz-aha-item">
+          <div class="biz-aha-key">${d.i} ${d.n}</div>
+          <div class="biz-aha-val">${esc(t11.bizMapping[d.k])}</div>
+        </div>` : '').join('')}
+      </div>
+    </div>`;
+  }
+
+  if (!html) {
+    html = '<div class="biz-empty">完成任务 11 后，评估结果将显示在此</div>';
+  }
+  el.innerHTML = html;
+}
+
+function downloadInspireDoc() {
+  const project = JSON.parse(localStorage.getItem('eureka_learn_projects_v2') || '[]');
+  const pid = localStorage.getItem('eureka_learn_current_v2') || '';
+  const p = project.find(x => x.id === pid) || {};
+  const name = p.name || 'Eureka项目';
+  const sep = '\n';
+  const lines = [
+    `# ${name} · Inspire 启发阶段产出文档`,
+    `生成时间: ${new Date().toLocaleString('zh-CN')}`,
+    '',
+  ];
+
+  const TASKS_INFO = [
+    { n:7, name:'用户问题拆解' },
+    { n:8, name:'HMW 重构' },
+    { n:9, name:'机遇筛选细化' },
+    { n:10, name:'灵感启发创意' },
+    { n:11, name:'创意筛选与价值发展' },
+  ];
+
+  TASKS_INFO.forEach(t => {
+    const done = isTaskDone(t.n);
+    const data = getTaskData(t.n);
+    lines.push(`## T${t.n} ${t.name} ${done?'✅':'❌'}`, '');
+    if (t.n === 7) {
+      if (data.povText) lines.push('**POV 陈述**', data.povText, '');
+    }
+    if (t.n === 8) {
+      const labels = { pos:'发挥优势', neg:'消除麻烦', asum:'假设转换', wild:'脑洞大开' };
+      Object.entries(state.hmwItems).forEach(([dim, items]) => {
+        if (items && items.length > 0) {
+          lines.push(`**${labels[dim]}**`);
+          items.forEach(item => lines.push(`- ${item}`));
+        }
+      });
+      lines.push('');
+    }
+    if (t.n === 9) {
+      ['problem','target','insight','brief'].forEach(k => {
+        if (data[k]) { lines.push(`**${k}**:`, data[k], ''); }
+      });
+    }
+    if (t.n === 10) {
+      const ideas = data.ideas || [];
+      ideas.forEach((idea, i) => { if (idea && idea.trim()) lines.push(`**创意 ${i+1}**: ${idea}`); });
+      lines.push('');
+    }
+    if (t.n === 11) {
+      const ideas = (getTaskData(10).ideas || []).filter(t => t && t.trim());
+      const bestIdeas = data.bestIdeas || [];
+      lines.push('**最佳创意**');
+      bestIdeas.forEach(i => { if (ideas[i]) lines.push(`- ${ideas[i]}`); });
+      if (state.ahaData.ideaRef) lines.push('', `**AHA 最佳创意**: ${state.ahaData.ideaRef}`);
+      const AHA = [{k:'eureka',n:'顿悟'},{k:'highlight',n:'高光'},{k:'progress',n:'进步'}];
+      AHA.forEach(d => {
+        if (state.ahaData[d.k]) lines.push(`**${d.n}**: ${state.ahaData[d.k]}`);
+      });
+      const bestIdx = bestIdeas[0];
+      if (bestIdx != null && state.mapScores[bestIdx]) {
+        const mp = state.mapScores[bestIdx];
+        lines.push('', '**MAP 评分**', `M(市场潜力): ${mp.m}/5  A(用户获取): ${mp.a}/5  P(竞争优势): ${mp.p}/5`);
+      }
+      ['q1','q2','q3'].forEach(k => {
+        if (state.bizMapping[k]) {
+          const labels = { q1:'💵 价值变现', q2:'📣 口碑传播', q3:'🚀 增长引擎' };
+          lines.push(sep, `**${labels[k]}**:`, state.bizMapping[k]);
+        }
+      });
+      lines.push('');
+    }
+    lines.push('---', '');
+  });
+
+  const blob = new Blob([lines.join(sep)], { type:'text/markdown;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name}_Inspire产出文档_${new Date().toLocaleDateString('zh-CN')}.md`.replace(/\//g,'-');
+  a.click();
+  showToast('📄 产出文档已下载！');
+}
+
+// ===================================================
+// AI: BIZ MAPPING
+// ===================================================
+function generateBizMapping() {
+  const bestIdeaRef = state.ahaData.ideaRef || '';
+  const ahaEureka = state.ahaData.eureka || '';
+  const ahaHighlight = state.ahaData.highlight || '';
+  const ahaProgress = state.ahaData.progress || '';
+  const bestIdx = (getTaskData(11).bestIdeas || [])[0];
+  const mapScores = bestIdx != null ? (state.mapScores[bestIdx] || {}) : {};
+  const ideas = (getTaskData(10).ideas || []).filter(t => t && t.trim());
+  const bestIdeaText = bestIdx != null ? ideas[bestIdx] : '';
+
+  const prompt = `你是产品创新顾问。用户正在进行创意发散与筛选后的价值评估阶段。
+
+**最佳创意**: ${bestIdeaText || '（未填写）'}
+**创意标题**: ${bestIdeaRef || '（未填写）'}
+**AHA 价值假设**:
+- 顿悟: ${ahaEureka || '（未填写）'}
+- 高光: ${ahaHighlight || '（未填写）'}
+- 进步: ${ahaProgress || '（未填写）'}
+**MAP 初评**: M=${mapScores.m||'-'} A=${mapScores.a||'-'} P=${mapScores.p||'-'}
+
+请针对以下三个商业映射问题给出分析建议（每条50-80字，简洁有力）：
+
+1. 💵 **价值变现**：当用户体验到 AHA 时刻时，他们愿意为此支付更高溢价吗？能转化为真实商业利润吗？
+2. 📣 **口碑传播**：他们会主动传播和显摆获得的价值吗？能形成自发口碑效应吗？
+3. 🚀 **增长引擎**：综合 MAP + AHA，这个创意能否成为持续增长引擎？给出结论性判断。
+
+请以 JSON 格式返回：
+{
+  "q1": "...",
+  "q2": "...",
+  "q3": "..."
+}`;
+
+  openAI(prompt, (reply) => {
+    try {
+      const match = reply.match(/\{[\s\S]*\}/);
+      if (match) {
+        const parsed = JSON.parse(match[0]);
+        state.bizMapping = { ...state.bizMapping, ...parsed };
+        if (parsed.q1) { const el = document.getElementById('biz-q1'); if (el) el.value = parsed.q1; }
+        if (parsed.q2) { const el = document.getElementById('biz-q2'); if (el) el.value = parsed.q2; }
+        if (parsed.q3) { const el = document.getElementById('biz-q3'); if (el) el.value = parsed.q3; }
+        saveInspireData();
+        renderSidebarBizEval();
+        showToast('💸 商业映射分析已完成！');
+      }
+    } catch(e) {
+      showToast('⚠️ 解析结果失败，请手动填写');
+    }
+  });
+}
+
+// ===================================================
+// EVENT BINDING
+// ===================================================
+function bindTaskEvents(n) {
+  if (n === 7) {
+    // live preview for pov decomp
+    ['f7-user','f7-trouble','f7-goal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updatePOVPreview);
+    });
+  }
+}
+
+// ===================================================
+// TASK 7 EVENTS
+// ===================================================
+function updatePOVPreview() {
+  const user = (document.getElementById('f7-user')||{}).value || '';
+  const trouble = (document.getElementById('f7-trouble')||{}).value || '';
+  const goal = (document.getElementById('f7-goal')||{}).value || '';
+  const preview = document.getElementById('pov-structured-preview');
+  const text = document.getElementById('pov-preview-text');
+  if (preview && text) {
+    if (user || trouble || goal) {
+      preview.style.display = '';
+      text.innerHTML = buildPOVPreview({ user, trouble, goal });
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+}
+
+function collectTask7() {
+  return {
+    povManual: (document.getElementById('f7-pov-manual')||{}).value || '',
+    user: (document.getElementById('f7-user')||{}).value || '',
+    trouble: (document.getElementById('f7-trouble')||{}).value || '',
+    goal: (document.getElementById('f7-goal')||{}).value || '',
+  };
+}
+
+// ===================================================
+// TASK 8 EVENTS
+// ===================================================
+function toggleHMWDim(key) {
+  const body = document.getElementById('hmw-dim-body-' + key);
+  if (body) body.classList.toggle('open');
+}
+
+function addHMWItem(key) {
+  const input = document.getElementById('hmw-input-' + key);
+  if (!input || !input.value.trim()) return;
+  const text = input.value.trim();
+  state.hmwItems[key] = state.hmwItems[key] || [];
+  state.hmwItems[key].push(text);
+  input.value = '';
+  saveState();
+  // refresh HMW dim and all list
+  const list = document.getElementById('hmw-items-' + key);
+  if (list) list.innerHTML = state.hmwItems[key].map((t,i) => renderHMWItem(t, key, i)).join('');
+  const cnt = document.querySelector('#hmw-dim-' + key + ' .hmw-dim-cnt');
+  if (cnt) cnt.textContent = state.hmwItems[key].length + ' 条';
+  refreshAllHMWList();
+  showToast('✅ 已添加 HMW');
+}
+
+function deleteHMWItem(key, idx) {
+  state.hmwItems[key].splice(idx, 1);
+  saveState();
+  const list = document.getElementById('hmw-items-' + key);
+  if (list) list.innerHTML = state.hmwItems[key].map((t,i) => renderHMWItem(t, key, i)).join('');
+  const cnt = document.querySelector('#hmw-dim-' + key + ' .hmw-dim-cnt');
+  if (cnt) cnt.textContent = state.hmwItems[key].length + ' 条';
+  refreshAllHMWList();
+}
+
+function refreshAllHMWList() {
+  const el = document.getElementById('hmw-all-list');
+  if (!el) return;
+  const total = Object.values(state.hmwItems).reduce((s,a)=>s+a.length,0);
+  el.innerHTML = renderAllHMW() || '<div style="font-size:13px;color:#94a3b8;padding:12px;background:#f8fafc;border-radius:8px;text-align:center">请在上方四个维度中各添加 1-2 条 HMW</div>';
+  // update label
+  const lbl = document.querySelector('#task-content .form-label');
+  // find by id pattern
+  document.querySelectorAll('.form-label').forEach(el2 => {
+    if (el2.textContent.includes('HMW 汇总')) {
+      el2.innerHTML = `所有 HMW 汇总（${total} 条）`;
+    }
+  });
+}
+
+function collectTask8() {
+  return { hmwSnapshot: JSON.parse(JSON.stringify(state.hmwItems)) };
+}
+
+// ===================================================
+// TASK 9 EVENTS
+// ===================================================
+function adjustScore(rowIdx, dim, delta) {
+  const data9 = getTaskData(9);
+  data9.scores = data9.scores || {};
+  data9.scores[rowIdx] = data9.scores[rowIdx] || { u:3, b:3, f:3 };
+  const sc = data9.scores[rowIdx];
+  sc[dim] = Math.min(5, Math.max(1, (sc[dim]||3) + delta));
+  setTaskData(9, { scores: data9.scores });
+  // update DOM
+  const valEl = document.getElementById(`sc-${rowIdx}-${dim}`);
+  if (valEl) valEl.textContent = sc[dim];
+  const total = sc.u + sc.b + sc.f;
+  const totEl = document.getElementById(`sc-tot-${rowIdx}`);
+  if (totEl) {
+    totEl.textContent = total;
+    totEl.className = 'sc-tot ' + (total >= 12 ? 'sc-h' : total >= 8 ? 'sc-m' : 'sc-l');
+  }
+}
+
+function toggleHMWSelect(idx) {
+  const data9 = getTaskData(9);
+  data9.selected = data9.selected || [];
+  const pos = data9.selected.indexOf(idx);
+  if (pos >= 0) {
+    data9.selected.splice(pos, 1);
+  } else {
+    if (data9.selected.length >= 2) {
+      showToast('⚠️ 最多选 2 个 HMW，请先取消一个');
+      document.querySelectorAll('.hmw-sel')[idx] && (document.querySelectorAll('.hmw-sel')[idx].checked = false);
+      return;
+    }
+    data9.selected.push(idx);
+  }
+  setTaskData(9, { selected: data9.selected });
+  // update display
+  const allHMW = getAllHMWList();
+  const selDisplay = document.getElementById('selected-hmw-display');
+  const selCount = document.getElementById('sel-count');
+  if (selDisplay) {
+    selDisplay.innerHTML = data9.selected.length > 0
+      ? data9.selected.map(i => `<div style="margin-bottom:6px"><span class="sel-badge">✓ 最佳 HMW</span> <span style="font-size:13px;margin-left:8px">${esc((allHMW[i]||{}).text||'')}</span></div>`).join('')
+      : '<div style="font-size:13px;color:#94a3b8;padding:8px">请在上方表格中勾选 1-2 个最佳 HMW</div>';
+  }
+  if (selCount) selCount.textContent = `(${data9.selected.length}/2)`;
+}
+
+function getAllHMWList() {
+  const list = [];
+  HMW_DIMS.forEach(dim => {
+    (state.hmwItems[dim.key]||[]).forEach(text => list.push({ text, dim: dim.key }));
+  });
+  return list;
+}
+
+function updateBriefField(key) {
+  const el = document.getElementById('brief-' + key);
+  if (!el) return;
+  const data9 = getTaskData(9);
+  data9.brief = data9.brief || {};
+  data9.brief[key] = el.textContent;
+  setTaskData(9, { brief: data9.brief });
+}
+
+// ===================================================
+// TASK 10 EVENTS
+// ===================================================
+function toggleNCO(id) {
+  const data10 = getTaskData(10);
+  data10.selectedNCO = data10.selectedNCO || [];
+  const pos = data10.selectedNCO.indexOf(id);
+  if (pos >= 0) {
+    data10.selectedNCO.splice(pos, 1);
+  } else {
+    data10.selectedNCO.push(id);
+  }
+  setTaskData(10, { selectedNCO: data10.selectedNCO });
+  const card = document.getElementById('nco-' + id);
+  if (card) card.classList.toggle('sel');
+}
+
+function autoSaveIdea(i) {
+  const el = document.getElementById('idea-' + i);
+  if (!el) return;
+  const data10 = getTaskData(10);
+  data10.ideas = data10.ideas || Array(8).fill('');
+  data10.ideas[i] = el.value;
+  setTaskData(10, { ideas: data10.ideas });
+}
+
+// ===================================================
+// TASK 11 EVENTS
+// ===================================================
+function setStar(dim, rowIdx, val) {
+  state.ideaScores[rowIdx] = state.ideaScores[rowIdx] || { user:3, impl:3 };
+  state.ideaScores[rowIdx][dim] = val;
+  saveState();
+  const starsEl = document.getElementById(`stars-${dim}-${rowIdx}`);
+  if (starsEl) starsEl.innerHTML = renderStars(dim, rowIdx, val);
+}
+
+function toggleBestIdea(idx) {
+  const data11 = getTaskData(11);
+  data11.bestIdeas = data11.bestIdeas || [];
+  const pos = data11.bestIdeas.indexOf(idx);
+  if (pos >= 0) {
+    data11.bestIdeas.splice(pos, 1);
+  } else {
+    if (data11.bestIdeas.length >= 2) {
+      showToast('⚠️ 最多选 2 个最佳创意');
+      document.querySelectorAll('.hmw-sel')[idx] && (document.querySelectorAll('.hmw-sel')[idx].checked = false);
+      return;
+    }
+    data11.bestIdeas.push(idx);
+  }
+  setTaskData(11, { bestIdeas: data11.bestIdeas });
+  const row = document.getElementById('idea-row-' + idx);
+  if (row) row.classList.toggle('best');
+  // update badge
+  const badgeEl = row ? row.querySelector('.best-badge') : null;
+  if (data11.bestIdeas.includes(idx)) {
+    if (!badgeEl) {
+      const top = row.querySelector('.i-row-top');
+      if (top) top.insertAdjacentHTML('beforeend', '<span class="best-badge">⭐ 最佳创意</span>');
+    }
+  } else {
+    if (badgeEl) badgeEl.remove();
+  }
+}
+
+function updateAHA(key, val) {
+  state.ahaData[key] = val;
+  saveState();
+}
+
+// ===================================================
+// SUBMIT / SAVE
+// ===================================================
+function collectFormData(n) {
+  if (n === 7) return collectTask7();
+  if (n === 8) return collectTask8();
+  if (n === 9) return getTaskData(9);
+  if (n === 10) {
+    const ideas = [];
+    for (let i = 0; i < 8; i++) {
+      const el = document.getElementById('idea-' + i);
+      ideas.push(el ? el.value : '');
+    }
+    return { ...(getTaskData(10)), ideas };
+  }
+  if (n === 11) {
+    return { ...(getTaskData(11)), ahaData: { ...state.ahaData } };
+  }
+  return {};
+}
+
+function saveDraft(n) {
+  const data = collectFormData(n);
+  setTaskData(n, data);
+  showToast('✅ 草稿已保存');
+}
+
+function submitTask(n) {
+  const data = collectFormData(n);
+  // basic validation
+  if (n === 7) {
+    if (!data.user && !data.trouble && !data.goal) {
+      showToast('⚠️ 请至少填写一项 POV 拆解内容'); return;
+    }
+  } else if (n === 8) {
+    const total = Object.values(state.hmwItems).reduce((s,a)=>s+a.length,0);
+    if (total < 3) { showToast('⚠️ 请产出至少 3 条 HMW'); return; }
+  } else if (n === 9) {
+    const sel = (getTaskData(9).selected||[]);
+    if (sel.length === 0) { showToast('⚠️ 请至少选定 1 个最佳 HMW'); return; }
+  } else if (n === 10) {
+    const ideas = (data.ideas||[]).filter(t=>t&&t.trim());
+    if (ideas.length < 3) { showToast('⚠️ 请至少填写 3 个创意想法'); return; }
+  } else if (n === 11) {
+    const best = (data.bestIdeas||[]);
+    if (best.length === 0) { showToast('⚠️ 请选定至少 1 个最佳创意'); return; }
+    if (!state.ahaData.eureka && !state.ahaData.highlight && !state.ahaData.progress) {
+      showToast('⚠️ 请至少填写一个 AHA 维度'); return;
+    }
+  }
+  setTaskData(n, { ...data, status:'done' });
+  showToast('🎉 任务已完成！');
+  renderTaskContent(n);
+  updateProgressUI();
+  // cross-module save
+  saveToProjectData(n, data);
+}
+
+function saveToProjectData(n, data) {
+  try {
+    const raw = localStorage.getItem(CROSS_MODULE_KEY);
+    const pd = raw ? JSON.parse(raw) : {};
+    pd.inspire = pd.inspire || {};
+    pd.inspire['task' + n] = data;
+    pd.meta = pd.meta || {};
+    pd.meta.updatedAt = new Date().toISOString();
+    localStorage.setItem(CROSS_MODULE_KEY, JSON.stringify(pd));
+  } catch(e) {}
+}
+
+// ===================================================
+// AI COACH
+// ===================================================
+function getAIConfig() {
+  try { return JSON.parse(localStorage.getItem(AI_CFG_KEY)||'{}'); } catch(e) { return {}; }
+}
+
+function openAI() {
+  const overlay = document.getElementById('ai-overlay');
+  overlay.classList.add('active');
+  const msgs = document.getElementById('ai-messages');
+  if (msgs.children.length === 0) {
+    addAIMsg(TASKS[state.currentTask].coachIntro, 'bot');
+  }
+}
+
+function closeAI() {
+  document.getElementById('ai-overlay').classList.remove('active');
+}
+
+function addAIMsg(text, role) {
+  const msgs = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addAIMsg(msg, 'user');
+  const btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+
+  const cfg = getAIConfig();
+  if (!cfg.apiUrl || !cfg.apiKey) {
+    addAIMsg('⚠️ 请先配置 AI 接口（点击右上角 ⚙️ AI 设置）\n\n你说的问题很好，让我来帮你分析一下：\n\n根据当前任务的要点，建议你：\n1. 先从最熟悉的维度入手\n2. 不要过度分析，先把想法写下来\n3. 数量比质量更重要，先求多再求精', 'bot');
+    btn.disabled = false;
+    return;
+  }
+
+  // build context
+  const taskCtx = TASKS[state.currentTask];
+  const systemPrompt = `你是 Eureka Coach，一位专业的设计思维和创新导师。
+当前任务：${taskCtx.title}
+任务目标：${taskCtx.objective}
+用简洁、实用的方式回答，给出具体可操作的建议。回复用中文，控制在 200 字以内。`;
+
+  try {
+    const resp = await fetch(cfg.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({
+        model: cfg.model || 'gpt-4o',
+        messages: [
+          { role:'system', content: systemPrompt },
+          { role:'user', content: msg }
+        ],
+        temperature: 0.7, max_tokens: 400
+      })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const json = await resp.json();
+    const reply = json.choices[0].message.content;
+    addAIMsg(reply, 'bot');
+  } catch(e) {
+    addAIMsg('⚠️ AI 接口连接失败：' + e.message + '\n\n请检查 API 地址和 Key 是否正确。', 'bot');
+  }
+  btn.disabled = false;
+}
+
+// ===================================================
+// AI GENERATION FUNCTIONS
+// ===================================================
+async function callAI(prompt, onSuccess, onError) {
+  const cfg = getAIConfig();
+  if (!cfg.apiUrl || !cfg.apiKey) {
+    onError('请先配置 AI 接口（右上角 ⚙️ AI 设置）');
+    return;
+  }
+  try {
+    const resp = await fetch(cfg.apiUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.apiKey},
+      body: JSON.stringify({
+        model: cfg.model || 'gpt-4o',
+        messages:[{role:'user',content:prompt}],
+        temperature: 0.8, max_tokens: 1000
+      })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const json = await resp.json();
+    onSuccess(json.choices[0].message.content);
+  } catch(e) {
+    onError(e.message);
+  }
+}
+
+function getPOVContext() {
+  const d7 = getTaskData(7);
+  if (d7.user || d7.trouble || d7.goal) {
+    return `用户：${d7.user||'—'}\n麻烦：${d7.trouble||'—'}\n目标：${d7.goal||'—'}`;
+  }
+  return getPOVFromReveal() || '（未找到POV数据）';
+}
+
+function aiSuggestDecomp(col) {
+  const pov = getPOVFromReveal() || (document.getElementById('f7-pov-manual')||{}).value || '';
+  if (!pov) { showToast('⚠️ 未找到 POV，请先填写或完成 Reveal 阶段'); return; }
+  const colNames = { user:'用户（User）是谁', trouble:'麻烦（Challenge）是什么', goal:'目标（Goal）是什么' };
+  const prompt = `基于以下 POV 陈述，请帮我提炼【${colNames[col]}】要素。
+POV：${pov}
+要求：简洁具体，50字以内，不要包含解决方案。直接给出内容，不要前缀说明。`;
+  
+  const btn = document.querySelector(`.pov-col-${col==='user'?'user':col==='trouble'?'trouble':'goal'} .pov-ai-btn`);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+  
+  callAI(prompt, text => {
+    const input = document.getElementById('f7-' + col);
+    if (input) { input.value = text.trim(); updatePOVPreview(); }
+    if (btn) { btn.disabled = false; btn.textContent = '✨ AI 建议'; }
+    showToast('✅ AI 建议已填入，请根据实际情况修改');
+  }, err => {
+    if (btn) { btn.disabled = false; btn.textContent = '✨ AI 建议'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+const DIM_GUIDES = {
+  pos: '将问题的负面要素转换成正面目标来追求。例如：如果问题是"用户总是忘记"，HMW可以是"我们如何帮助用户主动记住并珍视这些时刻？"',
+  neg: '假设阻碍因素不存在。例如：假设成本不是问题、假设技术完全成熟，HMW可以是"我们如何让用户完全不需要思考这个问题？"',
+  asum: '颠覆核心假设，反向思考。例如：反转主体、反转目的、反转方向。HMW可以是"我们如何让问题本身不再出现？"',
+  wild: '夸张化、极端化。例如：放大10倍、缩小到零、让完全不同的行业来解决。HMW可以是"我们如何让小学生也能在5分钟内解决这个问题？"',
+};
+
+async function generateHMWDim(key) {
+  const btn = document.getElementById('hmw-ai-btn-' + key);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> 生成中…'; }
+  
+  const povCtx = getPOVContext();
+  const dimInfo = HMW_DIMS.find(d => d.key === key);
+  const guide = DIM_GUIDES[key];
+  
+  const prompt = `你是一位设计思维专家。请基于以下 POV 拆解，用【${dimInfo.title}】维度生成 2 条高质量的 HMW（我们如何才能…？）创新机遇。
+
+POV 拆解：
+${povCtx}
+
+维度说明：${dimInfo.desc}
+${guide}
+
+要求：
+1. 每条 HMW 必须以"我们如何才能"或"HMW"开头
+2. 包含用户 + 问题/需求 + 期望价值的结构
+3. 不能包含具体解决方案
+4. 两条之间用换行分隔
+5. 直接输出HMW内容，不要序号和前缀`;
+
+  callAI(prompt, text => {
+    const lines = text.split('\n').map(l=>l.trim()).filter(l=>l && l.length > 5);
+    state.hmwItems[key] = state.hmwItems[key] || [];
+    lines.slice(0,2).forEach(line => {
+      const cleaned = line.replace(/^[HMW·\-\d\.\s]+/i,'').trim();
+      if (cleaned) state.hmwItems[key].push(cleaned);
+    });
+    saveState();
+    const list = document.getElementById('hmw-items-' + key);
+    if (list) list.innerHTML = state.hmwItems[key].map((t,i) => renderHMWItem(t, key, i)).join('');
+    const cnt = document.querySelector('#hmw-dim-' + key + ' .hmw-dim-cnt');
+    if (cnt) cnt.textContent = state.hmwItems[key].length + ' 条';
+    refreshAllHMWList();
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成该维度的 HMW 建议'; }
+    showToast('✅ AI 已生成 ' + Math.min(2, lines.length) + ' 条 HMW，可直接编辑');
+  }, err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成该维度的 HMW 建议'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+async function generateDesignBrief() {
+  const data9 = getTaskData(9);
+  const sel = data9.selected || [];
+  const allHMW = getAllHMWList();
+  const selectedHMW = sel.map(i => allHMW[i]?.text || '').filter(Boolean);
+  if (selectedHMW.length === 0) { showToast('⚠️ 请先选定最佳 HMW'); return; }
+  
+  const btn = document.getElementById('gen-brief-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> 生成中…'; }
+
+  const povCtx = getPOVContext();
+  const revealPOV = getPOVFromReveal() || '';
+  
+  const prompt = `你是设计简报撰写专家。请基于以下信息生成一份结构化的《设计简报（Design Brief）》。
+
+POV 拆解：
+${povCtx}
+
+原始POV：${revealPOV}
+
+最佳 HMW 创新机遇：
+${selectedHMW.map((h,i)=>`${i+1}. ${h}`).join('\n')}
+
+请用以下 JSON 格式输出，每个字段 50-100 字：
+{
+  "targetUser": "目标用户描述",
+  "scenarioChallenge": "场景挑战描述",
+  "coreHMW": "核心创新机遇（直接引用最佳HMW）",
+  "valueGoal": "目标价值路径（成功后用户的状态变化）",
+  "constraints": "设计约束与考量（时间、资源、技术等限制）"
+}
+只输出JSON，不要其他内容。`;
+
+  callAI(prompt, text => {
+    try {
+      const jsonStr = text.replace(/```json?/g,'').replace(/```/g,'').trim();
+      const brief = JSON.parse(jsonStr);
+      setTaskData(9, { brief });
+      const box = document.getElementById('design-brief-box');
+      const body = document.getElementById('brief-body');
+      if (box && body) {
+        box.style.display = '';
+        body.innerHTML = renderBriefContent(brief);
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ 重新生成简报草稿'; }
+      showToast('✅ 设计简报已生成，请检查并编辑');
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成设计简报草稿'; }
+      showToast('⚠️ AI 返回格式异常，请重试');
+    }
+  }, err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成设计简报草稿'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+async function generateNCOCards() {
+  const data9 = getTaskData(9);
+  const brief = data9.brief || {};
+  const hmwCtx = (data9.selected||[]).map(i => getAllHMWList()[i]?.text || '').filter(Boolean).join('\n');
+  
+  const btn = document.getElementById('gen-nco-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> 生成中…'; }
+
+  const prompt = `你是跨界创新专家。基于以下创新机遇，生成 9 张 NCO 跨界灵感卡（每类3张）。
+
+创新机遇 HMW：${hmwCtx || getPOVContext()}
+目标价值：${brief.valueGoal || ''}
+
+请用 JSON 格式输出：
+{
+  "new": [
+    {"title":"灵感标题","desc":"具体描述（30字）","insight":"对本问题的启发（30字）","industry":"领域标签"},
+    {"title":"...","desc":"...","insight":"...","industry":"..."},
+    {"title":"...","desc":"...","insight":"...","industry":"..."}
+  ],
+  "cool": [...],
+  "out": [...]
+}
+new：新兴技术/趋势（AI、元宇宙、新能源、生物科技等）
+cool：令人惊叹的产品体验（Apple、Airbnb、Uber等的设计亮点）
+out：完全不同行业的解决逻辑（医疗、游戏、军事、教育等）
+只输出JSON。`;
+
+  callAI(prompt, text => {
+    try {
+      const jsonStr = text.replace(/```json?/g,'').replace(/```/g,'').trim();
+      const cards = JSON.parse(jsonStr);
+      setTaskData(10, { ncoCards: cards, selectedNCO: [] });
+      const container = document.getElementById('nco-cards-container');
+      if (container) container.innerHTML = renderNCOCards(cards, []);
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ 重新生成 NCO 灵感卡'; }
+      showToast('✅ 9 张灵感卡已生成，选择最有启发性的');
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成 NCO 灵感卡'; }
+      showToast('⚠️ 生成失败，请重试');
+    }
+  }, err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成 NCO 灵感卡'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+async function generateAHA() {
+  const data11 = getTaskData(11);
+  const bestIdeas = (data11.bestIdeas || []);
+  const ideas10 = (getTaskData(10).ideas || []).filter(t=>t&&t.trim());
+  const bestTexts = bestIdeas.map(i => ideas10[i] || '').filter(Boolean);
+  
+  const btn = document.getElementById('gen-aha-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> 生成中…'; }
+
+  const prompt = `你是用户体验和价值假设专家。请为以下最佳创意构建 AHA 价值假设。
+
+最佳创意：
+${bestTexts.length > 0 ? bestTexts.map((t,i)=>`${i+1}. ${t}`).join('\n') : getPOVContext()}
+
+POV 背景：${getPOVContext()}
+
+请生成三重 AHA 价值假设，用 JSON 格式：
+{
+  "eureka": "顿悟（Eureka）：当用户第一次使用时，他们会产生'原来还可以这样'的新认知（具体场景化描述，50字）",
+  "highlight": "高光（Highlight）：在使用过程中，最令用户激动的情感高峰时刻是（具体描述那一刻的感受，50字）",
+  "progress": "进步（Progress）：长期使用后，用户的生活或工作会发生的真实改变是（量化或可感知的改变，50字）"
+}
+语言要生动、情感化、场景化，不要只描述功能。只输出JSON。`;
+
+  callAI(prompt, text => {
+    try {
+      const jsonStr = text.replace(/```json?/g,'').replace(/```/g,'').trim();
+      const aha = JSON.parse(jsonStr);
+      state.ahaData = { ...state.ahaData, ...aha };
+      saveState();
+      ['eureka','highlight','progress'].forEach(key => {
+        const el = document.getElementById('aha-' + key);
+        if (el && aha[key]) el.value = aha[key];
+      });
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ 重新生成 AHA 价值假设建议'; }
+      showToast('✅ AHA 价值假设已生成，请检查并深化');
+    } catch(e) {
+      if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成 AHA 价值假设建议'; }
+      showToast('⚠️ 生成失败，请重试');
+    }
+  }, err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 生成 AHA 价值假设建议'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+async function generateAHADim(dimKey) {
+  const ideas10 = (getTaskData(10).ideas || []).filter(t=>t&&t.trim());
+  const best = getTaskData(11).bestIdeas || [];
+  const bestTexts = best.map(i => ideas10[i] || '').filter(Boolean);
+  
+  const dimNames = { eureka:'顿悟（Eureka）——"原来还可以这样"的新认知', highlight:'高光（Highlight）——"这感觉太棒了"的情感高峰', progress:'进步（Progress）——"这改变了我的生活"的真实改变' };
+  
+  const prompt = `为以下创意生成一段关于【${dimNames[dimKey]}】的 AHA 价值假设（50字内，场景化、情感化语言）：
+创意：${bestTexts.join('；') || getPOVContext()}
+直接输出内容，不要前缀。`;
+
+  callAI(prompt, text => {
+    const el = document.getElementById('aha-' + dimKey);
+    if (el) { el.value = text.trim(); updateAHA(dimKey, text.trim()); }
+    showToast('✅ 已生成建议，请修改完善');
+  }, err => showToast('⚠️ ' + err));
+}
+
+// ===================================================
+// SETTINGS
+// ===================================================
+function openSettings() {
+  const cfg = getAIConfig();
+  document.getElementById('s-api-url').value = cfg.apiUrl || '';
+  document.getElementById('s-api-key').value = cfg.apiKey || '';
+  document.getElementById('s-model').value = cfg.model || '';
+  document.getElementById('m-overlay').classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('m-overlay').classList.remove('active');
+}
+
+function saveSettings() {
+  const cfg = {
+    apiUrl: document.getElementById('s-api-url').value.trim(),
+    apiKey: document.getElementById('s-api-key').value.trim(),
+    model: document.getElementById('s-model').value.trim() || 'gpt-4o',
+  };
+  localStorage.setItem(AI_CFG_KEY, JSON.stringify(cfg));
+  closeSettings();
+  showToast('✅ AI 配置已保存');
+}
+
+// ===================================================
+// INIT
+// ===================================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  updateProgressUI();
+  renderRevealDataCard();
+  renderTipsCard(7);
+  renderTaskContent(7);
+  // inherit AI settings from learn.html
+  if (!localStorage.getItem(AI_CFG_KEY)) {
+    const learnCfg = localStorage.getItem('eureka_ai_config');
+    if (learnCfg) localStorage.setItem(AI_CFG_KEY, learnCfg);
+  }
+});
+</script>
+</body>
+</html>
