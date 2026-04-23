@@ -18,10 +18,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;cursor:pointer;background:none;transition:.2s}
 .nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
 .nav-title{color:#fff;font-size:17px;font-weight:700}
-.nav-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:1px}
-.nav-right{display:flex;align-items:center;gap:10px}
-.nav-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+.nav-subtitle{color:rgba(255,255,255,.7);font-size:12px;margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.learn-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
 .ai-settings-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.ai-settings-btn:hover{background:rgba(255,255,255,.25)}
+.ai-settings-btn .icon{font-size:14px}
+.nav-sync-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
+/* Reveal done state = blue (inspire/shape/exam pages) */
+.rise-step:first-child .rise-dot.done{background:#667eea}
+.rise-step:first-child .rise-conn.done{background:#667eea}
 .ai-settings-btn:hover{background:rgba(255,255,255,.25)}
 /* RISE BAR */
 .rise-bar{background:#fff;border-bottom:1px solid var(--bd);padding:16px 24px;display:flex;align-items:center}
@@ -411,6 +418,69 @@ textarea{min-height:90px}
 .out-download-all{flex:1;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;text-align:center}
 .out-download-all:hover{opacity:.9}
 
+/* ONBOARDING MODAL */
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:.3s}
+.onboarding-overlay.active{opacity:1;pointer-events:all}
+.onboarding-content{background:#fff;border-radius:16px;width:560px;max-width:90vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.onboarding-header{padding:20px 24px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;gap:12px}
+.onboarding-header .icon{font-size:28px}
+.onboarding-header .text .title{font-size:16px;font-weight:800;color:#92400e}
+.onboarding-header .text .sub{font-size:12px;color:#b45309;margin-top:2px}
+.onboarding-close{width:28px;height:28px;border-radius:50%;border:none;background:#fff;cursor:pointer;font-size:14px;color:#92400e;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:.2s}
+.onboarding-close:hover{background:#fde68a}
+.onboarding-body{padding:24px;overflow-y:auto;flex:1}
+.onboarding-step{display:none}
+.onboarding-step.active{display:block;animation:fadeIn .3s ease}
+.onboarding-step h3{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:12px}
+.onboarding-step p{font-size:13px;color:#475569;line-height:1.8;margin-bottom:14px}
+.onboarding-step ul{margin:0;padding-left:20px}
+.onboarding-step li{font-size:13px;color:#475569;line-height:2}
+.onboarding-step .tip-box{background:#fff8f0;border:1.5px dashed #fdba74;border-radius:10px;padding:12px 16px;margin-top:14px}
+.onboarding-step .tip-box .tip-title{font-size:12px;font-weight:700;color:#c2410c;margin-bottom:6px}
+.onboarding-step .tip-box .tip-text{font-size:12px;color:#7c2d12;line-height:1.7}
+.onboarding-step .img-placeholder{background:linear-gradient(135deg,#f0f4ff,#e0e7ff);border-radius:12px;padding:30px;text-align:center;margin:14px 0}
+.onboarding-step .img-placeholder .img-icon{font-size:48px;margin-bottom:10px}
+.onboarding-step .img-placeholder .img-text{font-size:12px;color:#4f46e5}
+.onboarding-footer{padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
+.onboarding-dots{display:flex;gap:8px}
+.onboarding-dot{width:8px;height:8px;border-radius:50%;background:#e2e8f0;transition:.2s}
+.onboarding-dot.active{background:#f97316;width:20px;border-radius:4px}
+.onboarding-btn-group{display:flex;gap:10px}
+.onboarding-btn-prev{background:#f1f5f9;color:#64748b;border:none;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.onboarding-btn-prev:hover{background:#e2e8f0}
+.onboarding-btn-next{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.onboarding-btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+
+/* AI SETTINGS MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal.active{opacity:1;pointer-events:all}
+.modal-overlay{position:absolute;inset:0}
+.ai-settings-panel{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;animation:fadeIn .3s ease;margin:auto;position:relative;z-index:1}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.ai-settings-header{padding:20px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(234,88,12,.04))}
+.ai-settings-title{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;color:var(--t)}
+.ai-settings-close{background:var(--bd);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);transition:.2s}
+.ai-settings-close:hover{background:#e2e8f0}
+.ai-settings-body{padding:24px;overflow-y:auto}
+.ai-settings-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;padding:12px 16px;background:#fff8f0;border-radius:8px;border-left:3px solid var(--o)}
+.ai-form-group{margin-bottom:18px}
+.ai-form-label{font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px;display:block}
+.ai-form-input{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;transition:.2s}
+.ai-form-input:focus{border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.ai-form-hint{font-size:11px;color:var(--t3);margin-top:6px}
+.ai-settings-actions{display:flex;gap:10px;margin-top:24px}
+.ai-btn-primary{flex:1;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.ai-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,115,22,.4)}
+.ai-btn-secondary{flex:1;background:var(--bd);color:var(--t);border:none;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-btn-secondary:hover{background:#e2e8f0}
+.ai-test-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)}
+.ai-btn-test{background:#f1f5f9;border:1.5px solid var(--bd);color:var(--t);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-btn-test:hover{background:#e2e8f0}
+.ai-test-result{margin-top:10px;font-size:12px;padding:8px 12px;border-radius:6px;display:none}
+.ai-test-result.success{background:#f0fdf4;color:#15803d;border:1px solid #86efac}
+.ai-test-result.error{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+
 </style>
 </head>
 <body>
@@ -424,14 +494,26 @@ textarea{min-height:90px}
     <a class="nav-back" href="learn.html">← Reveal</a>
     <div>
       <div class="nav-title">💡 Inspire · 启发阶段</div>
-      <div class="nav-sub">重构创新机遇 · 跨界创意突破</div>
+      <div class="nav-subtitle">重构创新机遇 · 跨界创意突破</div>
     </div>
   </div>
   <div class="nav-right">
-    <span class="nav-badge" id="progress-badge">0/5 任务</span>
-    <button class="ai-settings-btn" onclick="openSettings()">
-      <span>⚙️</span> AI 设置
+    <button class="ai-settings-btn" onclick="showOnboarding()" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#f59e0b">
+      <span class="icon">🎯</span>
+      <span>新手引导</span>
     </button>
+    <button class="ai-settings-btn" onclick="openAISettings()">
+      <span class="icon">🤖</span>
+      <span>AI 设置</span>
+    </button>
+    <button class="ai-settings-btn" onclick="window.location.href='eureka.html'" title="查看 Eureka 完整学习流程">
+      <span class="icon">🗺️</span>
+      <span>学习流程</span>
+    </button>
+    <span class="nav-sync-badge" id="nav-sync-badge">
+      <span class="sync-dot"></span>
+      <span>已同步</span>
+    </span>
   </div>
 </nav>
 
@@ -591,20 +673,135 @@ textarea{min-height:90px}
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
-<div class="m-overlay" id="m-overlay">
-  <div class="m-box">
-    <div class="m-title">⚙️ AI 设置</div>
-    <div class="m-sub">配置 AI 接口，解锁智能生成与辅导功能</div>
-    <label class="m-lbl">API 地址</label>
-    <input class="m-input" id="s-api-url" placeholder="https://api.openai.com/v1/chat/completions">
-    <label class="m-lbl">API Key</label>
-    <input class="m-input" id="s-api-key" type="password" placeholder="sk-...">
-    <label class="m-lbl">模型名称</label>
-    <input class="m-input" id="s-model" placeholder="gpt-4o / deepseek-chat / qwen-plus">
-    <div class="m-footer">
-      <button class="btn-sec" onclick="closeSettings()">取消</button>
-      <button class="btn-pri" onclick="saveSettings()">保存</button>
+<!-- ONBOARDING MODAL -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-content">
+    <div class="onboarding-header">
+      <div class="icon">💡</div>
+      <div class="text">
+        <div class="title">Inspire 新手引导</div>
+        <div class="sub">启发阶段 · 创新机遇重构 & 跨界创意突破</div>
+      </div>
+      <button class="onboarding-close" onclick="closeOnboarding()">✕</button>
+    </div>
+    <div class="onboarding-body">
+      <!-- Step 1 -->
+      <div class="onboarding-step active" id="ob-step-1">
+        <h3>🎯 Inspire 阶段概览</h3>
+        <p>欢迎来到 Inspire 启发阶段！这里将帮助你把 Reveal 阶段发现的洞察转化为具体的创新机遇和跨界创意。</p>
+        <ul>
+          <li>任务 7-9：重构创新机遇（POV → HMW → 设计简报）</li>
+          <li>任务 10-11：跨界创意突破（NCO → AHA 价值假设）</li>
+          <li>每个任务都有明确的交付物，可导出为完整文档</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">💡 小贴士</div>
+          <div class="tip-text">Inspire 阶段的产出将直接作为 Shape 阶段的输入，建议按顺序完成每个任务。</div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="onboarding-step" id="ob-step-2">
+        <h3>📝 任务 7 · POV 拆解</h3>
+        <p>将 Reveal 阶段的 POV（用户视角问题）拆解为三个清晰要素：用户、麻烦、目标。</p>
+        <div class="img-placeholder">
+          <div class="img-icon">👤 ⚡ 🎯</div>
+          <div class="img-text">三维拆解：谁？遇到了什么问题？期望什么？</div>
+        </div>
+        <div class="tip-box">
+          <div class="tip-title">⚠️ 常见误区</div>
+          <div class="tip-text">避免把"大家"写成用户，要具体到角色和场景；麻烦不是表面现象，需要追问"然后呢？"</div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div class="onboarding-step" id="ob-step-3">
+        <h3>💡 任务 8 · HMW 重构</h3>
+        <p>使用 HMW（How Might We）四维重构方法，将挑战转化为创新机遇。</p>
+        <ul>
+          <li>✅ 发挥积极：把负面转换为正面目标</li>
+          <li>❌ 移除否定：假设障碍不存在</li>
+          <li>🔄 假设转换：从反面或中间思考</li>
+          <li>🚀 脑洞大开：夸张化、异想天开</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">💡 小贴士</div>
+          <div class="tip-text">每个维度产出 1-2 条，优先开放、不判断。哪怕荒唐的想法也先写下来！</div>
+        </div>
+      </div>
+      <!-- Step 4 -->
+      <div class="onboarding-step" id="ob-step-4">
+        <h3>🌟 任务 10-11 · 跨界创意 & AHA</h3>
+        <p>从 64 个跨界领域获取灵感，结合 AHA 框架发展创意价值假设。</p>
+        <ul>
+          <li>NCO：New（全新）、Cool（酷炫）、Out（延伸）三种创意类型</li>
+          <li>对创意进行多维评分，选出最佳方案</li>
+          <li>AHA 框架：顿悟、高光、成就三要素</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">🚀 开始吧！</div>
+          <div class="tip-text">点击「下一步」开始任务 7，从 POV 拆解开启你的创新之旅！</div>
+        </div>
+      </div>
+    </div>
+    <div class="onboarding-footer">
+      <div class="onboarding-dots">
+        <div class="onboarding-dot active" id="ob-dot-1"></div>
+        <div class="onboarding-dot" id="ob-dot-2"></div>
+        <div class="onboarding-dot" id="ob-dot-3"></div>
+        <div class="onboarding-dot" id="ob-dot-4"></div>
+      </div>
+      <div class="onboarding-btn-group">
+        <button class="onboarding-btn-prev" id="ob-prev" onclick="prevOnboardingStep()" style="display:none">上一步</button>
+        <button class="onboarding-btn-next" id="ob-next" onclick="nextOnboardingStep()">下一步</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI SETTINGS MODAL -->
+<div class="modal" id="ai-settings-modal">
+  <div class="modal-overlay" onclick="closeAISettings()"></div>
+  <div class="ai-settings-panel">
+    <div class="ai-settings-header">
+      <div class="ai-settings-title">🤖 AI 设置</div>
+      <button class="ai-settings-close" onclick="closeAISettings()">✕</button>
+    </div>
+    <div class="ai-settings-body">
+      <div class="ai-settings-desc">
+        配置 AI 接口后，Eureka Coach 将能够基于你的实际输入提供智能分析和建议。
+      </div>
+      <div class="ai-form-group">
+        <label class="ai-form-label">选择大模型</label>
+        <select class="ai-form-input" id="ai-provider" onchange="onProviderChange()" style="cursor:pointer">
+          <option value="custom">自定义 API</option>
+          <option value="openai">OpenAI (GPT 系列)</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="qwen">通义千问</option>
+        </select>
+      </div>
+      <div class="ai-form-group" id="api-url-group">
+        <label class="ai-form-label">API 地址</label>
+        <input type="text" class="ai-form-input" id="ai-api-url" placeholder="https://api.openai.com/v1/chat/completions">
+        <div class="ai-form-hint">不同模型的 API 地址可能不同，请参考服务商文档</div>
+      </div>
+      <div class="ai-form-group">
+        <label class="ai-form-label">API Key</label>
+        <input type="password" class="ai-form-input" id="ai-api-key" placeholder="sk-...">
+        <div class="ai-form-hint">你的 API Key 将被安全存储在本地浏览器中</div>
+      </div>
+      <div class="ai-form-group" id="model-name-group">
+        <label class="ai-form-label">模型名称</label>
+        <input type="text" class="ai-form-input" id="ai-model-name" placeholder="gpt-4o / deepseek-chat / qwen-plus">
+        <div class="ai-form-hint">与 API 地址配套使用</div>
+      </div>
+      <div class="ai-settings-actions">
+        <button class="ai-btn-secondary" onclick="closeAISettings()">取消</button>
+        <button class="ai-btn-primary" onclick="saveAISettings()">保存设置</button>
+      </div>
+      <div class="ai-test-section">
+        <button class="ai-btn-test" onclick="testAIConnection()">🧪 测试连接</button>
+        <div class="ai-test-result" id="ai-test-result"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -615,7 +812,7 @@ textarea{min-height:90px}
 // ===================================================
 const INSPIRE_KEY = 'eureka_inspire_v1';
 const CROSS_MODULE_KEY = 'eureka_project_data_v1';
-const AI_CFG_KEY = 'eureka_ai_config';
+const AI_CONFIG_KEY = 'eureka_learn_ai_v1';
 
 const state = {
   currentTask: 7,
@@ -623,7 +820,9 @@ const state = {
   hmwItems: { pos:[], neg:[], asum:[], wild:[] },
   ncoCards: {},    // generated NCO cards
   ideaScores: {},  // idea star scores {id:{user:n,impl:n}}
-  ahaData: {}      // {eureka:'',highlight:'',progress:''}
+  mapScores: {},   // MAP scores {id:{m:n,a:n,p:3}}
+  ahaData: {},     // {ideaRef:'',eureka:'',highlight:'',progress:''}
+  bizMapping: {}   // {q1:'',q2:'',q3:''}
 };
 
 // ===================================================
@@ -642,19 +841,48 @@ function openOutputsModal() {
   ];
   var html = '';
   tasks.forEach(function(t) {
-    var done = state[t.key] && state[t.key].done;
+    // Use the actual state.tasks[n] storage (not state.povData etc. which don't exist)
+    var taskData = state.tasks[t.id] || {};
+    var done = taskData.status === 'done';
     var content = '';
-    if (done && state[t.key]) {
-      if (t.id === 7 && state.povData && state.povData.pov) content = state.povData.pov;
-      else if (t.id === 8 && state.hmwData && state.hmwData.selected) content = state.hmwData.selected;
-      else if (t.id === 9 && state.briefData && state.briefData.brief) content = state.briefData.brief;
-      else if (t.id === 10 && state.ideasData && state.ideasData.ideas) content = state.ideasData.ideas.join('\n');
-      else if (t.id === 11 && state.ahaData) {
-        var lines = [];
-        if (state.ahaData.eureka) lines.push('顿悟：' + state.ahaData.eureka);
-        if (state.ahaData.highlight) lines.push('高光：' + state.ahaData.highlight);
-        if (state.ahaData.progress) lines.push('成就：' + state.ahaData.progress);
-        content = lines.join('\n');
+    if (done) {
+      if (t.id === 7) {
+        var parts = [];
+        if (taskData.user) parts.push('用户：' + taskData.user);
+        if (taskData.trouble) parts.push('麻烦：' + taskData.trouble);
+        if (taskData.goal) parts.push('目标：' + taskData.goal);
+        if (taskData.pov) parts.push('POV：' + taskData.pov);
+        content = parts.join('\n');
+      } else if (t.id === 8) {
+        var hmwLines = [];
+        var hi = state.hmwItems || {};
+        var labels = { pos:'发挥积极', neg:'移除否定', asum:'假设转换', wild:'脑洞大开' };
+        Object.keys(labels).forEach(function(k) {
+          (hi[k]||[]).forEach(function(item) { hmwLines.push('[' + labels[k] + '] ' + item); });
+        });
+        if (taskData.selected) hmwLines.push('\n已选定：' + taskData.selected);
+        content = hmwLines.join('\n');
+      } else if (t.id === 9) {
+        var p9 = [];
+        if (taskData.selected) p9.push('选定 HMW：' + taskData.selected);
+        if (taskData.brief) p9.push('\n设计简报：\n' + taskData.brief);
+        content = p9.join('\n');
+      } else if (t.id === 10) {
+        var ideas = (taskData.ideas || []).filter(function(x){ return x && x.trim(); });
+        if (ideas.length > 0) content = ideas.map(function(x,i){ return (i+1)+'. '+x; }).join('\n');
+        else content = '(已完成，创意已保存)';
+      } else if (t.id === 11) {
+        var lines11 = [];
+        var ahaD = state.ahaData || {};
+        if (ahaD.ideaRef) lines11.push('最佳创意：' + ahaD.ideaRef);
+        if (ahaD.eureka) lines11.push('顿悟时刻：' + ahaD.eureka);
+        if (ahaD.highlight) lines11.push('高光时刻：' + ahaD.highlight);
+        if (ahaD.progress) lines11.push('成就感：' + ahaD.progress);
+        var biz = taskData.bizMapping || state.bizMapping || {};
+        if (biz.q1) lines11.push('价值变现：' + biz.q1);
+        if (biz.q2) lines11.push('口碑传播：' + biz.q2);
+        if (biz.q3) lines11.push('增长引擎：' + biz.q3);
+        content = lines11.join('\n');
       }
     }
     html += '<div class="out-doc-section">' +
@@ -794,7 +1022,9 @@ function loadState() {
       state.hmwItems = saved.hmwItems || { pos:[], neg:[], asum:[], wild:[] };
       state.ncoCards = saved.ncoCards || {};
       state.ideaScores = saved.ideaScores || {};
+      state.mapScores = saved.mapScores || {};
       state.ahaData = saved.ahaData || {};
+      state.bizMapping = saved.bizMapping || {};
     }
   } catch(e) { console.warn('loadState err', e); }
 }
@@ -805,7 +1035,9 @@ function saveState() {
     hmwItems: state.hmwItems,
     ncoCards: state.ncoCards,
     ideaScores: state.ideaScores,
+    mapScores: state.mapScores,
     ahaData: state.ahaData,
+    bizMapping: state.bizMapping,
     updatedAt: new Date().toISOString()
   }));
   updateProgressUI();
@@ -876,7 +1108,11 @@ function showToast(msg, dur=2500) {
 
 function updateProgressUI() {
   const done = [7,8,9,10,11].filter(n => isTaskDone(n)).length;
-  document.getElementById('progress-badge').textContent = done + '/5 任务';
+  // progress badge removed, sync badge handled separately
+  const syncBadge = document.getElementById('nav-sync-badge');
+  if (syncBadge) {
+    syncBadge.querySelector('span:last-child').textContent = done > 0 ? '已同步' : '待开始';
+  }
   document.getElementById('sidebar-progress').style.width = (done/5*100) + '%';
   [7,8,9,10,11].forEach(n => {
     const st = document.getElementById('stat-' + n);
@@ -1435,7 +1671,7 @@ function renderTask11Form(data, isDone) {
 function renderIdeaScoreRow(text, i, scores, bestIdeas, mapScores) {
   const sc = scores[i] || { user:3, impl:3 };
   const isBest = bestIdeas.includes(i);
-  const mp = mapScores[i] || { m:3, a:3, p:3 };
+  const mp = (mapScores && mapScores[i]) ? mapScores[i] : { m:3, a:3, p:3 };
   return `<div class="idea-score-row ${isBest?'best':''}" id="idea-row-${i}">
     <div class="i-row-top">
       <span class="i-row-text">${esc(text)}</span>
@@ -1768,9 +2004,9 @@ function generateBizMapping() {
   "q3": "..."
 }`;
 
-  openAI(prompt, (reply) => {
+  callAI(prompt, (reply) => {
     try {
-      const match = reply.match(/\{[\s\S]*\}/);
+      const match = reply.match(/\{[\s\S]*?\}/);
       if (match) {
         const parsed = JSON.parse(match[0]);
         state.bizMapping = { ...state.bizMapping, ...parsed };
@@ -1780,10 +2016,14 @@ function generateBizMapping() {
         saveInspireData();
         renderSidebarBizEval();
         showToast('💸 商业映射分析已完成！');
+      } else {
+        showToast('⚠️ AI 返回格式异常，请手动填写');
       }
     } catch(e) {
       showToast('⚠️ 解析结果失败，请手动填写');
     }
+  }, (err) => {
+    showToast('⚠️ AI 调用失败：' + err);
   });
 }
 
@@ -2034,7 +2274,7 @@ function collectFormData(n) {
     return { ...(getTaskData(10)), ideas };
   }
   if (n === 11) {
-    return { ...(getTaskData(11)), ahaData: { ...state.ahaData } };
+    return { ...(getTaskData(11)), ahaData: { ...state.ahaData }, bizMapping: { ...state.bizMapping } };
   }
   return {};
 }
@@ -2092,7 +2332,7 @@ function saveToProjectData(n, data) {
 // AI COACH
 // ===================================================
 function getAIConfig() {
-  try { return JSON.parse(localStorage.getItem(AI_CFG_KEY)||'{}'); } catch(e) { return {}; }
+  try { return JSON.parse(localStorage.getItem(AI_CONFIG_KEY)||'{}'); } catch(e) { return {}; }
 }
 
 function openAI() {
@@ -2439,29 +2679,130 @@ async function generateAHADim(dimKey) {
 }
 
 // ===================================================
-// SETTINGS
+// ONBOARDING
 // ===================================================
-function openSettings() {
+let obStep = 1;
+const obTotal = 4;
+
+function showOnboarding() {
+  obStep = 1;
+  updateOnboardingUI();
+  document.getElementById('onboarding-overlay').classList.add('active');
+}
+
+function closeOnboarding() {
+  document.getElementById('onboarding-overlay').classList.remove('active');
+  localStorage.setItem('eureka_inspire_onboarding_skip', 'true');
+}
+
+function nextOnboardingStep() {
+  if (obStep < obTotal) {
+    obStep++;
+    updateOnboardingUI();
+  } else {
+    closeOnboarding();
+  }
+}
+
+function prevOnboardingStep() {
+  if (obStep > 1) {
+    obStep--;
+    updateOnboardingUI();
+  }
+}
+
+function updateOnboardingUI() {
+  for (let i = 1; i <= obTotal; i++) {
+    const step = document.getElementById('ob-step-' + i);
+    const dot = document.getElementById('ob-dot-' + i);
+    if (step) step.classList.toggle('active', i === obStep);
+    if (dot) dot.classList.toggle('active', i === obStep);
+  }
+  const prevBtn = document.getElementById('ob-prev');
+  const nextBtn = document.getElementById('ob-next');
+  if (prevBtn) prevBtn.style.display = obStep > 1 ? '' : 'none';
+  if (nextBtn) nextBtn.textContent = obStep === obTotal ? '完成' : '下一步';
+}
+
+// ===================================================
+// AI SETTINGS
+// ===================================================
+const PRESETS = {
+  openai: { apiUrl: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o' },
+  anthropic: { apiUrl: 'https://api.anthropic.com/v1/messages', model: 'claude-3-5-sonnet-20241022' },
+  deepseek: { apiUrl: 'https://api.deepseek.com/chat/completions', model: 'deepseek-chat' },
+  qwen: { apiUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model: 'qwen-plus' },
+  custom: { apiUrl: '', model: '' }
+};
+
+function openAISettings() {
+  const modal = document.getElementById('ai-settings-modal');
   const cfg = getAIConfig();
-  document.getElementById('s-api-url').value = cfg.apiUrl || '';
-  document.getElementById('s-api-key').value = cfg.apiKey || '';
-  document.getElementById('s-model').value = cfg.model || '';
-  document.getElementById('m-overlay').classList.add('active');
+  document.getElementById('ai-api-url').value = cfg.apiUrl || '';
+  document.getElementById('ai-api-key').value = cfg.apiKey || '';
+  document.getElementById('ai-model-name').value = cfg.model || '';
+  // detect provider
+  let provider = 'custom';
+  if (cfg.apiUrl && cfg.apiUrl.includes('openai.com')) provider = 'openai';
+  else if (cfg.apiUrl && cfg.apiUrl.includes('anthropic')) provider = 'anthropic';
+  else if (cfg.apiUrl && cfg.apiUrl.includes('deepseek')) provider = 'deepseek';
+  else if (cfg.apiUrl && cfg.apiUrl.includes('dashscope') || cfg.apiUrl && cfg.apiUrl.includes('aliyuncs')) provider = 'qwen';
+  document.getElementById('ai-provider').value = provider;
+  modal.classList.add('active');
 }
 
-function closeSettings() {
-  document.getElementById('m-overlay').classList.remove('active');
+function closeAISettings() {
+  document.getElementById('ai-settings-modal').classList.remove('active');
 }
 
-function saveSettings() {
+function onProviderChange() {
+  const p = document.getElementById('ai-provider').value;
+  const preset = PRESETS[p] || PRESETS.custom;
+  document.getElementById('ai-api-url').value = preset.apiUrl;
+  document.getElementById('ai-model-name').value = preset.model;
+}
+
+function saveAISettings() {
   const cfg = {
-    apiUrl: document.getElementById('s-api-url').value.trim(),
-    apiKey: document.getElementById('s-api-key').value.trim(),
-    model: document.getElementById('s-model').value.trim() || 'gpt-4o',
+    apiUrl: document.getElementById('ai-api-url').value.trim(),
+    apiKey: document.getElementById('ai-api-key').value.trim(),
+    model: document.getElementById('ai-model-name').value.trim() || 'gpt-4o',
   };
-  localStorage.setItem(AI_CFG_KEY, JSON.stringify(cfg));
-  closeSettings();
+  localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(cfg));
+  closeAISettings();
   showToast('✅ AI 配置已保存');
+}
+
+function testAIConnection() {
+  const result = document.getElementById('ai-test-result');
+  const apiUrl = document.getElementById('ai-api-url').value.trim();
+  const apiKey = document.getElementById('ai-api-key').value.trim();
+  const model = document.getElementById('ai-model-name').value.trim();
+  if (!apiUrl || !apiKey) {
+    result.className = 'ai-test-result error';
+    result.textContent = '⚠️ 请先填写 API 地址和 Key';
+    result.style.display = 'block';
+    return;
+  }
+  result.className = 'ai-test-result';
+  result.textContent = '⏳ 测试中...';
+  result.style.display = 'block';
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: model || 'gpt-4o', messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 })
+  }).then(r => {
+    if (r.ok) {
+      result.className = 'ai-test-result success';
+      result.textContent = '✅ 连接成功！API 正常工作';
+    } else {
+      result.className = 'ai-test-result error';
+      result.textContent = '⚠️ 连接失败：' + r.status + ' ' + r.statusText;
+    }
+  }).catch(e => {
+    result.className = 'ai-test-result error';
+    result.textContent = '⚠️ 连接失败：' + e.message;
+  });
 }
 
 // ===================================================
@@ -2473,10 +2814,9 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRevealDataCard();
   renderTipsCard(7);
   renderTaskContent(7);
-  // inherit AI settings from learn.html
-  if (!localStorage.getItem(AI_CFG_KEY)) {
-    const learnCfg = localStorage.getItem('eureka_ai_config');
-    if (learnCfg) localStorage.setItem(AI_CFG_KEY, learnCfg);
+  // Auto-show onboarding on first visit
+  if (!localStorage.getItem('eureka_inspire_onboarding_skip')) {
+    setTimeout(() => showOnboarding(), 800);
   }
 });
 </script>
