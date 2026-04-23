@@ -506,7 +506,7 @@ textarea{min-height:90px}
       <span class="icon">🤖</span>
       <span>AI 设置</span>
     </button>
-    <button class="ai-settings-btn" onclick="window.location.href='eureka.html'" title="查看 Eureka 完整学习流程">
+    <button class="ai-settings-btn" onclick="showEurekaFlow()" title="查看 Eureka 完整学习流程">
       <span class="icon">🗺️</span>
       <span>学习流程</span>
     </button>
@@ -2819,6 +2819,57 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => showOnboarding(), 800);
   }
 });
+
+function showEurekaFlow() {
+  const modal = document.getElementById('eureka-flow-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeEurekaFlow() {
+  const modal = document.getElementById('eureka-flow-modal');
+  if (modal) modal.classList.remove('active');
+}
 </script>
+
+<!-- Eureka 学习流程线路图 Modal -->
+<div id="eureka-flow-modal" class="modal" style="z-index:10000">
+  <div class="modal-overlay" onclick="closeEurekaFlow()"></div>
+  <div class="modal-content" style="max-width:900px;width:95%;padding:0;overflow:hidden;border-radius:16px">
+    <div style="position:relative;background:linear-gradient(135deg,#fef3c7,#fde68a);padding:20px 24px">
+      <button onclick="closeEurekaFlow()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border:none;background:rgba(0,0,0,0.1);border-radius:50%;cursor:pointer;font-size:18px;color:#78350f;transition:all 0.2s">✕</button>
+      <h2 style="margin:0;font-size:22px;font-weight:700;color:#78350f;display:flex;align-items:center;gap:10px">
+        <span>🗺️</span> Eureka 价值创新探索线路图
+      </h2>
+      <p style="margin:8px 0 0;font-size:13px;color:#92400e">点击任意位置关闭此图，开始你的创新探索之旅</p>
+    </div>
+    <div style="padding:24px;background:#fffbeb;max-height:80vh;overflow-y:auto">
+      <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=80"
+           alt="Eureka 价值创新探索线路图"
+           style="width:100%;height:auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer"
+           onclick="closeEurekaFlow()">
+      <div style="margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #3b82f6">
+          <div style="font-size:14px;font-weight:700;color:#1e40af;margin-bottom:6px">1. 揭示 (Reveal)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">团队构建共识，深入探索用户，洞察真实需求</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b">
+          <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px">2. 启发 (Inspire)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">重构创新机遇，通过跨界灵感实现创意突破</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #10b981">
+          <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:6px">3. 构建 (Shape)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">将创意想法发展为概念方案，构建用户体验故事</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6">
+          <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:6px">4. 验证 (Exam)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">搭建方案原型进行用户测试，规划价值呈现计划</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;text-align:center">
+        <div style="font-size:14px;font-weight:600;color:#78350f">🎯 目标：交付一个经过用户验证、具有商业价值的创新方案</div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
