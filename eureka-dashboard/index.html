@@ -399,6 +399,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .ef-add-btn:hover{background:#e0e7ff}
 .ef-inline-row{display:grid;gap:8px}
 .ef-note{font-size:11px;color:#94a3b8;margin-top:4px;line-height:1.5}
+/* ── Exam 常见误区卡片 ── */
+.tips-card{background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1.5px solid #fcd34d;border-radius:14px;padding:14px 16px;margin-bottom:20px}
+.tips-card-title{font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tips-card-body{display:flex;flex-direction:column;gap:6px}
+.tips-item{font-size:12px;color:#78350f;line-height:1.5;display:flex;align-items:flex-start;gap:6px}
+.tips-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.tips-dot.danger{background:#ef4444}
+.tips-dot.warn{background:#f59e0b}
+.tips-dot.info{background:#3b82f6}
+/* ── Exam 完成横幅 ── */
+.complete-banner{background:linear-gradient(135deg,#d1fae5,#ecfdf5);border:2px solid #34d399;border-radius:16px;padding:20px 24px;margin-bottom:20px;text-align:center}
+.complete-banner-icon{font-size:32px;margin-bottom:8px}
+.complete-banner-title{font-size:18px;font-weight:800;color:#065f46;margin-bottom:6px}
+.complete-banner-desc{font-size:13px;color:#047857;margin-bottom:14px}
+.complete-banner-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.complete-banner-btn{background:#fff;border:1.5px solid #34d399;color:#065f46;padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.complete-banner-btn.primary{background:#10b981;color:#fff;border-color:#10b981}
+.complete-banner-btn:hover{opacity:.85}
+/* ── Exam 任务完成布局 ── */
+.task-completion-area{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:16px;padding:20px;margin-top:8px}
+.task-output-box,.task-criteria-box,.task-feedback-box,.task-next-box{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;border:1px solid #e2e8f0}
+.task-output-label,.task-criteria-label,.task-feedback-label,.task-next-label{font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.task-output-preview{font-size:13px;color:#64748b;line-height:1.5;min-height:36px}
+.task-criteria-list{display:flex;flex-direction:column;gap:4px}
+.task-criteria-item{font-size:12px;color:#374151;line-height:1.5}
+.task-feedback-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;color:#1e293b;resize:vertical;min-height:60px;font-family:inherit;box-sizing:border-box}
+.task-feedback-input:focus{outline:none;border-color:#667eea}
+.task-next-actions{display:flex;gap:10px;flex-wrap:wrap}
+.task-next-btn{background:#fff;border:1.5px solid #e2e8f0;color:#475569;padding:9px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.task-next-btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:#667eea;box-shadow:0 4px 14px rgba(102,126,234,.3)}
+.task-next-btn:hover{opacity:.85}
 /* ── LEFT PANEL TABS ── */
 .panel-tabs{display:flex;border-bottom:1px solid #f1f5f9;padding:0 10px}
 .ptab{flex:1;padding:8px 4px;text-align:center;border:none;background:transparent;font-size:12px;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.2s}
@@ -842,6 +873,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
         <button id="aiHelperBtn" class="ai-header-btn" onclick="toggleAIPanel()" style="display:none">
           <span>🤖</span>
           <span>AI 助手</span>
+        </button>
+        <button id="editor-cloud-btn" class="btn-ghost" onclick="SyncUI.handleSyncClick()" style="display:flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer">
+          <span id="editor-sync-text">☁️ 同步</span>
         </button>
         <button class="editor-close" onclick="closeEditor()">×</button>
       </div>
@@ -4045,6 +4079,10 @@ function openEditor(id, isNew=false) {
   document.querySelectorAll('.etab')[0].classList.add('active');
   renderEditorTab('basic');
   _updateAIFab();
+  // 初始化编辑器云同步按钮状态
+  if (typeof SyncState !== 'undefined' && SyncState.state) {
+    SyncUI.updateUI(SyncState.state);
+  }
 }
 
 function closeEditor() {
@@ -4552,7 +4590,40 @@ function editorTabExam(p) {
   const invalidated = tr.invalidated||[];
   const newFindings = tr.newFindings||[];
   const newProblems = tr.newProblems||[];
+  
+  // 检查 Exam 是否已完成（有实质内容）
+  const examDone = !!(ex.ahaValues || tr.method || ep.problem || ip.d30);
+  const deliverable = `<strong>AHA 价值雷达</strong>（3项评分）+ <strong>测试报告</strong>（含验证结果）+ <strong>电梯演讲</strong> + <strong>迭代计划</strong> + <strong>商业模式画布</strong>`;
+  const criteria = [
+    '✅ AHA 三维评分均 ≥ 7，或有明确的提升计划',
+    '✅ 测试报告包含 ≥ 1 条有效验证或推翻记录',
+    '✅ 电梯演讲完整覆盖：问题 → 方案 → 用户 → 价值 → CTA',
+    '✅ 迭代计划有具体的 30/60/90 天里程碑'
+  ];
+
   return `
+  ${examDone ? `
+  <div class="complete-banner">
+    <div class="complete-banner-icon">🎉</div>
+    <div class="complete-banner-title">Exam · 验证 阶段已完成</div>
+    <div class="complete-banner-desc">你的价值验证体系已就绪，可以开始下一阶段或持续迭代。</div>
+    <div class="complete-banner-actions">
+      <button class="complete-banner-btn primary" onclick="showExamFeedback()">📝 查看反馈</button>
+      <button class="complete-banner-btn" onclick="switchEditorTab('reveal', document.querySelector('.etab'))">🔍 回到 Reveal</button>
+    </div>
+  </div>` : ''}
+  
+  <div class="tips-card exam-tips">
+    <div class="tips-card-title">⚠️ Exam 阶段常见误区</div>
+    <div class="tips-card-body">
+      <div class="tips-item"><span class="tips-dot danger"></span>验证≠成功：测试全部通过不代表产品成功了，只是假设被验证了</div>
+      <div class="tips-item"><span class="tips-dot danger"></span>闭门验证：没有找真实用户，只和团队内部讨论就下结论</div>
+      <div class="tips-item"><span class="tips-dot danger"></span>完美主义陷阱：等到"完全准备好"才去做测试，错过学习窗口</div>
+      <div class="tips-item"><span class="tips-dot danger"></span>忽视推翻：无兴趣验证被推翻的假设，推翻是最高价值的发现</div>
+      <div class="tips-item"><span class="tips-dot danger"></span>一次验证：只测一次就结束，没有建立持续验证机制</div>
+    </div>
+  </div>
+
   <div class="editor-section">
     <div class="editor-section-title">AHA 价值雷达</div>
     <div class="ef-row">
@@ -4625,7 +4696,56 @@ function editorTabExam(p) {
       <div class="ef-group"><label class="ef-label">重要合作</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_kp" placeholder="合作伙伴">${esc(bm.keyPartners||'')}</textarea></div>
       <div class="ef-group"><label class="ef-label">成本结构</label><textarea class="ef-textarea" style="min-height:52px" id="ef_bm_co" placeholder="主要成本构成">${esc(bm.costStructure||'')}</textarea></div>
     </div>
+  </div>
+
+  <div class="task-completion-area">
+    <div class="task-output-box">
+      <div class="task-output-label">📦 产出预览</div>
+      <div class="task-output-preview">${esc(ip.d30 ? '迭代计划已填写至 ' + ip.d30.split('\n')[0] : '待填写...')}</div>
+    </div>
+    <div class="task-criteria-box">
+      <div class="task-criteria-label">✅ 成功标准</div>
+      <div class="task-criteria-list">${criteria.map(c => `<div class="task-criteria-item">${c}</div>`).join('')}</div>
+    </div>
+    <div class="task-feedback-box">
+      <div class="task-feedback-label">💬 完成心得（选填）</div>
+      <textarea class="task-feedback-input" id="ef_exam_feedback" placeholder="验证阶段学到了什么？有什么新发现？"></textarea>
+    </div>
+    <div class="task-next-box">
+      <div class="task-next-label">🚀 下一步</div>
+      <div class="task-next-actions">
+        <button class="task-next-btn primary" onclick="examCompleteAndNext()">✅ 标记 Exam 完成</button>
+        <button class="task-next-btn" onclick="switchEditorTab('shape', document.querySelectorAll('.etab')[4])">← 返回 Shape</button>
+      </div>
+    </div>
   </div>`;
+}
+
+// Exam 标记完成
+function examCompleteAndNext() {
+  const feedback = document.getElementById('ef_exam_feedback')?.value || '';
+  // 保存项目（触发保存）
+  saveEditor();
+  // 显示反馈确认
+  if (feedback.trim()) {
+    toast('💾 已记录 Exam 完成状态');
+  } else {
+    toast('🎉 Exam · 验证阶段完成！');
+  }
+  // 刷新编辑器（重新渲染以显示完成横幅）
+  setTimeout(() => {
+    const p = getOne(_editorId);
+    if (p) {
+      const body = document.getElementById('editorBody');
+      if (body) body.innerHTML = editorTabExam(p);
+    }
+  }, 100);
+}
+
+// Exam 查看反馈
+function showExamFeedback() {
+  const feedback = document.getElementById('ef_exam_feedback')?.value || '';
+  alert('📝 Exam 验证阶段心得\n\n' + (feedback || '（暂无记录）\n\n欢迎随时回来填写验证过程中的发现和反思。'));
 }
 
 // ── Save Editor ──
@@ -4809,6 +4929,8 @@ function saveEditor() {
       keyPartners: v('ef_bm_kp'),
       costStructure: v('ef_bm_co')
     };
+    // feedback
+    p.exam.feedback = v('ef_exam_feedback') || p.exam.feedback || '';
   }
 
   p.updatedAt = new Date().toISOString().slice(0,10);
@@ -4822,6 +4944,15 @@ function saveEditor() {
   st.style.display = 'inline';
   setTimeout(()=>{ st.style.display='none'; },2500);
   toast('✅ 保存成功！');
+  
+  // 如果是 Exam Tab，重新渲染以刷新完成横幅状态
+  if (tab === 'exam') {
+    const p = getOne(_editorId);
+    if (p) {
+      const body = document.getElementById('editorBody');
+      if (body) body.innerHTML = editorTabExam(p);
+    }
+  }
 }
 
 // helper: get trimmed value
@@ -5602,6 +5733,20 @@ const SyncUI = {
     } else {
       btn.innerHTML = '☁️ <span id="sync-status-text">点击同步</span>';
       btn.disabled = false;
+    }
+    
+    // 同时更新编辑器标题栏的同步按钮
+    const editorSyncText = document.getElementById('editor-sync-text');
+    if (editorSyncText) {
+      if (state.isSyncing) {
+        editorSyncText.textContent = '同步中...';
+      } else if (state.mode === SYNC_CONFIG.MODE.OFFLINE) {
+        editorSyncText.textContent = '离线';
+      } else if (state.lastSyncTime) {
+        editorSyncText.textContent = '已同步 ' + this.formatTime(state.lastSyncTime);
+      } else {
+        editorSyncText.textContent = '同步';
+      }
     }
   },
   
