@@ -82,6 +82,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .pitfalls-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
 .pitfalls-hdr .lbl{color:#b91c1c}
 .tips-item::before{content:"⚠️  "}
+/* LEARN PROJECTS SECTION */
+.lp-projects-section{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.lp-projects-header{padding:14px 18px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;gap:8px}
+.lp-projects-header .icon{font-size:16px}
+.lp-projects-header .label{font-size:13px;font-weight:700;color:#1e40af;flex:1}
+.lp-btn-add{width:28px;height:28px;border-radius:50%;border:none;background:#3b82f6;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.lp-btn-add:hover{background:#2563eb;transform:scale(1.05)}
+.lp-projects-list{max-height:240px;overflow-y:auto}
+.lp-project-item{display:flex;align-items:center;gap:8px;padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .15s}
+.lp-project-item:last-child{border-bottom:none}
+.lp-project-item:hover{background:rgba(59,130,246,.05)}
+.lp-project-item.active{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05));border-left:3px solid #3b82f6}
+.lp-project-icon{font-size:16px;flex-shrink:0}
+.lp-project-info{flex:1;min-width:0}
+.lp-project-name{font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-project-meta{font-size:10px;color:#94a3b8;margin-top:2px}
+.lp-project-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.lp-project-item:hover .lp-project-actions{opacity:1}
+.lp-project-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;font-size:11px;border-radius:4px;transition:background .15s}
+.lp-project-btn:hover{background:rgba(0,0,0,.08)}
 .reveal-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
 .reveal-hdr .lbl{color:#1e40af}
 .reveal-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block}
@@ -553,6 +573,18 @@ textarea{min-height:90px}
 <div class="main">
   <!-- SIDEBAR -->
   <div class="sidebar">
+    <!-- 学习项目区域 - 置顶 -->
+    <div class="lp-projects-section" id="lp-projects-section">
+      <div class="lp-projects-header">
+        <span class="icon">📁</span>
+        <span class="label">学习项目</span>
+        <button class="lp-btn-add" onclick="lp_createNewProject()" title="新建项目">+</button>
+      </div>
+      <div class="lp-projects-list" id="lp-projects-list">
+        <!-- 项目列表动态生成 -->
+      </div>
+    </div>
+
     <!-- REVEAL DATA CARD — 放在子模块1上方 -->
     <div class="s-card" id="reveal-data-card">
       <div class="s-card-hdr reveal-hdr">
@@ -1050,6 +1082,7 @@ function saveState() {
     updatedAt: new Date().toISOString()
   }));
   updateProgressUI();
+  lp_syncProjectProgress();
 }
 
 function getTaskData(n) { return state.tasks[n] || {}; }
@@ -2823,6 +2856,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRevealDataCard();
   renderTipsCard(7);
   renderTaskContent(7);
+  // Init learn projects
+  lp_renderProjectsList();
   // Auto-show onboarding on first visit
   if (!localStorage.getItem('eureka_inspire_onboarding_skip')) {
     setTimeout(() => showOnboarding(), 800);
@@ -2838,6 +2873,236 @@ function closeEurekaFlow() {
   const modal = document.getElementById('eureka-flow-modal');
   if (modal) modal.classList.remove('active');
 }
+
+// ===================================================
+// LEARN PROJECTS SYSTEM (shared with learn/shape/exam)
+// ===================================================
+const LP_PROJECTS_KEY = 'eureka_learn_projects_v2';
+const LP_CURRENT_KEY = 'eureka_learn_current_v2';
+let lp_currentProjectId = null;
+
+function lp_getProjectsData() {
+  const raw = localStorage.getItem(LP_PROJECTS_KEY);
+  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+  return { projects: [], recycleBin: [], version: '2.0' };
+}
+
+function lp_saveProjectsData(data) {
+  data.meta = { updatedAt: new Date().toISOString(), version: '2.0' };
+  localStorage.setItem(LP_PROJECTS_KEY, JSON.stringify(data));
+}
+
+function lp_getCurrentProjectId() {
+  if (lp_currentProjectId) return lp_currentProjectId;
+  return localStorage.getItem(LP_CURRENT_KEY);
+}
+
+function lp_setCurrentProjectId(id) {
+  lp_currentProjectId = id;
+  localStorage.setItem(LP_CURRENT_KEY, id);
+}
+
+function lp_escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function lp_formatDate(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return (d.getMonth()+1) + '/' + d.getDate();
+  } catch(e) { return ''; }
+}
+
+function lp_showInputModal({ title, icon, defaultValue = '', placeholder = '', confirmText = '确认', onConfirm }) {
+  const old = document.getElementById('lp-input-modal');
+  if (old) old.remove();
+  const m = document.createElement('div');
+  m.id = 'lp-input-modal';
+  m.className = 'modal';
+  m.innerHTML = `
+    <div class="modal-overlay" onclick="lp_closeInputModal()"></div>
+    <div class="modal-content" style="width:400px;margin:0 auto;border-radius:16px;overflow:hidden;background:#fff">
+      <div style="background:linear-gradient(135deg,#3b82f6,#2563eb);padding:20px 24px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">${icon}</span>
+        <span style="font-size:16px;font-weight:700;color:#fff">${title}</span>
+      </div>
+      <div style="padding:20px">
+        <input id="lp-name-input" type="text" value="${lp_escapeHtml(defaultValue)}" placeholder="${lp_escapeHtml(placeholder)}"
+          style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none"
+          onkeydown="if(event.key==='Enter')lp_confirmInput()"
+        />
+        <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+          <button onclick="lp_closeInputModal()" style="padding:8px 16px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;cursor:pointer;font-size:13px;color:#64748b;font-weight:600">取消</button>
+          <button onclick="lp_confirmInput()" style="padding:8px 20px;border:none;border-radius:6px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:700">${confirmText}</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+  m.classList.add('active');
+  m._onConfirm = onConfirm;
+  document.getElementById('lp-name-input').focus();
+}
+
+let lp_pendingConfirm = null;
+function lp_confirmInput() {
+  const val = (document.getElementById('lp-name-input') || {}).value || '';
+  const modal = document.getElementById('lp-input-modal');
+  if (modal && modal._onConfirm) modal._onConfirm(val);
+  lp_closeInputModal();
+}
+function lp_closeInputModal() {
+  const m = document.getElementById('lp-input-modal');
+  if (m) { m.classList.remove('active'); setTimeout(() => m.remove(), 300); }
+}
+
+function lp_createNewProject() {
+  lp_showInputModal({
+    title: '新建学习项目', icon: '📁',
+    placeholder: '项目 ' + (new Date().toLocaleDateString()),
+    confirmText: '创建',
+    onConfirm: function(name) {
+      if (!name.trim()) return;
+      const pid = 'proj_' + Date.now();
+      const proj = { id: pid, name: name.trim(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), taskCount: 0, completedCount: 0 };
+      const data = lp_getProjectsData();
+      data.projects.push(proj);
+      lp_saveProjectsData(data);
+      lp_setCurrentProjectId(pid);
+      lp_renderProjectsList();
+      window.lp_onProjectSwitch && window.lp_onProjectSwitch(pid);
+    }
+  });
+}
+
+function lp_switchProject(pid) {
+  const cur = lp_getCurrentProjectId();
+  if (pid === cur) return;
+  const data = lp_getProjectsData();
+  const proj = data.projects.find(p => p.id === pid);
+  if (!proj) return;
+  lp_setCurrentProjectId(pid);
+  lp_renderProjectsList();
+  window.lp_onProjectSwitch && window.lp_onProjectSwitch(pid);
+}
+
+function lp_renameProject(pid, e) {
+  e.stopPropagation();
+  const data = lp_getProjectsData();
+  const proj = data.projects.find(p => p.id === pid);
+  if (!proj) return;
+  lp_showInputModal({
+    title: '重命名项目', icon: '✏️', defaultValue: proj.name,
+    placeholder: '输入新名称', confirmText: '保存',
+    onConfirm: function(name) {
+      if (!name.trim()) return;
+      proj.name = name.trim();
+      proj.updatedAt = new Date().toISOString();
+      lp_saveProjectsData(data);
+      lp_renderProjectsList();
+    }
+  });
+}
+
+function lp_deleteProject(pid, e) {
+  e.stopPropagation();
+  const data = lp_getProjectsData();
+  const proj = data.projects.find(p => p.id === pid);
+  if (!proj) return;
+  proj.deletedAt = new Date().toISOString();
+  data.projects = data.projects.filter(p => p.id !== pid);
+  data.recycleBin.push(proj);
+  lp_saveProjectsData(data);
+  lp_renderProjectsList();
+  if (lp_getCurrentProjectId() === pid) {
+    const first = data.projects[0];
+    if (first) lp_switchProject(first.id);
+  }
+}
+
+function lp_renderProjectsList() {
+  const c = document.getElementById('lp-projects-list');
+  if (!c) return;
+  const data = lp_getProjectsData();
+  const cur = lp_getCurrentProjectId();
+  if (data.projects.length === 0) {
+    c.innerHTML = '<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">暂无项目<br>点击 + 创建</div>';
+  } else {
+    c.innerHTML = data.projects.map(p => {
+      const isA = p.id === cur;
+      const prog = p.completedCount && p.taskCount ? Math.round(p.completedCount / p.taskCount * 100) : 0;
+      return `<div class="lp-project-item ${isA ? 'active' : ''}" onclick="lp_switchProject('${p.id}')">
+        <div class="lp-project-icon">📁</div>
+        <div class="lp-project-info">
+          <div class="lp-project-name">${lp_escapeHtml(p.name)}</div>
+          <div class="lp-project-meta">${lp_formatDate(p.updatedAt)} · ${prog}%</div>
+        </div>
+        <div class="lp-project-actions">
+          <button class="lp-project-btn" onclick="lp_renameProject('${p.id}', event)" title="重命名">✏️</button>
+          <button class="lp-project-btn" onclick="lp_deleteProject('${p.id}', event)" title="删除">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Sync project progress from all module data
+function lp_syncProjectProgress() {
+  const pid = lp_getCurrentProjectId();
+  if (!pid) return;
+  const data = lp_getProjectsData();
+  const proj = data.projects.find(p => p.id === pid);
+  if (!proj) return;
+
+  // Count completed tasks across all modules (T1-6, T7-11, T12-15, T16-20)
+  let done = 0, total = 20;
+
+  // Reveal (T1-6): tasks[1-6].status === 'done'
+  try {
+    const revealKey = 'eureka_learn_state_' + pid;
+    const rs = JSON.parse(localStorage.getItem(revealKey) || '{}');
+    if (rs.tasks) {
+      for (let i = 1; i <= 6; i++) {
+        if (rs.tasks[i] && rs.tasks[i].status === 'done') done++;
+      }
+    }
+  } catch(e) {}
+
+  // Inspire (T7-11)
+  try {
+    const ins = JSON.parse(localStorage.getItem('eureka_inspire_v1') || '{}');
+    for (let i = 7; i <= 11; i++) {
+      if (ins.tasks && ins.tasks[i] && ins.tasks[i].status === 'done') done++;
+    }
+  } catch(e) {}
+
+  // Shape (T12-15)
+  try {
+    const shp = JSON.parse(localStorage.getItem('eureka_shape_v1') || '{}');
+    for (let i = 12; i <= 15; i++) {
+      if (shp.tasks && shp.tasks[i] && shp.tasks[i].status === 'done') done++;
+    }
+  } catch(e) {}
+
+  // Exam (T16-20)
+  try {
+    const exm = JSON.parse(localStorage.getItem('eureka_exam_v1') || '{}');
+    for (let i = 16; i <= 20; i++) {
+      if (exm.tasks && exm.tasks[i] && exm.tasks[i].status === 'done') done++;
+    }
+  } catch(e) {}
+
+  proj.taskCount = total;
+  proj.completedCount = done;
+  proj.updatedAt = new Date().toISOString();
+  lp_saveProjectsData(data);
+  lp_renderProjectsList();
+}
+
+// Hook: call on state save
+window.lp_syncProjectProgress = lp_syncProjectProgress;
 </script>
 
 <!-- Eureka 学习流程线路图 Modal -->

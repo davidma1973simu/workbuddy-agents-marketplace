@@ -5723,9 +5723,6 @@ const SyncUI = {
     if (state.isSyncing) {
       btn.innerHTML = '🔄 <span id="sync-status-text">同步中...</span>';
       btn.disabled = true;
-    } else if (state.mode === SYNC_CONFIG.MODE.OFFLINE) {
-      btn.innerHTML = '⚪ <span id="sync-status-text">离线</span>';
-      btn.disabled = false;
     } else if (state.lastSyncTime) {
       const timeStr = this.formatTime(state.lastSyncTime);
       btn.innerHTML = `☁️ <span id="sync-status-text">已同步 ${timeStr}</span>`;
@@ -5740,8 +5737,6 @@ const SyncUI = {
     if (editorSyncText) {
       if (state.isSyncing) {
         editorSyncText.textContent = '同步中...';
-      } else if (state.mode === SYNC_CONFIG.MODE.OFFLINE) {
-        editorSyncText.textContent = '离线';
       } else if (state.lastSyncTime) {
         editorSyncText.textContent = '已同步 ' + this.formatTime(state.lastSyncTime);
       } else {

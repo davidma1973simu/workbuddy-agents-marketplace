@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 实训系统 · RISE 全流程学习</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   EUREKA LEARN SPA - RISE 四阶段合并版
+   基于 learn.html 结构，整合 Reveal/Inspire/Shape/Exam 四个模块
+   ═══════════════════════════════════════════════════════════ */
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* Reveal 紫色系 */
+  --reveal:#667eea;--reveal2:#764ba2;
+  /* Inspire 橙色系 */
+  --inspire:#f97316;--inspire2:#ea580c;
+  /* Shape 绿色系 */
+  --shape:#10b981;--shape2:#059669;
+  /* Exam Teal 色系 */
+  --exam:#0d9488;--exam2:#0f766e;
+  /* 通用 */
+  --green:#10b981;--amber:#f59e0b;--red:#ef4444;
+  --border:#e2e8f0;--radius:14px;
+  --shadow:0 4px 24px rgba(0,0,0,.1);
+  /* 当前激活模块颜色（默认 Reveal） */
+  --active:#667eea;--active2:#764ba2;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f5f5;color:#1e293b;min-height:100vh}
+
+/* 模态框通用 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal-box{background:#fff;border-radius:16px;width:480px;max-width:90vw;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2);transform:scale(.95);transition:.3s}
+.modal-overlay.active .modal-box{transform:scale(1)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-header h2{font-size:16px;font-weight:800}
+.modal-close{width:28px;height:28px;border:none;border-radius:50%;background:var(--border);cursor:pointer;font-size:14px}
+.modal-close:hover{background:#cbd5e1}
+
+/* ─── NAV ─── */
+.top-nav{background:linear-gradient(135deg,var(--active),var(--active2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:background .3s}
+.nav-left{display:flex;align-items:center;gap:14px}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:20px;transition:.2s}
+.nav-back:hover{background:rgba(255,255,255,.2)}
+.nav-brand{color:#fff;font-size:17px;font-weight:700}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-sync-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
+.ai-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.ai-btn:hover{background:rgba(255,255,255,.25)}
+
+/* ─── RISE TABS ─── */
+.rise-tabs{background:#fff;border-bottom:1px solid var(--border);display:flex;padding:0 24px}
+.rise-tab{flex:1;padding:16px 20px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;font-size:14px;font-weight:600;color:#64748b;background:none;border-left:1px solid #f1f5f9}
+.rise-tab:first-child{border-left:none}
+.rise-tab:hover{background:#f8faff;color:#1e293b}
+.rise-tab.active{color:var(--active);border-bottom-color:var(--active);background:linear-gradient(180deg,rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%)}
+.rise-tab .tab-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:all .2s}
+.rise-tab[data-phase="reveal"] .tab-dot{background:#667eea}
+.rise-tab[data-phase="inspire"] .tab-dot{background:#f97316}
+.rise-tab[data-phase="shape"] .tab-dot{background:#10b981}
+.rise-tab[data-phase="exam"] .tab-dot{background:#0d9488}
+.rise-tab.active .tab-dot{transform:scale(1.1);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+/* ─── PROGRESS BAR ─── */
+.progress-mini{display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b}
+.progress-mini-bar{flex:1;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden}
+.progress-mini-fill{height:100%;border-radius:2px;transition:width .3s}
+
+/* ─── LAYOUT ─── */
+.main{display:flex;gap:24px;padding:24px;max-width:1400px;margin:0 auto}
+.sidebar{width:280px;flex-shrink:0}
+.content{flex:1;min-width:0}
+
+/* ─── PROJECTS SECTION ─── */
+.projects-section{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.projects-header{padding:14px 18px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;gap:8px}
+.projects-header .icon{font-size:16px}
+.projects-header .label{font-size:13px;font-weight:700;color:#1e40af;flex:1}
+.btn-add-project{width:28px;height:28px;border-radius:50%;border:none;background:#3b82f6;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-add-project:hover{background:#2563eb;transform:scale(1.05)}
+.projects-list{max-height:180px;overflow-y:auto;padding:8px 0}
+.project-item{padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;border-left:3px solid transparent}
+.project-item:hover{background:#f1f5f9}
+.project-item.active{background:#eff6ff;border-left-color:#3b82f6}
+.project-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex-shrink:0}
+.project-info{flex:1;min-width:0}
+.project-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.project-meta{font-size:11px;color:#94a3b8;margin-top:2px}
+.project-actions{display:flex;gap:4px;opacity:0;transition:opacity .2s}
+.project-item:hover .project-actions{opacity:1}
+.project-btn{width:24px;height:24px;border-radius:4px;border:none;background:transparent;cursor:pointer;font-size:12px}
+.project-btn:hover{background:#e2e8f0}
+.project-btn.delete:hover{background:#fee2e2;color:#dc2626}
+.projects-empty{padding:20px;text-align:center;color:#94a3b8;font-size:12px}
+
+/* ─── MODULE PROGRESS ─── */
+.module-progress{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.module-progress-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.module-progress-header .phase{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.module-progress-header .module{font-size:14px;font-weight:700;margin-top:3px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* ─── TASK NAV ─── */
+.task-nav{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.task-item{padding:14px 20px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.task-item:last-child{border-bottom:none}
+.task-item:hover{background:#f8faff}
+.task-item.active{background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.06));border-left:3px solid var(--active)}
+.task-item.active .task-num{background:var(--active);color:#fff}
+.task-item.done .task-num{background:var(--green);color:#fff}
+.task-num{width:26px;height:26px;border-radius:50%;background:var(--border);color:#64748b;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-info .task-name{font-size:13px;font-weight:600;line-height:1.4}
+.task-info .task-status{font-size:11px;color:#94a3b8;margin-top:3px}
+.task-item.done .task-info .task-status{color:var(--green)}
+.mod-sep{padding:8px 20px;background:#f8faff;font-size:11px;font-weight:700;color:#64748b;border-bottom:1px solid var(--border)}
+
+/* ─── DELIVERABLE TAG ─── */
+.dlv-tag{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;border:1px solid #86efac;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:6px}
+
+/* ─── TIPS CARD ─── */
+.tips-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.tips-header{padding:14px 18px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;gap:8px}
+.tips-header .label{font-size:13px;font-weight:700;color:#92400e}
+.tips-body{padding:14px 18px}
+.tip-item{font-size:12px;color:#64748b;line-height:1.6;padding:6px 0;border-bottom:1px solid var(--border)}
+.tip-item:last-child{border-bottom:none}
+.tip-item::before{content:"⚠️ "}
+
+/* ─── CONTENT AREA ─── */
+.content-area{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:none}
+.content-area.active{display:block}
+.task-card{overflow:hidden}
+.task-hdr{padding:24px 28px;border-bottom:1px solid var(--border)}
+.step-badge{display:inline-flex;align-items:center;gap:6px;background:var(--active);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px;transition:background .3s}
+.task-hdr h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.obj-box{font-size:14px;color:#64748b;line-height:1.7;padding:12px 16px;background:rgba(0,0,0,.03);border-radius:8px;border-left:3px solid var(--active);margin-bottom:10px}
+.concept-box{padding:20px 28px;border-bottom:1px solid var(--border)}
+.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--active);transition:color .3s}
+.form-area{padding:20px 28px}
+.form-group{margin-bottom:22px}
+.form-label{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.form-hint{font-size:12px;color:#94a3b8;margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#f8faff;border-radius:6px;border-left:2px solid var(--active)}
+textarea,input[type="text"]{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:inherit;resize:vertical;transition:.2s}
+textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--active);box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+textarea{min-height:90px}
+
+/* ─── STEPS ─── */
+.steps-box{padding:20px 28px;border-bottom:1px solid var(--border)}
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f8faff;border-radius:8px;border:1px solid var(--border)}
+.step-circle{width:28px;height:28px;border-radius:50%;background:var(--active);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s}
+.step-title{font-size:13px;font-weight:700}
+.step-hint{font-size:12px;color:#94a3b8;margin-top:3px;line-height:1.5}
+
+/* ─── BUTTONS ─── */
+.btn-primary{background:linear-gradient(135deg,var(--active),var(--active2));color:#fff;border:none;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.btn-secondary{background:#f1f5f9;color:#475569;border:none;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{background:#e2e8f0}
+
+/* ─── COMPLETION LAYOUT ─── */
+.completion-area{padding:24px 28px;border-top:2px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,1) 0%,rgba(248,250,252,1) 100%)}
+.output-preview{background:#f8faff;border-radius:12px;padding:16px;margin-bottom:16px}
+.output-title{font-size:13px;font-weight:700;color:#475569;margin-bottom:8px}
+.output-content{font-size:13px;color:#1e293b;line-height:1.7;white-space:pre-wrap}
+.success-criteria{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.criteria-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:#475569}
+.criteria-item .icon{color:var(--green);font-size:16px}
+.next-step{display:flex;align-items:center;justify-content:space-between;padding:16px;background:linear-gradient(135deg,var(--active),var(--active2));border-radius:12px;color:#fff}
+.next-step-info .label{font-size:11px;opacity:.8}
+.next-step-info .name{font-size:14px;font-weight:700;margin-top:2px}
+.btn-next{background:rgba(255,255,255,.2);color:#fff;border:none;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-next:hover{background:rgba(255,255,255,.3)}
+
+/* ─── INSPIRE DATA CARD ─── */
+.inspire-data-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.inspire-data-header{padding:14px 18px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;gap:8px}
+.inspire-data-header .label{font-size:13px;font-weight:700;color:#92400e}
+.inspire-data-body{padding:14px 18px}
+.inspire-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.inspire-item:last-child{border-bottom:none}
+.inspire-item-label{font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase}
+.inspire-item-value{color:#78350f;margin-top:2px;line-height:1.5}
+
+/* ─── FORM SECTION (Exam style) ─── */
+.form-section{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.form-section-hdr{padding:14px 18px;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);display:flex;align-items:center;gap:10px;border-bottom:1px solid #99f6e4}
+.form-section-icon{font-size:18px}
+.form-section-title{font-size:14px;font-weight:700;color:#0f766e}
+.form-section-hint{font-size:12px;color:#64748b;margin-left:auto}
+.form-section-body{padding:18px}
+
+/* ─── OUTPUTS CARD ─── */
+.outputs-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;cursor:pointer}
+.outputs-header{padding:14px 18px;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);display:flex;align-items:center;gap:8px}
+.outputs-header .label{font-size:13px;font-weight:700;color:#0f766e;flex:1}
+.outputs-header .arrow{font-size:11px;color:#0f766e;opacity:.6}
+.outputs-body{padding:14px 18px}
+
+/* ─── MISC ─── */
+.hidden{display:none !important}
+.loading{text-align:center;padding:40px;color:#94a3b8}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#1e293b;color:#fff;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.2);opacity:0;transition:all .3s;z-index:9999}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="top-nav" id="topNav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-back">← 返回</a>
+    <span class="nav-brand">📚 Eureka 实训系统</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-sync-badge">
+      <span class="sync-dot"></span>
+      <span>本地存储</span>
+    </span>
+    <button class="ai-btn" onclick="showEurekaFlow()">
+      <span>🗺️</span>
+      <span>学习流程</span>
+    </button>
+    <button class="ai-btn" onclick="showGuide()">
+      <span>🎯</span>
+      <span>新手引导</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     RISE TABS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="rise-tabs">
+  <div class="rise-tab active" data-phase="reveal" onclick="switchModule('reveal')">
+    <div class="tab-dot">R</div>
+    <span>Reveal 揭示</span>
+  </div>
+  <div class="rise-tab" data-phase="inspire" onclick="switchModule('inspire')">
+    <div class="tab-dot">I</div>
+    <span>Inspire 启发</span>
+  </div>
+  <div class="rise-tab" data-phase="shape" onclick="switchModule('shape')">
+    <div class="tab-dot">S</div>
+    <span>Shape 构建</span>
+  </div>
+  <div class="rise-tab" data-phase="exam" onclick="switchModule('exam')">
+    <div class="tab-dot">E</div>
+    <span>Exam 验证</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════════════════ -->
+<div class="main">
+  
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar" id="sidebar">
+    
+    <!-- 学习项目区域 -->
+    <div class="projects-section" id="projects-section">
+      <div class="projects-header">
+        <span class="icon">📁</span>
+        <span class="label">学习项目</span>
+        <button class="btn-add-project" onclick="createNewProject()" title="新建项目">+</button>
+      </div>
+      <div class="projects-list" id="projects-list">
+        <div class="projects-empty">暂无项目<br>点击 + 创建新项目</div>
+      </div>
+    </div>
+
+    <!-- Reveal 模块侧边栏 -->
+    <div id="reveal-sidebar">
+      <div class="module-progress">
+        <div class="module-progress-header">
+          <div class="phase" style="color:var(--reveal)">Reveal · 揭示阶段</div>
+          <div class="module">🔍 用户洞察</div>
+          <div class="progress-bar"><div class="progress-fill" id="reveal-progress" style="width:0%;background:linear-gradient(90deg,var(--reveal),var(--reveal2))"></div></div>
+        </div>
+      </div>
+      <div class="task-nav" id="reveal-tasks">
+        <div class="mod-sep">🔍 用户洞察</div>
+        <div class="task-item" data-task="t1" onclick="loadTask('reveal','t1')"><div class="task-num">1</div><div class="task-info"><div class="task-name">用户访谈设计</div><div class="task-status" id="reveal-t1-status">待开始</div></div></div>
+        <div class="task-item" data-task="t2" onclick="loadTask('reveal','t2')"><div class="task-num">2</div><div class="task-info"><div class="task-name">访谈执行记录</div><div class="task-status" id="reveal-t2-status">待开始</div></div></div>
+        <div class="task-item" data-task="t3" onclick="loadTask('reveal','t3')"><div class="task-num">3</div><div class="task-info"><div class="task-name">用户画像</div><div class="task-status" id="reveal-t3-status">待开始</div></div></div>
+        <div class="mod-sep">💡 洞察提炼</div>
+        <div class="task-item" data-task="t4" onclick="loadTask('reveal','t4')"><div class="task-num">4</div><div class="task-info"><div class="task-name">需求洞察分析</div><div class="task-status" id="reveal-t4-status">待开始</div></div></div>
+        <div class="task-item" data-task="t5" onclick="loadTask('reveal','t5')"><div class="task-num">5</div><div class="task-info"><div class="task-name">用户旅程地图</div><div class="task-status" id="reveal-t5-status">待开始</div></div></div>
+        <div class="mod-sep">🎯 机会定义</div>
+        <div class="task-item" data-task="t6" onclick="loadTask('reveal','t6')"><div class="task-num">6</div><div class="task-info"><div class="task-name">POV陈述</div><div class="task-status" id="reveal-t6-status">待开始</div></div></div>
+      </div>
+    </div>
+
+    <!-- Inspire 模块侧边栏 -->
+    <div id="inspire-sidebar" class="hidden">
+      <div class="module-progress">
+        <div class="module-progress-header">
+          <div class="phase" style="color:var(--inspire)">Inspire · 启发阶段</div>
+          <div class="module">💡 AHA时刻</div>
+          <div class="progress-bar"><div class="progress-fill" id="inspire-progress" style="width:0%;background:linear-gradient(90deg,var(--inspire),var(--inspire2))"></div></div>
+        </div>
+      </div>
+      <div class="task-nav" id="inspire-tasks">
+        <div class="mod-sep">🎯 目标重构</div>
+        <div class="task-item" data-task="t7" onclick="loadTask('inspire','t7')"><div class="task-num">7</div><div class="task-info"><div class="task-name">HMW问题探索</div><div class="task-status" id="inspire-t7-status">待开始</div></div></div>
+        <div class="task-item" data-task="t8" onclick="loadTask('inspire','t8')"><div class="task-num">8</div><div class="task-info"><div class="task-name">跨界灵感收集</div><div class="task-status" id="inspire-t8-status">待开始</div></div></div>
+        <div class="mod-sep">💡 AHA设计</div>
+        <div class="task-item" data-task="t9" onclick="loadTask('inspire','t9')"><div class="task-num">9</div><div class="task-info"><div class="task-name">AHA时刻设计</div><div class="task-status" id="inspire-t9-status">待开始</div></div></div>
+        <div class="task-item" data-task="t10" onclick="loadTask('inspire','t10')"><div class="task-num">10</div><div class="task-info"><div class="task-name">创意方案生成</div><div class="task-status" id="inspire-t10-status">待开始</div></div></div>
+        <div class="mod-sep">✨ 创意筛选</div>
+        <div class="task-item" data-task="t11" onclick="loadTask('inspire','t11')"><div class="task-num">11</div><div class="task-info"><div class="task-name">最佳创意筛选</div><div class="task-status" id="inspire-t11-status">待开始</div></div></div>
+      </div>
+    </div>
+
+    <!-- Shape 模块侧边栏 -->
+    <div id="shape-sidebar" class="hidden">
+      <div class="module-progress">
+        <div class="module-progress-header">
+          <div class="phase" style="color:var(--shape)">Shape · 构建阶段</div>
+          <div class="module">🎨 概念方案</div>
+          <div class="progress-bar"><div class="progress-fill" id="shape-progress" style="width:0%;background:linear-gradient(90deg,var(--shape),var(--shape2))"></div></div>
+        </div>
+      </div>
+      <div class="task-nav" id="shape-tasks">
+        <div class="mod-sep">🔍 四维拷问</div>
+        <div class="task-item" data-task="t12" onclick="loadTask('shape','t12')"><div class="task-num">12</div><div class="task-info"><div class="task-name">四维拷问</div><div class="task-status" id="shape-t12-status">待开始</div></div></div>
+        <div class="mod-sep">💼 方案整合</div>
+        <div class="task-item" data-task="t13" onclick="loadTask('shape','t13')"><div class="task-num">13</div><div class="task-info"><div class="task-name">方案整合发展</div><div class="task-status" id="shape-t13-status">待开始</div></div></div>
+        <div class="mod-sep">📖 用户故事</div>
+        <div class="task-item" data-task="t14" onclick="loadTask('shape','t14')"><div class="task-num">14</div><div class="task-info"><div class="task-name">用户故事描述</div><div class="task-status" id="shape-t14-status">待开始</div></div></div>
+        <div class="mod-sep">✨ AHA价值</div>
+        <div class="task-item" data-task="t15" onclick="loadTask('shape','t15')"><div class="task-num">15</div><div class="task-info"><div class="task-name">AHA价值设计</div><div class="task-status" id="shape-t15-status">待开始</div></div></div>
+      </div>
+    </div>
+
+    <!-- Exam 模块侧边栏 -->
+    <div id="exam-sidebar" class="hidden">
+      <div class="module-progress">
+        <div class="module-progress-header">
+          <div class="phase" style="color:var(--exam)">Exam · 验证阶段</div>
+          <div class="module">🔬 原型验证</div>
+          <div class="progress-bar"><div class="progress-fill" id="exam-progress" style="width:0%;background:linear-gradient(90deg,var(--exam),var(--exam2))"></div></div>
+        </div>
+      </div>
+      <div class="task-nav" id="exam-tasks">
+        <div class="mod-sep">🔧 原型搭建</div>
+        <div class="task-item" data-task="t16" onclick="loadTask('exam','t16')"><div class="task-num">16</div><div class="task-info"><div class="task-name">测试计划设计</div><div class="task-status" id="exam-t16-status">待开始</div></div></div>
+        <div class="task-item" data-task="t17" onclick="loadTask('exam','t17')"><div class="task-num">17</div><div class="task-info"><div class="task-name">方案原型搭建</div><div class="task-status" id="exam-t17-status">待开始</div></div></div>
+        <div class="mod-sep">🎯 用户测试</div>
+        <div class="task-item" data-task="t18" onclick="loadTask('exam','t18')"><div class="task-num">18</div><div class="task-info"><div class="task-name">用户测试反馈</div><div class="task-status" id="exam-t18-status">待开始</div></div></div>
+        <div class="task-item" data-task="t19" onclick="loadTask('exam','t19')"><div class="task-num">19</div><div class="task-info"><div class="task-name">AHA价值验证</div><div class="task-status" id="exam-t19-status">待开始</div></div></div>
+        <div class="task-item" data-task="t20" onclick="loadTask('exam','t20')"><div class="task-num">20</div><div class="task-info"><div class="task-name">呈现和计划</div><div class="task-status" id="exam-t20-status">待开始</div></div></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ══════════ CONTENT ══════════ -->
+  <main class="content" id="content">
+    
+    <!-- Reveal 内容区 -->
+    <div class="content-area active" id="reveal-content">
+      <div class="loading" id="reveal-loading">正在加载 Reveal 阶段...</div>
+    </div>
+
+    <!-- Inspire 内容区 -->
+    <div class="content-area" id="inspire-content">
+      <div class="loading" id="inspire-loading">正在加载 Inspire 阶段...</div>
+    </div>
+
+    <!-- Shape 内容区 -->
+    <div class="content-area" id="shape-content">
+      <div class="loading" id="shape-loading">正在加载 Shape 阶段...</div>
+    </div>
+
+    <!-- Exam 内容区 -->
+    <div class="content-area" id="exam-content">
+      <div class="loading" id="exam-loading">正在加载 Exam 阶段...</div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODALS
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- EUREKA FLOW MODAL -->
+<div class="modal-overlay" id="eureka-flow-modal">
+  <div class="modal-box" style="max-width:800px">
+    <div class="modal-header">
+      <h2>🗺️ Eureka 价值创新探索线路图</h2>
+      <button class="modal-close" onclick="closeEurekaFlow()">✕</button>
+    </div>
+    <div style="padding:20px 0">
+      <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=80" alt="学习线路图" style="width:100%;border-radius:12px">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px">
+        <div style="padding:16px;background:#eff6ff;border-radius:12px;border-left:4px solid #3b82f6"><div style="font-weight:700;color:#1e40af">1. Reveal</div><div style="font-size:12px;color:#64748b;margin-top:4px">用户洞察，定义问题</div></div>
+        <div style="padding:16px;background:#fff7ed;border-radius:12px;border-left:4px solid #f97316"><div style="font-weight:700;color:#c2410c">2. Inspire</div><div style="font-size:12px;color:#64748b;margin-top:4px">跨界灵感，AHA时刻</div></div>
+        <div style="padding:16px;background:#f0fdf4;border-radius:12px;border-left:4px solid #10b981"><div style="font-weight:700;color:#15803d">3. Shape</div><div style="font-size:12px;color:#64748b;margin-top:4px">概念方案，用户故事</div></div>
+        <div style="padding:16px;background:#f0fdfa;border-radius:12px;border-left:4px solid #0d9488"><div style="font-weight:700;color:#0f766e">4. Exam</div><div style="font-size:12px;color:#64748b;margin-top:4px">原型测试，验证价值</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GUIDE MODAL -->
+<div class="modal-overlay" id="guide-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>🎯 新手引导</h2>
+      <button class="modal-close" onclick="closeGuide()">✕</button>
+    </div>
+    <div style="padding:10px 0">
+      <h3 style="font-size:14px;margin-bottom:12px">Eureka RISE 全流程学习</h3>
+      <p style="font-size:13px;color:#64748b;line-height:1.7;margin-bottom:12px">Eureka 实训系统基于 RISE 框架，帮助你完成从用户洞察到价值验证的完整创新流程。</p>
+      <ul style="font-size:13px;color:#64748b;line-height:1.8;padding-left:20px">
+        <li><strong>Reveal (揭示)：</strong>深入了解用户，发现真实需求</li>
+        <li><strong>Inspire (启发)：</strong>跨界灵感，找到 AHA 时刻</li>
+        <li><strong>Shape (构建)：</strong>发展概念，讲述用户故事</li>
+        <li><strong>Exam (验证)：</strong>原型测试，验证商业价值</li>
+      </ul>
+      <p style="font-size:12px;color:#94a3b8;margin-top:16px;padding:12px;background:#f8faff;border-radius:8px">💡 提示：每个阶段都有多个任务，完成后可切换到下一个阶段</p>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT INPUT MODAL -->
+<div class="modal-overlay" id="project-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="project-modal-title">📁 新建学习项目</h2>
+      <button class="modal-close" onclick="closeProjectModal()">✕</button>
+    </div>
+    <div style="padding:10px 0">
+      <div class="form-group">
+        <label class="form-label">项目名称</label>
+        <input type="text" id="project-name-input" placeholder="输入项目名称..." style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <button class="btn-secondary" onclick="closeProjectModal()" style="flex:1">取消</button>
+        <button class="btn-primary" id="project-modal-confirm" style="flex:1">创建</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+const MODULE_KEYS = {
+  reveal: 'eureka_learn_state_',
+  inspire: 'eureka_inspire_v1',
+  shape: 'eureka_shape_v1',
+  exam: 'eureka_exam_v1'
+};
+
+const PROJECTS_KEY = 'eureka_learn_projects_v2';
+const CURRENT_PROJECT_KEY = 'eureka_learn_current_v2';
+
+// Module configurations
+const MODULE_CONFIG = {
+  reveal: { color: '#667eea', color2: '#764ba2', name: 'Reveal', tasks: 6 },
+  inspire: { color: '#f97316', color2: '#ea580c', name: 'Inspire', tasks: 5 },
+  shape: { color: '#10b981', color2: '#059669', name: 'Shape', tasks: 4 },
+  exam: { color: '#0d9488', color2: '#0f766e', name: 'Exam', tasks: 5 }
+};
+
+// Task configurations
+const TASK_CONFIG = {
+  // Reveal (T1-T6)
+  reveal: {
+    t1: { name: '用户访谈设计', objective: '设计一份高质量的用户访谈提纲', section: '访谈准备' },
+    t2: { name: '访谈执行记录', objective: '记录并整理访谈中的关键发现', section: '访谈执行' },
+    t3: { name: '用户画像', objective: '基于访谈数据创建目标用户画像', section: '洞察提炼' },
+    t4: { name: '需求洞察分析', objective: '从访谈中提炼核心需求洞察', section: '洞察提炼' },
+    t5: { name: '用户旅程地图', objective: '绘制用户旅程地图，识别关键触点', section: '洞察提炼' },
+    t6: { name: 'POV陈述', objective: '形成清晰的 POV（Point-of-View）陈述', section: '机会定义' }
+  },
+  // Inspire (T7-T11)
+  inspire: {
+    t7: { name: 'HMW问题探索', objective: '将洞察转化为"How Might We"问题', section: '目标重构' },
+    t8: { name: '跨界灵感收集', objective: '从跨界领域收集创新灵感', section: '目标重构' },
+    t9: { name: 'AHA时刻设计', objective: '设计用户会惊叹的 AHA 时刻', section: 'AHA设计' },
+    t10: { name: '创意方案生成', objective: '基于灵感生成多个创意方案', section: 'AHA设计' },
+    t11: { name: '最佳创意筛选', objective: '使用筛选矩阵找到最佳创意', section: '创意筛选' }
+  },
+  // Shape (T12-T15)
+  shape: {
+    t12: { name: '四维拷问', objective: '从用户/商业/技术/生态四维验证创意', section: '四维拷问' },
+    t13: { name: '方案整合发展', objective: '发展完整的概念方案', section: '方案整合' },
+    t14: { name: '用户故事描述', objective: '用六格故事板描述用户旅程', section: '用户故事' },
+    t15: { name: 'AHA价值设计', objective: '深化 AHA 时刻的商业价值', section: 'AHA价值' }
+  },
+  // Exam (T16-T20)
+  exam: {
+    t16: { name: '测试计划设计', objective: '设计极简测试计划与脚本', section: '原型搭建' },
+    t17: { name: '方案原型搭建', objective: '搭建低保真原型', section: '原型搭建' },
+    t18: { name: '用户测试反馈', objective: '执行用户测试并记录反馈', section: '用户测试' },
+    t19: { name: 'AHA价值验证', objective: '验证 AHA 时刻是否被触发', section: '用户测试' },
+    t20: { name: '呈现和计划', objective: '完成电梯演讲与商业计划', section: '商业呈现' }
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let currentModule = 'reveal';
+let currentTask = null;
+let currentProjectId = null;
+let moduleStates = {
+  reveal: {},
+  inspire: {},
+  shape: {},
+  exam: {}
+};
+
+// ═══════════════════════════════════════════════════════════════
+// PROJECT MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function getProjectsData() {
+  try { return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '{"projects":[]}'); }
+  catch(e) { return { projects: [] }; }
+}
+
+function saveProjectsData(data) {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(data));
+}
+
+function getCurrentProjectId() {
+  return currentProjectId || localStorage.getItem(CURRENT_PROJECT_KEY);
+}
+
+function setCurrentProjectId(id) {
+  currentProjectId = id;
+  localStorage.setItem(CURRENT_PROJECT_KEY, id);
+}
+
+function createInitialState(module) {
+  const tasks = {};
+  const taskCount = MODULE_CONFIG[module].tasks;
+  for (let i = 1; i <= taskCount; i++) {
+    tasks['t' + i] = { done: false, data: {} };
+  }
+  return { tasks };
+}
+
+function saveProjectState(module, state) {
+  const projId = getCurrentProjectId();
+  if (!projId) return;
+  
+  if (module === 'reveal') {
+    localStorage.setItem(MODULE_KEYS.reveal + projId, JSON.stringify(state));
+  } else {
+    localStorage.setItem(MODULE_KEYS[module], JSON.stringify(state));
+  }
+  
+  updateProjectStats();
+}
+
+function loadProjectState(module) {
+  if (module === 'reveal') {
+    const projId = getCurrentProjectId();
+    if (!projId) return null;
+    try {
+      const data = localStorage.getItem(MODULE_KEYS.reveal + projId);
+      return data ? JSON.parse(data) : null;
+    } catch(e) { return null; }
+  } else {
+    try {
+      const data = localStorage.getItem(MODULE_KEYS[module]);
+      return data ? JSON.parse(data) : null;
+    } catch(e) { return null; }
+  }
+}
+
+function updateProjectStats() {
+  const projId = getCurrentProjectId();
+  if (!projId) return;
+  
+  const data = getProjectsData();
+  const project = data.projects.find(p => p.id === projId);
+  if (!project) return;
+  
+  // 计算各模块进度
+  let total = 0, done = 0;
+  Object.keys(MODULE_CONFIG).forEach(mod => {
+    const state = moduleStates[mod];
+    const tasks = state?.tasks || {};
+    Object.keys(tasks).forEach(t => {
+      total++;
+      if (tasks[t].done) done++;
+    });
+  });
+  
+  project.progress = total > 0 ? Math.round((done / total) * 100) : 0;
+  project.updatedAt = Date.now();
+  saveProjectsData(data);
+}
+
+function renderProjectsList() {
+  const container = document.getElementById('projects-list');
+  const data = getProjectsData();
+  const currentId = getCurrentProjectId();
+  
+  if (data.projects.length === 0) {
+    container.innerHTML = '<div class="projects-empty">暂无项目<br>点击 + 创建新项目</div>';
+    return;
+  }
+  
+  container.innerHTML = data.projects.map(p => `
+    <div class="project-item ${p.id === currentId ? 'active' : ''}" onclick="switchProject('${p.id}')">
+      <div class="project-icon">${p.icon || '📁'}</div>
+      <div class="project-info">
+        <div class="project-name">${p.name}</div>
+        <div class="project-meta">${p.progress || 0}% 完成</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function createNewProject() {
+  document.getElementById('project-modal-title').textContent = '📁 新建学习项目';
+  document.getElementById('project-name-input').value = '';
+  document.getElementById('project-modal-confirm').textContent = '创建';
+  document.getElementById('project-modal-confirm').onclick = confirmCreateProject;
+  document.getElementById('project-modal').classList.add('active');
+}
+
+function confirmCreateProject() {
+  const name = document.getElementById('project-name-input').value.trim();
+  if (!name) {
+    showToast('请输入项目名称');
+    return;
+  }
+  
+  const data = getProjectsData();
+  const projectId = 'proj_' + Date.now();
+  const newProject = {
+    id: projectId,
+    name: name,
+    icon: '📁',
+    progress: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+  
+  data.projects.push(newProject);
+  saveProjectsData(data);
+  
+  // 创建初始状态
+  Object.keys(MODULE_CONFIG).forEach(mod => {
+    if (mod === 'reveal') {
+      localStorage.setItem(MODULE_KEYS.reveal + projectId, JSON.stringify(createInitialState(mod)));
+    } else {
+      localStorage.setItem(MODULE_KEYS[mod], JSON.stringify(createInitialState(mod)));
+    }
+  });
+  
+  setCurrentProjectId(projectId);
+  loadAllModuleStates();
+  renderProjectsList();
+  updateAllProgress();
+  closeProjectModal();
+  showToast('✅ 项目已创建');
+}
+
+function switchProject(projectId) {
+  const currentId = getCurrentProjectId();
+  if (projectId === currentId) {
+    showToast('📌 已在当前项目');
+    return;
+  }
+  
+  setCurrentProjectId(projectId);
+  loadAllModuleStates();
+  renderProjectsList();
+  updateAllProgress();
+  showToast('📁 已切换到新项目');
+}
+
+function closeProjectModal() {
+  document.getElementById('project-modal').classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODULE SWITCHING
+// ═══════════════════════════════════════════════════════════════
+function switchModule(module) {
+  // 保存当前模块状态
+  saveProjectState(currentModule, moduleStates[currentModule]);
+  
+  currentModule = module;
+  
+  // 更新 Tab 样式
+  document.querySelectorAll('.rise-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.phase === module);
+  });
+  
+  // 更新侧边栏
+  document.querySelectorAll('[id$="-sidebar"]').forEach(sidebar => {
+    sidebar.classList.add('hidden');
+  });
+  document.getElementById(module + '-sidebar').classList.remove('hidden');
+  
+  // 更新内容区
+  document.querySelectorAll('.content-area').forEach(area => {
+    area.classList.remove('active');
+  });
+  document.getElementById(module + '-content').classList.add('active');
+  
+  // 更新主题色
+  const config = MODULE_CONFIG[module];
+  document.documentElement.style.setProperty('--active', config.color);
+  document.documentElement.style.setProperty('--active2', config.color2);
+  document.getElementById('topNav').style.background = `linear-gradient(135deg, ${config.color}, ${config.color2})`;
+  
+  // 加载模块内容
+  loadModuleContent(module);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TASK LOADING
+// ═══════════════════════════════════════════════════════════════
+function loadTask(module, taskId) {
+  currentModule = module;
+  const state = moduleStates[module];
+  const task = TASK_CONFIG[module][taskId];
+  const config = MODULE_CONFIG[module];
+  
+  // 更新侧边栏激活状态
+  document.querySelectorAll(`#${module}-tasks .task-item`).forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.task === taskId) item.classList.add('active');
+  });
+  
+  // 渲染任务内容
+  const content = document.getElementById(module + '-content');
+  content.innerHTML = renderTaskContent(module, taskId, task, state.tasks[taskId]);
+  
+  // 绑定保存事件
+  bindTaskEvents(module, taskId);
+}
+
+function renderTaskContent(module, taskId, task, taskState) {
+  const config = MODULE_CONFIG[module];
+  const taskNum = parseInt(taskId.replace('t', ''));
+  
+  return `
+    <div class="task-card">
+      <div class="task-hdr">
+        <div class="step-badge">${config.name} · 任务 ${taskNum}/20</div>
+        <h2>${task.name}</h2>
+        <div class="obj-box">${task.objective}</div>
+      </div>
+      
+      <div class="concept-box">
+        <div class="sec-label">📝 任务说明</div>
+        <div class="form-area">
+          <div class="form-group">
+            <label class="form-label">${task.section}</label>
+            <div class="form-hint">请详细描述你的思考和产出...</div>
+            <textarea id="task-input-${taskId}" rows="6" placeholder="在此输入...">${taskState?.data?.content || ''}</textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="completion-area">
+        <div class="output-preview">
+          <div class="output-title">📋 产出预览</div>
+          <div class="output-content" id="output-preview-${taskId}">${taskState?.data?.content || '暂无产出...'}</div>
+        </div>
+        <div class="success-criteria">
+          <div class="criteria-item"><span class="icon">✓</span><span>已完成任务要求</span></div>
+          <div class="criteria-item"><span class="icon">✓</span><span>产出有实质性内容</span></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <button class="btn-primary" onclick="saveAndComplete('${taskId}')" id="complete-btn-${taskId}" ${taskState?.done ? 'disabled style="opacity:0.5"' : ''}>
+            ${taskState?.done ? '✅ 已完成' : '✓ 标记完成'}
+          </button>
+          <button class="btn-secondary" onclick="switchModule('${getNextModule(module)}')" id="next-btn-${taskId}" ${taskState?.done ? '' : 'disabled style="opacity:0.5"'}>
+            → 下一阶段
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function bindTaskEvents(module, taskId) {
+  const input = document.getElementById('task-input-' + taskId);
+  const preview = document.getElementById('output-preview-' + taskId);
+  
+  if (input && preview) {
+    input.addEventListener('input', () => {
+      preview.textContent = input.value || '暂无产出...';
+      
+      // 自动保存
+      if (!moduleStates[module].tasks) moduleStates[module].tasks = {};
+      if (!moduleStates[module].tasks[taskId]) moduleStates[module].tasks[taskId] = { done: false, data: {} };
+      moduleStates[module].tasks[taskId].data.content = input.value;
+      saveProjectState(module, moduleStates[module]);
+      updateTaskStatus(module, taskId);
+    });
+  }
+}
+
+function saveAndComplete(taskId) {
+  const input = document.getElementById('task-input-' + taskId);
+  const content = input?.value?.trim();
+  
+  if (!content) {
+    showToast('请先填写任务内容');
+    return;
+  }
+  
+  moduleStates[currentModule].tasks[taskId].done = true;
+  moduleStates[currentModule].tasks[taskId].data.content = content;
+  saveProjectState(currentModule, moduleStates[currentModule]);
+  
+  updateTaskStatus(currentModule, taskId);
+  updateModuleProgress(currentModule);
+  
+  showToast('✅ 任务已完成');
+  
+  // 重新渲染
+  loadTask(currentModule, taskId);
+}
+
+function updateTaskStatus(module, taskId) {
+  const task = moduleStates[module].tasks[taskId];
+  const statusEl = document.getElementById(`${module}-${taskId}-status`);
+  const taskItem = document.querySelector(`#${module}-tasks [data-task="${taskId}"]`);
+  
+  if (statusEl) {
+    statusEl.textContent = task.done ? '已完成' : '进行中';
+  }
+  if (taskItem) {
+    taskItem.classList.toggle('done', task.done);
+  }
+}
+
+function updateModuleProgress(module) {
+  const state = moduleStates[module];
+  const tasks = state?.tasks || {};
+  const total = Object.keys(tasks).length;
+  const done = Object.values(tasks).filter(t => t.done).length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+  
+  const progressEl = document.getElementById(`${module}-progress`);
+  if (progressEl) progressEl.style.width = percent + '%';
+  
+  updateProjectStats();
+  renderProjectsList();
+}
+
+function updateAllProgress() {
+  Object.keys(MODULE_CONFIG).forEach(mod => updateModuleProgress(mod));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODULE CONTENT LOADING
+// ═══════════════════════════════════════════════════════════════
+function loadModuleContent(module) {
+  // 首次加载时渲染第一个未完成任务
+  const state = moduleStates[module];
+  const tasks = state?.tasks || {};
+  const firstUndone = Object.keys(tasks).find(t => !tasks[t].done) || Object.keys(tasks)[0];
+  
+  if (firstUndone) {
+    loadTask(module, firstUndone);
+  }
+}
+
+function loadAllModuleStates() {
+  Object.keys(MODULE_CONFIG).forEach(mod => {
+    const state = loadProjectState(mod);
+    if (state) {
+      moduleStates[mod] = state;
+    } else {
+      moduleStates[mod] = createInitialState(mod);
+    }
+    updateModuleProgress(mod);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════
+function showEurekaFlow() {
+  document.getElementById('eureka-flow-modal').classList.add('active');
+}
+
+function closeEurekaFlow() {
+  document.getElementById('eureka-flow-modal').classList.remove('active');
+}
+
+function showGuide() {
+  document.getElementById('guide-modal').classList.add('active');
+}
+
+function closeGuide() {
+  document.getElementById('guide-modal').classList.remove('active');
+}
+
+function getNextModule(module) {
+  const order = ['reveal', 'inspire', 'shape', 'exam'];
+  const idx = order.indexOf(module);
+  return idx < order.length - 1 ? order[idx + 1] : 'reveal';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // 初始化项目
+  const projId = getCurrentProjectId();
+  if (!projId) {
+    // 创建默认项目
+    const data = getProjectsData();
+    const defaultProject = {
+      id: 'proj_default',
+      name: '我的创新项目',
+      icon: '📁',
+      progress: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    data.projects.push(defaultProject);
+    saveProjectsData(data);
+    setCurrentProjectId(defaultProject.id);
+    
+    // 创建初始状态
+    Object.keys(MODULE_CONFIG).forEach(mod => {
+      if (mod === 'reveal') {
+        localStorage.setItem(MODULE_KEYS.reveal + defaultProject.id, JSON.stringify(createInitialState(mod)));
+      } else {
+        localStorage.setItem(MODULE_KEYS[mod], JSON.stringify(createInitialState(mod)));
+      }
+    });
+  }
+  
+  // 加载所有模块状态
+  loadAllModuleStates();
+  renderProjectsList();
+  
+  // 加载 Reveal 内容
+  loadModuleContent('reveal');
+  
+  // 键盘快捷键
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeEurekaFlow();
+      closeGuide();
+      closeProjectModal();
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -41,6 +41,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
 .modal.active{opacity:1;pointer-events:all}
 .modal-overlay{position:absolute;inset:0}
+/* EUREKA FLOW MODAL (Inspire-style) */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal.active{opacity:1;pointer-events:all}
+.modal-content{position:relative;z-index:1;background:#fff;margin:auto;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
 .ai-settings-panel{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;animation:fadeIn .3s ease;margin:auto;position:relative;z-index:1}
 @keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .ai-settings-header{padding:20px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(13,148,136,.06),rgba(15,118,110,.04))}
@@ -135,6 +139,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .tips-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
 .tips-hdr .lbl{color:#b91c1c}
 .tips-item::before{content:"⚠️  "}
+/* LEARN PROJECTS SECTION */
+.lp-projects-section{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.lp-projects-header{padding:14px 18px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;gap:8px}
+.lp-projects-header .icon{font-size:16px}
+.lp-projects-header .label{font-size:13px;font-weight:700;color:#1e40af;flex:1}
+.lp-btn-add{width:28px;height:28px;border-radius:50%;border:none;background:#3b82f6;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.lp-btn-add:hover{background:#2563eb;transform:scale(1.05)}
+.lp-projects-list{max-height:240px;overflow-y:auto}
+.lp-project-item{display:flex;align-items:center;gap:8px;padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .15s}
+.lp-project-item:last-child{border-bottom:none}
+.lp-project-item:hover{background:rgba(59,130,246,.05)}
+.lp-project-item.active{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05));border-left:3px solid #3b82f6}
+.lp-project-icon{font-size:16px;flex-shrink:0}
+.lp-project-info{flex:1;min-width:0}
+.lp-project-name{font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-project-meta{font-size:10px;color:#94a3b8;margin-top:2px}
+.lp-project-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.lp-project-item:hover .lp-project-actions{opacity:1}
+.lp-project-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;font-size:11px;border-radius:4px;transition:background .15s}
+.lp-project-btn:hover{background:rgba(0,0,0,.08)}
 /* Inspire data card */
 .inspire-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
 .inspire-hdr .lbl{color:#92400e}
@@ -352,20 +376,7 @@ textarea{min-height:80px}
 .outputs-modal-footer{padding:14px 20px;border-top:1px solid #99f6e4;background:#f0fdfa;display:flex;justify-content:flex-end}
 .out-download-all{display:flex;align-items:center;gap:6px;padding:10px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
 .out-download-all:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(13,148,136,.4)}
-/* GUIDE MODAL */
-#guide-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center}
-#guide-modal-overlay.hidden{display:none}
-.guide-modal{background:#fff;border-radius:16px;width:560px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
-.guide-modal-hdr{padding:18px 24px;background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-bottom:1px solid #99f6e4;display:flex;align-items:center;gap:12px}
-.guide-modal-icon{font-size:28px}
-.guide-modal-title{font-size:15px;font-weight:800;color:#0f766e}
-.guide-modal-sub{font-size:12px;color:var(--o2)}
-.guide-modal-body{flex:1;overflow-y:auto;padding:20px 24px}
-.guide-modal-body h3{font-size:14px;font-weight:700;color:var(--t);margin-bottom:8px}
-.guide-modal-body p{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:12px}
-.guide-modal-body ul{margin:0;padding-left:20px}
-.guide-modal-body li{font-size:13px;color:var(--t2);line-height:1.8}
-.guide-modal-footer{padding:14px 24px;border-top:1px solid #99f6e4;background:#f0fdfa}
+
 /* ONBOARDING MODAL */
 .onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:.3s}
 .onboarding-overlay.active{opacity:1;pointer-events:all}
@@ -452,7 +463,7 @@ textarea{min-height:80px}
     </div>
   </div>
   <div class="nav-right">
-    <button class="ai-settings-btn" onclick="showOnboarding()" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#f59e0b">
+    <button class="ai-settings-btn" onclick="showOnboarding()" title="查看 Exam 新手引导" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#f59e0b">
       <span class="icon">🎯</span>
       <span>新手引导</span>
     </button>
@@ -499,7 +510,29 @@ textarea{min-height:80px}
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <div class="task-nav">
+    <!-- 学习项目区域 - 置顶 -->
+    <div class="lp-projects-section" id="lp-projects-section">
+      <div class="lp-projects-header">
+        <span class="icon">📁</span>
+        <span class="label">学习项目</span>
+        <button class="lp-btn-add" onclick="lp_createNewProject()" title="新建项目">+</button>
+      </div>
+      <div class="lp-projects-list" id="lp-projects-list"></div>
+    </div>
+
+    <!-- INSPIRE + SHAPE DATA CARD — 置顶 -->
+    <div class="s-card" id="inspire-data-card">
+      <div class="s-card-hdr inspire-hdr">
+        <span class="icon">💡</span>
+        <span class="lbl">来自前三个阶段的关键输入</span>
+      </div>
+      <div class="s-card-body" id="inspire-data-body">
+        <div style="font-size:12px;color:#94a3b8;font-style:italic">加载中...</div>
+      </div>
+    </div>
+
+    <!-- TASK NAV -->
+    <div class="task-nav" style="margin-top:16px">
       <div class="task-nav-hdr">
         <div class="phase">Exam · 验证阶段</div>
         <div class="module">🔬 原型验证</div>
@@ -541,17 +574,6 @@ textarea{min-height:80px}
           <div class="t-name">呈现和计划</div>
           <div class="t-stat" id="status-t20">待开始</div>
         </div>
-      </div>
-    </div>
-
-    <!-- INSPIRE + SHAPE DATA CARD -->
-    <div class="s-card" id="inspire-data-card">
-      <div class="s-card-hdr inspire-hdr">
-        <span class="icon">💡</span>
-        <span class="lbl">来自 Inspire + Shape 的关键输入</span>
-      </div>
-      <div class="s-card-body" id="inspire-data-body">
-        <div style="font-size:12px;color:#94a3b8;font-style:italic">加载中...</div>
       </div>
     </div>
 
@@ -695,77 +717,47 @@ textarea{min-height:80px}
 </div>
 
 <!-- EUREKA FLOW MODAL -->
-<div id="eureka-flow-modal-overlay" class="hidden">
-  <div class="flow-modal">
-    <div class="flow-modal-hdr">
-      <div class="flow-modal-icon">🗺️</div>
-      <div class="flow-modal-title">Eureka 完整学习流程</div>
-      <button class="settings-close" onclick="closeEurekaFlow()" style="margin-left:auto">✕</button>
+<div id="eureka-flow-modal-overlay" class="hidden" style="z-index:10000">
+  <div class="modal-overlay" onclick="closeEurekaFlow()" style="position:absolute;inset:0"></div>
+  <div class="modal-content" style="max-width:900px;width:95%;padding:0;overflow:hidden;border-radius:16px;position:relative;z-index:1;background:#fff;margin:auto">
+    <div style="position:relative;background:linear-gradient(135deg,#fef3c7,#fde68a);padding:20px 24px">
+      <button onclick="closeEurekaFlow()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border:none;background:rgba(0,0,0,0.1);border-radius:50%;cursor:pointer;font-size:18px;color:#78350f;transition:all 0.2s">✕</button>
+      <h2 style="margin:0;font-size:22px;font-weight:700;color:#78350f;display:flex;align-items:center;gap:10px">
+        <span>🗺️</span> Eureka 价值创新探索线路图
+      </h2>
+      <p style="margin:8px 0 0;font-size:13px;color:#92400e">点击任意位置关闭此图，开始你的创新探索之旅</p>
     </div>
-    <div class="flow-modal-body" id="eureka-flow-body">
-      <div class="flow-step done">
-        <div class="flow-step-icon">R</div>
-        <div class="flow-step-info"><div class="flow-step-name">Reveal · 揭示阶段</div><div class="flow-step-desc">用户洞察 → POV → HMW 问题</div></div>
+    <div style="padding:24px;background:#fffbeb;max-height:80vh;overflow-y:auto">
+      <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=80"
+           alt="Eureka 价值创新探索线路图"
+           style="width:100%;height:auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer"
+           onclick="closeEurekaFlow()">
+      <div style="margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #3b82f6">
+          <div style="font-size:14px;font-weight:700;color:#1e40af;margin-bottom:6px">1. 揭示 (Reveal)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">团队构建共识，深入探索用户，洞察真实需求</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b">
+          <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px">2. 启发 (Inspire)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">重构创新机遇，通过跨界灵感实现创意突破</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #10b981">
+          <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:6px">3. 构建 (Shape)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">将创意想法发展为概念方案，构建用户体验故事</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #0d9488">
+          <div style="font-size:14px;font-weight:700;color:#0f766e;margin-bottom:6px">4. 验证 (Exam)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">搭建方案原型进行用户测试，规划价值呈现计划</div>
+        </div>
       </div>
-      <div class="flow-step done">
-        <div class="flow-step-icon">I</div>
-        <div class="flow-step-info"><div class="flow-step-name">Inspire · 启发阶段</div><div class="flow-step-desc">AHA 时刻 → 最佳创意筛选</div></div>
+      <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;text-align:center">
+        <div style="font-size:14px;font-weight:600;color:#78350f">🎯 目标：交付一个经过用户验证、具有商业价值的创新方案</div>
       </div>
-      <div class="flow-step done">
-        <div class="flow-step-icon">S</div>
-        <div class="flow-step-info"><div class="flow-step-name">Shape · 构建阶段</div><div class="flow-step-desc">概念方案 → 用户故事 → MAP 评分</div></div>
-      </div>
-      <div class="flow-step active">
-        <div class="flow-step-icon">E</div>
-        <div class="flow-step-info"><div class="flow-step-name">Exam · 验证阶段</div><div class="flow-step-desc">测试计划 → 原型搭建 → 用户测试 → AHA 验证 → 商业呈现</div></div>
-      </div>
-    </div>
-    <div class="flow-modal-footer">
-      <button class="btn-pri" onclick="closeEurekaFlow()">明白了！</button>
     </div>
   </div>
 </div>
 
 <!-- GUIDE MODAL -->
-<div id="guide-modal-overlay" class="hidden">
-  <div class="guide-modal">
-    <div class="guide-modal-hdr">
-      <div class="guide-modal-icon">❓</div>
-      <div>
-        <div class="guide-modal-title">Exam 使用指南</div>
-        <div class="guide-modal-sub">任务 16 - 20</div>
-      </div>
-      <button class="modal-close" onclick="closeGuideModal()" style="margin-left:auto">✕</button>
-    </div>
-    <div class="guide-modal-body">
-      <h3>Exam（原型验证）模块说明</h3>
-      <p>Exam 是 RISE 框架的最后一个阶段，核心目标是将前面三个阶段的产出（Reveal洞察 + Inspire启发 + Shape方案）转化为可验证的原型并进行真实用户测试，最终输出商业化行动计划。</p>
-      <h3>两个子模块</h3>
-      <ul>
-        <li><strong>🔧 原型搭建（16-17）：</strong>设计测试计划 → 搭建极低成本原型</li>
-        <li><strong>🎯 用户测试（18-20）：</strong>执行用户测试 → 验证AHA价值 → 商业呈现与计划</li>
-      </ul>
-      <h3>关键原则</h3>
-      <ul>
-        <li>测试的目的是验证假设，而非推销方案</li>
-        <li>原型要极低成本（纸笔、乐高、角色扮演），30分钟内完成</li>
-        <li>执行"闭嘴观察"纪律，不主动解释，让用户自然暴露问题</li>
-        <li>从用户真实情绪与行为中判断AHA时刻是否被触发</li>
-        <li>最终交付物必须是面向决策者的商业增长路线图</li>
-      </ul>
-      <h3>前置产出依赖</h3>
-      <ul>
-        <li><strong>Reveal：</strong>用户画像、POV、HMW问题</li>
-        <li><strong>Inspire：</strong>AHA时刻假设、最佳创意方案</li>
-        <li><strong>Shape：</strong>概念方案、用户故事、MAP评分</li>
-      </ul>
-    </div>
-    <div class="guide-modal-footer">
-      <button class="btn-pri" style="width:100%;justify-content:center" onclick="closeGuideModal()">明白了，开始！</button>
-    </div>
-  </div>
-</div>
-
 <!-- ONBOARDING MODAL -->
 <div class="onboarding-overlay" id="onboarding-overlay">
   <div class="onboarding-content">
@@ -868,6 +860,11 @@ const TASKS = {
       {label:'测试目标用户画像',hint:'例如：3年以上经验的中级产品经理',rows:2,id:'s2'},
       {label:'测试场景与任务',hint:'1. 向用户展示原型（30秒）\n2. 观察用户自发行为\n3. 询问开放式问题',rows:4,id:'s3'},
       {label:'测试时长与人数',hint:'例如：每人20分钟，共5人',rows:1,id:'s4'},
+    ],
+    misconceptions:[
+      '目标大而全，缺乏具体要验证的关键假设',
+      '测试脚本带有强烈的引导性，暗示用户给出正面答案',
+      '只测自己人（同事/朋友），没有代表性',
     ]},
   t17:{id:'t17',num:'17',name:'方案原型搭建',
     teach:'理解"低保真原型"在早期验证中的降本增效价值；掌握用极低成本快速将抽象方案具象化的能力。',
@@ -878,12 +875,23 @@ const TASKS = {
       {label:'核心功能展示路径',hint:'描述用户进入原型后的3个关键操作步骤',rows:3,id:'s2'},
       {label:'原型搭建时长',hint:'例如：25分钟',rows:1,id:'s3'},
       {label:'演示说明（文字描述）',hint:'描述你将如何向用户演示这个原型',rows:3,id:'s4'},
+    ],
+    misconceptions:[
+      '追求高保真原型，花大量时间在视觉设计上',
+      '展示太多功能路径，没有聚焦核心体验',
+      '把原型当产品演示，主动讲解每个按钮的用法',
     ]},
   t18:{id:'t18',num:'18',name:'用户测试反馈',
     teach:'理解真实用户反馈的残酷性；掌握"闭嘴观察"的测试执行技巧及四象限结构化记录方法。',
     deliverable:'四象限反馈记录',
     concept:'执行测试时，最重要的原则是"闭嘴观察"。让用户自然行为说话，不要主动解释、反驳或引导。记录时用四象限结构化整理。',
-    steps:[],hasQuadrant:true,hasFPF:true},
+    steps:[],hasQuadrant:true,hasFPF:true,
+    misconceptions:[
+      '在用户遇到困难时主动解释和"救场"',
+      '只记录正面好评，忽略负面情绪和困惑信号',
+      '不记录停顿时间和求助次数，反馈失真',
+      '不找出第一失败点，只做表面总结',
+    ]},
   t19:{id:'t19',num:'19',name:'AHA价值验证',
     teach:'理解主观测试结果如何映射到用户深层价值实现；掌握通过真实行为与反馈量化验证AHA价值假设的方法。',
     deliverable:'AHA + MAP 验证报告',
@@ -893,7 +901,13 @@ const TASKS = {
       {label:'顿悟（新认知）验证',hint:'用户在测试中是否产生了"原来可以这样"的认知转变？',rows:3,id:'s2'},
       {label:'高光（愉悦感）验证',hint:'用户在测试中是否有明显的情绪高点？在哪里？',rows:3,id:'s3'},
       {label:'进步（行为改变）验证',hint:'测试后用户是否表现出愿意改变现有行为的意愿？',rows:3,id:'s4'},
-    ],hasAHA:true,hasMAP:true,hasChecklist:true},
+    ],hasAHA:true,hasMAP:true,hasChecklist:true,
+    misconceptions:[
+      '只看用户口头"哇好棒"，没有行为证据就认定AHA成功',
+      '把体验中的小惊喜当作AHA，缺乏认知转变的深度',
+      'MAP评分主观随意，不基于真实测试行为数据',
+      '跳过了AHA验证，直接写商业计划书',
+    ]},
   t20:{id:'t20',num:'20',name:'呈现和计划',
     teach:'理解创新成果最终必须获得商业投资支撑；掌握电梯演讲、商业画布与30-60-90天计划的方法。',
     deliverable:'电梯演讲 + 30-60-90天计划',
@@ -902,7 +916,13 @@ const TASKS = {
       {label:'电梯演讲',hint:'对于[目标用户]，他们的[核心痛点]是[当前问题]，我们的[方案]能提供[核心价值]，不同于[竞争对手]，我们的优势在于[独特差异]。',rows:5,id:'s1'},
       {label:'商业画布关键要素',hint:'关键伙伴、关键活动、核心资源、价值主张、客户关系、渠道、客户细分、成本结构、收入来源',rows:6,id:'s2'},
       {label:'30-60-90天行动计划',hint:'30天：XXX\n60天：XXX\n90天：XXX',rows:5,id:'s3'},
-    ],hasTimeline:true}
+    ],hasTimeline:true,
+    misconceptions:[
+      '电梯演讲堆砌功能，没有聚焦核心价值主张',
+      '90天计划写得大而全，没有优先级和资源约束',
+      '商业画布照搬模板，没有基于测试验证的洞察',
+      '目标用户画像与前面阶段不一致，前后矛盾',
+    ]}
 };
 
 const AI_CONFIG = {
@@ -949,15 +969,18 @@ document.addEventListener('DOMContentLoaded', () => {
   updateRISEBar();
   const first = Object.keys(TASKS).find(k => !state[k].done) || 't16';
   loadTask(first);
+  lp_renderProjectsList();
   // Show onboarding on first visit
   if (!localStorage.getItem('eureka_exam_onboarded')) {
-    setTimeout(() => { document.getElementById('onboarding-overlay')?.classList.remove('hidden'); }, 300);
+    setTimeout(() => {
+      var o = document.getElementById('onboarding-overlay');
+      if (o) { o.classList.remove('hidden'); o.classList.add('active'); }
+    }, 300);
   }
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       toggleCoach();
       closeOutputsModal();
-      closeGuideModal();
       closeOnboarding();
       closeSettings();
       closeEurekaFlow();
@@ -973,6 +996,7 @@ function saveState() {
   renderSidebarOutputs();
   refreshBizEval();
   renderTipsCard();
+  lp_syncProjectProgress();
 }
 
 // ===== SIDEBAR: INSPIRE + SHAPE DATA =====
@@ -994,7 +1018,10 @@ function renderSidebarInspireData() {
     html += `<div class="s-card-item"><span class="inspire-lbl">✨ Shape AHA价值设计</span><div class="inspire-val">${esc(shape.task15.ahaDesign.substring(0,100))}${shape.task15.ahaDesign.length>100?'…':''}</div></div><div class="inspire-sep"></div>`;
   }
   if (reveal.task6?.povStatement?.trim()) {
-    html += `<div class="s-card-item"><span class="inspire-lbl">🔍 Reveal POV陈述</span><div class="inspire-val">${esc(reveal.task6.povStatement.substring(0,80))}${reveal.task6.povStatement.length>80?'…':''}</div></div>`;
+    html += `<div class="s-card-item"><span class="inspire-lbl">🔍 Reveal POV陈述</span><div class="inspire-val">${esc(reveal.task6.povStatement.substring(0,80))}${reveal.task6.povStatement.length>80?'…':''}</div></div><div class="inspire-sep"></div>`;
+  }
+  if (reveal.task3?.persona?.trim()) {
+    html += `<div class="s-card-item"><span class="inspire-lbl">👤 Reveal 用户画像</span><div class="inspire-val">${esc(reveal.task3.persona.substring(0,80))}${reveal.task3.persona.length>80?'…':''}</div></div>`;
   }
   if (!html) {
     html = '<div style="font-size:12px;color:#94a3b8;font-style:italic;padding:4px 0">暂无前置产出数据<br>请先完成 Inspire + Shape</div>';
@@ -1367,8 +1394,7 @@ function toggleCoach() {
   document.getElementById('coachBody').style.display = '';
   document.getElementById('coachMsgs').style.display = 'none';
 }
-function showGuide() { document.getElementById('guide-modal-overlay').classList.remove('hidden'); }
-function showOnboarding() { document.getElementById('onboarding-overlay').classList.remove('hidden'); }
+function showOnboarding() { var o=document.getElementById('onboarding-overlay'); if(o){o.classList.remove('hidden');o.classList.add('active');} }
 function openAISettings() {
   // 迁移旧配置到共享 key（仅执行一次）
   getAISharedConfig();
@@ -1443,6 +1469,59 @@ function testAIConnection() {
   });
 }
 function showEurekaFlow() { document.getElementById('eureka-flow-modal-overlay')?.classList.remove('hidden'); }
+// LEARN PROJECTS SYSTEM (shared)
+var LP_PROJECTS_KEY = 'eureka_learn_projects_v2';
+var LP_CURRENT_KEY = 'eureka_learn_current_v2';
+var lp_currentProjectId = null;
+function lp_getProjectsData() { var r=localStorage.getItem(LP_PROJECTS_KEY); if(r){try{return JSON.parse(r);}catch(e){}} return {projects:[],recycleBin:[],version:'2.0'}; }
+function lp_saveProjectsData(d) { d.meta={updatedAt:new Date().toISOString(),version:'2.0'}; localStorage.setItem(LP_PROJECTS_KEY,JSON.stringify(d)); }
+function lp_getCurrentProjectId() { if(lp_currentProjectId)return lp_currentProjectId; return localStorage.getItem(LP_CURRENT_KEY); }
+function lp_setCurrentProjectId(id) { lp_currentProjectId=id; localStorage.setItem(LP_CURRENT_KEY,id); }
+function lp_escapeHtml(s) { var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function lp_formatDate(iso) { if(!iso)return''; try{var d=new Date(iso);return(d.getMonth()+1)+'/'+d.getDate();}catch(e){return'';} }
+function lp_showInputModal(opts) {
+  var old=document.getElementById('lp-input-modal');if(old)old.remove();
+  var m=document.createElement('div');m.id='lp-input-modal';m.className='modal';
+  m.innerHTML='<div class="modal-overlay" onclick="lp_closeInputModal()"></div><div class="modal-content" style="width:400px;margin:0 auto;border-radius:16px;overflow:hidden;background:#fff"><div style="background:linear-gradient(135deg,#3b82f6,#2563eb);padding:20px 24px;display:flex;align-items:center;gap:10px"><span style="font-size:24px">'+opts.icon+'</span><span style="font-size:16px;font-weight:700;color:#fff">'+opts.title+'</span></div><div style="padding:20px"><input id="lp-name-input" type="text" value="'+lp_escapeHtml(opts.defaultValue||'')+'" placeholder="'+lp_escapeHtml(opts.placeholder||'')+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none" onkeydown="if(event.key===\'Enter\')lp_confirmInput()"/><div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end"><button onclick="lp_closeInputModal()" style="padding:8px 16px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;cursor:pointer;font-size:13px;color:#64748b;font-weight:600">取消</button><button onclick="lp_confirmInput()" style="padding:8px 20px;border:none;border-radius:6px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:700">'+opts.confirmText+'</button></div></div></div>';
+  document.body.appendChild(m);m.classList.add('active');m._onConfirm=opts.onConfirm;setTimeout(function(){var inp=document.getElementById('lp-name-input');if(inp)inp.focus();},50);
+}
+function lp_confirmInput() { var v=(document.getElementById('lp-name-input')||{}).value||''; var m=document.getElementById('lp-input-modal');if(m&&m._onConfirm)m._onConfirm(v);lp_closeInputModal(); }
+function lp_closeInputModal() { var m=document.getElementById('lp-input-modal');if(m){m.classList.remove('active');setTimeout(function(){m.remove();},300);} }
+function lp_createNewProject() {
+  lp_showInputModal({title:'新建学习项目',icon:'📁',placeholder:'项目 '+(new Date().toLocaleDateString()),confirmText:'创建',onConfirm:function(name){
+    if(!name.trim())return; var pid='proj_'+Date.now(); var proj={id:pid,name:name.trim(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),taskCount:0,completedCount:0};
+    var d=lp_getProjectsData();d.projects.push(proj);lp_saveProjectsData(d);lp_setCurrentProjectId(pid);lp_renderProjectsList();window.lp_onProjectSwitch&&window.lp_onProjectSwitch(pid);
+  }});
+}
+function lp_switchProject(pid) {
+  if(pid===lp_getCurrentProjectId())return; var d=lp_getProjectsData();var p=d.projects.find(function(x){return x.id===pid;});if(!p)return;
+  lp_setCurrentProjectId(pid);lp_renderProjectsList();window.lp_onProjectSwitch&&window.lp_onProjectSwitch(pid);
+}
+function lp_renameProject(pid,e){e.stopPropagation();var d=lp_getProjectsData();var p=d.projects.find(function(x){return x.id===pid;});if(!p)return;
+  lp_showInputModal({title:'重命名项目',icon:'✏️',defaultValue:p.name,placeholder:'输入新名称',confirmText:'保存',onConfirm:function(name){if(!name.trim())return;p.name=name.trim();p.updatedAt=new Date().toISOString();lp_saveProjectsData(d);lp_renderProjectsList();}});
+}
+function lp_deleteProject(pid,e){e.stopPropagation();var d=lp_getProjectsData();var p=d.projects.find(function(x){return x.id===pid;});if(!p)return;
+  p.deletedAt=new Date().toISOString();d.projects=d.projects.filter(function(x){return x.id!==pid;});d.recycleBin.push(p);lp_saveProjectsData(d);lp_renderProjectsList();
+  if(lp_getCurrentProjectId()===pid){var f=d.projects[0];if(f)lp_switchProject(f.id);}
+}
+function lp_renderProjectsList() {
+  var c=document.getElementById('lp-projects-list');if(!c)return;var d=lp_getProjectsData();var cur=lp_getCurrentProjectId();
+  if(d.projects.length===0){c.innerHTML='<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">暂无项目<br>点击 + 创建</div>';}else{
+    c.innerHTML=d.projects.map(function(p){var isA=p.id===cur;var prog=p.completedCount&&p.taskCount?Math.round(p.completedCount/p.taskCount*100):0;
+      return'<div class="lp-project-item '+(isA?'active':'')+'" onclick="lp_switchProject(\''+p.id+'\')"><div class="lp-project-icon">📁</div><div class="lp-project-info"><div class="lp-project-name">'+lp_escapeHtml(p.name)+'</div><div class="lp-project-meta">'+lp_formatDate(p.updatedAt)+' · '+prog+'%</div></div><div class="lp-project-actions"><button class="lp-project-btn" onclick="lp_renameProject(\''+p.id+'\',event)" title="重命名">✏️</button><button class="lp-project-btn" onclick="lp_deleteProject(\''+p.id+'\',event)" title="删除">🗑️</button></div></div>';
+    }).join('');
+  }
+}
+function lp_syncProjectProgress() {
+  var pid=lp_getCurrentProjectId();if(!pid)return;var d=lp_getProjectsData();var proj=d.projects.find(function(p){return p.id===pid;});if(!proj)return;
+  var done=0,total=20;
+  try{var rs=JSON.parse(localStorage.getItem('eureka_learn_state_'+pid)||'{}');if(rs.tasks){for(var i=1;i<=6;i++){if(rs.tasks[i]&&rs.tasks[i].status==='done')done++;}}}catch(e){}
+  try{var ins=JSON.parse(localStorage.getItem('eureka_inspire_v1')||'{}');for(var j=7;j<=11;j++){if(ins.tasks&&ins.tasks[j]&&ins.tasks[j].status==='done')done++;}}catch(e){}
+  try{var shp=JSON.parse(localStorage.getItem('eureka_shape_v1')||'{}');for(var k=12;k<=15;k++){if(shp.tasks&&shp.tasks[k]&&shp.tasks[k].status==='done')done++;}}catch(e){}
+  try{var exm=JSON.parse(localStorage.getItem('eureka_exam_v1')||'{}');for(var l=16;l<=20;l++){if(exm.tasks&&exm.tasks[l]&&exm.tasks[l].status==='done')done++;}}catch(e){}
+  proj.taskCount=total;proj.completedCount=done;proj.updatedAt=new Date().toISOString();lp_saveProjectsData(d);lp_renderProjectsList();
+}
+window.lp_syncProjectProgress=lp_syncProjectProgress;
 function openOutputsModal() {
   var overlay = document.getElementById('outputs-modal-overlay');
   var body = document.getElementById('outputs-modal-body');
@@ -1458,7 +1537,7 @@ function openOutputsModal() {
   overlay.classList.remove('hidden');
 }
 function closeOutputsModal() { var o = document.getElementById('outputs-modal-overlay'); if (o) o.classList.add('hidden'); }
-function closeGuideModal() { var o = document.getElementById('guide-modal-overlay'); if (o) o.classList.add('hidden'); }
+
 function closeSettings() { var o = document.getElementById('settings-modal-overlay'); if (o) o.classList.add('hidden'); }
 function closeEurekaFlow() { var o = document.getElementById('eureka-flow-modal-overlay'); if (o) o.classList.add('hidden'); }
 function saveExamAIConfig() { saveAISettings(); } // 兼容旧调用
@@ -1512,6 +1591,7 @@ function nextOnboardingStep() {
     steps[current + 1].classList.add('active');
     dots[current + 1].classList.add('active');
     document.getElementById('ob-prev').style.display = '';
+    document.getElementById('ob-next').textContent = current + 1 === total - 1 ? '完成' : '下一步';
   } else {
     closeOnboarding();
   }
@@ -1527,8 +1607,8 @@ function prevOnboardingStep() {
     dots[current].classList.remove('active');
     steps[current - 1].classList.add('active');
     dots[current - 1].classList.add('active');
-    document.getElementById('ob-next').style.display = '';
-    if (current - 1 === 0) document.getElementById('ob-prev').style.display = 'none';
+    document.getElementById('ob-prev').style.display = current - 1 === 0 ? 'none' : '';
+    document.getElementById('ob-next').textContent = '下一步';
   }
 }
 // Backward compat aliases

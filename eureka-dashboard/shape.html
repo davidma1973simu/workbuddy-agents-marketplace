@@ -84,6 +84,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .pitfalls-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
 .pitfalls-hdr .lbl{color:#b91c1c}
 .tips-item::before{content:"⚠️  "}
+/* LEARN PROJECTS SECTION */
+.lp-projects-section{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.lp-projects-header{padding:14px 18px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;gap:8px}
+.lp-projects-header .icon{font-size:16px}
+.lp-projects-header .label{font-size:13px;font-weight:700;color:#1e40af;flex:1}
+.lp-btn-add{width:28px;height:28px;border-radius:50%;border:none;background:#3b82f6;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.lp-btn-add:hover{background:#2563eb;transform:scale(1.05)}
+.lp-projects-list{max-height:240px;overflow-y:auto}
+.lp-project-item{display:flex;align-items:center;gap:8px;padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .15s}
+.lp-project-item:last-child{border-bottom:none}
+.lp-project-item:hover{background:rgba(59,130,246,.05)}
+.lp-project-item.active{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(59,130,246,.05));border-left:3px solid #3b82f6}
+.lp-project-icon{font-size:16px;flex-shrink:0}
+.lp-project-info{flex:1;min-width:0}
+.lp-project-name{font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-project-meta{font-size:10px;color:#94a3b8;margin-top:2px}
+.lp-project-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.lp-project-item:hover .lp-project-actions{opacity:1}
+.lp-project-btn{width:22px;height:22px;border:none;background:transparent;cursor:pointer;font-size:11px;border-radius:4px;transition:background .15s}
+.lp-project-btn:hover{background:rgba(0,0,0,.08)}
 /* Inspire data card */
 .inspire-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
 .inspire-hdr .lbl{color:#92400e}
@@ -556,6 +576,16 @@ textarea{min-height:90px}
 <div class="main">
   <!-- SIDEBAR -->
   <div class="sidebar">
+    <!-- 学习项目区域 - 置顶 -->
+    <div class="lp-projects-section" id="lp-projects-section">
+      <div class="lp-projects-header">
+        <span class="icon">📁</span>
+        <span class="label">学习项目</span>
+        <button class="lp-btn-add" onclick="lp_createNewProject()" title="新建项目">+</button>
+      </div>
+      <div class="lp-projects-list" id="lp-projects-list"></div>
+    </div>
+
     <!-- INSPIRE + REVEAL DATA CARD -->
     <div class="s-card" id="inspire-data-card">
       <div class="s-card-hdr inspire-hdr">
@@ -1031,6 +1061,7 @@ function saveState() {
     updatedAt: new Date().toISOString()
   }));
   updateProgressUI();
+  lp_syncProjectProgress();
 }
 
 function getTaskData(n) { return state.tasks[n] || {}; }
@@ -2083,6 +2114,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderSidebarOutputs();
   renderSidebarBizEval();
   renderTaskContent(12);
+  lp_renderProjectsList();
   if (!localStorage.getItem('eureka_shape_onboarding_skip')) {
     setTimeout(function() { showOnboarding(); }, 800);
   }
@@ -2101,6 +2133,62 @@ function closeEurekaFlow() {
   if (modal) modal.classList.remove('active');
 }
 
+var LP_PROJECTS_KEY = 'eureka_learn_projects_v2';
+var LP_CURRENT_KEY = 'eureka_learn_current_v2';
+var lp_currentProjectId = null;
+function lp_getProjectsData() {
+  var raw = localStorage.getItem(LP_PROJECTS_KEY);
+  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
+  return { projects: [], recycleBin: [], version: '2.0' };
+}
+function lp_saveProjectsData(data) { data.meta = { updatedAt: new Date().toISOString(), version: '2.0' }; localStorage.setItem(LP_PROJECTS_KEY, JSON.stringify(data)); }
+function lp_getCurrentProjectId() { if (lp_currentProjectId) return lp_currentProjectId; return localStorage.getItem(LP_CURRENT_KEY); }
+function lp_setCurrentProjectId(id) { lp_currentProjectId = id; localStorage.setItem(LP_CURRENT_KEY, id); }
+function lp_escapeHtml(str) { var div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
+function lp_formatDate(iso) { if (!iso) return ''; try { var d = new Date(iso); return (d.getMonth()+1)+'/'+d.getDate(); } catch(e) { return ''; } }
+function lp_showInputModal(opts) {
+  var old = document.getElementById('lp-input-modal'); if (old) old.remove();
+  var m = document.createElement('div'); m.id = 'lp-input-modal'; m.className = 'modal';
+  m.innerHTML = '<div class="modal-overlay" onclick="lp_closeInputModal()"></div><div class="modal-content" style="width:400px;margin:0 auto;border-radius:16px;overflow:hidden;background:#fff"><div style="background:linear-gradient(135deg,#3b82f6,#2563eb);padding:20px 24px;display:flex;align-items:center;gap:10px"><span style="font-size:24px">'+opts.icon+'</span><span style="font-size:16px;font-weight:700;color:#fff">'+opts.title+'</span></div><div style="padding:20px"><input id="lp-name-input" type="text" value="'+lp_escapeHtml(opts.defaultValue||'')+'" placeholder="'+lp_escapeHtml(opts.placeholder||'')+'" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none" onkeydown="if(event.key===\'Enter\')lp_confirmInput()"/><div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end"><button onclick="lp_closeInputModal()" style="padding:8px 16px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;cursor:pointer;font-size:13px;color:#64748b;font-weight:600">取消</button><button onclick="lp_confirmInput()" style="padding:8px 20px;border:none;border-radius:6px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;cursor:pointer;font-size:13px;font-weight:700">'+opts.confirmText+'</button></div></div></div>';
+  document.body.appendChild(m); m.classList.add('active'); m._onConfirm = opts.onConfirm; setTimeout(function() { var inp = document.getElementById('lp-name-input'); if(inp) inp.focus(); }, 50);
+}
+function lp_confirmInput() { var v = (document.getElementById('lp-name-input')||{}).value||''; var m = document.getElementById('lp-input-modal'); if(m&&m._onConfirm) m._onConfirm(v); lp_closeInputModal(); }
+function lp_closeInputModal() { var m = document.getElementById('lp-input-modal'); if(m){m.classList.remove('active');setTimeout(function(){m.remove();},300);} }
+function lp_createNewProject() {
+  lp_showInputModal({title:'新建学习项目',icon:'📁',placeholder:'项目 '+(new Date().toLocaleDateString()),confirmText:'创建',onConfirm:function(name){
+    if(!name.trim()) return; var pid='proj_'+Date.now(); var proj={id:pid,name:name.trim(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),taskCount:0,completedCount:0};
+    var data=lp_getProjectsData(); data.projects.push(proj); lp_saveProjectsData(data); lp_setCurrentProjectId(pid); lp_renderProjectsList(); window.lp_onProjectSwitch&&window.lp_onProjectSwitch(pid);
+  }});
+}
+function lp_switchProject(pid) {
+  if(pid===lp_getCurrentProjectId()) return; var data=lp_getProjectsData(); var proj=data.projects.find(function(p){return p.id===pid;}); if(!proj) return;
+  lp_setCurrentProjectId(pid); lp_renderProjectsList(); window.lp_onProjectSwitch&&window.lp_onProjectSwitch(pid);
+}
+function lp_renameProject(pid,e){e.stopPropagation();var data=lp_getProjectsData();var proj=data.projects.find(function(p){return p.id===pid;});if(!proj)return;
+  lp_showInputModal({title:'重命名项目',icon:'✏️',defaultValue:proj.name,placeholder:'输入新名称',confirmText:'保存',onConfirm:function(name){if(!name.trim())return;proj.name=name.trim();proj.updatedAt=new Date().toISOString();lp_saveProjectsData(data);lp_renderProjectsList();}});
+}
+function lp_deleteProject(pid,e){e.stopPropagation();var data=lp_getProjectsData();var proj=data.projects.find(function(p){return p.id===pid;});if(!proj)return;
+  proj.deletedAt=new Date().toISOString();data.projects=data.projects.filter(function(p){return p.id!==pid;});data.recycleBin.push(proj);lp_saveProjectsData(data);lp_renderProjectsList();
+  if(lp_getCurrentProjectId()===pid){var first=data.projects[0];if(first)lp_switchProject(first.id);}
+}
+function lp_renderProjectsList() {
+  var c=document.getElementById('lp-projects-list');if(!c)return;var data=lp_getProjectsData();var cur=lp_getCurrentProjectId();
+  if(data.projects.length===0){c.innerHTML='<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">暂无项目<br>点击 + 创建</div>';}else{
+    c.innerHTML=data.projects.map(function(p){var isA=p.id===cur;var prog=p.completedCount&&p.taskCount?Math.round(p.completedCount/p.taskCount*100):0;
+      return'<div class="lp-project-item '+(isA?'active':'')+'" onclick="lp_switchProject(\''+p.id+'\')"><div class="lp-project-icon">📁</div><div class="lp-project-info"><div class="lp-project-name">'+lp_escapeHtml(p.name)+'</div><div class="lp-project-meta">'+lp_formatDate(p.updatedAt)+' · '+prog+'%</div></div><div class="lp-project-actions"><button class="lp-project-btn" onclick="lp_renameProject(\''+p.id+'\',event)" title="重命名">✏️</button><button class="lp-project-btn" onclick="lp_deleteProject(\''+p.id+'\',event)" title="删除">🗑️</button></div></div>';
+    }).join('');
+  }
+}
+function lp_syncProjectProgress() {
+  var pid=lp_getCurrentProjectId();if(!pid)return;var data=lp_getProjectsData();var proj=data.projects.find(function(p){return p.id===pid;});if(!proj)return;
+  var done=0,total=20;
+  try{var rs=JSON.parse(localStorage.getItem('eureka_learn_state_'+pid)||'{}');if(rs.tasks){for(var i=1;i<=6;i++){if(rs.tasks[i]&&rs.tasks[i].status==='done')done++;}}}catch(e){}
+  try{var ins=JSON.parse(localStorage.getItem('eureka_inspire_v1')||'{}');for(var j=7;j<=11;j++){if(ins.tasks&&ins.tasks[j]&&ins.tasks[j].status==='done')done++;}}catch(e){}
+  try{var shp=JSON.parse(localStorage.getItem('eureka_shape_v1')||'{}');for(var k=12;k<=15;k++){if(shp.tasks&&shp.tasks[k]&&shp.tasks[k].status==='done')done++;}}catch(e){}
+  try{var exm=JSON.parse(localStorage.getItem('eureka_exam_v1')||'{}');for(var l=16;l<=20;l++){if(exm.tasks&&exm.tasks[l]&&exm.tasks[l].status==='done')done++;}}catch(e){}
+  proj.taskCount=total;proj.completedCount=done;proj.updatedAt=new Date().toISOString();lp_saveProjectsData(data);lp_renderProjectsList();
+}
+window.lp_syncProjectProgress=lp_syncProjectProgress;
 </script>
 
 <!-- Eureka 学习流程线路图 Modal -->
