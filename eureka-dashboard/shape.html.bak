@@ -3,41 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eureka 实训系统 · Inspire 启发阶段</title>
+<title>Eureka 实训系统 · Shape 构建阶段</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --o:#f97316;--o2:#ea580c;--g:#10b981;--r:#ef4444;
-  --bg:#fff8f0;--card:#fff;--t:#1e293b;--t2:#64748b;--t3:#94a3b8;
-  --bd:#e2e8f0;--rad:14px;--sh:0 4px 24px rgba(249,115,22,.1);
+  --o:#10b981;--o2:#059669;--g:#10b981;--r:#ef4444;
+  --bg:#f0fdf4;--card:#fff;--t:#1e293b;--t2:#64748b;--t3:#94a3b8;
+  --bd:#e2e8f0;--rad:14px;--sh:0 4px 24px rgba(16,185,129,.1);
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
 /* NAV */
-.top-nav{background:linear-gradient(135deg,var(--o),var(--o2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(249,115,22,.3)}
+.top-nav{background:linear-gradient(135deg,var(--o),var(--o2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(16,185,129,.3)}
 .nav-left{display:flex;align-items:center;gap:14px}
 .nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;cursor:pointer;background:none;transition:.2s}
 .nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
 .nav-title{color:#fff;font-size:17px;font-weight:700}
 .nav-subtitle{color:rgba(255,255,255,.7);font-size:12px;margin-top:1px}
 .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.nav-center{flex:1;display:flex;justify-content:center;align-items:center}
-.nav-center-text{color:rgba(255,255,255,.6);font-size:11px;text-align:center;line-height:1.5}
-.nav-center-text strong{display:block;font-size:13px;color:rgba(255,255,255,.85);font-weight:700}
 .learn-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
 .ai-settings-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
 .ai-settings-btn:hover{background:rgba(255,255,255,.25)}
 .ai-settings-btn .icon{font-size:14px}
 .nav-sync-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
-/* Reveal done state = blue (inspire/shape/exam pages) */
-.rise-step:first-child .rise-dot.done{background:#667eea}
-.rise-step:first-child .rise-conn.done{background:#667eea}
+/* Reveal done = blue / Inspire done = orange (shape/exam pages) */
+.rise-step:nth-child(1) .rise-dot.done{background:#667eea}
+.rise-step:nth-child(1) .rise-conn.done{background:#667eea}
+.rise-step:nth-child(2) .rise-dot.done{background:#f97316}
+.rise-step:nth-child(2) .rise-conn.done{background:#f97316}
 .ai-settings-btn:hover{background:rgba(255,255,255,.25)}
 /* RISE BAR */
 .rise-bar{background:#fff;border-bottom:1px solid var(--bd);padding:16px 24px;display:flex;align-items:center}
 .rise-step{display:flex;align-items:center;flex:1}
 .rise-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:.3s}
-.rise-dot.active{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.rise-dot.active{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.4)}
 .rise-dot.locked{background:var(--bd);color:var(--t3)}
 .rise-dot.done{background:var(--g);color:#fff}
 .rise-label{margin-left:8px}
@@ -59,15 +58,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .task-nav-hdr .pfill{height:100%;background:linear-gradient(90deg,var(--o),var(--o2));border-radius:2px;transition:.5s}
 .task-item{padding:14px 20px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:12px}
 .task-item:last-child{border-bottom:none}
-.task-item:hover{background:#fff8f0}
-.task-item.active{background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(234,88,12,.05));border-left:3px solid var(--o)}
+.task-item:hover{background:#f0fdf4}
+.task-item.active{background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(5,150,105,.05));border-left:3px solid var(--o)}
 .task-item.active .t-num{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff}
 .task-item.done .t-num{background:var(--g);color:#fff}
 .t-num{width:26px;height:26px;border-radius:50%;background:var(--bd);color:var(--t2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .t-info .t-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.4}
 .t-info .t-stat{font-size:11px;color:var(--t3);margin-top:3px}
 .task-item.done .t-info .t-stat{color:var(--g)}
-.mod-sep{padding:8px 20px;background:linear-gradient(135deg,#fff8f0,#fff3e0);font-size:11px;font-weight:700;color:var(--o2);letter-spacing:.5px;border-bottom:1px solid var(--bd)}
+.mod-sep{padding:8px 20px;background:linear-gradient(135deg,#f0fdf4,#d1fae5);font-size:11px;font-weight:700;color:var(--o2);letter-spacing:.5px;border-bottom:1px solid var(--bd)}
 .dlv-tag{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;border:1px solid #86efac;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:6px}
 /* SIDEBAR CARDS */
 .s-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);margin-top:16px;overflow:hidden}
@@ -77,29 +76,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .s-card-body{padding:14px 18px}
 .s-card-item{font-size:12px;color:var(--t2);line-height:1.6;padding:6px 0;border-bottom:1px solid var(--bd)}
 .s-card-item:last-child{border-bottom:none}
-.tips-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
-.tips-hdr .lbl{color:#92400e}
+.tips-hdr{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.tips-hdr .lbl{color:#065f46}
 .pitfalls-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
 .pitfalls-hdr .lbl{color:#b91c1c}
 .tips-item::before{content:"⚠️  "}
+/* Inspire data card */
+.inspire-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.inspire-hdr .lbl{color:#92400e}
 .reveal-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
 .reveal-hdr .lbl{color:#1e40af}
 .reveal-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block}
 .reveal-val{font-size:12px;color:#334155;margin-top:2px;line-height:1.5}
+.inspire-lbl{font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;display:block}
+.inspire-val{font-size:12px;color:#78350f;margin-top:2px;line-height:1.5}
+.inspire-sep{height:1px;background:var(--bd);margin:8px 0}
 /* CONTENT */
 .task-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
-.task-hdr{padding:24px 28px;background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(234,88,12,.04));border-bottom:1px solid var(--bd)}
+.task-hdr{padding:24px 28px;background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(5,150,105,.04));border-bottom:1px solid var(--bd)}
 .step-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px}
 .task-hdr h2{font-size:22px;font-weight:800;color:var(--t);margin-bottom:8px}
-.task-hdr .obj{font-size:14px;color:var(--t2);line-height:1.7;padding:12px 16px;background:rgba(249,115,22,.06);border-radius:8px;border-left:3px solid var(--o);margin-bottom:10px}
+.task-hdr .obj{font-size:14px;color:var(--t2);line-height:1.7;padding:12px 16px;background:rgba(16,185,129,.06);border-radius:8px;border-left:3px solid var(--o);margin-bottom:10px}
 .task-hdr .dlv-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .task-hdr .dlv-label{font-size:12px;color:var(--t3);font-weight:600}
 .concept-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
 .sec-label{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.concept-text{font-size:13px;color:var(--t2);line-height:1.8;background:#fff8f0;padding:14px 16px;border-radius:8px}
+.concept-text{font-size:13px;color:var(--t2);line-height:1.8;background:#f0fdf4;padding:14px 16px;border-radius:8px}
 .steps-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
 .step-list{display:flex;flex-direction:column;gap:10px}
-.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#fff8f0;border-radius:8px;border:1px solid var(--bd)}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f0fdf4;border-radius:8px;border:1px solid var(--bd)}
 .s-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .s-title{font-size:13px;font-weight:700;color:var(--t)}
 .s-hint{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.5}
@@ -107,100 +112,95 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .form-area{padding:20px 28px;border-bottom:1px solid var(--bd)}
 .form-group{margin-bottom:22px}
 .form-label{font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.form-hint{font-size:12px;color:var(--t3);margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#fff8f0;border-radius:6px;border-left:2px solid var(--o)}
+.form-hint{font-size:12px;color:var(--t3);margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#f0fdf4;border-radius:6px;border-left:2px solid var(--o)}
 textarea,input[type="text"]{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--t);font-family:inherit;resize:vertical;transition:.2s;background:#fff;line-height:1.7}
-textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
 textarea{min-height:90px}
-/* POV CONTEXT */
-.pov-ctx{padding:14px 28px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#eff6ff,#dbeafe)}
-.pov-ctx-title{font-size:12px;font-weight:700;color:#1e40af;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.pov-ctx-content{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border-left:3px solid #3b82f6}
-.pov-ctx-empty{font-size:12px;color:#64748b;font-style:italic;padding:10px;background:#f1f5f9;border-radius:6px}
-/* POV DECOMPOSE */
-.pov-decomp{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
-@media(max-width:900px){.pov-decomp{grid-template-columns:1fr}}
-.pov-col{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;transition:.2s}
-.pov-col:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(249,115,22,.1)}
-.pov-col-hdr{padding:12px 16px;display:flex;align-items:center;gap:8px}
-.pov-col-icon{font-size:18px}
-.pov-col-title{font-size:13px;font-weight:700;color:#fff}
-.pov-col-sub{font-size:11px;color:rgba(255,255,255,.85);margin-top:2px}
-.pov-col-user .pov-col-hdr{background:linear-gradient(135deg,#3b82f6,#2563eb)}
-.pov-col-trouble .pov-col-hdr{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.pov-col-goal .pov-col-hdr{background:linear-gradient(135deg,#10b981,#059669)}
-.pov-col-body{padding:14px}
-.pov-col-body textarea{min-height:100px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;padding:10px 12px;resize:vertical}
-.pov-col-body textarea:focus{border-color:var(--o);outline:none}
-.pov-ai-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--o);background:none;border:none;cursor:pointer;padding:5px 0;font-weight:600}
-.pov-ai-btn:hover{text-decoration:underline}
-/* POV PREVIEW */
-.pov-preview{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:12px;padding:18px;margin-top:16px}
-.pov-preview-title{font-size:13px;font-weight:700;color:var(--o2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.pov-preview-content{font-size:14px;color:#1e293b;line-height:1.8;background:#fff;padding:14px 16px;border-radius:8px;border-left:3px solid var(--o)}
-.pov-preview-placeholder{color:#94a3b8;font-style:italic;font-size:13px}
-/* HMW DIMS */
-.hmw-dims{display:flex;flex-direction:column;gap:14px;margin-top:8px}
-.hmw-dim{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
-.hmw-dim-hdr{padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:.15s}
-.hmw-dim-hdr:hover{background:#f8faff}
-.hmw-dim-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.dim-pos .hmw-dim-icon{background:#dcfce7;color:#16a34a}
-.dim-neg .hmw-dim-icon{background:#fee2e2;color:#dc2626}
-.dim-asum .hmw-dim-icon{background:#dbeafe;color:#2563eb}
-.dim-wild .hmw-dim-icon{background:#fce7f3;color:#be185d}
-.hmw-dim-title{font-size:13px;font-weight:700;color:var(--t);flex:1}
-.hmw-dim-sub{font-size:11px;color:var(--t3);margin-top:2px}
-.hmw-dim-cnt{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
-.dim-pos .hmw-dim-cnt{background:#dcfce7;color:#16a34a}
-.dim-neg .hmw-dim-cnt{background:#fee2e2;color:#dc2626}
-.dim-asum .hmw-dim-cnt{background:#dbeafe;color:#2563eb}
-.dim-wild .hmw-dim-cnt{background:#fce7f3;color:#be185d}
-.hmw-dim-body{padding:0 18px 16px;display:none}
-.hmw-dim-body.open{display:block;animation:fadeIn .2s ease}
-.hmw-items{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-.hmw-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid var(--bd);transition:.15s}
-.hmw-item.ai-gen{border-color:#bae6fd;background:#f0f9ff}
-.hmw-item-text{flex:1;font-size:13px;color:var(--t);line-height:1.6}
-.hmw-item-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;flex-shrink:0;transition:.15s}
-.hmw-item-del:hover{background:#fee2e2;color:var(--r)}
-.hmw-add-row{display:flex;gap:8px;margin-top:8px}
-.hmw-add-row input{flex:1;border:1.5px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:13px}
-.hmw-add-row input:focus{border-color:var(--o);outline:none}
-.hmw-add-btn{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
-.hmw-ai-gen{display:flex;align-items:center;gap:6px;width:100%;padding:10px 14px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:var(--o2);font-size:13px;font-weight:600;cursor:pointer;justify-content:center;transition:.2s;margin-bottom:10px}
-.hmw-ai-gen:hover{background:#ffedd5;border-color:var(--o)}
-.hmw-ai-gen:disabled{opacity:.6;cursor:not-allowed}
-/* HMW SUMMARY */
-.hmw-list{display:flex;flex-direction:column;gap:8px}
-.hmw-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;transition:.2s}
-.hmw-row:hover{border-color:var(--o);background:#fff8f0}
-.dim-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:2px}
-.tag-pos{background:#dcfce7;color:#16a34a}
-.tag-neg{background:#fee2e2;color:#dc2626}
-.tag-asum{background:#dbeafe;color:#2563eb}
-.tag-wild{background:#fce7f3;color:#be185d}
-.hmw-row-text{font-size:13px;color:var(--t);flex:1;line-height:1.6}
-/* SCORING TABLE */
-.score-wrap{overflow-x:auto}
-.score-tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;min-width:580px}
-.score-tbl th{padding:10px 12px;background:linear-gradient(135deg,#fff8f0,#fff3e0);text-align:left;font-size:11px;font-weight:700;color:var(--o2);border-bottom:2px solid var(--bd)}
-.score-tbl td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
-.score-tbl tr:last-child td{border-bottom:none}
-.score-tbl tr:hover td{background:#fff8f0}
-.sc-ctrl{display:flex;align-items:center;gap:4px}
-.sc-btn{width:26px;height:26px;border:1.5px solid var(--bd);border-radius:6px;background:#fff;color:var(--t);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-.sc-btn:hover{background:var(--o);border-color:var(--o);color:#fff}
-.sc-val{width:28px;text-align:center;font-size:14px;font-weight:700;color:var(--t)}
-.sc-tot{font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;display:inline-block}
-.sc-h{background:#dcfce7;color:#16a34a}
-.sc-m{background:#fef3c7;color:#92400e}
-.sc-l{background:#fee2e2;color:#dc2626}
-.hmw-sel{width:18px;height:18px;accent-color:var(--o);cursor:pointer}
-.sel-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-/* DESIGN BRIEF */
-.brief-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
-.brief-hdr{padding:16px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;display:flex;align-items:center;gap:10px}
-.brief-hdr h3{font-size:15px;font-weight:700}
+/* INSPIRE/CTX CONTEXT */
+.ctx-ctx{padding:14px 28px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+.ctx-ctx-title{font-size:12px;font-weight:700;color:#1e40af;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ctx-ctx-content{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border-left:3px solid #3b82f6}
+.ctx-ctx-empty{font-size:12px;color:#64748b;font-style:italic;padding:10px;background:#f1f5f9;border-radius:6px}
+/* 4-DIM CHALLENGE CARDS */
+.dim4-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:10px}
+@media(max-width:700px){.dim4-grid{grid-template-columns:1fr}}
+.dim4-card{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
+.dim4-card:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(16,185,129,.1)}
+.dim4-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.dim4-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dim-user .dim4-icon{background:#dbeafe;color:#2563eb}
+.dim-biz .dim4-icon{background:#fef3c7;color:#d97706}
+.dim-tech .dim4-icon{background:#d1fae5;color:#059669}
+.dim-stkh .dim4-icon{background:#ede9fe;color:#7c3aed}
+.dim4-title{font-size:13px;font-weight:700;color:#fff;flex:1}
+.dim4-sub{font-size:11px;color:rgba(255,255,255,.85);margin-top:2px}
+.dim4-body{padding:14px}
+.dim4-q-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.dim4-q-row{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:6px;border:1px solid var(--bd)}
+.dim4-q-text{flex:1;font-size:12px;color:var(--t);line-height:1.6}
+.dim4-q-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:2px 4px;flex-shrink:0}
+.dim4-q-del:hover{color:var(--r)}
+.dim4-add{display:flex;gap:8px}
+.dim4-add input{flex:1;border:1.5px solid var(--bd);border-radius:6px;padding:7px 10px;font-size:12px}
+.dim4-add input:focus{border-color:var(--o);outline:none}
+.dim4-add-btn{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.dim4-ai-btn{display:flex;align-items:center;gap:6px;width:100%;padding:9px 14px;background:#f0fdf4;border:1.5px dashed #6ee7b7;border-radius:8px;color:var(--o2);font-size:12px;font-weight:600;cursor:pointer;justify-content:center;transition:.2s;margin-bottom:10px}
+.dim4-ai-btn:hover{background:#d1fae5;border-color:var(--o)}
+/* CONCEPT PLAN */
+.cp-section{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.cp-section-title{font-size:13px;font-weight:700;color:#fff;padding:8px 14px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cp-user .cp-section-title{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.cp-biz .cp-section-title{background:linear-gradient(135deg,#d97706,#b45309)}
+.cp-tech .cp-section-title{background:linear-gradient(135deg,#059669,#047857)}
+.cp-stkh .cp-section-title{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.cp-overview .cp-section-title{background:linear-gradient(135deg,var(--o),var(--o2))}
+/* MAP TABLE */
+.map-wrap{overflow-x:auto;margin-top:10px}
+.map-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.map-tbl th{padding:10px 12px;background:#f0fdf4;text-align:left;font-size:11px;font-weight:700;color:var(--o2);border-bottom:2px solid var(--bd)}
+.map-tbl td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.map-tbl tr:last-child td{border-bottom:none}
+.map-tbl tr:hover td{background:#f0fdf4}
+.map-stars{display:flex;gap:4px}
+.map-star{font-size:16px;cursor:pointer;color:#e2e8f0;transition:.15s}
+.map-star.on{color:#10b981}
+/* STORYBOARD 6 GRID */
+.sb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media(max-width:800px){.sb-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.sb-grid{grid-template-columns:1fr}}
+.sb-cell{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;transition:.2s}
+.sb-cell:hover{border-color:var(--o)}
+.sb-cell-hdr{padding:10px 14px;display:flex;align-items:center;gap:8px}
+.sb-cell-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-cell-label{font-size:12px;font-weight:700;color:#fff;flex:1}
+.sb-cell:nth-child(1) .sb-cell-hdr{background:linear-gradient(135deg,#64748b,#475569)}
+.sb-cell:nth-child(2) .sb-cell-hdr{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.sb-cell:nth-child(3) .sb-cell-hdr{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.sb-cell:nth-child(4) .sb-cell-hdr{background:linear-gradient(135deg,#10b981,#059669)}
+.sb-cell:nth-child(5) .sb-cell-hdr{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.sb-cell:nth-child(6) .sb-cell-hdr{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.sb-cell-body{padding:12px}
+.sb-cell-body textarea{min-height:120px;font-size:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;resize:vertical;width:100%}
+.sb-cell-body textarea:focus{border-color:var(--o);outline:none}
+/* AHA DESIGN */
+.aha-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media(max-width:700px){.aha-cards{grid-template-columns:1fr}}
+.aha-card{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
+.aha-card:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(16,185,129,.1)}
+.aha-card-hdr{padding:14px 16px;display:flex;align-items:center;gap:10px}
+.aha-card:nth-child(1) .aha-card-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.aha-card:nth-child(2) .aha-card-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.aha-card:nth-child(3) .aha-card-hdr{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.aha-card:nth-child(1) .aha-icon{font-size:22px}
+.aha-card:nth-child(2) .aha-icon{font-size:22px}
+.aha-card:nth-child(3) .aha-icon{font-size:22px}
+.aha-title{font-size:14px;font-weight:700;color:#1e293b}
+.aha-sub{font-size:11px;color:#64748b;margin-top:2px}
+.aha-card-body{padding:14px}
+.aha-card-body textarea{min-height:90px;font-size:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;resize:vertical;width:100%}
+.aha-card-body textarea:focus{border-color:var(--o);outline:none}
+.aha-ai-btn{display:flex;align-items:center;gap:5px;width:100%;padding:8px 12px;background:#f0fdf4;border:1.5px dashed #6ee7b7;border-radius:6px;color:#065f46;font-size:12px;font-weight:600;cursor:pointer;justify-content:center;margin-top:8px}
+.aha-ai-btn:hover{background:#d1fae5}
 .brief-body{padding:20px;display:flex;flex-direction:column;gap:14px}
 .brief-sec-lbl{font-size:11px;font-weight:700;color:var(--o2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
 .brief-val{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #fed7aa;min-height:44px}
@@ -216,13 +216,13 @@ textarea{min-height:90px}
 @media(max-width:900px){.nco-grid{grid-template-columns:1fr}}
 .nco-card{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;position:relative}
 .nco-card:hover{border-color:var(--o);transform:translateY(-2px);box-shadow:0 4px 12px rgba(249,115,22,.12)}
-.nco-card.sel{border-color:var(--o);background:#fff8f0}
+.nco-card.sel{border-color:var(--o);background:#f0fdf4}
 .nco-chk{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--o);color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700}
 .nco-card.sel .nco-chk{display:flex}
 .nco-ind{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#f1f5f9;color:var(--t3);display:inline-block;margin-bottom:6px}
 .nco-title{font-size:13px;font-weight:700;color:var(--t);margin-bottom:5px;line-height:1.4}
 .nco-desc{font-size:12px;color:var(--t2);line-height:1.6}
-.nco-ins{font-size:11px;color:var(--o2);background:#fff8f0;padding:6px 8px;border-radius:6px;margin-top:8px;border-left:2px solid var(--o)}
+.nco-ins{font-size:11px;color:var(--o2);background:#f0fdf4;padding:6px 8px;border-radius:6px;margin-top:8px;border-left:2px solid var(--o)}
 /* IDEA GRID */
 .idea-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
 @media(max-width:900px){.idea-grid{grid-template-columns:1fr}}
@@ -236,7 +236,7 @@ textarea{min-height:90px}
 /* IDEA SCORE */
 .idea-score-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .idea-score-row{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;transition:.2s}
-.idea-score-row.best{border-color:var(--o);background:#fff8f0}
+.idea-score-row.best{border-color:var(--o);background:#f0fdf4}
 .i-row-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
 .i-row-text{flex:1;font-size:13px;color:var(--t);line-height:1.6}
 .best-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;white-space:nowrap;flex-shrink:0}
@@ -246,7 +246,7 @@ textarea{min-height:90px}
 .star-row{display:flex;gap:3px}
 .star{font-size:16px;cursor:pointer;line-height:1;transition:.1s;user-select:none}
 /* AHA */
-.aha-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
+.aha-box{background:linear-gradient(135deg,#f0fdf4,#d1fae5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
 .aha-hdr{padding:16px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;display:flex;align-items:center;gap:10px}
 .aha-hdr h3{font-size:15px;font-weight:700}
 .aha-body{padding:20px;display:flex;flex-direction:column;gap:14px}
@@ -261,16 +261,16 @@ textarea{min-height:90px}
 .aha-ai-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--o);background:none;border:none;cursor:pointer;font-weight:600;margin-top:6px;padding:4px 0}
 .aha-ai-btn:hover{text-decoration:underline}
 /* AI GENERATE */
-.ai-gen{margin:16px 0;padding:16px;background:#fff8f0;border-radius:10px;border:1.5px dashed #fdba74}
+.ai-gen{margin:16px 0;padding:16px;background:#f0fdf4;border-radius:10px;border:1.5px dashed #fdba74}
 .ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
-.ai-gen-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.35)}
+.ai-gen-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.35)}
 .ai-gen-btn:disabled{opacity:.6;cursor:not-allowed}
 .ai-gen-hint{margin-top:10px;font-size:12px;color:var(--o2);text-align:center}
 .ai-res-box{margin-top:12px;padding:14px;background:#fff;border-radius:8px;border:1.5px solid #fed7aa;display:none}
 .ai-res-box.show{display:block;animation:fadeIn .3s ease}
 .ai-res-title{font-size:12px;font-weight:700;color:var(--o2);margin-bottom:8px}
-.ai-res-item{padding:10px 12px;margin-bottom:8px;background:#fff8f0;border-radius:8px;border-left:3px solid var(--o);font-size:13px;color:#334155;line-height:1.6;cursor:pointer;transition:.2s}
-.ai-res-item:hover{background:#ffedd5;border-left-color:var(--o2)}
+.ai-res-item{padding:10px 12px;margin-bottom:8px;background:#f0fdf4;border-radius:8px;border-left:3px solid var(--o);font-size:13px;color:#334155;line-height:1.6;cursor:pointer;transition:.2s}
+.ai-res-item:hover{background:#d1fae5;border-left-color:var(--o2)}
 .ai-res-item:last-child{margin-bottom:0}
 .ai-res-apply{font-size:11px;color:var(--o);margin-top:4px}
 /* ACTION BAR */
@@ -281,7 +281,7 @@ textarea{min-height:90px}
 .btn-sec{padding:10px 20px;background:#f1f5f9;border:1.5px solid var(--bd);border-radius:24px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:.2s}
 .btn-sec:hover{background:#e2e8f0}
 .btn-pri{padding:10px 24px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
-.btn-pri:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4)}
 .done-banner{margin:16px 28px 0;padding:14px 18px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:10px;display:flex;align-items:center;gap:10px}
 .done-banner .icon{font-size:20px}
 .done-banner .msg{font-size:13px;font-weight:600;color:#15803d}
@@ -342,8 +342,8 @@ textarea{min-height:90px}
 .out-item.done .out-item-icon{color:#10b981}
 .out-dlv-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:#ede9fe;color:#6d28d9;white-space:nowrap}
 .out-item.done .out-dlv-badge{background:#dcfce7;color:#15803d}
-.out-download-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:none;border-radius:8px;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
-.out-download-btn:hover{background:linear-gradient(135deg,#ddd6fe,#c4b5fd)}
+.out-download-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#f0fdf4,#d1fae5);border:none;border-radius:8px;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.out-download-btn:hover{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
 
 /* BUSINESS EVAL SIDEBAR */
 .biz-hdr{background:linear-gradient(135deg,#fff8f0,#ffedd5)}
@@ -353,19 +353,19 @@ textarea{min-height:90px}
 .biz-card-hdr{padding:10px 14px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#ea580c;border-bottom:1px solid #fed7aa}
 .biz-card-body{padding:12px 14px}
 .biz-map-row{display:flex;gap:6px;margin-top:6px}
-.biz-map-item{flex:1;padding:8px 6px;background:#fff8f0;border-radius:8px;text-align:center;border:1px solid #fed7aa}
+.biz-map-item{flex:1;padding:8px 6px;background:#f0fdf4;border-radius:8px;text-align:center;border:1px solid #fed7aa}
 .biz-map-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
 .biz-map-val{font-size:11px;color:#334155;font-weight:600}
 .biz-aha-item{padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
 .biz-aha-item:last-child{border-bottom:none}
 .biz-aha-item .biz-aha-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
 .biz-aha-item .biz-aha-val{color:#334155;line-height:1.5}
-.biz-ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;margin-top:10px}
-.biz-ai-gen-btn:hover{background:#ffedd5;border-color:#f97316}
+.biz-ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;margin-top:10px}
+.biz-ai-gen-btn:hover{background:#d1fae5;border-color:#f97316}
 .biz-complete-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto}
 
 /* MAP SCORING (task11 inline) */
-.map-scoring-row{background:#fff8f0;border:1.5px solid #fed7aa;border-radius:10px;padding:14px;margin-top:12px}
+.map-scoring-row{background:#f0fdf4;border:1.5px solid #fed7aa;border-radius:10px;padding:14px;margin-top:12px}
 .map-scoring-title{font-size:12px;font-weight:700;color:#ea580c;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .map-scoring-hint{font-size:11px;color:#92400e;margin-bottom:10px;background:#fff;border:1px solid #fed7aa;padding:6px 10px;border-radius:6px;line-height:1.5}
 .map-dim-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #fef3c7}
@@ -396,8 +396,8 @@ textarea{min-height:90px}
 .biz-mapping-q-label{font-size:11px;font-weight:700;color:#ea580c;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .biz-mapping-q textarea{min-height:64px;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;resize:vertical;width:100%;margin-top:4px}
 .biz-mapping-q textarea:focus{border-color:#f97316;outline:none}
-.biz-mapping-ai{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:#fff8f0;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:4px}
-.biz-mapping-ai:hover{background:#ffedd5;border-color:#f97316}
+.biz-mapping-ai{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:4px}
+.biz-mapping-ai:hover{background:#d1fae5;border-color:#f97316}
 
 /* OUTPUTS MODAL */
 #outputs-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center}
@@ -439,7 +439,7 @@ textarea{min-height:90px}
 .onboarding-step p{font-size:13px;color:#475569;line-height:1.8;margin-bottom:14px}
 .onboarding-step ul{margin:0;padding-left:20px}
 .onboarding-step li{font-size:13px;color:#475569;line-height:2}
-.onboarding-step .tip-box{background:#fff8f0;border:1.5px dashed #fdba74;border-radius:10px;padding:12px 16px;margin-top:14px}
+.onboarding-step .tip-box{background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:10px;padding:12px 16px;margin-top:14px}
 .onboarding-step .tip-box .tip-title{font-size:12px;font-weight:700;color:#c2410c;margin-bottom:6px}
 .onboarding-step .tip-box .tip-text{font-size:12px;color:#7c2d12;line-height:1.7}
 .onboarding-step .img-placeholder{background:linear-gradient(135deg,#f0f4ff,#e0e7ff);border-radius:12px;padding:30px;text-align:center;margin:14px 0}
@@ -453,7 +453,7 @@ textarea{min-height:90px}
 .onboarding-btn-prev{background:#f1f5f9;color:#64748b;border:none;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
 .onboarding-btn-prev:hover{background:#e2e8f0}
 .onboarding-btn-next{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
-.onboarding-btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.onboarding-btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4)}
 
 /* AI SETTINGS MODAL */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
@@ -466,7 +466,7 @@ textarea{min-height:90px}
 .ai-settings-close{background:var(--bd);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);transition:.2s}
 .ai-settings-close:hover{background:#e2e8f0}
 .ai-settings-body{padding:24px;overflow-y:auto}
-.ai-settings-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;padding:12px 16px;background:#fff8f0;border-radius:8px;border-left:3px solid var(--o)}
+.ai-settings-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;padding:12px 16px;background:#f0fdf4;border-radius:8px;border-left:3px solid var(--o)}
 .ai-form-group{margin-bottom:18px}
 .ai-form-label{font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px;display:block}
 .ai-form-input{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;transition:.2s}
@@ -494,20 +494,14 @@ textarea{min-height:90px}
 <!-- TOP NAV -->
 <nav class="top-nav">
   <div class="nav-left">
-    <a class="nav-back" href="learn.html">← Reveal</a>
+    <a class="nav-back" href="inspire.html">← Inspire</a>
     <div>
-      <div class="nav-title">💡 Inspire · 启发阶段</div>
-      <div class="nav-subtitle">重构创新机遇 · 跨界创意突破</div>
-    </div>
-  </div>
-  <div class="nav-center">
-    <div class="nav-center-text">
-      <strong>Eureka 实训系统</strong>
-      边做边学，掌握 RISE 价值创新全流程
+      <div class="nav-title">🛠️ Shape · 构建阶段</div>
+      <div class="nav-subtitle">将创意落地为可验证的概念方案</div>
     </div>
   </div>
   <div class="nav-right">
-    <button class="ai-settings-btn" onclick="showOnboarding()" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#f59e0b">
+    <button class="ai-settings-btn" onclick="showOnboarding()" style="background:rgba(255,255,255,.25)">
       <span class="icon">🎯</span>
       <span>新手引导</span>
     </button>
@@ -530,21 +524,21 @@ textarea{min-height:90px}
 <div class="rise-bar">
   <div class="rise-step" style="cursor:pointer" onclick="window.location.href='learn.html'" title="返回 Reveal 揭示阶段">
     <div class="rise-dot done">R</div>
-    <div class="rise-label"><div class="name">Reveal</div><div class="desc">揭示阶段 ←</div></div>
+    <div class="rise-label"><div class="name">Reveal</div><div class="desc">揭示阶段 ✓</div></div>
+    <div class="rise-conn done"></div>
+  </div>
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='inspire.html'" title="返回 Shape 构建阶段">
+    <div class="rise-dot done">I</div>
+    <div class="rise-label"><div class="name">Inspire</div><div class="desc">启发阶段 ✓</div></div>
     <div class="rise-conn done"></div>
   </div>
   <div class="rise-step active">
-    <div class="rise-dot active">I</div>
-    <div class="rise-label"><div class="name">Inspire</div><div class="desc">启发阶段</div></div>
-    <div class="rise-conn"></div>
-  </div>
-  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='shape.html'" title="进入 Shape 构建阶段">
-    <div class="rise-dot locked" style="transition:.2s" onmouseover="this.style.background='#f97316';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">S</div>
+    <div class="rise-dot active">S</div>
     <div class="rise-label"><div class="name">Shape</div><div class="desc">构建阶段</div></div>
     <div class="rise-conn"></div>
   </div>
-  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='exam.html'" title="进入 Exam 验证阶段">
-    <div class="rise-dot locked" style="transition:.2s" onmouseover="this.style.background='#0d9488';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">E</div>
+  <div class="rise-step">
+    <div class="rise-dot locked">E</div>
     <div class="rise-label"><div class="name">Exam</div><div class="desc">验证阶段</div></div>
   </div>
 </div>
@@ -553,13 +547,13 @@ textarea{min-height:90px}
 <div class="main">
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <!-- REVEAL DATA CARD — 放在子模块1上方 -->
-    <div class="s-card" id="reveal-data-card">
-      <div class="s-card-hdr reveal-hdr">
-        <span class="icon">📌</span>
-        <span class="lbl">来自 Reveal 的关键输入</span>
+    <!-- INSPIRE + REVEAL DATA CARD -->
+    <div class="s-card" id="inspire-data-card">
+      <div class="s-card-hdr inspire-hdr">
+        <span class="icon">💡</span>
+        <span class="lbl">来自 Inspire + Reveal 的关键输入</span>
       </div>
-      <div class="s-card-body" id="reveal-data-body">
+      <div class="s-card-body" id="inspire-data-body">
         <div style="font-size:12px;color:#94a3b8;font-style:italic">加载中...</div>
       </div>
     </div>
@@ -569,59 +563,51 @@ textarea{min-height:90px}
 
     <div class="task-nav">
       <div class="task-nav-hdr">
-        <div class="phase">Inspire · 启发阶段</div>
-        <div class="module">创新机遇 &amp; 创意突破</div>
+        <div class="phase">Shape · 构建阶段</div>
+        <div class="module">概念方案 &amp; 用户体验故事</div>
         <div class="pbar"><div class="pfill" id="sidebar-progress" style="width:0%"></div></div>
       </div>
-      <div class="mod-sep">子模块 1 · 重构创新机遇</div>
-      <div class="task-item active" onclick="switchTask(7)" id="task-item-7">
-        <div class="t-num">7</div>
+      <div class="mod-sep">子模块 1 · 方案拷问构建</div>
+      <div class="task-item active" onclick="switchTask(12)" id="task-item-12">
+        <div class="t-num">12</div>
         <div class="t-info">
-          <div class="t-name">用户问题拆解</div>
-          <div class="t-stat" id="stat-7">未开始</div>
+          <div class="t-name">拷问创意想法</div>
+          <div class="t-stat" id="stat-12">未开始</div>
         </div>
       </div>
-      <div class="task-item" onclick="switchTask(8)" id="task-item-8">
-        <div class="t-num">8</div>
+      <div class="task-item" onclick="switchTask(13)" id="task-item-13">
+        <div class="t-num">13</div>
         <div class="t-info">
-          <div class="t-name">创新机遇重构 HMW</div>
-          <div class="t-stat" id="stat-8">未开始</div>
+          <div class="t-name">方案整合发展</div>
+          <div class="t-stat" id="stat-13">未开始</div>
+          <div class="dlv-tag">📄 概念方案</div>
         </div>
       </div>
-      <div class="task-item" onclick="switchTask(9)" id="task-item-9">
-        <div class="t-num">9</div>
+      <div class="mod-sep">子模块 2 · 用户体验故事</div>
+      <div class="task-item" onclick="switchTask(14)" id="task-item-14">
+        <div class="t-num">14</div>
         <div class="t-info">
-          <div class="t-name">机遇筛选细化</div>
-          <div class="t-stat" id="stat-9">未开始</div>
-          <div class="dlv-tag">📄 设计简报</div>
+          <div class="t-name">用户故事描述</div>
+          <div class="t-stat" id="stat-14">未开始</div>
+          <div class="dlv-tag">🎬 故事板</div>
         </div>
       </div>
-      <div class="mod-sep">子模块 2 · 跨界创意突破</div>
-      <div class="task-item" onclick="switchTask(10)" id="task-item-10">
-        <div class="t-num">10</div>
+      <div class="task-item" onclick="switchTask(15)" id="task-item-15">
+        <div class="t-num">15</div>
         <div class="t-info">
-          <div class="t-name">灵感启发创意</div>
-          <div class="t-stat" id="stat-10">未开始</div>
-        </div>
-      </div>
-      <div class="task-item" onclick="switchTask(11)" id="task-item-11">
-        <div class="t-num">11</div>
-        <div class="t-info">
-          <div class="t-name">创意筛选与价值发展</div>
-          <div class="t-stat" id="stat-11">未开始</div>
-          <div class="dlv-tag">✨ AHA 价值假设</div>
+          <div class="t-name">AHA 用户价值设计</div>
+          <div class="t-stat" id="stat-15">未开始</div>
+          <div class="dlv-tag">✨ AHA 价值设计</div>
         </div>
       </div>
     </div>
-
-    <!-- TIPS CARD 已移到 sidebar 底部 -->
 
     <!-- PROJECT OUTPUTS CARD -->
     <div class="s-card" id="outputs-card" onclick="openOutputsModal()" style="cursor:pointer">
       <div class="s-card-hdr out-hdr">
         <span class="icon">📋</span>
         <span class="lbl">项目产出文档</span>
-        <span style="margin-left:auto;font-size:11px;color:#7c3aed;opacity:.6">点击查看 →</span>
+        <span style="margin-left:auto;font-size:11px;color:#10b981;opacity:.6">点击查看 →</span>
       </div>
       <div class="s-card-body">
         <div class="out-items" id="out-items-list"></div>
@@ -635,11 +621,11 @@ textarea{min-height:90px}
         <span class="lbl">商业价值评估</span>
       </div>
       <div class="s-card-body" id="biz-eval-body">
-        <div class="biz-empty">完成任务 11 后，评估结果将显示在此</div>
+        <div class="biz-empty">完成任务 15 后，评估结果将显示在此</div>
       </div>
     </div>
 
-    <!-- COMMON PITFALLS CARD — 放在最下方（由 tips-card 迁移） -->
+    <!-- TIPS CARD -->
     <div class="s-card" id="tips-card"></div>
   </div>
 
@@ -655,14 +641,14 @@ textarea{min-height:90px}
 <div id="outputs-modal-overlay" class="hidden">
   <div class="outputs-modal">
     <div class="outputs-modal-hdr">
-      <h2>📋 项目产出文档</h2>
+      <h2>📋 Shape 产出文档</h2>
       <button class="outputs-modal-close" onclick="closeOutputsModal()">✕</button>
     </div>
     <div class="outputs-modal-body" id="outputs-modal-body">
       <div class="out-doc-empty">正在加载...</div>
     </div>
     <div class="outputs-modal-footer">
-      <button class="out-download-all" onclick="downloadInspireDoc()">⬇️ 下载完整产出文档</button>
+      <button class="out-download-all" onclick="downloadShapeDoc()">⬇️ 下载完整产出文档</button>
     </div>
   </div>
 </div>
@@ -688,7 +674,7 @@ textarea{min-height:90px}
     <div class="onboarding-header">
       <div class="icon">💡</div>
       <div class="text">
-        <div class="title">Inspire 新手引导</div>
+        <div class="title">Shape 新手引导</div>
         <div class="sub">启发阶段 · 创新机遇重构 & 跨界创意突破</div>
       </div>
       <button class="onboarding-close" onclick="closeOnboarding()">✕</button>
@@ -696,8 +682,8 @@ textarea{min-height:90px}
     <div class="onboarding-body">
       <!-- Step 1 -->
       <div class="onboarding-step active" id="ob-step-1">
-        <h3>🎯 Inspire 阶段概览</h3>
-        <p>欢迎来到 Inspire 启发阶段！这里将帮助你把 Reveal 阶段发现的洞察转化为具体的创新机遇和跨界创意。</p>
+        <h3>🎯 Shape 阶段概览</h3>
+        <p>欢迎来到 Shape 构建阶段！这里将帮助你把 Reveal 阶段发现的洞察转化为具体的创新机遇和跨界创意。</p>
         <ul>
           <li>任务 7-9：重构创新机遇（POV → HMW → 设计简报）</li>
           <li>任务 10-11：跨界创意突破（NCO → AHA 价值假设）</li>
@@ -705,7 +691,7 @@ textarea{min-height:90px}
         </ul>
         <div class="tip-box">
           <div class="tip-title">💡 小贴士</div>
-          <div class="tip-text">Inspire 阶段的产出将直接作为 Shape 阶段的输入，建议按顺序完成每个任务。</div>
+          <div class="tip-text">Shape 阶段的产出将直接作为 Shape 阶段的输入，建议按顺序完成每个任务。</div>
         </div>
       </div>
       <!-- Step 2 -->
@@ -819,7 +805,7 @@ textarea{min-height:90px}
 // ===================================================
 // STATE
 // ===================================================
-const INSPIRE_KEY = 'eureka_inspire_v1';
+const SHAPE_KEY = 'eureka_shape_v1';
 const CROSS_MODULE_KEY = 'eureka_project_data_v1';
 const AI_CONFIG_KEY = 'eureka_learn_ai_v1';
 
@@ -932,7 +918,7 @@ function escHtml(str) {
 const TASKS = {
   7: {
     title: '用户问题拆解',
-    badge: 'Inspire · 任务 7/11',
+    badge: 'Shape · 任务 12/15',
     deliverable: '结构化 POV 问题描述',
     objective: '基于 Reveal 阶段 task6 产出的 POV，将复杂的用户视角问题精准拆解为【用户】【麻烦】【目标】三要素，为下一步的 HMW 创新机遇重构提供清晰靶点。',
     concept: '本任务的核心是使用"POV 用户问题"拆解框架，从纠缠交错的信息中梳理并清晰界定三大核心要素：\n\n👤 用户：我们究竟在为谁解决问题（越具体越好）\n⚡ 麻烦：场景中的任务、体验痛点、真实挑战\n🎯 目标：期望达成的结果、需求满足、改变',
@@ -950,7 +936,7 @@ const TASKS = {
   },
   8: {
     title: '创新机遇重构 HMW',
-    badge: 'Inspire · 任务 8/11',
+    badge: 'Shape · 任务 13/15',
     deliverable: '6-8 条 HMW 创新机遇',
     objective: '从"用户视角问题 (POV)"切换到"团队视角的创新机遇"，运用四维重构方法将挑战转化为 HMW（我们如何才能…？）句式，产出具有探索空间的创新机遇靶点。',
     concept: '本任务使用 HMW 四维重构框架，从四个维度对 POV 进行视角切换：\n\n✅ 发挥积极：将问题的负面要素转换成正面目标\n❌ 移除否定：假设阻碍因素不存在，能做什么？\n🔄 假设转换：颠覆核心假设，从反面或中间思考\n🚀 脑洞大开：夸张化、极端化、完全异想天开',
@@ -968,7 +954,7 @@ const TASKS = {
   },
   9: {
     title: '机遇筛选细化',
-    badge: 'Inspire · 任务 9/11',
+    badge: 'Shape · 任务 14/15',
     deliverable: '设计简报（Design Brief）',
     objective: '综合评估 HMW 创新机遇的用户价值、商业价值和可行性，通过打分和团队投票筛选出 1-2 个最佳 HMW，并结合 Reveal 阶段的用户画像和场景洞察，生成指导后续创意的《设计简报》。',
     concept: '本任务包含两步：\n\n① 机遇评估矩阵：对每条 HMW 进行三维打分（用户价值 1-5 分 + 商业价值 1-5 分 + 可行性 1-5 分）\n② 设计简报生成：将最佳 HMW 与用户画像、场景挑战整合，AI 辅助生成可编辑的《设计简报》',
@@ -985,7 +971,7 @@ const TASKS = {
   },
   10: {
     title: '灵感启发创意',
-    badge: 'Inspire · 任务 10/11',
+    badge: 'Shape · 任务 15/15',
     deliverable: '8+ 条跨界创意想法',
     objective: '运用三类 NCO 外部灵感源（New 新、Cool 酷、Outside 外）对设计简报和最佳 HMW 进行跨界启发，催生突破常规边界的大量原始创意想法。',
     concept: '本任务的核心是使用 AI 产出的 NCO 灵感，通过强制交叉（将已有问题与完全无关的跨界灵感结合），强迫团队跳出固有边界：\n\n🆕 New（新兴趋势）：新技术、新商业模式、新社会现象\n😎 Cool（酷炫体验）：令人印象深刻的产品体验和设计\n🌍 Outside（跨界领域）：完全不同行业的解决逻辑',
@@ -1002,7 +988,7 @@ const TASKS = {
   },
   11: {
     title: '创意筛选与价值发展',
-    badge: 'Inspire · 任务 11/11',
+    badge: 'Shape · 任务 15/15',
     deliverable: 'AHA 价值假设',
     objective: '使用 2x2 矩阵（用户价值 vs 可实现性）评估收敛最佳创意，并为其构建 AHA 价值假设——预判该创意将如何让用户产生"顿悟、高光、进步"三重体验飞跃。',
     concept: '本任务包含两步：\n\n① 2x2 打分筛选：对每个创意在"用户价值"和"可实现性"两个维度进行 5 星评分，锁定 1-2 个最佳创意\n② AHA 价值假设：\n  💡 顿悟（Eureka）：用户获得"原来还可以这样"的新认知\n  ✨ 高光（Highlight）：用户产生"这感觉太棒了"的情感高峰\n  🚀 进步（Progress）：用户实现"这改变了我的生活"的真实改变',
@@ -1024,7 +1010,7 @@ const TASKS = {
 // ===================================================
 function loadState() {
   try {
-    const raw = localStorage.getItem(INSPIRE_KEY);
+    const raw = localStorage.getItem(SHAPE_KEY);
     if (raw) {
       const saved = JSON.parse(raw);
       state.tasks = saved.tasks || {};
@@ -1039,7 +1025,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(INSPIRE_KEY, JSON.stringify({
+  localStorage.setItem(SHAPE_KEY, JSON.stringify({
     tasks: state.tasks,
     hmwItems: state.hmwItems,
     ncoCards: state.ncoCards,
@@ -1785,13 +1771,13 @@ function setMapScore(ideaIdx, key, val) {
       mapRow.outerHTML = renderMAPScoring(ideaIdx, state.mapScores[ideaIdx]);
     }
   }
-  saveInspireData();
+  saveShapeData();
   renderSidebarBizEval();
 }
 
 function updateBizMapping(key, val) {
   state.bizMapping[key] = val;
-  saveInspireData();
+  saveShapeData();
   renderSidebarBizEval();
 }
 
@@ -1896,14 +1882,14 @@ function renderSidebarBizEval() {
   el.innerHTML = html;
 }
 
-function downloadInspireDoc() {
+function downloadShapeDoc() {
   const project = JSON.parse(localStorage.getItem('eureka_learn_projects_v2') || '[]');
   const pid = localStorage.getItem('eureka_learn_current_v2') || '';
   const p = project.find(x => x.id === pid) || {};
   const name = p.name || 'Eureka项目';
   const sep = '\n';
   const lines = [
-    `# ${name} · Inspire 启发阶段产出文档`,
+    `# ${name} · Shape 构建阶段产出文档`,
     `生成时间: ${new Date().toLocaleString('zh-CN')}`,
     '',
   ];
@@ -1972,7 +1958,7 @@ function downloadInspireDoc() {
   const blob = new Blob([lines.join(sep)], { type:'text/markdown;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${name}_Inspire产出文档_${new Date().toLocaleDateString('zh-CN')}.md`.replace(/\//g,'-');
+  a.download = `${name}_Shape产出文档_${new Date().toLocaleDateString('zh-CN')}.md`.replace(/\//g,'-');
   a.click();
   showToast('📄 产出文档已下载！');
 }
@@ -2022,7 +2008,7 @@ function generateBizMapping() {
         if (parsed.q1) { const el = document.getElementById('biz-q1'); if (el) el.value = parsed.q1; }
         if (parsed.q2) { const el = document.getElementById('biz-q2'); if (el) el.value = parsed.q2; }
         if (parsed.q3) { const el = document.getElementById('biz-q3'); if (el) el.value = parsed.q3; }
-        saveInspireData();
+        saveShapeData();
         renderSidebarBizEval();
         showToast('💸 商业映射分析已完成！');
       } else {
@@ -2701,7 +2687,7 @@ function showOnboarding() {
 
 function closeOnboarding() {
   document.getElementById('onboarding-overlay').classList.remove('active');
-  localStorage.setItem('eureka_inspire_onboarding_skip', 'true');
+  localStorage.setItem('eureka_shape_onboarding_skip', 'true');
 }
 
 function nextOnboardingStep() {
@@ -2824,7 +2810,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTipsCard(7);
   renderTaskContent(7);
   // Auto-show onboarding on first visit
-  if (!localStorage.getItem('eureka_inspire_onboarding_skip')) {
+  if (!localStorage.getItem('eureka_shape_onboarding_skip')) {
     setTimeout(() => showOnboarding(), 800);
   }
 });
@@ -2862,7 +2848,7 @@ function closeEurekaFlow() {
           <div style="font-size:12px;color:#64748b;line-height:1.5">团队构建共识，深入探索用户，洞察真实需求</div>
         </div>
         <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b">
-          <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px">2. 启发 (Inspire)</div>
+          <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px">2. 启发 (Inspire) ✓</div>
           <div style="font-size:12px;color:#64748b;line-height:1.5">重构创新机遇，通过跨界灵感实现创意突破</div>
         </div>
         <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #10b981">

@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 实训系统 · Shape 构建阶段</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --o:#10b981;--o2:#059669;--g:#10b981;--r:#ef4444;
+  --bg:#f0fdf4;--card:#fff;--t:#1e293b;--t2:#64748b;--t3:#94a3b8;
+  --bd:#e2e8f0;--rad:14px;--sh:0 4px 24px rgba(16,185,129,.1);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+/* NAV */
+.top-nav{background:linear-gradient(135deg,var(--o),var(--o2));padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(16,185,129,.3)}
+.nav-left{display:flex;align-items:center;gap:14px}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:20px;cursor:pointer;background:none;transition:.2s}
+.nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
+.nav-title{color:#fff;font-size:17px;font-weight:700}
+.nav-subtitle{color:rgba(255,255,255,.7);font-size:12px;margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-center{flex:1;display:flex;justify-content:center;align-items:center}
+.nav-center-text{color:rgba(255,255,255,.6);font-size:11px;text-align:center;line-height:1.5}
+.nav-center-text strong{display:block;font-size:13px;color:rgba(255,255,255,.85);font-weight:700}
+.learn-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+.ai-settings-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.ai-settings-btn:hover{background:rgba(255,255,255,.25)}
+.ai-settings-btn .icon{font-size:14px}
+.nav-sync-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
+/* Reveal done = blue / Inspire done = orange (shape/exam pages) */
+.rise-step:nth-child(1) .rise-dot.done{background:#667eea}
+.rise-step:nth-child(1) .rise-conn.done{background:#667eea}
+.rise-step:nth-child(2) .rise-dot.done{background:#f97316}
+.rise-step:nth-child(2) .rise-conn.done{background:#f97316}
+.ai-settings-btn:hover{background:rgba(255,255,255,.25)}
+/* RISE BAR */
+.rise-bar{background:#fff;border-bottom:1px solid var(--bd);padding:16px 24px;display:flex;align-items:center}
+.rise-step{display:flex;align-items:center;flex:1}
+.rise-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:.3s}
+.rise-dot.active{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.4)}
+.rise-dot.locked{background:var(--bd);color:var(--t3)}
+.rise-dot.done{background:var(--g);color:#fff}
+.rise-label{margin-left:8px}
+.rise-label .name{font-size:13px;font-weight:600;color:var(--t)}
+.rise-label .desc{font-size:11px;color:var(--t3)}
+.rise-conn{flex:1;height:2px;background:var(--bd);margin:0 8px;max-width:60px}
+.rise-conn.done{background:var(--g)}
+.rise-step.active .rise-label .name{color:var(--o)}
+/* LAYOUT */
+.main{display:flex;gap:24px;padding:24px;max-width:1200px;margin:0 auto}
+.sidebar{width:260px;flex-shrink:0}
+.content{flex:1;min-width:0}
+/* SIDEBAR */
+.task-nav{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+.task-nav-hdr{padding:16px 20px;border-bottom:1px solid var(--bd)}
+.task-nav-hdr .phase{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.5px}
+.task-nav-hdr .module{font-size:14px;font-weight:700;margin-top:3px}
+.task-nav-hdr .pbar{height:4px;background:var(--bd);border-radius:2px;margin-top:10px;overflow:hidden}
+.task-nav-hdr .pfill{height:100%;background:linear-gradient(90deg,var(--o),var(--o2));border-radius:2px;transition:.5s}
+.task-item{padding:14px 20px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;gap:12px}
+.task-item:last-child{border-bottom:none}
+.task-item:hover{background:#f0fdf4}
+.task-item.active{background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(5,150,105,.05));border-left:3px solid var(--o)}
+.task-item.active .t-num{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff}
+.task-item.done .t-num{background:var(--g);color:#fff}
+.t-num{width:26px;height:26px;border-radius:50%;background:var(--bd);color:var(--t2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.t-info .t-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.4}
+.t-info .t-stat{font-size:11px;color:var(--t3);margin-top:3px}
+.task-item.done .t-info .t-stat{color:var(--g)}
+.mod-sep{padding:8px 20px;background:linear-gradient(135deg,#f0fdf4,#d1fae5);font-size:11px;font-weight:700;color:var(--o2);letter-spacing:.5px;border-bottom:1px solid var(--bd)}
+.dlv-tag{display:inline-flex;align-items:center;gap:4px;background:#f0fdf4;color:#15803d;border:1px solid #86efac;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:6px}
+/* SIDEBAR CARDS */
+.s-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);margin-top:16px;overflow:hidden}
+.s-card-hdr{padding:14px 18px;display:flex;align-items:center;gap:8px}
+.s-card-hdr .icon{font-size:16px}
+.s-card-hdr .lbl{font-size:13px;font-weight:700}
+.s-card-body{padding:14px 18px}
+.s-card-item{font-size:12px;color:var(--t2);line-height:1.6;padding:6px 0;border-bottom:1px solid var(--bd)}
+.s-card-item:last-child{border-bottom:none}
+.tips-hdr{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.tips-hdr .lbl{color:#065f46}
+.pitfalls-hdr{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+.pitfalls-hdr .lbl{color:#b91c1c}
+.tips-item::before{content:"⚠️  "}
+/* Inspire data card */
+.inspire-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.inspire-hdr .lbl{color:#92400e}
+.reveal-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.reveal-hdr .lbl{color:#1e40af}
+.reveal-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;display:block}
+.reveal-val{font-size:12px;color:#334155;margin-top:2px;line-height:1.5}
+.inspire-lbl{font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;display:block}
+.inspire-val{font-size:12px;color:#78350f;margin-top:2px;line-height:1.5}
+.inspire-sep{height:1px;background:var(--bd);margin:8px 0}
+/* CONTENT */
+.task-card{background:var(--card);border-radius:var(--rad);box-shadow:var(--sh);overflow:hidden}
+.task-hdr{padding:24px 28px;background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(5,150,105,.04));border-bottom:1px solid var(--bd)}
+.step-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+.task-hdr h2{font-size:22px;font-weight:800;color:var(--t);margin-bottom:8px}
+.task-hdr .obj{font-size:14px;color:var(--t2);line-height:1.7;padding:12px 16px;background:rgba(16,185,129,.06);border-radius:8px;border-left:3px solid var(--o);margin-bottom:10px}
+.task-hdr .dlv-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-hdr .dlv-label{font-size:12px;color:var(--t3);font-weight:600}
+.concept-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.sec-label{font-size:11px;font-weight:700;color:var(--o);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.concept-text{font-size:13px;color:var(--t2);line-height:1.8;background:#f0fdf4;padding:14px 16px;border-radius:8px}
+.steps-box{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#f0fdf4;border-radius:8px;border:1px solid var(--bd)}
+.s-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-title{font-size:13px;font-weight:700;color:var(--t)}
+.s-hint{font-size:12px;color:var(--t3);margin-top:3px;line-height:1.5}
+/* FORM */
+.form-area{padding:20px 28px;border-bottom:1px solid var(--bd)}
+.form-group{margin-bottom:22px}
+.form-label{font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.form-hint{font-size:12px;color:var(--t3);margin-bottom:8px;line-height:1.6;padding:8px 12px;background:#f0fdf4;border-radius:6px;border-left:2px solid var(--o)}
+textarea,input[type="text"]{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--t);font-family:inherit;resize:vertical;transition:.2s;background:#fff;line-height:1.7}
+textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+textarea{min-height:90px}
+/* INSPIRE/CTX CONTEXT */
+.ctx-ctx{padding:14px 28px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+.ctx-ctx-title{font-size:12px;font-weight:700;color:#1e40af;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ctx-ctx-content{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border-left:3px solid #3b82f6}
+.ctx-ctx-empty{font-size:12px;color:#64748b;font-style:italic;padding:10px;background:#f1f5f9;border-radius:6px}
+/* 4-DIM CHALLENGE CARDS */
+.dim4-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:10px}
+@media(max-width:700px){.dim4-grid{grid-template-columns:1fr}}
+.dim4-card{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
+.dim4-card:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(16,185,129,.1)}
+.dim4-hdr{padding:12px 16px;display:flex;align-items:center;gap:10px}
+.dim4-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dim-user .dim4-icon{background:#dbeafe;color:#2563eb}
+.dim-biz .dim4-icon{background:#fef3c7;color:#d97706}
+.dim-tech .dim4-icon{background:#d1fae5;color:#059669}
+.dim-stkh .dim4-icon{background:#ede9fe;color:#7c3aed}
+.dim4-title{font-size:13px;font-weight:700;color:#fff;flex:1}
+.dim4-sub{font-size:11px;color:rgba(255,255,255,.85);margin-top:2px}
+.dim4-body{padding:14px}
+.dim4-q-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.dim4-q-row{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:6px;border:1px solid var(--bd)}
+.dim4-q-text{flex:1;font-size:12px;color:var(--t);line-height:1.6}
+.dim4-q-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:2px 4px;flex-shrink:0}
+.dim4-q-del:hover{color:var(--r)}
+.dim4-add{display:flex;gap:8px}
+.dim4-add input{flex:1;border:1.5px solid var(--bd);border-radius:6px;padding:7px 10px;font-size:12px}
+.dim4-add input:focus{border-color:var(--o);outline:none}
+.dim4-add-btn{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.dim4-ai-btn{display:flex;align-items:center;gap:6px;width:100%;padding:9px 14px;background:#f0fdf4;border:1.5px dashed #6ee7b7;border-radius:8px;color:var(--o2);font-size:12px;font-weight:600;cursor:pointer;justify-content:center;transition:.2s;margin-bottom:10px}
+.dim4-ai-btn:hover{background:#d1fae5;border-color:var(--o)}
+/* CONCEPT PLAN */
+.cp-section{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+.cp-section-title{font-size:13px;font-weight:700;color:#fff;padding:8px 14px;border-radius:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cp-user .cp-section-title{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.cp-biz .cp-section-title{background:linear-gradient(135deg,#d97706,#b45309)}
+.cp-tech .cp-section-title{background:linear-gradient(135deg,#059669,#047857)}
+.cp-stkh .cp-section-title{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.cp-overview .cp-section-title{background:linear-gradient(135deg,var(--o),var(--o2))}
+/* MAP TABLE */
+.map-wrap{overflow-x:auto;margin-top:10px}
+.map-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.map-tbl th{padding:10px 12px;background:#f0fdf4;text-align:left;font-size:11px;font-weight:700;color:var(--o2);border-bottom:2px solid var(--bd)}
+.map-tbl td{padding:10px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.map-tbl tr:last-child td{border-bottom:none}
+.map-tbl tr:hover td{background:#f0fdf4}
+.map-stars{display:flex;gap:4px}
+.map-star{font-size:16px;cursor:pointer;color:#e2e8f0;transition:.15s}
+.map-star.on{color:#10b981}
+/* STORYBOARD 6 GRID */
+.sb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media(max-width:800px){.sb-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.sb-grid{grid-template-columns:1fr}}
+.sb-cell{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;transition:.2s}
+.sb-cell:hover{border-color:var(--o)}
+.sb-cell-hdr{padding:10px 14px;display:flex;align-items:center;gap:8px}
+.sb-cell-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-cell-label{font-size:12px;font-weight:700;color:#fff;flex:1}
+.sb-cell:nth-child(1) .sb-cell-hdr{background:linear-gradient(135deg,#64748b,#475569)}
+.sb-cell:nth-child(2) .sb-cell-hdr{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.sb-cell:nth-child(3) .sb-cell-hdr{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.sb-cell:nth-child(4) .sb-cell-hdr{background:linear-gradient(135deg,#10b981,#059669)}
+.sb-cell:nth-child(5) .sb-cell-hdr{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.sb-cell:nth-child(6) .sb-cell-hdr{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.sb-cell-body{padding:12px}
+.sb-cell-body textarea{min-height:120px;font-size:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;resize:vertical;width:100%}
+.sb-cell-body textarea:focus{border-color:var(--o);outline:none}
+/* AHA DESIGN */
+.aha-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media(max-width:700px){.aha-cards{grid-template-columns:1fr}}
+.aha-card{background:#fff;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden}
+.aha-card:hover{border-color:var(--o);box-shadow:0 2px 8px rgba(16,185,129,.1)}
+.aha-card-hdr{padding:14px 16px;display:flex;align-items:center;gap:10px}
+.aha-card:nth-child(1) .aha-card-hdr{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.aha-card:nth-child(2) .aha-card-hdr{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.aha-card:nth-child(3) .aha-card-hdr{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+.aha-card:nth-child(1) .aha-icon{font-size:22px}
+.aha-card:nth-child(2) .aha-icon{font-size:22px}
+.aha-card:nth-child(3) .aha-icon{font-size:22px}
+.aha-title{font-size:14px;font-weight:700;color:#1e293b}
+.aha-sub{font-size:11px;color:#64748b;margin-top:2px}
+.aha-card-body{padding:14px}
+.aha-card-body textarea{min-height:90px;font-size:12px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;resize:vertical;width:100%}
+.aha-card-body textarea:focus{border-color:var(--o);outline:none}
+.aha-ai-btn{display:flex;align-items:center;gap:5px;width:100%;padding:8px 12px;background:#f0fdf4;border:1.5px dashed #6ee7b7;border-radius:6px;color:#065f46;font-size:12px;font-weight:600;cursor:pointer;justify-content:center;margin-top:8px}
+.aha-ai-btn:hover{background:#d1fae5}
+.brief-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.brief-sec-lbl{font-size:11px;font-weight:700;color:var(--o2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.brief-val{font-size:13px;color:#1e293b;line-height:1.7;background:#fff;padding:12px 14px;border-radius:8px;border:1px solid #fed7aa;min-height:44px}
+.brief-val[contenteditable="true"]:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+/* NCO */
+.nco-type-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.nco-badge{font-size:13px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:.5px}
+.nco-new{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff}
+.nco-cool{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff}
+.nco-out{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
+.nco-type-sub{font-size:12px;color:var(--t3)}
+.nco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+@media(max-width:900px){.nco-grid{grid-template-columns:1fr}}
+.nco-card{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;cursor:pointer;transition:.2s;position:relative}
+.nco-card:hover{border-color:var(--o);transform:translateY(-2px);box-shadow:0 4px 12px rgba(249,115,22,.12)}
+.nco-card.sel{border-color:var(--o);background:#f0fdf4}
+.nco-chk{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--o);color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700}
+.nco-card.sel .nco-chk{display:flex}
+.nco-ind{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#f1f5f9;color:var(--t3);display:inline-block;margin-bottom:6px}
+.nco-title{font-size:13px;font-weight:700;color:var(--t);margin-bottom:5px;line-height:1.4}
+.nco-desc{font-size:12px;color:var(--t2);line-height:1.6}
+.nco-ins{font-size:11px;color:var(--o2);background:#f0fdf4;padding:6px 8px;border-radius:6px;margin-top:8px;border-left:2px solid var(--o)}
+/* IDEA GRID */
+.idea-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+@media(max-width:900px){.idea-grid{grid-template-columns:1fr}}
+.idea-card{background:#fff;border:1.5px solid var(--bd);border-radius:10px;overflow:hidden;transition:.2s}
+.idea-card:hover{border-color:var(--o)}
+.idea-hdr{padding:8px 12px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--o2)}
+.idea-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.idea-body{padding:10px 12px}
+.idea-body textarea{min-height:72px;border:1px solid #e2e8f0;border-radius:6px;padding:8px 10px;font-size:13px;resize:vertical}
+.idea-body textarea:focus{border-color:var(--o);outline:none}
+/* IDEA SCORE */
+.idea-score-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.idea-score-row{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:14px;transition:.2s}
+.idea-score-row.best{border-color:var(--o);background:#f0fdf4}
+.i-row-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.i-row-text{flex:1;font-size:13px;color:var(--t);line-height:1.6}
+.best-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;white-space:nowrap;flex-shrink:0}
+.i-dims{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.i-dim{display:flex;align-items:center;gap:6px;font-size:12px}
+.i-dim-lbl{font-weight:600;color:var(--t);font-size:11px}
+.star-row{display:flex;gap:3px}
+.star{font-size:16px;cursor:pointer;line-height:1;transition:.1s;user-select:none}
+/* AHA */
+.aha-box{background:linear-gradient(135deg,#f0fdf4,#d1fae5);border:2px solid var(--o);border-radius:14px;overflow:hidden;margin-top:16px}
+.aha-hdr{padding:16px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;display:flex;align-items:center;gap:10px}
+.aha-hdr h3{font-size:15px;font-weight:700}
+.aha-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.aha-dim{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden}
+.aha-dim-hdr{padding:12px 16px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:10px}
+.aha-dim-icon{font-size:20px}
+.aha-dim-title{font-size:13px;font-weight:700;color:#1e293b}
+.aha-dim-sub{font-size:11px;color:var(--t3)}
+.aha-dim-body{padding:14px 16px}
+.aha-dim-body textarea{min-height:72px;border:1px solid #fed7aa;border-radius:8px;padding:10px 12px;font-size:13px}
+.aha-dim-body textarea:focus{border-color:var(--o);outline:none}
+.aha-ai-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--o);background:none;border:none;cursor:pointer;font-weight:600;margin-top:6px;padding:4px 0}
+.aha-ai-btn:hover{text-decoration:underline}
+/* AI GENERATE */
+.ai-gen{margin:16px 0;padding:16px;background:#f0fdf4;border-radius:10px;border:1.5px dashed #fdba74}
+.ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 20px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-gen-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.35)}
+.ai-gen-btn:disabled{opacity:.6;cursor:not-allowed}
+.ai-gen-hint{margin-top:10px;font-size:12px;color:var(--o2);text-align:center}
+.ai-res-box{margin-top:12px;padding:14px;background:#fff;border-radius:8px;border:1.5px solid #fed7aa;display:none}
+.ai-res-box.show{display:block;animation:fadeIn .3s ease}
+.ai-res-title{font-size:12px;font-weight:700;color:var(--o2);margin-bottom:8px}
+.ai-res-item{padding:10px 12px;margin-bottom:8px;background:#f0fdf4;border-radius:8px;border-left:3px solid var(--o);font-size:13px;color:#334155;line-height:1.6;cursor:pointer;transition:.2s}
+.ai-res-item:hover{background:#d1fae5;border-left-color:var(--o2)}
+.ai-res-item:last-child{margin-bottom:0}
+.ai-res-apply{font-size:11px;color:var(--o);margin-top:4px}
+/* ACTION BAR */
+.action-bar{padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.save-hint{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px}
+.btn-ai{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.btn-ai:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.4)}
+.btn-sec{padding:10px 20px;background:#f1f5f9;border:1.5px solid var(--bd);border-radius:24px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:.2s}
+.btn-sec:hover{background:#e2e8f0}
+.btn-pri{padding:10px 24px;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4)}
+.done-banner{margin:16px 28px 0;padding:14px 18px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:10px;display:flex;align-items:center;gap:10px}
+.done-banner .icon{font-size:20px}
+.done-banner .msg{font-size:13px;font-weight:600;color:#15803d}
+.done-banner .sub{font-size:12px;color:#16a34a;margin-top:2px}
+/* TOAST */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;font-size:13px;font-weight:600;padding:12px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* AI COACH PANEL */
+.ai-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:.3s}
+.ai-overlay.active{opacity:1;pointer-events:all}
+.ai-panel{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:75vh;display:flex;flex-direction:column;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(40px)}to{transform:translateY(0)}}
+.ai-panel-hdr{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.ai-panel-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ai-panel-close{background:var(--bd);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);transition:.2s}
+.ai-panel-close:hover{background:#e2e8f0}
+.ai-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:88%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.ai-msg.bot{background:#f8fafc;border:1px solid var(--bd);align-self:flex-start}
+.ai-msg.user{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;align-self:flex-end}
+.ai-input-row{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:8px}
+.ai-input{flex:1;border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit}
+.ai-input:focus{outline:none;border-color:var(--o)}
+.ai-send{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-send:disabled{opacity:.6;cursor:not-allowed}
+/* SETTINGS MODAL */
+.m-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:.3s}
+.m-overlay.active{opacity:1;pointer-events:all}
+.m-box{background:#fff;border-radius:20px;padding:28px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.96);transition:.3s}
+.m-overlay.active .m-box{transform:scale(1)}
+.m-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.m-sub{font-size:13px;color:var(--t3);margin-bottom:20px}
+.m-lbl{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px;display:block}
+.m-input{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;font-family:inherit}
+.m-input:focus{outline:none;border-color:var(--o)}
+.m-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+/* UTILS */
+.loading-dots{display:inline-flex;gap:4px}
+.loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--o);animation:bounce .8s infinite}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease}
+
+/* PROJECT OUTPUTS SIDEBAR */
+.out-hdr{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.out-hdr .lbl{color:#6d28d9}
+.out-items{display:flex;flex-direction:column;gap:8px}
+.out-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:8px;border:1px solid var(--bd);cursor:pointer;transition:.15s;font-size:12px}
+.out-item:hover{background:#ede9fe;border-color:#c4b5fd}
+.out-item.done{border-color:#86efac;background:#f0fdf4}
+.out-item-icon{font-size:14px;flex-shrink:0}
+.out-item-info{flex:1;min-width:0}
+.out-item-name{font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.out-item-desc{font-size:10px;color:var(--t3);margin-top:1px}
+.out-item.done .out-item-name{color:#15803d}
+.out-item.done .out-item-icon{color:#10b981}
+.out-dlv-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:#ede9fe;color:#6d28d9;white-space:nowrap}
+.out-item.done .out-dlv-badge{background:#dcfce7;color:#15803d}
+.out-download-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-top:12px;background:linear-gradient(135deg,#f0fdf4,#d1fae5);border:none;border-radius:8px;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.out-download-btn:hover{background:linear-gradient(135deg,#d1fae5,#a7f3d0)}
+
+/* BUSINESS EVAL SIDEBAR */
+.biz-hdr{background:linear-gradient(135deg,#fff8f0,#ffedd5)}
+.biz-hdr .lbl{color:#ea580c}
+.biz-empty{font-size:12px;color:var(--t3);text-align:center;padding:12px;font-style:italic;background:#f8fafc;border-radius:8px}
+.biz-card{margin-top:10px;background:#fff;border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden}
+.biz-card-hdr{padding:10px 14px;background:linear-gradient(135deg,#fff8f0,#ffedd5);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#ea580c;border-bottom:1px solid #fed7aa}
+.biz-card-body{padding:12px 14px}
+.biz-map-row{display:flex;gap:6px;margin-top:6px}
+.biz-map-item{flex:1;padding:8px 6px;background:#f0fdf4;border-radius:8px;text-align:center;border:1px solid #fed7aa}
+.biz-map-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
+.biz-map-val{font-size:11px;color:#334155;font-weight:600}
+.biz-aha-item{padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
+.biz-aha-item:last-child{border-bottom:none}
+.biz-aha-item .biz-aha-key{font-size:10px;font-weight:700;color:#ea580c;margin-bottom:3px}
+.biz-aha-item .biz-aha-val{color:#334155;line-height:1.5}
+.biz-ai-gen-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;margin-top:10px}
+.biz-ai-gen-btn:hover{background:#d1fae5;border-color:#f97316}
+.biz-complete-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto}
+
+/* MAP SCORING (task11 inline) */
+.map-scoring-row{background:#f0fdf4;border:1.5px solid #fed7aa;border-radius:10px;padding:14px;margin-top:12px}
+.map-scoring-title{font-size:12px;font-weight:700;color:#ea580c;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.map-scoring-hint{font-size:11px;color:#92400e;margin-bottom:10px;background:#fff;border:1px solid #fed7aa;padding:6px 10px;border-radius:6px;line-height:1.5}
+.map-dim-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #fef3c7}
+.map-dim-row:last-child{border-bottom:none}
+.map-dim-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.map-dim-info{flex:1}
+.map-dim-name{font-size:13px;font-weight:700;color:#1e293b}
+.map-dim-q{font-size:11px;color:#64748b;margin-top:2px}
+.map-btn-row{display:flex;gap:4px}
+.map-btn{width:30px;height:30px;border:1.5px solid #fed7aa;border-radius:6px;background:#fff;color:#ea580c;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.map-btn:hover{background:#f97316;border-color:#f97316;color:#fff}
+.map-btn.active{background:#f97316;border-color:#f97316;color:#fff}
+.map-score-display{font-size:14px;font-weight:800;color:#ea580c;width:24px;text-align:center}
+.map-summary{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.map-summary-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.map-chip-high{background:#dcfce7;color:#16a34a}
+.map-chip-mid{background:#fef3c7;color:#92400e}
+.map-chip-low{background:#fee2e2;color:#dc2626}
+.map-chip-none{background:#f1f5f9;color:#64748b}
+
+/* BIZ MAPPING (商业映射) */
+.biz-mapping-box{background:linear-gradient(135deg,#fff8f0,#ffedd5);border:2px solid #f97316;border-radius:12px;margin-top:16px;overflow:hidden}
+.biz-mapping-hdr{padding:14px 18px;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;display:flex;align-items:center;gap:10px}
+.biz-mapping-hdr h3{font-size:14px;font-weight:700}
+.biz-mapping-body{padding:16px 18px}
+.biz-mapping-q{background:#fff;border:1px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.biz-mapping-q:last-child{margin-bottom:0}
+.biz-mapping-q-label{font-size:11px;font-weight:700;color:#ea580c;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.biz-mapping-q textarea{min-height:64px;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;resize:vertical;width:100%;margin-top:4px}
+.biz-mapping-q textarea:focus{border-color:#f97316;outline:none}
+.biz-mapping-ai{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:8px;color:#ea580c;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:4px}
+.biz-mapping-ai:hover{background:#d1fae5;border-color:#f97316}
+
+/* OUTPUTS MODAL */
+#outputs-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;display:flex;align-items:center;justify-content:center}
+#outputs-modal-overlay.hidden{display:none}
+.outputs-modal{background:#fff;border-radius:16px;width:640px;max-width:90vw;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.outputs-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-bottom:1px solid #e9d5ff}
+.outputs-modal-hdr h2{font-size:16px;font-weight:700;color:#6d28d9;margin:0}
+.outputs-modal-close{width:32px;height:32px;border:none;border-radius:8px;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#6d28d9;flex-shrink:0}
+.outputs-modal-body{flex:1;overflow-y:auto;padding:20px 24px}
+.out-doc-section{margin-bottom:14px;border:1.5px solid #e9d5ff;border-radius:12px;overflow:hidden}
+.out-doc-section-header{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#f5f3ff;cursor:pointer;user-select:none}
+.out-doc-section-header:hover{background:#ede9fe}
+.out-doc-task-badge{font-size:11px;font-weight:700;color:#7c3aed;background:#ede9fe;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.out-doc-task-name{font-size:13px;font-weight:700;color:#4c1d95;flex:1}
+.out-doc-task-done{font-size:12px;color:#16a34a;font-weight:600}
+.out-doc-task-pending{font-size:12px;color:#94a3b8}
+.out-doc-section-body{padding:0}
+.out-doc-section-body.open .out-doc-content{min-height:60px;max-height:180px;overflow-y:auto;border-top:1px solid #e9d5ff;padding:10px 14px;font-size:13px;color:#334155;line-height:1.6;background:#fafafa;white-space:pre-wrap}
+.out-doc-empty{text-align:center;padding:40px 0;color:#94a3b8;font-size:14px}
+.outputs-modal-footer{padding:16px 24px;border-top:1px solid #e9d5ff}
+.out-download-all{flex:1;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;text-align:center}
+.out-download-all:hover{opacity:.9}
+
+/* ONBOARDING MODAL */
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:.3s}
+.onboarding-overlay.active{opacity:1;pointer-events:all}
+.onboarding-content{background:#fff;border-radius:16px;width:560px;max-width:90vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.onboarding-header{padding:20px 24px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;gap:12px}
+.onboarding-header .icon{font-size:28px}
+.onboarding-header .text .title{font-size:16px;font-weight:800;color:#92400e}
+.onboarding-header .text .sub{font-size:12px;color:#b45309;margin-top:2px}
+.onboarding-close{width:28px;height:28px;border-radius:50%;border:none;background:#fff;cursor:pointer;font-size:14px;color:#92400e;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:.2s}
+.onboarding-close:hover{background:#fde68a}
+.onboarding-body{padding:24px;overflow-y:auto;flex:1}
+.onboarding-step{display:none}
+.onboarding-step.active{display:block;animation:fadeIn .3s ease}
+.onboarding-step h3{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:12px}
+.onboarding-step p{font-size:13px;color:#475569;line-height:1.8;margin-bottom:14px}
+.onboarding-step ul{margin:0;padding-left:20px}
+.onboarding-step li{font-size:13px;color:#475569;line-height:2}
+.onboarding-step .tip-box{background:#f0fdf4;border:1.5px dashed #fdba74;border-radius:10px;padding:12px 16px;margin-top:14px}
+.onboarding-step .tip-box .tip-title{font-size:12px;font-weight:700;color:#c2410c;margin-bottom:6px}
+.onboarding-step .tip-box .tip-text{font-size:12px;color:#7c2d12;line-height:1.7}
+.onboarding-step .img-placeholder{background:linear-gradient(135deg,#f0f4ff,#e0e7ff);border-radius:12px;padding:30px;text-align:center;margin:14px 0}
+.onboarding-step .img-placeholder .img-icon{font-size:48px;margin-bottom:10px}
+.onboarding-step .img-placeholder .img-text{font-size:12px;color:#4f46e5}
+.onboarding-footer{padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
+.onboarding-dots{display:flex;gap:8px}
+.onboarding-dot{width:8px;height:8px;border-radius:50%;background:#e2e8f0;transition:.2s}
+.onboarding-dot.active{background:#f97316;width:20px;border-radius:4px}
+.onboarding-btn-group{display:flex;gap:10px}
+.onboarding-btn-prev{background:#f1f5f9;color:#64748b;border:none;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.onboarding-btn-prev:hover{background:#e2e8f0}
+.onboarding-btn-next{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border:none;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.onboarding-btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,.4)}
+
+/* AI SETTINGS MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal.active{opacity:1;pointer-events:all}
+.modal-overlay{position:absolute;inset:0}
+.ai-settings-panel{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;animation:fadeIn .3s ease;margin:auto;position:relative;z-index:1}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.ai-settings-header{padding:20px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(234,88,12,.04))}
+.ai-settings-title{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;color:var(--t)}
+.ai-settings-close{background:var(--bd);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--t2);transition:.2s}
+.ai-settings-close:hover{background:#e2e8f0}
+.ai-settings-body{padding:24px;overflow-y:auto}
+.ai-settings-desc{font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:20px;padding:12px 16px;background:#f0fdf4;border-radius:8px;border-left:3px solid var(--o)}
+.ai-form-group{margin-bottom:18px}
+.ai-form-label{font-size:13px;font-weight:600;color:var(--t);margin-bottom:6px;display:block}
+.ai-form-input{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;transition:.2s}
+.ai-form-input:focus{border-color:var(--o);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.ai-form-hint{font-size:11px;color:var(--t3);margin-top:6px}
+.ai-settings-actions{display:flex;gap:10px;margin-top:24px}
+.ai-btn-primary{flex:1;background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;border:none;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.ai-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(249,115,22,.4)}
+.ai-btn-secondary{flex:1;background:var(--bd);color:var(--t);border:none;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-btn-secondary:hover{background:#e2e8f0}
+.ai-test-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)}
+.ai-btn-test{background:#f1f5f9;border:1.5px solid var(--bd);color:var(--t);padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.ai-btn-test:hover{background:#e2e8f0}
+.ai-test-result{margin-top:10px;font-size:12px;padding:8px 12px;border-radius:6px;display:none}
+.ai-test-result.success{background:#f0fdf4;color:#15803d;border:1px solid #86efac}
+.ai-test-result.error{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <a class="nav-back" href="inspire.html">← Inspire</a>
+    <div>
+      <div class="nav-title">🛠️ Shape · 构建阶段</div>
+      <div class="nav-subtitle">将创意落地为可验证的概念方案</div>
+    </div>
+  </div>
+  <div class="nav-center">
+    <div class="nav-center-text">
+      <strong>Eureka 实训系统</strong>
+      边做边学，掌握 RISE 价值创新全流程
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="ai-settings-btn" onclick="showOnboarding()" style="background:rgba(255,255,255,.25)">
+      <span class="icon">🎯</span>
+      <span>新手引导</span>
+    </button>
+    <button class="ai-settings-btn" onclick="openAISettings()">
+      <span class="icon">🤖</span>
+      <span>AI 设置</span>
+    </button>
+    <button class="ai-settings-btn" onclick="showEurekaFlow()" title="查看 Eureka 完整学习流程">
+      <span class="icon">🗺️</span>
+      <span>学习流程</span>
+    </button>
+    <span class="nav-sync-badge" id="nav-sync-badge">
+      <span class="sync-dot"></span>
+      <span>已同步</span>
+    </span>
+  </div>
+</nav>
+
+<!-- RISE BAR -->
+<div class="rise-bar">
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='learn.html'" title="返回 Reveal 揭示阶段">
+    <div class="rise-dot done">R</div>
+    <div class="rise-label"><div class="name">Reveal</div><div class="desc">揭示阶段 ✓</div></div>
+    <div class="rise-conn done"></div>
+  </div>
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='inspire.html'" title="返回 Inspire 启发阶段">
+    <div class="rise-dot done">I</div>
+    <div class="rise-label"><div class="name">Inspire</div><div class="desc">启发阶段 ✓</div></div>
+    <div class="rise-conn done"></div>
+  </div>
+  <div class="rise-step active">
+    <div class="rise-dot active">S</div>
+    <div class="rise-label"><div class="name">Shape</div><div class="desc">构建阶段</div></div>
+    <div class="rise-conn"></div>
+  </div>
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='exam.html'" title="进入 Exam 验证阶段">
+    <div class="rise-dot locked" style="transition:.2s" onmouseover="this.style.background='#0d9488';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">E</div>
+    <div class="rise-label"><div class="name">Exam</div><div class="desc">验证阶段</div></div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- INSPIRE + REVEAL DATA CARD -->
+    <div class="s-card" id="inspire-data-card">
+      <div class="s-card-hdr inspire-hdr">
+        <span class="icon">💡</span>
+        <span class="lbl">来自 Inspire + Reveal 的关键输入</span>
+      </div>
+      <div class="s-card-body" id="inspire-data-body">
+        <div style="font-size:12px;color:#94a3b8;font-style:italic">加载中...</div>
+      </div>
+    </div>
+
+    <!-- 空行分隔 -->
+    <div style="height:12px"></div>
+
+    <div class="task-nav">
+      <div class="task-nav-hdr">
+        <div class="phase">Shape · 构建阶段</div>
+        <div class="module">概念方案 &amp; 用户体验故事</div>
+        <div class="pbar"><div class="pfill" id="sidebar-progress" style="width:0%"></div></div>
+      </div>
+      <div class="mod-sep">子模块 1 · 方案拷问构建</div>
+      <div class="task-item active" onclick="switchTask(12)" id="task-item-12">
+        <div class="t-num">12</div>
+        <div class="t-info">
+          <div class="t-name">拷问创意想法</div>
+          <div class="t-stat" id="stat-12">未开始</div>
+        </div>
+      </div>
+      <div class="task-item" onclick="switchTask(13)" id="task-item-13">
+        <div class="t-num">13</div>
+        <div class="t-info">
+          <div class="t-name">方案整合发展</div>
+          <div class="t-stat" id="stat-13">未开始</div>
+          <div class="dlv-tag">📄 概念方案</div>
+        </div>
+      </div>
+      <div class="mod-sep">子模块 2 · 用户体验故事</div>
+      <div class="task-item" onclick="switchTask(14)" id="task-item-14">
+        <div class="t-num">14</div>
+        <div class="t-info">
+          <div class="t-name">用户故事描述</div>
+          <div class="t-stat" id="stat-14">未开始</div>
+          <div class="dlv-tag">🎬 故事板</div>
+        </div>
+      </div>
+      <div class="task-item" onclick="switchTask(15)" id="task-item-15">
+        <div class="t-num">15</div>
+        <div class="t-info">
+          <div class="t-name">AHA 用户价值设计</div>
+          <div class="t-stat" id="stat-15">未开始</div>
+          <div class="dlv-tag">✨ AHA 价值设计</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT OUTPUTS CARD -->
+    <div class="s-card" id="outputs-card" onclick="openOutputsModal()" style="cursor:pointer">
+      <div class="s-card-hdr out-hdr">
+        <span class="icon">📋</span>
+        <span class="lbl">项目产出文档</span>
+        <span style="margin-left:auto;font-size:11px;color:#10b981;opacity:.6">点击查看 →</span>
+      </div>
+      <div class="s-card-body">
+        <div class="out-items" id="out-items-list"></div>
+      </div>
+    </div>
+
+    <!-- BUSINESS EVALUATION CARD -->
+    <div class="s-card" id="biz-eval-card">
+      <div class="s-card-hdr biz-hdr">
+        <span class="icon">💰</span>
+        <span class="lbl">商业价值评估</span>
+      </div>
+      <div class="s-card-body" id="biz-eval-body">
+        <div class="biz-empty">完成任务 15 后，评估结果将显示在此</div>
+      </div>
+    </div>
+
+    <!-- TIPS CARD -->
+    <div class="s-card" id="tips-card"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="task-card">
+      <div id="task-content"><!-- rendered by JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUTS MODAL -->
+<div id="outputs-modal-overlay" class="hidden">
+  <div class="outputs-modal">
+    <div class="outputs-modal-hdr">
+      <h2>📋 Shape 产出文档</h2>
+      <button class="outputs-modal-close" onclick="closeOutputsModal()">✕</button>
+    </div>
+    <div class="outputs-modal-body" id="outputs-modal-body">
+      <div class="out-doc-empty">正在加载...</div>
+    </div>
+    <div class="outputs-modal-footer">
+      <button class="out-download-all" onclick="downloadShapeDoc()">⬇️ 下载完整产出文档</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI COACH MODAL -->
+<div class="ai-overlay" id="ai-overlay">
+  <div class="ai-panel">
+    <div class="ai-panel-hdr">
+      <div class="ai-panel-title">🤖 Eureka Coach · AI 辅导</div>
+      <button class="ai-panel-close" onclick="closeAI()">✕</button>
+    </div>
+    <div class="ai-messages" id="ai-messages"></div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="ai-input" placeholder="输入问题，或直接描述你的困惑…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}">
+      <button class="ai-send" id="ai-send-btn" onclick="sendAI()">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING MODAL -->
+<div class="onboarding-overlay" id="onboarding-overlay">
+  <div class="onboarding-content">
+    <div class="onboarding-header">
+      <div class="icon">💡</div>
+      <div class="text">
+        <div class="title">Shape 新手引导</div>
+        <div class="sub">构建阶段 · 概念方案 & 用户体验故事</div>
+      </div>
+      <button class="onboarding-close" onclick="closeOnboarding()">✕</button>
+    </div>
+    <div class="onboarding-body">
+      <!-- Step 1 -->
+      <div class="onboarding-step active" id="ob-step-1">
+        <h3>🎯 Shape 阶段概览</h3>
+        <p>欢迎来到 Shape 构建阶段！这里将帮助你对 Inspire 的创意进行深度拷问、整合为具体方案、并用故事化的方式描绘用户体验。</p>
+        <ul>
+          <li>任务 12：四维拷问（用户 / 商业 / 技术 / 生态）</li>
+          <li>任务 13：方案整合发展（概念方案 + MAP 评分）</li>
+          <li>任务 14：六格故事板（用户旅程叙事）</li>
+          <li>任务 15：AHA 价值设计（顿悟 / 高光 / 进步）</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">💡 小贴士</div>
+          <div class="tip-text">Shape 的核心输入来自 Inspire 阶段的最佳创意和 AHA，请先确保 Inspire 阶段已完成。</div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="onboarding-step" id="ob-step-2">
+        <h3>🔍 任务 12 · 四维拷问</h3>
+        <p>从用户、商业、技术、生态四个维度深入质疑 Inspire 的最佳创意，找出最大风险点。</p>
+        <div class="img-placeholder">
+          <div class="img-icon">👤 💰 ⚙️ 🤝</div>
+          <div class="img-text">四维拷问：谁在乎？如何盈利？技术可行吗？生态支持吗？</div>
+        </div>
+        <div class="tip-box">
+          <div class="tip-title">⚠️ 常见误区</div>
+          <div class="tip-text">拷问过于温和不敢质疑核心假设，或只关注一个维度忽视其他致命风险。</div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div class="onboarding-step" id="ob-step-3">
+        <h3>📊 任务 13-14 · 方案整合 & 故事板</h3>
+        <p>基于四维拷问生成《概念方案》，并用六格故事板描绘用户的完整体验旅程。</p>
+        <ul>
+          <li>概念方案：用户诉求 + 商业模型 + 技术路径 + 生态关系</li>
+          <li>MAP 评分：M(市场) / A(获客) / P(优势) 各 1-5 分</li>
+          <li>故事板：从痛苦→顿悟→探索→AHA→成长→传播</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">💡 小贴士</div>
+          <div class="tip-text">好的故事板用情感和场景说话，不是功能流程。问自己：这个故事有人愿意转发给朋友吗？</div>
+        </div>
+      </div>
+      <!-- Step 4 -->
+      <div class="onboarding-step" id="ob-step-4">
+        <h3>✨ 任务 15 · AHA 用户价值设计</h3>
+        <p>在 Inspire AHA 基础上深化三维价值设计，让每一个 AHA 时刻都有清晰、动人、可验证的描述。</p>
+        <ul>
+          <li>💡 顿悟："原来还可以这样！"——认知突破的震撼时刻</li>
+          <li>✨ 高光："这感觉太棒了！"——使用中的情感高峰</li>
+          <li>🚀 进步："这真的改变了我的生活！"——真实改变</li>
+        </ul>
+        <div class="tip-box">
+          <div class="tip-title">🚀 开始吧！</div>
+          <div class="tip-text">点击「下一步」开始任务 12，从四维拷问开启 Shape 之旅！</div>
+        </div>
+      </div>
+    </div>
+    <div class="onboarding-footer">
+      <div class="onboarding-dots">
+        <div class="onboarding-dot active" id="ob-dot-1"></div>
+        <div class="onboarding-dot" id="ob-dot-2"></div>
+        <div class="onboarding-dot" id="ob-dot-3"></div>
+        <div class="onboarding-dot" id="ob-dot-4"></div>
+      </div>
+      <div class="onboarding-btn-group">
+        <button class="onboarding-btn-prev" id="ob-prev" onclick="prevOnboardingStep()" style="display:none">上一步</button>
+        <button class="onboarding-btn-next" id="ob-next" onclick="nextOnboardingStep()">下一步</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI SETTINGS MODAL -->
+<div class="modal" id="ai-settings-modal">
+  <div class="modal-overlay" onclick="closeAISettings()"></div>
+  <div class="ai-settings-panel">
+    <div class="ai-settings-header">
+      <div class="ai-settings-title">🤖 AI 设置</div>
+      <button class="ai-settings-close" onclick="closeAISettings()">✕</button>
+    </div>
+    <div class="ai-settings-body">
+      <div class="ai-settings-desc">
+        配置 AI 接口后，Eureka Coach 将能够基于你的实际输入提供智能分析和建议。
+      </div>
+      <div class="ai-form-group">
+        <label class="ai-form-label">选择大模型</label>
+        <select class="ai-form-input" id="ai-provider" onchange="onProviderChange()" style="cursor:pointer">
+          <option value="custom">自定义 API</option>
+          <option value="openai">OpenAI (GPT 系列)</option>
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="qwen">通义千问</option>
+        </select>
+      </div>
+      <div class="ai-form-group" id="api-url-group">
+        <label class="ai-form-label">API 地址</label>
+        <input type="text" class="ai-form-input" id="ai-api-url" placeholder="https://api.openai.com/v1/chat/completions">
+        <div class="ai-form-hint">不同模型的 API 地址可能不同，请参考服务商文档</div>
+      </div>
+      <div class="ai-form-group">
+        <label class="ai-form-label">API Key</label>
+        <input type="password" class="ai-form-input" id="ai-api-key" placeholder="sk-...">
+        <div class="ai-form-hint">你的 API Key 将被安全存储在本地浏览器中</div>
+      </div>
+      <div class="ai-form-group" id="model-name-group">
+        <label class="ai-form-label">模型名称</label>
+        <input type="text" class="ai-form-input" id="ai-model-name" placeholder="gpt-4o / deepseek-chat / qwen-plus">
+        <div class="ai-form-hint">与 API 地址配套使用</div>
+      </div>
+      <div class="ai-settings-actions">
+        <button class="ai-btn-secondary" onclick="closeAISettings()">取消</button>
+        <button class="ai-btn-primary" onclick="saveAISettings()">保存设置</button>
+      </div>
+      <div class="ai-test-section">
+        <button class="ai-btn-test" onclick="testAIConnection()">🧪 测试连接</button>
+        <div class="ai-test-result" id="ai-test-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ===================================================
+// TASKS CONFIG
+// ===================================================
+const TASKS = {
+  12: {
+    title: '拷问创意想法',
+    badge: 'Shape · 任务 12/15',
+    icon: '🔍',
+    deliverable: '四维拷问清单',
+    objective: '基于 Inspire 阶段的最佳创意和 AHA 价值假设，从用户、商业、技术、利益相关者四个维度深入质疑，找出创意的最大风险点和薄弱环节，为方案整合提供靶点。',
+    concept: '四维拷问框架帮你在早期发现创意的致命缺陷：\n\n👤 用户维度：用户真的在乎这个解决方案吗？痛点有多深？\n💰 商业维度：如何盈利？护城河在哪里？能否规模化？\n⚙️ 技术维度：技术可行吗？壁垒是什么？\n🤝 生态维度：谁会支持或反对？如何平衡利益？',
+    steps: [
+      { title: '读取 Inspire 最佳创意', hint: '从 Inspire 阶段获取最佳创意和 AHA 价值假设，明确拷问的靶点' },
+      { title: '逐维深入质疑', hint: '每个维度产出 1-2 条核心拷问，直击要害，不要温和' },
+      { title: 'AI 辅助生成拷问', hint: '使用 AI 辅助生成更尖锐、更有深度的拷问' },
+      { title: '输出综合判断', hint: '综合四维拷问，输出该想法的总体可行性判断和核心风险' },
+    ],
+    misconceptions: [
+      '拷问过于温和，不敢质疑核心假设',
+      '只关注一个维度，忽视其他维度的致命风险',
+      '把"有没有解决方案"当成拷问，而不是发现真正的问题',
+    ],
+    coachIntro: '🔍 任务 12 开始！\n\n四维拷问的目标不是否定创意，而是尽早发现它的致命弱点。\n\n最好的做法：\n· 从最熟悉的维度开始，但每个维度都要有\n· 读 Inspire 的最佳创意时，想象最挑剔的用户会怎么质疑\n· 越早在内部发现缺陷，越容易修正\n\n你从哪个维度开始？',
+  },
+  13: {
+    title: '方案整合发展',
+    badge: 'Shape · 任务 13/15',
+    icon: '📊',
+    deliverable: '概念方案文档',
+    objective: '基于四维拷问的结论，整合用户、商业、技术、生态四个维度的洞察，生成一份完整的《概念方案》文档，并通过 MAP 评分评估其商业价值潜力。',
+    concept: '概念方案是创意从"点子"变成"方案"的关键一步：\n\n整合四维洞察：用户诉求 → 商业模型 → 技术路径 → 生态关系\nMAP 评分：M(市场潜力) / A(用户获取) / P(竞争优势) 各 1-5 分\n综合判断：基于 MAP 评分给出方案的整体商业价值评估',
+    steps: [
+      { title: '填写概念方案四维内容', hint: '基于任务 12 的四维拷问，在各维度填写具体的方案内容' },
+      { title: '执行 MAP 评分', hint: '对概念方案进行 M/A/P 三维评分（参考 Inspire 阶段的评分）' },
+      { title: '综合判断', hint: '基于四维内容和 MAP 评分，给出方案的整体可行性和商业价值判断' },
+    ],
+    misconceptions: [
+      '概念方案变成功能列表，缺乏用户视角和商业逻辑',
+      'MAP 评分过于乐观，没有真实反映市场现实',
+      '四维内容各自为政，缺乏内在逻辑一致性',
+    ],
+    coachIntro: '📊 任务 13 是把拷问变成方案！\n\n四维拷问发现了风险，概念方案要给出应对之道。\n\n写概念方案的技巧：\n· 每个维度都要回答"所以呢"——不只是描述，要给出判断\n· MAP 评分要真实：把自己当成最苛刻的投资人\n· 好的概念方案应该有内在一致的故事线\n\n哪个维度你最有把握？',
+  },
+  14: {
+    title: '用户故事描述',
+    badge: 'Shape · 任务 14/15',
+    icon: '🎬',
+    deliverable: '六格故事板',
+    objective: '基于概念方案和 AHA 价值设计，用故事化的方式描绘用户的完整体验旅程——从痛苦到发现，从探索到顿悟，从成长到传播。',
+    concept: '六格故事板用叙事的方式呈现用户旅程：\n\n😰 痛苦时刻：用户当前的困境\n💡 顿悟时刻：用户发现了什么\n🌈 探索方案：用户如何寻找\n✨ AHA 时刻：惊喜的高光\n🚀 成长轨迹：真实改变发生\n💬 口碑传播：用户主动推荐\n\n好的故事板用情感和场景说话，而不是功能和流程。',
+    steps: [
+      { title: '回顾 AHA 价值设计', hint: '从 Inspire 阶段获取 AHA 价值假设，明确要传达的核心体验' },
+      { title: '绘制六格故事板', hint: '依次填写六个关键时刻，用场景化、情感化的语言讲故事' },
+      { title: '检验故事完整性', hint: '六个格子应该串成一条完整的故事线，有起承转合' },
+    ],
+    misconceptions: [
+      '用功能流程代替用户感受，把故事板写成产品手册',
+      '缺乏情感细节，只有"用户登录→点击→完成"的描述',
+      '六个格子孤立，缺乏故事线的起承转合',
+    ],
+    coachIntro: '🎬 任务 14 ——讲故事！\n\n好的故事板能让投资人、团队伙伴3分钟内被你的创意打动。\n\n技巧：\n· 想象一个具体的真实用户在真实场景里的反应\n· 少说"用户可以..."，多说"用户感到..."、"用户发现..."\n· 问自己：这个故事有人愿意转发给朋友吗？\n\n哪个时刻你最有灵感？',
+  },
+  15: {
+    title: 'AHA 用户价值设计',
+    badge: 'Shape · 任务 15/15',
+    icon: '✨',
+    deliverable: 'AHA 价值设计方案',
+    objective: '在 Inspire AHA 框架的基础上，结合六格故事板和概念方案，深化并具体化三维 AHA 价值设计——让每一个 AHA 时刻都有清晰、动人、可验证的描述。',
+    concept: 'Shape 阶段的 AHA 是对 Inspire AHA 的深化和具体化：\n\n💡 顿悟（Eureka）：用户第一次获得认知突破的时刻——"原来还可以这样！"\n✨ 高光（Highlight）：使用过程中最令用户激动的情感高峰——"这感觉太棒了！"\n🚀 进步（Progress）：长期使用后用户实现的真实改变——"这真的改变了我的生活！"\n\n每个 AHA 都要用具体、场景化、情感化的语言描述。',
+    steps: [
+      { title: '撰写核心定位', hint: '用一句话描述方案给用户的核心价值主张（15字以内）' },
+      { title: '深化 AHA 三维', hint: '结合六格故事板，在 Inspire AHA 基础上深化每个维度的描述' },
+      { title: 'AI 辅助完善', hint: '使用 AI 辅助生成更生动、更情感化的 AHA 描述' },
+    ],
+    misconceptions: [
+      'AHA 描述停留于功能层面，缺乏情感深度',
+      '三个维度描述趋同，没有各自的独特价值',
+      '缺乏具体场景，让用户无法想象那个 AHA 时刻',
+    ],
+    coachIntro: '✨ 最后冲刺！任务 15 是整个 Shape 阶段的高光时刻！\n\nAHA 的力量在于：让听到它的人立刻想体验。\n\n好的 AHA 描述：\n· 有具体的场景（而不是"用户感到满意"）\n· 有情感的词汇（"愣住"、"倒吸一口凉气"、"忍不住发朋友圈"）\n· 让他人读完就想行动\n\n你印象中最让你惊喜的产品体验是什么？',
+  },
+};
+
+// ===================================================
+// STATE
+// ===================================================
+const SHAPE_KEY = 'eureka_shape_v1';
+const INSPIRE_KEY = 'eureka_inspire_v1';
+const REVEAL_KEY = 'eureka_project_data_v1';
+const AI_CONFIG_KEY = 'eureka_learn_ai_v1';
+
+const state = {
+  currentTask: 12,
+  tasks: {},           // task data keyed by taskId
+  dim4Items: { user:[], biz:[], tech:[], stkh:[] }, // Task 12: 四维拷问
+  cpSections: {},      // Task 13: 概念方案各维度内容
+  mapScores2: {},      // Task 13: MAP打分 {dim:{m:0,a:0,p:0}}
+  storyBoard: Array(6).fill(''),  // Task 14: 故事板6格
+  ahaDesign: { title:'', eureka:'', highlight:'', progress:'' }, // Task 15
+};
+
+// ===================================================
+// CROSS-MODULE DATA READING
+// ===================================================
+function getInspireData() {
+  try {
+    const raw = localStorage.getItem(INSPIRE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function getRevealData() {
+  try {
+    const raw = localStorage.getItem(REVEAL_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  try {
+    const pid = localStorage.getItem('eureka_learn_current_v2') || '';
+    const key = 'eureka_learn_state_' + pid;
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function getCrossContext() {
+  const inspire = getInspireData() || {};
+  const reveal = getRevealData() || {};
+
+  // Best idea from Inspire task 11
+  let bestIdea = '';
+  let bestAha = {};
+  let bizMapping = {};
+  let mapScores = {};
+  try {
+    const t11 = inspire.tasks && inspire.tasks[11] ? inspire.tasks[11] :
+                (inspire.task11 || {});
+    bestIdea = t11.bestIdeaText || t11.ahaData?.ideaRef || t11.ideaRef || '';
+    bestAha = t11.ahaData || {};
+    bizMapping = t11.bizMapping || inspire.bizMapping || {};
+    mapScores = t11.mapScores || inspire.mapScores || {};
+  } catch(e) {}
+
+  // POV from Reveal
+  let pov = '';
+  try {
+    const t6 = (reveal.tasks || {})[6] || reveal.reveal?.module2?.task6 || {};
+    pov = t6.pov_statement || t6.pov || '';
+  } catch(e) {}
+
+  // User persona from Reveal
+  let persona = '';
+  try {
+    const t3 = (reveal.tasks || {})[3] || reveal.reveal?.module1?.task3 || {};
+    persona = t3.persona_summary || t3.persona || '';
+  } catch(e) {}
+
+  return { inspire, reveal, bestIdea, bestAha, bizMapping, mapScores, pov, persona };
+}
+
+function renderInspireDataCard() {
+  const body = document.getElementById('inspire-data-body');
+  if (!body) return;
+  const ctx = getCrossContext();
+  let html = '';
+
+  if (ctx.bestIdea) {
+    html += `<div class="s-card-item"><span class="inspire-lbl">💡 Inspire 最佳创意</span><div class="inspire-val">${esc(ctx.bestIdea.substring(0,100))}${ctx.bestIdea.length>100?'…':''}</div></div>`;
+    html += '<div class="inspire-sep"></div>';
+  }
+  if (ctx.bestAha.eureka || ctx.bestAha.highlight || ctx.bestAha.progress) {
+    const items = [];
+    if (ctx.bestAha.eureka) items.push({l:'顿悟',v:ctx.bestAha.eureka});
+    if (ctx.bestAha.highlight) items.push({l:'高光',v:ctx.bestAha.highlight});
+    if (ctx.bestAha.progress) items.push({l:'进步',v:ctx.bestAha.progress});
+    items.forEach(it => {
+      html += `<div class="s-card-item"><span class="inspire-lbl">✨ ${it.l}</span><div class="inspire-val">${esc(it.v.substring(0,80))}${it.v.length>80?'…':''}</div></div>`;
+    });
+    html += '<div class="inspire-sep"></div>';
+  }
+  if (ctx.pov) {
+    html += `<div class="s-card-item"><span class="reveal-lbl">🔵 Reveal POV</span><div class="reveal-val">${esc(ctx.pov.substring(0,100))}${ctx.pov.length>100?'…':''}</div></div>`;
+  }
+  if (!html) {
+    html = '<div style="font-size:12px;color:#94a3b8;font-style:italic">暂无 Inspire/Reveal 数据<br><a href="inspire.html" style="color:#f97316">请先完成 Inspire 阶段</a></div>';
+  }
+  body.innerHTML = html;
+}
+
+// ===================================================
+// STORAGE
+// ===================================================
+function loadState() {
+  try {
+    const raw = localStorage.getItem(SHAPE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state.tasks = saved.tasks || {};
+      state.dim4Items = saved.dim4Items || { user:[], biz:[], tech:[], stkh:[] };
+      state.cpSections = saved.cpSections || {};
+      state.mapScores2 = saved.mapScores2 || {};
+      state.storyBoard = saved.storyBoard || Array(6).fill('');
+      state.ahaDesign = saved.ahaDesign || { title:'', eureka:'', highlight:'', progress:'' };
+    }
+  } catch(e) { console.warn('loadState err', e); }
+}
+
+function saveState() {
+  localStorage.setItem(SHAPE_KEY, JSON.stringify({
+    tasks: state.tasks,
+    dim4Items: state.dim4Items,
+    cpSections: state.cpSections,
+    mapScores2: state.mapScores2,
+    storyBoard: state.storyBoard,
+    ahaDesign: state.ahaDesign,
+    updatedAt: new Date().toISOString()
+  }));
+  updateProgressUI();
+}
+
+function getTaskData(n) { return state.tasks[n] || {}; }
+function setTaskData(n, data) {
+  state.tasks[n] = { ...(state.tasks[n]||{}), ...data };
+  saveState();
+}
+function isTaskDone(n) { return (state.tasks[n]||{}).status === 'done'; }
+
+// ===================================================
+// UI HELPERS
+// ===================================================
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, dur) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur || 2500);
+}
+
+function updateProgressUI() {
+  const TASK_NUMS = [12,13,14,15];
+  const done = TASK_NUMS.filter(n => isTaskDone(n)).length;
+  const pct = done / TASK_NUMS.length * 100;
+
+  const syncBadge = document.getElementById('nav-sync-badge');
+  if (syncBadge) {
+    syncBadge.querySelector('span:last-child').textContent = done > 0 ? '已同步' : '待开始';
+  }
+
+  const pbar = document.getElementById('sidebar-progress');
+  if (pbar) pbar.style.width = pct + '%';
+
+  TASK_NUMS.forEach(n => {
+    const st = document.getElementById('stat-' + n);
+    const item = document.getElementById('task-item-' + n);
+    if (!st || !item) return;
+    const isDone = isTaskDone(n);
+    const isActive = state.currentTask === n;
+    st.textContent = isDone ? '✅ 已完成' : (isActive ? '进行中' : '未开始');
+    item.classList.toggle('done', isDone);
+    item.classList.toggle('active', isActive && !isDone);
+  });
+}
+
+function renderTipsCard(n) {
+  const el = document.getElementById('tips-card');
+  const task = TASKS[n];
+  if (!task || !task.misconceptions || !task.misconceptions.length) { if(el) el.innerHTML=''; return; }
+  el.innerHTML = [
+    '<div class="s-card-hdr tips-hdr"><span class="icon">⚠️</span><span class="lbl">常见误区</span></div>',
+    '<div class="s-card-body">',
+    task.misconceptions.map(m => '<div class="s-card-item tips-item">'+esc(m)+'</div>').join(''),
+    '</div>'
+  ].join('');
+}
+
+// ===================================================
+// TASK SWITCHING
+// ===================================================
+function switchTask(n) {
+  state.currentTask = n;
+  updateProgressUI();
+  renderInspireDataCard();
+  renderTipsCard(n);
+  renderTaskContent(n);
+  document.getElementById('ai-messages').innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================================================
+// TASK RENDERER (dispatcher)
+// ===================================================
+function renderTaskContent(n) {
+  const el = document.getElementById('task-content');
+  const task = TASKS[n];
+  const data = getTaskData(n);
+  const isDone = isTaskDone(n);
+
+  if (!task) { el.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8">任务配置不存在</div>'; return; }
+
+  let inner = `
+  <div class="task-hdr">
+    <div class="step-badge">${task.badge}</div>
+    <h2>${task.icon} ${task.title}</h2>
+    <div class="obj">${task.objective}</div>
+    <div class="dlv-row">
+      <span class="dlv-label">📦 产出物：</span>
+      <span class="dlv-tag">✅ ${task.deliverable}</span>
+    </div>
+  </div>
+  <div class="concept-box">
+    <div class="sec-label">💡 关键概念</div>
+    <div class="concept-text">${esc(task.concept).replace(/\\n/g,'<br>')}</div>
+  </div>
+  <div class="steps-box">
+    <div class="sec-label">📌 操作步骤</div>
+    <div class="step-list">${task.steps.map((s,i)=>`
+    <div class="step-row">
+      <div class="s-circle">${i+1}</div>
+      <div><div class="s-title">${esc(s.title)}</div><div class="s-hint">${esc(s.hint)}</div></div>
+    </div>`).join('')}</div>
+  </div>`;
+
+  // task-specific form
+  if (n === 12) inner += renderTask12Form(data, isDone);
+  else if (n === 13) inner += renderTask13Form(data, isDone);
+  else if (n === 14) inner += renderTask14Form(data, isDone);
+  else if (n === 15) inner += renderTask15Form(data, isDone);
+
+  // done banner
+  if (isDone) {
+    inner += `<div class="done-banner"><span class="icon">🎉</span><div><div class="msg">任务已完成！</div><div class="sub">你可以随时返回修改，进度会自动保存</div></div></div>`;
+  }
+
+  // action bar
+  inner += `
+  <div class="action-bar">
+    <div class="save-hint">🔒 进度自动保存，随时可返回继续</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-ai" onclick="openAI()">💬 AI 辅导</button>
+      <button class="btn-sec" onclick="saveDraft(${n})">保存草稿</button>
+      <button class="btn-pri" onclick="submitTask(${n})">${isDone ? '✓ 更新保存' : '✓ 提交完成'}</button>
+    </div>
+  </div>`;
+
+  el.innerHTML = inner;
+}
+
+// ===================================================
+// TASK 12: 四维拷问
+// ===================================================
+const DIM4 = [
+  { key:'user',  cls:'dim-user',  icon:'👤', title:'用户挑战', sub:'针对目标用户的核心质疑', q:'这个想法真正解决了用户的什么问题？用户真的在乎吗？' },
+  { key:'biz',   cls:'dim-biz',   icon:'💰', title:'商业挑战', sub:'商业可行性与价值链质疑', q:'这个想法如何盈利？能规模化吗？护城河在哪里？' },
+  { key:'tech',  cls:'dim-tech',  icon:'⚙️', title:'技术挑战', sub:'技术可行性与实现路径', q:'现有技术能支撑这个方案吗？核心壁垒是什么？' },
+  { key:'stkh',  cls:'dim-stkh',  icon:'🤝', title:'利益相关者挑战', sub:'生态与利益平衡', q:'谁是利益相关者？如何平衡各方诉求？如何建立合作关系？' },
+];
+
+function renderTask12Form(data, isDone) {
+  const ctx = getCrossContext();
+  const bestIdea = ctx.bestIdea || '';
+
+  return `
+  <div class="ctx-ctx">
+    <div class="ctx-ctx-title">📎 来自 Inspire 的关键输入</div>
+    ${bestIdea
+      ? `<div class="ctx-ctx-content">💡 <strong>最佳创意</strong>：${esc(bestIdea)}</div>`
+      : `<div class="ctx-ctx-empty">未找到 Inspire 数据，<a href="inspire.html" style="color:#f97316">请先完成 Inspire 阶段</a></div>`
+    }
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">四维拷问 <span style="font-size:11px;font-weight:400;color:#64748b">来自 Inspire 最佳创意，请逐维深入质疑</span></div>
+      <div class="form-hint">每个维度记录 1-2 条核心拷问及其初步回答。点击各卡片展开，AI 可辅助生成建议。</div>
+      <div class="dim4-grid">
+        ${DIM4.map(dim => renderDim4Card(dim)).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">📝 综合判断</div>
+      <div class="form-hint">综合四维拷问，该想法的总体可行性评估和关键风险点是什么？</div>
+      <textarea id="f12-summary" rows="4" placeholder="综合四维拷问，输出你的核心判断（100-200字）…" oninput="autoSave12()">${esc(data.summary||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderDim4Card(dim) {
+  const items = state.dim4Items[dim.key] || [];
+  return `
+  <div class="dim4-card ${dim.cls}">
+    <div class="dim4-hdr">
+      <div class="dim4-icon">${dim.icon}</div>
+      <div>
+        <div class="dim4-title">${dim.title}</div>
+        <div class="dim4-sub">${dim.sub}</div>
+      </div>
+    </div>
+    <div class="dim4-body">
+      <div class="dim4-q-list" id="dim4-list-${dim.key}">
+        ${items.map((q,i) => `
+        <div class="dim4-q-row fade-in">
+          <div class="dim4-q-text">${esc(q)}</div>
+          <button class="dim4-q-del" onclick="delDim4Q('${dim.key}',${i})">✕</button>
+        </div>`).join('')}
+        ${items.length === 0 ? `<div style="font-size:11px;color:#94a3b8;text-align:center;padding:8px">暂无拷问，点击下方添加</div>` : ''}
+      </div>
+      <button class="dim4-ai-btn" onclick="genDim4AI('${dim.key}')" id="dim4-ai-btn-${dim.key}">
+        ✨ AI 辅助生成
+      </button>
+      <div class="dim4-add">
+        <input type="text" id="dim4-input-${dim.key}" placeholder="输入核心拷问…" onkeydown="if(event.key==='Enter')addDim4Q('${dim.key}')">
+        <button class="dim4-add-btn" onclick="addDim4Q('${dim.key}')">+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addDim4Q(key) {
+  const input = document.getElementById('dim4-input-' + key);
+  if (!input || !input.value.trim()) return;
+  state.dim4Items[key] = state.dim4Items[key] || [];
+  state.dim4Items[key].push(input.value.trim());
+  input.value = '';
+  saveState();
+  refreshDim4Card(key);
+  showToast('✅ 已添加');
+}
+
+function delDim4Q(key, idx) {
+  state.dim4Items[key].splice(idx, 1);
+  saveState();
+  refreshDim4Card(key);
+}
+
+function refreshDim4Card(key) {
+  const list = document.getElementById('dim4-list-' + key);
+  if (!list) return;
+  const items = state.dim4Items[key] || [];
+  list.innerHTML = items.map((q,i) => `
+    <div class="dim4-q-row fade-in">
+      <div class="dim4-q-text">${esc(q)}</div>
+      <button class="dim4-q-del" onclick="delDim4Q('${key}',${i})">✕</button>
+    </div>`).join('') ||
+    `<div style="font-size:11px;color:#94a3b8;text-align:center;padding:8px">暂无拷问，点击下方添加</div>`;
+}
+
+function autoSave12() {
+  const summary = (document.getElementById('f12-summary')||{}).value || '';
+  setTaskData(12, { summary });
+}
+
+function genDim4AI(key) {
+  const dim = DIM4.find(d => d.key === key);
+  const ctx = getCrossContext();
+  const bestIdea = ctx.bestIdea || '（未提供）';
+  const dimNames = { user:'用户挑战', biz:'商业挑战', tech:'技术挑战', stkh:'利益相关者挑战' };
+
+  const btn = document.getElementById('dim4-ai-btn-' + key);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> 生成中…'; }
+
+  const prompt = `基于以下创意，给出【${dimNames[key]}】维度的 1 条核心拷问（直击要害，质疑式语言，50字以内）：
+创意：${bestIdea}
+直接输出内容，不要前缀。`;
+
+  callAI(prompt, text => {
+    const q = text.trim().replace(/^[1-9][\.\)、]\s*/, '').trim();
+    if (q && q.length > 5) {
+      state.dim4Items[key] = state.dim4Items[key] || [];
+      state.dim4Items[key].push(q);
+      saveState();
+      refreshDim4Card(key);
+    }
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 辅助生成'; }
+    showToast(q ? '✅ 已生成并添加' : '⚠️ 未生成有效内容');
+  }, err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI 辅助生成'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+// ===================================================
+// TASK 13: 方案整合发展
+// ===================================================
+const CP_DIMS = [
+  { key:'user',   cls:'cp-user',     icon:'👤', title:'用户维度', q:'目标用户的核心诉求、使用场景、决策路径是什么？' },
+  { key:'biz',    cls:'cp-biz',      icon:'💰', title:'商业维度', q:'如何盈利？收入模型、成本结构、护城河是什么？' },
+  { key:'tech',   cls:'cp-tech',     icon:'⚙️', title:'技术维度', q:'技术选型、核心壁垒、规模化路径是什么？' },
+  { key:'stkh',   cls:'cp-stkh',    icon:'🤝', title:'生态维度', q:'利益相关者有哪些？如何建立合作关系？' },
+  { key:'overview',cls:'cp-overview',icon:'🧭', title:'综合概览', q:'整合四维，形成清晰的概念方案叙事' },
+];
+
+function renderTask13Form(data, isDone) {
+  const ctx = getCrossContext();
+  const bestIdea = ctx.bestIdea || '';
+
+  // MAP scoring table based on Inspire data
+  const inspireMAP = ctx.mapScores;
+  const existingScores = state.mapScores2;
+
+  return `
+  <div class="ctx-ctx">
+    <div class="ctx-ctx-title">📎 来自 Inspire 的关键输入</div>
+    ${bestIdea
+      ? `<div class="ctx-ctx-content">💡 <strong>最佳创意</strong>：${esc(bestIdea)}</div>`
+      : `<div class="ctx-ctx-empty">未找到 Inspire 数据，请先完成 Inspire 阶段</div>`
+    }
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">📋 概念方案 · 四维整合</div>
+      <div class="form-hint">基于任务 12 的四维拷问，在各维度填写具体的概念方案内容（可引用四维拷问结论）。</div>
+      ${CP_DIMS.map(dim => renderCPSection(dim)).join('')}
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">💰 MAP 商业价值评分</div>
+      <div class="form-hint">M = 市场潜力 / A = 用户获取 / P = 竞争优势。1-5星评分，参考 Inspire 阶段的评分进行复核。</div>
+      <div class="map-wrap">
+        <table class="map-tbl">
+          <thead>
+            <tr>
+              <th>维度</th><th>M 市场潜力</th><th>A 用户获取</th><th>P 竞争优势</th><th>Σ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${CP_DIMS.filter(d=>d.key!=='overview').map(dim => {
+              const sc = existingScores[dim.key] || { m:3, a:3, p:3 };
+              const total = (sc.m||0)+(sc.a||0)+(sc.p||0);
+              return `<tr>
+                <td><strong>${dim.icon} ${dim.title}</strong></td>
+                ${['m','a','p'].map(k => `
+                <td>
+                  <div class="map-stars">
+                    ${[1,2,3,4,5].map(s => `<span class="map-star ${s<=sc[k]?'on':''}" onclick="setMapScore2('${dim.key}','${k}',${s})">★</span>`).join('')}
+                  </div>
+                </td>`).join('')}
+                <td><strong style="color:#10b981">${total}</strong></td>
+              </tr>`;
+            }).join('')}
+            <tr style="background:#f0fdf4;font-weight:700">
+              <td>总分</td>
+              <td colspan="3"></td>
+              <td style="color:#10b981;font-size:16px">${Object.values(existingScores).reduce((s,sc)=>s+(sc.m||0)+(sc.a||0)+(sc.p||0),0)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCPSection(dim) {
+  const content = state.cpSections[dim.key] || '';
+  return `
+  <div class="cp-section ${dim.cls}">
+    <div class="cp-section-title">
+      <span style="font-size:16px">${dim.icon}</span>
+      <span>${dim.title}</span>
+      <span style="font-size:11px;font-weight:400;opacity:.8;margin-left:4px">— ${dim.q}</span>
+    </div>
+    <textarea id="cp-${dim.key}" rows="4" placeholder="填写 ${dim.title} 的具体概念方案内容…" oninput="saveCPSection('${dim.key}',this.value)">${esc(content)}</textarea>
+  </div>`;
+}
+
+function saveCPSection(key, val) {
+  state.cpSections[key] = val;
+  saveState();
+}
+
+function setMapScore2(dim, key, val) {
+  state.mapScores2[dim] = state.mapScores2[dim] || { m:3, a:3, p:3 };
+  state.mapScores2[dim][key] = val;
+  saveState();
+  // re-render the MAP table
+  const data = getTaskData(13);
+  const el = document.getElementById('task-content');
+  if (el) {
+    const formArea = el.querySelector('.form-area');
+    if (formArea) {
+      const mapGroup = formArea.querySelector('.form-group:last-child');
+      if (mapGroup) {
+        const mapWrap = mapGroup.querySelector('.map-wrap');
+        if (mapWrap) {
+          const tbody = mapWrap.querySelector('tbody');
+          if (tbody) {
+            tbody.innerHTML = CP_DIMS.filter(d=>d.key!=='overview').map(d => {
+              const sc = state.mapScores2[d.key] || { m:3, a:3, p:3 };
+              const total = (sc.m||0)+(sc.a||0)+(sc.p||0);
+              return `<tr>
+                <td><strong>${d.icon} ${d.title}</strong></td>
+                ${['m','a','p'].map(k => `<td><div class="map-stars">${[1,2,3,4,5].map(s => `<span class="map-star ${s<=sc[k]?'on':''}" onclick="setMapScore2('${d.key}','${k}',${s})">★</span>`).join('')}</div></td>`).join('')}
+                <td><strong style="color:#10b981">${total}</strong></td>
+              </tr>`;
+            }).join('') + `<tr style="background:#f0fdf4;font-weight:700"><td>总分</td><td colspan="3"></td><td style="color:#10b981;font-size:16px">${Object.values(state.mapScores2).reduce((s,sc)=>s+(sc.m||0)+(sc.a||0)+(sc.p||0),0)}</td></tr>`;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ===================================================
+// TASK 14: 用户故事描述（6格故事板）
+// ===================================================
+const SB_CELLS = [
+  { n:1, icon:'😰', title:'痛苦时刻', label:'Before', color:'#64748b', q:'用户当前的困境、痛苦点是什么？' },
+  { n:2, icon:'💡', title:'顿悟时刻', label:'Insight', color:'#3b82f6', q:'用户突然发现了什么机会或灵感？' },
+  { n:3, icon:'🌈', title:'探索方案', label:'Explore', color:'#8b5cf6', q:'用户开始寻找什么样的解决方案？' },
+  { n:4, icon:'✨', title:'AHA 时刻', label:'AHA!', color:'#10b981', q:'用户第一次感受到什么惊喜和价值？' },
+  { n:5, icon:'🚀', title:'成长轨迹', label:'Progress', color:'#f59e0b', q:'用户的生活/工作发生了怎样的真实改变？' },
+  { n:6, icon:'💬', title:'口碑传播', label:'Share', color:'#ef4444', q:'用户会如何向他人推荐和描述这段体验？' },
+];
+
+function renderTask14Form(data, isDone) {
+  const ctx = getCrossContext();
+  const bestIdea = ctx.bestIdea || '';
+
+  return `
+  <div class="ctx-ctx">
+    <div class="ctx-ctx-title">📎 来自 Inspire + 任务 13 的关键输入</div>
+    ${bestIdea
+      ? `<div class="ctx-ctx-content">💡 <strong>最佳创意</strong>：${esc(bestIdea)}</div>`
+      : `<div class="ctx-ctx-empty">未找到 Inspire 数据</div>`
+    }
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">🎬 六格故事板 <span style="font-size:11px;font-weight:400;color:#64748b">用故事化的语言描绘用户的完整体验旅程</span></div>
+      <div class="form-hint">依次填写六个关键时刻/场景，用生动、情感化的语言（避免功能描述），讲好用户故事。</div>
+      <div class="sb-grid">
+        ${SB_CELLS.map(cell => `
+        <div class="sb-cell" style="border-top:3px solid ${cell.color}">
+          <div class="sb-cell-hdr">
+            <div class="sb-cell-num">${cell.n}</div>
+            <div class="sb-cell-label" style="background:${cell.color}">${cell.icon} ${cell.title}</div>
+          </div>
+          <div class="sb-cell-body">
+            <textarea id="sb-${cell.n}" rows="5" placeholder="${cell.q}" oninput="autoSaveSB(${cell.n})">${esc(state.storyBoard[cell.n-1]||'')}</textarea>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function autoSaveSB(n) {
+  const el = document.getElementById('sb-' + n);
+  if (!el) return;
+  state.storyBoard[n-1] = el.value;
+  saveState();
+}
+
+// ===================================================
+// TASK 15: AHA 用户价值设计
+// ===================================================
+const AHA_DIMS2 = [
+  { key:'eureka',    icon:'💡', title:'顿悟 Eureka', sub:'"原来还可以这样！"——用户第一次获得新认知的震撼时刻', color:'#fef3c7' },
+  { key:'highlight', icon:'✨', title:'高光 Highlight', sub:'"这感觉太棒了！"——使用过程中的情感高峰和惊喜瞬间', color:'#dbeafe' },
+  { key:'progress',  icon:'🚀', title:'进步 Progress', sub:'"这真的改变了我的生活！"——长期使用后的真实改变', color:'#d1fae5' },
+];
+
+function renderTask15Form(data, isDone) {
+  const ctx = getCrossContext();
+  const bestIdea = ctx.bestIdea || '';
+  const d = state.ahaDesign;
+
+  return `
+  <div class="ctx-ctx">
+    <div class="ctx-ctx-title">📎 来自 Inspire 的 AHA 基础</div>
+    ${ctx.bestAha.eureka || ctx.bestAha.highlight || ctx.bestAha.progress
+      ? `<div class="ctx-ctx-content">✨ Inspire AHA 已有：顿悟 "${esc((ctx.bestAha.eureka||'').substring(0,60))}" 等</div>`
+      : bestIdea
+        ? `<div class="ctx-ctx-content">💡 最佳创意：${esc(bestIdea)}，请在此深化和具体化</div>`
+        : `<div class="ctx-ctx-empty">未找到 Inspire 数据</div>`
+    }
+  </div>
+  <div class="form-area">
+    <div class="form-group">
+      <div class="form-label">🎯 方案核心定位</div>
+      <input type="text" id="f15-title" placeholder="用一句话描述这个方案的核心价值主张（15字以内）…" value="${esc(d.title||'')}" oninput="saveAHAField('title',this.value)" style="min-height:44px;font-size:14px;font-weight:600">
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">✨ AHA 三维价值设计 <span style="font-size:11px;font-weight:400;color:#64748b">在 Inspire 的 AHA 基础上，结合六格故事板，深化具体化</span></div>
+      <div class="form-hint">用生动、情感化、场景化的语言描述用户将获得的体验飞跃——不是功能，是感受。</div>
+      <div class="aha-cards">
+        ${AHA_DIMS2.map(dim => `
+        <div class="aha-card">
+          <div class="aha-card-hdr" style="background:${dim.color}">
+            <span class="aha-icon">${dim.icon}</span>
+            <div>
+              <div class="aha-title">${dim.title}</div>
+              <div class="aha-sub">${dim.sub}</div>
+            </div>
+          </div>
+          <div class="aha-card-body">
+            <textarea id="f15-${dim.key}" rows="4" placeholder="描述用户在此刻的具体体验和内心感受…" oninput="saveAHAField('${dim.key}',this.value)">${esc(d[dim.key]||'')}</textarea>
+            <button class="aha-ai-btn" onclick="genAHA2Dim('${dim.key}')">✨ AI 补充建议</button>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveAHAField(key, val) {
+  state.ahaDesign[key] = val;
+  saveState();
+}
+
+function genAHA2Dim(key) {
+  const ctx = getCrossContext();
+  const dimNames = { eureka:'顿悟 Eureka——用户获得新认知的震撼时刻', highlight:'高光 Highlight——使用中的情感高峰', progress:'进步 Progress——长期使用的真实改变' };
+  const bestIdea = ctx.bestIdea || '';
+  const inspireAha = ctx.bestAha[key] || '';
+  const sbText = state.storyBoard.filter(t=>t&&t.trim()).join('；') || '';
+
+  const btn = document.querySelector(`[onclick="genAHA2Dim('${key}')"]`);
+  if (btn) { btn.disabled = true; btn.textContent = '生成中…'; }
+
+  const prompt = `基于以下信息，生成一段关于【${dimNames[key]}】的用户体验描述（50字以内，生动、情感化、场景化语言，第一人称）：
+方案：${bestIdea || '（未提供）'}
+Inspire AHA：${inspireAha || '（无）'}
+故事板：${sbText || '（无）'}
+只输出内容，不要前缀。`;
+
+  callAI(prompt, text => {
+    const t = text.trim().replace(/^[💡✨🚀\d\.\)\s]+/, '').trim();
+    if (t && t.length > 5) {
+      state.ahaDesign[key] = t;
+      saveState();
+      const el = document.getElementById('f15-' + key);
+      if (el) el.value = t;
+    }
+    if (btn) { btn.disabled = false; btn.textContent = '✨ AI 补充建议'; }
+    showToast(t ? '✅ 已填入建议内容' : '⚠️ 未生成有效内容');
+  }, err => {
+    if (btn) { btn.disabled = false; btn.textContent = '✨ AI 补充建议'; }
+    showToast('⚠️ ' + err);
+  });
+}
+
+// ===================================================
+// COLLECT / SAVE / SUBMIT
+// ===================================================
+function collectFormData(n) {
+  if (n === 12) {
+    return { ...(getTaskData(12)), summary: (document.getElementById('f12-summary')||{}).value || '' };
+  }
+  if (n === 13) {
+    return { ...(getTaskData(13)), cpSections: {...state.cpSections}, mapScores: {...state.mapScores2} };
+  }
+  if (n === 14) {
+    return { ...(getTaskData(14)), storyBoard: [...state.storyBoard] };
+  }
+  if (n === 15) {
+    return { ...(getTaskData(15)), ahaDesign: {...state.ahaDesign} };
+  }
+  return {};
+}
+
+function saveDraft(n) {
+  const data = collectFormData(n);
+  setTaskData(n, data);
+  showToast('✅ 草稿已保存');
+}
+
+function submitTask(n) {
+  const data = collectFormData(n);
+  // basic validation
+  if (n === 12) {
+    const totalQ = Object.values(state.dim4Items).reduce((s,a)=>s+a.length,0);
+    if (totalQ < 2) { showToast('⚠️ 请至少产出 2 条四维拷问'); return; }
+  } else if (n === 13) {
+    const filledSections = Object.values(state.cpSections).filter(v=>v&&v.trim()).length;
+    if (filledSections < 2) { showToast('⚠️ 请至少填写 2 个维度的概念方案'); return; }
+  } else if (n === 14) {
+    const filledCells = state.storyBoard.filter(v=>v&&v.trim()).length;
+    if (filledCells < 3) { showToast('⚠️ 请至少填写 3 个故事板格子'); return; }
+  } else if (n === 15) {
+    if (!state.ahaDesign.title && !state.ahaDesign.eureka && !state.ahaDesign.highlight && !state.ahaDesign.progress) {
+      showToast('⚠️ 请至少填写一项 AHA 内容'); return;
+    }
+  }
+  setTaskData(n, { ...data, status:'done' });
+  showToast('🎉 任务已完成！');
+  renderTaskContent(n);
+  updateProgressUI();
+  renderSidebarOutputs();
+  renderSidebarBizEval();
+  saveCrossModule(n, data);
+}
+
+// ===================================================
+// CROSS-MODULE SAVE
+// ===================================================
+function saveCrossModule(n, data) {
+  try {
+    const raw = localStorage.getItem(SHAPE_KEY);
+    const pd = raw ? JSON.parse(raw) : {};
+    pd['task' + n] = data;
+    pd.meta = pd.meta || {};
+    pd.meta.updatedAt = new Date().toISOString();
+    localStorage.setItem(SHAPE_KEY, JSON.stringify(pd));
+  } catch(e) {}
+}
+
+// ===================================================
+// SIDEBAR: Project Outputs
+// ===================================================
+function renderSidebarOutputs() {
+  const el = document.getElementById('out-items-list');
+  if (!el) return;
+  const INFO = [
+    { n:12, name:'拷问创意想法',   dlv:'四维拷问清单',     icon:'🔍' },
+    { n:13, name:'方案整合发展',   dlv:'📄 概念方案',      icon:'📊' },
+    { n:14, name:'用户故事描述',   dlv:'🎬 故事板',        icon:'🎬' },
+    { n:15, name:'AHA 用户价值设计',dlv:'✨ AHA 价值设计',  icon:'✨' },
+  ];
+  el.innerHTML = INFO.map(t => {
+    const done = isTaskDone(t.n);
+    return `<div class="out-item ${done?'done':''}" onclick="switchTask(${t.n})">
+      <div class="out-item-icon">${t.icon}</div>
+      <div class="out-item-info">
+        <div class="out-item-name">T${t.n} ${t.name}</div>
+        <div class="out-item-desc">${done?'已完成':'未完成'}</div>
+      </div>
+      <span class="out-dlv-badge">${t.dlv}</span>
+      ${done?'<span style="color:#10b981;font-size:13px">✓</span>':''}
+    </div>`;
+  }).join('');
+}
+
+function renderSidebarBizEval() {
+  const el = document.getElementById('biz-eval-body');
+  if (!el) return;
+  const isDone = isTaskDone(15);
+  const d15 = getTaskData(15);
+  const aha = d15.ahaDesign || state.ahaDesign;
+  const t13 = getTaskData(13);
+  const mapScores = t13.mapScores || state.mapScores2 || {};
+
+  if (!isDone) {
+    el.innerHTML = '<div class="biz-empty">完成任务 15 后，评估结果将显示在此</div>';
+    return;
+  }
+
+  let html = '';
+  if (aha.title) {
+    html += `<div style="font-size:13px;font-weight:700;color:#10b981;margin-bottom:8px;padding:10px 12px;background:#f0fdf4;border-radius:8px">🎯 ${esc(aha.title)}</div>`;
+  }
+
+  // MAP summary
+  const total = Object.values(mapScores).reduce((s,sc)=>s+(sc.m||0)+(sc.a||0)+(sc.p||0),0);
+  if (total > 0) {
+    html += `<div class="biz-card">
+      <div class="biz-card-hdr">💰 MAP 评分</div>
+      <div class="biz-card-body">
+        <div class="biz-map-row">
+          ${[{k:'m',n:'M 市场'},{k:'a',n:'A 获客'},{k:'p',n:'P 优势'}].map(d => {
+            const sum = Object.values(mapScores).reduce((s,sc)=>s+(sc[d.k]||0),0);
+            const avg = Object.keys(mapScores).length ? Math.round(sum/Object.keys(mapScores).length) : 0;
+            const cls = avg>=4?'map-chip-high':avg>=3?'map-chip-mid':avg>=1?'map-chip-low':'map-chip-none';
+            return `<div class="biz-map-item">
+              <div class="biz-map-key">${d.n}</div>
+              <div class="biz-map-val"><span class="map-summary-chip ${cls}" style="font-size:16px;font-weight:800">${avg||'-'}</span>/5</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // AHA summary
+  const hasAha = aha.eureka || aha.highlight || aha.progress;
+  if (hasAha) {
+    const dims2 = [{k:'eureka',i:'💡',n:'顿悟'},{k:'highlight',i:'✨',n:'高光'},{k:'progress',i:'🚀',n:'进步'}];
+    html += `<div class="biz-card" style="margin-top:10px">
+      <div class="biz-card-hdr">✨ AHA 价值</div>
+      <div class="biz-card-body">
+        ${dims2.map(d => aha[d.k] ? `<div class="biz-aha-item">
+          <div class="biz-aha-key">${d.i} ${d.n}</div>
+          <div class="biz-aha-val">${esc(aha[d.k])}</div>
+        </div>` : '').join('')}
+      </div>
+    </div>`;
+  }
+
+  if (!html) html = '<div class="biz-empty">完成任务 15 后，评估结果将显示在此</div>';
+  el.innerHTML = html;
+}
+
+// ===================================================
+// OUTPUTS MODAL
+// ===================================================
+function openOutputsModal() {
+  var overlay = document.getElementById('outputs-modal-overlay');
+  var body = document.getElementById('outputs-modal-body');
+  if (!overlay || !body) return;
+
+  const TASKS_INFO = [
+    { id:12, name:'拷问创意想法',    tag:'四维',    key:'dim4' },
+    { id:13, name:'方案整合发展',    tag:'概念方案', key:'cp' },
+    { id:14, name:'用户故事描述',    tag:'故事板',   key:'sb' },
+    { id:15, name:'AHA 用户价值设计',tag:'AHA',     key:'aha' },
+  ];
+
+  var html = '';
+  TASKS_INFO.forEach(t => {
+    var taskData = getTaskData(t.id);
+    var done = taskData.status === 'done';
+    var content = '';
+    if (done) {
+      if (t.key === 'dim4') {
+        var lines = [];
+        DIM4.forEach(d => {
+          var items = state.dim4Items[d.key] || [];
+          if (items.length) lines.push('【' + d.title + '】' + items.join('；'));
+        });
+        if (taskData.summary) lines.push('\n综合判断：' + taskData.summary);
+        content = lines.join('\n');
+      } else if (t.key === 'cp') {
+        var lines2 = [];
+        CP_DIMS.forEach(d => {
+          var v = state.cpSections[d.key] || '';
+          if (v && v.trim()) lines2.push('【' + d.title + '】\n' + v);
+        });
+        var ms = taskData.mapScores || {};
+        var mapTotal = Object.values(ms).reduce((s,sc)=>s+(sc.m||0)+(sc.a||0)+(sc.p||0),0);
+        if (mapTotal > 0) lines2.push('\nMAP总分：' + mapTotal + '/60');
+        content = lines2.join('\n\n');
+      } else if (t.key === 'sb') {
+        var sb = taskData.storyBoard || state.storyBoard || [];
+        content = SB_CELLS.map((c,i) => c.icon + ' ' + c.title + '：' + (sb[i]||'(未填写)')).join('\n');
+      } else if (t.key === 'aha') {
+        var ad = taskData.ahaDesign || state.ahaDesign || {};
+        var lines3 = [];
+        if (ad.title) lines3.push('🎯 核心定位：' + ad.title);
+        if (ad.eureka) lines3.push('💡 顿悟：' + ad.eureka);
+        if (ad.highlight) lines3.push('✨ 高光：' + ad.highlight);
+        if (ad.progress) lines3.push('🚀 进步：' + ad.progress);
+        content = lines3.join('\n');
+      }
+    }
+
+    html += '<div class="out-doc-section">' +
+      '<div class="out-doc-section-header" onclick="toggleOutSection(this)">' +
+      '<span class="out-doc-task-badge">' + t.tag + '</span>' +
+      '<span class="out-doc-task-name">任务 ' + t.id + ' · ' + t.name + '</span>' +
+      '<span class="' + (done ? 'out-doc-task-done' : 'out-doc-task-pending') + '">' +
+      (done ? '✓ 已完成' : '○ 待完成') + '</span>' +
+      '</div>' +
+      '<div class="out-doc-section-body' + (done ? ' open' : '') + '">' +
+      (done && content ? '<div class="out-doc-content">' + esc(content) + '</div>' :
+       (!done ? '<div class="out-doc-content" style="color:#94a3b8;font-style:italic">此任务尚未完成</div>' :
+        '<div class="out-doc-content" style="color:#94a3b8;font-style:italic">此任务无文本产出</div>')) +
+      '</div></div>';
+  });
+
+  body.innerHTML = html;
+  overlay.classList.remove('hidden');
+}
+
+function closeOutputsModal() {
+  var overlay = document.getElementById('outputs-modal-overlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function toggleOutSection(header) {
+  var body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+// ===================================================
+// DOWNLOAD
+// ===================================================
+function downloadShapeDoc() {
+  var project = [];
+  try { project = JSON.parse(localStorage.getItem('eureka_learn_projects_v2') || '[]'); } catch(e) {}
+  var pid = localStorage.getItem('eureka_learn_current_v2') || '';
+  var p = project.find(x => x.id === pid) || {};
+  var name = p.name || 'Eureka项目';
+  var sep = '\n';
+  var lines = [
+    '# ' + name + ' · Shape 构建阶段产出文档',
+    '生成时间: ' + new Date().toLocaleString('zh-CN'),
+    '',
+  ];
+
+  const TASKS_INFO = [
+    { id:12, name:'拷问创意想法' },
+    { id:13, name:'方案整合发展' },
+    { id:14, name:'用户故事描述' },
+    { id:15, name:'AHA 用户价值设计' },
+  ];
+
+  TASKS_INFO.forEach(t => {
+    var done = isTaskDone(t.id);
+    var data = getTaskData(t.id);
+    lines.push('## T' + t.id + ' ' + t.name + ' ' + (done ? '✅' : '❌'), '');
+
+    if (t.id === 12) {
+      DIM4.forEach(d => {
+        var items = state.dim4Items[d.key] || [];
+        if (items.length) lines.push('**' + d.icon + ' ' + d.title + '**');
+        items.forEach(q => lines.push('- ' + q));
+      });
+      if (data.summary) lines.push('', '**综合判断：**', data.summary);
+    } else if (t.id === 13) {
+      CP_DIMS.forEach(d => {
+        var v = state.cpSections[d.key] || '';
+        if (v && v.trim()) lines.push('**' + d.icon + ' ' + d.title + '**', v, '');
+      });
+      var ms = data.mapScores || {};
+      var total = Object.values(ms).reduce((s,sc)=>s+(sc.m||0)+(sc.a||0)+(sc.p||0),0);
+      if (total > 0) lines.push('**MAP总分：**' + total + '/60');
+    } else if (t.id === 14) {
+      var sb = data.storyBoard || state.storyBoard || [];
+      SB_CELLS.forEach((c,i) => lines.push('**' + c.icon + ' ' + c.title + '：**' + (sb[i]||'(未填写)')));
+    } else if (t.id === 15) {
+      var ad = data.ahaDesign || state.ahaDesign || {};
+      if (ad.title) lines.push('**🎯 核心定位：**' + ad.title);
+      if (ad.eureka) lines.push('**💡 顿悟：**' + ad.eureka);
+      if (ad.highlight) lines.push('**✨ 高光：**' + ad.highlight);
+      if (ad.progress) lines.push('**🚀 进步：**' + ad.progress);
+    }
+    lines.push('---', '');
+  });
+
+  var blob = new Blob([lines.join(sep)], { type:'text/markdown;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name + '_Shape产出文档_' + new Date().toLocaleDateString('zh-CN').replace(/\//g,'-') + '.md';
+  a.click();
+  showToast('📄 产出文档已下载！');
+}
+
+// ===================================================
+// AI: callAI helper
+// ===================================================
+async function callAI(prompt, onSuccess, onError) {
+  var cfg = getAIConfig();
+  if (!cfg.apiUrl || !cfg.apiKey) {
+    onError('请先配置 AI 接口（右上角 ⚙️ AI 设置）');
+    return;
+  }
+  try {
+    var resp = await fetch(cfg.apiUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.apiKey},
+      body: JSON.stringify({
+        model: cfg.model || 'gpt-4o',
+        messages:[{role:'user',content:prompt}],
+        temperature: 0.8, max_tokens: 1000
+      })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var json = await resp.json();
+    onSuccess(json.choices[0].message.content);
+  } catch(e) {
+    onError(e.message);
+  }
+}
+
+// ===================================================
+// AI COACH
+// ===================================================
+function getAIConfig() {
+  try { return JSON.parse(localStorage.getItem(AI_CONFIG_KEY)||'{}'); } catch(e) { return {}; }
+}
+
+function openAI() {
+  var overlay = document.getElementById('ai-overlay');
+  overlay.classList.add('active');
+  var msgs = document.getElementById('ai-messages');
+  if (msgs.children.length === 0) {
+    addAIMsg(TASKS[state.currentTask] ? TASKS[state.currentTask].coachIntro : '你好！我是 Eureka Coach。', 'bot');
+  }
+}
+
+function closeAI() {
+  document.getElementById('ai-overlay').classList.remove('active');
+}
+
+function addAIMsg(text, role) {
+  var msgs = document.getElementById('ai-messages');
+  var div = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendAI() {
+  var input = document.getElementById('ai-input');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addAIMsg(msg, 'user');
+  var btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+
+  var cfg = getAIConfig();
+  if (!cfg.apiUrl || !cfg.apiKey) {
+    addAIMsg('⚠️ 请先配置 AI 接口（点击右上角 ⚙️ AI 设置）\n\n你说的问题很好，让我来帮你分析一下。建议你从最熟悉的维度入手，先把想法写下来，数量比质量更重要。', 'bot');
+    btn.disabled = false;
+    return;
+  }
+
+  var taskCtx = TASKS[state.currentTask] || {};
+  var systemPrompt = '你是 Eureka Coach，一位专业的设计思维和创新导师。\n当前任务：' + (taskCtx.title||'') + '\n任务目标：' + (taskCtx.objective||'') + '\n用简洁、实用的方式回答，给出具体可操作的建议。回复用中文，控制在 200 字以内。';
+
+  try {
+    var resp = await fetch(cfg.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({
+        model: cfg.model || 'gpt-4o',
+        messages: [
+          { role:'system', content: systemPrompt },
+          { role:'user', content: msg }
+        ],
+        temperature: 0.7, max_tokens: 400
+      })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    var json = await resp.json();
+    addAIMsg(json.choices[0].message.content, 'bot');
+  } catch(e) {
+    addAIMsg('⚠️ AI 接口连接失败：' + e.message + '\n\n请检查 API 地址和 Key 是否正确。', 'bot');
+  }
+  btn.disabled = false;
+}
+
+// ===================================================
+// AI SETTINGS
+// ===================================================
+var PRESETS = {
+  openai:    { apiUrl:'https://api.openai.com/v1/chat/completions', model:'gpt-4o' },
+  anthropic: { apiUrl:'https://api.anthropic.com/v1/messages', model:'claude-3-5-sonnet-20241022' },
+  deepseek:  { apiUrl:'https://api.deepseek.com/chat/completions', model:'deepseek-chat' },
+  qwen:      { apiUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model:'qwen-plus' },
+  custom:    { apiUrl:'', model:'' }
+};
+
+function openAISettings() {
+  var modal = document.getElementById('ai-settings-modal');
+  var cfg = getAIConfig();
+  document.getElementById('ai-api-url').value = cfg.apiUrl || '';
+  document.getElementById('ai-api-key').value = cfg.apiKey || '';
+  document.getElementById('ai-model-name').value = cfg.model || '';
+  var provider = 'custom';
+  var url = cfg.apiUrl || '';
+  if (url.includes('openai.com')) provider = 'openai';
+  else if (url.includes('anthropic')) provider = 'anthropic';
+  else if (url.includes('deepseek')) provider = 'deepseek';
+  else if (url.includes('dashscope') || url.includes('aliyuncs')) provider = 'qwen';
+  document.getElementById('ai-provider').value = provider;
+  modal.classList.add('active');
+}
+
+function closeAISettings() {
+  document.getElementById('ai-settings-modal').classList.remove('active');
+}
+
+function onProviderChange() {
+  var p = document.getElementById('ai-provider').value;
+  var preset = PRESETS[p] || PRESETS.custom;
+  document.getElementById('ai-api-url').value = preset.apiUrl;
+  document.getElementById('ai-model-name').value = preset.model;
+}
+
+function saveAISettings() {
+  var cfg = {
+    apiUrl: document.getElementById('ai-api-url').value.trim(),
+    apiKey: document.getElementById('ai-api-key').value.trim(),
+    model: document.getElementById('ai-model-name').value.trim() || 'gpt-4o',
+  };
+  localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(cfg));
+  closeAISettings();
+  showToast('✅ AI 配置已保存');
+}
+
+function testAIConnection() {
+  var result = document.getElementById('ai-test-result');
+  var apiUrl = document.getElementById('ai-api-url').value.trim();
+  var apiKey = document.getElementById('ai-api-key').value.trim();
+  var model = document.getElementById('ai-model-name').value.trim();
+  if (!apiUrl || !apiKey) {
+    result.className = 'ai-test-result error';
+    result.textContent = '⚠️ 请先填写 API 地址和 Key';
+    result.style.display = 'block';
+    return;
+  }
+  result.className = 'ai-test-result';
+  result.textContent = '⏳ 测试中...';
+  result.style.display = 'block';
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({ model: model || 'gpt-4o', messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 })
+  }).then(r => {
+    if (r.ok) {
+      result.className = 'ai-test-result success';
+      result.textContent = '✅ 连接成功！API 正常工作';
+    } else {
+      result.className = 'ai-test-result error';
+      result.textContent = '⚠️ 连接失败：' + r.status + ' ' + r.statusText;
+    }
+  }).catch(e => {
+    result.className = 'ai-test-result error';
+    result.textContent = '⚠️ 连接失败：' + e.message;
+  });
+}
+
+// ===================================================
+// ONBOARDING
+// ===================================================
+var obStep = 1;
+var obTotal = 4;
+
+function showOnboarding() {
+  obStep = 1;
+  updateOnboardingUI();
+  document.getElementById('onboarding-overlay').classList.add('active');
+}
+
+function closeOnboarding() {
+  document.getElementById('onboarding-overlay').classList.remove('active');
+  localStorage.setItem('eureka_shape_onboarding_skip', 'true');
+}
+
+function nextOnboardingStep() {
+  if (obStep < obTotal) { obStep++; updateOnboardingUI(); }
+  else closeOnboarding();
+}
+
+function prevOnboardingStep() {
+  if (obStep > 1) { obStep--; updateOnboardingUI(); }
+}
+
+function updateOnboardingUI() {
+  for (var i = 1; i <= obTotal; i++) {
+    var step = document.getElementById('ob-step-' + i);
+    var dot = document.getElementById('ob-dot-' + i);
+    if (step) step.classList.toggle('active', i === obStep);
+    if (dot) dot.classList.toggle('active', i === obStep);
+  }
+  var prevBtn = document.getElementById('ob-prev');
+  var nextBtn = document.getElementById('ob-next');
+  if (prevBtn) prevBtn.style.display = obStep > 1 ? '' : 'none';
+  if (nextBtn) nextBtn.textContent = obStep === obTotal ? '完成' : '下一步';
+}
+
+// ===================================================
+// INIT
+// ===================================================
+document.addEventListener('DOMContentLoaded', function() {
+  loadState();
+  updateProgressUI();
+  renderInspireDataCard();
+  renderTipsCard(12);
+  renderSidebarOutputs();
+  renderSidebarBizEval();
+  renderTaskContent(12);
+  if (!localStorage.getItem('eureka_shape_onboarding_skip')) {
+    setTimeout(function() { showOnboarding(); }, 800);
+  }
+});
+
+// ===================================================
+// EUREKA FLOW (copied from learn.html)
+// ===================================================
+function showEurekaFlow() {
+  var modal = document.getElementById('eureka-flow-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeEurekaFlow() {
+  var modal = document.getElementById('eureka-flow-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+</script>
+
+<!-- Eureka 学习流程线路图 Modal -->
+<div id="eureka-flow-modal" class="modal" style="z-index:10000">
+  <div class="modal-overlay" onclick="closeEurekaFlow()"></div>
+  <div class="modal-content" style="max-width:900px;width:95%;padding:0;overflow:hidden;border-radius:16px">
+    <div style="position:relative;background:linear-gradient(135deg,#d1fae5,#a7f3d0);padding:20px 24px">
+      <button onclick="closeEurekaFlow()" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border:none;background:rgba(0,0,0,0.1);border-radius:50%;cursor:pointer;font-size:18px;color:#065f46;transition:all 0.2s">✕</button>
+      <h2 style="margin:0;font-size:22px;font-weight:700;color:#065f46;display:flex;align-items:center;gap:10px">
+        <span>🗺️</span> Eureka 价值创新探索线路图
+      </h2>
+      <p style="margin:8px 0 0;font-size:13px;color:#047857">点击任意位置关闭此图，开始你的创新探索之旅</p>
+    </div>
+    <div style="padding:24px;background:#f0fdf4;max-height:80vh;overflow-y:auto">
+      <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=80"
+           alt="Eureka 价值创新探索线路图"
+           style="width:100%;height:auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:pointer"
+           onclick="closeEurekaFlow()">
+      <div style="margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #3b82f6">
+          <div style="font-size:14px;font-weight:700;color:#1e40af;margin-bottom:6px">1. 揭示 (Reveal)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">团队构建共识，深入探索用户，洞察真实需求</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #f59e0b">
+          <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:6px">2. 启发 (Inspire) ✓</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">重构创新机遇，通过跨界灵感实现创意突破</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #10b981">
+          <div style="font-size:14px;font-weight:700;color:#065f46;margin-bottom:6px">3. 构建 (Shape) ←</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">将创意想法发展为概念方案，构建用户体验故事</div>
+        </div>
+        <div style="padding:16px;background:#fff;border-radius:12px;border-left:4px solid #8b5cf6">
+          <div style="font-size:14px;font-weight:700;color:#5b21b6;margin-bottom:6px">4. 验证 (Exam)</div>
+          <div style="font-size:12px;color:#64748b;line-height:1.5">搭建方案原型进行用户测试，规划价值呈现计划</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:12px;text-align:center">
+        <div style="font-size:14px;font-weight:600;color:#065f46">🎯 目标：交付一个经过用户验证、具有商业价值的创新方案</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -30,11 +30,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
 .nav-back:hover{background:rgba(255,255,255,.2);color:#fff}
 .nav-title{color:#fff;font-size:17px;font-weight:700}
 .nav-subtitle{color:rgba(255,255,255,.7);font-size:12px;margin-top:1px}
-.nav-right{display:flex;align-items:center;gap:10px}
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-sync-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0}
 .learn-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
 .ai-settings-btn{background:rgba(255,255,255,.15);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
 .ai-settings-btn:hover{background:rgba(255,255,255,.25)}
 .ai-settings-btn .icon{font-size:14px}
+.nav-center{flex:1;display:flex;justify-content:center;align-items:center}
+.nav-center-text{color:rgba(255,255,255,.6);font-size:11px;text-align:center;line-height:1.5}
+.nav-center-text strong{display:block;font-size:13px;color:rgba(255,255,255,.85);font-weight:700}
 
 /* RISE PROGRESS */
 .rise-bar{background:#fff;border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:0}
@@ -667,8 +672,14 @@ textarea{min-height:90px}
   <div class="nav-left">
     <button class="nav-back" onclick="window.location.href='https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka.html'">← 返回 Eureka</button>
     <div>
-      <div class="nav-title">Eureka 实训系统</div>
-      <div class="nav-subtitle">边做边学，掌握 RISE 价值创新全流程</div>
+      <div class="nav-title">🔍 Reveal · 揭示阶段</div>
+      <div class="nav-subtitle">团队构建共识 · 用户探索洞察</div>
+    </div>
+  </div>
+  <div class="nav-center">
+    <div class="nav-center-text">
+      <strong>Eureka 实训系统</strong>
+      边做边学，掌握 RISE 价值创新全流程
     </div>
   </div>
   <div class="nav-right">
@@ -684,6 +695,10 @@ textarea{min-height:90px}
       <span class="icon">🗺️</span>
       <span>学习流程</span>
     </button>
+    <span class="nav-sync-badge" id="nav-sync-badge">
+      <span class="sync-dot"></span>
+      <span>已同步</span>
+    </span>
   </div>
 </nav>
 
@@ -705,21 +720,22 @@ textarea{min-height:90px}
     </div>
   </div>
   <div class="rise-connector"></div>
-  <div class="rise-step">
-    <div class="rise-dot locked">S</div>
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='shape.html'" title="进入 Shape 构建阶段">
+    <div class="rise-dot locked" style="transition:.2s" onmouseover="this.style.background='#f97316';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">S</div>
     <div class="rise-label">
       <div class="name">Shape · 构建</div>
       <div class="desc">方案构建与用户体验</div>
     </div>
   </div>
-  <div class="rise-connector"></div>
-  <div class="rise-step">
-    <div class="rise-dot locked">E</div>
+  <div class="rise-conn" style="background:var(--border)"></div>
+  <div class="rise-step" style="cursor:pointer" onclick="window.location.href='exam.html'" title="进入 Exam 验证阶段">
+    <div class="rise-dot locked" style="transition:.2s" onmouseover="this.style.background='#0d9488';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color=''">E</div>
     <div class="rise-label">
       <div class="name">Exam · 验证</div>
-      <div class="desc">原型构建与价值验证</div>
+      <div class="desc">原型测试与商业验证 →</div>
     </div>
   </div>
+
 </div>
 
 <!-- MAIN -->
