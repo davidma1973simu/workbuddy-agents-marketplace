@@ -5,916 +5,633 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eureka Learn · 快速上手手册</title>
 <style>
-:root{
-  --purple:#667eea;--purple2:#764ba2;--purple-bg:#f0f4ff;
-  --orange:#f97316;--orange2:#ea580c;--orange-bg:#fff8f0;
-  --green:#10b981;--green2:#059669;--green-bg:#f0fdf4;
-  --teal:#0d9488;--teal2:#0f766e;--teal-bg:#f0fdfa;
-  --text:#1e293b;--text2:#64748b;--text3:#94a3b8;
-  --border:#e2e8f0;--radius:16px;--card:#fff;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#f8fafc;color:var(--text);line-height:1.7}
-a{color:inherit;text-decoration:none}
-
-/* NAV */
-.topnav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.topnav-brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800;color:var(--text)}
-.topnav-brand .logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:16px}
-.topnav-tabs{display:flex;align-items:center;margin-left:auto;gap:0}
-.tab{font-size:13px;font-weight:600;padding:6px 18px;border-radius:20px;cursor:pointer;transition:.2s;border:none;background:none;color:var(--text2);margin:0 3px}
-.tab:hover{color:var(--text);background:#f1f5f9}
-.tab.active-purple{background:var(--purple-bg);color:var(--purple)}
-.tab.active-orange{background:var(--orange-bg);color:var(--orange)}
-.tab.active-green{background:var(--green-bg);color:var(--green)}
-.tab.active-teal{background:var(--teal-bg);color:var(--teal)}
-.topnav-right{margin-left:24px;font-size:12px;color:var(--text3)}
-
-/* PAGE LAYOUT */
-.pages{max-width:1100px;margin:0 auto;padding:40px 24px}
-.page{display:none}
-.page.active{display:block}
-
-/* HERO */
-.hero{text-align:center;padding:60px 20px 40px}
-.hero h1{font-size:36px;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
-.hero p{font-size:16px;color:var(--text2);max-width:560px;margin:0 auto 32px}
-.hero-stats{display:flex;justify-content:center;gap:32px}
-.hero-stat{text-align:center}
-.hero-stat .num{font-size:28px;font-weight:900;color:var(--text)}
-.hero-stat .label{font-size:12px;color:var(--text3);margin-top:2px}
-.hero-stat .num.p{color:var(--purple)}
-.hero-stat .num.o{color:var(--orange)}
-.hero-stat .num.g{color:var(--green)}
-.hero-stat .num.t{color:var(--teal)}
-
-/* OVERVIEW GRID */
-.overview{padding:20px 0 40px}
-.phase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.phase-card{border-radius:var(--radius);padding:24px 20px;text-align:center;cursor:pointer;transition:.25s;position:relative}
-.phase-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
-.phase-card.p{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff}
-.phase-card.o{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff}
-.phase-card.g{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff}
-.phase-card.t{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff}
-.phase-card .icon{font-size:36px;margin-bottom:8px}
-.phase-card .name{font-size:16px;font-weight:800}
-.phase-card .tasks{font-size:12px;opacity:.85;margin-top:4px}
-.phase-card .arrow{position:absolute;right:16px;top:50%;transform:translateY(-50%);opacity:.5;font-size:20px}
-
-/* MODULE PAGE */
-.mod-header{border-radius:var(--radius);padding:32px 36px;color:#fff;margin-bottom:32px}
-.mod-header.p{background:linear-gradient(135deg,var(--purple),var(--purple2))}
-.mod-header.o{background:linear-gradient(135deg,var(--orange),var(--orange2))}
-.mod-header.g{background:linear-gradient(135deg,var(--green),var(--green2))}
-.mod-header.t{background:linear-gradient(135deg,var(--teal),var(--teal2))}
-.mod-header .badge{display:inline-block;font-size:11px;font-weight:700;background:rgba(255,255,255,.25);padding:3px 12px;border-radius:20px;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase}
-.mod-header h2{font-size:26px;font-weight:900;margin-bottom:8px}
-.mod-header .desc{font-size:14px;opacity:.9;line-height:1.7;max-width:600px}
-
-/* 2-COL LAYOUT */
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
-
-/* CARDS */
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
-.card-header{padding:14px 20px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-.card-header .icon{font-size:16px}
-.card-body{padding:16px 20px}
-
-/* MODULE NAV */
-.module-nav{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
-.mbtn{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;color:var(--text2)}
-.mbtn:hover{border-color:var(--purple);color:var(--purple)}
-.mbtn.active{background:var(--purple-bg);border-color:var(--purple);color:var(--purple)}
-.mbtn.ao.active{background:var(--orange-bg);border-color:var(--orange);color:var(--orange)}
-.mbtn.ag.active{background:var(--green-bg);border-color:var(--green);color:var(--green)}
-.mbtn.at.active{background:var(--teal-bg);border-color:var(--teal);color:var(--teal)}
-
-/* TASK TABLE */
-.task-table{width:100%;border-collapse:collapse;font-size:13px}
-.task-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);border-bottom:2px solid var(--border);background:#f8fafc}
-.task-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top}
-.task-table tr:hover td{background:#f8fafc}
-.task-table .tnum{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:#fff}
-.task-table tr:last-child td{border-bottom:none}
-.tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px}
-.tag.ai{background:#f0f9ff;color:#0369a1}
-.tag.pdf{background:#f0fdf4;color:#15803d}
-.tag.key{background:#fef3c7;color:#92400e}
-
-/* TASK DETAIL */
-.task-detail{display:none}
-.task-detail.active{display:block}
-.task-detail-header{border-radius:var(--radius);padding:20px 24px;margin-bottom:24px;display:flex;align-items:flex-start;gap:16px}
-.task-detail-header.p{background:linear-gradient(135deg,var(--purple-bg),#ede9fe);border-left:4px solid var(--purple)}
-.task-detail-header.o{background:linear-gradient(135deg,var(--orange-bg),#ffedd5);border-left:4px solid var(--orange)}
-.task-detail-header.g{background:linear-gradient(135deg,var(--green-bg),#d1fae5);border-left:4px solid var(--green)}
-.task-detail-header.t{background:linear-gradient(135deg,var(--teal-bg),#ccfbf1);border-left:4px solid var(--teal)}
-.task-num-big{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0}
-.task-num-big.p{background:linear-gradient(135deg,var(--purple),var(--purple2))}
-.task-num-big.o{background:linear-gradient(135deg,var(--orange),var(--orange2))}
-.task-num-big.g{background:linear-gradient(135deg,var(--green),var(--green2))}
-.task-num-big.t{background:linear-gradient(135deg,var(--teal),var(--teal2))}
-.task-detail-title h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px}
-.task-detail-title .obj{font-size:13px;color:var(--text2);line-height:1.6}
-.task-detail-title .deliverable{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px}
-.task-detail-title .deliverable.p{background:#ede9fe;color:var(--purple)}
-.task-detail-title .deliverable.o{background:#ffedd5;color:var(--orange2)}
-.task-detail-title .deliverable.g{background:#d1fae5;color:var(--green2)}
-.task-detail-title .deliverable.t{background:#ccfbf1;color:var(--teal2)}
-
-/* STEPS */
-.step-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:#f8fafc;border-radius:10px;border:1px solid var(--border)}
-.step-row .sc{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:#fff}
-.step-row .sc.p{background:var(--purple)}
-.step-row .sc.o{background:var(--orange)}
-.step-row .sc.g{background:var(--green)}
-.step-row .sc.t{background:var(--teal)}
-.step-row .stitle{font-size:13px;font-weight:700;color:var(--text)}
-.step-row .shint{font-size:12px;color:var(--text3);margin-top:2px}
-
-/* INPUTS/OUTPUTS */
-.io-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.io-card{border-radius:12px;padding:16px}
-.io-card.in{background:#eff6ff;border:1px solid #bfdbfe}
-.io-card.out{background:#f0fdf4;border:1px solid #86efac}
-.io-card .io-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.io-card.in .io-title{color:#1d4ed8}
-.io-card.out .io-title{color:#15803d}
-.io-card li{font-size:13px;color:var(--text2);padding:3px 0;margin-left:16px}
-.io-card li::marker{font-size:10px}
-
-/* AI USAGE */
-.ai-card{border-radius:12px;padding:16px;background:#faf5ff;border:1px solid #e9d5ff;margin-bottom:20px}
-.ai-card .ai-title{font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.ai-card .ai-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #ede9fe;font-size:12px;color:var(--text2)}
-.ai-card .ai-item:last-child{border-bottom:none}
-.ai-card .ai-item .tag-sm{background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;flex-shrink:0}
-.ai-card .ai-item:last-child{border-bottom:none}
-
-/* UX TIPS */
-.ux-card{border-radius:12px;padding:16px;background:#fff8f0;border:1px solid #fed7aa;margin-bottom:20px}
-.ux-card .ux-title{font-size:12px;font-weight:700;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.ux-tip{font-size:12px;color:var(--text2);padding:6px 0;border-bottom:1px solid #fef3c7;display:flex;align-items:flex-start;gap:8px}
-.ux-tip:last-child{border-bottom:none}
-.ux-tip .emoji{font-size:14px;flex-shrink:0}
-.ux-tip .txt{line-height:1.6}
-
-/* PAGE NAV */
-.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
-.page-nav-btn{padding:10px 24px;border-radius:24px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px;color:var(--text2)}
-.page-nav-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.page-nav-btn .arrow{font-size:16px}
-.page-nav-btn.next{border-color:var(--purple);color:var(--purple)}
-.page-nav-btn.prev{border-color:var(--border)}
-
-/* HOW TO USE */
-.how-to-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
-.how-to-item{border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border);transition:.2s}
-.how-to-item:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.how-to-item .num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;margin:0 auto 10px}
-.how-to-item .title{font-size:13px;font-weight:700;margin-bottom:4px}
-.how-to-item .desc{font-size:12px;color:var(--text3)}
-
-/* FOOTER */
-.manual-footer{text-align:center;padding:32px 20px;color:var(--text3);font-size:12px;border-top:1px solid var(--border);margin-top:48px}
-
-@media(max-width:768px){
-  .phase-grid{grid-template-columns:1fr 1fr}
-  .two-col{grid-template-columns:1fr}
-  .io-grid{grid-template-columns:1fr}
-  .how-to-grid{grid-template-columns:1fr}
-  .three-col{grid-template-columns:1fr}
-}
+  :root {
+    --r: #7c3aed; --r2: #5b21b6; --rbg: rgba(124,58,237,.08);
+    --g: #ea580c; --g2: #c2410c; --gbg: rgba(234,88,12,.08);
+    --s: #0891b2; --s2: #0e7490; --sbg: rgba(8,145,178,.08);
+    --e: #0d9488; --e2: #0f766e; --ebg: rgba(13,148,136,.08);
+    --w: #1e293b; --m: #475569; --s1: #64748b; --bg: #f8fafc;
+    --bdr: #e2e8f0; --card: #ffffff; --rad: 16px; --sh: 0 4px 24px rgba(0,0,0,.08);
+    --tag-r: #ede9fe; --tag-g: #ffedd5; --tag-s: #e0f2fe; --tag-e: #ccfbf1;
+    --txt-r: #5b21b6; --txt-g: #9a3412; --txt-s: #0c4a6e; --txt-e: #134e4a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system,'PingFang SC','Microsoft YaHei',sans-serif; background: var(--bg); color: var(--w); line-height: 1.7; min-height: 100vh; }
+  .hero { background: linear-gradient(135deg,#2e1065 0%,#4c1d95 50%,#5b21b6 100%); color: #fff; padding: 56px 24px 48px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; background: radial-gradient(circle,rgba(139,92,246,.4) 0%,transparent 70%); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -60px; left: -40px; width: 240px; height: 240px; background: radial-gradient(circle,rgba(167,139,250,.25) 0%,transparent 70%); border-radius: 50%; }
+  .hero-badge { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); border-radius: 100px; padding: 4px 16px; font-size: 13px; letter-spacing: .5px; margin-bottom: 16px; backdrop-filter: blur(8px); position: relative; }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; position: relative; }
+  .hero p { font-size: 17px; opacity: .8; max-width: 540px; margin: 0 auto; position: relative; }
+  .tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; padding: 20px 24px 0; position: sticky; top: 0; z-index: 100; background: linear-gradient(to bottom,var(--bg) 80%,transparent); }
+  .tab { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; background: transparent; color: var(--s1); transition: all .2s; }
+  .tab:hover { background: var(--bdr); }
+  .tab.active { color: #fff; }
+  .tab[data-t=overview].active { background: var(--r); }
+  .tab[data-t=reveal].active { background: var(--r); }
+  .tab[data-t=inspire].active { background: var(--g); }
+  .tab[data-t=shape].active { background: var(--s); }
+  .tab[data-t=exam].active { background: var(--e); }
+  .page { display: none; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; animation: fade .3s ease; }
+  .page.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; letter-spacing: -.5px; }
+  h2 .phase { display: inline-block; font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 100px; margin-right: 10px; vertical-align: middle; }
+  .phase-purple { background: var(--tag-r); color: var(--txt-r); }
+  .phase-orange { background: var(--tag-g); color: var(--txt-g); }
+  .phase-cyan { background: var(--tag-s); color: var(--txt-s); }
+  .phase-teal { background: var(--tag-e); color: var(--txt-e); }
+  .subtitle { font-size: 15px; color: var(--s1); margin-bottom: 32px; }
+  .divider { height: 1px; background: var(--bdr); margin: 40px 0; }
+  h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--w); display: flex; align-items: center; gap: 8px; }
+  h3 .icon { font-size: 20px; }
+  .output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+  .output-item { background: var(--card); border: 1px solid var(--bdr); border-radius: 12px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+  .output-item .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .output-item strong { display: block; font-weight: 700; margin-bottom: 2px; }
+  .output-item span { color: var(--s1); font-size: 13px; }
+  .interface { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rad); padding: 28px; margin-bottom: 32px; box-shadow: var(--sh); }
+  .interface-row { display: flex; gap: 20px; margin-bottom: 20px; }
+  .interface-row:last-child { margin-bottom: 0; }
+  .zone { flex: 1; background: var(--bg); border-radius: 10px; padding: 14px 16px; }
+  .zone-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--s1); margin-bottom: 6px; }
+  .zone-content { font-size: 13px; color: var(--m); line-height: 1.6; }
+  .zone-content li { margin-bottom: 4px; margin-left: 14px; }
+  .tasks { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .task-card { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rad); padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,.04); transition: box-shadow .2s; }
+  .task-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); }
+  .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .task-title { font-size: 15px; font-weight: 700; }
+  .task-num { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 100px; }
+  .task-steps { display: flex; flex-direction: column; gap: 8px; }
+  .step { display: flex; gap: 10px; font-size: 14px; }
+  .step-dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .step-content { color: var(--m); }
+  .step-content strong { font-weight: 700; }
+  .step-content .input-tag { display: inline-block; background: var(--rbg); color: var(--r); font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 100px; margin: 0 2px; }
+  .step-content .output-tag { display: inline-block; background: var(--gbg); color: var(--g); font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 100px; margin: 0 2px; }
+  .step-content .ai-tag { display: inline-block; background: var(--sbg); color: var(--s); font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 100px; margin: 0 2px; }
+  .tips { background: linear-gradient(135deg,#fffbeb 0%,#fef9c3 100%); border: 1px solid #fde68a; border-radius: var(--rad); padding: 20px 24px; margin-bottom: 28px; }
+  .tips h3 { color: #92400e; margin-bottom: 12px; }
+  .tips li { font-size: 14px; color: #78350f; margin-bottom: 8px; margin-left: 18px; line-height: 1.6; }
+  .tips li:last-child { margin-bottom: 0; }
+  .mistakes { background: linear-gradient(135deg,#fef2f2 0%,#fee2e2 100%); border: 1px solid #fecaca; border-radius: var(--rad); padding: 20px 24px; margin-bottom: 28px; }
+  .mistakes h3 { color: #991b1b; margin-bottom: 12px; }
+  .mistakes li { font-size: 14px; color: #7f1d1d; margin-bottom: 8px; margin-left: 18px; line-height: 1.6; }
+  .mistakes li:last-child { margin-bottom: 0; }
+  .warning { background: linear-gradient(135deg,#fff7ed 0%,#ffedd5 100%); border: 2px solid #fed7aa; border-radius: var(--rad); padding: 20px 24px; margin-bottom: 28px; }
+  .warning h3 { color: #9a3412; margin-bottom: 12px; }
+  .warning li { font-size: 14px; color: #7c2d12; margin-bottom: 8px; margin-left: 18px; line-height: 1.6; }
+  .quick-links { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 12px; margin-top: 40px; }
+  .quick-link { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--bdr); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: var(--w); font-size: 14px; font-weight: 600; transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .quick-link:hover { border-color: var(--r); color: var(--r); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+  .quick-link .link-icon { font-size: 20px; }
+  .overview-hero { background: linear-gradient(135deg,#2e1065 0%,#4c1d95 100%); border-radius: 20px; padding: 36px; color: #fff; margin-bottom: 32px; text-align: center; }
+  .overview-hero h2 { color: #fff; font-size: 28px; margin-bottom: 8px; }
+  .overview-hero p { opacity: .85; font-size: 15px; }
+  .phase-card { background: var(--card); border: 1px solid var(--bdr); border-radius: var(--rad); padding: 22px; margin-bottom: 16px; display: flex; gap: 16px; align-items: flex-start; transition: all .2s; cursor: pointer; }
+  .phase-card:hover { box-shadow: var(--sh); transform: translateY(-2px); }
+  .phase-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .phase-info h3 { font-size: 16px; margin-bottom: 4px; }
+  .phase-info .desc { font-size: 13px; color: var(--s1); margin-bottom: 6px; }
+  .phase-info .tasks-list { font-size: 13px; color: var(--m); }
+  .footer { text-align: center; padding: 40px 24px; color: var(--s1); font-size: 13px; border-top: 1px solid var(--bdr); margin-top: 40px; }
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 30px; }
+    .output-grid { grid-template-columns: 1fr; }
+    .interface-row { flex-direction: column; }
+    .tabs { gap: 2px; }
+    .tab { padding: 8px 12px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<nav class="topnav">
-  <div class="topnav-brand">
-    <div class="logo">💡</div>
-    Eureka Learn
-  </div>
-  <div class="topnav-tabs">
-    <button class="tab active-purple" onclick="showPage('overview')">总览</button>
-    <button class="tab" onclick="showPage('reveal')">Reveal 揭示</button>
-    <button class="tab" onclick="showPage('inspire')">Inspire 启发</button>
-    <button class="tab" onclick="showPage('shape')">Shape 构建</button>
-    <button class="tab" onclick="showPage('exam')">Exam 验证</button>
-  </div>
-  <div class="topnav-right">快速上手手册 v1.0</div>
-</nav>
+<div class="hero">
+  <div class="hero-badge">📖 快速上手 · 用户旅程版</div>
+  <h1>Eureka Learn</h1>
+  <p>从登录到完成验证——每一步怎么走，产出什么，注意什么</p>
+</div>
 
-<!-- ========== PAGE: OVERVIEW ========== -->
+<div class="tabs">
+  <button class="tab active" data-t="overview">总览</button>
+  <button class="tab" data-t="reveal">Reveal · 揭示</button>
+  <button class="tab" data-t="inspire">Inspire · 启发</button>
+  <button class="tab" data-t="shape">Shape · 构建</button>
+  <button class="tab" data-t="exam">Exam · 验证</button>
+</div>
+
+<!-- 总览页 -->
 <div class="page active" id="page-overview">
-  <div class="pages">
-    <div class="hero">
-      <h1>Eureka Learn 快速上手手册</h1>
-      <p>用 20 个结构化任务，帮你把模糊的想法变成可验证的创新方案。<br>四个阶段，循序渐进，每一步都有产出。</p>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="num p">4</div><div class="label">阶段</div></div>
-        <div class="hero-stat"><div class="num o">20</div><div class="label">任务</div></div>
-        <div class="hero-stat"><div class="num g">1</div><div class="label">产出文档</div></div>
-        <div class="hero-stat"><div class="num t">AI</div><div class="label">全程辅助</div></div>
-      </div>
-    </div>
+  <h2><span class="phase phase-purple">总览</span>你会经历什么</h2>
+  <p class="subtitle">Eureka 是一个完整的创新验证流程。20个任务，分4个阶段，你从「发现问题」走到「验证方案」。</p>
 
-    <div class="overview">
-      <div class="phase-grid">
-        <div class="phase-card p" onclick="showPage('reveal')">
-          <div class="icon">🎯</div>
-          <div class="name">Reveal · 揭示</div>
-          <div class="tasks">T1-T6 · 6个任务</div>
-          <div class="arrow">→</div>
-        </div>
-        <div class="phase-card o" onclick="showPage('inspire')">
-          <div class="icon">💡</div>
-          <div class="name">Inspire · 启发</div>
-          <div class="tasks">T7-T11 · 5个任务</div>
-          <div class="arrow">→</div>
-        </div>
-        <div class="phase-card g" onclick="showPage('shape')">
-          <div class="icon">🔧</div>
-          <div class="name">Shape · 构建</div>
-          <div class="tasks">T12-T15 · 4个任务</div>
-          <div class="arrow">→</div>
-        </div>
-        <div class="phase-card t" onclick="showPage('exam')">
-          <div class="icon">✅</div>
-          <div class="name">Exam · 验证</div>
-          <div class="tasks">T16-T20 · 5个任务</div>
-          <div class="arrow">→</div>
-        </div>
-      </div>
-    </div>
+  <div class="overview-hero">
+    <h2>💡 创新的四个阶段</h2>
+    <p>Reveal（发现问题）→ Inspire（寻找灵感）→ Shape（构建方案）→ Exam（验证方案）</p>
+  </div>
 
-    <!-- 通用操作指引 -->
-    <div class="card" style="margin-bottom:24px">
-      <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-        <span class="icon">📖</span> 使用方法
-      </div>
-      <div class="card-body">
-        <div class="how-to-grid">
-          <div class="how-to-item">
-            <div class="num" style="background:var(--purple)">1</div>
-            <div class="title">创建项目</div>
-            <div class="desc">点击侧边栏「+」新建一个学习项目，为它起个名字</div>
-          </div>
-          <div class="how-to-item">
-            <div class="num" style="background:var(--orange)">2</div>
-            <div class="title">按序完成任务</div>
-            <div class="desc">从 T1 开始逐个完成任务，每个任务完成后点「标记完成」</div>
-          </div>
-          <div class="how-to-item">
-            <div class="num" style="background:var(--green)">3</div>
-            <div class="title">导出成果</div>
-            <div class="desc">随时点击「📋 项目产出文档」导出 Markdown 成果报告</div>
-          </div>
-        </div>
-      </div>
+  <div class="phase-card" onclick="switchTab('reveal')">
+    <div class="phase-icon" style="background:#ede9fe;">🔍</div>
+    <div class="phase-info">
+      <h3>Reveal · 揭示 <span style="font-weight:400;color:var(--s1);font-size:13px;">任务 T1–T6</span></h3>
+      <div class="desc">发现真正要解决的问题，而不是停留在表面</div>
+      <div class="tasks-list">6个任务 · 用户画像 → POV → HMW → 聚焦问题 → 定义成功</div>
     </div>
+  </div>
 
-    <!-- 通用界面说明 -->
-    <div class="card">
-      <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-        <span class="icon">🗺️</span> 界面布局
-      </div>
-      <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-          <div style="text-align:center">
-            <div style="font-size:28px;margin-bottom:6px">📋</div>
-            <div style="font-size:13px;font-weight:700">左侧导航</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:4px">任务列表 + 项目管理 + 产出文档</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:28px;margin-bottom:6px">📄</div>
-            <div style="font-size:13px;font-weight:700">主内容区</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:4px">任务说明 + 输入表单 + 操作步骤</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:28px;margin-bottom:6px">🤖</div>
-            <div style="font-size:13px;font-weight:700">AI 辅助</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:4px">点击「AI 生成」获取智能建议</div>
-          </div>
-        </div>
-        <div style="margin-top:16px;padding:12px 16px;background:#f8fafc;border-radius:8px;font-size:12px;color:var(--text2)">
-          <strong>顶部导航栏：</strong>左侧「← 返回」返回首页 · 中间显示当前模块名 · 右侧「AI 设置」配置 AI 模型 · 「学习流程」查看四阶段总览
-        </div>
-        <div style="margin-top:10px;padding:12px 16px;background:#f8fafc;border-radius:8px;font-size:12px;color:var(--text2)">
-          <strong>RISE 进度条：</strong>紫色=R 揭示（完成✓/进行中/未开始）→ 橙色=I 启发 → 绿色=S 构建 → 青色=E 验证
-        </div>
-      </div>
+  <div class="phase-card" onclick="switchTab('inspire')">
+    <div class="phase-icon" style="background:#ffedd5;">💡</div>
+    <div class="phase-info">
+      <h3>Inspire · 启发 <span style="font-weight:400;color:var(--s1);font-size:13px;">任务 T7–T11</span></h3>
+      <div class="desc">在更广阔的范围内寻找创意，找到那个 AHA 顿悟</div>
+      <div class="tasks-list">5个任务 · 探索领域 → 收集灵感 → AHA时刻 → 验证价值 → 选定方向</div>
     </div>
+  </div>
+
+  <div class="phase-card" onclick="switchTab('shape')">
+    <div class="phase-icon" style="background:#e0f2fe;">🎯</div>
+    <div class="phase-info">
+      <h3>Shape · 构建 <span style="font-weight:400;color:var(--s1);font-size:13px;">任务 T12–T15</span></h3>
+      <div class="desc">把灵感变成可验证的具体方案</div>
+      <div class="tasks-list">4个任务 · 四维拷问 → 方案整合 → 用户故事 → AHA价值设计</div>
+    </div>
+  </div>
+
+  <div class="phase-card" onclick="switchTab('exam')">
+    <div class="phase-icon" style="background:#ccfbf1;">🏁</div>
+    <div class="phase-info">
+      <h3>Exam · 验证 <span style="font-weight:400;color:var(--s1);font-size:13px;">任务 T16–T20</span></h3>
+      <div class="desc">真实世界检验你的方案，找到第一失败点</div>
+      <div class="tasks-list">5个任务 · 测试计划 → 原型搭建 → 用户测试 → AHA验证 → 电梯演讲</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:36px;margin-bottom:16px;"><span class="icon">🚀</span>快速开始指引</h3>
+  <div class="tips">
+    <h3><span class="icon">🎯</span>如果你是第一次用 Eureka</h3>
+    <ul>
+      <li>1️⃣ 打开 <strong>Reveal · learn.html</strong>，从 T1 开始，按顺序做</li>
+      <li>2️⃣ 每个任务都认真写，Reveal 是整个流程的地基</li>
+      <li>3️⃣ Inspire → Shape → Exam，按顺序走，不要跳阶段</li>
+      <li>4️⃣ <strong>T18「第一失败点」</strong>是整个 Eureka 最值钱的产出，花足够时间</li>
+      <li>5️⃣ 用 AI 加速信息收集和初稿生成，但不要让 AI 替你做判断</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-bottom:16px;"><span class="icon">🔗</span>直接进入</h3>
+  <div class="quick-links">
+    <a class="quick-link" href="learn.html"><span class="link-icon">🔍</span>Reveal · learn.html</a>
+    <a class="quick-link" href="inspire.html"><span class="link-icon">💡</span>Inspire · inspire.html</a>
+    <a class="quick-link" href="shape.html"><span class="link-icon">🎯</span>Shape · shape.html</a>
+    <a class="quick-link" href="exam.html"><span class="link-icon">🏁</span>Exam · exam.html</a>
   </div>
 </div>
 
-<!-- ========== PAGE: REVEAL ========== -->
+<!-- Reveal 页 -->
 <div class="page" id="page-reveal">
-  <div class="pages">
-    <div class="module-nav">
-      <button class="mbtn active" onclick="showPage('overview')">← 总览</button>
-      <button class="mbtn active" onclick="showDetail('reveal','r-all')">全部任务</button>
-      <button class="mbtn" onclick="showDetail('reveal','r1')">T1</button>
-      <button class="mbtn" onclick="showDetail('reveal','r2')">T2</button>
-      <button class="mbtn" onclick="showDetail('reveal','r3')">T3</button>
-      <button class="mbtn" onclick="showDetail('reveal','r4')">T4</button>
-      <button class="mbtn" onclick="showDetail('reveal','r5')">T5</button>
-      <button class="mbtn" onclick="showDetail('reveal','r6')">T6</button>
+  <h2><span class="phase phase-purple">Reveal · 揭示</span>发现真正的问题</h2>
+  <p class="subtitle">6个任务（T1–T6） · 主色紫色 · 核心产出：POV + HMW</p>
+
+  <h3><span class="icon">🎯</span>我会得到什么</h3>
+  <div class="output-grid">
+    <div class="output-item"><span class="icon">👤</span><div><strong>用户画像</strong><span>T3 · 谁是你的目标用户</span></div></div>
+    <div class="output-item"><span class="icon">💬</span><div><strong>POV 观点陈述</strong><span>T4 · [用户]+[需求/痛点]+[洞见]</span></div></div>
+    <div class="output-item"><span class="icon">🤔</span><div><strong>HMW 问题重构</strong><span>T5 · 把痛点翻成创新机会</span></div></div>
+    <div class="output-item"><span class="icon">✅</span><div><strong>聚焦问题陈述</strong><span>T6 · 从HMW中选定核心问题</span></div></div>
+  </div>
+
+  <h3><span class="icon">🖥️</span>打开这个页面我看到什么</h3>
+  <div class="interface">
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">左侧边栏</div>
+        <div class="zone-content"><ul><li>创新项目列表（你创建的所有项目）</li><li>「创建新项目」按钮</li><li>切换项目时侧边栏实时刷新</li></ul></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">顶部导航</div>
+        <div class="zone-content"><ul><li>项目名（可点击切换）</li><li>云端同步按钮（保存到云）</li><li>模板市场 / 产品手册</li></ul></div>
+      </div>
     </div>
-
-    <!-- MODULE HEADER -->
-    <div class="mod-header p">
-      <div class="badge">阶段 1/4</div>
-      <h2>Reveal · 揭示阶段</h2>
-      <p class="desc">从模糊到清晰。找到真正值得解决的问题，建立团队共识，产出清晰的 POV（用户观点陈述）。这是整个创新旅程的北极星。</p>
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">右侧主内容</div>
+        <div class="zone-content"><ul><li>当前任务说明 + 操作区</li><li>「常见误区」提示卡</li><li>任务完成布局（产出预览 + 成功标准 + 下一步）</li></ul></div>
+      </div>
     </div>
+  </div>
 
-    <!-- 全部任务总览表 -->
-    <div class="task-detail active" id="reveal-r-all">
-      <div class="card" style="overflow-x:auto">
-        <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-          <span class="icon">📋</span> 任务一览
-        </div>
-        <table class="task-table">
-          <thead>
-            <tr>
-              <th style="width:40px">#</th>
-              <th>任务名称</th>
-              <th>输入</th>
-              <th>产出</th>
-              <th>AI辅助</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">1</span></td>
-              <td><strong>明确创新主题</strong><div class="tag" style="background:#ede9fe;color:var(--purple)">🎯 主题</div></td>
-              <td>个人挑战 + 兴趣领域</td>
-              <td>创新主题标题 + 2×2象限定位</td>
-              <td><span class="tag ai">AI推荐象限</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">2</span></td>
-              <td><strong>背景挑战研究</strong><div class="tag" style="background:#ede9fe;color:var(--purple)">🔬 研究</div></td>
-              <td>主题背景 + 现状描述</td>
-              <td>现状分析 + 核心挑战 + 限制要素</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">3</span></td>
-              <td><strong>团队构建共识</strong><div class="tag" style="background:#ede9fe;color:var(--purple)">🤝 共识</div></td>
-              <td>团队角色 + 主题理解</td>
-              <td>团队角色定义 + 愿景共识 + 待验证假设</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">4</span></td>
-              <td><strong>用户共情探索</strong><div class="tag" style="background:#ede9fe;color:var(--purple)">👤 共情</div></td>
-              <td>探索场景 + 共情卡片</td>
-              <td>用户画像 + JTBD（用户需要完成的任务）</td>
-              <td><span class="tag ai">AI生成画像</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">5</span></td>
-              <td><strong>用户旅程发现</strong><div class="tag" style="background:#ede9fe;color:var(--purple)">🛤️ 旅程</div></td>
-              <td>用户画像 + 目标场景</td>
-              <td>用户旅程地图 + 关键发现</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum p" style="background:var(--purple)">6</span></td>
-              <td><strong>POV构建</strong><div class="tag pdf" style="background:#f0fdf4;color:#15803d">📄 核心产出</div></td>
-              <td>所有前序洞察</td>
-              <td>POV 用户观点陈述 + FIND分析</td>
-              <td><span class="tag ai">AI辅助FIND分析</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <h3><span class="icon">📋</span>每个任务怎么做</h3>
+  <div class="tasks">
 
-      <!-- 阶段特点 -->
-      <div style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,var(--purple-bg),#ede9fe);border-radius:var(--radius);border-left:4px solid var(--purple)">
-        <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px">🎯 Reveal 阶段的核心逻辑</div>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8">Reveal 的目标是找到「正确的问题」（而不是立即给出解决方案）。T1-T3 帮你聚焦主题并建立团队共识，T4-T5 深入理解用户，T6 产出北极星 POV。POV 是整个 RISE 框架最重要的输出之一，后续所有阶段都围绕它展开。</p>
-      </div>
-
-      <!-- AI 使用说明 -->
-      <div class="ai-card">
-        <div class="ai-title">🤖 AI 在 Reveal 的使用场景</div>
-        <div class="ai-item">
-          <span class="tag-sm">T1</span>
-          <span>点击「AI 分析」：AI 会根据你的主题描述，推荐最适合的创新象限（蓝海/竞争优势/突破/重构）</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T4</span>
-          <span>点击「AI 生成画像」：基于探索场景描述，AI 生成候选用户画像卡片</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T6</span>
-          <span>点击「AI 辅助分析」：AI 基于前序任务数据，生成 FIND 模型分析（Facts→Interpret→Need→Design）</span>
-        </div>
-      </div>
-
-      <!-- UX 引导 -->
-      <div class="ux-card">
-        <div class="ux-title">💡 体验技巧</div>
-        <div class="ux-tip"><span class="emoji">⏱️</span><div class="txt"><strong>节奏建议：</strong>单个任务建议 15-30 分钟完成。T4 和 T6 是情感峰值——当你看到自己生成的 POV 或用户画像时，会感受到工具真的在工作。</div></div>
-        <div class="ux-tip"><span class="emoji">📝</span><div class="txt"><strong>不要跳过：</strong>T1 的主题选择直接影响后续所有任务的质量。花 5 分钟认真思考「为什么选这个主题」是值得的。</div></div>
-        <div class="ux-tip"><span class="emoji">🔗</span><div class="txt"><strong>数据存储：</strong>所有数据保存在浏览器本地（localStorage），换浏览器或清缓存会丢失。建议完成后立即导出文档。</div></div>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T1 · 明确创新主题</span><span class="task-num phase-purple">T1/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">在顶部输入框写一个主题，如<strong>「帮助职场人找到副业方向」</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">在「背景描述」框中描述你为什么想做这个（2–3段）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>主题名称 + 背景描述<br><strong>AI：</strong>如果背景写不下去，点「AI辅助」生成初稿，然后改写</div></div>
       </div>
     </div>
 
-    <!-- T1-T6 详情 (内联) -->
-    <div id="reveal-r1" class="task-detail" style="display:none"></div>
-    <div id="reveal-r2" class="task-detail" style="display:none"></div>
-    <div id="reveal-r3" class="task-detail" style="display:none"></div>
-    <div id="reveal-r4" class="task-detail" style="display:none"></div>
-    <div id="reveal-r5" class="task-detail" style="display:none"></div>
-    <div id="reveal-r6" class="task-detail" style="display:none"></div>
-
-    <div class="page-nav">
-      <button class="page-nav-btn prev" onclick="showPage('overview')"><span class="arrow">←</span> 总览</button>
-      <button class="page-nav-btn next" onclick="showPage('inspire')">Inspire 启发 <span class="arrow">→</span></button>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T2 · 选择研究方法</span><span class="task-num phase-purple">T2/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">选择1–2种研究方法（桌面调研 / 访谈用户 / 问卷调查等）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">按每种方法填写：<span class="input-tag">具体做什么</span> → <span class="input-tag">输出什么</span> → <span class="output-tag">预期产出</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>AI：</strong>选完方法后可以让 AI 帮你起草访谈提纲或问卷问题<br><strong>技巧：</strong>初学者建议「桌面调研」+「访谈3–5人」，组合效果最好</div></div>
+      </div>
     </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T3 · 描述目标用户</span><span class="task-num phase-purple">T3/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">选择用户类型（职场人士 / 自由职业者 / 创业者 等）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">按模板描述：<span class="input-tag">基本信息</span> → <span class="input-tag">行为特点</span> → <span class="input-tag">当前痛点</span> → <span class="input-tag">期望结果</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>一个具体、真实的用户画像<br><strong>AI：</strong>可以先让 AI 生成多个用户画像候选，再选最真实的一个</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T4 · 形成 POV 观点陈述</span><span class="task-num phase-purple">T4/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">回顾 T2–T3 的研究，提取一个核心洞见</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">按格式填写：<strong>「[用户] 需要 [需求/痛点]，因为 [洞见]」</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>1–2句精准的POV<br><strong>技巧：</strong>POV 是整个 Reveal 的核心，写的越具体，后面越顺</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T5 · HMW 问题重构</span><span class="task-num phase-purple">T5/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">把 POV 中的痛点翻成「How Might We...」问题（至少3条）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">对每条 HMW 从三个维度打分：<span class="ai-tag">创新性</span> <span class="ai-tag">影响力</span> <span class="ai-tag">可行性</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>⭐最有价值的维度：</strong>「创新性」——如果得分低，说明你在解决一个已经被解决过的问题<br><strong>AI：</strong>可以先让 AI 生成 5–10 条 HMW，再自己筛选最相关的 3–5 条</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T6 · 聚焦问题陈述</span><span class="task-num phase-purple">T6/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">1</div><div class="step-content">从 T5 的 HMW 中选 1 个作为核心问题</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-r);color:var(--txt-r);">2</div><div class="step-content">按模板描述：<span class="input-tag">我要解决的问题</span> → <span class="input-tag">目标用户</span> → <span class="input-tag">预期改变</span> → <span class="input-tag">成功指标</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>聚焦问题陈述（这是 Inspire 阶段的核心输入）<br><strong>Reveal 阶段结束！</strong>点击「完成」→ 进入 Inspire</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips">
+    <h3><span class="icon">🎯</span>体验技巧</h3>
+    <ul>
+      <li>Reveal 是整个流程的地基。T3–T5 写好了，后面 Inspire 和 Shape 速度翻倍</li>
+      <li>不要跳过「AI辅助」——尤其在 T2 起草访谈提纲、T5 生成 HMW 时，AI 是加速器</li>
+      <li>用户画像写具体：「32岁有2年经验的UI设计师，想转产品经理」比「职场人」好十倍</li>
+      <li>HMW 的「创新性」维度最能揭示你是在解决真问题还是伪问题</li>
+    </ul>
+  </div>
+
+  <div class="mistakes">
+    <h3><span class="icon">⚠️</span>常见误区</h3>
+    <ul>
+      <li>POV 写成解决方案而不是用户需求（不要写「做一个App」——写「用户需要…」）</li>
+      <li>HMW 数量太少（少于3条）或全是同一个角度</li>
+      <li>选了「可行性」最高而不是「创新性」最高的 HMW，导致方向保守</li>
+      <li>聚焦问题写得太模糊（「帮助用户成功」不是问题陈述）</li>
+    </ul>
   </div>
 </div>
 
-<!-- ========== PAGE: INSPIRE ========== -->
+<!-- Inspire 页 -->
 <div class="page" id="page-inspire">
-  <div class="pages">
-    <div class="module-nav">
-      <button class="mbtn ao" onclick="showPage('overview')">← 总览</button>
-      <button class="mbtn ao active" onclick="showDetail('inspire','i-all')">全部任务</button>
-      <button class="mbtn ao" onclick="showDetail('inspire','i7')">T7</button>
-      <button class="mbtn ao" onclick="showDetail('inspire','i8')">T8</button>
-      <button class="mbtn ao" onclick="showDetail('inspire','i9')">T9</button>
-      <button class="mbtn ao" onclick="showDetail('inspire','i10')">T10</button>
-      <button class="mbtn ao" onclick="showDetail('inspire','i11')">T11</button>
+  <h2><span class="phase phase-orange">Inspire · 启发</span>找到那个 AHA 时刻</h2>
+  <p class="subtitle">5个任务（T7–T11） · 主色橙色 · 核心产出：最佳创意 + AHA时刻</p>
+
+  <h3><span class="icon">🎯</span>我会得到什么</h3>
+  <div class="output-grid">
+    <div class="output-item"><span class="icon">🌍</span><div><strong>灵感地图</strong><span>T8 · 探索的领域边界</span></div></div>
+    <div class="output-item"><span class="icon">✨</span><div><strong>AHA 时刻</strong><span>T9 · 灵感的顿悟点</span></div></div>
+    <div class="output-item"><span class="icon">💎</span><div><strong>最佳创意方案</strong><span>T11 · 从灵感提炼的最终方案</span></div></div>
+    <div class="output-item"><span class="icon">📊</span><div><strong>AHA 数据矩阵</strong><span>T10 · AHA 的量化验证</span></div></div>
+  </div>
+
+  <h3><span class="icon">🖥️</span>打开这个页面我看到什么</h3>
+  <div class="interface">
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">左侧边栏</div>
+        <div class="zone-content"><ul><li>从 Reveal 自动继承：POV、用户画像、聚焦问题</li><li>灵感列表（你收集的灵感）</li><li>灵感分类（可折叠/展开）</li></ul></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">右侧主内容</div>
+        <div class="zone-content"><ul><li>任务说明区（当前任务目标 + 操作区）</li><li>灵感收集区（T8灵感探索的核心区）</li><li>AI辅助区（T9 AHA 生成专用）</li></ul></div>
+      </div>
     </div>
-
-    <div class="mod-header o">
-      <div class="badge">阶段 2/4</div>
-      <h2>Inspire · 启发阶段</h2>
-      <p class="desc">从 POV 到创新机遇。拆解问题，转化为 HMW 问句，跨界寻找灵感，找到那个让用户发出「啊哈！」的 AHA 时刻。</p>
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">底部（任务完成后）</div>
+        <div class="zone-content"><ul><li>产出预览 + 成功标准 + 下一步指引</li></ul></div>
+      </div>
     </div>
+  </div>
 
-    <div class="task-detail active" id="inspire-i-all">
-      <div class="card" style="overflow-x:auto">
-        <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-          <span class="icon">📋</span> 任务一览
-        </div>
-        <table class="task-table">
-          <thead>
-            <tr>
-              <th style="width:40px">#</th>
-              <th>任务名称</th>
-              <th>输入</th>
-              <th>产出</th>
-              <th>AI辅助</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tnum o" style="background:var(--orange)">7</span></td>
-              <td><strong>用户问题拆解</strong><div class="tag" style="background:#ffedd5;color:var(--orange2)">🔍 拆解</div></td>
-              <td>Reveal T6 的 POV</td>
-              <td>POV 三要素（用户/麻烦/目标）</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum o" style="background:var(--orange)">8</span></td>
-              <td><strong>创新机遇重构 HMW</strong><div class="tag" style="background:#ffedd5;color:var(--orange2)">💡 HMW</div></td>
-              <td>POV 三要素</td>
-              <td>四维 HMW 问句（积极/否定/假设/脑洞）</td>
-              <td><span class="tag ai">AI生成HMW</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum o" style="background:var(--orange)">9</span></td>
-              <td><strong>机遇筛选细化</strong><div class="tag pdf" style="background:#f0fdf4;color:#15803d">📄 设计简报</div></td>
-              <td>四维 HMW 问句</td>
-              <td>设计简报 + 选定 HMW</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum o" style="background:var(--orange)">10</span></td>
-              <td><strong>灵感启发创意</strong><div class="tag" style="background:#ffedd5;color:var(--orange2)">🎨 创意</div></td>
-              <td>设计简报 + 灵感来源</td>
-              <td>跨界创意列表（可评分）</td>
-              <td><span class="tag ai">AI扩展创意</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum o" style="background:var(--orange)">11</span></td>
-              <td><strong>创意筛选与价值发展</strong><div class="tag key" style="background:#fef3c7;color:#92400e">✨ AHA+MAP</div></td>
-              <td>创意列表 + 灵感数据</td>
-              <td>最佳创意 + AHA时刻 + MAP评分</td>
-              <td><span class="tag ai">AI综合评分</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <h3><span class="icon">📋</span>每个任务怎么做</h3>
+  <div class="tasks">
 
-      <!-- 阶段特点 -->
-      <div style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,var(--orange-bg),#ffedd5);border-radius:var(--radius);border-left:4px solid var(--orange)">
-        <div style="font-size:13px;font-weight:700;color:var(--orange2);margin-bottom:10px">💡 Inspire 阶段的核心逻辑</div>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8">Inspire 的目标是找到「正确的解法方向」。T7-T9 把 POV 转化为可操作的设计简报，T10-T11 跨界找灵感并用 AHA+MAP 框架选出最佳创意。AHA（顿悟/高光/进步）是打动用户的关键价值锚点。</p>
-      </div>
-
-      <div class="io-grid">
-        <div class="io-card in">
-          <div class="io-title">📥 来自 Reveal 的输入</div>
-          <ul>
-            <li>T6 的 POV 陈述（用户/麻烦/目标）</li>
-            <li>T4 的用户画像</li>
-            <li>T3 的团队假设</li>
-          </ul>
-        </div>
-        <div class="io-card out">
-          <div class="io-title">📤 产出（传递给 Shape）</div>
-          <ul>
-            <li>最佳创意文字描述</li>
-            <li>AHA 价值假设（顿悟/高光/进步）</li>
-            <li>MAP 评分（M/A/P 各1-5分）</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- AI 使用 -->
-      <div class="ai-card">
-        <div class="ai-title">🤖 AI 在 Inspire 的使用场景</div>
-        <div class="ai-item">
-          <span class="tag-sm">T8</span>
-          <span>点击「AI 生成 HMW」：基于 POV 三要素，AI 生成四维 HMW 问句建议（发挥积极/移除否定/假设转换/脑洞大开）</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T10</span>
-          <span>点击「AI 扩展」：基于灵感关键词，AI 跨界联想生成更多创意选项</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T11</span>
-          <span>AI 综合评分：基于创意描述、灵感来源和 AHA 价值，AI 给出综合评分建议</span>
-        </div>
-      </div>
-
-      <!-- UX 引导 -->
-      <div class="ux-card">
-        <div class="ux-title">💡 体验技巧</div>
-        <div class="ux-tip"><span class="emoji">🎯</span><div class="txt"><strong>T8 最关键：</strong>HMW 问句的质量决定后续创意的好坏。「移除否定」和「脑洞大开」两列最容易产生意外惊喜，不要跳过。</div></div>
-        <div class="ux-tip"><span class="emoji">⭐</span><div class="txt"><strong>T11 AHA 设计：</strong>这是整个 Inspire 阶段的情感峰值。花时间想清楚「用户第一次体验时，什么会让他们发出『啊哈！』」是值得的。</div></div>
-        <div class="ux-tip"><span class="emoji">📊</span><div class="txt"><strong>NCO 创意维度：</strong>T10 使用 NCO（Needs/Concepts/Outcomes）框架。点击维度卡片展开，查看更多创意维度提示。</div></div>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T7 · 探索灵感领域</span><span class="task-num phase-orange">T7/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">1</div><div class="step-content">根据 T6 的聚焦问题，选择灵感来源类型（行业标杆 / 跨行业参考 / 学术研究 / 用户访谈 等）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">2</div><div class="step-content">为每种来源填写：<span class="input-tag">具体案例/来源</span> → <span class="input-tag">为什么选它</span> → <span class="output-tag">可借鉴的点</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>AI：</strong>可以让 AI 帮你搜索相关行业的创新案例<br><strong>技巧：</strong>「跨行业参考」往往最有价值——教育行业的模式套用到健身行业</div></div>
       </div>
     </div>
 
-    <div class="page-nav">
-      <button class="page-nav-btn prev" onclick="showPage('reveal')"><span class="arrow">←</span> Reveal 揭示</button>
-      <button class="page-nav-btn next" onclick="showPage('shape')">Shape 构建 <span class="arrow">→</span></button>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T8 · 收集灵感</span><span class="task-num phase-orange">T8/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">1</div><div class="step-content">在灵感收集区逐条添加灵感，每条包含：<span class="input-tag">灵感标题</span> + <span class="input-tag">描述</span> + <span class="input-tag">来源</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">2</div><div class="step-content">为灵感贴标签（问题解决型 / 技术驱动型 / 体验优化型 等），可折叠/展开分类</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>目标：</strong>至少收集 10–20 条灵感，覆盖多个类型<br><strong>AI：</strong>可以先让 AI 批量生成灵感初稿，再筛选和补充<br><strong>产出：</strong>分类整理后的灵感列表（Inspire 的核心输入）</div></div>
+      </div>
     </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T9 · 发现 AHA 时刻</span><span class="task-num phase-orange">T9/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">1</div><div class="step-content">回顾 T8 收集的所有灵感，找出让你产生「顿悟感」的灵感（AHA 时刻）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">2</div><div class="step-content">按格式描述 AHA：<span class="input-tag">核心洞见</span> → <span class="input-tag">顿悟来源</span> → <span class="input-tag">解决思路</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>⭐这个 AHA 会被 Shape 阶段的 T15 直接使用</strong><br><strong>AI：</strong>T9 是 AI 最能发挥的地方——让 AI 分析你的灵感列表，找出最有洞见的组合<br><strong>技巧：</strong>AHA 不是「我觉得好」——要说明「为什么这个组合之前没人做」</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T10 · 评估 AHA 价值</span><span class="task-num phase-orange">T10/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">1</div><div class="step-content">在 AHA 数据矩阵中，量化评估 AHA 时刻的三个维度：<span class="ai-tag">顿悟强度</span> <span class="ai-tag">价值空间</span> <span class="ai-tag">创新程度</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">2</div><div class="step-content">用 1–10 分打分，并写出每项的打分理由</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>量化的 AHA 评分（用于 T19 Exam 阶段的基准对比）<br><strong>技巧：</strong>诚实打分——如果顿悟强度低于6分，说明 AHA 不够强烈，建议回 T8 补充灵感</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T11 · 选定最佳创意</span><span class="task-num phase-orange">T11/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">1</div><div class="step-content">基于 AHA 时刻，综合灵感列表，输出最佳创意方案</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-g);color:var(--txt-g);">2</div><div class="step-content">按模板填写：<span class="input-tag">方案名称</span> → <span class="input-tag">核心创意</span> → <span class="input-tag">解决的问题</span> → <span class="input-tag">差异化</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--gbg);color:var(--txt-g);">→</div><div class="step-content"><strong>产出：</strong>最佳创意方案（这是 Shape 阶段的核心输入）<br><strong>⭐T11 的最佳创意 + AHA 数据 + MAP评分会直接传给 Shape</strong><br><strong>Inspire 阶段结束！</strong>点击「完成」→ 进入 Shape</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips">
+    <h3><span class="icon">🎯</span>体验技巧</h3>
+    <ul>
+      <li>T9 AHA 是整个 Eureka 的灵魂——花足够时间，不要为了进度跳过</li>
+      <li>跨行业灵感最有价值：医疗行业的「分级诊疗」可以启发教育行业的「分级学习」</li>
+      <li>AI 在 Inspire 是真正的加速器：批量生成灵感 → 人工筛选 → 组合创新</li>
+      <li>T10 的量化评分是 Exam 阶段 T19「AHA验证矩阵」的基准，不要随便填</li>
+    </ul>
+  </div>
+
+  <div class="mistakes">
+    <h3><span class="icon">⚠️</span>常见误区</h3>
+    <ul>
+      <li>灵感数量太少（少于10条）就开始总结，导致 AHA 质量低</li>
+      <li>AHA 写成感受而不是洞见（「这个灵感好棒」→「这个组合能解决X问题，因为Y」）</li>
+      <li>T10 打分随意，失去了 Exam 阶段对标的基准</li>
+      <li>选了「最安全」的创意而不是「最有洞见」的创意</li>
+    </ul>
   </div>
 </div>
 
-<!-- ========== PAGE: SHAPE ========== -->
+<!-- Shape 页 -->
 <div class="page" id="page-shape">
-  <div class="pages">
-    <div class="module-nav">
-      <button class="mbtn ag" onclick="showPage('overview')">← 总览</button>
-      <button class="mbtn ag active" onclick="showDetail('shape','s-all')">全部任务</button>
-      <button class="mbtn ag" onclick="showDetail('shape','s12')">T12</button>
-      <button class="mbtn ag" onclick="showDetail('shape','s13')">T13</button>
-      <button class="mbtn ag" onclick="showDetail('shape','s14')">T14</button>
-      <button class="mbtn ag" onclick="showDetail('shape','s15')">T15</button>
+  <h2><span class="phase phase-cyan">Shape · 构建</span>把灵感变成可验证的方案</h2>
+  <p class="subtitle">4个任务（T12–T15） · 主色青色 · 核心产出：四维拷问 + 用户故事 + AHA价值</p>
+
+  <h3><span class="icon">🎯</span>我会得到什么</h3>
+  <div class="output-grid">
+    <div class="output-item"><span class="icon">👤</span><div><strong>四维拷问</strong><span>T12 · 用户 / 商业 / 技术 / 生态</span></div></div>
+    <div class="output-item"><span class="icon">📐</span><div><strong>方案整合</strong><span>T13 · MAP评分 + 整合发展</span></div></div>
+    <div class="output-item"><span class="icon">📖</span><div><strong>六格用户故事</strong><span>T14 · 痛苦→顿悟→探索→AHA→成长→传播</span></div></div>
+    <div class="output-item"><span class="icon">✨</span><div><strong>AHA价值深化</strong><span>T15 · 顿悟 / 高光 / 进步</span></div></div>
+  </div>
+
+  <h3><span class="icon">🖥️</span>打开这个页面我看到什么</h3>
+  <div class="interface">
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">左侧边栏</div>
+        <div class="zone-content"><ul><li>Inspire 数据自动传入（最佳创意 + AHA + MAP评分）</li><li>Reveal 数据（POV + 用户画像）</li><li>当前灵感列表</li></ul></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">右侧主内容</div>
+        <div class="zone-content"><ul><li>T12 四维拷问区（👤💰⚙️🤝四列评分区）</li><li>T13 方案整合区（M/A/P 三维评分 + 整合方案）</li><li>T14 六格故事板区</li><li>T15 AHA 深化区</li></ul></div>
+      </div>
     </div>
+  </div>
 
-    <div class="mod-header g">
-      <div class="badge">阶段 3/4</div>
-      <h2>Shape · 构建阶段</h2>
-      <p class="desc">从灵感到方案。用四维拷问检验创意，用六格故事板讲好用户故事，设计 AHA 价值交付点，把点子变成可讲述、可验证的概念。</p>
-    </div>
+  <h3><span class="icon">📋</span>每个任务怎么做</h3>
+  <div class="tasks">
 
-    <div class="task-detail active" id="shape-s-all">
-      <div class="card" style="overflow-x:auto">
-        <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-          <span class="icon">📋</span> 任务一览
-        </div>
-        <table class="task-table">
-          <thead>
-            <tr>
-              <th style="width:40px">#</th>
-              <th>任务名称</th>
-              <th>输入</th>
-              <th>产出</th>
-              <th>AI辅助</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tnum g" style="background:var(--green)">12</span></td>
-              <td><strong>拷问创意想法</strong><div class="tag" style="background:#d1fae5;color:var(--green2)">🔍 四维</div></td>
-              <td>Inspire 最佳创意 + AHA</td>
-              <td>四维拷问清单（用户/商业/技术/生态）</td>
-              <td><span class="tag ai">AI生成拷问</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum g" style="background:var(--green)">13</span></td>
-              <td><strong>方案整合发展</strong><div class="tag pdf" style="background:#f0fdf4;color:#15803d">📄 概念方案</div></td>
-              <td>四维拷问结论 + Inspire 数据</td>
-              <td>概念方案文档 + MAP 评分</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum g" style="background:var(--green)">14</span></td>
-              <td><strong>用户故事描述</strong><div class="tag" style="background:#d1fae5;color:var(--green2)">🎬 故事</div></td>
-              <td>概念方案 + AHA 价值设计</td>
-              <td>六格故事板（痛苦→顿悟→探索→AHA→成长→传播）</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum g" style="background:var(--green)">15</span></td>
-              <td><strong>AHA 用户价值设计</strong><div class="tag key" style="background:#fef3c7;color:#92400e">✨ 价值</div></td>
-              <td>前序所有洞察</td>
-              <td>AHA 价值深化（顿悟/高光/进步 × 各维度）</td>
-              <td><span class="tag ai">AI辅助深化</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,var(--green-bg),#d1fae5);border-radius:var(--radius);border-left:4px solid var(--green)">
-        <div style="font-size:13px;font-weight:700;color:var(--green2);margin-bottom:10px">🔧 Shape 阶段的核心逻辑</div>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8">Shape 的目标是把「创意」变成「方案」。T12 四维拷问是自我审视（用户/商业/技术/生态），T13 把拷问结论整合成概念方案，T14 用故事板讲好用户故事，T15 深化 AHA 价值设计。Shape 的产出应该是一个「能讲清楚、值得做、经得起质疑」的方案。</p>
-      </div>
-
-      <div class="io-grid">
-        <div class="io-card in">
-          <div class="io-title">📥 来自 Inspire 的输入</div>
-          <ul>
-            <li>最佳创意描述</li>
-            <li>AHA 价值假设（顿悟/高光/进步）</li>
-            <li>MAP 评分（M/A/P 各1-5分）</li>
-            <li>T3 的团队愿景</li>
-          </ul>
-        </div>
-        <div class="io-card out">
-          <div class="io-title">📤 产出（传递给 Exam）</div>
-          <ul>
-            <li>概念方案文档（四维整合）</li>
-            <li>六格故事板（用户旅程叙事）</li>
-            <li>深化后的 AHA 价值设计</li>
-            <li>四维拷问清单</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="three-col" style="margin-bottom:20px">
-        <div style="border-radius:12px;padding:16px;background:#dbeafe;border:1px solid #bfdbfe;text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">👤</div>
-          <div style="font-size:12px;font-weight:700;color:#1d4ed8">用户维度</div>
-          <div style="font-size:11px;color:#64748b;margin-top:4px">用户真的在乎吗？痛点有多深？</div>
-        </div>
-        <div style="border-radius:12px;padding:16px;background:#fef3c7;border:1px solid #fde68a;text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">💰</div>
-          <div style="font-size:12px;font-weight:700;color:#92400e">商业维度</div>
-          <div style="font-size:11px;color:#64748b;margin-top:4px">如何盈利？护城河？能否规模化？</div>
-        </div>
-        <div style="border-radius:12px;padding:16px;background:#d1fae5;border:1px solid #a7f3d0;text-align:center">
-          <div style="font-size:24px;margin-bottom:6px">⚙️</div>
-          <div style="font-size:12px;font-weight:700;color:#065f46">技术维度</div>
-          <div style="font-size:11px;color:#64748b;margin-top:4px">技术可行吗？壁垒在哪里？</div>
-        </div>
-      </div>
-
-      <div class="ai-card">
-        <div class="ai-title">🤖 AI 在 Shape 的使用场景</div>
-        <div class="ai-item">
-          <span class="tag-sm">T12</span>
-          <span>点击「AI 辅助生成」：基于 Inspire 最佳创意，AI 生成四个维度的尖锐拷问建议，帮助你更全面地审视创意的风险</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T15</span>
-          <span>点击「AI 深化 AHA」：AI 基于现有 AHA 数据，从用户情感、惊喜设计、长期价值三个角度深化 AHA 价值描述</span>
-        </div>
-      </div>
-
-      <div class="ux-card">
-        <div class="ux-title">💡 体验技巧</div>
-        <div class="ux-tip"><span class="emoji">🔪</span><div class="txt"><strong>T12 四维拷问要尖锐：</strong>这个阶段的目标是「在内部发现缺陷」，而不是「说服自己这个想法很好」。每个维度至少要有 1 条真正让你不舒服的拷问。</div></div>
-        <div class="ux-tip"><span class="emoji">🎬</span><div class="txt"><strong>T14 六格故事板：</strong>用情感和场景讲故事，而不是功能和流程。「用户第一眼看到时感觉如何？」比「功能点有哪些」更重要。</div></div>
-        <div class="ux-tip"><span class="emoji">🔗</span><div class="txt"><strong>侧边栏引用：</strong>Shape 的侧边栏会显示来自 Inspire 和 Reveal 的关键数据引用，可以随时点击跳回前序任务。</div></div>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T12 · 四维拷问</span><span class="task-num phase-cyan">T12/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">1</div><div class="step-content">读取 Inspire 的最佳创意，对它进行四个维度的自我拷问：</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">2</div><div class="step-content"><span class="input-tag">👤 用户</span> 用户真的会想要吗？<br><span class="input-tag">💰 商业</span> 有人愿意为此付钱吗？<br><span class="input-tag">⚙️ 技术</span> 我们能做出来吗？<br><span class="input-tag">🤝 生态</span> 各方利益相关者都能受益吗？</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--sbg);color:var(--txt-s);">→</div><div class="step-content"><strong>AI：</strong>可以让 AI 扮演不同角色（用户/投资人/工程师）来挑战你的方案<br><strong>技巧：</strong>至少找出每个维度的 1 个致命弱点，没有弱点的方案可能是不真实的</div></div>
       </div>
     </div>
 
-    <div class="page-nav">
-      <button class="page-nav-btn prev" onclick="showPage('inspire')"><span class="arrow">←</span> Inspire 启发</button>
-      <button class="page-nav-btn next" onclick="showPage('exam')">Exam 验证 <span class="arrow">→</span></button>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T13 · 方案整合发展</span><span class="task-num phase-cyan">T13/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">1</div><div class="step-content">针对每个致命弱点，给出解决方案或应对策略</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">2</div><div class="step-content">对方案进行 MAP 三维评分：<span class="ai-tag">M 市场吸引力</span> <span class="ai-tag">A 能力匹配度</span> <span class="ai-tag">P 竞争优先性</span>（各1–5星）</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--sbg);color:var(--txt-s);">→</div><div class="step-content"><strong>⭐ MAP 评分会自动传入 Exam 的 T19 AHA验证矩阵</strong><br><strong>技巧：</strong>如果 MAP 任何一项低于3星，认真考虑是否要调整方向</div></div>
+      </div>
     </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T14 · 用户故事描述</span><span class="task-num phase-cyan">T14/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">1</div><div class="step-content">用六格故事板描述用户旅程：<strong>痛苦 → 顿悟 → 探索 → AHA → 成长 → 传播</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">2</div><div class="step-content">每格写：<span class="input-tag">场景</span> + <span class="input-tag">用户行为</span> + <span class="input-tag">情绪变化</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--sbg);color:var(--txt-s);">→</div><div class="step-content"><strong>产出：</strong>完整的用户故事（用于 Exam 阶段 T18 用户测试的场景设计）<br><strong>技巧：</strong>故事板让抽象方案变成可体验的场景，是 Exam 测试的核心脚本</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T15 · AHA 价值深化设计</span><span class="task-num phase-cyan">T15/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">1</div><div class="step-content">深化 Inspire 的 AHA，设计三个层次的递进：<br><span class="input-tag">💡 顿悟</span> 用户在什么时刻「啊哈」了？<br><span class="input-tag">✨ 高光</span> 方案最让人惊艳的瞬间是什么？<br><span class="input-tag">🚀 进步</span> 用户使用后获得了什么真实进步？</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-s);color:var(--txt-s);">2</div><div class="step-content">每层填写：<span class="input-tag">具体描述</span> + <span class="output-tag">预期效果</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--sbg);color:var(--txt-s);">→</div><div class="step-content"><strong>⭐ T15 的 AHA 设计是 Exam 阶段 T19「AHA验证矩阵」的主要对照项</strong><br><strong>Shape 阶段结束！</strong>点击「完成」→ 进入 Exam</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips">
+    <h3><span class="icon">🎯</span>体验技巧</h3>
+    <ul>
+      <li>T12 四维拷问要对自己诚实——找不出弱点的方案是假方案</li>
+      <li>AI 扮演「魔鬼代言人」特别有效：让 AI 扮演投资人质疑你，逼迫你思考深度</li>
+      <li>T14 故事板是 Exam T18 测试脚本的直接来源，故事越真实，测试越有效</li>
+      <li>T15 的 AHA 三层设计要足够具体——「用户觉得好」不是AHA，「用户在X场景下解决了Y问题」才是</li>
+    </ul>
+  </div>
+
+  <div class="mistakes">
+    <h3><span class="icon">⚠️</span>常见误区</h3>
+    <ul>
+      <li>T12 四个维度打分都很好看（说明你没有真正拷问自己）</li>
+      <li>方案整合时回避弱点而不是解决弱点</li>
+      <li>T14 故事板写成产品功能说明而不是用户感受</li>
+      <li>T15 的 AHA 设计太空洞，无法在 Exam 阶段实际验证</li>
+    </ul>
   </div>
 </div>
 
-<!-- ========== PAGE: EXAM ========== -->
+<!-- Exam 页 -->
 <div class="page" id="page-exam">
-  <div class="pages">
-    <div class="module-nav">
-      <button class="mbtn at" onclick="showPage('overview')">← 总览</button>
-      <button class="mbtn at active" onclick="showDetail('exam','e-all')">全部任务</button>
-      <button class="mbtn at" onclick="showDetail('exam','e16')">T16</button>
-      <button class="mbtn at" onclick="showDetail('exam','e17')">T17</button>
-      <button class="mbtn at" onclick="showDetail('exam','e18')">T18</button>
-      <button class="mbtn at" onclick="showDetail('exam','e19')">T19</button>
-      <button class="mbtn at" onclick="showDetail('exam','e20')">T20</button>
+  <h2><span class="phase phase-teal">Exam · 验证</span>真实世界的第一失败点</h2>
+  <p class="subtitle">5个任务（T16–T20） · 主色青绿 · ⭐核心产出：T18 第一失败点</p>
+
+  <div class="warning">
+    <h3><span class="icon">⚠️</span>Exam 是整个 Eureka 最值钱的阶段</h3>
+    <ul>
+      <li>Reveal 告诉你问题是什么，Inspire 给你灵感，Shape 给你方案——<strong>Exam 告诉你哪里错了</strong></li>
+      <li><strong>找到第一失败点越早，损失越小</strong>——这是创新的核心护城河</li>
+      <li>不要跳过任何任务直接「总结」——每一步都是在降低验证风险</li>
+    </ul>
+  </div>
+
+  <h3><span class="icon">🎯</span>我会得到什么</h3>
+  <div class="output-grid">
+    <div class="output-item"><span class="icon">📝</span><div><strong>极简测试计划</strong><span>T16 · 5步测试脚本</span></div></div>
+    <div class="output-item"><span class="icon">🎨</span><div><strong>低保真原型</strong><span>T17 · 快速可测试的原型</span></div></div>
+    <div class="output-item"><span class="icon">💥</span><div><strong>第一失败点</strong><span>T18 · 四象限记录 · ⭐最有价值产出</span></div></div>
+    <div class="output-item"><span class="icon">📊</span><div><strong>AHA 验证矩阵</strong><span>T19 · AHA vs 真实反馈对比</span></div></div>
+    <div class="output-item"><span class="icon">🎤</span><div><strong>电梯演讲 + 商业画布</strong><span>T20 · 可呈现的最终产出</span></div></div>
+  </div>
+
+  <h3><span class="icon">🖥️</span>打开这个页面我看到什么</h3>
+  <div class="interface">
+    <div class="interface-row">
+      <div class="zone">
+        <div class="zone-label">左侧边栏</div>
+        <div class="zone-content"><ul><li>Shape 传入的所有数据（方案 + MAP评分 + 故事板 + AHA设计）</li><li>Inspire 传入的 AHA 数据和评分</li><li>Reveal 传入的 POV 和用户画像</li></ul></div>
+      </div>
+      <div class="zone">
+        <div class="zone-label">右侧主内容</div>
+        <div class="zone-content"><ul><li>四象限记录区（T18 最核心的UI：正面/负面/洞察/改进）</li><li>AHA验证矩阵（T19：Inspire AHA vs 真实反馈对比）</li><li>电梯演讲编辑器（T20）</li></ul></div>
+      </div>
     </div>
+  </div>
 
-    <div class="mod-header t">
-      <div class="badge">阶段 4/4</div>
-      <h2>Exam · 验证阶段</h2>
-      <p class="desc">从方案到验证。设计测试计划，搭建低保真原型，获取真实用户反馈，验证 AHA 价值假设，最终产出可执行的行动计划。</p>
-    </div>
+  <h3><span class="icon">📋</span>每个任务怎么做</h3>
+  <div class="tasks">
 
-    <div class="task-detail active" id="exam-e-all">
-      <div class="card" style="overflow-x:auto">
-        <div class="card-header" style="background:#f8fafc;border-bottom:1px solid var(--border)">
-          <span class="icon">📋</span> 任务一览
-        </div>
-        <table class="task-table">
-          <thead>
-            <tr>
-              <th style="width:40px">#</th>
-              <th>任务名称</th>
-              <th>输入</th>
-              <th>产出</th>
-              <th>AI辅助</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tnum t" style="background:var(--teal)">16</span></td>
-              <td><strong>测试计划设计</strong><div class="tag" style="background:#ccfbf1;color:var(--teal2)">🧪 测试</div></td>
-              <td>概念方案 + AHA 价值</td>
-              <td>极简测试计划脚本（3-5步）</td>
-              <td><span class="tag ai">AI生成脚本</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum t" style="background:var(--teal)">17</span></td>
-              <td><strong>方案原型搭建</strong><div class="tag" style="background:#ccfbf1;color:var(--teal2)">🖼️ 原型</div></td>
-              <td>概念方案 + 六格故事板</td>
-              <td>低保真原型（纸面/草图/线框）</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td><span class="tnum t" style="background:var(--teal)">18</span></td>
-              <td><strong>用户测试反馈</strong><div class="tag key" style="background:#fef3c7;color:#92400e">🎯 核心</div></td>
-              <td>原型 + 测试计划</td>
-              <td>四象限记录 + 第一失败点</td>
-              <td><span class="tag ai">AI辅助记录</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum t" style="background:var(--teal)">19</span></td>
-              <td><strong>AHA价值验证</strong><div class="tag key" style="background:#fef3c7;color:#92400e">✨ 验证</div></td>
-              <td>Shape AHA + 用户反馈</td>
-              <td>AHA矩阵 + MAP商业验证 + Checklist</td>
-              <td><span class="tag ai">AI综合验证</span></td>
-            </tr>
-            <tr>
-              <td><span class="tnum t" style="background:var(--teal)">20</span></td>
-              <td><strong>呈现和计划</strong><div class="tag pdf" style="background:#f0fdf4;color:#15803d">📄 终极产出</div></td>
-              <td>所有前序产出</td>
-              <td>电梯演讲 + 商业画布 + 30-60-90天计划</td>
-              <td><span class="tag ai">AI辅助生成</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,var(--teal-bg),#ccfbf1);border-radius:var(--radius);border-left:4px solid var(--teal)">
-        <div style="font-size:13px;font-weight:700;color:var(--teal2);margin-bottom:10px">✅ Exam 阶段的核心逻辑</div>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8">Exam 的目标是「用真实反馈验证假设」。T16-T17 搭建验证基础设施，T18 出去找用户测试（这是最关键的一步！），T19 分析反馈验证 AHA，T20 把所有洞察整合成可执行的行动计划。T20 的产出是整个 RISE 旅程的终极交付物。</p>
-      </div>
-
-      <div class="io-grid">
-        <div class="io-card in">
-          <div class="io-title">📥 来自 Shape 的输入</div>
-          <ul>
-            <li>概念方案文档（四维整合）</li>
-            <li>六格故事板</li>
-            <li>AHA 价值设计（顿悟/高光/进步）</li>
-            <li>四维拷问结论</li>
-          </ul>
-        </div>
-        <div class="io-card out">
-          <div class="io-title">📤 终极产出</div>
-          <ul>
-            <li>已验证的 AHA 价值假设</li>
-            <li>电梯演讲（1分钟内讲清楚）</li>
-            <li>商业画布（Business Canvas）</li>
-            <li>30-60-90 天行动计划</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- T18 特别说明 -->
-      <div style="border-radius:12px;padding:20px;background:#fef3c7;border:1.5px solid #fde68a;margin-bottom:20px">
-        <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">⚠️ T18 用户测试——最重要的任务</div>
-        <p style="font-size:13px;color:var(--text2);line-height:1.7">T18 是整个 RISE 框架中「唯一一个需要出去找真实用户」的任务。很多人会在这里跳过或敷衍。但真实反馈是创新验证的唯一标准。AI 可以帮你记录和分析，但「出去找人」这一步必须你亲自做。</p>
-      </div>
-
-      <div class="ai-card">
-        <div class="ai-title">🤖 AI 在 Exam 的使用场景</div>
-        <div class="ai-item">
-          <span class="tag-sm">T16</span>
-          <span>点击「AI 生成测试脚本」：基于概念方案和 AHA 价值，AI 生成 3-5 步极简测试计划，包括测试目标、验证问题和成功标准</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T18</span>
-          <span>点击「AI 辅助分析」：输入用户原话反馈，AI 帮你识别第一失败点（First Failure Point）</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T19</span>
-          <span>点击「AI 综合验证」：AI 基于 AHA 价值设计、用户反馈和 MAP 评分，综合判断 AHA 假设是否成立</span>
-        </div>
-        <div class="ai-item">
-          <span class="tag-sm">T20</span>
-          <span>点击「AI 辅助生成」：基于前序所有数据，AI 生成电梯演讲、商业画布和行动计划建议</span>
-        </div>
-      </div>
-
-      <div class="ux-card">
-        <div class="ux-title">💡 体验技巧</div>
-        <div class="ux-tip"><span class="emoji">🚶</span><div class="txt"><strong>T18 不要等：</strong>用户测试不需要完美原型。纸面草图+口头介绍就足够。关键是「出去」，找 3-5 个真实目标用户做 15-20 分钟访谈。</div></div>
-        <div class="ux-tip"><span class="emoji">📸</span><div class="txt"><strong>原型可以很简单：</strong>T17 低保真原型可以是纸面草图、PPT 草页、甚至口头描述。重点是「能演示」，而不是「做漂亮」。</div></div>
-        <div class="ux-tip"><span class="emoji">🏆</span><div class="txt"><strong>T20 是你的名片：</strong>电梯演讲（60秒）和 30-60-90 天计划是整个旅程的结晶。认真打磨，可以用它来向投资人、老板或合作伙伴介绍你的项目。</div></div>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T16 · 设计测试计划</span><span class="task-num phase-teal">T16/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">1</div><div class="step-content">基于 T14 的故事板，设计一个 <strong>5步极简测试脚本</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">2</div><div class="step-content">每步包含：<span class="input-tag">任务描述</span> → <span class="input-tag">观察重点</span> → <span class="output-tag">成功标准</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--ebg);color:var(--txt-e);">→</div><div class="step-content"><strong>技巧：</strong>测试脚本不超过5步，每步不超过2分钟，聚焦验证 AHA 是否真实存在<br><strong>AI：</strong>可以让 AI 根据故事板自动生成测试脚本初稿</div></div>
       </div>
     </div>
 
-    <div class="page-nav">
-      <button class="page-nav-btn prev" onclick="showPage('shape')"><span class="arrow">←</span> Shape 构建</button>
-      <button class="page-nav-btn next" onclick="showPage('overview')">返回总览 <span class="arrow">↑</span></button>
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T17 · 搭建方案原型</span><span class="task-num phase-teal">T17/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">1</div><div class="step-content">用 Figma/PPT/纸笔等方式，快速搭建一个 <strong>低保真原型</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">2</div><div class="step-content">原型要能回答：用户在 T15 AHA 设计中的「顿悟时刻」能否被体验到？</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--ebg);color:var(--txt-e);">→</div><div class="step-content"><strong>原则：</strong>够用就好，不要追求精致——Exam 是来找错的，不是来展示的<br><strong>快速方法：</strong>纸原型 + 真人演示，最快30分钟可以开始测试</div></div>
+      </div>
     </div>
+
+    <div class="task-card" style="border: 2px solid #99f6e4; background: linear-gradient(135deg,#f0fdfa 0%,#ccfbf1 100%);">
+      <div class="task-header">
+        <span class="task-title">⭐ T18 · 用户测试反馈（四象限记录）</span>
+        <span class="task-num" style="background:#0d9488;color:#fff;">T18/20 · 最值钱的任务</span>
+      </div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:#0d9488;color:#fff;">1</div><div class="step-content">对至少 3–5 人进行用户测试，记录每人的反馈</div></div>
+        <div class="step"><div class="step-dot" style="background:#0d9488;color:#fff;">2</div><div class="step-content">用<strong>四象限</strong>分类记录：<br><span class="input-tag">😊 正面反馈</span> 用户喜欢什么<br><span class="input-tag">😞 负面反馈</span> 用户哪里卡住了<br><span class="input-tag">💡 洞察</span> 你观察到的意料之外的事<br><span class="input-tag">🔧 改进建议</span> 如何修复负面反馈</div></div>
+        <div class="step"><div class="step-dot" style="background:#0d9488;color:#fff;">3</div><div class="step-content">找到<strong>「第一失败点」</strong>：用户测试中最先出错/放弃的那个点<br><strong>→ 这就是整个方案最需要修复的地方</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--ebg);color:var(--txt-e);">→</div><div class="step-content"><strong>⭐ 第一失败点 = 整个 Eureka 最值钱的产出</strong><br><strong>技巧：</strong>测试时「不要教用户」——让他们自己摸索，才能暴露真实问题<br><strong>AI：</strong>测试后可以让 AI 帮你整理反馈，从混乱记录中提取四象限总结</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T19 · AHA 价值验证</span><span class="task-num phase-teal">T19/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">1</div><div class="step-content">对比 Inspire AHA（预测）vs T18 真实反馈：Inspire 的 AHA 是否真实存在？</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">2</div><div class="step-content">在 AHA 验证矩阵中填写：<span class="input-tag">Inspire AHA</span> vs <span class="output-tag">实际测试结果</span> → <span class="ai-tag">验证结论</span></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">3</div><div class="step-content">同时做 <strong>MAP 商业验证</strong> + <strong>Checklist 自查</strong></div></div>
+        <div class="step"><div class="step-dot" style="background:var(--ebg);color:var(--txt-e);">→</div><div class="step-content"><strong>⭐ AHA 被验证存在</strong> → 继续推进，修复第一失败点<br><strong>⭐ AHA 不存在</strong> → 回 Shape 调整方向，不要硬撑</div></div>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <div class="task-header"><span class="task-title">T20 · 呈现与计划</span><span class="task-num phase-teal">T20/20</span></div>
+      <div class="task-steps">
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">1</div><div class="step-content">写一个 <strong>60秒电梯演讲</strong>：「对于[用户]，他们的[痛点]是一个问题，我们的方案[核心价值]」</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">2</div><div class="step-content">填写 <strong>商业画布</strong>：关键伙伴 / 关键活动 / 价值主张 / 客户关系 / 渠道 / 客户细分 / 核心资源 / 成本结构 / 收入流</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--tag-e);color:var(--txt-e);">3</div><div class="step-content">制定 <strong>30-60-90天行动计划</strong>：<br><span class="input-tag">30天</span> 修复第一失败点，做第二轮测试<br><span class="input-tag">60天</span> MVP 上线，小规模验证<br><span class="input-tag">90天</span> 迭代优化，准备规模化</div></div>
+        <div class="step"><div class="step-dot" style="background:var(--ebg);color:var(--txt-e);">→</div><div class="step-content"><strong>⭐ Eureka 完成！</strong>从问题发现 → 灵感获取 → 方案构建 → 真实验证，你完成了完整的创新闭环<br><strong>最有价值的产出：</strong>第一失败点 + AHA验证结论 + 电梯演讲</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips">
+    <h3><span class="icon">🎯</span>体验技巧</h3>
+    <ul>
+      <li><strong>T18 是整个 Eureka 的心脏</strong>——不要跳过，不要敷衍，不要只测1个人</li>
+      <li>找测试用户：在你 T3 描述的目标用户群里找，最真实的用户才能暴露最真实的问题</li>
+      <li>测试时保持沉默：不要教用户怎么用，让他们自己摸索，记录他们「第一个卡住的地方」</li>
+      <li>T19 AHA 验证后，「AHA不存在」不是失败——及时调整方向才是真正的成功</li>
+      <li>60秒电梯演讲要背下来——随时能用一句话说清楚你的方案</li>
+    </ul>
+  </div>
+
+  <div class="mistakes">
+    <h3><span class="icon">⚠️</span>常见误区</h3>
+    <ul>
+      <li>T17 原型做得太精致（花了2周做设计稿），然后发现方向错了——原型只需要30分钟</li>
+      <li>T18 只测1个人就下结论——至少3–5人才能发现模式</li>
+      <li>测试时「教用户」——你一教，就不知道用户自己会不会了</li>
+      <li>T19 强行说 AHA 存在（用户明显没反应还说「他们内心 AHA 了」）</li>
+      <li>T20 的行动计划写「继续迭代」而不写具体里程碑</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top:32px;"><span class="icon">🔗</span>直接进入 Exam</h3>
+  <div class="quick-links">
+    <a class="quick-link" href="exam.html"><span class="link-icon">🏁</span>开始 Exam · exam.html</a>
+    <a class="quick-link" href="shape.html"><span class="link-icon">🎯</span>回到 Shape · shape.html</a>
   </div>
 </div>
 
-<div class="manual-footer">
-  Eureka Learn 快速上手手册 · v1.0 · 四个阶段，20个任务，把想法变成可验证的方案
+<div class="footer">
+  <p>Eureka Learn · 从发现问题到验证方案 · 完整创新流程手册</p>
+  <p style="margin-top:4px;">访问地址：davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/</p>
 </div>
 
 <script>
-// Task detail data for Reveal T1-T6
-const taskDetails = {
-  reveal: {
-    r1: { num:1, name:'明确创新主题', badge:'Reveal · 任务 1/6', icon:'🎯', deliverable:'创新主题标题 + 2×2象限定位', color:'purple',
-      objective:'将模糊的创新想法聚焦为一个清晰的、可操作的主题，并在创新象限中找到它的定位。',
-      steps:[
-        {title:'描述你的创新主题',hint:'用1-2句话描述你想探索的方向（越具体越好）'},
-        {title:'标注个人挑战',hint:'为什么这个主题对你重要？它解决了你什么痛点？'},
-        {title:'AI 分析定位（可选）',hint:'点击「AI 分析」，AI 会根据你的描述推荐最匹配的创新象限'},
-        {title:'标记完成',hint:'选择创新象限并点击「标记完成」推进到下一个任务'}
-      ],
-      inputs:['个人挑战描述','感兴趣的创新领域'],
-      outputs:['创新主题标题','2×2创新象限定位（蓝海/竞争优势/突破/重构）','个人挑战说明'],
-      ai:'点击「AI 分析」：基于主题描述，AI 推荐最适合的创新象限和定位理由'
-    },
-    r6: { num:6, name:'POV构建', badge:'Reveal · 任务 6/6', icon:'⭐', deliverable:'POV 用户观点陈述 + FIND分析', color:'purple',
-      objective:'综合前序所有洞察，产出清晰的 POV（用户观点陈述）。POV 是整个 RISE 旅程的北极星，后续所有阶段都围绕它展开。',
-      steps:[
-        {title:'读取洞察数据',hint:'系统自动显示 T3-T5 的团队共识、用户画像和旅程发现'},
-        {title:'进行 FIND 分析',hint:'Facts（事实）→ Interpret（解读）→ Need（需求）→ Design insight（设计洞察）'},
-        {title:'AI 辅助 FIND 分析（可选）',hint:'点击「AI 辅助分析」，AI 基于前序数据生成 FIND 分析建议'},
-        {title:'撰写 POV 陈述',hint:'用「[用户] 在 [场景] 时，渴望 [目标]，但 [障碍]」的格式撰写'},
-        {title:'检验 POV 完整性',hint:'确认 POV 有具体用户、有真实场景、有清晰目标'}
-      ],
-      inputs:['T3 团队共识','T4 用户画像','T5 用户旅程发现'],
-      outputs:['FIND 分析（F/I/N/D 四步）','POV 用户观点陈述','POV 检验清单'],
-      ai:'点击「AI 辅助分析」：AI 基于前序任务数据，生成 FIND 四步分析建议'
-    }
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-t="' + tab + '"]').classList.add('active');
+    document.getElementById('page-' + tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-};
-
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  // Update tab states
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(t => t.className = 'tab');
-  if(page === 'overview') tabs[0].className = 'tab active-purple';
-  else if(page === 'reveal') tabs[1].className = 'tab active-purple';
-  else if(page === 'inspire') tabs[2].className = 'tab active-orange';
-  else if(page === 'shape') tabs[3].className = 'tab active-green';
-  else if(page === 'exam') tabs[4].className = 'tab active-teal';
-  window.scrollTo(0,0);
-}
-
-function showDetail(mod, detail) {
-  // Hide all details for this module
-  document.querySelectorAll('[id^="'+mod+'-"]').forEach(d => d.style.display = 'none');
-  document.getElementById(mod + '-' + detail).style.display = 'block';
-  // Update mbtn states
-  const btns = document.querySelectorAll('.mbtn');
-  btns.forEach(b => {
-    const isActive = b.getAttribute('onclick') === `showDetail('${mod}','${detail}')` ||
-                     b.getAttribute('onclick') === `showPage('overview')`;
-    if(isActive) b.classList.add('active');
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.t));
   });
-  window.scrollTo(0,0);
-}
 </script>
 </body>
 </html>
