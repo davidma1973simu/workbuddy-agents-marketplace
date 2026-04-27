@@ -87,27 +87,21 @@
    * 显示/更新同步状态指示器
    */
   function showSyncIndicator(status, text) {
-    var nav = document.querySelector('.nav-actions') || document.querySelector('.nav-right') || document.querySelector('.top-nav');
-    if (!nav) {
-      console.log('[TCB] 未找到导航栏，跳过指示器');
-      return;
+    // 仅更新已有的 sync-btn（由 SyncUI 创建），不再单独插入第二个按钮
+    var syncBtn = document.getElementById('sync-btn');
+    if (syncBtn) {
+      if (status === 'error') {
+        syncBtn.innerHTML = '☁️ <span id="sync-status-text">' + (text || '同步失败') + '</span>';
+        syncBtn.disabled = false;
+      } else if (status === 'synced') {
+        syncBtn.innerHTML = '☁️ <span id="sync-status-text">' + (text || '已同步') + '</span>';
+        syncBtn.disabled = false;
+      } else if (status === 'syncing') {
+        syncBtn.innerHTML = '🔄 <span id="sync-status-text">' + (text || '同步中...') + '</span>';
+        syncBtn.disabled = true;
+      }
     }
-
-    var indicator = document.getElementById('tcb-sync-indicator');
-    if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.id = 'tcb-sync-indicator';
-      indicator.innerHTML = '<span class="dot"></span><span class="text">同步中</span>';
-      indicator.addEventListener('click', onSyncClick);
-      nav.appendChild(indicator);
-    }
-
-    // 更新状态
-    indicator.className = status || 'syncing';
-    var textEl = indicator.querySelector('.text');
-    if (textEl) textEl.textContent = text || '同步中';
-
-    return indicator;
+    return syncBtn;
   }
 
   /**

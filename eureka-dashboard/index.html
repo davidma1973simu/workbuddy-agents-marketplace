@@ -6350,15 +6350,6 @@ document.addEventListener('keydown', e => {
   var auth = app.auth();
   auth.signInAnonymously().then(function() {
     console.log('[TCB] 匿名登录成功');
-    var nav = document.querySelector('.nav-actions');
-    if (nav) {
-      var ind = document.createElement('button');
-      ind.className = 'btn-tool';
-      ind.style.cssText = 'background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:24px;font-size:13px;color:#fff;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;';
-      ind.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#10b981"></span><span class="btn-text">已同步</span>';
-      ind.onclick = function() { if(typeof syncToCloud==='function') syncToCloud(); };
-      nav.appendChild(ind);
-    }
   }).catch(function(e) {
     console.warn('[TCB] 登录失败:', e);
   });
