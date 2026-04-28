@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 产品全景图</title>
+<style>
+:root{
+  --purple:#7c3aed;--purple2:#9f67fa;--purple-bg:#f5f3ff;
+  --orange:#ea580c;--orange2:#f97316;--orange-bg:#fff7ed;
+  --teal:#0d9488;--teal2:#0f766e;--teal-bg:#f0fdfa;
+  --blue:#2563eb;--blue-bg:#eff6ff;
+  --gray:#6b7280;--gray-bg:#f9fafb;--border:#e5e7eb;
+  --txt:#111827;--txt2:#374151;--txt3:#6b7280;
+  font-family:'PingFang SC','Helvetica Neue',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#f8f7ff;color:var(--txt);min-height:100vh;}
+
+/* TOP NAV */
+.topnav{background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(79,70,229,.3);}
+.topnav-logo{color:#fff;font-size:20px;font-weight:800;letter-spacing:-0.5px;}
+.topnav-logo span{opacity:.7;font-weight:400;font-size:13px;margin-left:8px;}
+.topnav-tabs{display:flex;gap:4px;}
+.tab-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;transition:.2s;white-space:nowrap;}
+.tab-btn:hover,.tab-btn.active{background:rgba(255,255,255,.3);}
+
+/* HERO */
+.hero{padding:48px 32px 32px;text-align:center;max-width:860px;margin:0 auto;}
+.hero-tag{display:inline-block;background:var(--purple-bg);color:var(--purple);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:16px;border:1px solid rgba(124,58,237,.2);}
+.hero h1{font-size:32px;font-weight:900;letter-spacing:-1px;color:var(--txt);line-height:1.25;margin-bottom:12px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--purple),#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:15px;color:var(--txt3);max-width:580px;margin:0 auto;line-height:1.7;}
+
+/* SECTION */
+.section{max-width:1100px;margin:0 auto;padding:32px 24px;}
+.section-title{font-size:20px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.section-sub{font-size:13px;color:var(--txt3);margin-bottom:24px;}
+.divider{border:none;border-top:2px solid var(--border);margin:40px 0;}
+
+/* PAGE - users */
+.user-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.user-card{background:#fff;border-radius:16px;padding:20px;border:1px solid var(--border);transition:.2s;}
+.user-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.07);transform:translateY(-2px);}
+.user-icon{font-size:32px;margin-bottom:10px;}
+.user-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+.user-name{font-size:16px;font-weight:800;margin-bottom:6px;}
+.user-desc{font-size:12px;color:var(--txt2);line-height:1.6;}
+.user-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-top:8px;}
+.tag-c{background:#ede9fe;color:#5b21b6;}
+.tag-b{background:#dbeafe;color:#1d4ed8;}
+.tag-p{background:#fef3c7;color:#92400e;}
+
+/* PAGE - scenarios */
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.scene-card{background:#fff;border-radius:16px;padding:22px;border:1px solid var(--border);border-left:4px solid var(--purple);}
+.scene-card.orange{border-left-color:var(--orange);}
+.scene-card.teal{border-left-color:var(--teal);}
+.scene-card.blue{border-left-color:var(--blue);}
+.scene-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.scene-emoji{font-size:24px;}
+.scene-title{font-size:15px;font-weight:800;}
+.scene-who{font-size:11px;color:var(--txt3);margin-top:2px;}
+.scene-steps{margin-top:10px;}
+.scene-step{font-size:12px;color:var(--txt2);padding:4px 0;border-bottom:1px dashed var(--border);display:flex;gap:8px;line-height:1.5;}
+.scene-step:last-child{border:none;}
+.scene-step-num{color:var(--purple);font-weight:700;flex-shrink:0;width:16px;}
+.scene-card.orange .scene-step-num{color:var(--orange);}
+.scene-card.teal .scene-step-num{color:var(--teal);}
+.scene-card.blue .scene-step-num{color:var(--blue);}
+.scene-value{margin-top:12px;background:var(--purple-bg);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--purple);font-weight:600;}
+.scene-card.orange .scene-value{background:var(--orange-bg);color:var(--orange);}
+.scene-card.teal .scene-value{background:var(--teal-bg);color:var(--teal);}
+.scene-card.blue .scene-value{background:var(--blue-bg);color:var(--blue);}
+
+/* PAGE - architecture */
+.arch-wrap{position:relative;}
+.arch-flow{display:flex;flex-direction:column;gap:0;}
+/* Row: landing */
+.arch-row{display:flex;justify-content:center;margin-bottom:4px;}
+.arch-row-label{text-align:center;font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+
+.page-box{background:#fff;border-radius:14px;border:2px solid var(--border);padding:14px 18px;min-width:160px;max-width:220px;text-align:center;transition:.2s;position:relative;}
+.page-box:hover{box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-2px);}
+.page-box-icon{font-size:22px;margin-bottom:4px;}
+.page-box-name{font-size:14px;font-weight:800;}
+.page-box-name a{color:inherit;text-decoration:none;display:block;}
+.page-box-name a:hover{text-decoration:underline;}
+.page-box-file{font-size:10px;color:var(--txt3);margin-top:2px;}
+.page-box-file a{color:var(--txt3);text-decoration:none;}
+.page-box-file a:hover{text-decoration:underline;}
+.page-box-desc{font-size:11px;color:var(--txt2);margin-top:6px;line-height:1.5;}
+.page-box.purple{border-color:var(--purple);background:var(--purple-bg);}
+.page-box.orange{border-color:var(--orange);background:var(--orange-bg);}
+.page-box.teal{border-color:var(--teal);background:var(--teal-bg);}
+.page-box.blue{border-color:var(--blue);background:var(--blue-bg);}
+.page-box.gray{border-color:var(--gray);background:var(--gray-bg);}
+
+.arrow-down{text-align:center;font-size:20px;color:var(--txt3);line-height:1.2;margin:2px 0;}
+.arrow-right{font-size:18px;color:var(--txt3);display:flex;align-items:center;padding:0 4px;}
+
+/* RISE flow row */
+.rise-row{display:flex;align-items:stretch;gap:0;justify-content:center;margin:8px 0;}
+.rise-box{flex:1;max-width:200px;background:#fff;border-radius:14px;padding:14px;text-align:center;border:2px solid var(--border);position:relative;transition:.2s;}
+.rise-box:hover{box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-2px);}
+.rise-box a{color:inherit;text-decoration:none;display:block;}
+.rise-box.r{border-color:var(--purple);background:var(--purple-bg);}
+.rise-box.i{border-color:var(--orange);background:var(--orange-bg);}
+.rise-box.s{border-color:var(--orange);background:var(--orange-bg);}
+.rise-box.e{border-color:var(--teal);background:var(--teal-bg);}
+.rise-letter{font-size:28px;font-weight:900;line-height:1;}
+.rise-letter.r{color:var(--purple);}
+.rise-letter.i{color:var(--orange);}
+.rise-letter.s{color:var(--orange);}
+.rise-letter.e{color:var(--teal);}
+.rise-name{font-size:13px;font-weight:800;margin:4px 0 2px;}
+.rise-file{font-size:10px;color:var(--txt3);margin-bottom:6px;}
+.rise-file a{color:var(--txt3);text-decoration:none;}
+.rise-file a:hover{text-decoration:underline;}
+.rise-tasks{font-size:11px;font-weight:600;margin-bottom:6px;}
+.rise-outputs{text-align:left;}
+.rise-output{font-size:10px;color:var(--txt2);padding:2px 0;display:flex;gap:4px;align-items:flex-start;line-height:1.4;}
+.rise-output::before{content:'▸';flex-shrink:0;margin-top:1px;}
+.rise-connector{display:flex;align-items:center;color:var(--txt3);font-size:22px;padding:0 2px;flex-shrink:0;}
+
+/* data flow */
+.data-flow{margin-top:20px;background:#fff;border-radius:14px;border:1px solid var(--border);padding:20px;}
+.data-flow-title{font-size:13px;font-weight:800;margin-bottom:14px;color:var(--txt);}
+.data-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.data-from{background:var(--purple-bg);color:var(--purple);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.data-from.orange{background:var(--orange-bg);color:var(--orange);}
+.data-arrow{font-size:14px;color:var(--txt3);}
+.data-to{background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.data-to.teal{background:var(--teal-bg);color:var(--teal);}
+.data-field{font-size:11px;color:var(--txt2);background:var(--gray-bg);padding:2px 8px;border-radius:6px;}
+
+/* PAGE - func table */
+.func-table{width:100%;border-collapse:collapse;font-size:13px;}
+.func-table th{background:var(--gray-bg);padding:10px 14px;text-align:left;font-weight:700;font-size:12px;color:var(--txt3);letter-spacing:.3px;}
+.func-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+.func-table tr:last-child td{border:none;}
+.func-table tr:hover td{background:#fafafa;}
+.badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;}
+.badge-purple{background:#ede9fe;color:#5b21b6;}
+.badge-orange{background:#ffedd5;color:#9a3412;}
+.badge-teal{background:#ccfbf1;color:#065f46;}
+.badge-blue{background:#dbeafe;color:#1e40af;}
+.badge-gray{background:#f3f4f6;color:#374151;}
+.func-dot{display:flex;gap:4px;flex-wrap:wrap;}
+
+/* PAGE - value map */
+.value-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.value-card{background:#fff;border-radius:16px;padding:22px;border:1px solid var(--border);}
+.value-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.value-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.va-c{background:linear-gradient(135deg,#ede9fe,#ddd6fe);}
+.va-b{background:linear-gradient(135deg,#dbeafe,#bfdbfe);}
+.va-p{background:linear-gradient(135deg,#fef3c7,#fde68a);}
+.value-who{font-size:15px;font-weight:800;}
+.value-type{font-size:11px;color:var(--txt3);}
+.value-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.value-scenario-tag{flex-shrink:0;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;line-height:1.4;}
+.vt-c{background:#ede9fe;color:#5b21b6;}
+.vt-b{background:#dbeafe;color:#1d4ed8;}
+.vt-p{background:#fef3c7;color:#92400e;}
+.value-text{font-size:12px;color:var(--txt2);line-height:1.65;}
+.value-outcome{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:12px;font-weight:600;line-height:1.5;}
+.vo-c{background:var(--purple-bg);color:var(--purple);}
+.vo-b{background:var(--blue-bg);color:var(--blue);}
+.vo-p{background:var(--orange-bg);color:var(--orange);}
+
+/* TABS CONTENT */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* responsive */
+@media(max-width:720px){
+  .topnav-tabs{gap:2px;overflow-x:auto;padding-bottom:2px;}
+  .tab-btn{font-size:11px;padding:5px 10px;}
+  .hero{padding:32px 16px 24px;}
+  .hero h1{font-size:24px;}
+  .section{padding:24px 16px;}
+  .rise-row{flex-direction:column;align-items:center;}
+  .rise-connector{transform:rotate(90deg);}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-logo">✦ Eureka <span>产品全景图</span></div>
+  <div class="topnav-tabs">
+    <button class="tab-btn active" onclick="showTab('users')">🎯 目标用户</button>
+    <button class="tab-btn" onclick="showTab('scenarios')">🗺️ 应用场景</button>
+    <button class="tab-btn" onclick="showTab('arch')">🏗️ 功能架构</button>
+    <button class="tab-btn" onclick="showTab('pages')">📄 页面功能</button>
+    <button class="tab-btn" onclick="showTab('value')">💎 场景价值</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Eureka · RISE 创新工具平台</div>
+  <h1>一张图看清<br><em>Eureka 是什么、给谁用、做什么</em></h1>
+  <p class="hero-sub">从目标用户到应用场景，从功能架构到页面链路，从使用流程到交付价值——Eureka 产品全景一页搞定。</p>
+</div>
+
+<!-- ===== TAB: USERS ===== -->
+<div class="tab-content active" id="tab-users">
+<div class="section">
+  <div class="section-title">🎯 目标用户画像</div>
+  <div class="section-sub">三端用户（C端 / B端 / P端），六类具体角色，各有不同的核心诉求和价值期待</div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:12px;font-weight:700;color:var(--txt3);margin-bottom:10px;letter-spacing:.5px;">C 端 · 个人用户</div>
+    <div class="user-grid">
+      <div class="user-card">
+        <div class="user-icon">🔍</div>
+        <div class="user-label">C端 · 个人探索者</div>
+        <div class="user-name">职场转型人</div>
+        <div class="user-desc">想开发副业/转型，有想法但不知如何系统推进，需要一套把「模糊感觉」变成「可执行方案」的工具。</div>
+        <span class="user-tag tag-c">免费 → 付费</span>
+      </div>
+      <div class="user-card">
+        <div class="user-icon">🎓</div>
+        <div class="user-label">C端 · 学习成长者</div>
+        <div class="user-name">设计思维学习者</div>
+        <div class="user-desc">正在学习设计思维/创新方法论，需要一个能边学边做、有真实产出的练习工具，不只是看课程。</div>
+        <span class="user-tag tag-c">免费体验</span>
+      </div>
+      <div class="user-card">
+        <div class="user-icon">🚀</div>
+        <div class="user-label">C端 · 创业探索者</div>
+        <div class="user-name">独立创业者/产品人</div>
+        <div class="user-desc">做早期产品验证，需要把用户洞察、机会识别、方案成型的过程系统化、可追溯、可复用。</div>
+        <span class="user-tag tag-c">核心付费用户</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:12px;font-weight:700;color:var(--txt3);margin-bottom:10px;letter-spacing:.5px;">B 端 · 企业/机构</div>
+    <div class="user-grid">
+      <div class="user-card">
+        <div class="user-icon">🏢</div>
+        <div class="user-label">B端 · 企业 HR/L&D</div>
+        <div class="user-name">企业培训负责人</div>
+        <div class="user-desc">负责创新培训/工作坊设计，需要有结构、有产出、员工参与感强的工具，让工作坊不只是开会。</div>
+        <span class="user-tag tag-b">授权采购</span>
+      </div>
+      <div class="user-card">
+        <div class="user-icon">🏫</div>
+        <div class="user-label">B端 · 高校院系</div>
+        <div class="user-name">设计思维课程教师</div>
+        <div class="user-desc">开设创新/设计思维课程，需要让学生在课程中完成真实创新项目，并有可评分的结构化产出。</div>
+        <span class="user-tag tag-b">教育授权</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-size:12px;font-weight:700;color:var(--txt3);margin-bottom:10px;letter-spacing:.5px;">P 端 · 讲师/顾问</div>
+    <div class="user-grid">
+      <div class="user-card">
+        <div class="user-icon">🎤</div>
+        <div class="user-label">P端 · 讲师/顾问</div>
+        <div class="user-name">创新培训师 / 引导师</div>
+        <div class="user-desc">需要一套可交付、有背书的完整工具系统，带给客户高质量的工作坊体验，同时形成自己的方法论壁垒。</div>
+        <span class="user-tag tag-p">授权复制</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB: SCENARIOS ===== -->
+<div class="tab-content" id="tab-scenarios">
+<div class="section">
+  <div class="section-title">🗺️ 核心应用场景</div>
+  <div class="section-sub">4大典型使用场景，覆盖个人独立探索→团队线下工作坊→课程教学→讲师商业交付</div>
+  <div class="scene-grid">
+
+    <div class="scene-card">
+      <div class="scene-head">
+        <div class="scene-emoji">🧑‍💻</div>
+        <div>
+          <div class="scene-title">个人创新项目</div>
+          <div class="scene-who">职场转型人 / 产品人 / 创业者</div>
+        </div>
+      </div>
+      <div class="scene-steps">
+        <div class="scene-step"><div class="scene-step-num">1</div><div>打开 Dashboard，创建新创新项目</div></div>
+        <div class="scene-step"><div class="scene-step-num">2</div><div>独立完成 T1–T6 Reveal：定义主题、研究背景、构建共识</div></div>
+        <div class="scene-step"><div class="scene-step-num">3</div><div>T7–T11 Inspire：拆解POV、HMW重构、NCO跨界灵感、AHA假设</div></div>
+        <div class="scene-step"><div class="scene-step-num">4</div><div>T12–T15 Shape：四维拷问、方案整合、故事板、AHA设计</div></div>
+        <div class="scene-step"><div class="scene-step-num">5</div><div>T16–T20 Exam：测试计划、原型、用户反馈、验证、呈现</div></div>
+      </div>
+      <div class="scene-value">🎯 价值：从模糊想法到结构化验证方案，全程 AI 辅助，有真实产出</div>
+    </div>
+
+    <div class="scene-card orange">
+      <div class="scene-head">
+        <div class="scene-emoji">👥</div>
+        <div>
+          <div class="scene-title">团队线下工作坊</div>
+          <div class="scene-who">企业创新团队 / HR / 培训讲师</div>
+        </div>
+      </div>
+      <div class="scene-steps">
+        <div class="scene-step"><div class="scene-step-num">1</div><div>讲师/引导师使用 guide.html 进行新手引导讲解</div></div>
+        <div class="scene-step"><div class="scene-step-num">2</div><div>团队围绕实体画布（线下），数字端实时记录，AI教练辅助</div></div>
+        <div class="scene-step"><div class="scene-step-num">3</div><div>各阶段完成后云端同步，团队成员可各自查看项目进展</div></div>
+        <div class="scene-step"><div class="scene-step-num">4</div><div>工作坊结束导出 PDF 成果报告，留存完整创新档案</div></div>
+      </div>
+      <div class="scene-value">🎯 价值：工作坊有可交付的结构化产出，不再只是白板照片</div>
+    </div>
+
+    <div class="scene-card teal">
+      <div class="scene-head">
+        <div class="scene-emoji">🎓</div>
+        <div>
+          <div class="scene-title">设计思维课程教学</div>
+          <div class="scene-who">高校教师 / 企业内训师</div>
+        </div>
+      </div>
+      <div class="scene-steps">
+        <div class="scene-step"><div class="scene-step-num">1</div><div>教师讲解 RISE 框架，学生创建个人/小组项目</div></div>
+        <div class="scene-step"><div class="scene-step-num">2</div><div>按课程进度分阶段完成 T1–T20，每阶段有评分标准</div></div>
+        <div class="scene-step"><div class="scene-step-num">3</div><div>每个任务有「成功标准」清单，学生自评/互评</div></div>
+        <div class="scene-step"><div class="scene-step-num">4</div><div>最终提交 T20 成果：电梯演讲 + 商业画布 + 行动计划</div></div>
+      </div>
+      <div class="scene-value">🎯 价值：课程有结构化作业，教师有可评分产出，学生有真实创新经历</div>
+    </div>
+
+    <div class="scene-card blue">
+      <div class="scene-head">
+        <div class="scene-emoji">💼</div>
+        <div>
+          <div class="scene-title">讲师商业交付</div>
+          <div class="scene-who">认证讲师 / 创新顾问</div>
+        </div>
+      </div>
+      <div class="scene-steps">
+        <div class="scene-step"><div class="scene-step-num">1</div><div>讲师使用授权版 Eureka Learn 作为交付工具</div></div>
+        <div class="scene-step"><div class="scene-step-num">2</div><div>客户企业每位学员独立运行一个创新项目（T1–T20）</div></div>
+        <div class="scene-step"><div class="scene-step-num">3</div><div>讲师在「讲师模式」查看答案提示，控制节奏</div></div>
+        <div class="scene-step"><div class="scene-step-num">4</div><div>交付完成后导出 PDF + 实体画布留存，客户带走资产</div></div>
+      </div>
+      <div class="scene-value">🎯 价值：讲师有完整交付工具系统，客户有高质感可见产出，提升成单率</div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB: ARCH ===== -->
+<div class="tab-content" id="tab-arch">
+<div class="section">
+  <div class="section-title">🏗️ 功能架构与页面链路</div>
+  <div class="section-sub">从入口页到各功能模块的完整连接关系，以及模块间的数据流转</div>
+
+  <!-- Layer 1: Landing -->
+  <div class="arch-row-label">① 入口层</div>
+  <div class="arch-row" style="gap:16px;flex-wrap:wrap;">
+    <div class="page-box purple">
+      <div class="page-box-icon">🌐</div>
+      <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka.html" target="_blank">产品首页</a></div>
+      <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka.html" target="_blank">eureka.html</a></div>
+      <div class="page-box-desc">产品介绍、用户拉新、CTA 跳转 Dashboard</div>
+    </div>
+    <div class="arrow-right">→</div>
+    <div class="page-box blue">
+      <div class="page-box-icon">📖</div>
+      <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/EUREKA_LEARN_MANUAL.html" target="_blank">快速上手手册</a></div>
+      <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/EUREKA_LEARN_MANUAL.html" target="_blank">EUREKA_LEARN_MANUAL.html</a></div>
+      <div class="page-box-desc">5页手册：总览 / Reveal / Inspire / Shape / Exam</div>
+    </div>
+    <div class="arrow-right">→</div>
+    <div class="page-box gray">
+      <div class="page-box-icon">🧭</div>
+      <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/guide.html" target="_blank">新手引导</a></div>
+      <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/guide.html" target="_blank">guide.html</a></div>
+      <div class="page-box-desc">首次使用引导，RISE 框架讲解，快速上手</div>
+    </div>
+  </div>
+
+  <div class="arrow-down" style="margin:16px 0;">↓</div>
+
+  <!-- Layer 2: Dashboard -->
+  <div class="arch-row-label">② 控制中心</div>
+  <!-- ② 控制中心：两个 Dashboard 平行排列 -->
+  <div class="arch-row" style="gap:20px;flex-wrap:wrap;justify-content:center;align-items:flex-start;">
+    <div class="page-box purple" style="min-width:260px;max-width:300px;">
+      <div class="page-box-icon">🗂️</div>
+      <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/index.html" target="_blank">Dashboard · 培训学习管理</a></div>
+      <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/index.html" target="_blank">index.html</a></div>
+      <div class="page-box-desc">创建/切换项目 · RISE 四阶段编辑器 · 完成度进度追踪 · 云同步 · 模板市场 · AI 设置</div>
+    </div>
+    <div class="page-box blue" style="min-width:260px;max-width:300px;">
+      <div class="page-box-icon">⚡</div>
+      <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/index.html" target="_blank">Dashboard · 项目实践辅助</a></div>
+      <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/index.html" target="_blank">index.html（同一入口）</a></div>
+      <div class="page-box-desc">独立创新项目实战追踪 · 灵感库/笔记 · 成果沉淀 · 商业画布复用 · 讲师模式 · 不限于 RISE 流程的自有项目</div>
+    </div>
+  </div>
+
+  <div class="arrow-down" style="margin:16px 0;">↓</div>
+
+  <!-- ③ RISE 四阶段（居中，承接培训学习管理） -->
+  <div class="arch-row-label">③ RISE 四阶段（核心学习模块）</div>
+  <div class="rise-row" style="margin-top:8px;">
+    <div class="rise-box r">
+      <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/learn.html" target="_blank">
+        <div class="rise-letter r">R</div>
+        <div class="rise-name">Reveal · 揭示</div>
+        <div class="rise-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/learn.html" target="_blank">learn.html</a></div>
+        <div class="rise-tasks">T1 – T6 · 6个任务</div>
+        <div class="rise-outputs">
+          <div class="rise-output">结构化创新主题</div>
+          <div class="rise-output">背景挑战描述</div>
+          <div class="rise-output">《项目简报》</div>
+          <div class="rise-output">用户画像 + JTBD</div>
+          <div class="rise-output">用户旅程图</div>
+          <div class="rise-output">POV 洞察陈述</div>
+        </div>
+      </a>
+    </div>
+    <div class="rise-connector">→</div>
+    <div class="rise-box i">
+      <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/inspire.html" target="_blank">
+        <div class="rise-letter i">I</div>
+        <div class="rise-name">Inspire · 启发</div>
+        <div class="rise-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/inspire.html" target="_blank">inspire.html</a></div>
+        <div class="rise-tasks">T7 – T11 · 5个任务</div>
+        <div class="rise-outputs">
+          <div class="rise-output">POV 三要素拆解</div>
+          <div class="rise-output">HMW 创新机遇</div>
+          <div class="rise-output">《设计简报》</div>
+          <div class="rise-output">NCO 跨界灵感</div>
+          <div class="rise-output">AHA 价值假设</div>
+        </div>
+      </a>
+    </div>
+    <div class="rise-connector">→</div>
+    <div class="rise-box s">
+      <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/shape.html" target="_blank">
+        <div class="rise-letter s">S</div>
+        <div class="rise-name">Shape · 构建</div>
+        <div class="rise-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/shape.html" target="_blank">shape.html</a></div>
+        <div class="rise-tasks">T12 – T15 · 4个任务</div>
+        <div class="rise-outputs">
+          <div class="rise-output">四维拷问（用户/商业/技术/生态）</div>
+          <div class="rise-output">概念方案 + MAP 评分</div>
+          <div class="rise-output">六格故事板</div>
+          <div class="rise-output">AHA 价值设计</div>
+        </div>
+      </a>
+    </div>
+    <div class="rise-connector">→</div>
+    <div class="rise-box e">
+      <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/exam.html" target="_blank">
+        <div class="rise-letter e">E</div>
+        <div class="rise-name">Exam · 验证</div>
+        <div class="rise-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/exam.html" target="_blank">exam.html</a></div>
+        <div class="rise-tasks">T16 – T20 · 5个任务</div>
+        <div class="rise-outputs">
+          <div class="rise-output">极简测试计划</div>
+          <div class="rise-output">低保真原型</div>
+          <div class="rise-output">用户测试四象限</div>
+          <div class="rise-output">AHA 验证矩阵</div>
+          <div class="rise-output">电梯演讲 + 商业画布 + 90天计划</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Data flow -->
+  <div class="data-flow">
+    <div class="data-flow-title">🔗 模块间数据流转（localStorage 自动传递）</div>
+    <div class="data-row">
+      <div class="data-from">Reveal T6</div>
+      <div class="data-arrow">→ 传给 →</div>
+      <div class="data-to">Inspire T7</div>
+      <div class="data-field">POV 陈述</div>
+    </div>
+    <div class="data-row">
+      <div class="data-from">Reveal T4</div>
+      <div class="data-arrow">→ 传给 →</div>
+      <div class="data-to">Shape T12</div>
+      <div class="data-field">用户画像</div>
+    </div>
+    <div class="data-row">
+      <div class="data-from orange">Inspire T11</div>
+      <div class="data-arrow">→ 传给 →</div>
+      <div class="data-to">Shape T12/13/14/15</div>
+      <div class="data-field">最佳创意</div>
+      <div class="data-field">AHA 数据</div>
+      <div class="data-field">MAP 评分</div>
+    </div>
+    <div class="data-row">
+      <div class="data-from orange">Inspire T11 AHA</div>
+      <div class="data-arrow">→ 传给 →</div>
+      <div class="data-to teal">Exam T19</div>
+      <div class="data-field">AHA 基准值（用于验证对比）</div>
+    </div>
+  </div>
+
+  <!-- Layer 4: Support -->
+  <div style="margin-top:24px;">
+    <div class="arch-row-label">④ 支撑工具层</div>
+    <div class="arch-row" style="gap:16px;flex-wrap:wrap;justify-content:flex-start;">
+      <div class="page-box gray">
+        <div class="page-box-icon">🧑‍🤝‍🧑</div>
+        <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/persona-lab/" target="_blank">Persona Lab</a></div>
+        <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/persona-lab/" target="_blank">persona-lab/</a></div>
+        <div class="page-box-desc">虚拟用户画像生成，同步到 Reveal T4</div>
+      </div>
+      <div class="page-box gray">
+        <div class="page-box-icon">☁️</div>
+        <div class="page-box-name">云同步</div>
+        <div class="page-box-file">js/sync/cloud-sync.js<br>js/sync/tcb-init.js</div>
+        <div class="page-box-desc">腾讯云开发（TCB）适配器，多端同步</div>
+      </div>
+      <div class="page-box gray">
+        <div class="page-box-icon">🤖</div>
+        <div class="page-box-name">AI 辅助</div>
+        <div class="page-box-file">各模块内嵌</div>
+        <div class="page-box-desc">任务内 AI 起草、分析、建议，可配置 Key</div>
+      </div>
+      <div class="page-box gray">
+        <div class="page-box-icon">📦</div>
+        <div class="page-box-name">模板市场</div>
+        <div class="page-box-file">index.html 内嵌</div>
+        <div class="page-box-desc">行业模板快速启动创新项目</div>
+      </div>
+      <div class="page-box gray">
+        <div class="page-box-icon">📊</div>
+        <div class="page-box-name"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/eureka-product-map.html" target="_blank">产品全景图</a></div>
+        <div class="page-box-file"><a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/eureka-product-map.html" target="_blank">eureka-product-map.html</a></div>
+        <div class="page-box-desc">本页面：全景图、用户、场景、架构、价值</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB: PAGES ===== -->
+<div class="tab-content" id="tab-pages">
+<div class="section">
+  <div class="section-title">📄 各页面功能详情</div>
+  <div class="section-sub">每个页面的核心功能、关键交互元素和对外跳转链接</div>
+
+  <table class="func-table">
+    <thead>
+      <tr>
+        <th>页面</th>
+        <th>文件</th>
+        <th>核心功能</th>
+        <th>关键元素</th>
+        <th>跳转关系</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-purple">产品首页</span></td>
+        <td style="font-size:11px;color:var(--txt3);">eureka.html<br>eureka-landing-v2.html</td>
+        <td>产品介绍、用户转化<br>特性展示、FAQ</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-gray">Hero CTA</span>
+            <span class="badge badge-gray">痛点/功能</span>
+            <span class="badge badge-gray">用户评价</span>
+            <span class="badge badge-gray">联系方式</span>
+          </div>
+        </td>
+        <td>→ Dashboard<br>→ 快速上手手册</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-gray">新手引导</span></td>
+        <td style="font-size:11px;color:var(--txt3);">guide.html</td>
+        <td>首次使用流程讲解<br>RISE 框架介绍</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-gray">RISE 框架图</span>
+            <span class="badge badge-gray">步骤说明</span>
+            <span class="badge badge-gray">动态引导</span>
+          </div>
+        </td>
+        <td>→ Dashboard</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">Dashboard</span></td>
+        <td style="font-size:11px;color:var(--txt3);">index.html</td>
+        <td>项目管理核心<br>多项目切换、进度追踪<br>四阶段 Tab 编辑器</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-purple">项目列表</span>
+            <span class="badge badge-purple">完成度进度条</span>
+            <span class="badge badge-purple">RISE Tab 切换</span>
+            <span class="badge badge-gray">模板市场</span>
+            <span class="badge badge-gray">AI 设置</span>
+            <span class="badge badge-gray">云同步按钮</span>
+          </div>
+        </td>
+        <td>→ learn.html<br>→ inspire.html<br>→ shape.html<br>→ exam.html<br>→ 模板市场</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">Reveal 揭示</span></td>
+        <td style="font-size:11px;color:var(--txt3);">learn.html</td>
+        <td>T1–T6 六个任务<br>用户研究、问题定义<br>POV 洞察构建</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-purple">任务卡片</span>
+            <span class="badge badge-purple">AI 辅助</span>
+            <span class="badge badge-gray">常见误区卡</span>
+            <span class="badge badge-gray">完成布局</span>
+            <span class="badge badge-gray">项目简报生成</span>
+          </div>
+        </td>
+        <td>← Dashboard<br>→ inspire.html（T6完成后）</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-orange">Inspire 启发</span></td>
+        <td style="font-size:11px;color:var(--txt3);">inspire.html</td>
+        <td>T7–T11 五个任务<br>HMW 重构、NCO 灵感<br>AHA 价值假设</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-orange">HMW 卡片组</span>
+            <span class="badge badge-orange">NCO 灵感矩阵</span>
+            <span class="badge badge-orange">设计简报 AI</span>
+            <span class="badge badge-gray">AHA 三重体验</span>
+            <span class="badge badge-gray">MAP 评分</span>
+          </div>
+        </td>
+        <td>← Reveal（继承POV/用户画像）<br>→ shape.html</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-orange">Shape 构建</span></td>
+        <td style="font-size:11px;color:var(--txt3);">shape.html</td>
+        <td>T12–T15 四个任务<br>方案整合、故事板<br>AHA 价值深化</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-orange">四维拷问</span>
+            <span class="badge badge-orange">概念方案卡</span>
+            <span class="badge badge-orange">六格故事板</span>
+            <span class="badge badge-gray">AHA 设计</span>
+          </div>
+        </td>
+        <td>← Inspire（继承最佳创意/AHA）<br>← Reveal（继承用户画像/POV）<br>→ exam.html</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-teal">Exam 验证</span></td>
+        <td style="font-size:11px;color:var(--txt3);">exam.html</td>
+        <td>T16–T20 五个任务<br>原型测试、反馈收集<br>验证闭环、成果呈现</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-teal">测试计划脚本</span>
+            <span class="badge badge-teal">四象限反馈</span>
+            <span class="badge badge-teal">AHA 矩阵验证</span>
+            <span class="badge badge-teal">商业画布</span>
+            <span class="badge badge-gray">90天计划</span>
+            <span class="badge badge-gray">PDF 导出</span>
+          </div>
+        </td>
+        <td>← Shape<br>← Inspire（AHA 基准）<br>→ PDF 成果报告</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">快速上手手册</span></td>
+        <td style="font-size:11px;color:var(--txt3);">EUREKA_LEARN_MANUAL.html</td>
+        <td>5页参考手册<br>每个任务操作说明<br>技巧/误区提示</td>
+        <td>
+          <div class="func-dot">
+            <span class="badge badge-blue">总览页</span>
+            <span class="badge badge-blue">Reveal 页</span>
+            <span class="badge badge-blue">Inspire 页</span>
+            <span class="badge badge-blue">Shape 页</span>
+            <span class="badge badge-blue">Exam 页</span>
+          </div>
+        </td>
+        <td>← 产品首页 / Dashboard 导航栏<br>（参考文档，无跳转）</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ===== TAB: VALUE ===== -->
+<div class="tab-content" id="tab-value">
+<div class="section">
+  <div class="section-title">💎 场景价值地图</div>
+  <div class="section-sub">不同用户在不同使用场景下，Eureka 带来的具体价值——不是功能列表，是真实改变</div>
+
+  <div class="value-grid">
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-c">🔍</div>
+        <div>
+          <div class="value-who">职场转型人 / 创业者</div>
+          <div class="value-type">C端个人 · 独立探索场景</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-c">痛点</div>
+        <div class="value-text">有想法，不知从哪儿下手；做了一半，逻辑乱掉了；最终拿不出可以给别人看的东西</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-c">Eureka 改变了什么</div>
+        <div class="value-text">T1-T6 帮你把「感觉」变成「洞察」；T7-T11 把洞察变成「有价值的机会方向」；T12-T20 把方向变成「可以展示的方案+验证」</div>
+      </div>
+      <div class="value-outcome vo-c">✦ 核心价值：从「想做」到「做完了」——全程有任务、有产出、有AI辅助，不会卡住</div>
+    </div>
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-c">🎓</div>
+        <div>
+          <div class="value-who">设计思维学习者</div>
+          <div class="value-type">C端个人 · 学习练习场景</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-c">痛点</div>
+        <div class="value-text">看了课程没有练习机会；知道理论但不会用；学了又忘，没有实操输出</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-c">Eureka 改变了什么</div>
+        <div class="value-text">20个任务 = 20次「边做边学」实战；每个任务有「常见误区」提醒；快速上手手册随时对照</div>
+      </div>
+      <div class="value-outcome vo-c">✦ 核心价值：方法论从「知道」变成「用过」——有真实项目产出，能讲给别人听</div>
+    </div>
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-b">🏢</div>
+        <div>
+          <div class="value-who">企业 HR / L&D</div>
+          <div class="value-type">B端企业 · 内部培训场景</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-b">痛点</div>
+        <div class="value-text">工作坊开完没留下东西；员工参与感低；老板问「学了能用在哪」答不上来</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-b">Eureka 改变了什么</div>
+        <div class="value-text">每个员工完成自己的创新项目，有 POV + 方案 + 验证报告；云同步实现团队进度可见；T20 商业画布作为可汇报的内部提案</div>
+      </div>
+      <div class="value-outcome vo-b">✦ 核心价值：培训从「开了会」变成「留下了资产」——可复用、可汇报、可追溯</div>
+    </div>
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-b">🏫</div>
+        <div>
+          <div class="value-who">高校 / 设计思维课程</div>
+          <div class="value-type">B端教育 · 课程教学场景</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-b">痛点</div>
+        <div class="value-text">课程作业很难评分；学生产出质量参差不齐；没有标准化的评估框架</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-b">Eureka 改变了什么</div>
+        <div class="value-text">每个任务有「成功标准」清单，教师可用于评分；T20 最终产出（电梯演讲+商业画布）是标准化结课作业；AI 辅助让学生有自我反馈能力</div>
+      </div>
+      <div class="value-outcome vo-b">✦ 核心价值：课程从「讲过了」变成「学生真的做过了」——有评分标准，有展示成果</div>
+    </div>
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-p">🎤</div>
+        <div>
+          <div class="value-who">认证讲师 / 创新顾问</div>
+          <div class="value-type">P端讲师 · 商业交付场景</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-p">痛点</div>
+        <div class="value-text">每次工作坊要从头准备；客户付了钱但说不清学到什么；竞争中没有明显差异化</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-p">Eureka 改变了什么</div>
+        <div class="value-text">Eureka 是讲师的「系统化交付工具」：RISE 框架作为方法论背书，数字+实体双端提升体验感，学员带走 PDF 报告，讲师有可复制的交付体系</div>
+      </div>
+      <div class="value-outcome vo-p">✦ 核心价值：从「我教会了你」变成「你带走了资产」——讲师专业度可见，客户满意度高</div>
+    </div>
+
+    <div class="value-card">
+      <div class="value-head">
+        <div class="value-avatar va-p">👥</div>
+        <div>
+          <div class="value-who">团队线下工作坊</div>
+          <div class="value-type">混合场景 · 数字+实体</div>
+        </div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-p">痛点</div>
+        <div class="value-text">工作坊结束只有白板照片；团队成员理解不一致；成果无法在会后继续推进</div>
+      </div>
+      <div class="value-row">
+        <div class="value-scenario-tag vt-p">Eureka 改变了什么</div>
+        <div class="value-text">线下画布触发集体思维，数字端实时记录不丢失；AI 教练让每个人都有引导；工作坊结束后成果在云端，可以继续迭代</div>
+      </div>
+      <div class="value-outcome vo-p">✦ 核心价值：工作坊从「活动」变成「起点」——有可延续的数字资产，不是一次性的</div>
+    </div>
+
+  </div>
+
+  <!-- 价值总结 -->
+  <div style="margin-top:32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:20px;padding:28px 32px;color:#fff;">
+    <div style="font-size:18px;font-weight:900;margin-bottom:16px;">✦ Eureka 的核心价值公式</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;">
+      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px;">
+        <div style="font-size:24px;margin-bottom:4px;">🧠</div>
+        <div style="font-size:13px;font-weight:800;">RISE 方法论</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">20个任务的完整创新闭环</div>
+      </div>
+      <div style="font-size:24px;opacity:.6;">×</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px;">
+        <div style="font-size:24px;margin-bottom:4px;">💻</div>
+        <div style="font-size:13px;font-weight:800;">Eureka Learn</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">数字工具 + AI 辅助</div>
+      </div>
+      <div style="font-size:24px;opacity:.6;">×</div>
+      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:14px 20px;text-align:center;min-width:140px;">
+        <div style="font-size:24px;margin-bottom:4px;">📦</div>
+        <div style="font-size:13px;font-weight:800;">实体资产盒子</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">画布 + 卡片 + 激活码</div>
+      </div>
+      <div style="font-size:24px;opacity:.6;">=</div>
+      <div style="background:rgba(255,255,255,.25);border-radius:12px;padding:14px 20px;text-align:center;min-width:160px;border:2px solid rgba(255,255,255,.4);">
+        <div style="font-size:24px;margin-bottom:4px;">✨</div>
+        <div style="font-size:14px;font-weight:900;">可复用的创新资产</div>
+        <div style="font-size:11px;opacity:.85;margin-top:2px;">从想法→洞察→方案→验证</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;font-size:13px;opacity:.8;text-align:center;line-height:1.7;">
+      让每一次创新探索都留下真正有价值的东西——<strong>可追溯、可分享、可复用</strong>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
