@@ -5667,6 +5667,10 @@ function updateAIModelPlaceholder() {
 }
 </script>
 
+<!-- Supabase 云同步 - 必须在 SyncUI 之前加载 -->
+<script src="js/sync/supabase-adapter.js"></script>
+<script src="js/sync/cloud-sync.js"></script>
+
 <!-- ═══════════════ CLOUD SYNC MODULE ═══════════════ -->
 <script>
 // 同步状态UI管理
@@ -5854,21 +5858,10 @@ const SyncUI = {
   }
 };
 
-// 加载云同步脚本
-const syncScripts = document.createElement('script');
-syncScripts.src = 'js/sync/supabase-adapter.js';
-syncScripts.onload = () => {
-  const cloudSync = document.createElement('script');
-  cloudSync.src = 'js/sync/cloud-sync.js';
-  cloudSync.onload = () => {
-    // 页面加载完成后初始化同步UI
-    document.addEventListener('DOMContentLoaded', () => {
-      SyncUI.init();
-    });
-  };
-  document.head.appendChild(cloudSync);
-};
-document.head.appendChild(syncScripts);
+// 页面加载完成后初始化同步UI
+document.addEventListener('DOMContentLoaded', () => {
+  SyncUI.init();
+});
 </script>
 
 <!-- ══════════════════════════════════════════
