@@ -165,7 +165,8 @@ class SupabaseAdapter extends CloudStorageAdapter {
         provider: 'google',
         options: {
           redirectTo: siteUrl,
-          skipBrowserRedirect: false
+          skipBrowserRedirect: false,
+          queryParams: { prompt: 'select_account' }  // 强制每次选择账号
         }
       });
       
