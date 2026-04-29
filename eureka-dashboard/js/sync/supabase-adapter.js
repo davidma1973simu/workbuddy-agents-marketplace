@@ -155,14 +155,24 @@ class SupabaseAdapter extends CloudStorageAdapter {
 
   // Google 登录
   async signInWithGoogle() {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.href
+    console.log('[Supabase] Starting Google OAuth...');
+    try {
+      const { data, error } = await this.supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.href
+        }
+      });
+      if (error) {
+        console.error('[Supabase] OAuth error:', error);
+        throw error;
       }
-    });
-    if (error) throw error;
-    return data;
+      console.log('[Supabase] OAuth initiated, data:', data);
+      return data;
+    } catch (err) {
+      console.error('[Supabase] signInWithGoogle exception:', err);
+      throw err;
+    }
   }
 
   // 退出登录

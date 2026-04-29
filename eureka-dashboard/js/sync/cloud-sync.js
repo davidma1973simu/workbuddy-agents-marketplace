@@ -354,7 +354,9 @@ class SyncEngine {
       }
       
       // 初始化适配器
+      console.log('[SyncEngine] Initializing adapter:', mode);
       await this.adapter.init();
+      console.log('[SyncEngine] Adapter initialized, checking session...');
       
       // 获取用户ID
       SyncState.userId = await this.adapter.getUserId();

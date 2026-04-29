@@ -5687,10 +5687,16 @@ const SyncUI = {
     // 自动初始化 Supabase 同步
     initSync(SYNC_CONFIG.MODE.SUPABASE).then(success => {
       if (success) {
-        console.log('[SyncUI] Supabase initialized');
+        console.log('[SyncUI] Supabase initialized successfully');
         syncNow();
         this.updateAuthUI();
+      } else {
+        console.warn('[SyncUI] Supabase initialization failed, running in offline mode');
+        this.updateAuthUI();
       }
+    }).catch(err => {
+      console.error('[SyncUI] Init error:', err);
+      this.updateAuthUI();
     });
   },
 
@@ -5744,20 +5750,25 @@ const SyncUI = {
 
   // 处理登录点击
   async handleLoginClick() {
+    console.log('[SyncUI] handleLoginClick called');
     if (typeof SupabaseAdapter === 'undefined') {
       toast('❌ 云同步模块未加载');
+      console.error('[SyncUI] SupabaseAdapter is undefined');
       return;
     }
     try {
       const adapter = syncEngine?.adapter;
+      console.log('[SyncUI] adapter:', adapter);
+      console.log('[SyncUI] signInWithGoogle exists:', typeof adapter?.signInWithGoogle);
       if (adapter && typeof adapter.signInWithGoogle === 'function') {
         toast('🔄 正在跳转 Google 登录...');
         await adapter.signInWithGoogle();
       } else {
         toast('❌ 登录服务不可用，请刷新页面');
+        console.error('[SyncUI] signInWithGoogle not available');
       }
     } catch (err) {
-      toast('❌ 登录失败');
+      toast('❌ 登录失败: ' + (err.message || '未知错误'));
       console.error('[SyncUI] Login error:', err);
     }
   },
