@@ -157,18 +157,32 @@ class SupabaseAdapter extends CloudStorageAdapter {
   async signInWithGoogle() {
     console.log('[Supabase] Starting Google OAuth...');
     try {
-      const { data, error } = await this.supabase.auth.signInWithOAuth({
+      // 使用固定 URL 作为回调地址（不要用 window.location.href，避免 URL 过长）
+      const redirectUrl = window.location.origin + window.location.pathname;
+      
+      // 先获取 OAuth URL 用于调试（不直接跳转）
+      const { data: urlData } = await this.supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.href
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true  // 先不跳转，只获取 URL
         }
       });
-      if (error) {
-        console.error('[Supabase] OAuth error:', error);
-        throw error;
+      
+      console.log('[Supabase] OAuth URL:', urlData?.url);
+      console.log('[Supabase] URL length:', urlData?.url?.length);
+      
+      // 检查 URL 长度
+      if (urlData?.url && urlData.url.length > 1800) {
+        console.warn('[Supabase] WARNING: OAuth URL is very long (>1800 chars), may cause issues');
       }
-      console.log('[Supabase] OAuth initiated, data:', data);
-      return data;
+      
+      // 手动跳转到 OAuth URL
+      if (urlData?.url) {
+        window.location.href = urlData.url;
+      }
+      
+      return urlData;
     } catch (err) {
       console.error('[Supabase] signInWithGoogle exception:', err);
       throw err;
