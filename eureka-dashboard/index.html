@@ -4080,8 +4080,8 @@ function openEditor(id, isNew=false) {
   renderEditorTab('basic');
   _updateAIFab();
   // 初始化编辑器云同步按钮状态
-  if (typeof SyncState !== 'undefined' && SyncState.state) {
-    SyncUI.updateUI(SyncState.state);
+  if (typeof SyncState !== 'undefined' && SyncState) {
+    SyncUI.updateUI(SyncState);
   }
 }
 
@@ -5668,45 +5668,110 @@ function updateAIModelPlaceholder() {
 </script>
 
 <!-- ═══════════════ CLOUD SYNC MODULE ═══════════════ -->
-<script src="js/sync/cloud-sync.js"></script>
 <script>
 // 同步状态UI管理
 const SyncUI = {
   container: null,
-  
+  loginContainer: null,
+
   // 初始化同步UI
   init() {
     this.createSyncButton();
+    this.createLoginButton();
     this.subscribeToState();
-    
-    // 自动初始化同步（使用腾讯云开发）
-    initSync(SYNC_CONFIG.MODE.TENCENT_CLOUD).then(success => {
+
+    // 自动初始化 Supabase 同步
+    initSync(SYNC_CONFIG.MODE.SUPABASE).then(success => {
       if (success) {
-        console.log('[SyncUI] Cloud sync initialized');
-        // 首次同步
+        console.log('[SyncUI] Supabase initialized');
         syncNow();
+        this.updateAuthUI();
       }
     });
   },
-  
+
   // 创建同步按钮
   createSyncButton() {
-    // 在顶部导航栏添加同步按钮
     const navActions = document.querySelector('.nav-actions');
     if (!navActions) return;
-    
+
     const syncBtn = document.createElement('button');
     syncBtn.id = 'sync-btn';
     syncBtn.className = 'btn-ghost';
     syncBtn.innerHTML = '☁️ <span id="sync-status-text">同步</span>';
     syncBtn.style.cssText = 'display:flex;align-items:center;gap:6px;';
     syncBtn.onclick = () => this.handleSyncClick();
-    
-    // 插入到导航栏开头
     navActions.insertBefore(syncBtn, navActions.firstChild);
     this.container = syncBtn;
   },
-  
+
+  // 创建登录/退出按钮
+  createLoginButton() {
+    const navActions = document.querySelector('.nav-actions');
+    if (!navActions) return;
+
+    const loginBtn = document.createElement('button');
+    loginBtn.id = 'login-btn';
+    loginBtn.className = 'btn-ghost';
+    loginBtn.style.cssText = 'display:flex;align-items:center;gap:6px;';
+    loginBtn.onclick = () => this.handleLoginClick();
+    navActions.insertBefore(loginBtn, navActions.firstChild);
+    this.loginContainer = loginBtn;
+    this.updateAuthUI();
+  },
+
+  // 更新登录按钮状态
+  updateAuthUI() {
+    const btn = document.getElementById('login-btn');
+    if (!btn) return;
+
+    // 获取 Supabase 适配器中的用户状态
+    const adapter = syncEngine?.adapter;
+    if (adapter && typeof adapter.isLoggedIn === 'function' && adapter.isLoggedIn()) {
+      const user = adapter.getUser();
+      const email = user?.email || '已登录';
+      btn.innerHTML = '🔓 <span id="login-status-text">' + email + '</span>';
+      btn.onclick = () => this.handleLogoutClick();
+    } else {
+      btn.innerHTML = '🔒 <span id="login-status-text">游客</span>';
+      btn.onclick = () => this.handleLoginClick();
+    }
+  },
+
+  // 处理登录点击
+  async handleLoginClick() {
+    if (typeof SupabaseAdapter === 'undefined') {
+      toast('❌ 云同步模块未加载');
+      return;
+    }
+    try {
+      const adapter = syncEngine?.adapter;
+      if (adapter && typeof adapter.signInWithGoogle === 'function') {
+        toast('🔄 正在跳转 Google 登录...');
+        await adapter.signInWithGoogle();
+      } else {
+        toast('❌ 登录服务不可用，请刷新页面');
+      }
+    } catch (err) {
+      toast('❌ 登录失败');
+      console.error('[SyncUI] Login error:', err);
+    }
+  },
+
+  // 处理退出点击
+  async handleLogoutClick() {
+    try {
+      const adapter = syncEngine?.adapter;
+      if (adapter && typeof adapter.signOut === 'function') {
+        await adapter.signOut();
+        toast('✅ 已退出登录');
+        this.updateAuthUI();
+      }
+    } catch (err) {
+      toast('❌ 退出失败');
+    }
+  },
+
   // 订阅状态变化
   subscribeToState() {
     SyncState.subscribe((state) => {
@@ -5761,7 +5826,7 @@ const SyncUI = {
     if (SyncState.mode === SYNC_CONFIG.MODE.OFFLINE) {
       // 尝试重新连接
       toast('🔄 尝试连接云端...');
-      const success = await initSync(SYNC_CONFIG.MODE.TENCENT_CLOUD);
+      const success = await initSync(SYNC_CONFIG.MODE.SUPABASE);
       if (success) {
         toast('✅ 已连接到云端');
         syncNow();
@@ -6335,26 +6400,9 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
-<!-- TCB 云同步 -->
-<script src="https://imgcache.qq.com/qcloud/tcbjs/1.10.10/tcb.js"></script>
+<!-- Supabase 云同步 -->
+<script src="js/sync/supabase-adapter.js"></script>
 <script src="js/sync/cloud-sync.js"></script>
-<script src="js/sync/tcb-init.js"></script>
-<script>
-(function initTCB() {
-  var envId = 'eureka-8g0iymqr969c1b32';
-  if (typeof tcb === 'undefined') {
-    console.warn('[TCB] SDK 未加载，跳过云同步');
-    return;
-  }
-  var app = tcb.init({ env: envId });
-  var auth = app.auth();
-  auth.signInAnonymously().then(function() {
-    console.log('[TCB] 匿名登录成功');
-  }).catch(function(e) {
-    console.warn('[TCB] 登录失败:', e);
-  });
-})();
-</script>
 <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}</style>
 </body>
 </html>

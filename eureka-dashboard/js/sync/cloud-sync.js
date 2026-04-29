@@ -1,7 +1,7 @@
 /**
  * Eureka Dashboard 云端同步模块
- * 支持微信云开发 / 腾讯云开发 / 本地模拟三种模式
- * @version 1.0.0
+ * 支持 Supabase / 腾讯云开发 / 本地模拟三种模式
+ * @version 2.0.0
  */
 
 // ═══════════════════════════════════════════════════════════
@@ -18,9 +18,9 @@ const SYNC_CONFIG = {
   
   // 同步模式
   MODE: {
-    OFFLINE: 'offline',           // 纯离线模式
-    WECHAT_CLOUD: 'wechat_cloud', // 微信云开发
-    TENCENT_CLOUD: 'tencent_cloud', // 腾讯云开发
+    OFFLINE: 'offline',           // 纯离线模式（游客默认）
+    SUPABASE: 'supabase',         // Supabase 云同步（登录用户）
+    TENCENT_CLOUD: 'tencent_cloud', // 腾讯云开发（保留，暂不使用）
     MOCK: 'mock'                  // 本地模拟（测试用）
   },
   
@@ -339,13 +339,15 @@ class SyncEngine {
     try {
       // 创建适配器
       switch (mode) {
-        case SYNC_CONFIG.MODE.WECHAT_CLOUD:
-          this.adapter = new WechatCloudAdapter();
+        case SYNC_CONFIG.MODE.SUPABASE:
+          this.adapter = new SupabaseAdapter();
           break;
         case SYNC_CONFIG.MODE.TENCENT_CLOUD:
           this.adapter = new TencentCloudAdapter();
           break;
         case SYNC_CONFIG.MODE.MOCK:
+          this.adapter = new MockCloudAdapter();
+          break;
         default:
           this.adapter = new MockCloudAdapter();
           break;
@@ -425,13 +427,17 @@ class SyncEngine {
       return { success: false, reason: 'offline_mode' };
     }
     
+    // Supabase 游客模式：不上云，只用本地
+    if (SyncState.mode === SYNC_CONFIG.MODE.SUPABASE && !SyncState.userId) {
+      return { success: true, reason: 'guest_mode', hasChanges: false };
+    }
+    
     SyncState.update({ isSyncing: true });
     
     try {
-      // 1. 获取本地数据（使用 ProjectStorage 或空数组）
+      // 1. 获取本地数据
       const storage = typeof ProjectStorage !== 'undefined' ? new ProjectStorage() : null;
       const localProjects = storage ? storage.getAll() : [];
-      const localTrash = [];
       const localTimestamp = Date.now();
       
       // 2. 下载云端数据
@@ -439,19 +445,21 @@ class SyncEngine {
       
       // 3. 合并数据（冲突解决）
       const merged = this.mergeData(
-        { projects: localProjects, trash: localTrash, timestamp: localTimestamp },
+        { projects: localProjects, timestamp: localTimestamp },
         cloudData
       );
       
       // 4. 如果有变更，上传合并后的数据
       if (merged.hasChanges || force) {
-        await this.adapter.upload({
+        const uploadResult = await this.adapter.upload({
           projects: merged.projects,
           timestamp: localTimestamp
         });
 
-        // 更新本地数据
-        if (storage && merged.projects !== localProjects) {
+        // 游客模式跳过上传
+        if (uploadResult && uploadResult.reason === 'guest_mode') {
+          console.log('[Sync] Guest mode, local only');
+        } else if (merged.projects !== localProjects && storage) {
           storage.save(merged.projects);
         }
       }
@@ -582,7 +590,6 @@ if (typeof module !== 'undefined' && module.exports) {
     SyncState,
     SYNC_CONFIG,
     CloudStorageAdapter,
-    WechatCloudAdapter,
     TencentCloudAdapter,
     MockCloudAdapter,
     syncEngine,
