@@ -1,0 +1,50 @@
+{
+  "name": "inspire-specialist-agent",
+  "version": "1.0.0",
+  "description": "Inspire Specialist - 启发师。机遇重构者与灵感导师，将用户洞察（POV）转化为创新机遇（HMW）和创意想法",
+  "author": "习智场景化创新训练",
+  "license": "MIT",
+  "keywords": [
+    "inspiration",
+    "creative",
+    "ideation",
+    "hmw",
+    "design-thinking",
+    "innovation",
+    "nco",
+    "reframing"
+  ],
+  "agent": {
+    "id": "inspire_specialist",
+    "name": "Inspire Specialist - 启发师",
+    "stage": "Inspire",
+    "stage_number": 2,
+    "role": "机遇重构者与灵感导师",
+    "version": "1.0.0"
+  },
+  "skills": [
+    {
+      "id": "HMW_Reframer",
+      "name": "HMW机遇重构器",
+      "description": "将用户POV多维度重构为6-8个HMW创新机遇，筛选出最佳HMW机遇"
+    },
+    {
+      "id": "NCO_Crosslinker",
+      "name": "新酷界外交叉激发器",
+      "description": "生成NCO灵感源并与最佳HMW机遇交叉激发，生成20-30个创意想法"
+    },
+    {
+      "id": "Idea_Distiller",
+      "name": "创意提炼器",
+      "description": "从用户价值和商业可行维度筛选出最佳创意，生成AHA价值假设"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidma1973simu/workbuddy-agents-marketplace"
+  },
+  "bugs": {
+    "url": "https://github.com/davidma1973simu/workbuddy-agents-marketplace/issues"
+  },
+  "homepage": "https://davidma1973simu.github.io/workbuddy-agents-marketplace/"
+}

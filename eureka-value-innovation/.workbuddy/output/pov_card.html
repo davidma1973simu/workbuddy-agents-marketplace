@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POV卡片 - 鞋服零售门店用户选择困难症</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .pov-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .card-header .subtitle {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .pov-content {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            line-height: 2;
+            font-size: 18px;
+            color: #2d3436;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .pov-card-highlight {
+            color: #6c5ce7;
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: #a29bfe;
+            text-underline-offset: 4px;
+        }
+
+        .insight-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .insight-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .insight-box p {
+            color: #495057;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .key-point {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .key-point h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .key-point p {
+            color: #495057;
+            font-size: 13px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .metric:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .metric .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .metric .label {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .download-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="pov-card">
+            <div class="card-header">
+                <h1>🎯 用户POV卡片</h1>
+                <p class="subtitle">鞋服零售门店的用户选择困难症 - Eureka价值创新系统</p>
+            </div>
+
+            <div class="pov-content">
+                <span class="pov-card-highlight">29岁的职场女性Lisa</span>
+                在 <span class="pov-card-highlight">周六下午为下周重要会议选购职业装</span>
+                场景下面对 <span class="pov-card-highlight">面对200+款商品和8次试穿后陷入选择困境</span>，期望达成
+                <span class="pov-card-highlight">在1小时内快速找到符合自己风格、预算和审美的商品</span>，因为
+                <span class="pov-card-highlight">她的深层需求不是"更多选择"，而是"更聪明的选择"</span>。
+            </div>
+
+            <div class="insight-box">
+                <h3>💡 核心洞察</h3>
+                <p>Lisa的选择困难症并非源于"商品不够好"，而是源于"选择成本过高"。她不需要更多的选项，而是需要一个能够理解她、引导她、让她感到安全和自信的决策伙伴。这个伙伴不应该是替她做决定，而是帮她快速筛选、建立信心、最终让她自己做出满意的决定。</p>
+            </div>
+
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>👤 用户画像</h4>
+                    <p>29岁，互联网公司产品经理，注重时尚和品质，时间有限</p>
+                </div>
+                <div class="key-point">
+                    <h4>🎯 场景挑战</h4>
+                    <p>周六下午，重要会议职业装，200+款商品，信息过载</p>
+                </div>
+                <div class="key-point">
+                    <h4>😫 痛点</h4>
+                    <p>试穿8次，无法做决定，要么放弃购买，要么草率决定</p>
+                </div>
+                <div class="key-point">
+                    <h4>✨ 深层需求</h4>
+                    <p>更聪明的选择，而非更多的选择；快速决策，而非复杂决策</p>
+                </div>
+            </div>
+
+            <div class="metrics">
+                <div class="metric">
+                    <div class="value">50%+</div>
+                    <div class="label">决策时间缩短</div>
+                </div>
+                <div class="metric">
+                    <div class="value">40%+</div>
+                    <div class="label">试穿次数减少</div>
+                </div>
+                <div class="metric">
+                    <div class="value">20%+</div>
+                    <div class="label">满意度提升</div>
+                </div>
+                <div class="metric">
+                    <div class="value">15%+</div>
+                    <div class="label">转化率提升</div>
+                </div>
+            </div>
+
+            <button class="download-btn" onclick="downloadJSON()">
+                📥 下载完整JSON输出
+            </button>
+
+            <div class="footer">
+                <p>Eureka! AI价值创新系统 | Reveal阶段 | 2026-03-22</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadJSON() {
+            const data = {
+                "skill": "pov_builder",
+                "stage": "reveal",
+                "output": {
+                    "project_id": "vi_20260322_002",
+                    "user_persona": {
+                        "name": "Lisa",
+                        "age": "29",
+                        "occupation": "互联网公司产品经理",
+                        "location": "上海",
+                        "income_level": "中高收入",
+                        "style_preference": "简约时尚，注重品质和舒适度"
+                    },
+                    "context_challenge": {
+                        "scenario": "Lisa在周六下午走进一家知名女装门店，准备为下周的重要会议准备一套职业装。门店里陈列着当季新款200+件，风格各异，从商务休闲到时尚潮流。导购热情地推荐了几款，但每款都有自己的优点，Lisa试穿了8件衣服，每件都还不错，但她陷入了选择的困境。"
+                    },
+                    "pov_card": {
+                        "user": "29岁的职场女性Lisa",
+                        "scenario": "周六下午为下周重要会议选购职业装",
+                        "challenge": "面对200+款商品和8次试穿后陷入选择困境",
+                        "goal": "在1小时内快速找到符合自己风格、预算和审美的商品",
+                        "insight": "她的深层需求不是'更多选择'，而是'更聪明的选择'"
+                    },
+                    "key_insight": "Lisa的选择困难症并非源于'商品不够好'，而是源于'选择成本过高'。她不需要更多的选项，而是需要一个能够理解她、引导她、让她感到安全和自信的决策伙伴。"
+                },
+                "timestamp": "2026-03-22T20:37:00Z"
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '01_pov_builder.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

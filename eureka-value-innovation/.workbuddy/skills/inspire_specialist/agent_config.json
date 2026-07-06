@@ -1,0 +1,149 @@
+{
+  "agent_id": "inspire_specialist",
+  "agent_name": "Inspire Specialist - 启发师",
+  "version": "1.0.0",
+  "stage": "Inspire",
+  "stage_number": 2,
+  "role": "机遇重构者与灵感导师",
+  "developer": "习智场景化创新训练",
+  "license": "MIT",
+  "description": "将用户洞察（POV）转化为创新机遇（HMW）和创意想法，为原型设计提供基础",
+  "upstream_agents": [
+    "reveal_specialist"
+  ],
+  "downstream_agents": [
+    "shape_specialist"
+  ],
+  "skills": [
+    {
+      "skill_id": "HMW_Reframer",
+      "skill_name": "HMW机遇重构器",
+      "description": "将用户POV多维度重构为6-8个HMW创新机遇，筛选出最佳HMW机遇",
+      "order": 1,
+      "required": true
+    },
+    {
+      "skill_id": "NCO_Crosslinker",
+      "skill_name": "新酷界外交叉激发器",
+      "description": "生成NCO灵感源并与最佳HMW机遇交叉激发，生成20-30个创意想法",
+      "order": 2,
+      "required": true
+    },
+    {
+      "skill_id": "Idea_Distiller",
+      "skill_name": "创意提炼器",
+      "description": "从用户价值和商业可行维度筛选出最佳创意，生成AHA价值假设",
+      "order": 3,
+      "required": true
+    }
+  ],
+  "input_schema": {
+    "user_pov": {
+      "type": "string",
+      "required": true,
+      "description": "用户POV（来自Reveal Specialist）"
+    },
+    "user_persona": {
+      "type": "object",
+      "required": true,
+      "description": "用户画像"
+    },
+    "scenario_description": {
+      "type": "string",
+      "required": true,
+      "description": "场景描述"
+    },
+    "user_insights": {
+      "type": "array",
+      "required": true,
+      "description": "用户洞察列表"
+    }
+  },
+  "output_schema": {
+    "hmw_opportunities": {
+      "type": "array",
+      "description": "6-8个HMW机遇列表"
+    },
+    "best_hmw_opportunities": {
+      "type": "array",
+      "description": "1-2个最佳HMW机遇"
+    },
+    "creative_ideas": {
+      "type": "array",
+      "description": "20-30个创意想法列表"
+    },
+    "best_creative_ideas": {
+      "type": "array",
+      "description": "3-5个最佳创意"
+    },
+    "aha_hypotheses": {
+      "type": "array",
+      "description": "最佳创意的AHA价值假设"
+    }
+  },
+  "workflow_steps": [
+    {
+      "step": 1,
+      "name": "生成HMW机遇",
+      "skill": "HMW_Reframer",
+      "description": "将用户POV多维度重构为6-8个HMW机遇"
+    },
+    {
+      "step": 2,
+      "name": "筛选最佳HMW机遇",
+      "skill": "Idea_Distiller",
+      "description": "从用户价值和商业可行维度筛选出最佳HMW机遇（1-2个）"
+    },
+    {
+      "step": 3,
+      "name": "生成创意想法",
+      "skill": "NCO_Crosslinker",
+      "description": "生成NCO灵感源并与最佳HMW机遇交叉激发，生成20-30个创意想法"
+    },
+    {
+      "step": 4,
+      "name": "筛选最佳创意",
+      "skill": "Idea_Distiller",
+      "description": "从用户价值和商业可行维度筛选出最佳创意（3-5个），生成AHA假设"
+    }
+  ],
+  "quality_standards": {
+    "hmw_count": {
+      "min": 6,
+      "max": 8,
+      "target": 8
+    },
+    "best_hmw_count": {
+      "min": 1,
+      "max": 2,
+      "target": 2
+    },
+    "idea_count": {
+      "min": 20,
+      "max": 30,
+      "target": 25
+    },
+    "best_idea_count": {
+      "min": 3,
+      "max": 5,
+      "target": 3
+    },
+    "nco_coverage": {
+      "new_min": 6,
+      "cool_min": 6,
+      "out_of_box_min": 6
+    }
+  },
+  "metadata": {
+    "created_at": "2026-03-23",
+    "updated_at": "2026-03-23",
+    "tags": [
+      "innovation",
+      "creative",
+      "ideation",
+      "inspiration",
+      "hmw",
+      "design thinking"
+    ]
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "skill": "roleplay_stakeholder",
+  "stage": "reveal",
+  "timestamp": "2026-03-22T20:24:00",
+  "output": {
+    "project_id": "vi_20260322_001",
+    "stakeholders": [
+      {
+        "name": "Alice",
+        "role": "执行者",
+        "perspective": {
+          "position": "负责团队周度工作回顾和目标管理，使用简报工具收集汇报",
+          "core_concerns": "需要简洁易用的工具，不增加额外工作负担，提升团队执行力",
+          "expectations": "期望1"
+        },
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "简洁易用的目标定义工具",
+              "importance_score": 5,
+              "priority": "高"
+            },
+            {
+              "id": 2,
+              "description": "简单的工作回顾模板",
+              "importance_score": 4,
+              "priority": "高"
+            },
+            {
+              "id": 3,
+              "description": "不增加额外工作负担",
+              "importance_score": 2,
+              "priority": "中"
+            },
+            {
+              "id": 4,
+              "description": "自动追踪功能",
+              "importance_score": 1,
+              "priority": "低"
+            }
+          ]
+        },
+        "influence": {
+          "score": 2,
+          "level": "相关",
+          "dimensions": {
+            "decision_power": "部分",
+            "resource_control": "中",
+            "influence_scope": "项目部分",
+            "criticality": "重要"
+          }
+        }
+      },
+      {
+        "name": "团队成员",
+        "role": "受益者",
+        "perspective": {
+          "position": "参与周度工作回顾，需要明确目标和承诺",
+          "core_concerns": "目标清晰，可衡量，有反馈",
+          "expectations": "期望2"
+        },
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "明确可承诺的目标",
+              "importance_score": 5,
+              "priority": "高"
+            },
+            {
+              "id": 2,
+              "description": "简洁的目标定义",
+              "importance_score": 3,
+              "priority": "中"
+            },
+            {
+              "id": 3,
+              "description": "进度反馈",
+              "importance_score": 3,
+              "priority": "中"
+            },
+            {
+              "id": 4,
+              "description": "不增加工作量",
+              "importance_score": 1,
+              "priority": "低"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "dimensions": {
+            "decision_power": "有",
+            "resource_control": "高",
+            "influence_scope": "项目整体",
+            "criticality": "关键"
+          }
+        }
+      },
+      {
+        "name": "管理层",
+        "role": "决策者",
+        "perspective": {
+          "position": "负责团队整体业绩评估和资源分配",
+          "core_concerns": "提升团队执行效率和目标达成率",
+          "expectations": "期望3"
+        },
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "团队执行力提升",
+              "importance_score": 5,
+              "priority": "高"
+            },
+            {
+              "id": 2,
+              "description": "目标达成率提升",
+              "importance_score": 4,
+              "priority": "高"
+            },
+            {
+              "id": 3,
+              "description": "数据可追踪",
+              "importance_score": 2,
+              "priority": "中"
+            },
+            {
+              "id": 4,
+              "description": "快速实施",
+              "importance_score": 1,
+              "priority": "低"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "dimensions": {
+            "decision_power": "有",
+            "resource_control": "高",
+            "influence_scope": "项目整体",
+            "criticality": "关键"
+          }
+        }
+      }
+    ],
+    "consensus_analysis": {
+      "conflicts": [
+        {
+          "stakeholders": ["Alice", "团队成员"],
+          "conflict": "Alice希望提升执行力，但团队成员担心增加工作量",
+          "severity": "中"
+        }
+      ],
+      "common_grounds": [
+        {
+          "stakeholders": ["Alice", "团队成员", "管理层"],
+          "common_goal": "提升目标清晰度和执行力"
+        },
+        {
+          "stakeholders": ["Alice", "管理层"],
+          "common_goal": "建立可追踪的承诺机制"
+        }
+      ],
+      "consensus_suggestions": [
+        {
+          "approach": "平衡设计，在不增加工作负担的前提下提升目标清晰度",
+          "expected_outcome": "获得团队成员支持，同时满足管理层期望"
+        }
+      ]
+    },
+    "summary": {
+      "total_stakeholders": 3,
+      "high_influence_count": 2,
+      "medium_influence_count": 1,
+      "low_influence_count": 0,
+      "critical_priorities": [
+        "简洁易用的目标定义工具",
+        "明确可承诺的目标",
+        "团队执行力提升",
+        "目标达成率提升"
+      ]
+    }
+  }
+}

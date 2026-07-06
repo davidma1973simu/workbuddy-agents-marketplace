@@ -1,0 +1,296 @@
+{
+  "skill": "roleplay_stakeholder",
+  "stage": "reveal",
+  "output": {
+    "project_id": "vi_20260322_002",
+    "stakeholders": [
+      {
+        "name": "门店经理 张经理",
+        "role": "决策者",
+        "responsibilities": "负责门店整体运营和业绩，决定是否采用新系统",
+        "core_concerns": "系统是否提升销售业绩？员工培训成本如何？投资回报率如何？是否影响现有工作流程？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "显著提升门店转化率和销售额",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "这是KPI的核心，直接影响奖金和职业发展"
+            },
+            {
+              "id": 2,
+              "description": "提升顾客满意度和复购率",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "长期业绩和品牌口碑的基础"
+            },
+            {
+              "id": 3,
+              "description": "易于培训和使用，降低学习成本",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "员工流动性高，培训成本影响效率"
+            },
+            {
+              "id": 4,
+              "description": "投资回报率高，回本周期短",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "由公司承担，个人压力较小"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "reasoning": "可以直接决定是否在门店试点和推广，直接影响项目成败"
+        }
+      },
+      {
+        "name": "导购顾问 小王",
+        "role": "执行者",
+        "responsibilities": "负责日常顾客服务、商品推荐和销售转化",
+        "core_concerns": "系统是否简化工作流程？是否提升服务效率？是否带来更多提成？是否需要额外学习成本？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "简化工作流程，减少重复劳动",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "每天服务20+位顾客，效率直接影响收入和体力"
+            },
+            {
+              "id": 2,
+              "description": "提升销售转化率和提成收入",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "收入直接挂钩，是工作的核心动力"
+            },
+            {
+              "id": 3,
+              "description": "提升专业形象，获得顾客信任",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "职业发展的重要基础"
+            },
+            {
+              "id": 4,
+              "description": "易于学习，无需复杂培训",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "有一定学习能力，但怕影响现有工作"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "reasoning": "一线执行者，系统的好坏直接影响工作体验和效果，抵触或支持都能决定项目成败"
+        }
+      },
+      {
+        "name": "品牌营销总监 陈总监",
+        "role": "影响者",
+        "responsibilities": "负责品牌定位、营销策略和顾客体验设计",
+        "core_concerns": "系统是否符合品牌调性？是否提升品牌形象？如何营销推广？数据如何支撑营销决策？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "符合品牌高端时尚的定位和调性",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "品牌是核心资产，不能因为系统而稀释"
+            },
+            {
+              "id": 2,
+              "description": "提升品牌形象和顾客体验口碑",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "品牌影响力和顾客忠诚度是长期竞争力"
+            },
+            {
+              "id": 3,
+              "description": "收集顾客数据和洞察，支持营销决策",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "数据驱动的营销越来越重要"
+            },
+            {
+              "id": 4,
+              "description": "易于营销传播，有话题性和社交属性",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "加分项，但不是核心需求"
+            }
+          ]
+        },
+        "influence": {
+          "score": 2,
+          "level": "相关",
+          "reasoning": "虽然没有直接决策权，但可以影响管理层决策，特别是对品牌层面的质疑或支持"
+        }
+      },
+      {
+        "name": "IT技术团队 李工程师",
+        "role": "执行者",
+        "responsibilities": "负责系统开发、部署和维护",
+        "core_concerns": "技术可行性如何？与其他系统的集成难度？开发和维护成本？数据安全和隐私保护？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "技术方案成熟可行，风险可控",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "避免技术失败导致的重大损失"
+            },
+            {
+              "id": 2,
+              "description": "与现有系统（POS、库存、CRM）无缝集成",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "避免数据孤岛，提升整体效率"
+            },
+            {
+              "id": 3,
+              "description": "开发周期合理，不影响其他项目",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "团队资源有限，需要平衡多个项目"
+            },
+            {
+              "id": 4,
+              "description": "维护成本低，易于扩展和升级",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "长期考虑，但不是当前重点"
+            }
+          ]
+        },
+        "influence": {
+          "score": 2,
+          "level": "相关",
+          "reasoning": "技术实现能力决定项目可行性，但可以通过外包或引入新技术解决"
+        }
+      },
+      {
+        "name": "区域总监 王总监",
+        "role": "影响者",
+        "responsibilities": "负责区域门店管理和资源分配",
+        "core_concerns": "跨门店推广的难度？资源投入是否合理？与区域战略是否一致？其他门店是否也面临同样问题？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "在试点成功后易于规模化复制",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "如果只有1-2家门店能用，价值有限"
+            },
+            {
+              "id": 2,
+              "description": "投资回报率符合区域KPI要求",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "需要向总部证明投资的合理性"
+            },
+            {
+              "id": 3,
+              "description": "解决区域共性问题，提升整体业绩",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "区域战略的一部分"
+            },
+            {
+              "id": 4,
+              "description": "不影响其他门店的正常运营",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "试点期间可以接受局部影响"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "reasoning": "掌握区域资源和推广决策，如果试点效果好会成为有力支持者，如果效果不佳会成为阻碍者"
+        }
+      },
+      {
+        "name": "门店顾客 Lisa等",
+        "role": "受益者",
+        "responsibilities": "系统的最终使用者和评价者",
+        "core_concerns": "是否真正解决选择困难？推荐是否准确？是否节省时间？是否尊重个人偏好？隐私是否被保护？",
+        "buy_features": {
+          "total_score": 12,
+          "requirements": [
+            {
+              "id": 1,
+              "description": "真正快速解决选择困难，提升决策效率",
+              "importance_score": 5,
+              "priority": "高",
+              "justification": "核心痛点，直接影响购物体验"
+            },
+            {
+              "id": 2,
+              "description": "推荐准确，符合个人偏好和需求",
+              "importance_score": 4,
+              "priority": "高",
+              "justification": "如果推荐不合适，反而增加挫败感"
+            },
+            {
+              "id": 3,
+              "description": "尊重个人选择，不强迫购买",
+              "importance_score": 2,
+              "priority": "中",
+              "justification": "自主权很重要，但可以接受适度引导"
+            },
+            {
+              "id": 4,
+              "description": "保护隐私，不收集不必要的数据",
+              "importance_score": 1,
+              "priority": "低",
+              "justification": "有一定关注，但不是核心需求"
+            }
+          ]
+        },
+        "influence": {
+          "score": 3,
+          "level": "有很大影响力",
+          "reasoning": "虽然不是内部利益相关方，但用户体验和口碑决定项目的最终成败"
+        }
+      }
+    ],
+    "summary": {
+      "total_stakeholders": 6,
+      "high_influence_count": 4,
+      "medium_influence_count": 2,
+      "critical_supporters": [
+        "门店经理 张经理",
+        "导购顾问 小王",
+        "区域总监 王总监",
+        "门店顾客"
+      ],
+      "potential_risks": [
+        "如果技术团队认为方案不可行，可能导致项目延期或流产",
+        "如果品牌营销总监认为系统不符合品牌调性，可能影响推广",
+        "如果导购顾问感觉被替代或工作被简化，可能产生抵触情绪"
+      ],
+      "success_factors": [
+        "需要同时满足决策者和执行者的核心需求",
+        "需要在门店试点时快速证明效果和价值",
+        "需要平衡技术可行性和用户体验",
+        "需要保持品牌调性的一致性"
+      ]
+    }
+  },
+  "timestamp": "2026-03-22T20:37:00Z"
+}

@@ -1,0 +1,58 @@
+{
+  "name": "exam-specialist",
+  "version": "1.0.0",
+  "description": "Exam Specialist - 验证官 Agent，负责测试验证、价值评估、方案呈现和落地规划",
+  "main": "AGENT.md",
+  "author": "习智场景化创新训练",
+  "license": "MIT",
+  "keywords": [
+    "eureka",
+    "exam",
+    "validation",
+    "pitch",
+    "iteration",
+    "business-model",
+    "innovation"
+  ],
+  "skills": [
+    {
+      "id": "AHA_MAP_Evaluator",
+      "name": "AHA_MAP 评估师",
+      "version": "1.0.0"
+    },
+    {
+      "id": "Pitch_Composer",
+      "name": "电梯呈现脚本撰写者",
+      "version": "1.0.0"
+    },
+    {
+      "id": "Project_Iteration",
+      "name": "项目迭代规划师",
+      "version": "1.0.0"
+    },
+    {
+      "id": "BusinessModel_Painter",
+      "name": "商业模式画布绘制者",
+      "version": "1.0.0"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/eureka-value-innovation"
+  },
+  "homepage": "https://github.com/yourusername/eureka-value-innovation#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/eureka-value-innovation/issues"
+  },
+  "metadata": {
+    "agent_id": "exam_specialist",
+    "agent_name": "Exam Specialist - 验证官",
+    "stage": "Exam",
+    "stage_number": 4,
+    "role": "测试助理与决策评委",
+    "created_at": "2026-03-23",
+    "last_updated": "2026-03-23"
+  }
+}

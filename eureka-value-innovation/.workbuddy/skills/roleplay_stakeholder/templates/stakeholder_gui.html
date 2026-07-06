@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleplay Stakeholder - 利益相关方分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stakeholder-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+
+        .stakeholder-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .stakeholder-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stakeholder-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stakeholder-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .stakeholder-role {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e3f2fd;
+            color: #1a237e;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .buy-features-section {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .buy-features-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buy-features-constraints {
+            background: #ff5722;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buy-features-constraints span {
+            margin-right: 16px;
+        }
+
+        .buy-features-constraints span:last-child {
+            margin-right: 0;
+        }
+
+        .requirement-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .requirement-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .requirement-number {
+            background: #ff9800;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .requirement-input {
+            flex: 1;
+        }
+
+        .score-input {
+            width: 80px !important;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .score-total {
+            background: #e65100;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .score-total.valid {
+            background: #4caf50;
+        }
+
+        .score-total.invalid {
+            background: #f44336;
+        }
+
+        .influence-section {
+            background: #e3f2fd;
+            border: 2px solid #1a237e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .influence-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        .influence-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .influence-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .influence-option input[type="radio"] {
+            display: none;
+        }
+
+        .influence-option label {
+            display: block;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .influence-option input[type="radio"]:checked + label {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        .influence-option input[type="radio"]:checked + label.level-1 {
+            background: #757575;
+            border-color: #757575;
+        }
+
+        .influence-option input[type="radio"]:checked + label.level-2 {
+            background: #ff9800;
+            border-color: #ff9800;
+        }
+
+        .influence-option input[type="radio"]:checked + label.level-3 {
+            background: #e65100;
+            border-color: #e65100;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .output-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .output-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .output-section h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .output-json {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #555;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .summary-list {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .summary-item.level-1 {
+            border-left-color: #757575;
+        }
+
+        .summary-item.level-2 {
+            border-left-color: #ff9800;
+        }
+
+        .summary-item.level-3 {
+            border-left-color: #e65100;
+        }
+
+        .summary-item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .summary-item-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .summary-item-influence {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .summary-item-influence.level-1 {
+            background: #757575;
+            color: white;
+        }
+
+        .summary-item-influence.level-2 {
+            background: #ff9800;
+            color: white;
+        }
+
+        .summary-item-influence.level-3 {
+            background: #e65100;
+            color: white;
+        }
+
+        .summary-item-requirements {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Roleplay Stakeholder</h1>
+            <p>利益相关方分析 - Buy Features方法与影响力评估</p>
+        </div>
+
+        <div class="content">
+            <div id="errorMessage" class="error-message">
+                ⚠️ 请确保每个利益相关方的Buy Features总分等于12分。
+            </div>
+
+            <!-- 利益相关方1 -->
+            <div class="section">
+                <div class="stakeholder-card">
+                    <div class="stakeholder-header">
+                        <span class="stakeholder-number">1</span>
+                        <input type="text" class="stakeholder-name" id="stakeholder1Name" placeholder="利益相关方名称" value="Alice">
+                        <span class="stakeholder-role">执行者</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>角色定位</label>
+                        <textarea id="stakeholder1Position" placeholder="描述该利益相关方在项目中的角色和职责">负责团队周度工作回顾和目标管理，使用简报工具收集汇报</textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>核心关注点</label>
+                        <textarea id="stakeholder1Concerns" placeholder="该利益相关方最关心的问题和目标">需要简洁易用的工具，不增加额外工作负担，提升团队执行力</textarea>
+                    </div>
+
+                    <!-- Buy Features -->
+                    <div class="buy-features-section">
+                        <div class="buy-features-title">📊 Buy Features（需求优先级）</div>
+                        <div class="buy-features-constraints">
+                            <span>✓ 最多4个需求</span>
+                            <span>✓ 重要性打分1-5分</span>
+                            <span>✓ 总分12分</span>
+                        </div>
+
+                        <div id="stakeholder1Requirements">
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">1</span>
+                                    <input type="text" class="requirement-input" id="stakeholder1Req1" placeholder="需求描述" value="简洁易用的目标定义工具">
+                                    <input type="number" class="score-input" id="stakeholder1Score1" min="1" max="5" value="5" onchange="updateTotal(1)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">2</span>
+                                    <input type="text" class="requirement-input" id="stakeholder1Req2" placeholder="需求描述" value="简单的工作回顾模板">
+                                    <input type="number" class="score-input" id="stakeholder1Score2" min="1" max="5" value="4" onchange="updateTotal(1)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">3</span>
+                                    <input type="text" class="requirement-input" id="stakeholder1Req3" placeholder="需求描述" value="不增加额外工作负担">
+                                    <input type="number" class="score-input" id="stakeholder1Score3" min="1" max="5" value="2" onchange="updateTotal(1)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">4</span>
+                                    <input type="text" class="requirement-input" id="stakeholder1Req4" placeholder="需求描述" value="自动追踪功能">
+                                    <input type="number" class="score-input" id="stakeholder1Score4" min="1" max="5" value="1" onchange="updateTotal(1)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="score-total" id="stakeholder1Total">总分: 12/12</div>
+                    </div>
+
+                    <!-- 影响力 -->
+                    <div class="influence-section">
+                        <div class="influence-title">🎯 影响力评估（1-3分）</div>
+                        <div class="influence-selector">
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder1Influence" id="stakeholder1Inf1" value="1">
+                                <label for="stakeholder1Inf1" class="level-1">1分（无关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder1Influence" id="stakeholder1Inf2" value="2" checked>
+                                <label for="stakeholder1Inf2" class="level-2">2分（相关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder1Influence" id="stakeholder1Inf3" value="3">
+                                <label for="stakeholder1Inf3" class="level-3">3分（很大影响）</label>
+                            </div>
+                        </div>
+                        <div class="input-hint">选择该利益相关方对项目的影响力水平</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 利益相关方2 -->
+            <div class="section">
+                <div class="stakeholder-card">
+                    <div class="stakeholder-header">
+                        <span class="stakeholder-number">2</span>
+                        <input type="text" class="stakeholder-name" id="stakeholder2Name" placeholder="利益相关方名称" value="团队成员">
+                        <span class="stakeholder-role">受益者</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>角色定位</label>
+                        <textarea id="stakeholder2Position" placeholder="描述该利益相关方在项目中的角色和职责">参与周度工作回顾，需要明确目标和承诺</textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>核心关注点</label>
+                        <textarea id="stakeholder2Concerns" placeholder="该利益相关方最关心的问题和目标">目标清晰，可衡量，有反馈</textarea>
+                    </div>
+
+                    <!-- Buy Features -->
+                    <div class="buy-features-section">
+                        <div class="buy-features-title">📊 Buy Features（需求优先级）</div>
+                        <div class="buy-features-constraints">
+                            <span>✓ 最多4个需求</span>
+                            <span>✓ 重要性打分1-5分</span>
+                            <span>✓ 总分12分</span>
+                        </div>
+
+                        <div id="stakeholder2Requirements">
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">1</span>
+                                    <input type="text" class="requirement-input" id="stakeholder2Req1" placeholder="需求描述" value="明确可承诺的目标">
+                                    <input type="number" class="score-input" id="stakeholder2Score1" min="1" max="5" value="5" onchange="updateTotal(2)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">2</span>
+                                    <input type="text" class="requirement-input" id="stakeholder2Req2" placeholder="需求描述" value="简洁的目标定义">
+                                    <input type="number" class="score-input" id="stakeholder2Score2" min="1" max="5" value="3" onchange="updateTotal(2)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">3</span>
+                                    <input type="text" class="requirement-input" id="stakeholder2Req3" placeholder="需求描述" value="进度反馈">
+                                    <input type="number" class="score-input" id="stakeholder2Score3" min="1" max="5" value="3" onchange="updateTotal(2)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">4</span>
+                                    <input type="text" class="requirement-input" id="stakeholder2Req4" placeholder="需求描述" value="不增加工作量">
+                                    <input type="number" class="score-input" id="stakeholder2Score4" min="1" max="5" value="1" onchange="updateTotal(2)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="score-total" id="stakeholder2Total">总分: 12/12</div>
+                    </div>
+
+                    <!-- 影响力 -->
+                    <div class="influence-section">
+                        <div class="influence-title">🎯 影响力评估（1-3分）</div>
+                        <div class="influence-selector">
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder2Influence" id="stakeholder2Inf1" value="1">
+                                <label for="stakeholder2Inf1" class="level-1">1分（无关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder2Influence" id="stakeholder2Inf2" value="2">
+                                <label for="stakeholder2Inf2" class="level-2">2分（相关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder2Influence" id="stakeholder2Inf3" value="3" checked>
+                                <label for="stakeholder2Inf3" class="level-3">3分（很大影响）</label>
+                            </div>
+                        </div>
+                        <div class="input-hint">选择该利益相关方对项目的影响力水平</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 利益相关方3 -->
+            <div class="section">
+                <div class="stakeholder-card">
+                    <div class="stakeholder-header">
+                        <span class="stakeholder-number">3</span>
+                        <input type="text" class="stakeholder-name" id="stakeholder3Name" placeholder="利益相关方名称" value="管理层">
+                        <span class="stakeholder-role">决策者</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label>角色定位</label>
+                        <textarea id="stakeholder3Position" placeholder="描述该利益相关方在项目中的角色和职责">负责团队整体业绩评估和资源分配</textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>核心关注点</label>
+                        <textarea id="stakeholder3Concerns" placeholder="该利益相关方最关心的问题和目标">提升团队执行效率和目标达成率</textarea>
+                    </div>
+
+                    <!-- Buy Features -->
+                    <div class="buy-features-section">
+                        <div class="buy-features-title">📊 Buy Features（需求优先级）</div>
+                        <div class="buy-features-constraints">
+                            <span>✓ 最多4个需求</span>
+                            <span>✓ 重要性打分1-5分</span>
+                            <span>✓ 总分12分</span>
+                        </div>
+
+                        <div id="stakeholder3Requirements">
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">1</span>
+                                    <input type="text" class="requirement-input" id="stakeholder3Req1" placeholder="需求描述" value="团队执行力提升">
+                                    <input type="number" class="score-input" id="stakeholder3Score1" min="1" max="5" value="5" onchange="updateTotal(3)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">2</span>
+                                    <input type="text" class="requirement-input" id="stakeholder3Req2" placeholder="需求描述" value="目标达成率提升">
+                                    <input type="number" class="score-input" id="stakeholder3Score2" min="1" max="5" value="4" onchange="updateTotal(3)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">3</span>
+                                    <input type="text" class="requirement-input" id="stakeholder3Req3" placeholder="需求描述" value="数据可追踪">
+                                    <input type="number" class="score-input" id="stakeholder3Score3" min="1" max="5" value="2" onchange="updateTotal(3)">
+                                </div>
+                            </div>
+                            <div class="requirement-item">
+                                <div class="requirement-header">
+                                    <span class="requirement-number">4</span>
+                                    <input type="text" class="requirement-input" id="stakeholder3Req4" placeholder="需求描述" value="快速实施">
+                                    <input type="number" class="score-input" id="stakeholder3Score4" min="1" max="5" value="1" onchange="updateTotal(3)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="score-total" id="stakeholder3Total">总分: 12/12</div>
+                    </div>
+
+                    <!-- 影响力 -->
+                    <div class="influence-section">
+                        <div class="influence-title">🎯 影响力评估（1-3分）</div>
+                        <div class="influence-selector">
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder3Influence" id="stakeholder3Inf1" value="1">
+                                <label for="stakeholder3Inf1" class="level-1">1分（无关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder3Influence" id="stakeholder3Inf2" value="2">
+                                <label for="stakeholder3Inf2" class="level-2">2分（相关）</label>
+                            </div>
+                            <div class="influence-option">
+                                <input type="radio" name="stakeholder3Influence" id="stakeholder3Inf3" value="3" checked>
+                                <label for="stakeholder3Inf3" class="level-3">3分（很大影响）</label>
+                            </div>
+                        </div>
+                        <div class="input-hint">选择该利益相关方对项目的影响力水平</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="generateStakeholderAnalysis()">🚀 生成利益相关方分析</button>
+
+            <!-- 输出区域 -->
+            <div class="output-section" id="outputSection">
+                <h3>📊 利益相关方分析输出</h3>
+                <div class="output-json" id="outputJson"></div>
+
+                <div class="summary-list" id="summaryList">
+                    <h4 style="margin-bottom: 15px; color: #333;">📋 利益相关方需求优先列表</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新总分
+        function updateTotal(stakeholderNum) {
+            let total = 0;
+            for (let i = 1; i <= 4; i++) {
+                const scoreInput = document.getElementById(`stakeholder${stakeholderNum}Score${i}`);
+                const score = parseInt(scoreInput.value) || 0;
+                total += score;
+            }
+
+            const totalDiv = document.getElementById(`stakeholder${stakeholderNum}Total`);
+            totalDiv.textContent = `总分: ${total}/12`;
+
+            if (total === 12) {
+                totalDiv.classList.remove('invalid');
+                totalDiv.classList.add('valid');
+            } else {
+                totalDiv.classList.remove('valid');
+                totalDiv.classList.add('invalid');
+            }
+        }
+
+        // 初始化所有总分
+        updateTotal(1);
+        updateTotal(2);
+        updateTotal(3);
+
+        // 生成利益相关方分析
+        function generateStakeholderAnalysis() {
+            const stakeholders = [];
+
+            // 收集利益相关方1
+            const s1 = collectStakeholderData(1);
+            const s1Influence = document.querySelector('input[name="stakeholder1Influence"]:checked');
+            s1.influence = parseInt(s1Influence ? s1Influence.value : 2);
+            stakeholders.push(s1);
+
+            // 收集利益相关方2
+            const s2 = collectStakeholderData(2);
+            const s2Influence = document.querySelector('input[name="stakeholder2Influence"]:checked');
+            s2.influence = parseInt(s2Influence ? s2Influence.value : 2);
+            stakeholders.push(s2);
+
+            // 收集利益相关方3
+            const s3 = collectStakeholderData(3);
+            const s3Influence = document.querySelector('input[name="stakeholder3Influence"]:checked');
+            s3.influence = parseInt(s3Influence ? s3Influence.value : 2);
+            stakeholders.push(s3);
+
+            // 验证总分
+            let allValid = true;
+            for (let i = 1; i <= 3; i++) {
+                const totalDiv = document.getElementById(`stakeholder${i}Total`);
+                if (!totalDiv.classList.contains('valid')) {
+                    allValid = false;
+                    break;
+                }
+            }
+
+            if (!allValid) {
+                document.getElementById('errorMessage').classList.add('show');
+                return;
+            }
+
+            document.getElementById('errorMessage').classList.remove('show');
+
+            // 构建JSON输出
+            const output = {
+                skill: "roleplay_stakeholder",
+                stage: "reveal",
+                timestamp: new Date().toISOString(),
+                output: {
+                    project_id: "vi_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_001",
+                    stakeholders: stakeholders.map((s, index) => ({
+                        name: s.name,
+                        role: s.role,
+                        perspective: {
+                            position: s.position,
+                            core_concerns: s.concerns,
+                            expectations: `期望${index + 1}`
+                        },
+                        buy_features: {
+                            total_score: 12,
+                            requirements: s.requirements
+                        },
+                        influence: {
+                            score: s.influence,
+                            level: getInfluenceLevel(s.influence),
+                            dimensions: {
+                                decision_power: "部分",
+                                resource_control: "中",
+                                influence_scope: "项目部分",
+                                criticality: s.influence >= 3 ? "关键" : "重要"
+                            }
+                        }
+                    })),
+                    summary: {
+                        total_stakeholders: stakeholders.length,
+                        high_influence_count: stakeholders.filter(s => s.influence === 3).length,
+                        medium_influence_count: stakeholders.filter(s => s.influence === 2).length,
+                        low_influence_count: stakeholders.filter(s => s.influence === 1).length
+                    }
+                }
+            };
+
+            // 显示JSON输出
+            document.getElementById('outputJson').textContent = JSON.stringify(output, null, 2);
+            document.getElementById('outputSection').classList.add('show');
+
+            // 生成摘要列表
+            generateSummaryList(stakeholders);
+
+            // 滚动到输出区域
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 收集利益相关方数据
+        function collectStakeholderData(stakeholderNum) {
+            const name = document.getElementById(`stakeholder${stakeholderNum}Name`).value.trim();
+            const role = document.getElementById(`stakeholder${stakeholderNum}Name`).nextElementSibling.textContent.trim();
+            const position = document.getElementById(`stakeholder${stakeholderNum}Position`).value.trim();
+            const concerns = document.getElementById(`stakeholder${stakeholderNum}Concerns`).value.trim();
+
+            const requirements = [];
+            for (let i = 1; i <= 4; i++) {
+                const req = document.getElementById(`stakeholder${stakeholderNum}Req${i}`).value.trim();
+                const score = parseInt(document.getElementById(`stakeholder${stakeholderNum}Score${i}`).value);
+                const priority = getPriority(score);
+
+                if (req) {
+                    requirements.push({
+                        id: i,
+                        description: req,
+                        importance_score: score,
+                        priority: priority
+                    });
+                }
+            }
+
+            return {
+                name: name || `利益相关方${stakeholderNum}`,
+                role: role,
+                position: position || "待补充",
+                concerns: concerns || "待补充",
+                requirements: requirements
+            };
+        }
+
+        // 获取优先级
+        function getPriority(score) {
+            if (score >= 5) return "高";
+            if (score >= 3) return "中";
+            return "低";
+        }
+
+        // 获取影响力水平
+        function getInfluenceLevel(score) {
+            if (score === 1) return "无关";
+            if (score === 2) return "相关";
+            if (score === 3) return "有很大影响力";
+            return "未知";
+        }
+
+        // 生成摘要列表
+        function generateSummaryList(stakeholders) {
+            const summaryList = document.getElementById('summaryList');
+
+            stakeholders.forEach((s, index) => {
+                const item = document.createElement('div');
+                item.className = `summary-item level-${s.influence}`;
+
+                const requirementsHtml = s.requirements
+                    .sort((a, b) => b.importance_score - a.importance_score)
+                    .map((req, i) => `<strong>${i + 1}.</strong> ${req.description}（${req.importance_score}分）`)
+                    .join('<br>');
+
+                item.innerHTML = `
+                    <div class="summary-item-header">
+                        <span class="summary-item-name">${s.name}</span>
+                        <span class="summary-item-influence level-${s.influence}">
+                            ${getInfluenceLevel(s.influence)}（${s.influence}分）
+                        </span>
+                    </div>
+                    <div class="summary-item-requirements">
+                        <strong>需求优先级：</strong><br>
+                        ${requirementsHtml}
+                    </div>
+                `;
+
+                summaryList.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>

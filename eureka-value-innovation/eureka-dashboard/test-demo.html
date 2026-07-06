@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试示范项目 - Eureka Dashboard</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .project-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .project-info h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .project-info p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #10b981;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .progress {
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 100%;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #f87171;
+    }
+
+    .message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #60a5fa;
+    }
+
+    .stages {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .stages h3 {
+      margin-bottom: 15px;
+    }
+
+    .stage-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stage-item {
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stage-icon {
+      font-size: 20px;
+    }
+
+    .stage-item.completed {
+      background: #d1fae5;
+    }
+
+    .stage-item.completed .stage-icon {
+      color: #10b981;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Eureka 仪表板 - 示范项目</h1>
+    <p class="subtitle">加载并测试智能购物推荐系统完整案例</p>
+
+    <div class="project-info">
+      <h3>智能社交购物助手 <span class="status">已完成</span></h3>
+      <p><strong>目标用户：</strong>20-35岁都市白领女性，无锻炼习惯，有活力和社交展示需求</p>
+      <p><strong>核心问题：</strong>面对鞋服门店内款式众多，认知过载，导致放弃购物，满意度差</p>
+      <p><strong>解决方案：</strong>通过 Eureka RISE 四个阶段，构建社交网络链接的智能推荐系统</p>
+
+      <div class="progress">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text">项目完成度：100%</div>
+      </div>
+    </div>
+
+    <div class="stages">
+      <h3>📊 四阶段完成情况</h3>
+      <div class="stage-list">
+        <div class="stage-item completed">
+          <span class="stage-icon">🔍</span>
+          <span><strong>Reveal · 洞察层</strong> - POV、用户画像、利益相关者、场景地图</span>
+        </div>
+        <div class="stage-item completed">
+          <span class="stage-icon">💡</span>
+          <span><strong>Inspire · 启发层</strong> - 创意列表、评估矩阵、最佳创意</span>
+        </div>
+        <div class="stage-item completed">
+          <span class="stage-icon">🎨</span>
+          <span><strong>Shape · 构建层</strong> - 概念方案、体验故事、MAP 雷达图</span>
+        </div>
+        <div class="stage-item completed">
+          <span class="stage-icon">✅</span>
+          <span><strong>Exam · 验证层</strong> - AHA 评估、电梯呈现、商业模式画布</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="loadDemo()">
+        🚀 加载示范项目到仪表板
+      </button>
+      <button class="btn btn-secondary" onclick="clearDemo()">
+        🗑️ 清除示范项目
+      </button>
+      <button class="btn btn-secondary" onclick="goToDashboard()">
+        📊 前往仪表板
+      </button>
+    </div>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/test-demo-project.js"></script>
+  <script>
+    const DEMO_PROJECT_ID = 'demo_shopping_assistant';
+
+    /**
+     * 加载示范项目
+     */
+    function loadDemo() {
+      try {
+        const storage = new ProjectStorage();
+        
+        // 检查是否已存在
+        const existing = storage.getById(DEMO_PROJECT_ID);
+        if (existing) {
+          showMessage('示范项目已存在，跳过加载', 'info');
+          setTimeout(() => {
+            goToDashboard();
+          }, 1000);
+          return;
+        }
+
+        // 加载示范项目
+        storage.create(DEMO_PROJECT);
+        showMessage('✅ 示范项目加载成功！正在跳转...', 'success');
+
+        setTimeout(() => {
+          goToDashboard();
+        }, 1500);
+
+      } catch (error) {
+        showMessage('❌ 加载失败：' + error.message, 'error');
+        console.error(error);
+      }
+    }
+
+    /**
+     * 清除示范项目
+     */
+    function clearDemo() {
+      try {
+        const storage = new ProjectStorage();
+        const existing = storage.getById(DEMO_PROJECT_ID);
+
+        if (!existing) {
+          showMessage('示范项目不存在', 'info');
+          return;
+        }
+
+        if (!confirm('确定要清除示范项目吗？')) {
+          return;
+        }
+
+        storage.delete(DEMO_PROJECT_ID);
+        showMessage('✅ 示范项目已清除', 'success');
+
+      } catch (error) {
+        showMessage('❌ 清除失败：' + error.message, 'error');
+        console.error(error);
+      }
+    }
+
+    /**
+     * 前往仪表板
+     */
+    function goToDashboard() {
+      window.location.href = 'index.html';
+    }
+
+    /**
+     * 显示消息
+     */
+    function showMessage(text, type) {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = 'message ' + type;
+      messageEl.style.display = 'block';
+    }
+
+    // 页面加载时检查示范项目状态
+    document.addEventListener('DOMContentLoaded', () => {
+      const storage = new ProjectStorage();
+      const existing = storage.getById(DEMO_PROJECT_ID);
+      
+      if (existing) {
+        showMessage('💡 示范项目已加载，可以直接查看', 'info');
+      }
+    });
+  </script>
+</body>
+</html>

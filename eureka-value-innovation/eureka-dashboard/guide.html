@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 使用指南 — 从零到成果</title>
+<style>
+  :root {
+    --purple: #667eea;
+    --purple-dark: #4f46e5;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --bg: #f0f4ff;
+    --surface: #fff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --r: 16px;
+    --rs: 10px;
+    --shadow: 0 4px 24px rgba(102,126,234,.10);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 80px 40px 100px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.3); border-radius: 40px; padding: 6px 18px; font-size: 12px; color: rgba(255,255,255,.9); font-weight: 600; letter-spacing: .5px; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, #ffd700, #ffb347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 18px; color: rgba(255,255,255,.8); max-width: 520px; margin: 0 auto 40px; line-height: 1.65; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--purple-dark); padding: 14px 32px; border-radius: 40px; font-weight: 800; font-size: 15px; text-decoration: none; transition: .2s; box-shadow: 0 8px 32px rgba(0,0,0,.15); }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.2); }
+  .hero-back { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,.15); color: #fff; padding: 14px 32px; border-radius: 40px; font-weight: 700; font-size: 15px; text-decoration: none; transition: .2s; border: 1.5px solid rgba(255,255,255,.35); backdrop-filter: blur(8px); }
+  .hero-back:hover { background: rgba(255,255,255,.25); transform: translateY(-2px); }
+  .hero-btns { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .hero-wave { position: absolute; bottom: -1px; left: 0; right: 0; height: 60px; }
+
+  /* ── NAV ── */
+  .sticky-nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; gap: 4px; padding: 0 24px; height: 56px; overflow-x: auto; scrollbar-width: none; }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; transition: .15s; cursor: pointer; border: none; background: none; }
+  .nav-link:hover, .nav-link.active { background: #f0f4ff; color: var(--purple); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 72px; }
+  .section-label { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; color: var(--purple); background: #f0f4ff; padding: 4px 14px; border-radius: 40px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+  .section-title { font-size: clamp(24px, 3vw, 32px); font-weight: 900; color: var(--text); line-height: 1.2; margin-bottom: 10px; }
+  .section-desc { font-size: 15px; color: var(--muted); line-height: 1.75; max-width: 640px; }
+
+  /* ── OVERVIEW CARDS ── */
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px; }
+  .ov-card { background: var(--surface); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: .2s; }
+  .ov-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(102,126,234,.15); border-color: #c7d2fe; }
+  .ov-icon { font-size: 32px; margin-bottom: 12px; }
+  .ov-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .ov-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FLOW STEPS ── */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 32px; }
+  .flow-item { display: grid; grid-template-columns: 56px 1fr; gap: 0; position: relative; }
+  .flow-item:not(:last-child) .flow-line { position: absolute; left: 27px; top: 56px; bottom: -16px; width: 2px; background: linear-gradient(180deg, var(--purple), transparent); }
+  .flow-dot { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; z-index: 1; position: relative; box-shadow: 0 4px 16px rgba(102,126,234,.2); }
+  .flow-content { padding: 0 0 40px 20px; }
+  .flow-step { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .flow-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .flow-body { font-size: 14px; color: var(--muted); line-height: 1.75; }
+  .flow-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .flow-tag { font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; background: #f0f4ff; color: var(--purple); }
+
+  /* ── STAGE CARDS ── */
+  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px; }
+  .stage-card { border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); transition: .2s; cursor: pointer; }
+  .stage-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+  .stage-hd { padding: 20px 20px 16px; color: #fff; }
+  .stage-icon { font-size: 28px; margin-bottom: 8px; }
+  .stage-name { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+  .stage-sub { font-size: 12px; opacity: .8; }
+  .stage-bd { background: var(--surface); padding: 16px 20px; }
+  .stage-out-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text); padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+  .stage-out-item:last-child { border-bottom: none; }
+  .stage-bullet { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+  /* ── INPUT/OUTPUT TABLE ── */
+  .io-table { width: 100%; border-collapse: collapse; margin-top: 24px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
+  .io-table th { padding: 14px 18px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; text-align: left; }
+  .io-table td { padding: 14px 18px; font-size: 13px; color: var(--text); border-top: 1px solid var(--border); vertical-align: top; line-height: 1.65; }
+  .io-table tr:hover td { background: #f8faff; }
+  .io-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .io-in { background: #fef3c7; color: #92400e; }
+  .io-out { background: #d1fae5; color: #065f46; }
+  .io-both { background: #e0e7ff; color: #3730a3; }
+
+  /* ── EXPERIENCE JOURNEY ── */
+  .journey { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 24px; }
+  .jn-card { background: var(--surface); border-radius: var(--rs); padding: 16px; box-shadow: var(--shadow); border-top: 3px solid; text-align: center; }
+  .jn-emoji { font-size: 28px; margin-bottom: 8px; }
+  .jn-phase { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
+  .jn-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .jn-feel { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ── TIP BLOCKS ── */
+  .tip { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); margin-top: 16px; border-left: 4px solid; }
+  .tip-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+  .tip-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .tip-purple { border-color: var(--purple); }
+  .tip-green { border-color: var(--green); }
+  .tip-amber { border-color: var(--amber); }
+
+  /* ── QUICK ACTIONS ── */
+  .qa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 24px; }
+  .qa-card { background: var(--surface); border-radius: var(--r); padding: 20px; box-shadow: var(--shadow); border: 1.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; transition: .2s; }
+  .qa-card:hover { border-color: #a5b4fc; transform: translateY(-2px); }
+  .qa-icon { font-size: 28px; }
+  .qa-label { font-size: 13px; font-weight: 800; color: var(--text); }
+  .qa-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+  .qa-shortcut { display: inline-block; font-size: 10px; font-weight: 700; background: #f1f5f9; color: var(--muted); padding: 2px 8px; border-radius: 6px; font-family: monospace; }
+
+  /* ── DEMO BANNER ── */
+  .demo-banner { background: linear-gradient(135deg, #667eea, #10b981); border-radius: 20px; padding: 36px 40px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: 32px; }
+  .demo-left h3 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  .demo-left p { font-size: 14px; opacity: .85; line-height: 1.65; max-width: 400px; }
+  .demo-btn { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--purple-dark); padding: 12px 28px; border-radius: 40px; font-weight: 800; font-size: 14px; text-decoration: none; transition: .2s; white-space: nowrap; flex-shrink: 0; }
+  .demo-btn:hover { transform: scale(1.03); }
+
+  /* ── FAQ ACCORDION ── */
+  .faq-list { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { background: var(--surface); border-radius: var(--rs); border: 1.5px solid var(--border); overflow: hidden; transition: .2s; }
+  .faq-item.open { border-color: #c7d2fe; }
+  .faq-q { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--text); user-select: none; }
+  .faq-q:hover { background: #f8faff; }
+  .faq-arrow { font-size: 18px; transition: .25s; flex-shrink: 0; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s; }
+  .faq-item.open .faq-a { max-height: 400px; }
+  .faq-a-inner { padding: 0 20px 18px; font-size: 13px; color: var(--muted); line-height: 1.75; border-top: 1px solid var(--border); padding-top: 14px; }
+
+  /* ── SUB-AGENT ── */
+  .agent-hero { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 20px; padding: 36px 40px; color: #fff; margin-top: 32px; position: relative; overflow: hidden; }
+  .agent-hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(102,126,234,.3), transparent 70%); pointer-events: none; }
+  .agent-hero-label { font-size: 11px; font-weight: 800; color: #a5b4fc; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .agent-hero-title { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
+  .agent-hero-desc { font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.7; max-width: 560px; }
+
+  .agent-pipeline { display: flex; align-items: center; gap: 0; margin-top: 28px; overflow-x: auto; padding-bottom: 4px; }
+  .ap-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .ap-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 3px solid rgba(255,255,255,.15); position: relative; }
+  .ap-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.65); text-align: center; }
+  .ap-arrow { font-size: 18px; color: rgba(255,255,255,.25); padding: 0 6px; flex-shrink: 0; margin-bottom: 18px; }
+
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 32px; }
+  .agent-card { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: .2s; }
+  .agent-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
+  .ac-hd { padding: 22px 24px 18px; color: #fff; position: relative; overflow: hidden; }
+  .ac-hd::after { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,.08); pointer-events: none; }
+  .ac-agent-name { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: .75; margin-bottom: 6px; }
+  .ac-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .ac-desc { font-size: 12px; opacity: .8; line-height: 1.55; }
+  .ac-bd { background: var(--surface); padding: 18px 24px; }
+  .ac-skill { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .ac-skill:last-child { border-bottom: none; }
+  .ac-skill-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .ac-skill-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .ac-skill-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .ac-trigger { margin-top: 14px; background: #f8faff; border-radius: 10px; padding: 12px 14px; }
+  .ac-trigger-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px; }
+  .ac-trigger-text { font-size: 12px; color: var(--text); line-height: 1.65; font-style: italic; }
+
+  .usage-table { width: 100%; border-collapse: collapse; margin-top: 24px; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); font-size: 13px; }
+  .usage-table th { padding: 12px 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; text-align: left; background: #0f172a; color: rgba(255,255,255,.7); }
+  .usage-table td { padding: 13px 16px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  .usage-table tr:hover td { background: #f8faff; }
+  .usage-table code { font-size: 11px; background: #f1f5f9; color: var(--purple-dark); padding: 2px 7px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, monospace; }
+
+  .callout-box { border-radius: 14px; padding: 20px 24px; margin-top: 16px; }
+  .cb-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .cb-body { font-size: 13px; line-height: 1.75; }
+  .cb-body code { font-size: 12px; background: rgba(0,0,0,.06); padding: 2px 8px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, monospace; }
+
+  /* ── FOOTER ── */
+  .footer { background: var(--text); color: rgba(255,255,255,.5); text-align: center; padding: 32px 24px; font-size: 12px; line-height: 1.8; }
+  .footer strong { color: rgba(255,255,255,.85); }
+  .footer a { color: #a5b4fc; text-decoration: none; }
+
+  /* ── PROGRESS BAR (reading) ── */
+  .reading-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--green)); z-index: 9999; transition: width .1s; }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .hero { padding: 56px 24px 80px; }
+    .container { padding: 32px 16px 60px; }
+    .demo-banner { padding: 24px; }
+    .io-table { font-size: 12px; }
+    .io-table th, .io-table td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div class="reading-bar" id="readingBar"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge">✦ EUREKA USER GUIDE v1.3</div>
+  <h1>从洞察到成果<br><em>全程不迷路</em></h1>
+  <p class="hero-sub">一本够用的产品手册——告诉你怎么准备、怎么用、输入什么、得到什么，以及学员整体体验是什么感觉。</p>
+  <div class="hero-btns">
+    <a href="index.html" class="hero-back">
+      ← 返回仪表板
+    </a>
+    <a href="#start" class="hero-cta">
+      <span>🚀</span> 开始读
+    </a>
+  </div>
+  <svg class="hero-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0 60L1440 60L1440 20C1200 60 960 0 720 20C480 40 240 0 0 20Z" fill="#f0f4ff"/>
+  </svg>
+</section>
+
+<!-- ── STICKY NAV ── -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-link" style="color:var(--purple-dark); border:1.5px solid #c7d2fe; border-radius:20px; padding:5px 14px; font-weight:700; flex-shrink:0; text-decoration:none;">← 仪表板</a>
+    <span style="width:1px; height:20px; background:var(--border); flex-shrink:0; margin: 0 4px;"></span>
+    <button class="nav-link active" onclick="scrollTo('start')">🎯 是什么</button>
+    <button class="nav-link" onclick="scrollTo('prep')">📦 准备</button>
+    <button class="nav-link" onclick="scrollTo('flow')">🔄 使用流程</button>
+    <button class="nav-link" onclick="scrollTo('stages')">4️⃣ 四阶段</button>
+    <button class="nav-link" onclick="scrollTo('io')">⇄ 输入输出</button>
+    <button class="nav-link" onclick="scrollTo('exp')">💫 学员体验</button>
+    <button class="nav-link" onclick="scrollTo('tips')">💡 避坑指南</button>
+    <button class="nav-link" onclick="scrollTo('agents')">🤖 Sub-Agent</button>
+    <button class="nav-link" onclick="scrollTo('api-config')">🔌 API 配置</button>
+    <button class="nav-link" onclick="scrollTo('faq')">❓ 常见问题</button>
+  </div>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="container">
+
+  <!-- ①  是什么 -->
+  <section class="section fade-in" id="start">
+    <div class="section-label">🎯 产品定位</div>
+    <h2 class="section-title">Eureka 是什么？</h2>
+    <p class="section-desc">Eureka 是一个<strong>创新项目成果仪表板</strong>，帮助团队把设计思维四阶段（Reveal → Inspire → Shape → Exam）的所有过程产出，沉淀成一个可视化、可分享、可导出的在线项目库。</p>
+
+    <div class="overview-grid">
+      <div class="ov-card">
+        <div class="ov-icon">📁</div>
+        <div class="ov-title">项目库</div>
+        <div class="ov-desc">多项目集中管理，状态一目了然，支持搜索/筛选/归档。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">✏️</div>
+        <div class="ov-title">四阶段编辑器</div>
+        <div class="ov-desc">分阶段录入产出——画像、HMW、概念方案、测试报告，结构清晰。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📊</div>
+        <div class="ov-title">可视化看板</div>
+        <div class="ov-desc">甘特图、MAP 雷达、AHA 雷达、商业模式画布，自动渲染。</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-icon">📤</div>
+        <div class="ov-title">一键导出</div>
+        <div class="ov-desc">PDF 报告 / Markdown 文档 / PPT 幻灯片，三种格式随时交付。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-purple" style="margin-top: 28px;">
+      <span class="tip-icon">✦</span>
+      <div>
+        <div class="tip-title">纯前端，零部署负担</div>
+        <div class="tip-body">所有数据存储在浏览器 localStorage，无需注册账号、无需服务器。打开网页即用，刷新不丢数据。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 准备 -->
+  <section class="section fade-in" id="prep">
+    <div class="section-label">📦 准备</div>
+    <h2 class="section-title">开始前，你需要准备什么？</h2>
+    <p class="section-desc">不需要装任何软件。打开浏览器，30 秒搞定。</p>
+
+    <div class="qa-grid" style="margin-top: 28px;">
+      <div class="qa-card">
+        <div class="qa-icon">🌐</div>
+        <div class="qa-label">现代浏览器</div>
+        <div class="qa-desc">Chrome / Edge / Safari / Firefox 均可。推荐 Chrome，体验最佳。</div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">🔗</div>
+        <div class="qa-label">打开仪表板</div>
+        <div class="qa-desc" style="word-break:break-all; font-size:11px;">
+          <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" style="color:var(--purple);">
+            → 在线访问 Eureka Dashboard
+          </a>
+        </div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">📝</div>
+        <div class="qa-label">项目原始资料</div>
+        <div class="qa-desc">把设计思维过程中的便利贴、文档或照片整理好，录入更高效。</div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon">👥</div>
+        <div class="qa-label">团队分工（可选）</div>
+        <div class="qa-desc">每阶段可由不同成员负责录入，最终汇入同一个项目即可。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-amber" style="margin-top: 20px;">
+      <span class="tip-icon">⚠️</span>
+      <div>
+        <div class="tip-title">同一台电脑 = 同一份数据</div>
+        <div class="tip-body">数据存在浏览器本地，换设备或清理浏览器缓存会导致数据丢失。重要项目记得定时「导出 Markdown」备份。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 使用流程 -->
+  <section class="section fade-in" id="flow">
+    <div class="section-label">🔄 全流程</div>
+    <h2 class="section-title">完整使用流程</h2>
+    <p class="section-desc">从建项目到交付成果，共 6 步，平均全程 2–4 小时（取决于内容丰富度）。</p>
+
+    <div class="flow" style="margin-top: 36px;">
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #667eea, #764ba2);">🆕</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 01</div>
+          <div class="flow-title">新建项目</div>
+          <div class="flow-body">点击右上角「＋ 新建项目」，填写项目名称、简报描述、目标用户、适用场景，选择初始状态（草稿/进行中）。<br>系统自动生成唯一 ID，立即出现在左侧项目列表。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">项目名称</span>
+            <span class="flow-tag">目标用户</span>
+            <span class="flow-tag">场景描述</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #7c3aed, #9f67fa);">🔍</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 02</div>
+          <div class="flow-title">录入 Reveal 阶段</div>
+          <div class="flow-body">在编辑器「Reveal」Tab 中，录入项目简报五要素（背景/机会/假设/范围/团队）、POV 洞察三段式、用户画像（最多 4 个）、利益相关者、场景地图触点；同时可粘贴<strong>用户访谈记录</strong>原文和<strong>亲和图</strong>聚类分析。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">POV</span>
+            <span class="flow-tag">用户画像</span>
+            <span class="flow-tag">利益相关者</span>
+            <span class="flow-tag">HMW</span>
+            <span class="flow-tag">访谈记录</span>
+            <span class="flow-tag">亲和图</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">💡</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 03</div>
+          <div class="flow-title">录入 Inspire 阶段</div>
+          <div class="flow-body">在「Inspire」Tab 中添加创意方案（可打分：可行性/价值性/创新性），标记最佳创意并填写选择理由；还可录入 <strong>Crazy 8 草图</strong>——用文字描述 8 个快速发散方向，留存头脑风暴过程。系统自动生成评估矩阵和高亮最佳方案。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">创意列表</span>
+            <span class="flow-tag">评分矩阵</span>
+            <span class="flow-tag">Crazy 8</span>
+            <span class="flow-tag">最佳创意</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #10b981, #34d399);">🎨</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 04</div>
+          <div class="flow-title">录入 Shape 阶段</div>
+          <div class="flow-body">在「Shape」Tab 中填写概念名称 / 全局描述 / 功能特性（最多 6 个）、六幕体验故事，以及 MAP 商业价值雷达分值（市场潜力/用户增长/优势壁垒，1–10）。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">概念方案</span>
+            <span class="flow-tag">功能特性</span>
+            <span class="flow-tag">体验故事</span>
+            <span class="flow-tag">MAP 雷达</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #ef4444, #f87171);">✅</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 05</div>
+          <div class="flow-title">录入 Exam 阶段</div>
+          <div class="flow-body">在「Exam」Tab 中录入 AHA 价值雷达（顿悟/高光/进步）、电梯呈现五段式、30-60-90 天迭代计划，以及商业模式画布九格内容。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">AHA 雷达</span>
+            <span class="flow-tag">电梯呈现</span>
+            <span class="flow-tag">迭代计划</span>
+            <span class="flow-tag">商业画布</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-line"></div>
+        <div class="flow-dot" style="background: linear-gradient(135deg, #475569, #94a3b8);">🗂️</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 05.5</div>
+          <div class="flow-title">查看专家过程产出物</div>
+          <div class="flow-body">右侧最底部「🗂️ 专家过程产出物」面板，按四阶段列出全部 15 项产出物。每项卡片独占一行：<strong>名称</strong>靠左、<strong>状态徽章</strong>（✓ 已填写 / 待填写 / BETA）靠右；第二行显示产出物类型标签；第三行为内容摘要（2 行截断）；第四行操作按钮：⬇ 下载 MD、✨ AI 优化（Prompt 模板）、✏ 编辑（直跳对应 Tab）。完成度进度条显示在标题右侧（如 11 / 15 已完成）。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">15 项产出物</span>
+            <span class="flow-tag">状态感知</span>
+            <span class="flow-tag">下载 MD</span>
+            <span class="flow-tag">AI Prompt</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-dot" style="background: linear-gradient(135deg, #667eea, #10b981);">🚀</div>
+        <div class="flow-content">
+          <div class="flow-step">Step 06</div>
+          <div class="flow-title">导出 & 交付</div>
+          <div class="flow-body">在右侧「可交付资产」区域，根据项目进度解锁：<strong>PDF 报告</strong>（完整打印）、<strong>Markdown</strong>（复制到剪贴板）、<strong>PPT 幻灯片</strong>（下载 HTML 格式）。左上角「📅 项目计划」Tab 可追踪四阶段实际进度和时间线。</div>
+          <div class="flow-tags">
+            <span class="flow-tag">PDF</span>
+            <span class="flow-tag">Markdown</span>
+            <span class="flow-tag">PPT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ 四阶段 -->
+  <section class="section fade-in" id="stages">
+    <div class="section-label">4️⃣ 四阶段详解</div>
+    <h2 class="section-title">每个阶段做什么？</h2>
+    <p class="section-desc">RISE 四阶段是 Eureka 的核心框架，每阶段对应设计思维的一个关键节点。</p>
+
+    <div class="stage-grid">
+      <!-- Reveal -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #7c3aed, #9f67fa);">
+          <div class="stage-icon">🔍</div>
+          <div class="stage-name">Reveal</div>
+          <div class="stage-sub">洞察 · 定义问题</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>项目简报（背景/机会/假设/范围/团队）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>POV 三段式洞察声明</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>用户画像（最多 4 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>利益相关者地图</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>场景地图触点（最多 8 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#7c3aed;"></span>HMW 创新机遇（最多 5 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#9f67fa;"></span>用户访谈记录（原始素材）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#9f67fa;"></span>亲和图 Affinity Map（洞察聚类）</div>
+        </div>
+      </div>
+
+      <!-- Inspire -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+          <div class="stage-icon">💡</div>
+          <div class="stage-name">Inspire</div>
+          <div class="stage-sub">启发 · 产生创意</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>创意列表（含评分：可行/价值/创新）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>评估矩阵（自动生成对比表）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#d97706;"></span>最佳创意 + 选择理由</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#fbbf24;"></span>Crazy 8 创意草图（8 方向快速发散）</div>
+        </div>
+      </div>
+
+      <!-- Shape -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #10b981, #34d399);">
+          <div class="stage-icon">🎨</div>
+          <div class="stage-name">Shape</div>
+          <div class="stage-sub">构建 · 塑造方案</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>概念名称 + 全局描述</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>核心功能特性（最多 6 个）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>六幕体验故事（用户视角）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#10b981;"></span>MAP 商业价值雷达（M/A/P，1–10）</div>
+        </div>
+      </div>
+
+      <!-- Exam -->
+      <div class="stage-card">
+        <div class="stage-hd" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+          <div class="stage-icon">✅</div>
+          <div class="stage-name">Exam</div>
+          <div class="stage-sub">验证 · 评估成果</div>
+        </div>
+        <div class="stage-bd">
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>AHA 用户价值雷达（A/H/A，1–10）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>电梯呈现（5 要素：问题/方案/用户/价值/行动）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>测试报告（有效/无效/发现/问题）</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>30-60-90 天迭代计划</div>
+          <div class="stage-out-item"><span class="stage-bullet" style="background:#ef4444;"></span>商业模式画布（9 格）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ 输入输出 -->
+  <section class="section fade-in" id="io">
+    <div class="section-label">⇄ 输入 / 输出</div>
+    <h2 class="section-title">输入什么？得到什么？</h2>
+    <p class="section-desc">明确每个操作的信息流，帮助你合理安排录入节奏和成果预期。</p>
+
+    <table class="io-table">
+      <thead style="background: #f0f4ff;">
+        <tr>
+          <th style="color: var(--purple);">操作</th>
+          <th style="color: var(--purple);">你输入的</th>
+          <th style="color: var(--green);">你得到的</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>创建项目</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目名、简报、目标用户、场景、状态</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 左侧列表新增卡片，自动生成 ID，进度 0%</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Reveal</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目简报五要素、POV、画像、利益相关者、触点、HMW、用户访谈记录、亲和图</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 洞察卡片、POV 引用块、画像卡片、场景横向地图、HMW 列表；产出物面板显示访谈/亲和图状态</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Inspire</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 创意标题、描述、三项评分（1–5）、最佳创意标记与理由、Crazy 8 草图文字描述</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 可视化评分对比表、最佳创意高亮卡片；产出物面板显示 Crazy 8 状态</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Shape</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 概念名称/描述、功能特性、六幕故事、MAP 三维评分</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 概念卡片、功能 Grid、体验故事六格卡、MAP 三角雷达图</td>
+        </tr>
+        <tr>
+          <td><strong>录入 Exam</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> AHA 三维评分、电梯五段式、测试发现、迭代计划、商业画布九格</td>
+          <td><span class="io-badge io-out">✅ 输出</span> AHA 绿色雷达、电梯呈现卡、测试报告四格、商业模式画布</td>
+        </tr>
+        <tr>
+          <td><strong>设置项目计划</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> 项目起止日期、四阶段开始/结束/实际完成日期</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 真实甘特图（按阶段色块）、整体进度自动推算</td>
+        </tr>
+        <tr>
+          <td><strong>导出 PDF</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「PDF」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 浏览器打印对话框，选择「另存为 PDF」</td>
+        </tr>
+        <tr>
+          <td><strong>导出 Markdown</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「Markdown」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 完整项目文档复制到剪贴板，粘贴即用</td>
+        </tr>
+        <tr>
+          <td><strong>导出 PPT</strong></td>
+          <td><span class="io-badge io-both">↔ 触发</span> 点击「PPT」按钮</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 下载 HTML 幻灯片文件，浏览器全屏即为演示</td>
+        </tr>
+        <tr>
+          <td><strong>上传文档</strong></td>
+          <td><span class="io-badge io-in">✍️ 输入</span> TXT / MD / JSON / CSV 文件，选择关联项目</td>
+          <td><span class="io-badge io-out">✅ 输出</span> 文档内容预览，可复制到各字段</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 专家过程产出物专题 -->
+    <div style="margin-top:40px; background:#fff; border-radius:16px; border:1.5px solid #e0e7ff; overflow:hidden; box-shadow:0 4px 24px rgba(102,126,234,.08);">
+      <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">FEATURE SPOTLIGHT</div>
+          <div style="font-size:18px;font-weight:800;color:#fff;">🗂️ 专家过程产出物面板</div>
+        </div>
+        <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;">共 15 项产出物</div>
+      </div>
+      <div style="padding:24px 28px;">
+        <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:20px;">
+          每个项目仪表板底部有一个<strong>「专家过程产出物」</strong>面板，按四阶段（Reveal / Inspire / Shape / Exam）分四列展示全部 15 项创新过程产出。该面板实时感知数据状态，是项目过程留存和 AI 协作的核心入口。
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;">
+          <div style="background:#f8faff;border-radius:12px;padding:16px;border:1.5px solid #e0e7ff;">
+            <div style="font-size:13px;font-weight:800;color:#4f46e5;margin-bottom:8px;">📐 卡片排版结构</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              第 1 行：图标 + 名称（超长省略）+ 状态徽章<br>
+              第 2 行：产出物类型标签（彩色）<br>
+              第 3 行：内容摘要（最多 2 行截断）<br>
+              第 4 行：操作按钮（下载 / AI / 编辑）
+            </div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:12px;padding:16px;border:1.5px solid #a7f3d0;">
+            <div style="font-size:13px;font-weight:800;color:#15803d;margin-bottom:8px;">✓ 三种状态</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              <span style="background:#dcfce7;color:#15803d;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">✓ 已填写</span> 左侧绿色竖线 + 绿色边框<br>
+              <span style="background:#f1f5f9;color:#94a3b8;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">待填写</span> 灰色边框，显示「去填写」按钮<br>
+              <span style="background:#fef3c7;color:#d97706;border-radius:6px;padding:1px 7px;font-weight:700;font-size:11px;">BETA</span> 虚线边框，即将支持
+            </div>
+          </div>
+          <div style="background:#fdf4ff;border-radius:12px;padding:16px;border:1.5px solid #e9d5ff;">
+            <div style="font-size:13px;font-weight:800;color:#7c3aed;margin-bottom:8px;">⚡ 三大操作</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+              <strong>⬇ 下载</strong>：将该产出物导出为 Markdown 文件<br>
+              <strong>✨ AI 优化</strong>：弹出专属 Prompt 模板，复制给 AI<br>
+              <strong>✏ 编辑</strong>：直接跳转到对应编辑器 Tab
+            </div>
+          </div>
+        </div>
+        <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:12px;color:#92400e;line-height:1.7;">
+          💡 <strong>小贴士</strong>：每次在编辑器中保存数据后，该面板会自动更新状态。右上角的进度数字（如 <span style="font-weight:700;color:#10b981;">11</span> / 15 已完成）可帮助你追踪整个项目过程的完整度。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑥ 学员体验 -->
+  <section class="section fade-in" id="exp">
+    <div class="section-label">💫 学员体验</div>
+    <h2 class="section-title">学员全程感受什么？</h2>
+    <p class="section-desc">从「我不知道怎么开始」到「哇，我做出来了」，六个情感节点。</p>
+
+    <div class="journey">
+      <div class="jn-card" style="border-top-color: #667eea;">
+        <div class="jn-emoji">😳</div>
+        <div class="jn-phase">Before</div>
+        <div class="jn-title">迷茫期</div>
+        <div class="jn-feel">工作坊结束了，便利贴堆了一桌，不知道怎么整理成报告。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #7c3aed;">
+        <div class="jn-emoji">🤔</div>
+        <div class="jn-phase">Step 1</div>
+        <div class="jn-title">上手期</div>
+        <div class="jn-feel">打开仪表板，新建项目，看到四阶段结构——「哦，原来是这样分的！」</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #f59e0b;">
+        <div class="jn-emoji">⌨️</div>
+        <div class="jn-phase">Step 2–4</div>
+        <div class="jn-title">录入期</div>
+        <div class="jn-feel">逐步把内容填进去，看着卡片一个个出现，有种「我真的做了这些」的成就感。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #10b981;">
+        <div class="jn-emoji">✨</div>
+        <div class="jn-phase">Step 5</div>
+        <div class="jn-title">AHA 时刻</div>
+        <div class="jn-feel">雷达图、甘特图、商业画布自动渲染出来——「这不是 PPT，这是我真实的成果！」</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #667eea;">
+        <div class="jn-emoji">🙌</div>
+        <div class="jn-phase">Step 6</div>
+        <div class="jn-title">交付时刻</div>
+        <div class="jn-feel">一键导出 PDF，发给导师或客户，看到对方「这个很专业」的反应。</div>
+      </div>
+      <div class="jn-card" style="border-top-color: #f59e0b;">
+        <div class="jn-emoji">🚀</div>
+        <div class="jn-phase">After</div>
+        <div class="jn-title">持续使用</div>
+        <div class="jn-feel">下次有新项目，主动打开 Eureka，因为「这里有我的创新历史」。</div>
+      </div>
+    </div>
+
+    <div class="tip tip-green" style="margin-top: 28px;">
+      <span class="tip-icon">💬</span>
+      <div>
+        <div class="tip-title">学员常见反馈</div>
+        <div class="tip-body">「填着填着就梳理清楚了」— 录入过程本身就是复盘。<br>「看到雷达图那一刻特别有成就感」— 可视化的反馈非常即时。<br>「终于知道这几天做了什么了」— 系统帮助建立整体认知。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑦ 避坑指南 -->
+  <section class="section fade-in" id="tips">
+    <div class="section-label">💡 避坑指南</div>
+    <h2 class="section-title">这些坑不用踩</h2>
+    <p class="section-desc">基于真实使用场景整理，5 分钟省去 5 小时迷糊。</p>
+
+    <div class="tip tip-purple">
+      <span class="tip-icon">🗑️</span>
+      <div>
+        <div class="tip-title">删除 ≠ 永久消失</div>
+        <div class="tip-body">从项目列表删除会先进入<strong>回收站</strong>（左侧 Tab 切换），可恢复。彻底删除才是真的消失。误删不要慌，先看回收站。</div>
+      </div>
+    </div>
+    <div class="tip tip-amber">
+      <span class="tip-icon">💾</span>
+      <div>
+        <div class="tip-title">每次修改都要点「保存项目」</div>
+        <div class="tip-body">编辑器不会自动保存。每个 Tab 修改后，记得点底部「保存项目」。关闭浏览器前务必保存一次。</div>
+      </div>
+    </div>
+    <div class="tip tip-green">
+      <span class="tip-icon">📱</span>
+      <div>
+        <div class="tip-title">手机可以查看，不建议录入</div>
+        <div class="tip-body">仪表板支持响应式，手机可查看已有项目成果，但大量文字录入建议在桌面端完成，体验更流畅。</div>
+      </div>
+    </div>
+    <div class="tip tip-purple">
+      <span class="tip-icon">📤</span>
+      <div>
+        <div class="tip-title">重要项目导出 Markdown 备份</div>
+        <div class="tip-body">清理浏览器数据会导致 localStorage 清空。建议每次重要更新后「导出 Markdown」，存到云盘作为版本备份。</div>
+      </div>
+    </div>
+    <div class="tip tip-amber">
+      <span class="tip-icon">🎯</span>
+      <div>
+        <div class="tip-title">PPT 导出是 HTML 文件</div>
+        <div class="tip-body">导出的 PPT 是一个 HTML 幻灯片，用浏览器打开后按 F11 全屏即可演示。如需转成真正的 .pptx，可截图后手工整理或告知辅导老师协助。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO BANNER -->
+  <div class="demo-banner fade-in">
+    <div class="demo-left">
+      <h3>👀 先看示范项目</h3>
+      <p>「智能购物推荐系统」是一个完整填写的 Demo 项目，覆盖全部四阶段。打开仪表板后点击它，5 分钟了解所有功能长什么样。</p>
+    </div>
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" class="demo-btn">
+      🚀 立即查看 Demo
+    </a>
+  </div>
+
+  <!-- ⑧ Sub-Agent -->
+  <section class="section fade-in" id="agents">
+    <div class="section-label">🤖 AI Sub-Agent</div>
+    <h2 class="section-title">四大 Sub-Agent，每阶段的 AI 专家</h2>
+    <p class="section-desc">Eureka 不只是一个录入工具——当你需要 AI 协助<strong>生成内容</strong>时，可以在对应阶段唤醒专属 Sub-Agent，让它帮你从零产出结构化成果，再粘贴进仪表板。</p>
+
+    <!-- 总体架构图 -->
+    <div class="agent-hero">
+      <div class="agent-hero-label">⚙️ AI 工作流架构</div>
+      <div class="agent-hero-title">TheArchitect 总调度 → 四阶段专家流水线</div>
+      <div class="agent-hero-desc">一句自然语言描述项目需求，TheArchitect 自动拉起整条流水线，依次激活四个 Specialist，逐阶段产出 JSON 成果，最终汇聚成一页看板。也可以单独唤起任意 Specialist 处理特定阶段。</div>
+      <div class="agent-pipeline" style="margin-top: 28px;">
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#764ba2);">🏗️</div>
+          <div class="ap-label">Build<br>TheArchitect</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">🔍</div>
+          <div class="ap-label">Reveal<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#d97706,#f59e0b);">💡</div>
+          <div class="ap-label">Inspire<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#10b981,#34d399);">🎨</div>
+          <div class="ap-label">Shape<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#ef4444,#f87171);">✅</div>
+          <div class="ap-label">Exam<br>Specialist</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#10b981);">🚀</div>
+          <div class="ap-label">Final<br>看板</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 四个 Agent 卡片 -->
+    <div class="agent-grid">
+
+      <!-- Reveal -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">
+          <div class="ac-agent-name">🔍 Reveal Specialist</div>
+          <div class="ac-title">洞察专家</div>
+          <div class="ac-desc">负责用户洞察阶段，从 Project Brief 生成 POV、FIND 洞察和利益相关方分析，帮你看清「用户真正需要什么」。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">👁</div>
+            <div>
+              <div class="ac-skill-name">pov_builder · POV 构建师</div>
+              <div class="ac-skill-desc">将项目简报转化为「用户画像 + 场景触点 + 痛点 + POV 陈述」四维结构。支持 AI 自动生成或 GUI 交互式手动填写。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🔬</div>
+            <div>
+              <div class="ac-skill-name">find_insight · FIND 洞察器</div>
+              <div class="ac-skill-desc">运用 FIND 模型（Facts→Interpret→Need→Design insight）从用户旅程事实中挖掘深层需求，生成精炼洞察卡片。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🎭</div>
+            <div>
+              <div class="ac-skill-name">roleplay_stakeholder · 利益相关方模拟</div>
+              <div class="ac-skill-desc">AI 扮演多个利益相关方角色，模拟各方需求、影响力和潜在冲突，输出关系地图。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「请用 pov_builder 帮我构建针对 20-35 岁都市白领女性购物场景的用户 POV」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inspire -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#d97706,#fbbf24);">
+          <div class="ac-agent-name">💡 Inspire Specialist</div>
+          <div class="ac-title">启发专家</div>
+          <div class="ac-desc">负责创意生成阶段，从 POV 出发产出 HMW 机遇、交叉激发创意，并提炼最佳方案，帮你打开「可能性空间」。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">❓</div>
+            <div>
+              <div class="ac-skill-name">HMW_Reframer · HMW 机遇重构器</div>
+              <div class="ac-skill-desc">从 4 个维度重构用户 POV，生成 6-8 个「How Might We...」创新机遇，并按用户价值 × 商业可行双维度筛选最佳 HMW。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">⚡</div>
+            <div>
+              <div class="ac-skill-name">NCO_Crosslinker · 新酷界外交叉激发器</div>
+              <div class="ac-skill-desc">强制从「新（New）/ 酷（Cool）/ 界外（Out of box）」三类生成灵感源，与最佳 HMW 交叉激发 20-30 个全新创意。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">💎</div>
+            <div>
+              <div class="ac-skill-name">Idea_Distiller · 创意提炼师</div>
+              <div class="ac-skill-desc">对创意列表进行评分（可行性/价值性/创新性）、聚类、提炼，选出最有潜力的核心创意并给出「为什么是它」的理由。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 NCO_Crosslinker 对『如何让购物决策更轻松』这个 HMW 进行交叉激发，生成 20 个创意」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shape -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#10b981,#34d399);">
+          <div class="ac-agent-name">🎨 Shape Specialist</div>
+          <div class="ac-title">构建专家</div>
+          <div class="ac-desc">负责方案构建阶段，对最佳创意进行四维压力测试，构建完整概念方案，并写出用户视角六幕体验故事。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🔨</div>
+            <div>
+              <div class="ac-skill-name">Solution_Interrogator · 方案拷问员</div>
+              <div class="ac-skill-desc">从「用户 / 技术 / 商业 / 利益方」四个维度对最佳创意进行压力测试，发现风险与盲点，迫使方案自我完善。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🏗</div>
+            <div>
+              <div class="ac-skill-name">Solution_Build · 方案构建师</div>
+              <div class="ac-skill-desc">整合压力测试结果，构建完整概念方案：概念名称 + 核心功能特性（最多 6 个）+ AHA 价值设计，输出可直接填入仪表板的结构化内容。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🎬</div>
+            <div>
+              <div class="ac-skill-name">Storyboard_Scriptor · 故事脚本师</div>
+              <div class="ac-skill-desc">以用户视角撰写六幕体验故事脚本：用户挑战→POV洞见→接触→使用→分享结果→持续感受，每幕含场景、情感和 AHA 瞬间。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 Solution_Interrogator 从四个维度拷问『AI 智能购物推荐』这个创意方案」</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam -->
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#ef4444,#f87171);">
+          <div class="ac-agent-name">✅ Exam Specialist</div>
+          <div class="ac-title">验证专家</div>
+          <div class="ac-desc">负责验证评估阶段，量化方案的 AHA 和 MAP 价值，撰写电梯演讲，制定迭代计划，完成商业模式画布。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📊</div>
+            <div>
+              <div class="ac-skill-name">AHA_MAP_Evaluator · 价值评估师</div>
+              <div class="ac-skill-desc">汇总测试报告，量化评估 AHA 用户价值（顿悟/高光/进步）和 MAP 商业价值（市场潜力/用户增长/优势壁垒），生成双雷达图数据。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🎤</div>
+            <div>
+              <div class="ac-skill-name">Pitch_Composer · 电梯呈现撰写师</div>
+              <div class="ac-skill-desc">生成 60 秒电梯演讲脚本（五段式：问题/方案/用户/价值/行动），语言精炼有力，适合向投资人或决策者呈现。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📅</div>
+            <div>
+              <div class="ac-skill-name">Project_Iteration · 迭代计划师</div>
+              <div class="ac-skill-desc">制定 30-60-90 天分阶段迭代计划，每个节点包含具体里程碑、成功指标和资源需求。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🖼</div>
+            <div>
+              <div class="ac-skill-name">BusinessModel_Painter · 商业模式画家</div>
+              <div class="ac-skill-desc">完整填写商业模式画布 9 格（价值主张/客户细分/渠道通路/客户关系/收入来源/核心资源/关键业务/重要合作/成本结构）。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 唤醒示例</div>
+            <div class="ac-trigger-text">「用 Pitch_Composer 为『智能购物推荐系统』写一段 60 秒电梯演讲」</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 对应关系总表 -->
+    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">📌 仪表板字段 × Sub-Agent 对应关系</h3>
+    <p class="section-desc" style="margin-bottom:0;">在仪表板哪个模块卡壳了，就用哪个 Agent——一一对应，不用猜。</p>
+
+    <table class="usage-table">
+      <thead>
+        <tr>
+          <th>仪表板模块</th>
+          <th>对应 Sub-Agent</th>
+          <th>对应 Skill</th>
+          <th>你需要告诉 AI 的</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>基本信息</strong><br><span style="color:var(--muted);font-size:11px;">项目名/简报/目标用户/场景</span></td>
+          <td>🏗️ TheArchitect</td>
+          <td><code>build_project_brief</code></td>
+          <td>用一句话描述你的项目背景和想解决的问题</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 项目简报</strong><br><span style="color:var(--muted);font-size:11px;">背景/机会/假设/范围/团队</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>build_project_brief</code></td>
+          <td>原始需求描述 + 目标用户群体</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › POV 洞察</strong><br><span style="color:var(--muted);font-size:11px;">用户/痛点/洞见三段式</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>用户画像描述 + 典型场景 + 观察到的困扰</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 用户画像</strong><br><span style="color:var(--muted);font-size:11px;">角色/特征/引语/痛点</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>目标用户群体描述（年龄/职业/行为特征）</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 利益相关者</strong><br><span style="color:var(--muted);font-size:11px;">各方角色/影响力/需求</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>roleplay_stakeholder</code></td>
+          <td>项目名称 + 目标用户 + 你已知的相关方角色</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › HMW</strong><br><span style="color:var(--muted);font-size:11px;">5 个创新机遇</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>HMW_Reframer</code></td>
+          <td>POV 洞察陈述（一句话描述用户核心问题）</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › 创意列表</strong><br><span style="color:var(--muted);font-size:11px;">创意 + 三维评分</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>NCO_Crosslinker</code></td>
+          <td>最佳 HMW 机遇（1-2 条） + 目标用户背景</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › 最佳创意</strong><br><span style="color:var(--muted);font-size:11px;">选择 + 理由</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>Idea_Distiller</code></td>
+          <td>创意列表（可直接粘贴 NCO 输出）</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › 概念方案</strong><br><span style="color:var(--muted);font-size:11px;">名称/描述/功能特性</span></td>
+          <td>🎨 Shape Specialist</td>
+          <td><code>Solution_Build</code></td>
+          <td>最佳创意描述 + 压力测试结果（可选）</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › 体验故事</strong><br><span style="color:var(--muted);font-size:11px;">六幕故事脚本</span></td>
+          <td>🎨 Shape Specialist</td>
+          <td><code>Storyboard_Scriptor</code></td>
+          <td>概念方案 + 目标用户画像</td>
+        </tr>
+        <tr>
+          <td><strong>Shape › MAP 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">M/A/P 三维 1-10</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>AHA_MAP_Evaluator</code></td>
+          <td>概念方案全文 + 目标市场描述</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › AHA 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">A/H/A 三维 1-10</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>AHA_MAP_Evaluator</code></td>
+          <td>用户测试反馈 / 体验故事 + 概念方案</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 电梯呈现</strong><br><span style="color:var(--muted);font-size:11px;">问题/方案/用户/价值/行动</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>Pitch_Composer</code></td>
+          <td>概念方案 + 核心价值主张 + 目标受众</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 迭代计划</strong><br><span style="color:var(--muted);font-size:11px;">30-60-90 天</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>Project_Iteration</code></td>
+          <td>概念方案 + 当前资源条件 + 优先级</td>
+        </tr>
+        <tr>
+          <td><strong>Exam › 商业模式画布</strong><br><span style="color:var(--muted);font-size:11px;">9 格全填</span></td>
+          <td>✅ Exam Specialist</td>
+          <td><code>BusinessModel_Painter</code></td>
+          <td>概念方案 + 电梯呈现 + 目标市场</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 用户访谈记录</strong><br><span style="color:var(--muted);font-size:11px;">原始访谈文本</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>受访者角色描述 + 访谈问题 + 关键发现</td>
+        </tr>
+        <tr>
+          <td><strong>Reveal › 亲和图</strong><br><span style="color:var(--muted);font-size:11px;">洞察聚类分析</span></td>
+          <td>🔍 Reveal Specialist</td>
+          <td><code>pov_builder</code></td>
+          <td>访谈记录 / 观察便利贴，要求归类为 3–5 个主题</td>
+        </tr>
+        <tr>
+          <td><strong>Inspire › Crazy 8 草图</strong><br><span style="color:var(--muted);font-size:11px;">8 方向快速发散</span></td>
+          <td>💡 Inspire Specialist</td>
+          <td><code>NCO_Crosslinker</code></td>
+          <td>HMW 机遇（1–2 条），要求产出 8 个差异化方向</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 两种使用方式 -->
+    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">🚦 两种调用方式，按需选择</h3>
+    <div class="qa-grid">
+      <div class="qa-card" style="border-color:#c7d2fe;">
+        <div class="qa-icon">⚡</div>
+        <div class="qa-label">全自动模式（推荐新手）</div>
+        <div class="qa-desc">一句话描述项目，TheArchitect 自动执行完整五阶段流水线，所有 JSON 产出落地后，批量粘贴进仪表板。</div>
+        <div style="margin-top:10px; background:#f0f4ff; border-radius:8px; padding:10px 12px; font-size:12px; color:var(--purple-dark); font-family:monospace; line-height:1.7;">
+          「帮我用 Eureka 系统解决一个线下零售场景下，年轻消费者的排队等待焦虑问题，达到提升顾客满意度和门店转化率的目的」
+        </div>
+      </div>
+      <div class="qa-card" style="border-color:#a7f3d0;">
+        <div class="qa-icon">🎯</div>
+        <div class="qa-label">单点调用模式（推荐熟练用户）</div>
+        <div class="qa-desc">针对某个阶段卡壳或需要深化的内容，直接点名对应 Skill，输入上下文，获取精准产出。</div>
+        <div style="margin-top:10px; background:#f0fdf4; border-radius:8px; padding:10px 12px; font-size:12px; color:#15803d; font-family:monospace; line-height:1.7;">
+          「用 Storyboard_Scriptor 给我的 AI 推荐系统概念写六幕体验故事」
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box" style="background:#f0f4ff; border: 1.5px solid #c7d2fe; margin-top:20px;">
+      <div class="cb-title" style="color:var(--purple-dark);">🔄 AI 产出 → 仪表板的标准流程</div>
+      <div class="cb-body" style="color:var(--text);">
+        ① 在对话中告诉 AI 你要用哪个 Skill + 提供输入内容<br>
+        ② AI 产出结构化文本（JSON 或 Markdown 格式）<br>
+        ③ 打开仪表板 → 进入对应编辑器 Tab（如 Shape）<br>
+        ④ 将 AI 产出的内容粘贴 / 填入对应字段<br>
+        ⑤ 点「保存项目」 → 可视化卡片自动渲染
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑨ API 配置与 WorkBuddy 集成 -->
+  <section class="section fade-in" id="api-config">
+    <div class="section-label">🔌 API 配置</div>
+    <h2 class="section-title">如何配置 AI 与调用 Sub-Agent</h2>
+    <p class="section-desc">Eureka 支持两种 AI 调用方式：Dashboard 内直接配置 API Key，或通过 WorkBuddy 调用已集成的 Skills。选择适合你的方式开始使用。</p>
+
+    <!-- 方式一：Dashboard API 配置 -->
+    <div style="margin-top: 32px; background: var(--surface); border-radius: var(--r); border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow);">
+      <div style="background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px 28px; color: #fff;">
+        <div style="font-size: 11px; font-weight: 800; opacity: .8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">METHOD 01</div>
+        <div style="font-size: 18px; font-weight: 800;">🔑 在 Dashboard 内配置 API Key</div>
+      </div>
+      <div style="padding: 28px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+          <div style="background: #f8faff; border-radius: 12px; padding: 20px; border: 1.5px solid #e0e7ff;">
+            <div style="font-size: 13px; font-weight: 800; color: #4f46e5; margin-bottom: 12px;">步骤 1：打开 AI 设置</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              进入 <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank" style="color: #4f46e5; font-weight: 600;">Eureka Dashboard</a>，点击页面右上角「⚙️ AI 设置」按钮，弹出配置面板。
+            </div>
+          </div>
+          <div style="background: #f0fdf4; border-radius: 12px; padding: 20px; border: 1.5px solid #a7f3d0;">
+            <div style="font-size: 13px; font-weight: 800; color: #15803d; margin-bottom: 12px;">步骤 2：选择服务商</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              支持 OpenAI、DeepSeek、通义千问，或选择「自定义」输入其他兼容 OpenAI 接口格式的服务商。
+            </div>
+          </div>
+          <div style="background: #fffbeb; border-radius: 12px; padding: 20px; border: 1.5px solid #fde68a;">
+            <div style="font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 12px;">步骤 3：填写配置</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              输入 API Key、模型名称（如 gpt-4、deepseek-chat）、Base URL（如使用自定义服务商）。
+            </div>
+          </div>
+          <div style="background: #fdf4ff; border-radius: 12px; padding: 20px; border: 1.5px solid #e9d5ff;">
+            <div style="font-size: 13px; font-weight: 800; color: #7c3aed; margin-bottom: 12px;">步骤 4：测试并保存</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.8;">
+              点击「测试连接」验证 API 可用性，确认无误后点击「保存配置」。配置将存储在浏览器本地。
+            </div>
+          </div>
+        </div>
+        
+        <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; color: #991b1b; line-height: 1.7;">
+            <strong>⚠️ 安全提示：</strong>API Key 仅存储在浏览器 localStorage 中，不会上传到任何服务器。建议个人使用，不要在公共电脑上保存敏感 Key。团队共享场景建议使用 WorkBuddy 集成方式。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方式二：WorkBuddy 集成 -->
+    <div style="margin-top: 28px; background: var(--surface); border-radius: var(--r); border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow);">
+      <div style="background: linear-gradient(135deg, #0f766e, #14b8a6); padding: 20px 28px; color: #fff;">
+        <div style="font-size: 11px; font-weight: 800; opacity: .8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">METHOD 02 · RECOMMENDED</div>
+        <div style="font-size: 18px; font-weight: 800;">🛰️ 通过 WorkBuddy 调用 Skills</div>
+      </div>
+      <div style="padding: 28px;">
+        <p style="font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 24px;">
+          如果你已经在使用 WorkBuddy，可以直接调用 Eureka 系列 Skills，无需在 Dashboard 中重复配置 API Key。WorkBuddy 会自动管理 API 调用和上下文传递。
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div style="background: #f0fdfa; border-radius: 12px; padding: 20px; border: 1.5px solid #99f6e4;">
+            <div style="font-size: 20px; margin-bottom: 12px;">✨</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0f766e; margin-bottom: 8px;">直接唤醒 Agent</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              在 WorkBuddy 聊天框输入：<br>
+              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Reveal Specialist</code><br>
+              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Inspire Specialist</code><br>
+              即可直接调用对应阶段的专家智能体。
+            </div>
+          </div>
+          <div style="background: #f0f9ff; border-radius: 12px; padding: 20px; border: 1.5px solid #bae6fd;">
+            <div style="font-size: 20px; margin-bottom: 12px;">🎯</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 8px;">调用具体 Skill</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              使用 Skill 名称精确调用：<br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">pov_builder</code>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">HMW_Reframer</code><br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">NCO_Crosslinker</code>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">Solution_Build</code>
+            </div>
+          </div>
+          <div style="background: #faf5ff; border-radius: 12px; padding: 20px; border: 1.5px solid #e9d5ff;">
+            <div style="font-size: 20px; margin-bottom: 12px;">💬</div>
+            <div style="font-size: 14px; font-weight: 700; color: #7c3aed; margin-bottom: 8px;">自然语言描述</div>
+            <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
+              直接描述你的需求：<br>
+              <em style="color: #7c3aed;">"帮我为这个产品写一段 POV 洞察"</em><br>
+              <em style="color: #7c3aed;">"基于这个痛点生成 HMW 问题"</em><br>
+              WorkBuddy 会自动匹配最合适的 Skill。
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 16px 20px;">
+          <div style="font-size: 13px; color: #166534; line-height: 1.7;">
+            <strong>✅ WorkBuddy 集成优势：</strong>无需管理 API Key · 自动上下文传递 · 支持多轮对话 · 可与其他 Skills 组合使用 · 团队共享配置
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API 配置 Troubleshooting -->
+    <h3 style="font-size: 18px; font-weight: 800; margin: 40px 0 16px; color: var(--text);">🔧 常见问题排查</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ "未配置 AI 接口" 提示</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          表示当前没有可用的 API 配置。点击 Dashboard 右上角「⚙️ AI 设置」进行配置，或切换到 WorkBuddy 环境使用。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ "API 连接失败" 错误</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          检查 API Key 是否正确、是否已过期、是否有足够的余额。自定义 Base URL 时需确保接口兼容 OpenAI 格式。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❌ 响应缓慢或超时</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          可能是网络问题或模型服务商响应慢。尝试切换模型（如从 gpt-4 切换到 gpt-3.5-turbo）或检查网络连接。
+        </div>
+      </div>
+      <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❓ WorkBuddy 中找不到 Eureka Skills</div>
+        <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
+          确保 WorkBuddy 已更新到最新版本。Skills 列表中搜索 "Eureka" 或 "创新" 即可找到相关技能包。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑩ FAQ -->
+  <section class="section fade-in" id="faq">
+    <div class="section-label">❓ 常见问题</div>
+    <h2 class="section-title">遇到问题先看这里</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>刷新页面，数据还在吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">在的。数据存储在浏览器 localStorage，普通刷新不影响。但<strong>清除浏览器数据/缓存</strong>或<strong>换浏览器</strong>会导致数据消失。重要项目请定期导出 Markdown 备份。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>多人协作可以用同一个项目吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">目前不支持实时多人协同（数据在各自浏览器本地）。推荐一人主导录入，其他成员提供素材；或导出 Markdown 后分工编辑，再由一人汇总回 Eureka。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>导出的 PDF 版面乱了怎么办？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">PDF 使用浏览器打印生成。打印设置中调整纸张方向（横向效果更好）、缩放比例（推荐 80%），关闭「页眉页脚」选项。Chrome 效果优于其他浏览器。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>雷达图/甘特图不显示？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">雷达图需要填写对应评分数据才会渲染。甘特图需要在「项目计划」Tab 中设置至少一个阶段的日期。填完保存后刷新页面或重新点击该项目即可。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>可以把项目迁移到另一台电脑吗？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">可以。在当前电脑导出 Markdown，在新电脑「上传创新文档」（导航栏按钮）导入内容，手工核对后重新保存即可。未来版本将支持 JSON 完整导入导出。</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>项目进度是怎么自动计算的？</span>
+          <span class="faq-arrow">⌄</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">系统根据「项目计划」Tab 中各阶段的状态（completed / in_progress / pending）自动推算整体 progress 百分比。状态设置越完整，进度越准确。也可以在基本信息 Tab 手动设置进度。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div><strong>Eureka Dashboard</strong> · v1.3.1 · 2026-04-08</div>
+  <div style="margin-top:6px;">
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/" target="_blank">🔗 打开仪表板</a>
+    &nbsp;·&nbsp;
+    <a href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/" target="_blank">🏠 主页</a>
+  </div>
+  <div style="margin-top: 8px; opacity: .4; font-size: 11px;">数据存储在浏览器本地，请定期导出备份</div>
+</footer>
+
+<script>
+  // 阅读进度条
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('readingBar');
+    const doc = document.documentElement;
+    const top = doc.scrollTop || document.body.scrollTop;
+    const height = doc.scrollHeight - doc.clientHeight;
+    bar.style.width = (top / height * 100) + '%';
+
+    // 更新 nav 活跃状态
+    const sections = ['start','prep','flow','stages','io','exp','tips','agents','api-config','faq'];
+    const links = document.querySelectorAll('.nav-link');
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= 80 && rect.bottom > 80) {
+        links.forEach(l => l.classList.remove('active'));
+        links[i] && links[i].classList.add('active');
+      }
+    });
+  });
+
+  // 导航点击
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - 70;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }
+
+  // FAQ 展开/收起
+  function toggleFaq(q) {
+    const item = q.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // 滚动淡入动画
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+{
+  "agent_id": "exam_specialist",
+  "agent_name": "Exam Specialist - 验证官",
+  "version": "1.0.0",
+  "stage": "Exam",
+  "stage_number": 4,
+  "role": "测试助理与决策评委",
+  "developer": "习智场景化创新训练",
+  "license": "MIT",
+  
+  "description": "测试助理与决策评委，负责：1) 搭建测试计划，对概念方案的原型进行测试；2) 评估 AHA 价值和商业 MAP 价值；3) 生成 60 秒电梯呈现脚本；4) 生成 30-60-90 天迭代计划和商业模式画布。",
+  
+  "skills": [
+    {
+      "skill_id": "AHA_MAP_Evaluator",
+      "skill_name": "AHA_MAP 评估师",
+      "type": "评估类",
+      "description": "汇总测试报告，量化和主观评估方案带来的 AHA 价值（顿悟、高光、进步）和商业 MAP 价值（潜力、获客、壁垒）",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "Pitch_Composer",
+      "skill_name": "电梯呈现脚本撰写者",
+      "type": "创意类",
+      "description": "基于方案和测试结果生成 60 秒电梯呈现脚本",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "Project_Iteration",
+      "skill_name": "项目迭代规划师",
+      "type": "规划类",
+      "description": "生成项目的概念方案原型的 30-60-90 天迭代计划",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "BusinessModel_Painter",
+      "skill_name": "商业模式画布绘制者",
+      "type": "规划类",
+      "description": "基于整个项目生成商业模式画布的 9 要素假设",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "workflow": [
+    {
+      "step": 1,
+      "name": "AHA_MAP 价值评估",
+      "skill": "AHA_MAP_Evaluator",
+      "description": "汇总测试报告，量化和主观评估方案带来的 AHA 价值和商业 MAP 价值",
+      "input": ["概念方案", "体验故事", "测试数据"],
+      "output": ["测试报告"]
+    },
+    {
+      "step": 2,
+      "name": "电梯呈现脚本",
+      "skill": "Pitch_Composer",
+      "description": "基于方案和测试结果生成 60 秒电梯呈现脚本",
+      "input": ["项目简报", "POV", "概念方案", "用户故事", "测试报告"],
+      "output": ["电梯呈现脚本"]
+    },
+    {
+      "step": 3,
+      "name": "项目迭代计划",
+      "skill": "Project_Iteration",
+      "description": "生成项目的概念方案原型的 30-60-90 天迭代计划",
+      "input": ["概念方案", "测试报告", "商业 MAP 价值评估"],
+      "output": ["迭代计划"]
+    },
+    {
+      "step": 4,
+      "name": "商业模式画布",
+      "skill": "BusinessModel_Painter",
+      "description": "基于整个项目生成商业模式画布的 9 要素假设",
+      "input": ["概念方案", "测试报告", "迭代计划"],
+      "output": ["商业模式画布"]
+    }
+  ],
+  
+  "input_schema": {
+    "required": [
+      "concept_solution",
+      "experience_story",
+      "project_brief",
+      "pov"
+    ],
+    "optional": [
+      "test_data",
+      "observation_records",
+      "quantitative_metrics"
+    ],
+    "fields": {
+      "concept_solution": {
+        "type": "object",
+        "description": "概念方案，来自 Shape Specialist",
+        "required_fields": [
+          "concept_name",
+          "core_value",
+          "core_functions",
+          "key_features"
+        ]
+      },
+      "experience_story": {
+        "type": "object",
+        "description": "体验故事，来自 Shape Specialist",
+        "required_fields": [
+          "story_title",
+          "user_persona",
+          "act_1",
+          "act_2",
+          "act_3",
+          "act_4",
+          "act_5",
+          "act_6"
+        ]
+      },
+      "project_brief": {
+        "type": "object",
+        "description": "项目简报，来自 Reveal Specialist"
+      },
+      "pov": {
+        "type": "string",
+        "description": "用户 POV，来自 Reveal Specialist"
+      },
+      "test_data": {
+        "type": "object",
+        "description": "用户测试数据，包含用户反馈、评分、AHA 时刻等"
+      },
+      "observation_records": {
+        "type": "array",
+        "description": "观察记录，测试过程中的观察记录"
+      },
+      "quantitative_metrics": {
+        "type": "object",
+        "description": "量化指标，包含时间节省、决策信心提升、满意度提升等"
+      }
+    }
+  },
+  
+  "output_schema": {
+    "test_report": {
+      "type": "object",
+      "description": "测试报告",
+      "fields": {
+        "test_summary": {
+          "type": "object",
+          "description": "测试总结"
+        },
+        "aha_value_evaluation": {
+          "type": "object",
+          "description": "AHA 价值评估（顿悟、高光、进步）"
+        },
+        "business_map_value_evaluation": {
+          "type": "object",
+          "description": "商业 MAP 价值评估（潜力、获客、壁垒）"
+        },
+        "test_conclusions": {
+          "type": "object",
+          "description": "测试结论（有效、无效、新发现、新问题）"
+        },
+        "iteration_directions": {
+          "type": "object",
+          "description": "迭代方向"
+        }
+      }
+    },
+    "pitch_script": {
+      "type": "object",
+      "description": "电梯呈现脚本",
+      "fields": {
+        "60_second_script": {
+          "type": "string",
+          "description": "60 秒脚本"
+        },
+        "word_count": {
+          "type": "string",
+          "description": "字数统计"
+        },
+        "duration_estimate": {
+          "type": "string",
+          "description": "时长估算"
+        },
+        "script_points": {
+          "type": "array",
+          "description": "脚本要点"
+        },
+        "key_data": {
+          "type": "array",
+          "description": "关键数据"
+        },
+        "call_to_action": {
+          "type": "object",
+          "description": "行动号召"
+        }
+      }
+    },
+    "iteration_plan": {
+      "type": "object",
+      "description": "迭代计划",
+      "fields": {
+        "30_day_plan": {
+          "type": "object",
+          "description": "30 天计划"
+        },
+        "60_day_plan": {
+          "type": "object",
+          "description": "60 天计划"
+        },
+        "90_day_plan": {
+          "type": "object",
+          "description": "90 天计划"
+        },
+        "iteration_summary": {
+          "type": "object",
+          "description": "迭代总结"
+        }
+      }
+    },
+    "business_model_canvas": {
+      "type": "object",
+      "description": "商业模式画布",
+      "fields": {
+        "customer_segments": {
+          "type": "object",
+          "description": "客户细分"
+        },
+        "value_propositions": {
+          "type": "object",
+          "description": "价值主张"
+        },
+        "channels": {
+          "type": "object",
+          "description": "渠道通路"
+        },
+        "customer_relationships": {
+          "type": "object",
+          "description": "客户关系"
+        },
+        "revenue_streams": {
+          "type": "object",
+          "description": "收入来源"
+        },
+        "key_resources": {
+          "type": "object",
+          "description": "核心资源"
+        },
+        "key_activities": {
+          "type": "object",
+          "description": "关键业务"
+        },
+        "key_partnerships": {
+          "type": "object",
+          "description": "重要合作"
+        },
+        "cost_structure": {
+          "type": "object",
+          "description": "成本结构"
+        },
+        "hypothesis_validation": {
+          "type": "object",
+          "description": "假设验证"
+        },
+        "validation_plan": {
+          "type": "object",
+          "description": "验证计划"
+        }
+      }
+    }
+  },
+  
+  "quality_standards": {
+    "test_report": {
+      "test_completeness": {
+        "description": "测试完整性",
+        "metric": "测试目标明确、测试脚本完整、测试数据充分",
+        "pass": true
+      },
+      "aha_value_evaluation": {
+        "description": "AHA 价值评估",
+        "metric": "顿悟、高光、进步三个维度都有评估，有量化指标",
+        "pass": true
+      },
+      "business_map_value_evaluation": {
+        "description": "商业 MAP 价值评估",
+        "metric": "潜力、获客、壁垒三个维度都有评估，有量化指标",
+        "pass": true
+      },
+      "test_conclusions": {
+        "description": "测试结论",
+        "metric": "有效、无效、新发现、新问题四个角度都有结论",
+        "pass": true
+      },
+      "iteration_directions": {
+        "description": "迭代方向",
+        "metric": "迭代方向明确，优先级清晰，可执行",
+        "pass": true
+      }
+    },
+    "pitch_script": {
+      "duration_control": {
+        "description": "时长控制",
+        "metric": "60 秒内可以说完（约 150-200 字）",
+        "pass": true
+      },
+      "logical_clarity": {
+        "description": "逻辑清晰",
+        "metric": "逻辑清晰，层次分明，易于理解",
+        "pass": true
+      },
+      "value_highlight": {
+        "description": "价值突出",
+        "metric": "突出核心价值和亮点",
+        "pass": true
+      },
+      "data_support": {
+        "description": "数据支撑",
+        "metric": "有测试数据支撑，可信度高",
+        "pass": true
+      },
+      "powerful_call_to_action": {
+        "description": "号召有力",
+        "metric": "有明确的行动号召",
+        "pass": true
+      }
+    },
+    "iteration_plan": {
+      "clear_objectives": {
+        "description": "目标明确",
+        "metric": "每个阶段都有明确的目标",
+        "pass": true
+      },
+      "reasonable_time": {
+        "description": "时间合理",
+        "metric": "每个阶段的时间安排合理",
+        "pass": true
+      },
+      "clear_milestones": {
+        "description": "里程碑清晰",
+        "metric": "每个阶段都有清晰的里程碑",
+        "pass": true
+      },
+      "high_executability": {
+        "description": "可执行性强",
+        "metric": "计划可执行，资源可获得",
+        "pass": true
+      },
+      "controllable_risks": {
+        "description": "风险可控",
+        "metric": "风险识别充分，应对措施明确",
+        "pass": true
+      }
+    },
+    "business_model_canvas": {
+      "nine_elements_complete": {
+        "description": "9 要素完整",
+        "metric": "9 个要素都有内容",
+        "pass": true
+      },
+      "logical_consistency": {
+        "description": "逻辑一致",
+        "metric": "9 个要素之间逻辑一致",
+        "pass": true
+      },
+      "clear_hypotheses": {
+        "description": "假设明确",
+        "metric": "每个要素的假设都明确",
+        "pass": true
+      },
+      "verifiability": {
+        "description": "可验证性",
+        "metric": "假设可以验证",
+        "pass": true
+      },
+      "iterability": {
+        "description": "可迭代性",
+        "metric": "画布可以迭代更新",
+        "pass": true
+      }
+    }
+  },
+  
+  "upstream_agents": [
+    {
+      "agent_id": "reveal_specialist",
+      "agent_name": "Reveal Specialist - 洞察官",
+      "stage": "Reveal",
+      "outputs": ["项目简报", "POV", "用户画像", "使用场景"]
+    },
+    {
+      "agent_id": "shape_specialist",
+      "agent_name": "Shape Specialist - 架构师",
+      "stage": "Shape",
+      "outputs": ["概念方案", "体验故事"]
+    }
+  ],
+  
+  "downstream_agents": [],
+  
+  "deliverables": [
+    {
+      "name": "测试报告",
+      "description": "包含测试汇总、AHA 价值评估、商业 MAP 价值评估、迭代方向"
+    },
+    {
+      "name": "电梯呈现脚本",
+      "description": "60 秒投资者呈现脚本"
+    },
+    {
+      "name": "迭代计划",
+      "description": "30-60-90 天项目迭代计划"
+    },
+    {
+      "name": "商业模式画布",
+      "description": "9 要素商业模式画布"
+    }
+  ],
+  
+  "metadata": {
+    "created_at": "2026-03-23",
+    "last_updated": "2026-03-23",
+    "author": "习智场景化创新训练",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2026-03-23",
+        "changes": "初始版本发布"
+      }
+    ]
+  }
+}

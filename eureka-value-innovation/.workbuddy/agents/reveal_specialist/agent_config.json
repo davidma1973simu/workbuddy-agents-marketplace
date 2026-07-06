@@ -1,0 +1,312 @@
+{
+  "agent_id": "reveal_specialist",
+  "agent_name": "洞察官",
+  "version": "1.0",
+  "stage": ["build", "reveal"],
+  "description": "负责项目启动、用户探索、需求整合和洞察挖掘的核心Agent",
+  "capabilities": [
+    "项目简报构建",
+    "用户探索计划设计",
+    "利益相关方分析",
+    "FIND模型洞察挖掘",
+    "POV构建",
+    "洞察质量验证",
+    "跨阶段协作"
+  ],
+  "skills": [
+    {
+      "skill_id": "build_project_brief",
+      "skill_name": "构建项目简报",
+      "stage": "build",
+      "output_file": "00_build_project_brief.json",
+      "description": "将客户需求转化为结构化的项目简报"
+    },
+    {
+      "skill_id": "roleplay_stakeholder",
+      "skill_name": "利益相关方分析",
+      "stage": "reveal",
+      "output_file": "03_roleplay_stakeholder.json",
+      "description": "使用Buy Features方法分析利益相关方需求和影响力"
+    },
+    {
+      "skill_id": "find_insight",
+      "skill_name": "FIND模型洞察",
+      "stage": "reveal",
+      "output_file": "02_find_insight.json",
+      "description": "运用FIND模型从用户旅程事实中挖掘深层需求"
+    },
+    {
+      "skill_id": "pov_builder",
+      "skill_name": "POV构建",
+      "stage": "reveal",
+      "output_file": "01_pov_builder.json",
+      "description": "整合所有洞察生成用户POV"
+    }
+  ],
+  "input_requirements": {
+    "minimal": {
+      "description": "最小输入要求",
+      "data": [
+        {
+          "name": "客户需求描述",
+          "type": "text",
+          "required": true,
+          "description": "客户对项目目标和需求的初步描述"
+        }
+      ]
+    },
+    "full": {
+      "description": "完整输入要求（用于Reveal阶段）",
+      "data": [
+        {
+          "name": "客户需求描述",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "用户探索数据",
+          "type": "json",
+          "required": false,
+          "description": "访谈记录、观察笔记、问卷数据等"
+        },
+        {
+          "name": "项目约束条件",
+          "type": "json",
+          "required": false,
+          "description": "时间、预算、技术等约束"
+        },
+        {
+          "name": "利益相关方列表",
+          "type": "json",
+          "required": false,
+          "description": "已识别的利益相关方信息"
+        }
+      ]
+    }
+  },
+  "output_format": {
+    "project_brief": {
+      "file": "00_build_project_brief.json",
+      "content": {
+        "background": "项目背景案例",
+        "core_challenge": "核心设计挑战",
+        "consensus_goals": "共识目标（SMART）",
+        "target_user": "目标用户画像",
+        "timeframe": "时间窗口和里程碑",
+        "stakeholders": "利益相关方列表"
+      }
+    },
+    "find_insight": {
+      "file": "02_find_insight.json",
+      "content": {
+        "facts": "客观事实清单",
+        "interpretations": "行为解读清单",
+        "needs": "四层次需求（显性、隐性、情感、深层）",
+        "design_insight": "设计洞察、设计原则、设计建议"
+      }
+    },
+    "pov_builder": {
+      "file": "01_pov_builder.json",
+      "content": {
+        "user_persona": "用户画像",
+        "context_challenge": "场景挑战",
+        "pain_points": "痛点清单",
+        "user_needs": "用户需求",
+        "pov_statement": "POV陈述（行动/洞察/情感导向）",
+        "success_criteria": "成功标准"
+      }
+    },
+    "stakeholder": {
+      "file": "03_roleplay_stakeholder.json",
+      "content": {
+        "stakeholders": "利益相关方分析",
+        "buy_features": "Buy Features需求优先级",
+        "influence": "影响力评估"
+      }
+    },
+    "visualizations": {
+      "pov_card": {
+        "file": "pov_card.html",
+        "description": "POV卡片可视化界面"
+      },
+      "requirements_list": {
+        "file": "stakeholder_requirements_list.txt",
+        "description": "利益相关方需求优先列表"
+      }
+    }
+  },
+  "workflow": {
+    "build_stage": [
+      {
+        "step": 1,
+        "action": "接收客户需求",
+        "skill": "N/A"
+      },
+      {
+        "step": 2,
+        "action": "调用 build_project_brief",
+        "skill": "build_project_brief"
+      },
+      {
+        "step": 3,
+        "action": "生成项目简报",
+        "output": "00_build_project_brief.json"
+      },
+      {
+        "step": 4,
+        "action": "识别利益相关方",
+        "skill": "N/A"
+      },
+      {
+        "step": 5,
+        "action": "定义项目范围和约束",
+        "skill": "N/A"
+      }
+    ],
+    "reveal_stage": [
+      {
+        "step": 1,
+        "action": "用户探索计划设计",
+        "skill": "N/A"
+      },
+      {
+        "step": 2,
+        "action": "收集用户探索数据",
+        "skill": "N/A"
+      },
+      {
+        "step": 3,
+        "action": "并行执行利益相关方分析",
+        "skill": "roleplay_stakeholder",
+        "output": "03_roleplay_stakeholder.json",
+        "parallel_with": "find_insight"
+      },
+      {
+        "step": 4,
+        "action": "并行执行FIND模型洞察",
+        "skill": "find_insight",
+        "output": "02_find_insight.json",
+        "parallel_with": "roleplay_stakeholder"
+      },
+      {
+        "step": 5,
+        "action": "验证洞察质量",
+        "skill": "N/A"
+      },
+      {
+        "step": 6,
+        "action": "调用 pov_builder",
+        "skill": "pov_builder",
+        "output": "01_pov_builder.json"
+      },
+      {
+        "step": 7,
+        "action": "生成POV卡片和需求列表",
+        "skill": "N/A",
+        "output": ["pov_card.html", "stakeholder_requirements_list.txt"]
+      }
+    ]
+  },
+  "quality_standards": {
+    "project_brief": {
+      "background_clear": "背景案例清晰，问题场景具体",
+      "challenge_actionable": "核心挑战是行动导向的清晰陈述",
+      "goals_smart": "目标符合SMART原则",
+      "persona_detailed": "用户画像有足够的细节和特征",
+      "timeframe_reasonable": "时间窗口合理，里程碑可执行"
+    },
+    "find_insight": {
+      "facts_objective": "事实客观、可观察、有来源",
+      "interpretations_based": "解读基于事实，逻辑清晰",
+      "needs_complete": "需求覆盖四个层次",
+      "insight_concise": "洞察陈述简洁有力（≤100字）",
+      "principles_actionable": "设计原则具体可执行"
+    },
+    "pov_builder": {
+      "user_centric": "POV陈述从用户视角出发",
+      "insight_deep": "洞察有深度，非表面需求",
+      "scenario_specific": "场景具体，痛点真实",
+      "goals_measurable": "目标明确，可测量",
+      "card_correct": "POV卡片格式正确"
+    },
+    "stakeholder": {
+      "buy_features_valid": "Buy Features总分12分",
+      "influence_scaled": "影响力评分1-3分",
+      "priorities_clear": "需求优先级清晰"
+    }
+  },
+  "error_handling": {
+    "p1_errors": [
+      {
+        "name": "用户探索数据不足",
+        "condition": "observations < 5 or interviews < 3",
+        "action": "停止执行，请求补充数据"
+      },
+      {
+        "name": "事实质量低",
+        "condition": ">50% facts包含主观判断",
+        "action": "停止执行，建议重新提取事实"
+      },
+      {
+        "name": "利益相关方识别不完整",
+        "condition": "遗漏关键利益相关方",
+        "action": "停止执行，补充识别"
+      }
+    ],
+    "p2_errors": [
+      {
+        "name": "洞察缺乏依据",
+        "condition": "design_insight缺乏充分fact支撑",
+        "action": "标记为需要验证"
+      },
+      {
+        "name": "利益方需求冲突",
+        "condition": "多个stakeholders需求存在冲突",
+        "action": "识别冲突，组织讨论"
+      },
+      {
+        "name": "POV与洞察不一致",
+        "condition": "POV中的insight与find_insight不匹配",
+        "action": "重新构建POV"
+      }
+    ]
+  },
+  "collaboration": {
+    "upstream": [],
+    "downstream": [
+      {
+        "agent_id": "inspire_specialist",
+        "agent_name": "灵感官",
+        "receives": ["POV", "FIND洞察", "设计原则"],
+        "provides": ["用户需求"],
+        "collaboration": "确保HMW机遇与用户洞察一致"
+      },
+      {
+        "agent_id": "imagine_specialist",
+        "agent_name": "想象官",
+        "receives": ["用户需求", "成功标准"],
+        "provides": ["用户反馈"],
+        "collaboration": "验证创意是否满足用户需求"
+      },
+      {
+        "agent_id": "verify_specialist",
+        "agent_name": "验证官",
+        "receives": ["用户画像", "POV"],
+        "provides": ["用户测试建议"],
+        "collaboration": "参与用户测试和数据分析"
+      }
+    ]
+  },
+  "metadata": {
+    "created_date": "2026-03-22",
+    "last_updated": "2026-03-22",
+    "author": "Eureka! AI价值创新系统",
+    "version_history": [
+      {
+        "version": "1.0",
+        "date": "2026-03-22",
+        "changes": "初始版本创建，定义Agent核心能力、工作流程和协作方式"
+      }
+    ]
+  }
+}

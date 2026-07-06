@@ -1,0 +1,292 @@
+{
+  "agent_id": "shape_specialist",
+  "agent_name": "Shape Specialist - 架构师",
+  "version": "1.0.0",
+  "stage": "Shape",
+  "stage_number": 3,
+  "role": "方案拷问员与剧本作家",
+  "developer": "习智场景化创新训练",
+  "license": "MIT",
+  
+  "description": "方案拷问员与剧本作家，负责：1) 从四个维度（用户、技术、商业、利益方）对最佳创意进行拷问和压力测试；2) 将拷问结果整合为完整的概念方案；3) 从用户视角构建 6 幕体验故事脚本。",
+  
+  "skills": [
+    {
+      "skill_id": "Solution_Interrogator",
+      "skill_name": "方案拷问员",
+      "type": "分析类",
+      "description": "从四个维度（用户、技术、商业、利益方）对最佳创意进行拷问和压力测试",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "Solution_Build",
+      "skill_name": "方案构建师",
+      "type": "构建类",
+      "description": "将拷问结果整合为完整的概念方案，明确功能和特性，设计 AHA 价值",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "Storyboard_Scriptor",
+      "skill_name": "故事板编剧",
+      "type": "创意类",
+      "description": "将概念方案转化为用户视角体验的 6 幕体验故事脚本",
+      "version": "1.0.0"
+    }
+  ],
+  
+  "workflow": [
+    {
+      "step": 1,
+      "name": "方案拷问",
+      "skill": "Solution_Interrogator",
+      "description": "从用户、技术、商业、利益方四个维度对最佳创意进行拷问和压力测试",
+      "input": ["最佳创意", "AHA 价值假设", "利益相关者分析"],
+      "output": ["拷问报告"]
+    },
+    {
+      "step": 2,
+      "name": "方案构建",
+      "skill": "Solution_Build",
+      "description": "将拷问结果整合为完整的概念方案，明确功能和特性",
+      "input": ["拷问报告"],
+      "output": ["概念方案"]
+    },
+    {
+      "step": 3,
+      "name": "体验故事设计",
+      "skill": "Storyboard_Scriptor",
+      "description": "从用户视角构建 6 幕体验故事脚本",
+      "input": ["概念方案", "用户画像", "使用场景"],
+      "output": ["体验故事脚本"]
+    }
+  ],
+  
+  "input_schema": {
+    "required": [
+      "best_ideas",
+      "aha_value_hypothesis",
+      "stakeholder_analysis"
+    ],
+    "optional": [
+      "user_personas",
+      "usage_scenarios"
+    ],
+    "fields": {
+      "best_ideas": {
+        "type": "array",
+        "description": "最佳创意列表，来自 Inspire Specialist",
+        "min_items": 1,
+        "max_items": 5
+      },
+      "aha_value_hypothesis": {
+        "type": "string",
+        "description": "AHA 价值假设，说明用户获得的价值"
+      },
+      "stakeholder_analysis": {
+        "type": "object",
+        "description": "利益相关者分析，来自 Reveal Specialist 的 Roleplay_Stakeholder skill"
+      },
+      "user_personas": {
+        "type": "object",
+        "description": "用户画像，来自 Reveal Specialist"
+      },
+      "usage_scenarios": {
+        "type": "string",
+        "description": "使用场景描述，来自 Reveal Specialist"
+      }
+    }
+  },
+  
+  "output_schema": {
+    "concept_solution": {
+      "type": "object",
+      "description": "概念方案",
+      "fields": {
+        "concept_name": {
+          "type": "string",
+          "description": "概念名称，简洁有力"
+        },
+        "core_value": {
+          "type": "string",
+          "description": "核心价值（AHA 价值声明）"
+        },
+        "core_functions": {
+          "type": "array",
+          "description": "核心功能（3-5 个）"
+        },
+        "key_features": {
+          "type": "object",
+          "description": "关键特性"
+        },
+        "technical_architecture": {
+          "type": "object",
+          "description": "技术架构（高层）"
+        },
+        "business_logic": {
+          "type": "object",
+          "description": "商业逻辑"
+        },
+        "stakeholder_relations": {
+          "type": "object",
+          "description": "利益方关系"
+        },
+        "implementation_path": {
+          "type": "array",
+          "description": "实施路径"
+        }
+      }
+    },
+    "experience_story": {
+      "type": "object",
+      "description": "体验故事脚本",
+      "fields": {
+        "story_title": {
+          "type": "string",
+          "description": "故事标题"
+        },
+        "user_persona": {
+          "type": "object",
+          "description": "用户画像"
+        },
+        "act_1": {
+          "type": "object",
+          "description": "第 1 幕：用户问题"
+        },
+        "act_2": {
+          "type": "object",
+          "description": "第 2 幕：POV"
+        },
+        "act_3": {
+          "type": "object",
+          "description": "第 3 幕：接触新方案"
+        },
+        "act_4": {
+          "type": "object",
+          "description": "第 4 幕：使用新方案解决问题"
+        },
+        "act_5": {
+          "type": "object",
+          "description": "第 5 幕：得到方案的结果"
+        },
+        "act_6": {
+          "type": "object",
+          "description": "第 6 幕：用户的感受和所思所想"
+        }
+      }
+    }
+  },
+  
+  "quality_standards": {
+    "concept_solution": {
+      "concept_clarity": {
+        "description": "概念清晰度",
+        "metric": "概念名称简洁有力，一句话可以解释清楚",
+        "pass": true
+      },
+      "value_clarity": {
+        "description": "价值明确性",
+        "metric": "AHA 价值声明明确，用户获得的价值清晰",
+        "pass": true
+      },
+      "function_completeness": {
+        "description": "功能完整性",
+        "metric": "核心功能覆盖主要痛点（3-5 个）",
+        "pass": true
+      },
+      "feature_concreteness": {
+        "description": "特具体现性",
+        "metric": "关键特性具体可衡量，不是模糊描述",
+        "pass": true
+      },
+      "technical_feasibility": {
+        "description": "技术可行性",
+        "metric": "技术方案在现有技术基础上可实现",
+        "pass": true
+      },
+      "business_feasibility": {
+        "description": "商业可行性",
+        "metric": "商业模式合理，有清晰的盈利路径",
+        "pass": true
+      },
+      "stakeholder_balance": {
+        "description": "利益方平衡",
+        "metric": "各利益相关者的诉求得到平衡考虑",
+        "pass": true
+      },
+      "implementation_feasibility": {
+        "description": "实施可行性",
+        "metric": "实施路径清晰，分阶段可执行",
+        "pass": true
+      }
+    },
+    "experience_story": {
+      "story_completeness": {
+        "description": "故事完整性",
+        "metric": "6 幕都完整呈现",
+        "pass": true
+      },
+      "user_authenticity": {
+        "description": "用户真实性",
+        "metric": "用户行为和感受真实可信",
+        "pass": true
+      },
+      "scene_concreteness": {
+        "description": "场景具体性",
+        "metric": "场景描述具体，有画面感",
+        "pass": true
+      },
+      "emotion_coherence": {
+        "description": "情感连贯性",
+        "metric": "情感变化连贯自然",
+        "pass": true
+      },
+      "value_manifestation": {
+        "description": "价值体现性",
+        "metric": "AHA 价值在故事中得到体现",
+        "pass": true
+      },
+      "visualizability": {
+        "description": "可视化性",
+        "metric": "可以转化为可视化的故事板",
+        "pass": true
+      }
+    }
+  },
+  
+  "upstream_agents": [
+    {
+      "agent_id": "reveal_specialist",
+      "agent_name": "Reveal Specialist - 洞察官",
+      "stage": "Reveal",
+      "outputs": ["利益相关者分析", "用户画像", "使用场景"]
+    },
+    {
+      "agent_id": "inspire_specialist",
+      "agent_name": "Inspire Specialist - 启发师",
+      "stage": "Inspire",
+      "outputs": ["最佳创意", "AHA 价值假设", "用户价值评分", "商业可行评分"]
+    }
+  ],
+  
+  "downstream_agents": [
+    {
+      "agent_id": "exam_specialist",
+      "agent_name": "Exam Specialist - 验证官",
+      "stage": "Exam",
+      "inputs": ["概念方案", "体验故事脚本"]
+    }
+  ],
+  
+  "metadata": {
+    "created_at": "2026-03-23",
+    "last_updated": "2026-03-23",
+    "author": "习智场景化创新训练",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2026-03-23",
+        "changes": "初始版本发布"
+      }
+    ]
+  }
+}

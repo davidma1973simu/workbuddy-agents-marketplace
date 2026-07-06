@@ -1,0 +1,52 @@
+{
+  "name": "shape-specialist",
+  "version": "1.0.0",
+  "description": "Shape Specialist - 架构师 Agent，负责方案拷问、方案构建和体验故事设计",
+  "main": "AGENT.md",
+  "author": "习智场景化创新训练",
+  "license": "MIT",
+  "keywords": [
+    "eureka",
+    "shape",
+    "architecture",
+    "concept",
+    "storyboard",
+    "innovation"
+  ],
+  "skills": [
+    {
+      "id": "Solution_Interrogator",
+      "name": "方案拷问员",
+      "version": "1.0.0"
+    },
+    {
+      "id": "Solution_Build",
+      "name": "方案构建师",
+      "version": "1.0.0"
+    },
+    {
+      "id": "Storyboard_Scriptor",
+      "name": "故事板编剧",
+      "version": "1.0.0"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/eureka-value-innovation"
+  },
+  "homepage": "https://github.com/yourusername/eureka-value-innovation#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/eureka-value-innovation/issues"
+  },
+  "metadata": {
+    "agent_id": "shape_specialist",
+    "agent_name": "Shape Specialist - 架构师",
+    "stage": "Shape",
+    "stage_number": 3,
+    "role": "方案拷问员与剧本作家",
+    "created_at": "2026-03-23",
+    "last_updated": "2026-03-23"
+  }
+}

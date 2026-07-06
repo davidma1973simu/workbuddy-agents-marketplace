@@ -1,0 +1,122 @@
+{
+  "categories": {
+    "product": {
+      "name": "产品创新",
+      "inspirations": [
+        {
+          "type": "New",
+          "title": "订阅制思维",
+          "description": "从一次性购买转向持续服务订阅，让用户与产品保持长期关系",
+          "source": "SaaS行业",
+          "tags": ["订阅", "持续价值"]
+        },
+        {
+          "type": "Cool",
+          "title": "游戏化反馈",
+          "description": "让用户的每一个行为都获得即时、愉悦的反馈，激发内在动机",
+          "source": "Duolingo, Habitica",
+          "tags": ["游戏化", "激励"]
+        },
+        {
+          "type": "Outsider",
+          "title": "反向定制",
+          "description": "让用户参与产品定义，把决定权交给用户",
+          "source": "乐高Ideas, Threadless",
+          "tags": ["用户共创", "定制"]
+        }
+      ]
+    },
+    "service": {
+      "name": "服务体验",
+      "inspirations": [
+        {
+          "type": "New",
+          "title": "情境感知服务",
+          "description": "根据用户当前的状态、时间、环境自动调整服务内容",
+          "source": "高端酒店行业",
+          "tags": ["智能化", "个性化"]
+        },
+        {
+          "type": "Cool",
+          "title": "惊喜元素",
+          "description": "在用户预期之外创造超预期体验，让用户感到被重视",
+          "source": "迪士尼, 五星级酒店",
+          "tags": ["惊喜", "体验峰值"]
+        },
+        {
+          "type": "Outsider",
+          "title": "社区驱动服务",
+          "description": "让用户之间互相帮助、互相服务，形成自运转的社区",
+          "source": "Airbnb社区, 书友会",
+          "tags": ["社区", "UGC"]
+        }
+      ]
+    },
+    "problem": {
+      "name": "复杂问题",
+      "inspirations": [
+        {
+          "type": "New",
+          "title": "系统思维框架",
+          "description": "从单一问题看到整个系统，识别杠杆点和反馈循环",
+          "source": "IDEO, 系统动力学",
+          "tags": ["系统", "全局观"]
+        },
+        {
+          "type": "Cool",
+          "title": "快速原型测试",
+          "description": "用最小成本快速验证假设，避免过度分析",
+          "source": "精益创业, Design Sprint",
+          "tags": ["快速验证", "敏捷"]
+        },
+        {
+          "type": "Outsider",
+          "title": "逆向思考法",
+          "description": "从期望的结果反向推导问题根源和解决方案",
+          "source": "特斯拉, 桥水基金",
+          "tags": ["逆向", "目标导向"]
+        }
+      ]
+    },
+    "explore": {
+      "name": "探索验证",
+      "inspirations": [
+        {
+          "type": "New",
+          "title": "假设验证优先",
+          "description": "先验证最风险、最不确定的假设，降低整体风险",
+          "source": "YC创业方法论",
+          "tags": ["MVP", "风险验证"]
+        },
+        {
+          "type": "Cool",
+          "title": "用户共创探索",
+          "description": "与用户一起探索可能性，让用户成为创新伙伴",
+          "source": "创新工作坊, Co-creation",
+          "tags": ["共创", "参与感"]
+        },
+        {
+          "type": "Outsider",
+          "title": "极端用户研究",
+          "description": "关注极端用户的极端需求，发现主流市场盲区",
+          "source": "设计思维, Lead User方法",
+          "tags": ["极端用户", "创新来源"]
+        }
+      ]
+    }
+  },
+  "general_principles": {
+    "title": "NCO 灵感源原则",
+    "description": "NCO = New / Cool / Outsider",
+    "rules": [
+      "New（新）：来自不同领域的新趋势、新技术、新模式",
+      "Cool（酷）：正在流行、被年轻人追捧的酷炫做法",
+      "Outsider（局外人）：来自边缘群体、非主流市场的创新"
+    ],
+    "usage_tips": [
+      "不要直接复制灵感，而是理解其背后的原理",
+      "将灵感与你的具体场景结合，创造新组合",
+      "每个阶段选择1-2个最相关的灵感来源深入探索"
+    ]
+  }
+}

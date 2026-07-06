@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POV Builder - 用户洞察收集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 50px;
+            align-items: flex-start;
+        }
+
+        .tag-input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag .remove {
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .tag .remove:hover {
+            color: #ff6b6b;
+        }
+
+        .tag-input-container input {
+            flex: 1;
+            min-width: 150px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 4px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .progress {
+            height: 4px;
+            background: #e0e0e0;
+            margin-top: 30px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .output-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .output-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .output-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .output-json {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #555;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* POV卡片样式 */
+        .pov-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pov-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .pov-card-icon {
+            font-size: 28px;
+        }
+
+        .pov-card-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .pov-card-content {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .pov-card-highlight {
+            color: #FFE082;
+            font-weight: 600;
+            font-size: 19px;
+        }
+
+        .pov-card-footer {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pov-card-insight-icon {
+            font-size: 24px;
+        }
+
+        .pov-card-insight {
+            font-size: 15px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 POV Builder</h1>
+            <p>构建用户洞察 - 整合四个关键信息</p>
+        </div>
+
+        <div class="content">
+            <!-- 提示和状态消息 -->
+            <div id="successMessage" class="success-message">
+                ✅ POV构建成功！已生成JSON输出。
+            </div>
+            <div id="errorMessage" class="error-message">
+                ⚠️ 请填写所有必填字段。
+            </div>
+
+            <!-- 1. 用户画像 -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-number">1</span>
+                    用户画像
+                </div>
+
+                <div class="input-group">
+                    <label>用户角色 *</label>
+                    <input type="text" id="userRole" placeholder="例如：中层管理者、都市白领消费者">
+                    <div class="input-hint">用户的职业或身份</div>
+                </div>
+
+                <div class="input-group">
+                    <label>用户背景 *</label>
+                    <textarea id="userBackground" placeholder="描述用户的工作/生活背景、环境和特点"></textarea>
+                    <div class="input-hint">2-3句话概括用户的基本情况</div>
+                </div>
+
+                <div class="input-group">
+                    <label>用户特征（标签）</label>
+                    <div class="tag-input-container" id="characteristicsTags">
+                        <input type="text" id="characteristicsInput" placeholder="输入后按回车添加">
+                    </div>
+                    <div class="input-hint">例如：注重效率、时间紧张、数字化素养高</div>
+                </div>
+            </div>
+
+            <!-- 2. 场景挑战 -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-number">2</span>
+                    场景挑战
+                </div>
+
+                <div class="input-group">
+                    <label>使用场景 *</label>
+                    <textarea id="scenario" placeholder="描述用户在什么场景下遇到问题"></textarea>
+                    <div class="input-hint">具体的使用场景或工作/生活情境</div>
+                </div>
+
+                <div class="input-group">
+                    <label>主要障碍 *</label>
+                    <textarea id="obstacles" placeholder="列出用户遇到的主要障碍或困难"></textarea>
+                    <div class="input-hint">阻碍用户达成目标的因素</div>
+                </div>
+
+                <div class="input-group">
+                    <label>约束条件</label>
+                    <textarea id="constraints" placeholder="时间、资源、技术等方面的限制"></textarea>
+                    <div class="input-hint">可选：项目或环境的约束条件</div>
+                </div>
+            </div>
+
+            <!-- 3. 期望目标 -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-number">3</span>
+                    期望目标
+                </div>
+
+                <div class="input-group">
+                    <label>显性需求 *</label>
+                    <textarea id="explicitNeeds" placeholder="用户明确表达的需求"></textarea>
+                    <div class="input-hint">用户直接说出的需求（每行一个）</div>
+                </div>
+
+                <div class="input-group">
+                    <label>隐性需求</label>
+                    <textarea id="implicitNeeds" placeholder="用户未明确表达但真实需要的需求"></textarea>
+                    <div class="input-hint">从行为和场景推断的深层需求（每行一个）</div>
+                </div>
+
+                <div class="input-group">
+                    <label>情感需求</label>
+                    <textarea id="emotionalNeeds" placeholder="用户的感受、动机和情感状态"></textarea>
+                    <div class="input-hint">例如：焦虑、期待、挫败（每行一个）</div>
+                </div>
+            </div>
+
+            <!-- 4. 用户探索发现 -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-number">4</span>
+                    用户探索发现
+                </div>
+
+                <div class="input-group">
+                    <label>探索方法 *</label>
+                    <input type="text" id="explorationMethod" placeholder="例如：深度访谈、用户调研、观察">
+                    <div class="input-hint">获取用户洞察的方法</div>
+                </div>
+
+                <div class="input-group">
+                    <label>关键发现 *</label>
+                    <textarea id="keyFindings" placeholder="从探索中获得的关键发现"></textarea>
+                    <div class="input-hint">重要的洞察和发现（每行一个）</div>
+                </div>
+
+                <div class="input-group">
+                    <label>意外发现</label>
+                    <textarea id="surprises" placeholder="探索中的意外发现或反直觉的洞察"></textarea>
+                    <div class="input-hint">可选：令你感到意外的发现（每行一个）</div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="generatePOV()">🚀 生成POV</button>
+
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+
+            <!-- 输出区域 -->
+            <div class="output-section" id="outputSection">
+                <h3>📊 POV输出</h3>
+                <div class="output-json" id="outputJson"></div>
+
+                <!-- POV卡片 -->
+                <div style="margin-top: 30px;">
+                    <h3>🎯 POV卡片</h3>
+                    <div class="pov-card" id="povCard">
+                        <div class="pov-card-header">
+                            <span class="pov-card-icon">🎯</span>
+                            <span class="pov-card-title">Point of View</span>
+                        </div>
+                        <div class="pov-card-content" id="povCardContent">
+                            POV卡片将在这里显示
+                        </div>
+                        <div class="pov-card-footer">
+                            <span class="pov-card-insight-icon">💡</span>
+                            <span class="pov-card-insight" id="povCardInsight">洞察将在这里显示</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签输入处理
+        const characteristicsData = [];
+
+        function setupTagInput(inputId, containerId, dataArray) {
+            const input = document.getElementById(inputId);
+            const container = document.getElementById(containerId);
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = input.value.trim();
+                    if (value && !dataArray.includes(value)) {
+                        dataArray.push(value);
+                        renderTags(container, dataArray, inputId, containerId, dataArray);
+                        input.value = '';
+                    }
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                const value = input.value.trim();
+                if (value && !dataArray.includes(value)) {
+                    dataArray.push(value);
+                    renderTags(container, dataArray, inputId, containerId, dataArray);
+                    input.value = '';
+                }
+            });
+        }
+
+        function renderTags(container, dataArray, inputId, containerId, dataRef) {
+            container.innerHTML = '';
+            dataArray.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <span class="remove" onclick="removeTag('${inputId}', '${containerId}', ${index})">×</span>
+                `;
+                container.appendChild(tagElement);
+            });
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = inputId;
+            input.placeholder = '输入后按回车添加';
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = input.value.trim();
+                    if (value && !dataRef.includes(value)) {
+                        dataRef.push(value);
+                        renderTags(container, dataRef, inputId, containerId, dataRef);
+                    }
+                }
+            };
+            container.appendChild(input);
+            input.focus();
+        }
+
+        window.removeTag = function(inputId, containerId, index) {
+            const dataRef = inputId === 'characteristicsInput' ? characteristicsData : [];
+            dataRef.splice(index, 1);
+            const container = document.getElementById(containerId);
+            renderTags(container, dataRef, inputId, containerId, dataRef);
+        };
+
+        // 初始化标签输入
+        setupTagInput('characteristicsInput', 'characteristicsTags', characteristicsData);
+
+        // 生成POV
+        function generatePOV() {
+            // 获取输入值
+            const userRole = document.getElementById('userRole').value.trim();
+            const userBackground = document.getElementById('userBackground').value.trim();
+            const scenario = document.getElementById('scenario').value.trim();
+            const obstacles = document.getElementById('obstacles').value.trim();
+            const explicitNeeds = document.getElementById('explicitNeeds').value.trim();
+            const explorationMethod = document.getElementById('explorationMethod').value.trim();
+            const keyFindings = document.getElementById('keyFindings').value.trim();
+
+            // 验证必填字段
+            if (!userRole || !userBackground || !scenario || !obstacles || !explicitNeeds || !explorationMethod || !keyFindings) {
+                document.getElementById('errorMessage').classList.add('show');
+                document.getElementById('successMessage').classList.remove('show');
+                return;
+            }
+
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.add('show');
+
+            // 获取可选字段
+            const constraints = document.getElementById('constraints').value.trim();
+            const implicitNeeds = document.getElementById('implicitNeeds').value.trim();
+            const emotionalNeeds = document.getElementById('emotionalNeeds').value.trim();
+            const surprises = document.getElementById('surprises').value.trim();
+
+            // 构建JSON输出
+            const output = {
+                skill: "pov_builder",
+                stage: "reveal",
+                timestamp: new Date().toISOString(),
+                output: {
+                    project_id: "vi_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_001",
+                    user_persona: {
+                        role: userRole,
+                        background: userBackground,
+                        characteristics: characteristicsData.length > 0 ? characteristicsData : ["待补充"],
+                        behaviors: ["待补充"]
+                    },
+                    context_challenge: {
+                        scenario: scenario,
+                        obstacles: obstacles.split('\n').filter(s => s.trim()),
+                        constraints: constraints ? constraints.split('\n').filter(s => s.trim()) : []
+                    },
+                    user_needs: {
+                        explicit: explicitNeeds.split('\n').filter(s => s.trim()),
+                        implicit: implicitNeeds ? implicitNeeds.split('\n').filter(s => s.trim()) : [],
+                        emotional: emotionalNeeds ? emotionalNeeds.split('\n').filter(s => s.trim()) : []
+                    },
+                    exploration_discoveries: {
+                        method: explorationMethod,
+                        key_findings: keyFindings.split('\n').filter(s => s.trim()),
+                        surprises: surprises ? surprises.split('\n').filter(s => s.trim()) : []
+                    }
+                }
+            };
+
+            // 显示输出
+            document.getElementById('outputJson').textContent = JSON.stringify(output, null, 2);
+            document.getElementById('outputSection').classList.add('show');
+            document.getElementById('progressBar').style.width = '100%';
+
+            // 生成POV卡片
+            const povCardHTML = generatePOVCard(userRole, scenario, obstacles, explicitNeeds);
+            document.getElementById('povCardContent').innerHTML = povCardHTML;
+
+            // 生成洞察
+            const insightHTML = generateInsight(implicitNeeds, emotionalNeeds, keyFindings);
+            document.getElementById('povCardInsight').textContent = insightHTML;
+
+            // 将POV卡片添加到JSON输出中
+            output.output.pov_card = {
+                user: userRole,
+                scenario: scenario,
+                challenge: obstacles.split('\n').filter(s => s.trim())[0] || obstacles,
+                goal: explicitNeeds.split('\n').filter(s => s.trim())[0] || explicitNeeds,
+                insight: insightHTML
+            };
+
+            // 更新JSON显示
+            document.getElementById('outputJson').textContent = JSON.stringify(output, null, 2);
+
+            // 滚动到输出区域
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 生成POV卡片HTML
+        function generatePOVCard(user, scenario, challenge, goal) {
+            // 提取第一个障碍作为主要挑战
+            const mainChallenge = challenge.split('\n').filter(s => s.trim())[0] || challenge;
+
+            // 提取第一个需求作为主要目标
+            const mainGoal = goal.split('\n').filter(s => s.trim())[0] || goal;
+
+            // 限制长度，避免卡片过长
+            const shortScenario = mainChallenge.length > 60 ? mainChallenge.substring(0, 60) + '...' : mainChallenge;
+            const shortGoal = mainGoal.length > 50 ? mainGoal.substring(0, 50) + '...' : mainGoal;
+
+            return `
+                <span class="pov-card-highlight">${user}</span>
+                在
+                <span class="pov-card-highlight">${scenario}</span>
+                场景下
+                面对
+                <span class="pov-card-highlight">${shortScenario}</span>
+                ，期望达成
+                <span class="pov-card-highlight">${shortGoal}</span>
+            `;
+        }
+
+        // 生成洞察
+        function generateInsight(implicitNeeds, emotionalNeeds, keyFindings) {
+            const implicitArray = implicitNeeds ? implicitNeeds.split('\n').filter(s => s.trim()) : [];
+            const emotionalArray = emotionalNeeds ? emotionalNeeds.split('\n').filter(s => s.trim()) : [];
+            const findingsArray = keyFindings ? keyFindings.split('\n').filter(s => s.trim()) : [];
+
+            // 优先使用隐性需求，其次情感需求，最后关键发现
+            if (implicitArray.length > 0) {
+                return implicitArray[0];
+            } else if (emotionalArray.length > 0) {
+                return emotionalArray[0];
+            } else if (findingsArray.length > 0) {
+                return findingsArray[0];
+            } else {
+                return "需要进一步探索用户的深层需求和动机";
+            }
+        }
+    </script>
+</body>
+</html>
