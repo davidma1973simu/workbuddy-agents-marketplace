@@ -22,3 +22,8 @@ node_modules/
 *.zip
 *.bak
 *.backup.*
+
+# Secrets - AI API keys (keep example, ignore real config)
+eureka-lite/js/ai-config.js
+**/ai-config.js
+!**/ai-config.example.js

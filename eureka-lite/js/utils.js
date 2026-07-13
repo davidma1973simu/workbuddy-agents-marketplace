@@ -145,7 +145,7 @@ const Utils = {
         color: 'var(--shape-primary)',
         bgColor: 'var(--shape-bg)',
         theme: 'theme-shape',
-        screens: 3
+        screens: 4
       },
       exam: {
         name: 'Exam',

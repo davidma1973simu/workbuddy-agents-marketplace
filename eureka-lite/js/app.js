@@ -1170,7 +1170,7 @@ class EurekaLite {
     panel?.classList.toggle('open', AppState.aiPanelOpen);
   }
 
-  handleAiAction(action) {
+  async handleAiAction(action) {
     const stage = AppState.currentStage || 'reveal';
     const screen = AppState.currentScreen || 1;
     const project = AppState.currentProject;
@@ -1178,53 +1178,54 @@ class EurekaLite {
     // Get user's current input
     const input = document.getElementById('screenInput');
     const userInput = input?.value || project?.title || '';
+    const aiOn = !!(window.AIService && window.AIService.isReady());
 
     switch (action) {
       case 'suggest':
-        this.showLoadingToast('正在分析您的内容...');
-        setTimeout(() => {
-          // Pass userInput to get context-aware suggestions
-          const suggestions = AIAssistant.getSuggestions(stage, screen, userInput);
+      case 'feedback': {
+        this.showLoadingToast(aiOn ? '🤖 DeepSeek 正在分析您的内容...' : '正在分析您的内容...');
+        try {
+          const suggestions = await AIAssistant.getSuggestionsAI(stage, screen, userInput, project);
           const hint = AIAssistant.getHint(stage, screen, userInput);
           this.showAiSuggestions(suggestions, hint, userInput);
-        }, 600);
+        } catch (e) {
+          const suggestions = AIAssistant.getSuggestions(stage, screen, userInput);
+          this.showAiSuggestions(suggestions, AIAssistant.getHint(stage, screen, userInput), userInput);
+        }
         break;
+      }
       case 'example':
         this.showLoadingToast('正在查找案例...');
         setTimeout(() => {
           const category = project?.category || 'product';
-          // Pass userInput for context-aware inspirations
           const examples = AIAssistant.getNCOInspiration(category, 3, userInput);
           this.showAiExamples(examples);
-        }, 600);
+        }, 400);
         break;
-      case 'prefill':
-        this.showLoadingToast('正在规范化您的内容...');
-        setTimeout(() => {
-          if (!userInput || userInput.trim().length < 5) {
-            this.showToast('请先输入内容，再点击预填');
-            return;
-          }
-          const prefill = AIAssistant.generatePrefillContent(
+      case 'prefill': {
+        this.showLoadingToast(aiOn ? '🤖 DeepSeek 正在生成草稿...' : '正在规范化您的内容...');
+        try {
+          const prefill = await AIAssistant.generatePrefillContentAI(
             { stage, screen, type: 'text' },
-            userInput
+            userInput,
+            project
           );
           if (prefill?.content) {
-            // Show diff instead of direct replacement
-            this.showPrefillDiff(userInput, prefill);
+            // 有原文则显示 diff 对比，无原文则直接填入预览
+            if (userInput && userInput.trim().length >= 5) {
+              this.showPrefillDiff(userInput, prefill);
+            } else {
+              this.showPrefillDiff('（空白，AI 基于项目上下文生成初稿）', prefill);
+            }
           } else {
-            this.showToast('暂无预填建议');
+            this.showToast('暂无生成建议，请补充更多项目信息');
           }
-        }, 800);
+        } catch (e) {
+          console.error('[AI] prefill failed:', e);
+          this.showToast('AI 生成失败：' + (e.message || '请检查网络或 API Key'));
+        }
         break;
-      case 'feedback':
-        this.showLoadingToast('正在分析反馈...');
-        setTimeout(() => {
-          const suggestions = AIAssistant.getSuggestions(stage, screen, userInput);
-          const hint = AIAssistant.getHint(stage, screen, userInput);
-          this.showAiSuggestions(suggestions, hint, userInput);
-        }, 600);
-        break;
+      }
     }
   }
 
@@ -1789,95 +1790,89 @@ class EurekaLite {
           title: '重构用户问题',
           subtitle: '从 POV 出发，四维重构创新机遇',
           hmw: true,
-          hint: '基于 Reveal 洞察，从四个维度重构 HMW 问题，筛选团队共识的创新机遇'
+          hint: '基于 Reveal 洞察，从四个维度重构 HMW 问题，勾选最多 2 个最佳 HMW'
         },
         {
           title: '寻找灵感',
           subtitle: 'NCO：New / Cool / Outsider',
-          cards: true,
-          hint: '从不同领域寻找灵感启发'
+          type: 'nco',
+          hint: '每类 3 张共 9 张灵感卡片，收藏喜欢的、刷新或自定义添加'
         },
         {
           title: '生成创意',
-          subtitle: '基于灵感，产生大量创意',
-          inputLabel: '你的创意',
-          inputPlaceholder: '写下你的创意...',
-          hint: '先求量，再求质。允许疯狂的想法'
+          subtitle: '基于灵感，做"强制连接"',
+          type: 'ideas',
+          hint: '用已选 HMW + 已收藏灵感，让 AI 做交叉创新，也可手动添加'
         },
         {
           title: '筛选最佳创意',
-          subtitle: '哪个创意最能打动你？',
-          cards: true,
-          hint: '考虑可行性、用户价值、商业潜力'
+          subtitle: '四维打分，选出最佳',
+          type: 'filter',
+          hint: '对创意进行可行性/用户价值/商业价值/创新程度打分，勾选最佳创意'
         },
         {
-          title: '确认最佳创意',
-          subtitle: '为什么选这个？',
-          inputLabel: '选择理由',
-          inputPlaceholder: '为什么这个创意值得深入...',
-          hint: '给创意起个名字，一句话说明价值'
+          title: 'Inspire 阶段总结',
+          subtitle: '确认启发成果',
+          type: 'summary',
+          hint: '核对 POV、最佳 HMW 与最佳创意，确认后进入 Shape'
         }
       ],
       shape: [
         {
           title: '四维拷问',
-          subtitle: '从四个维度拷问你的创意',
-          inputLabel: '拷问结果',
-          inputPlaceholder: '从用户/商业/技术/生态四个维度分析...',
-          hint: '每个维度都要诚实回答'
+          subtitle: '从用户 / 商业 / 技术 / 生态 四个维度拷问你的创意',
+          type: 'shapeFourDim',
+          hint: '点击「AI 帮我生成拷问问题」，然后逐题填写你的回答'
         },
         {
           title: '最小概念方案',
-          subtitle: '核心功能是什么？不做什么？',
-          inputLabel: 'MVP 定义',
-          inputPlaceholder: '用一句话描述你的最小可行方案...',
-          hint: '明确边界：包含什么，不包含什么'
+          subtitle: '定义核心功能与边界（什么做，什么不做）',
+          type: 'shapeMinConcept',
+          hint: '基于前面所有内容，明确方案一句话定义、功能特性与边界'
         },
         {
           title: '用户体验故事板',
           subtitle: '六个场景讲完一个完整故事',
-          inputLabel: '故事板描述',
-          inputPlaceholder: '认识 → 尝试 → 使用 → 顿悟 → 成长 → 传播',
-          hint: '每个场景用一句话描述'
+          type: 'shapeStoryboard',
+          hint: '每行 3 张共 2 行；每屏一张卡片，描述用户经历的关键时刻'
+        },
+        {
+          title: 'Shape 整合确认',
+          subtitle: '确认你的构建成果',
+          type: 'shapeSummary',
+          hint: '核对概念方案与用户故事，确认后进入 Exam'
         }
       ],
       exam: [
         {
-          title: '搭建原型',
-          subtitle: '如何让用户快速体验核心价值？',
-          inputLabel: '原型描述',
-          inputPlaceholder: '描述你的原型方案...',
-          hint: '最简可用的原型即可'
-        },
-        {
-          title: '执行测试',
-          subtitle: '找到目标用户，观察真实使用',
-          inputLabel: '测试计划',
-          inputPlaceholder: '如何找到测试用户...',
-          hint: '不要引导，让用户自然探索'
+          title: '设计测试计划',
+          subtitle: '为验证做好准备',
+          type: 'examTestPlan',
+          hint: '明确测试目的、场景、待验证假设与用户价值'
         },
         {
           title: '测试报告',
-          subtitle: '成功了哪里？失败在哪里？',
-          inputLabel: '测试发现',
-          inputPlaceholder: '成功：第一失败点：意外发现：',
-          hint: '诚实记录，不自我欺骗'
+          subtitle: '记录真实的测试发现',
+          type: 'examTestReport',
+          hint: '诚实记录：验证了什么、错在哪里、发现了什么'
         },
         {
           title: '四维度评价',
-          subtitle: '用户/商业/技术/生态',
-          inputLabel: '评价结果',
-          inputPlaceholder: '各维度的评价...',
-          hint: '用事实和数据支撑'
+          subtitle: '基于测试发现，对方案做四维评估',
+          type: 'examFourDimEval',
+          hint: '用事实和数据支撑每个维度的评分'
         },
         {
           title: '电梯演讲 & 迭代计划',
-          subtitle: '30秒讲清价值，下一步做什么？',
-          inputLabel: '电梯演讲',
-          inputPlaceholder: '如果你只有1分钟向投资人介绍...',
-          inputLabel2: '迭代计划',
-          inputPlaceholder2: '下一步行动清单...',
-          hint: '浓缩精华，行动计划具体'
+          subtitle: '30秒讲清价值，规划下一步',
+          type: 'examElevator',
+          hint: '用模板或 AI 生成电梯演讲，制定 30-60-90 天迭代计划'
+        },
+        {
+          title: 'Exam 整合确认',
+          subtitle: '确认你的验证成果',
+          type: 'examSummary',
+          hint: '核对测试产出与呈现计划，确认完成项目'
         }
       ]
     };
@@ -2021,6 +2016,39 @@ class EurekaLite {
     if (screenData.hmw) {
       return this.getHmwTemplate(project);
     }
+
+    // NCO 灵感卡片模板 for Inspire Screen 2
+    if (screenData.type === 'nco') {
+      return this.getInspireNcoTemplate(project);
+    }
+
+    // 创意生成模板 for Inspire Screen 3
+    if (screenData.type === 'ideas') {
+      return this.getInspireIdeasTemplate(project);
+    }
+
+    // 四维筛选模板 for Inspire Screen 4
+    if (screenData.type === 'filter') {
+      return this.getInspireFilterTemplate(project);
+    }
+
+    // 阶段总结模板 for Inspire Screen 5
+    if (screenData.type === 'summary') {
+      return this.getInspireSummaryTemplate(project);
+    }
+
+    // Shape 四屏
+    if (screenData.type === 'shapeFourDim') return this.getShapeFourDimTemplate(project);
+    if (screenData.type === 'shapeMinConcept') return this.getShapeMinConceptTemplate(project);
+    if (screenData.type === 'shapeStoryboard') return this.getShapeStoryboardTemplate(project);
+    if (screenData.type === 'shapeSummary') return this.getShapeSummaryTemplate(project);
+
+    // Exam 五屏
+    if (screenData.type === 'examFourDimEval') return this.getExamFourDimEvalTemplate(project);
+    if (screenData.type === 'examTestPlan') return this.getExamTestPlanTemplate(project);
+    if (screenData.type === 'examTestReport') return this.getExamTestReportTemplate(project);
+    if (screenData.type === 'examElevator') return this.getExamElevatorTemplate(project);
+    if (screenData.type === 'examSummary') return this.getExamSummaryTemplate(project);
 
     return `
       <div class="screen-content animate-fade-in-up">
@@ -2759,6 +2787,725 @@ class EurekaLite {
     `).join('');
   }
 
+  /* =========================================================
+     Inspire 重构屏 (Screen 2-5) 方法
+     ========================================================= */
+
+  // ---- 存储工具 ----
+  _ncoBaseKey(pid) { return `eureka_inspire_nco_base_${pid}`; }
+  _ncoStateKey(pid) { return `eureka_inspire_nco_${pid}`; }
+  _filterKey(pid) { return `eureka_inspire_filter_${pid}`; }
+
+  _readCardJSON(cardType) {
+    const project = window.EurekaStorage.getProject(AppState.currentProjectId);
+    const raw = project?.cards?.[cardType];
+    if (!raw) return null;
+    let data = raw;
+    if (typeof data === 'object' && data !== null && data.content !== undefined) data = data.content;
+    if (typeof data === 'string') { try { return JSON.parse(data); } catch (e) { return null; } }
+    return data;
+  }
+
+  // ---- NCO 状态 ----
+  getNcoBase(projectId) {
+    try {
+      const raw = localStorage.getItem(this._ncoBaseKey(projectId));
+      if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; }
+    } catch (e) {}
+    const project = window.EurekaStorage.getProject(projectId);
+    const category = project?.category || 'product';
+    const ctx = this.getInspireContextText(project);
+    return AIAssistant.getNcoInspirations(category, ctx, 3);
+  }
+
+  setNcoBase(projectId, cards) {
+    try { localStorage.setItem(this._ncoBaseKey(projectId), JSON.stringify(cards)); } catch (e) {}
+  }
+
+  getNcoState(projectId) {
+    try {
+      const raw = localStorage.getItem(this._ncoStateKey(projectId));
+      if (raw) { const s = JSON.parse(raw); return { favorites: s.favorites || [], customCards: s.customCards || [] }; }
+    } catch (e) {}
+    const saved = this._readCardJSON('ncoInspiration');
+    if (saved && (saved.favorites || saved.customCards)) return { favorites: saved.favorites || [], customCards: saved.customCards || [] };
+    return { favorites: [], customCards: [] };
+  }
+
+  setNcoState(projectId, state) {
+    try { localStorage.setItem(this._ncoStateKey(projectId), JSON.stringify(state)); } catch (e) {}
+  }
+
+  // ---- 已选 HMW ----
+  getSelectedHmws(project) {
+    const raw = project?.cards?.hmw;
+    if (!raw) return [];
+    let data = raw;
+    if (typeof data === 'object' && data !== null && data.content !== undefined) data = data.content;
+    if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) { return []; } }
+    if (!data || !data.dimensions) return [];
+    const byId = {};
+    Object.keys(data.dimensions).forEach(k => (data.dimensions[k] || []).forEach(it => { byId[it.id] = it.text; }));
+    return (data.selectedIds || []).map(id => byId[id]).filter(Boolean);
+  }
+
+  getInspireContextText(project) {
+    const pov = this.extractPovFromProject(project);
+    const hmws = this.getSelectedHmws(project);
+    return [project?.title, pov.targetUser, pov.sceneChallenge, pov.userProblem, pov.insight, pov.goal, ...hmws]
+      .filter(Boolean).join('\n');
+  }
+
+  // ---- 创意 ----
+  getIdeas(project) {
+    const data = this._readCardJSON('ideas');
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.ideas)) return data.ideas;
+    return [];
+  }
+
+  setIdeas(ideas) {
+    if (!AppState.currentProjectId) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'ideas', { content: JSON.stringify(ideas), timestamp: Date.now() });
+  }
+
+  _newId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6); }
+
+  // ---- 筛选状态 ----
+  getFilterState(projectId) {
+    try {
+      const raw = localStorage.getItem(this._filterKey(projectId));
+      if (raw) { const s = JSON.parse(raw); return { scores: s.scores || {}, bestIds: s.bestIds || [] }; }
+    } catch (e) {}
+    const saved = this._readCardJSON('filteredIdeas');
+    if (saved && (saved.scores || saved.bestIds)) return { scores: saved.scores || {}, bestIds: saved.bestIds || [] };
+    return { scores: {}, bestIds: [] };
+  }
+
+  setFilterState(projectId, state) {
+    try { localStorage.setItem(this._filterKey(projectId), JSON.stringify(state)); } catch (e) {}
+  }
+
+  // ---- Screen 2: NCO 模板 ----
+  getInspireNcoTemplate(project) {
+    const projectId = project.id;
+    const baseCards = this.getNcoBase(projectId);
+    const state = this.getNcoState(projectId);
+    const isFav = (c) => state.favorites.some(f => f.type === c.type && f.title === c.title && f.description === c.description);
+    const typeMeta = {
+      New: { label: 'New · 全新做法', color: 'var(--reveal-primary)', sub: '从零构思的颠覆性方案' },
+      Cool: { label: 'Cool · 有趣炫酷', color: 'var(--inspire-primary)', sub: '让人眼前一亮的体验' },
+      Outsider: { label: 'Outsider · 跨界借鉴', color: 'var(--shape-primary)', sub: '来自其他领域的解法' }
+    };
+    const sectionsHtml = ['New', 'Cool', 'Outsider'].map(type => {
+      const m = typeMeta[type];
+      const cardsHtml = baseCards.filter(c => c.type === type).map(c => this.getInspCardHtml(c, isFav(c), false, baseCards.indexOf(c))).join('');
+      return `
+        <div class="nco-section">
+          <div class="nco-section-header">
+            <span class="nco-section-tag" style="background:${m.color}">${type}</span>
+            <span class="nco-section-title">${m.label}</span>
+            <span class="nco-section-sub">${m.sub}</span>
+          </div>
+          <div class="nco-grid">${cardsHtml}</div>
+        </div>`;
+    }).join('');
+
+    const favHtml = state.favorites.length
+      ? state.favorites.map((c, i) => this.getInspCardHtml(c, true, false, i, true)).join('')
+      : '<div class="inspire-context-empty">还没有收藏的灵感，点击卡片右上角 ☆ 即可收藏。</div>';
+
+    const customHtml = state.customCards.length
+      ? state.customCards.map((c, i) => this.getInspCardHtml(c, false, true, i)).join('')
+      : '';
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">寻找灵感</h2>
+        <p class="screen-subtitle">NCO：New / Cool / Outsider —— 从不同视角收集启发</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>每类 3 张共 9 张灵感卡片，点击 ☆ 收藏喜欢的；也可用「刷新」获取新灵感，或「添加」自定义灵感。</span></div>
+        <div class="nco-toolbar">
+          <button class="btn-ai" id="ncoRefreshBtn">🔄 刷新灵感</button>
+          <button class="btn-add" id="ncoAddBtn">➕ 添加灵感卡片</button>
+        </div>
+        ${sectionsHtml}
+        <div class="nco-section">
+          <div class="nco-section-header">
+            <span class="nco-section-title">⭐ 我的收藏</span>
+            <span class="nco-section-sub">已收藏 ${state.favorites.length} 张</span>
+          </div>
+          <div class="nco-grid" id="ncoFavGrid">${favHtml}</div>
+        </div>
+        ${customHtml ? `
+        <div class="nco-section">
+          <div class="nco-section-header"><span class="nco-section-title">📝 自定义灵感</span><span class="nco-section-sub">${state.customCards.length} 张</span></div>
+          <div class="nco-grid" id="ncoCustomGrid">${customHtml}</div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  getInspCardHtml(card, faved = false, isCustom = false, idx = null, removable = false) {
+    const colorMap = { New: 'var(--reveal-primary)', Cool: 'var(--inspire-primary)', Outsider: 'var(--shape-primary)' };
+    const color = colorMap[card.type] || 'var(--inspire-primary)';
+    const esc = (s) => this.escapeHtml(s || '');
+    let starAttr = '';
+    let star = '';
+    if (removable) {
+      starAttr = `data-fav-index="${idx}"`;
+      star = `<button class="fav-btn active" data-fav-remove ${starAttr} title="取消收藏">★</button>`;
+    } else if (isCustom) {
+      starAttr = `data-custom-index="${idx}"`;
+      star = `<button class="fav-btn" data-custom-remove ${starAttr} title="删除">✕</button>`;
+    } else {
+      // 用 base 数组下标定位卡片，避免属性中嵌入含引号文本
+      starAttr = `data-nco-index="${idx}"`;
+      star = `<button class="fav-btn ${faved ? 'active' : ''}" data-fav-toggle ${starAttr} title="收藏">${faved ? '★' : '☆'}</button>`;
+    }
+    return `
+      <div class="insp-card ${faved ? 'favorited' : ''} ${isCustom ? 'custom' : ''}">
+        <span class="insp-card-type" style="background:${color}">${esc(card.type)}</span>
+        <h4 class="insp-card-title">${esc(card.title)}</h4>
+        <p class="insp-card-desc">${esc(card.description)}</p>
+        <div class="insp-card-source">来源：${esc(card.source)}</div>
+        ${star}
+      </div>`;
+  }
+
+  attachInspireNcoEvents(project) {
+    const stage = 'inspire';
+    const projectId = project.id;
+
+    document.getElementById('ncoRefreshBtn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '🔄 生成中...';
+      try {
+        const ctx = this.getInspireContextText(project);
+        const cards = await AIAssistant.generateNcoInspirationsAI(ctx, 3);
+        this.setNcoBase(projectId, cards);
+        this.setNcoState(projectId, this.getNcoState(projectId));
+        this.renderModule(stage);
+      } catch (err) {
+        console.error('[NCO] refresh failed:', err);
+        this.showToast('刷新失败：' + (err.message || '请检查网络或 API Key'));
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    });
+
+    document.getElementById('ncoAddBtn')?.addEventListener('click', () => {
+      this.openFormModal({
+        title: '添加灵感卡片',
+        fields: [
+          { key: 'title', label: '标题', type: 'text', placeholder: '灵感标题' },
+          { key: 'description', label: '描述', type: 'textarea', placeholder: '一句话描述这个灵感' },
+          { key: 'type', label: '类型', type: 'select', options: ['New', 'Cool', 'Outsider'], placeholder: '选择类型' },
+          { key: 'source', label: '来源', type: 'text', placeholder: '例如：个人经验' }
+        ]
+      }).then(res => {
+        if (!res) return;
+        if (!res.title || !res.title.trim()) { this.showToast('请填写标题'); return; }
+        const state = this.getNcoState(projectId);
+        state.customCards.push({
+          type: res.type || 'New',
+          title: res.title.trim(),
+          description: (res.description || '').trim(),
+          source: res.source || '自定义'
+        });
+        this.setNcoState(projectId, state);
+        this.saveNcoData();
+        this.renderModule(stage);
+      });
+    });
+
+    document.querySelectorAll('[data-fav-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const gi = parseInt(btn.dataset.ncoIndex);
+        const base = this.getNcoBase(projectId);
+        const card = base[gi];
+        if (!card) return;
+        const state = this.getNcoState(projectId);
+        const i = state.favorites.findIndex(f => f.type === card.type && f.title === card.title && f.description === card.description);
+        if (i >= 0) state.favorites.splice(i, 1);
+        else state.favorites.push(card);
+        this.setNcoState(projectId, state);
+        this.saveNcoData();
+        this.renderModule(stage);
+      });
+    });
+
+    document.querySelectorAll('[data-fav-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.favIndex);
+        const state = this.getNcoState(projectId);
+        if (!isNaN(i)) state.favorites.splice(i, 1);
+        this.setNcoState(projectId, state);
+        this.saveNcoData();
+        this.renderModule(stage);
+      });
+    });
+
+    document.querySelectorAll('[data-custom-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.customIndex);
+        const state = this.getNcoState(projectId);
+        if (!isNaN(i)) state.customCards.splice(i, 1);
+        this.setNcoState(projectId, state);
+        this.saveNcoData();
+        this.renderModule(stage);
+      });
+    });
+  }
+
+  saveNcoData() {
+    if (!AppState.currentProjectId) return;
+    const state = this.getNcoState(AppState.currentProjectId);
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'ncoInspiration', {
+      content: JSON.stringify(state), timestamp: Date.now()
+    });
+  }
+
+  // ---- Screen 3: 创意生成模板 ----
+  getInspireIdeasTemplate(project) {
+    const hmws = this.getSelectedHmws(project);
+    const state = this.getNcoState(project.id);
+    const favs = state.favorites;
+    const ideas = this.getIdeas(project);
+
+    const hmwHtml = hmws.length
+      ? hmws.map(h => `<div class="inspire-context-item"><span class="ctx-tag">HMW</span>${this.escapeHtml(h)}</div>`).join('')
+      : '<div class="inspire-context-empty">尚未在上一屏选定最佳 HMW（最多 2 个）</div>';
+
+    const favHtml = favs.length
+      ? favs.map(c => `<div class="inspire-context-item"><span class="ctx-tag">${this.escapeHtml(c.type)}</span>${this.escapeHtml(c.title)}</div>`).join('')
+      : '<div class="inspire-context-empty">尚未收藏灵感（Screen 2）</div>';
+
+    const ideasHtml = ideas.length
+      ? ideas.map(i => this.getIdeaCardHtml(i)).join('')
+      : '<div class="inspire-context-empty">尚无创意，点击下方按钮让 AI 帮你强制连接，或手动添加。</div>';
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">生成创意</h2>
+        <p class="screen-subtitle">基于最佳 HMW 与已收藏灵感，做"强制连接"</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>把 HMW 问题与灵感卡片交叉组合，产生大量创意；先求量，再求质。</span></div>
+        <div class="inspire-context-bar">
+          <div class="inspire-context-title">🎯 已选最佳 HMW（${hmws.length}/2）</div>
+          <div class="inspire-context-list">${hmwHtml}</div>
+          <div class="inspire-context-title" style="margin-top:var(--space-sm)">⭐ 已收藏灵感（${favs.length}）</div>
+          <div class="inspire-context-list">${favHtml}</div>
+        </div>
+        <div class="ideas-list" id="ideasList">${ideasHtml}</div>
+        <div style="display:flex;gap:var(--space-sm);">
+          <button class="btn-ai" id="aiForceBtn" style="flex:1">✨ AI 强制连接生成</button>
+          <button class="btn-add" id="addIdeaBtn" style="flex:1">➕ 手动添加创意</button>
+        </div>
+      </div>`;
+  }
+
+  getIdeaCardHtml(idea) {
+    const esc = (s) => this.escapeHtml(s || '');
+    return `
+      <div class="idea-card" data-id="${idea.id}">
+        <div class="idea-card-actions">
+          <button class="idea-del-btn" data-idea-del="${idea.id}" title="删除">✕</button>
+        </div>
+        <h4 class="idea-card-title">${esc(idea.title)}</h4>
+        <p class="idea-card-desc">${esc(idea.description)}</p>
+        ${idea.source ? `<span class="idea-card-source">${esc(idea.source)}</span>` : ''}
+      </div>`;
+  }
+
+  attachInspireIdeasEvents(project) {
+    const stage = 'inspire';
+    const projectId = project.id;
+
+    document.getElementById('aiForceBtn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '✨ AI 连接中...';
+      try {
+        const hmws = this.getSelectedHmws(project);
+        const state = this.getNcoState(projectId);
+        const ctx = this.getInspireContextText(project);
+        const newIdeas = await AIAssistant.generateForcedConnectionIdeas(hmws, state.favorites, ctx);
+        const ideas = this.getIdeas(project);
+        newIdeas.forEach(idea => ideas.push({
+          id: this._newId('idea'),
+          title: idea.title,
+          description: idea.description,
+          source: idea.source || 'AI 强制连接'
+        }));
+        this.setIdeas(ideas);
+        this.renderModule(stage);
+      } catch (err) {
+        console.error('[Ideas] AI force failed:', err);
+        this.showToast('AI 生成失败：' + (err.message || '请检查网络或 API Key'));
+        btn.disabled = false;
+        btn.textContent = orig;
+      }
+    });
+
+    document.getElementById('addIdeaBtn')?.addEventListener('click', () => {
+      this.openFormModal({
+        title: '手动添加创意',
+        fields: [
+          { key: 'title', label: '创意名称', type: 'text', placeholder: '给你的创意起个名字' },
+          { key: 'description', label: '创意描述', type: 'textarea', placeholder: '一句话说明创意核心' }
+        ]
+      }).then(res => {
+        if (!res) return;
+        if (!res.title || !res.title.trim()) { this.showToast('请填写创意名称'); return; }
+        const ideas = this.getIdeas(project);
+        ideas.push({
+          id: this._newId('idea'),
+          title: res.title.trim(),
+          description: (res.description || '').trim(),
+          source: '手动添加'
+        });
+        this.setIdeas(ideas);
+        this.renderModule(stage);
+      });
+    });
+
+    document.querySelectorAll('[data-idea-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.ideaDel;
+        const ideas = this.getIdeas(project).filter(i => i.id !== id);
+        this.setIdeas(ideas);
+        this.renderModule(stage);
+      });
+    });
+  }
+
+  saveIdeasData() {
+    // 创意已在每次变更时通过 setIdeas 持久化，这里无需额外操作
+  }
+
+  // ---- Screen 4: 四维筛选模板 ----
+  getInspireFilterTemplate(project) {
+    const projectId = project.id;
+    const ideas = this.getIdeas(project);
+    if (!ideas.length) {
+      return `
+        <div class="screen-content animate-fade-in-up">
+          <h2 class="screen-title">筛选最佳创意</h2>
+          <p class="screen-subtitle">四维打分，选出最佳</p>
+          <div class="screen-hint"><span class="hint-icon">💡</span><span>请先在上一屏（生成创意）产生一些创意，再回来打分筛选。</span></div>
+        </div>`;
+    }
+    const fstate = this.getFilterState(projectId);
+    const scored = ideas.map(idea => {
+      const s = fstate.scores[idea.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+      const total = s.feasibility + s.userValue + s.businessValue + s.innovation;
+      return { ...idea, s, total, best: fstate.bestIds.includes(idea.id) };
+    }).sort((a, b) => b.total - a.total);
+
+    const cardsHtml = scored.map(idea => this.getFilterCardHtml(idea)).join('');
+    const bestItems = scored.filter(i => i.best)
+      .map(i => `<div class="filter-summary-item">✓ ${this.escapeHtml(i.title)}（总分 ${i.total}）</div>`).join('');
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">筛选最佳创意</h2>
+        <p class="screen-subtitle">四维打分，选出最值得深入的创意</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>对每条创意从可行性 / 用户价值 / 商业价值 / 创新程度打分（1-5），可让 AI 辅助评分，勾选最佳创意（可多选）。</span></div>
+        <div class="filter-grid" id="filterGrid">${cardsHtml}</div>
+        <div class="filter-summary">
+          <div class="filter-summary-title">🏆 最佳创意已选定（${scored.filter(i => i.best).length}）</div>
+          <div id="filterSummaryList">${bestItems || '<div class="inspire-context-empty">勾选卡片左侧，确认最佳创意</div>'}</div>
+        </div>
+      </div>`;
+  }
+
+  getFilterCardHtml(idea) {
+    const esc = (s) => this.escapeHtml(s || '');
+    const dims = [
+      { key: 'feasibility', label: '可行性 Feasibility' },
+      { key: 'userValue', label: '用户价值 User Value' },
+      { key: 'businessValue', label: '商业价值 Business Value' },
+      { key: 'innovation', label: '创新程度 Innovation' }
+    ];
+    const rowsHtml = dims.map(d => `
+      <div class="dim-score-row">
+        <span class="dim-score-label">${d.label}</span>
+        <span class="dim-score-control">
+          <button class="dim-score-btn" data-score="${idea.id}" data-metric="${d.key}" data-delta="-1">-</button>
+          <span class="dim-score-val" id="dim_${d.key}_${idea.id}">${idea.s[d.key]}</span>
+          <button class="dim-score-btn" data-score="${idea.id}" data-metric="${d.key}" data-delta="1">+</button>
+        </span>
+      </div>`).join('');
+
+    return `
+      <div class="idea-filter-card ${idea.best ? 'selected' : ''}" data-idea="${idea.id}">
+        <div class="idea-filter-head">
+          <input type="checkbox" class="idea-filter-check" data-best="${idea.id}" ${idea.best ? 'checked' : ''} />
+          <div>
+            <h4 class="idea-filter-title">${esc(idea.title)}</h4>
+            ${idea.description ? `<p class="idea-filter-desc">${esc(idea.description)}</p>` : ''}
+            ${idea.source ? `<span class="idea-card-source">${esc(idea.source)}</span>` : ''}
+          </div>
+        </div>
+        <div class="dim-scores">${rowsHtml}</div>
+        <div class="idea-filter-total">
+          <span class="idea-ai-score-btn" data-ai-score="${idea.id}">🤖 AI 辅助评分</span>
+          <span>总分 <span class="idea-filter-total-score" id="total_${idea.id}">${idea.total}</span>/20</span>
+        </div>
+      </div>`;
+  }
+
+  attachInspireFilterEvents(project) {
+    const stage = 'inspire';
+    const projectId = project.id;
+
+    const persist = () => {
+      const fstate = this.getFilterState(projectId);
+      const ideas = this.getIdeas(project);
+      const enriched = ideas.map(i => ({
+        ...i,
+        scores: fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 },
+        best: fstate.bestIds.includes(i.id)
+      }));
+      window.EurekaStorage.updateCard(projectId, 'filteredIdeas', {
+        content: JSON.stringify({ ideas: enriched, scores: fstate.scores, bestIds: fstate.bestIds }),
+        timestamp: Date.now()
+      });
+    };
+
+    const updateSummary = () => {
+      const fstate = this.getFilterState(projectId);
+      const ideas = this.getIdeas(project);
+      const best = ideas.filter(i => fstate.bestIds.includes(i.id))
+        .map(i => {
+          const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+          const total = s.feasibility + s.userValue + s.businessValue + s.innovation;
+          return `<div class="filter-summary-item">✓ ${this.escapeHtml(i.title)}（总分 ${total}）</div>`;
+        }).join('');
+      const list = document.getElementById('filterSummaryList');
+      if (list) list.innerHTML = best || '<div class="inspire-context-empty">勾选卡片左侧，确认最佳创意</div>';
+      const title = document.querySelector('.filter-summary-title');
+      if (title) title.textContent = `🏆 最佳创意已选定（${fstate.bestIds.length}）`;
+    };
+
+    document.querySelectorAll('[data-score]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.score;
+        const metric = btn.dataset.metric;
+        const delta = parseInt(btn.dataset.delta);
+        const valEl = document.getElementById(`dim_${metric}_${id}`);
+        if (!valEl) return;
+        let val = parseInt(valEl.textContent) || 3;
+        val = Math.max(1, Math.min(5, val + delta));
+        valEl.textContent = val;
+        const fstate = this.getFilterState(projectId);
+        fstate.scores[id] = fstate.scores[id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+        fstate.scores[id][metric] = val;
+        this.setFilterState(projectId, fstate);
+        const total = ['feasibility', 'userValue', 'businessValue', 'innovation']
+          .reduce((sum, k) => sum + (fstate.scores[id][k] || 3), 0);
+        const totalEl = document.getElementById(`total_${id}`);
+        if (totalEl) totalEl.textContent = total;
+        persist();
+      });
+    });
+
+    document.querySelectorAll('[data-best]').forEach(check => {
+      check.addEventListener('change', () => {
+        const id = check.dataset.best;
+        const fstate = this.getFilterState(projectId);
+        const card = check.closest('.idea-filter-card');
+        if (check.checked) {
+          if (!fstate.bestIds.includes(id)) fstate.bestIds.push(id);
+          if (card) card.classList.add('selected');
+        } else {
+          fstate.bestIds = fstate.bestIds.filter(x => x !== id);
+          if (card) card.classList.remove('selected');
+        }
+        this.setFilterState(projectId, fstate);
+        persist();
+        updateSummary();
+      });
+    });
+
+    document.querySelectorAll('[data-ai-score]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.aiScore;
+        const ideas = this.getIdeas(project);
+        const idea = ideas.find(i => i.id === id);
+        if (!idea) return;
+        const orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '🤖 评分中...';
+        try {
+          const ctx = this.getInspireContextText(project);
+          const scores = await AIAssistant.scoreIdeaAI(idea, ctx);
+          const fstate = this.getFilterState(projectId);
+          fstate.scores[id] = scores;
+          this.setFilterState(projectId, fstate);
+          ['feasibility', 'userValue', 'businessValue', 'innovation'].forEach(k => {
+            const el = document.getElementById(`dim_${k}_${id}`);
+            if (el) el.textContent = scores[k];
+          });
+          const total = scores.feasibility + scores.userValue + scores.businessValue + scores.innovation;
+          const totalEl = document.getElementById(`total_${id}`);
+          if (totalEl) totalEl.textContent = total;
+          persist();
+          this.showToast('✨ AI 已完成评分');
+        } catch (err) {
+          console.error('[Filter] AI score failed:', err);
+          this.showToast('AI 评分失败：' + (err.message || '请检查网络或 API Key'));
+        } finally {
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      });
+    });
+  }
+
+  saveFilterData() {
+    // 分数与最佳选择已在每次变更时即时持久化（persist + setFilterState）
+  }
+
+  // ---- Screen 5: 阶段总结模板 ----
+  getInspireSummaryTemplate(project) {
+    const pov = this.extractPovFromProject(project);
+    const hmws = this.getSelectedHmws(project);
+    const ideas = this.getIdeas(project);
+    const fstate = this.getFilterState(project.id);
+
+    let bestIdeas = ideas.filter(i => fstate.bestIds.includes(i.id)).map(i => {
+      const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+      const total = s.feasibility + s.userValue + s.businessValue + s.innovation;
+      return { ...i, s, total };
+    });
+    if (bestIdeas.length === 0 && ideas.length) {
+      bestIdeas = ideas.map(i => {
+        const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+        const total = s.feasibility + s.userValue + s.businessValue + s.innovation;
+        return { ...i, s, total };
+      }).sort((a, b) => b.total - a.total).slice(0, 3);
+    }
+
+    const hmwHtml = hmws.length
+      ? hmws.map(h => `<div class="summary-hmw-item"><span class="summary-tag">HMW</span>${this.escapeHtml(h)}</div>`).join('')
+      : '<div class="summary-empty">尚未选定最佳 HMW</div>';
+
+    const ideaHtml = bestIdeas.length
+      ? bestIdeas.map(i => `
+        <div class="summary-idea-item">
+          <strong>${this.escapeHtml(i.title)}</strong>
+          ${i.description ? `<div class="idea-card-desc">${this.escapeHtml(i.description)}</div>` : ''}
+          <div class="summary-idea-total">四维总分 ${i.total}/20 ｜ 可行性 ${i.s.feasibility} · 用户 ${i.s.userValue} · 商业 ${i.s.businessValue} · 创新 ${i.s.innovation}</div>
+        </div>`).join('')
+      : '<div class="summary-empty">尚未生成/选定创意</div>';
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">Inspire 阶段总结</h2>
+        <p class="screen-subtitle">确认你的启发成果，准备进入 Shape</p>
+
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">📌 POV 摘要</div>
+          <div class="summary-row"><span class="summary-key">目标用户</span><span>${this.escapeHtml(pov.targetUser || '—')}</span></div>
+          <div class="summary-row"><span class="summary-key">场景挑战</span><span>${this.escapeHtml(pov.sceneChallenge || '—')}</span></div>
+          <div class="summary-row"><span class="summary-key">用户问题</span><span>${this.escapeHtml(pov.userProblem || '—')}</span></div>
+          <div class="summary-row"><span class="summary-key">核心洞察</span><span>${this.escapeHtml(pov.insight || '—')}</span></div>
+          <div class="summary-row"><span class="summary-key">目标</span><span>${this.escapeHtml(pov.goal || '—')}</span></div>
+        </div>
+
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">🏆 最佳 HMW（${hmws.length}）</div>
+          ${hmwHtml}
+        </div>
+
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">💡 最佳创意（${bestIdeas.length}）</div>
+          ${ideaHtml}
+        </div>
+
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="summaryBackBtn">返回修改</button>
+          <button class="btn btn-confirm-primary" id="summaryConfirmBtn">确认完成，进入 Shape</button>
+        </div>
+      </div>`;
+  }
+
+  attachInspireSummaryEvents(project) {
+    document.getElementById('summaryBackBtn')?.addEventListener('click', () => {
+      this.goToScreen('inspire', 4);
+    });
+    document.getElementById('summaryConfirmBtn')?.addEventListener('click', () => {
+      this.saveInspireSummary(project);
+      this.completeStage('inspire');
+    });
+  }
+
+  saveInspireSummary(project) {
+    if (!AppState.currentProjectId) return;
+    const pov = this.extractPovFromProject(project);
+    const hmws = this.getSelectedHmws(project);
+    const ideas = this.getIdeas(project);
+    const fstate = this.getFilterState(project.id);
+    let bestIdeas = ideas.filter(i => fstate.bestIds.includes(i.id)).map(i => {
+      const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+      return {
+        id: i.id, title: i.title, description: i.description, source: i.source,
+        scores: s, total: s.feasibility + s.userValue + s.businessValue + s.innovation
+      };
+    });
+    if (bestIdeas.length === 0 && ideas.length) {
+      bestIdeas = ideas.map(i => {
+        const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+        return { id: i.id, title: i.title, description: i.description, source: i.source, scores: s, total: s.feasibility + s.userValue + s.businessValue + s.innovation };
+      }).sort((a, b) => b.total - a.total).slice(0, 3);
+    }
+    const summary = { pov, bestHmws: hmws, bestIdeas, createdAt: Date.now() };
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'inspireSummary', {
+      content: JSON.stringify(summary), timestamp: Date.now()
+    });
+  }
+
+  // ---- 通用表单弹窗（NCO 添加 / 创意添加 复用）----
+  openFormModal({ title, fields }) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:var(--space-md);';
+      const fieldHtml = fields.map(f => {
+        const id = 'fm_' + f.key;
+        if (f.type === 'textarea') {
+          return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><textarea id="${id}" rows="3" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;"></textarea></div>`;
+        }
+        if (f.type === 'select') {
+          const opts = (f.options || []).map(o => `<option value="${this.escapeHtml(o)}">${this.escapeHtml(o)}</option>`).join('');
+          return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><select id="${id}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;">${opts}</select></div>`;
+        }
+        return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><input id="${id}" type="text" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;" /></div>`;
+      }).join('');
+
+      overlay.innerHTML = `
+        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:var(--space-lg);width:100%;max-width:420px;">
+          <h3 style="margin:0 0 var(--space-md);color:var(--text-primary);font-size:var(--font-size-lg);">${this.escapeHtml(title)}</h3>
+          ${fieldHtml}
+          <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-md);">
+            <button id="fmCancel" class="btn btn-secondary" style="flex:1;">取消</button>
+            <button id="fmSave" class="btn-ai" style="flex:1;">保存</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+
+      const close = (val) => { overlay.remove(); resolve(val); };
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) close(null); });
+      overlay.querySelector('#fmCancel').addEventListener('click', () => close(null));
+      overlay.querySelector('#fmSave').addEventListener('click', () => {
+        const res = {};
+        fields.forEach(f => { res[f.key] = overlay.querySelector('#fm_' + f.key)?.value?.trim() || ''; });
+        close(res);
+      });
+    });
+  }
+
   /**
    * Generate HMW 四维重构 HTML template (Inspire Screen 1)
    */
@@ -2801,25 +3548,25 @@ class EurekaLite {
             <span class="hmw-section-title">用户观点问题 (POV)</span>
             <span class="hmw-section-badge">来自 Reveal</span>
           </div>
-          <div class="hmw-pov-grid">
+            <div class="hmw-pov-grid">
             <div class="hmw-pov-field">
-              <label class="hmw-pov-label">目标用户</label>
+              <label class="hmw-pov-label">目标用户 ${pov.from?.targetUser ? '<span class="hmw-from-reveal">来自 Reveal</span>' : ''}</label>
               <input type="text" class="hmw-pov-input" id="hmwPovTargetUser" placeholder="例如：城市驾驶者" value="${this.escapeHtml(pov.targetUser)}" />
             </div>
             <div class="hmw-pov-field">
-              <label class="hmw-pov-label">场景挑战</label>
+              <label class="hmw-pov-label">场景挑战 ${pov.from?.sceneChallenge ? '<span class="hmw-from-reveal">来自 Reveal</span>' : ''}</label>
               <input type="text" class="hmw-pov-input" id="hmwPovScene" placeholder="例如：在繁忙市区寻找停车位" value="${this.escapeHtml(pov.sceneChallenge)}" />
             </div>
             <div class="hmw-pov-field">
-              <label class="hmw-pov-label">用户问题</label>
+              <label class="hmw-pov-label">用户问题 ${pov.from?.userProblem ? '<span class="hmw-from-reveal">来自 Reveal</span>' : ''}</label>
               <input type="text" class="hmw-pov-input" id="hmwPovProblem" placeholder="用户面临的核心问题" value="${this.escapeHtml(pov.userProblem)}" />
             </div>
             <div class="hmw-pov-field">
-              <label class="hmw-pov-label">洞察</label>
+              <label class="hmw-pov-label">洞察 ${pov.from?.insight ? '<span class="hmw-from-reveal">来自 Reveal</span>' : ''}</label>
               <input type="text" class="hmw-pov-input" id="hmwPovInsight" placeholder="来自 FIND 的核心洞察" value="${this.escapeHtml(pov.insight)}" />
             </div>
             <div class="hmw-pov-field full-width">
-              <label class="hmw-pov-label">目标</label>
+              <label class="hmw-pov-label">目标 ${pov.from?.goal ? '<span class="hmw-from-reveal">来自 Reveal</span>' : ''}</label>
               <input type="text" class="hmw-pov-input" id="hmwPovGoal" placeholder="我们期望达成的改变" value="${this.escapeHtml(pov.goal)}" />
             </div>
           </div>
@@ -2967,7 +3714,7 @@ class EurekaLite {
    * Extract POV data from Reveal stage outputs
    */
   extractPovFromProject(project) {
-    const pov = { targetUser: '', sceneChallenge: '', userProblem: '', insight: '', goal: '' };
+    const pov = { targetUser: '', sceneChallenge: '', userProblem: '', insight: '', goal: '', from: {} };
 
     // Try project briefing first
     if (project?.cards?.projectBriefing) {
@@ -2975,8 +3722,8 @@ class EurekaLite {
         let raw = project.cards.projectBriefing;
         if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
         const briefing = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (briefing.targetUser) pov.targetUser = briefing.targetUser;
-        if (briefing.scene) pov.sceneChallenge = briefing.scene;
+        if (briefing.targetUser) { pov.targetUser = briefing.targetUser; pov.from.targetUser = true; }
+        if (briefing.scene) { pov.sceneChallenge = briefing.scene; pov.from.sceneChallenge = true; }
       } catch (e) {}
     }
 
@@ -2988,8 +3735,22 @@ class EurekaLite {
         if (typeof raw === 'string') {
           const targetMatch = raw.match(/【目标用户】(.+?)(?=\n【场景描述】|$)/s);
           const sceneMatch = raw.match(/【场景描述】(.+?)$/s);
-          if (targetMatch) pov.targetUser = targetMatch[1].trim();
-          if (sceneMatch) pov.sceneChallenge = sceneMatch[1].trim();
+          if (targetMatch) { pov.targetUser = targetMatch[1].trim(); pov.from.targetUser = true; }
+          if (sceneMatch) { pov.sceneChallenge = sceneMatch[1].trim(); pov.from.sceneChallenge = true; }
+        }
+      } catch (e) {}
+    }
+
+    // Extract user problem: prefer journey discovery (first key finding)
+    if (project?.cards?.journey) {
+      try {
+        let raw = project.cards.journey;
+        if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+        const journeyData = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        const discoveries = (journeyData || []).filter(c => c.discovery && c.discovery.trim());
+        if (discoveries.length > 0) {
+          pov.userProblem = discoveries[0].discovery.trim();
+          pov.from.userProblem = true;
         }
       } catch (e) {}
     }
@@ -3001,26 +3762,30 @@ class EurekaLite {
         if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
         const findData = typeof raw === 'string' ? JSON.parse(raw) : raw;
         if (Array.isArray(findData.findings) && findData.findings.length > 0) {
-          // Use the first completed distill as insight
           const first = findData.findings.find(f => f.distill?.trim());
-          if (first) pov.insight = first.distill;
-          // Use source finding as user problem
-          const firstFinding = findData.findings.find(f => f.sourceFinding?.trim());
-          if (firstFinding) pov.userProblem = firstFinding.sourceFinding;
+          if (first) { pov.insight = first.distill; pov.from.insight = true; }
+          // Use FIND sourceFinding as user problem if not yet filled by journey
+          if (!pov.userProblem) {
+            const firstFinding = findData.findings.find(f => f.sourceFinding?.trim());
+            if (firstFinding) { pov.userProblem = firstFinding.sourceFinding; pov.from.userProblem = true; }
+          }
         } else if (findData.distill) {
-          pov.insight = findData.distill;
+          pov.insight = findData.distill; pov.from.insight = true;
         }
       } catch (e) {}
     }
 
-    // Extract goal from business goal
+    // Extract goal from business goal (Reveal Screen 4)
     if (project?.cards?.businessGoal) {
       try {
         let raw = project.cards.businessGoal;
         if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
         const bg = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (bg.goal) pov.goal = bg.goal;
-        else if (bg.consensus) pov.goal = bg.consensus;
+        const bgObj = bg?.hypothesis || bg; // businessGoal may wrap under hypothesis
+        if (bgObj?.goal) { pov.goal = bgObj.goal; pov.from.goal = true; }
+        else if (bgObj?.consensus) { pov.goal = bgObj.consensus; pov.from.goal = true; }
+        else if (bg?.goal) { pov.goal = bg.goal; pov.from.goal = true; }
+        else if (bg?.consensus) { pov.goal = bg.consensus; pov.from.goal = true; }
       } catch (e) {}
     }
 
@@ -3126,22 +3891,47 @@ class EurekaLite {
 
     // Complete button
     document.getElementById('completeBtn')?.addEventListener('click', () => {
+      const cur = AppState.currentScreen || project?.currentScreen || 1;
+      if (stage === 'inspire' && cur === 5) this.saveInspireSummary(project);
+      if (stage === 'shape' && cur === 4) this.saveShapeSummary(project);
+      if (stage === 'exam' && cur === 5) this.saveExamSummary(project);
       this.completeStage(stage);
     });
 
-    // AI Prefill button (generic screenInput)
-    document.getElementById('aiPrefillBtn')?.addEventListener('click', () => {
+    // AI Prefill button (generic screenInput) - now powered by DeepSeek
+    document.getElementById('aiPrefillBtn')?.addEventListener('click', async (e) => {
       const input = document.getElementById('screenInput');
       const screenNum = getCurrentScreen();
-      if (input) {
-        const prefill = AIAssistant.generatePrefillContent(
+      if (!input) return;
+      const btn = e.currentTarget;
+      const aiOn = !!(window.AIService && window.AIService.isReady());
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = aiOn ? '🤖 DeepSeek 生成中...' : 'AI 生成中...';
+      try {
+        const prefill = await AIAssistant.generatePrefillContentAI(
           { stage, screen: screenNum, type: 'text' },
-          input.placeholder
+          input.value,
+          AppState.currentProject
         );
         if (prefill?.content) {
-          input.value = prefill.content;
-          this.autoSaveScreenContent(stage, screenNum, input.value);
+          if (input.value && input.value.trim().length >= 5) {
+            this.showPrefillDiff(input.value, prefill);
+          } else {
+            input.value = prefill.content;
+            input.dispatchEvent(new Event('input'));
+            this.autoSaveScreenContent(stage, screenNum, input.value);
+            this.showToast('✨ AI 已生成初稿，你可以继续编辑修订');
+          }
+        } else {
+          this.showToast('暂无生成建议，请补充更多项目信息');
         }
+      } catch (err) {
+        console.error('[AI] aiPrefillBtn failed:', err);
+        this.showToast('AI 生成失败：' + (err.message || '请检查网络或 API Key'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
       }
     });
 
@@ -3291,6 +4081,34 @@ class EurekaLite {
     // HMW 四维重构 events (Inspire Screen 1)
     this.attachHmwEvents(stage, project);
 
+    // Inspire 重构屏事件 (Screen 2-5)
+    if (stage === 'inspire') {
+      const cur = AppState.currentScreen || project?.currentScreen || 1;
+      if (cur === 2) this.attachInspireNcoEvents(project);
+      else if (cur === 3) this.attachInspireIdeasEvents(project);
+      else if (cur === 4) this.attachInspireFilterEvents(project);
+      else if (cur === 5) this.attachInspireSummaryEvents(project);
+    }
+
+    // Shape 四屏事件 (Screen 1-4)
+    if (stage === 'shape') {
+      const cur = AppState.currentScreen || project?.currentScreen || 1;
+      if (cur === 1) this.attachShapeFourDimEvents(project);
+      else if (cur === 2) this.attachShapeMinConceptEvents(project);
+      else if (cur === 3) this.attachShapeStoryboardEvents(project);
+      else if (cur === 4) this.attachShapeSummaryEvents(project);
+    }
+
+    // Exam 五屏事件
+    if (stage === 'exam') {
+      const cur = AppState.currentScreen || project?.currentScreen || 1;
+      if (cur === 1) this.attachExamTestPlanEvents(project);
+      else if (cur === 2) this.attachExamTestReportEvents(project);
+      else if (cur === 3) this.attachExamFourDimEvents(project);
+      else if (cur === 4) this.attachExamElevatorEvents(project);
+      else if (cur === 5) this.attachExamSummaryEvents(project);
+    }
+
     // Info Capsule - Project info quick view
     this.attachInfoCapsuleEvents(project);
   }
@@ -3387,8 +4205,8 @@ class EurekaLite {
         const cardTypeMap = {
           reveal: ['scene', 'journey', 'findInsight', 'businessGoal', 'projectBriefing'],
           inspire: ['hmw', 'ncoInspiration', 'ideas', 'filteredIdeas', 'bestIdea'],
-          shape: ['fourDimensions', 'minConcept', 'storyboard'],
-          exam: ['prototype', 'testPlan', 'testReport', 'fourDimensionEval', 'elevatorPitch']
+          shape: ['shapeFourDim', 'shapeMinConcept', 'shapeStoryboard', 'shapeSummary'],
+          exam: ['examTestPlan', 'examTestReport', 'examFourDimEval', 'examElevator', 'examSummary']
         };
         const cardTypes = cardTypeMap[stage] || [];
         const cardType = cardTypes[screen - 1];
@@ -3768,6 +4586,36 @@ class EurekaLite {
    * Save current screen content helper
    */
   saveCurrentScreenContent(stage, screen) {
+    // Inspire 重构屏：数据已随交互即时持久化，这里做镜像兜底
+    if (stage === 'inspire') {
+      const sc = screen || AppState.currentScreen || 1;
+      if (sc === 2) { this.saveNcoData(); return; }
+      if (sc === 3) { this.saveIdeasData(); return; }
+      if (sc === 4) { this.saveFilterData(); return; }
+      // Screen 5 仅在用户确认时写入 inspireSummary
+      return;
+    }
+
+    // Shape 四屏：数据已随交互即时持久化
+    if (stage === 'shape') {
+      const sc = screen || AppState.currentScreen || 1;
+      if (sc === 1) { this.saveShapeFourDimData(project); return; }
+      if (sc === 2) { this.saveShapeMinConceptData(project); return; }
+      if (sc === 3) { this.saveShapeStoryboardData(project); return; }
+      // Screen 4 仅在用户确认时写入 shapeSummary
+      return;
+    }
+
+    // Exam 五屏：自定义屏即时持久化
+    if (stage === 'exam') {
+      const sc = screen || AppState.currentScreen || 1;
+      if (sc === 1) { this.saveExamTestPlanData(project); return; }
+      if (sc === 2) { this.saveExamTestReportData(project); return; }
+      if (sc === 3) { this.saveExamFourDimData(project); return; }
+      if (sc === 4) { this.saveExamElevatorData(project); return; }
+      if (sc === 5) return; // 仅在用户确认时写入 examSummary
+    }
+
     const screenInput = document.getElementById('screenInput');
     const screenInput2 = document.getElementById('screenInput2');
     const targetUserInput = document.getElementById('targetUserInput');
@@ -4385,9 +5233,15 @@ class EurekaLite {
       });
     });
 
-    // Evaluation checkbox
+    // Evaluation checkbox — enforce max 2 selected best HMW
     document.querySelectorAll('.hmw-eval-check').forEach(check => {
       check.addEventListener('change', () => {
+        const checked = Array.from(document.querySelectorAll('.hmw-eval-check:checked'));
+        if (check.checked && checked.length > 2) {
+          check.checked = false;
+          this.showToast('建议精选不超过 2 个最佳 HMW');
+          return;
+        }
         const id = check.dataset.id;
         const row = document.querySelector(`.hmw-eval-row[data-id="${id}"]`);
         if (row) row.classList.toggle('selected', check.checked);
@@ -4841,8 +5695,8 @@ class EurekaLite {
     const cardTypeMap = {
       reveal: ['scene', 'journey', 'findInsight', 'businessGoal', 'projectBriefing'],
       inspire: ['hmw', 'ncoInspiration', 'ideas', 'filteredIdeas', 'bestIdea'],
-      shape: ['fourDimensions', 'minConcept', 'storyboard'],
-      exam: ['prototype', 'testPlan', 'testReport', 'fourDimensionEval', 'elevatorPitch']
+      shape: ['shapeFourDim', 'shapeMinConcept', 'shapeStoryboard', 'shapeSummary'],
+      exam: ['examTestPlan', 'examTestReport', 'examFourDimEval', 'examElevator', 'examSummary']
     };
 
     const cardTypes = cardTypeMap[stage] || [];
@@ -4907,6 +5761,11 @@ class EurekaLite {
         title: '已保存！产出：「最佳创意」及选择理由',
         desc: '综合考虑可行性、用户价值和商业潜力，选出了最值得深入的创意，并给出了清晰的选择理由。',
         nextLabel: '完成 Inspire →'
+      },
+      'inspire-5': {
+        title: '已保存！产出：Inspire 阶段总结',
+        desc: '汇总了 POV、最佳 HMW 与最佳创意，形成可交付 Shape 阶段使用的启发成果。',
+        nextLabel: '进入 Shape →'
       },
       'shape-1': {
         title: '已保存！产出：「四维拷问」分析',
@@ -5010,7 +5869,7 @@ class EurekaLite {
         AppState.navigate(nextStage, { projectId: AppState.currentProjectId });
       }, 2500);
     } else {
-      // Project complete - show final capsule
+      // Project complete - show panorama
       this.showTaskCompletionCapsule(stage, stageInfo.screens);
 
       setTimeout(() => {
@@ -5021,7 +5880,7 @@ class EurekaLite {
         });
 
         this.showToast('🎉 恭喜完成完整项目！+100 积分');
-        AppState.navigate('home');
+        this.showPanorama(window.EurekaStorage.getProject(AppState.currentProjectId));
       }, 2500);
     }
   }
@@ -5074,6 +5933,11 @@ class EurekaLite {
                     <span>${stageInfo.name} 第 ${project.currentScreen}/${stageInfo.screens} 屏</span>
                     <span>${progress}%</span>
                   </div>
+                  ${project.status === 'completed' ? `
+                    <button class="btn btn-ai project-panorama-btn" data-project-id="${project.id}" style="margin-top: var(--space-md); width: 100%;">
+                      🎉 查看全景图
+                    </button>
+                  ` : ''}
                 </div>
               `;
             }).join('')}
@@ -5100,6 +5964,14 @@ class EurekaLite {
       card.addEventListener('click', () => {
         const projectId = card.dataset.projectId;
         AppState.navigate('reveal', { projectId });
+      });
+    });
+
+    document.querySelectorAll('.project-panorama-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const projectId = btn.dataset.projectId;
+        this.showPanorama(window.EurekaStorage.getProject(projectId));
       });
     });
 
@@ -5219,6 +6091,1084 @@ class EurekaLite {
       }
     });
   }
+
+  // ========== SHAPE / EXAM 共享辅助 ==========
+
+  getProjectBriefing(project) {
+    let raw = project?.cards?.projectBriefing;
+    if (!raw) return null;
+    if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+    try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { return null; }
+  }
+
+  getBestIdeas(project) {
+    const ideas = this.getIdeas(project);
+    const fstate = this.getFilterState(project.id);
+    let best = ideas.filter(i => fstate.bestIds.includes(i.id));
+    if (best.length === 0 && ideas.length) {
+      best = ideas.map(i => {
+        const s = fstate.scores[i.id] || { feasibility: 3, userValue: 3, businessValue: 3, innovation: 3 };
+        return { ...i, total: s.feasibility + s.userValue + s.businessValue + s.innovation };
+      }).sort((a, b) => b.total - a.total).slice(0, 2);
+    }
+    return best.slice(0, 2);
+  }
+
+  getShapeContextSummary(project) {
+    const pov = this.extractPovFromProject(project);
+    const hmws = this.getSelectedHmws(project);
+    const bestIdeas = this.getBestIdeas(project);
+    const bestIdea = bestIdeas[0];
+    const fd = this._readCardJSON('shapeFourDim');
+    const fdResult = fd && fd.result ? fd.result : '';
+    let txt = '';
+    txt += `【POV】目标用户：${pov.targetUser || '—'}；场景：${pov.sceneChallenge || '—'}；用户问题：${pov.userProblem || '—'}；洞察：${pov.insight || '—'}\n`;
+    txt += `【最佳 HMW】${hmws.length ? hmws.join('；') : '—'}\n`;
+    txt += `【最佳创意】${bestIdea ? bestIdea.title + (bestIdea.description ? '：' + bestIdea.description : '') : '—'}\n`;
+    if (fdResult) txt += `【四维拷问】${fdResult}\n`;
+    return txt.trim();
+  }
+
+  // ========== SHAPE 屏1：四维拷问 ==========
+
+  getShapeFourDimTemplate(project) {
+    const pov = this.extractPovFromProject(project);
+    const bestIdeas = this.getBestIdeas(project);
+    const bestTitle = bestIdeas[0] ? bestIdeas[0].title : '（尚未选定最佳创意）';
+    let dims = { user: [], business: [], technical: [], ecosystem: [] };
+    const saved = this._readCardJSON('shapeFourDim');
+    if (saved && saved.dimensions) dims = saved.dimensions;
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">四维拷问</h2>
+        <p class="screen-subtitle">从用户 / 商业 / 技术 / 生态 四个维度，拷问你的最佳创意</p>
+        <div class="shape-context-card">
+          <div class="shape-context-row"><span class="shape-context-label">用户问题</span><span>${this.escapeHtml(pov.userProblem || '—')}</span></div>
+          <div class="shape-context-row"><span class="shape-context-label">最佳创意</span><span>${this.escapeHtml(bestTitle)}</span></div>
+        </div>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>点击按钮让 AI 基于你的最佳创意生成拷问问题，然后逐题填写你的回答。</span></div>
+        <button class="btn btn-ai" id="genFourDimBtn">✨ AI 帮我生成拷问问题</button>
+        <div id="fourDimContainer">${this.fourDimQuestionsHTML(dims, bestTitle)}</div>
+        <div class="result-block">
+          <label class="input-label">拷问结果（自动汇总，可编辑）</label>
+          <textarea class="input textarea" id="fourDimResult" rows="5" placeholder="生成问题并填写回答后，这里会自动汇总...">${this.escapeHtml(saved?.result || '')}</textarea>
+        </div>
+        <button class="btn btn-secondary" id="saveFourDimBtn">保存拷问结果</button>
+      </div>`;
+  }
+
+  fourDimQuestionsHTML(dims, bestTitle) {
+    const DIMS = [
+      { key: 'user', label: '👤 用户 User', color: 'var(--shape-primary)' },
+      { key: 'business', label: '💰 商业 Business', color: '#F59E0B' },
+      { key: 'technical', label: '⚙️ 技术 Technical', color: '#22C55E' },
+      { key: 'ecosystem', label: '🌿 生态 Ecosystem', color: '#7F77DD' }
+    ];
+    const list = dims || { user: [], business: [], technical: [], ecosystem: [] };
+    const anyQ = DIMS.some(d => (list[d.key] || []).length > 0);
+    if (!anyQ) {
+      return `<div class="fourdim-empty" id="fourDimEmpty">尚未生成拷问问题，点击上方「✨ AI 帮我生成拷问问题」开始。</div>`;
+    }
+    return DIMS.map(d => {
+      const items = list[d.key] || [];
+      return `
+        <div class="fourdim-dim" data-dim="${d.key}">
+          <div class="fourdim-dim-header" style="border-color:${d.color}">
+            <span class="fourdim-dim-title" style="color:${d.color}">${d.label}</span>
+          </div>
+          <div class="fourdim-questions">
+            ${items.map((it, idx) => `
+              <div class="fourdim-q">
+                <div class="fourdim-q-text">${this.escapeHtml(it.q || '')}</div>
+                <textarea class="input textarea fourdim-ans" data-dim="${d.key}" data-idx="${idx}" rows="2" placeholder="你的回答...">${this.escapeHtml(it.a || '')}</textarea>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  buildFourDimResultText(dims, bestTitle) {
+    const labels = { user: '用户', business: '商业', technical: '技术', ecosystem: '生态' };
+    let txt = `【四维拷问结果：${bestTitle}】\n`;
+    Object.keys(labels).forEach(k => {
+      const items = (dims[k] || []).filter(x => x.q);
+      if (items.length) {
+        txt += `\n${labels[k]}维度：\n`;
+        items.forEach((it, i) => {
+          txt += `Q${i + 1}：${it.q}\nA：${it.a || '（待回答）'}\n`;
+        });
+      }
+    });
+    return txt.trim();
+  }
+
+  attachShapeFourDimEvents(project) {
+    let saveTimer = null;
+    const container = document.getElementById('fourDimContainer');
+    const genBtn = document.getElementById('genFourDimBtn');
+    const saveBtn = document.getElementById('saveFourDimBtn');
+    const resultEl = document.getElementById('fourDimResult');
+    const bestIdeas = this.getBestIdeas(project);
+    const bestTitle = bestIdeas[0] ? bestIdeas[0].title : '（尚未选定最佳创意）';
+
+    const readDims = () => {
+      const dims = { user: [], business: [], technical: [], ecosystem: [] };
+      document.querySelectorAll('#fourDimContainer .fourdim-dim').forEach(dimEl => {
+        const key = dimEl.dataset.dim;
+        dims[key] = Array.from(dimEl.querySelectorAll('.fourdim-q')).map(qEl => ({
+          q: (qEl.querySelector('.fourdim-q-text')?.textContent || '').trim(),
+          a: (qEl.querySelector('.fourdim-ans')?.value || '').trim()
+        }));
+      });
+      return dims;
+    };
+
+    const onInput = () => {
+      if (resultEl) resultEl.value = this.buildFourDimResultText(readDims(), bestTitle);
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveShapeFourDimData(project), 600);
+    };
+
+    container?.querySelectorAll('.fourdim-ans').forEach(ta => ta.addEventListener('input', onInput));
+
+    genBtn?.addEventListener('click', async () => {
+      const pov = this.extractPovFromProject(project);
+      const briefing = this.getProjectBriefing(project);
+      const briefText = briefing ? JSON.stringify(briefing).slice(0, 1200) : (project?.title || '');
+      const bestIdea = bestIdeas[0] || { title: bestTitle, description: '' };
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateShapeQuestions(bestIdea, pov.userProblem, briefText);
+        if (container) {
+          container.innerHTML = this.fourDimQuestionsHTML(obj, bestTitle);
+          container.querySelectorAll('.fourdim-ans').forEach(ta => ta.addEventListener('input', onInput));
+        }
+        onInput();
+        this.saveShapeFourDimData(project);
+        this.showToast('✨ 已生成四维新拷问，请逐题填写回答');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 帮我生成拷问问题';
+      }
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      this.saveShapeFourDimData(project);
+      this.showToast('已保存拷问结果');
+    });
+
+    resultEl?.addEventListener('input', () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveShapeFourDimData(project), 600);
+    });
+  }
+
+  saveShapeFourDimData(project) {
+    if (!AppState.currentProjectId) return;
+    const container = document.getElementById('fourDimContainer');
+    const dims = { user: [], business: [], technical: [], ecosystem: [] };
+    if (container) {
+      container.querySelectorAll('.fourdim-dim').forEach(dimEl => {
+        const key = dimEl.dataset.dim;
+        dims[key] = Array.from(dimEl.querySelectorAll('.fourdim-q')).map(qEl => ({
+          q: (qEl.querySelector('.fourdim-q-text')?.textContent || '').trim(),
+          a: (qEl.querySelector('.fourdim-ans')?.value || '').trim()
+        }));
+      });
+    }
+    const resultEl = document.getElementById('fourDimResult');
+    const bestIdeas = this.getBestIdeas(project);
+    const bestTitle = bestIdeas[0] ? bestIdeas[0].title : '';
+    const empty = JSON.stringify(dims) === JSON.stringify({ user: [], business: [], technical: [], ecosystem: [] });
+    const result = (resultEl?.value || this.buildFourDimResultText(dims, bestTitle)).trim();
+    if (empty && !result) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'shapeFourDim', {
+      content: JSON.stringify({ dimensions: dims, result }), timestamp: Date.now()
+    });
+  }
+
+  // ========== SHAPE 屏2：最小概念方案 ==========
+
+  conceptRowHTML(list, val) {
+    return `
+      <div class="concept-row">
+        <textarea class="input textarea concept-item" data-list="${list}" rows="2" placeholder="输入一项...">${this.escapeHtml(val || '')}</textarea>
+        <button class="concept-del" data-list="${list}" title="删除">✕</button>
+      </div>`;
+  }
+
+  getShapeMinConceptTemplate(project) {
+    const example = this.getShapeContextSummary(project);
+    let concept = { oneLiner: '', features: [], characteristics: [], boundaries: [] };
+    const saved = this._readCardJSON('shapeMinConcept');
+    if (saved && saved.concept) concept = saved.concept;
+    if (!Array.isArray(concept.features)) concept.features = [];
+    if (!Array.isArray(concept.characteristics)) concept.characteristics = [];
+    if (!Array.isArray(concept.boundaries)) concept.boundaries = [];
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">最小概念方案</h2>
+        <p class="screen-subtitle">基于前面所有内容，定义你的概念方案</p>
+        <details class="shape-example" open>
+          <summary>📐 范例 / 前面内容汇总（点此收起）</summary>
+          <div class="shape-example-body">${this.escapeHtml(example).replace(/\n/g, '<br>')}</div>
+        </details>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>参考上方汇总，用「✨ AI 生成概念方案」获得初稿，再自由编辑。</span></div>
+        <button class="btn btn-ai" id="genConceptBtn">✨ AI 生成概念方案</button>
+        <div class="concept-field">
+          <label class="input-label">一句话定义（oneLiner）</label>
+          <textarea class="input textarea" id="mcOneLiner" rows="2" placeholder="例如：一个让上班族 3 分钟找到可靠停车位的应用">${this.escapeHtml(concept.oneLiner || '')}</textarea>
+        </div>
+        <div class="concept-field">
+          <label class="input-label">功能与特性（features）</label>
+          <div class="concept-list" id="mcFeatures">${concept.features.map(f => this.conceptRowHTML('features', f)).join('')}</div>
+          <button class="btn-add concept-add" data-list="features">➕ 添加</button>
+        </div>
+        <div class="concept-field">
+          <label class="input-label">产品特性（characteristics）</label>
+          <div class="concept-list" id="mcCharacteristics">${concept.characteristics.map(f => this.conceptRowHTML('characteristics', f)).join('')}</div>
+          <button class="btn-add concept-add" data-list="characteristics">➕ 添加</button>
+        </div>
+        <div class="concept-field">
+          <label class="input-label">边界 / 不做什么（boundaries）</label>
+          <div class="concept-list" id="mcBoundaries">${concept.boundaries.map(f => this.conceptRowHTML('boundaries', f)).join('')}</div>
+          <button class="btn-add concept-add" data-list="boundaries">➕ 添加</button>
+        </div>
+        <button class="btn btn-secondary" id="saveConceptBtn">保存概念方案</button>
+      </div>`;
+  }
+
+  attachShapeMinConceptEvents(project) {
+    let saveTimer = null;
+    const oneLinerEl = document.getElementById('mcOneLiner');
+    const genBtn = document.getElementById('genConceptBtn');
+    const saveBtn = document.getElementById('saveConceptBtn');
+
+    const onInput = () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveShapeMinConceptData(project), 600);
+    };
+
+    const bindList = (list) => {
+      const container = document.getElementById('mc' + list.charAt(0).toUpperCase() + list.slice(1));
+      container?.querySelectorAll('.concept-item').forEach(ta => ta.addEventListener('input', onInput));
+      container?.querySelectorAll('.concept-del').forEach(b => b.addEventListener('click', () => {
+        b.closest('.concept-row')?.remove();
+        this.saveShapeMinConceptData(project);
+      }));
+    };
+    ['features', 'characteristics', 'boundaries'].forEach(bindList);
+    oneLinerEl?.addEventListener('input', onInput);
+
+    document.querySelectorAll('.concept-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const list = btn.dataset.list;
+        const container = document.getElementById('mc' + list.charAt(0).toUpperCase() + list.slice(1));
+        if (container) {
+          container.insertAdjacentHTML('beforeend', this.conceptRowHTML(list, ''));
+          bindList(list);
+          this.saveShapeMinConceptData(project);
+        }
+      });
+    });
+
+    genBtn?.addEventListener('click', async () => {
+      const pov = this.extractPovFromProject(project);
+      const fd = this._readCardJSON('shapeFourDim');
+      const fdText = fd && fd.result ? fd.result : '';
+      const bestIdeas = this.getBestIdeas(project);
+      const bestIdea = bestIdeas[0] || { title: '', description: '' };
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateMinConcept(
+          `用户问题：${pov.userProblem || ''}\n最佳创意：${bestIdea.title || ''} ${bestIdea.description || ''}\n四维拷问：${fdText}`.slice(0, 1500)
+        );
+        if (oneLinerEl && obj.oneLiner) oneLinerEl.value = obj.oneLiner;
+        if (Array.isArray(obj.features)) this.refreshConceptList(project, 'features', obj.features);
+        if (Array.isArray(obj.characteristics)) this.refreshConceptList(project, 'characteristics', obj.characteristics);
+        if (Array.isArray(obj.boundaries)) this.refreshConceptList(project, 'boundaries', obj.boundaries);
+        this.saveShapeMinConceptData(project);
+        this.showToast('✨ 已生成概念方案初稿，可继续编辑');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 生成概念方案';
+      }
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      this.saveShapeMinConceptData(project);
+      this.showToast('已保存概念方案');
+    });
+  }
+
+  refreshConceptList(project, list, values) {
+    const container = document.getElementById('mc' + list.charAt(0).toUpperCase() + list.slice(1));
+    if (!container) return;
+    container.innerHTML = (values || []).map(v => this.conceptRowHTML(list, v)).join('');
+    const onInput = () => this.saveShapeMinConceptData(project);
+    container.querySelectorAll('.concept-item').forEach(ta => ta.addEventListener('input', onInput));
+    container.querySelectorAll('.concept-del').forEach(b => b.addEventListener('click', () => {
+      b.closest('.concept-row')?.remove();
+      this.saveShapeMinConceptData(project);
+    }));
+  }
+
+  saveShapeMinConceptData(project) {
+    if (!AppState.currentProjectId) return;
+    const readList = (list) => {
+      const container = document.getElementById('mc' + list.charAt(0).toUpperCase() + list.slice(1));
+      if (!container) return [];
+      return Array.from(container.querySelectorAll('.concept-item')).map(ta => (ta.value || '').trim()).filter(Boolean);
+    };
+    const oneLiner = document.getElementById('mcOneLiner')?.value?.trim() || '';
+    const concept = {
+      oneLiner,
+      features: readList('features'),
+      characteristics: readList('characteristics'),
+      boundaries: readList('boundaries')
+    };
+    const example = this.getShapeContextSummary(project);
+    if (!oneLiner && !concept.features.length && !concept.characteristics.length && !concept.boundaries.length) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'shapeMinConcept', {
+      content: JSON.stringify({ example, concept }), timestamp: Date.now()
+    });
+  }
+
+  // ========== SHAPE 屏3：用户体验故事板 ==========
+
+  getShapeStoryboardTemplate(project) {
+    const themes = [
+      { key: 'problem', title: '用户面对的问题' },
+      { key: 'opportunity', title: '我们的创新机遇' },
+      { key: 'contact', title: '用户接触新的概念方案' },
+      { key: 'usage', title: '用户使用新方案解决问题' },
+      { key: 'outcome', title: '用户得到的结果' },
+      { key: 'feeling', title: '用户的感受和表达' }
+    ];
+    let cards = [];
+    const saved = this._readCardJSON('shapeStoryboard');
+    if (saved && Array.isArray(saved.cards) && saved.cards.length === 6) cards = saved.cards;
+    else cards = themes.map(t => ({ key: t.key, title: t.title, desc: '', image: '' }));
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">用户体验故事板</h2>
+        <p class="screen-subtitle">基于最小概念方案，用 6 个场景讲完用户故事</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 生成故事板」自动生成 6 卡描述，可自由编辑；图片占位区后续接入 AI 生图。</span></div>
+        <button class="btn btn-ai" id="genStoryboardBtn">✨ AI 生成故事板</button>
+        <div class="storyboard-grid">
+          ${cards.map((c, i) => `
+            <div class="storyboard-card" data-key="${c.key}">
+              <div class="storyboard-card-head"><span class="storyboard-num">${i + 1}</span><span class="storyboard-title">${this.escapeHtml(c.title)}</span></div>
+              <textarea class="input textarea storyboard-desc" data-key="${c.key}" rows="3" placeholder="描述这一刻的用户经历...">${this.escapeHtml(c.desc || '')}</textarea>
+              <div class="storyboard-img-placeholder">🖼️ 图片占位（待接入 AI 生成）</div>
+            </div>`).join('')}
+        </div>
+        <button class="btn btn-secondary" id="saveStoryboardBtn">保存故事板</button>
+      </div>`;
+  }
+
+  attachShapeStoryboardEvents(project) {
+    let saveTimer = null;
+    const genBtn = document.getElementById('genStoryboardBtn');
+    const saveBtn = document.getElementById('saveStoryboardBtn');
+    document.querySelectorAll('.storyboard-desc').forEach(ta => ta.addEventListener('input', () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveShapeStoryboardData(project), 600);
+    }));
+
+    genBtn?.addEventListener('click', async () => {
+      const mc = this._readCardJSON('shapeMinConcept');
+      const conceptText = mc && mc.concept ? JSON.stringify(mc.concept) : (project?.title || '');
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateStoryboard(conceptText.slice(0, 1500));
+        const cards = (obj && Array.isArray(obj.cards)) ? obj.cards : [];
+        document.querySelectorAll('.storyboard-card').forEach(cardEl => {
+          const key = cardEl.dataset.key;
+          const c = cards.find(x => x.key === key);
+          const ta = cardEl.querySelector('.storyboard-desc');
+          if (c && c.desc && ta) ta.value = c.desc;
+        });
+        this.saveShapeStoryboardData(project);
+        this.showToast('✨ 已生成 6 卡故事板描述');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 生成故事板';
+      }
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      this.saveShapeStoryboardData(project);
+      this.showToast('已保存故事板');
+    });
+  }
+
+  saveShapeStoryboardData(project) {
+    if (!AppState.currentProjectId) return;
+    const cards = Array.from(document.querySelectorAll('.storyboard-card')).map(cardEl => ({
+      key: cardEl.dataset.key,
+      title: cardEl.querySelector('.storyboard-title')?.textContent || '',
+      desc: (cardEl.querySelector('.storyboard-desc')?.value || '').trim(),
+      image: ''
+    }));
+    if (!cards.length) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'shapeStoryboard', {
+      content: JSON.stringify({ cards }), timestamp: Date.now()
+    });
+  }
+
+  // ========== SHAPE 屏4：整合确认卡 ==========
+
+  getShapeSummaryTemplate(project) {
+    const concept = this._readCardJSON('shapeMinConcept');
+    const sb = this._readCardJSON('shapeStoryboard');
+    const oneLiner = concept?.concept?.oneLiner || '（尚未生成概念方案）';
+    const features = (concept?.concept?.features || []).filter(Boolean);
+    const storyCards = (sb && Array.isArray(sb.cards)) ? sb.cards : [];
+    const storyHtml = storyCards.length
+      ? storyCards.map(c => `<div class="summary-story-item"><strong>${this.escapeHtml(c.title)}</strong>：${this.escapeHtml(c.desc || '（待填写）')}</div>`).join('')
+      : '<div class="summary-empty">尚未生成故事板</div>';
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">Shape 整合确认卡</h2>
+        <p class="screen-subtitle">确认你的构建成果，准备进入 Exam</p>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">🎯 概念方案</div>
+          <div class="summary-row"><span class="summary-key">一句话定义</span><span>${this.escapeHtml(oneLiner)}</span></div>
+          <div class="summary-block-sub">功能与特性</div>
+          ${features.length ? features.map(f => `<div class="summary-idea-item">${this.escapeHtml(f)}</div>`).join('') : '<div class="summary-empty">暂无</div>'}
+        </div>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">📖 用户故事（6 卡）</div>
+          ${storyHtml}
+        </div>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="summaryBackBtn">返回修改</button>
+          <button class="btn btn-confirm-primary" id="summaryConfirmBtn">确认完成，进入 Exam</button>
+        </div>
+      </div>`;
+  }
+
+  attachShapeSummaryEvents(project) {
+    document.getElementById('summaryBackBtn')?.addEventListener('click', () => {
+      this.goToScreen('shape', 3);
+    });
+    document.getElementById('summaryConfirmBtn')?.addEventListener('click', () => {
+      this.saveShapeSummary(project);
+      this.completeStage('shape');
+    });
+  }
+
+  saveShapeSummary(project) {
+    if (!AppState.currentProjectId) return;
+    const minConcept = this._readCardJSON('shapeMinConcept');
+    const storyboard = this._readCardJSON('shapeStoryboard');
+    const concept = (minConcept && minConcept.concept) || { oneLiner: '', features: [], characteristics: [], boundaries: [] };
+    const story = (storyboard && Array.isArray(storyboard.cards)) ? storyboard.cards : [];
+    const summary = { concept, storyboard: story, createdAt: Date.now() };
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'shapeSummary', {
+      content: JSON.stringify(summary), timestamp: Date.now()
+    });
+  }
+
+  // ========== EXAM 屏1：设计测试计划 ==========
+
+  getExamTestPlanTemplate(project) {
+    const concept = this._readCardJSON('shapeMinConcept');
+    const oneLiner = concept?.concept?.oneLiner || '';
+    let data = { purpose: '', scenario: '', hypotheses: '', userValue: '' };
+    const saved = this._readCardJSON('examTestPlan');
+    if (saved) data = { ...data, ...saved };
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">设计测试计划</h2>
+        <p class="screen-subtitle">${this.escapeHtml(oneLiner || '基于概念方案设计验证计划')}</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 生成测试计划」基于概念方案生成初稿，再编辑。</span></div>
+        <button class="btn btn-ai" id="genTestPlanBtn">✨ AI 生成测试计划</button>
+        <div class="exam-field"><label class="input-label">测试目的（purpose）</label><textarea class="input textarea exam-input" id="tp_purpose" rows="2" placeholder="我们想要验证的核心假设是什么？">${this.escapeHtml(data.purpose)}</textarea></div>
+        <div class="exam-field"><label class="input-label">测试场景（scenario）</label><textarea class="input textarea exam-input" id="tp_scenario" rows="2" placeholder="在什么场景下测试？找谁测试？">${this.escapeHtml(data.scenario)}</textarea></div>
+        <div class="exam-field"><label class="input-label">需要验证的假设（hypotheses，每行一条）</label><textarea class="input textarea exam-input" id="tp_hypotheses" rows="3" placeholder="1. 用户愿意...\n2. 用户能...">${this.escapeHtml(data.hypotheses)}</textarea></div>
+        <div class="exam-field"><label class="input-label">用户价值（userValue）</label><textarea class="input textarea exam-input" id="tp_userValue" rows="2" placeholder="我们为目标用户创造了什么价值？">${this.escapeHtml(data.userValue)}</textarea></div>
+        <button class="btn btn-secondary" id="saveTestPlanBtn">保存测试计划</button>
+      </div>`;
+  }
+
+  attachExamTestPlanEvents(project) {
+    let saveTimer = null;
+    document.querySelectorAll('.exam-input').forEach(ta => ta.addEventListener('input', () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveExamTestPlanData(project), 600);
+    }));
+
+    const genBtn = document.getElementById('genTestPlanBtn');
+    genBtn?.addEventListener('click', async () => {
+      const mc = this._readCardJSON('shapeMinConcept');
+      const sb = this._readCardJSON('shapeStoryboard');
+      const ctx = `概念方案：${mc && mc.concept ? JSON.stringify(mc.concept) : ''}\n故事板：${sb && Array.isArray(sb.cards) ? JSON.stringify(sb.cards.map(c => c.desc)) : ''}`.slice(0, 1500);
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateExamTestPlan(ctx);
+        if (obj.purpose) document.getElementById('tp_purpose').value = obj.purpose;
+        if (obj.scenario) document.getElementById('tp_scenario').value = obj.scenario;
+        if (obj.hypotheses) document.getElementById('tp_hypotheses').value = Array.isArray(obj.hypotheses) ? obj.hypotheses.join('\n') : obj.hypotheses;
+        if (obj.userValue) document.getElementById('tp_userValue').value = obj.userValue;
+        this.saveExamTestPlanData(project);
+        this.showToast('✨ 已生成测试计划初稿');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 生成测试计划';
+      }
+    });
+
+    document.getElementById('saveTestPlanBtn')?.addEventListener('click', () => {
+      this.saveExamTestPlanData(project);
+      this.showToast('已保存测试计划');
+    });
+  }
+
+  saveExamTestPlanData(project) {
+    if (!AppState.currentProjectId) return;
+    const get = (id) => document.getElementById(id)?.value?.trim() || '';
+    const data = {
+      purpose: get('tp_purpose'),
+      scenario: get('tp_scenario'),
+      hypotheses: get('tp_hypotheses'),
+      userValue: get('tp_userValue')
+    };
+    if (!data.purpose && !data.scenario && !data.hypotheses && !data.userValue) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'examTestPlan', {
+      content: JSON.stringify(data), timestamp: Date.now()
+    });
+  }
+
+  // ========== EXAM 屏2：测试报告 ==========
+
+  getExamTestReportTemplate(project) {
+    let data = { effectiveValue: '', invalidValue: '', newProblems: '', newOpportunities: '' };
+    const saved = this._readCardJSON('examTestReport');
+    if (saved) data = { ...data, ...saved };
+
+    const field = (id, label, ph) => `
+      <div class="exam-field">
+        <label class="input-label">${label}</label>
+        <textarea class="input textarea exam-input" id="${id}" rows="3" placeholder="${ph}">${this.escapeHtml(data[id.replace('tr_', '')] || '')}</textarea>
+      </div>`;
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">测试报告</h2>
+        <p class="screen-subtitle">记录真实的测试发现，诚实不自我欺骗</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 辅助撰写测试报告」基于测试计划+观察生成 4 类内容，再编辑。</span></div>
+        <button class="btn btn-ai" id="genTestReportBtn">✨ AI 辅助撰写测试报告</button>
+        ${field('tr_effectiveValue', '验证的有效方案价值（effectiveValue）', '哪些设计真正解决了用户问题？')}
+        ${field('tr_invalidValue', '验证的错误和无效价值（invalidValue）', '哪些假设被证伪？哪里做错了？')}
+        ${field('tr_newProblems', '发现的全新问题和挑战（newProblems）', '测试中暴露的新问题？')}
+        ${field('tr_newOpportunities', '新的机会和信息（newOpportunities）', '意外的正向发现？')}
+        <button class="btn btn-secondary" id="saveTestReportBtn">保存测试报告</button>
+      </div>`;
+  }
+
+  attachExamTestReportEvents(project) {
+    let saveTimer = null;
+    document.querySelectorAll('.exam-input').forEach(ta => ta.addEventListener('input', () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveExamTestReportData(project), 600);
+    }));
+
+    const genBtn = document.getElementById('genTestReportBtn');
+    genBtn?.addEventListener('click', async () => {
+      const tp = this._readCardJSON('examTestPlan');
+      const ctx = `测试计划：${tp ? JSON.stringify(tp) : ''}`.slice(0, 1500);
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateExamTestReport(ctx);
+        if (obj.effectiveValue) document.getElementById('tr_effectiveValue').value = obj.effectiveValue;
+        if (obj.invalidValue) document.getElementById('tr_invalidValue').value = obj.invalidValue;
+        if (obj.newProblems) document.getElementById('tr_newProblems').value = obj.newProblems;
+        if (obj.newOpportunities) document.getElementById('tr_newOpportunities').value = obj.newOpportunities;
+        this.saveExamTestReportData(project);
+        this.showToast('✨ 已生成测试报告初稿');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 辅助撰写测试报告';
+      }
+    });
+
+    document.getElementById('saveTestReportBtn')?.addEventListener('click', () => {
+      this.saveExamTestReportData(project);
+      this.showToast('已保存测试报告');
+    });
+  }
+
+  saveExamTestReportData(project) {
+    if (!AppState.currentProjectId) return;
+    const get = (id) => document.getElementById(id)?.value?.trim() || '';
+    const data = {
+      effectiveValue: get('tr_effectiveValue'),
+      invalidValue: get('tr_invalidValue'),
+      newProblems: get('tr_newProblems'),
+      newOpportunities: get('tr_newOpportunities')
+    };
+    if (!data.effectiveValue && !data.invalidValue && !data.newProblems && !data.newOpportunities) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'examTestReport', {
+      content: JSON.stringify(data), timestamp: Date.now()
+    });
+  }
+
+  // ========== EXAM 屏3：四维度评价 ==========
+
+  getExamFourDimEvalTemplate(project) {
+    const dims = [
+      { key: 'userValue', label: '用户价值 User Value', desc: '方案为用户创造的实际价值与体验改善' },
+      { key: 'businessValue', label: '商业价值 Business Value', desc: '商业可行性、变现与增长潜力' },
+      { key: 'feasibility', label: '技术可行性 Feasibility', desc: '实现难度、资源与时间可行性' },
+      { key: 'innovation', label: '创新程度 Innovation', desc: '差异化与突破性' }
+    ];
+    const saved = this._readCardJSON('examFourDimEval') || {};
+    const scores = saved.scores || { userValue: 3, businessValue: 3, feasibility: 3, innovation: 3 };
+    const reasons = saved.reasons || {};
+    const concept = this._readCardJSON('shapeMinConcept');
+    const oneLiner = (concept && concept.concept && concept.concept.oneLiner)
+      ? concept.concept.oneLiner : '（尚未生成最小概念方案）';
+
+    const rowsHtml = dims.map(d => `
+      <div class="exam-dim-card">
+        <div class="exam-dim-head">
+          <span class="exam-dim-label">${d.label}</span>
+          <span class="dim-score-control">
+            <button class="dim-score-btn" data-dim="${d.key}" data-delta="-1">−</button>
+            <span class="dim-score-val" id="dimVal_${d.key}">${scores[d.key]}</span>
+            <button class="dim-score-btn" data-dim="${d.key}" data-delta="1">+</button>
+          </span>
+        </div>
+        <p class="exam-dim-desc">${d.desc}</p>
+        <textarea class="textarea exam-dim-reason" id="dimReason_${d.key}" placeholder="结合测试发现，说明该维度的评价与依据...">${this.escapeHtml(reasons[d.key] || '')}</textarea>
+      </div>`).join('');
+
+    const total = dims.reduce((s, d) => s + (Number(scores[d.key]) || 0), 0);
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">四维度评价</h2>
+        <p class="screen-subtitle">基于测试发现，对方案做四维评估</p>
+        <div class="info-panel exam-dim-context">
+          <div class="info-panel-title">🎯 评价对象</div>
+          <div class="info-panel-body">${this.escapeHtml(oneLiner)}</div>
+        </div>
+        <div class="exam-dim-grid">${rowsHtml}</div>
+        <div class="idea-filter-total">
+          <span class="idea-ai-score-btn" id="examAiScoreBtn">🤖 AI 辅助评分</span>
+          <span>综合得分 <span class="idea-filter-total-score" id="examDimTotal">${total}</span>/20</span>
+        </div>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="saveFourDimBtn">保存评价</button>
+        </div>
+      </div>`;
+  }
+
+  attachExamFourDimEvents(project) {
+    const clamp = (n) => Math.max(1, Math.min(5, n));
+    const dims = ['userValue', 'businessValue', 'feasibility', 'innovation'];
+
+    const updateTotal = () => {
+      let t = 0;
+      dims.forEach(k => {
+        const el = document.getElementById('dimVal_' + k);
+        if (el) t += Number(el.textContent) || 0;
+      });
+      const totalEl = document.getElementById('examDimTotal');
+      if (totalEl) totalEl.textContent = t;
+    };
+
+    document.querySelectorAll('.dim-score-btn[data-dim]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.dim;
+        const valEl = document.getElementById('dimVal_' + key);
+        if (!valEl) return;
+        valEl.textContent = clamp((Number(valEl.textContent) || 3) + Number(btn.dataset.delta));
+        updateTotal();
+        this.saveExamFourDimData(project);
+      });
+    });
+
+    dims.forEach(k => {
+      const ta = document.getElementById('dimReason_' + k);
+      if (ta) ta.addEventListener('input', () => this.saveExamFourDimData(project));
+    });
+
+    document.getElementById('examAiScoreBtn')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.textContent = '⏳ AI 评分中...';
+      try {
+        const context = this._buildExamFourDimContext(project);
+        const res = await AIAssistant.generateExamFourDimEval(context);
+        if (res && res.scores) {
+          dims.forEach(k => {
+            const valEl = document.getElementById('dimVal_' + k);
+            const reasonEl = document.getElementById('dimReason_' + k);
+            if (valEl && res.scores[k]) valEl.textContent = clamp(res.scores[k]);
+            if (reasonEl && res.reasons && res.reasons[k]) reasonEl.value = res.reasons[k];
+          });
+          updateTotal();
+          this.saveExamFourDimData(project);
+          this.showToast('✨ AI 已完成四维评分');
+        } else {
+          this.showToast('AI 未返回有效评分');
+        }
+      } catch (err) {
+        this.showToast('AI 评分失败：' + (err.message || '未知错误'));
+      } finally {
+        btn.disabled = false; btn.textContent = '🤖 AI 辅助评分';
+      }
+    });
+
+    document.getElementById('saveFourDimBtn')?.addEventListener('click', () => {
+      this.saveExamFourDimData(project);
+      this.showToast('已保存四维度评价');
+    });
+  }
+
+  saveExamFourDimData(project) {
+    if (!AppState.currentProjectId) return;
+    const dims = ['userValue', 'businessValue', 'feasibility', 'innovation'];
+    const scores = {}; const reasons = {};
+    dims.forEach(k => {
+      scores[k] = Number(document.getElementById('dimVal_' + k)?.textContent) || 3;
+      reasons[k] = document.getElementById('dimReason_' + k)?.value?.trim() || '';
+    });
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'examFourDimEval', {
+      content: JSON.stringify({ scores, reasons, updatedAt: Date.now() }),
+      timestamp: Date.now()
+    });
+  }
+
+  _buildExamFourDimContext(project) {
+    const concept = this._readCardJSON('shapeMinConcept');
+    const report = this._readCardJSON('examTestReport');
+    const plan = this._readCardJSON('examTestPlan');
+    const oneLiner = (concept && concept.concept && concept.concept.oneLiner) ? concept.concept.oneLiner : '';
+    const features = (concept && concept.concept && Array.isArray(concept.concept.features))
+      ? concept.concept.features.join('；') : '';
+    const tr = report
+      ? `有效价值：${report.effectiveValue || ''}；无效价值：${report.invalidValue || ''}；新问题：${report.newProblems || ''}；新机会：${report.newOpportunities || ''}`
+      : '';
+    const purpose = plan?.purpose || '';
+    return `概念方案：${oneLiner}\n功能特性：${features}\n测试目的：${purpose}\n测试报告：${tr}`;
+  }
+
+  // ========== EXAM 屏4：电梯演讲 & 迭代计划 ==========
+
+  getExamElevatorTemplate(project) {
+    let data = { pitch: '', iteration: [{ actions: ['', '', ''] }] };
+    const saved = this._readCardJSON('examElevator');
+    if (saved) {
+      data = {
+        pitch: saved.pitch || '',
+        iteration: (Array.isArray(saved.iteration) && saved.iteration.length) ? saved.iteration : [{ actions: ['', '', ''] }]
+      };
+    }
+    const phases = ['0-30天', '31-60天', '61-90天'];
+    const rowsHtml = data.iteration.map((row, ri) => `
+      <div class="iter-row" data-ri="${ri}">
+        ${phases.map((p, ci) => `<textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="${ci}" rows="2" placeholder="${p}的行动...">${this.escapeHtml((row.actions && row.actions[ci]) || '')}</textarea>`).join('')}
+        <button class="iter-del" data-ri="${ri}" title="删除该行">✕</button>
+      </div>`).join('');
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">电梯演讲 & 迭代计划</h2>
+        <p class="screen-subtitle">30 秒讲清价值，规划下一步</p>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>用模板或「✨ AI 生成电梯演讲」；下方填写 30-60-90 天迭代计划（可增删行）。</span></div>
+        <div class="exam-field">
+          <label class="input-label">电梯演讲模板</label>
+          <div class="elevator-template">我们为【目标用户】提供了【方案】，解决了【问题】，带来【价值】。</div>
+        </div>
+        <button class="btn btn-ai" id="genPitchBtn">✨ AI 生成电梯演讲</button>
+        <div class="exam-field"><label class="input-label">电梯演讲（pitch）</label><textarea class="input textarea" id="el_pitch" rows="3" placeholder="我们为...">${this.escapeHtml(data.pitch)}</textarea></div>
+        <div class="exam-field">
+          <label class="input-label">30-60-90 天迭代计划</label>
+          <div class="iter-table">
+            <div class="iter-head"><span>0-30天</span><span>31-60天</span><span>61-90天</span><span></span></div>
+            <div id="iterBody">${rowsHtml}</div>
+          </div>
+          <button class="btn-add" id="iterAddRow">➕ 添加行动项</button>
+        </div>
+        <button class="btn btn-secondary" id="saveElevatorBtn">保存</button>
+      </div>`;
+  }
+
+  attachExamElevatorEvents(project) {
+    let saveTimer = null;
+    const onInput = () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.saveExamElevatorData(project), 600);
+    };
+    const bindCells = () => {
+      document.querySelectorAll('.iter-cell').forEach(ta => ta.addEventListener('input', onInput));
+      document.querySelectorAll('.iter-del').forEach(b => b.addEventListener('click', () => {
+        b.closest('.iter-row')?.remove();
+        this.saveExamElevatorData(project);
+      }));
+    };
+    bindCells();
+    document.getElementById('el_pitch')?.addEventListener('input', onInput);
+
+    document.getElementById('iterAddRow')?.addEventListener('click', () => {
+      const body = document.getElementById('iterBody');
+      const ri = body.children.length;
+      const row = document.createElement('div');
+      row.className = 'iter-row';
+      row.dataset.ri = ri;
+      row.innerHTML = `
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="0" rows="2" placeholder="0-30天行动..."></textarea>
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="1" rows="2" placeholder="31-60天行动..."></textarea>
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="2" rows="2" placeholder="61-90天行动..."></textarea>
+        <button class="iter-del" data-ri="${ri}" title="删除该行">✕</button>`;
+      body.appendChild(row);
+      bindCells();
+      this.saveExamElevatorData(project);
+    });
+
+    const genBtn = document.getElementById('genPitchBtn');
+    genBtn?.addEventListener('click', async () => {
+      const summary = this._readCardJSON('shapeSummary') || {};
+      const tp = this._readCardJSON('examTestPlan') || {};
+      const ctx = `概念方案：${summary.concept ? JSON.stringify(summary.concept) : ''}\n测试目的：${tp.purpose || ''}`.slice(0, 1200);
+      genBtn.disabled = true; genBtn.textContent = '🤖 AI 生成中...';
+      try {
+        const obj = await AIAssistant.generateElevatorPitch(ctx);
+        if (obj.pitch) document.getElementById('el_pitch').value = obj.pitch;
+        this.saveExamElevatorData(project);
+        this.showToast('✨ 已生成电梯演讲');
+      } catch (err) {
+        this.showToast('生成失败：' + (err.message || '未知错误'));
+      } finally {
+        genBtn.disabled = false; genBtn.textContent = '✨ AI 生成电梯演讲';
+      }
+    });
+
+    document.getElementById('saveElevatorBtn')?.addEventListener('click', () => {
+      this.saveExamElevatorData(project);
+      this.showToast('已保存');
+    });
+  }
+
+  saveExamElevatorData(project) {
+    if (!AppState.currentProjectId) return;
+    const pitch = document.getElementById('el_pitch')?.value?.trim() || '';
+    const iteration = Array.from(document.querySelectorAll('#iterBody .iter-row')).map(row => {
+      const cells = Array.from(row.querySelectorAll('.iter-cell')).map(ta => (ta.value || '').trim());
+      return { actions: cells };
+    });
+    if (!pitch && iteration.every(r => r.actions.every(a => !a))) return;
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'examElevator', {
+      content: JSON.stringify({ pitch, iteration }), timestamp: Date.now()
+    });
+  }
+
+  // ========== EXAM 屏5：整合确认卡 ==========
+
+  getExamSummaryTemplate(project) {
+    const tp = this._readCardJSON('examTestPlan');
+    const tr = this._readCardJSON('examTestReport');
+    const el = this._readCardJSON('examElevator');
+    const fd = this._readCardJSON('examFourDimEval');
+    const purpose = tp?.purpose || '（尚未填写测试计划）';
+    const fourDimHtml = fd ? (() => {
+      const labels = { userValue: '用户价值', businessValue: '商业价值', feasibility: '技术可行性', innovation: '创新程度' };
+      const order = ['userValue', 'businessValue', 'feasibility', 'innovation'];
+      const total = order.reduce((s, k) => s + (Number(fd.scores?.[k]) || 0), 0);
+      const rows = order.map(k => `
+        <div class="summary-row"><span class="summary-key">${labels[k]}</span><span>${Number(fd.scores?.[k]) || 0}/5${fd.reasons?.[k] ? ' — ' + this.escapeHtml(fd.reasons[k]) : ''}</span></div>`).join('');
+      return `<div class="summary-row"><span class="summary-key">综合得分</span><span><b>${total}</b>/20</span></div>${rows}`;
+    })() : '<div class="summary-empty">尚未完成四维度评价</div>';
+    const reportHtml = tr ? `
+      <div class="summary-row"><span class="summary-key">验证的有效价值</span><span>${this.escapeHtml(tr.effectiveValue || '—')}</span></div>
+      <div class="summary-row"><span class="summary-key">无效 / 错误价值</span><span>${this.escapeHtml(tr.invalidValue || '—')}</span></div>
+      <div class="summary-row"><span class="summary-key">新发现的问题</span><span>${this.escapeHtml(tr.newProblems || '—')}</span></div>
+      <div class="summary-row"><span class="summary-key">新机会 / 信息</span><span>${this.escapeHtml(tr.newOpportunities || '—')}</span></div>
+    ` : '<div class="summary-empty">尚未生成测试报告</div>';
+    const pitch = el?.pitch || '（尚未生成电梯演讲）';
+    const iterRows = (el && Array.isArray(el.iteration)) ? el.iteration : [];
+    const iterHtml = iterRows.length ? iterRows.map(r => {
+      const acts = (r.actions || []).map(a => a.trim()).filter(Boolean);
+      return acts.length ? `<div class="summary-idea-item">${acts.map(a => '· ' + this.escapeHtml(a)).join('；')}</div>` : '';
+    }).join('') : '<div class="summary-empty">暂无迭代计划</div>';
+
+    return `
+      <div class="screen-content animate-fade-in-up">
+        <h2 class="screen-title">Exam 整合确认卡</h2>
+        <p class="screen-subtitle">确认你的验证成果，准备完成项目</p>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">🧪 测试目的</div>
+          <div class="summary-row"><span class="summary-key">目的</span><span>${this.escapeHtml(purpose)}</span></div>
+        </div>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">📊 测试产出</div>
+          ${reportHtml}
+        </div>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">📐 四维度评价</div>
+          ${fourDimHtml}
+        </div>
+        <div class="inspire-summary-card">
+          <div class="summary-block-title">🎤 呈现计划</div>
+          <div class="summary-row"><span class="summary-key">电梯演讲</span><span>${this.escapeHtml(pitch)}</span></div>
+          <div class="summary-block-sub">30-60-90 迭代</div>
+          ${iterHtml}
+        </div>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="summaryBackBtn">返回修改</button>
+          <button class="btn btn-confirm-primary" id="summaryConfirmBtn">确认完成，查看全景图</button>
+        </div>
+      </div>`;
+  }
+
+  attachExamSummaryEvents(project) {
+    document.getElementById('summaryBackBtn')?.addEventListener('click', () => {
+      this.goToScreen('exam', 4);
+    });
+    document.getElementById('summaryConfirmBtn')?.addEventListener('click', () => {
+      this.saveExamSummary(project);
+      this.completeStage('exam');
+    });
+  }
+
+  saveExamSummary(project) {
+    if (!AppState.currentProjectId) return;
+    const tp = this._readCardJSON('examTestPlan') || {};
+    const tr = this._readCardJSON('examTestReport') || {};
+    const el = this._readCardJSON('examElevator') || { pitch: '', iteration: [] };
+    const summary = {
+      testPlan: tp,
+      testReport: tr,
+      elevator: el,
+      createdAt: Date.now()
+    };
+    window.EurekaStorage.updateCard(AppState.currentProjectId, 'examSummary', {
+      content: JSON.stringify(summary), timestamp: Date.now()
+    });
+  }
+
+  // ========== 需求9：四模块全景图 ==========
+
+  showPanorama(project) {
+    if (!project) { AppState.navigate('home'); return; }
+
+    // Reveal
+    const briefing = this.getProjectBriefing(project) || {};
+    const pov = this.extractPovFromProject(project);
+    const bgRaw = this._readCardJSON('businessGoal');
+    const businessGoal = (bgRaw && (bgRaw.hypothesis || bgRaw)) ? (bgRaw.hypothesis || bgRaw) : {};
+
+    // Inspire
+    const hmws = this.getSelectedHmws(project);
+    const bestIdeas = this.getBestIdeas(project);
+
+    // Shape（优先 summary）
+    const shapeSummary = this._readCardJSON('shapeSummary');
+    const minConcept = this._readCardJSON('shapeMinConcept');
+    const storyboard = this._readCardJSON('shapeStoryboard');
+    const concept = (shapeSummary && shapeSummary.concept) || (minConcept && minConcept.concept) || { oneLiner: '', features: [], characteristics: [], boundaries: [] };
+    const storyCards = (shapeSummary && Array.isArray(shapeSummary.storyboard)) ? shapeSummary.storyboard
+      : (storyboard && Array.isArray(storyboard.cards) ? storyboard.cards : []);
+
+    // Exam（优先 summary）
+    const examSummary = this._readCardJSON('examSummary');
+    const testPlan = (examSummary && examSummary.testPlan) || this._readCardJSON('examTestPlan') || {};
+    const testReport = (examSummary && examSummary.testReport) || this._readCardJSON('examTestReport') || {};
+    const elevator = (examSummary && examSummary.elevator) || this._readCardJSON('examElevator') || { pitch: '', iteration: [] };
+
+    const fdEval = this._readCardJSON('examFourDimEval');
+    const fdHtml = fdEval && fdEval.scores ? (() => {
+      const labels = { userValue: '用户价值', businessValue: '商业价值', feasibility: '技术可行性', innovation: '创新程度' };
+      const order = ['userValue', 'businessValue', 'feasibility', 'innovation'];
+      const total = order.reduce((s, k) => s + (Number(fdEval.scores[k]) || 0), 0);
+      const rows = order.map(k => `<li>${labels[k]}：${Number(fdEval.scores[k]) || 0}/5${fdEval.reasons && fdEval.reasons[k] ? ' — ' + this.escapeHtml(fdEval.reasons[k]) : ''}</li>`).join('');
+      return `<div class="panorama-sub">四维评价（综合 ${total}/20）</div><ul class="panorama-list">${rows}</ul>`;
+    })() : '';
+
+    const listHtml = (arr) => (arr && arr.length)
+      ? arr.filter(Boolean).map(x => `<li>${this.escapeHtml(typeof x === 'string' ? x : (x.title || x.text || x.q || ''))}</li>`).join('')
+      : '<li class="panorama-empty">—</li>';
+
+    const revealBlock = `
+      <div class="panorama-block reveal-block">
+        <div class="panorama-block-head"><span class="panorama-icon">🔍</span><h3>揭示了什么（Reveal）</h3></div>
+        <div class="panorama-row"><span class="panorama-key">目标用户</span><span>${this.escapeHtml(pov.targetUser || briefing.targetUser || '—')}</span></div>
+        <div class="panorama-row"><span class="panorama-key">场景</span><span>${this.escapeHtml(pov.sceneChallenge || briefing.scene || '—')}</span></div>
+        <div class="panorama-row"><span class="panorama-key">核心洞察</span><span>${this.escapeHtml(pov.insight || '—')}</span></div>
+        <div class="panorama-row"><span class="panorama-key">商业假设</span><span>${this.escapeHtml(businessGoal.goal || businessGoal.consensus || '—')}</span></div>
+      </div>`;
+
+    const inspireBlock = `
+      <div class="panorama-block inspire-block">
+        <div class="panorama-block-head"><span class="panorama-icon">💡</span><h3>启发了什么（Inspire）</h3></div>
+        <div class="panorama-sub">最佳 HMW</div>
+        <ul class="panorama-list">${listHtml(hmws)}</ul>
+        <div class="panorama-sub">最佳创意</div>
+        <ul class="panorama-list">${listHtml(bestIdeas.map(i => i.title))}</ul>
+      </div>`;
+
+    const shapeBlock = `
+      <div class="panorama-block shape-block">
+        <div class="panorama-block-head"><span class="panorama-icon">🎯</span><h3>构建了什么（Shape）</h3></div>
+        <div class="panorama-row"><span class="panorama-key">概念方案</span><span>${this.escapeHtml(concept.oneLiner || '—')}</span></div>
+        <div class="panorama-sub">功能与特性</div>
+        <ul class="panorama-list">${listHtml(concept.features)}</ul>
+        <div class="panorama-sub">用户故事（6 卡）</div>
+        <ul class="panorama-list">${listHtml(storyCards.map(c => c.title + (c.desc ? '：' + c.desc : '')))}</ul>
+      </div>`;
+
+    const examBlock = `
+      <div class="panorama-block exam-block">
+        <div class="panorama-block-head"><span class="panorama-icon">📋</span><h3>验证了什么（Exam）</h3></div>
+        <div class="panorama-row"><span class="panorama-key">测试目的</span><span>${this.escapeHtml(testPlan.purpose || '—')}</span></div>
+        <div class="panorama-sub">测试产出</div>
+        <ul class="panorama-list">
+          <li>有效价值：${this.escapeHtml(testReport.effectiveValue || '—')}</li>
+          <li>无效价值：${this.escapeHtml(testReport.invalidValue || '—')}</li>
+          <li>新问题：${this.escapeHtml(testReport.newProblems || '—')}</li>
+          <li>新机会：${this.escapeHtml(testReport.newOpportunities || '—')}</li>
+        </ul>
+        ${fdHtml}
+        <div class="panorama-sub">电梯演讲</div>
+        <div class="panorama-pitch">${this.escapeHtml(elevator.pitch || '—')}</div>
+      </div>`;
+
+    this.setContent(`
+      <div class="panorama-view">
+        <header class="panorama-header">
+          <h1 class="panorama-title">🎉 项目全景图</h1>
+          <p class="panorama-subtitle">${this.escapeHtml(project.title || '未命名项目')} · 完整 RISE 创新旅程</p>
+        </header>
+        <div class="panorama-grid">
+          ${revealBlock}
+          ${inspireBlock}
+          ${shapeBlock}
+          ${examBlock}
+        </div>
+        <div class="panorama-footer">
+          <button class="btn btn-primary" id="panoramaHomeBtn" style="background: var(--exam-primary);">返回首页</button>
+        </div>
+      </div>
+    `);
+
+    document.getElementById('panoramaHomeBtn')?.addEventListener('click', () => {
+      AppState.navigate('home');
+    });
+  }
+
 }
 
 // Initialize app when DOM is ready
