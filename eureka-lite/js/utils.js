@@ -127,7 +127,14 @@ const Utils = {
         color: 'var(--reveal-primary)',
         bgColor: 'var(--reveal-bg)',
         theme: 'theme-reveal',
-        screens: 5
+        screens: 5,
+        screenDefs: [
+          { title: '创新场景与用户', subtitle: '描述目标用户和场景' },
+          { title: '用户旅程地图', subtitle: '标记关键发现' },
+          { title: '洞察用户痛点', subtitle: 'FIND 四步法分析' },
+          { title: '对齐商业目标', subtitle: '利益相关方与假设' },
+          { title: '项目简报', subtitle: '汇总所有洞察' }
+        ]
       },
       inspire: {
         name: 'Inspire',
@@ -136,7 +143,14 @@ const Utils = {
         color: 'var(--inspire-primary)',
         bgColor: 'var(--inspire-bg)',
         theme: 'theme-inspire',
-        screens: 5
+        screens: 5,
+        screenDefs: [
+          { title: '重构用户问题', subtitle: '从 POV 出发四维重构' },
+          { title: '寻找灵感', subtitle: 'NCO 灵感卡片' },
+          { title: '生成创意', subtitle: '强制连接创新' },
+          { title: '筛选最佳创意', subtitle: '四维打分筛选' },
+          { title: 'Inspire 总结', subtitle: '确认启发成果' }
+        ]
       },
       shape: {
         name: 'Shape',
@@ -145,7 +159,13 @@ const Utils = {
         color: 'var(--shape-primary)',
         bgColor: 'var(--shape-bg)',
         theme: 'theme-shape',
-        screens: 4
+        screens: 4,
+        screenDefs: [
+          { title: '四维拷问', subtitle: '用户/商业/技术/生态' },
+          { title: '最小概念方案', subtitle: '功能与边界定义' },
+          { title: '故事板', subtitle: '六张卡片讲完整故事' },
+          { title: 'Shape 总结', subtitle: '确认构建成果' }
+        ]
       },
       exam: {
         name: 'Exam',
@@ -154,7 +174,14 @@ const Utils = {
         color: 'var(--exam-primary)',
         bgColor: 'var(--exam-bg)',
         theme: 'theme-exam',
-        screens: 5
+        screens: 5,
+        screenDefs: [
+          { title: '测试计划', subtitle: '设计验证方案' },
+          { title: '测试报告', subtitle: '记录验证结果' },
+          { title: '四维度评价', subtitle: '多维度评估打分' },
+          { title: '电梯演讲', subtitle: '呈现与迭代计划' },
+          { title: 'Exam 总结', subtitle: '确认验证成果' }
+        ]
       }
     };
 

@@ -688,90 +688,137 @@ const AIAssistant = {
    * F(fact) -> I(interpret) -> N(need) -> D(distill)
    */
   async generateFindStep(stepKey, userInput, context) {
-    // 优先使用 DeepSeek 真实推理
-    if (this._hasAI() && stepKey !== 'distill') {
-      const stepMap = {
-        fact: '用户给出的是"事实(Fact)"，请你输出对该事实的深层"解释(Interpret)"——追问为什么会这样、背后的系统性原因。',
-        interpret: '用户给出的是"解释(Interpret)"，请你据此提炼用户真正的"需求(Need)"——他真正想要的是什么。',
-        need: '用户给出的是"需求(Need)"，请你凝练出一句直击本质的"核心洞察(Distill)"。'
+    console.log(`[FIND-AI] generateFindStep called: step=${stepKey}, hasAI=${this._hasAI()}`);
+    console.log(`[FIND-AI] context=`, JSON.stringify(context));
+    console.log(`[FIND-AI] userInput="${(userInput || '').trim().slice(0, 100)}"`);
+
+    // 优先使用 DeepSeek 真实推理 —— 重写版 prompt 强制链式推导
+    if (this._hasAI()) {
+      const stepPrompts = {
+        fact: {
+          guide: `你是一位资深创新洞察分析师。用户输入了一个"事实(Fact)"——从用户旅程中观察到的具体、可验证的现象。
+
+【你的唯一任务】对这个事实进行深层"解释(Interpretation)"，回答：**Why: 这个现象为什么会发生？**
+
+【严格规则】
+1. 必须直接基于下面用户输入的「事实原文」来分析原因，绝对不要泛泛而谈
+2. 挖掘表面现象背后的系统性/结构性/流程性原因（归因于系统设计，而非个人能力）
+3. 输出一句话解释，50-80字，严格使用"因为...导致...所以..."的因果链句式
+4. 禁止使用"可能""也许""或许"等模糊词，必须给出确定性的判断
+
+【用户输入的事实】
+${(userInput || '').trim()}
+
+请直接输出解释结论，不要任何前缀：`,
+          outputLabel: 'I 解释'
+        },
+        interpret: {
+          guide: `你是一位资深创新洞察分析师。我们现在有了"事实(Fact)"和它的"解释(Interpretation)"。
+
+【你的唯一任务】基于已知的「事实+解释」，提炼用户的真正"需求(Need)"——回答：**Why Not: 用户潜意识里真正需要的到底是什么？（不是"说想要"，而是"离不开"）**
+
+【已知的前序推导结果】
+- 🔍 事实(F)：${context?.fact || '（前序步骤未填写）'}
+- 💡 解释(I)：${context?.interpret || '（前序步骤未填写）'}
+- 📝 用户本步输入：${(userInput || '').trim()}
+
+【严格规则】
+1. 需求必须从上面的「事实→解释」因果链逻辑推导出来，不能跳跃到无关领域
+2. 需求应该是一个可以被产品/服务解决的具体痛点或深层渴望
+3. 一句话，40-60字，格式如"用户真正需要的不是A表面需求，而是B深层本质"
+4. 禁止输出与上面事实和解释无关的需求
+
+请直接输出需求结论，不要任何前缀：`,
+          outputLabel: 'N 需求'
+        },
+        need: {
+          guide: `你是一位资深创新洞察分析师。我们已完成三步推导：事实(Fact) → 解释(Interpretation) → 需要(Need)。
+
+【你的唯一任务】将以上三者凝练为一句直击本质的核心"洞察(Distill/POV)"——回答：**So What: 这意味着什么具体的创新机会？**
+
+【完整的 F→I→N 推导链】
+- 🔍 事实(F)：${context?.fact || '（缺失）'}
+- 💡 解释(I)：${context?.interpret || '（缺失）'}
+- ❤️ 需要(N)：${context?.need || '（缺失）'}
+- 📝 用户本步输入：${(userInput || '').trim()}
+
+【严格规则】
+1. 洞察必须是 POV 陈述句，固定格式：「目标用户」需要「核心需求/体验」，因为「根本原因」
+2. 这句话应该能让团队立刻明白创新方向和产品机会点
+3. 一句话，50-80字，要有冲击力，像电梯演讲一样有力
+4. 必须综合引用 F-I-N 三步的全部内容，缺一不可
+
+请直接输出洞察POV结论，不要任何前缀：`,
+          outputLabel: 'D 洞察(POV)'
+        }
       };
-      const guide = stepMap[stepKey];
-      if (guide) {
+      const sp = stepPrompts[stepKey];
+      if (sp) {
         const ctxLines = [];
-        if (context?.scene) ctxLines.push(`场景背景：${context.scene}`);
-        if (context?.fact) ctxLines.push(`事实：${context.fact}`);
-        if (context?.interpret) ctxLines.push(`解释：${context.interpret}`);
-        if (context?.need) ctxLines.push(`需求：${context.need}`);
+        if (context?.scene) ctxLines.push(`【项目场景】${context.scene}`);
+        if (context?.finding && context.finding !== (userInput || '').trim()) ctxLines.push(`【原始关键发现】${context.finding}`);
         const prompt =
-          `${ctxLines.join('\n')}\n\n用户本步输入：${(userInput || '').trim()}\n\n${guide}\n` +
-          `要求：直接输出一句话结论，80字内，紧扣用户输入，不要套话、不要前缀。`;
+          `${ctxLines.join('\n')}\n\n${sp.guide}`;
+        console.log(`[FIND-AI] Calling DeepSeek for step=${stepKey}, prompt length=${prompt.length}`);
+
         try {
           const r = await window.AIService.complete(prompt, {
-            system: this._systemPersona(), temperature: 0.7, maxTokens: 200
+            system: this._systemPersona(), temperature: 0.7, maxTokens: 300
           });
-          if (r && r.trim()) return r.trim().slice(0, 100);
+          if (r && r.trim()) {
+            console.log(`[FIND-AI] ✅ DeepSeek 返回 (${r.length}字):`, r.slice(0, 120));
+            return '[🤖 DeepSeek] ' + r.trim().slice(0, 200);
+          }
         } catch (e) {
-          console.warn('[AI] generateFindStep fallback:', e.message);
+          console.warn('[FIND-AI] ❌ DeepSeek 失败，走本地兜:', e.message);
         }
+      } else {
+        console.warn(`[FIND-AI] ❌ 无 prompt 定义 for step=${stepKey}`);
       }
+    } else {
+      console.warn('[FIND-AI] ⚠️ _hasAI()=false，AI服务未配置或Key无效，使用本地模板');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // ---- 本地兜底模板 ----
+    console.log(`[FIND-AI] 📋 使用本地 fallback 模板 for step=${stepKey}`);
 
+    // ---- 改进版 fallback：更贴合上下文 ----
     const { fact, interpret, need } = context;
     const input = (userInput || '').trim();
-
-    // Extract short phrase from text (up to punctuation or 15 chars)
     const brief = (text) => {
       if (!text) return '';
-      const m = text.match(/^(.{2,15}?)[，,。\s]/);
-      return m ? m[1].trim() : text.slice(0, 15).trim();
+      const m = text.match(/^(.{2,20}?)[，,。\s]/);
+      return m ? m[1].trim() : text.slice(0, 20).trim();
     };
 
     if (stepKey === 'fact') {
-      if (!input) return '请先输入关键事实。';
+      if (!input) return '[📋 本地模板] 请先输入观察到的事实。';
       const k = brief(input);
-      const outputs = [
-        `「${k}」说明现有方案只解决了表面，未触及用户真正的痛点。`,
-        `为什么「${k}」反复发生？因为设计者假设用户会按理想路径使用，但真实场景充满例外。`,
-        `「${k}」背后是系统逻辑与用户心智模型之间的错位——系统要求用户适应它，而非它适应用户。`
-      ];
-      const idx = input.length % outputs.length;
-      return outputs[idx].slice(0, 100);
+      return '[📋 本地模板] 为什么会出现「' + k + '」这个现象？\n深层原因可能是：现有方案的设计假设与用户的真实使用场景不匹配，导致用户在关键节点上遇到摩擦却无法自助解决。建议从系统设计和用户心智模型两个角度继续追问。';
     }
 
     if (stepKey === 'interpret') {
-      const content = (interpret || input || '').trim();
-      if (!content) return '请先完成上一步。';
-      const k = brief(content);
-      const outputs = [
-        `用户真正需要的不是"更多功能"，而是"${k}时能获得恰到好处的支持"。`,
-        `深层需求：「${k}」这个问题不再发生，或发生时能被系统自动解决。`,
-        `真正需要的是"effortless"的体验——不需学习、不需记忆、不需额外认知负担。`
-      ];
-      const idx = content.length % outputs.length;
-      return outputs[idx].slice(0, 100);
+      const factText = fact || input;
+      const k = brief(factText);
+      if (!factText && !input) return '[📋 本地模板] 请先完成事实(F)步骤。';
+      return '[📋 本地模板] 基于「' + k + '」这一事实，用户潜意识里真正需要的不是更多功能或信息，而是在做决策时获得"确定感"和"掌控感"——减少焦虑、降低认知负担、能快速做出正确选择。（⚠️ 此为本地兜底，如需AI深度分析请检查AI配置）';
     }
 
     if (stepKey === 'need') {
-      const content = (need || interpret || input || '').trim();
-      if (!content) return '请先完成上一步。';
       const fBrief = brief(fact || '');
-      const nBrief = brief(need || '');
-      const outputs = [
-        `核心洞察：当「${fBrief}」时，用户真正需要的是——问题被预见和解决，而非事后补救。`,
-        `创新机会：不是做更多功能，而是让「${nBrief || '用户需求'}」在发生前就被系统预判。`,
-        `一句话洞察：「${fBrief}」的本质不是技术问题，而是"系统是否真正站在用户视角设计"的问题。`
-      ];
-      const idx = content.length % outputs.length;
-      return outputs[idx].slice(0, 100);
+      const iBrief = brief(interpret || '');
+      if (!interpret && !fact) return '[📋 本地模板] 请先完成解释(I)步骤。';
+      return '[📋 本地模板] 核心洞察（POV）：当面对「' + (fBrief || '上述情况') + '」时，用户真正需要的是一套能预判问题、主动提供解决方案的系统，而不是被动地发现问题后再去寻找答案。（⚠️ 此为本地兜底，如需AI深度分析请检查AI配置）';
     }
 
     if (stepKey === 'distill') {
-      return '✅ FIND 分析完成！';
+      const fBrief = brief(fact || '');
+      const iBrief = brief(interpret || '');
+      const nBrief = brief(need || '');
+      return '[📋 本地模板] ✅ FIND 推导完成！（本地模式）\n📌 事实：' + (fBrief || '(已填写)') + '\n→ 解释：' + (iBrief || '(已填写)') + '\n→ 需求：' + (nBrief || '(已填写)') + '\n→ 建议 POV：「目标用户」需要在「具体场景」下获得「确定性解决方案」，因为「根本原因导致现有方式效率低下」。';
     }
 
-    return '请先完成当前步骤。';
+    return '[📋 本地模板] 请先完成当前步骤。';
   },
 
   /**
@@ -972,6 +1019,63 @@ const AIAssistant = {
    * @returns {Object} - { tam, sam, som, competitors, alignment, notes }
    */
   async generateBusinessHypothesis(findData, stakeholderData, project) {
+    // ---- 优先使用 DeepSeek AI 生成紧扣项目的商业假设 ----
+    if (this._hasAI()) {
+      const sceneData = this._getSceneData(project);
+      const insight = findData?.distill || findData?.need || '';
+      const fact = findData?.fact || '';
+      const targetUser = sceneData.targetUser || '目标用户';
+      const scene = sceneData.sceneDesc || '';
+      const projectName = project?.title || project?.originalTitle || '本项目';
+
+      // 构建项目上下文摘要（关键：让 AI 紧扣实际项目主题）
+      const ctxParts = [
+        `【项目名称】${projectName}`,
+        `【目标用户】${targetUser}`,
+        `【场景描述】${scene}`,
+        `【核心事实】${fact}`,
+        `【FIND洞察】${insight}`
+      ];
+      if (stakeholderData?.stakeholders) {
+        const sList = (Array.isArray(stakeholderData.stakeholders) ? stakeholderData.stakeholders : []).map(s => `${s.name || ''}(${s.role || ''})`).filter(Boolean).join('、');
+        if (sList) ctxParts.push(`【利益相关方】${sList}`);
+      }
+
+      const prompt =
+`${ctxParts.join('\n')}
+
+基于以上**真实的项目信息**，生成商业假设。要求：
+1. **绝对紧扣项目主题和场景**，不要生成与项目无关的领域/产品形态
+2. 如果项目是"智能跑鞋"，就围绕智能跑鞋写商业假设，不要写成健康管理App或通用运动平台
+3. TAM/SAM/SOM 的用户群定义必须与目标用户一致
+
+以 JSON 返回：
+{"tam":"总潜在市场（具体数字+人群定义）","sam":"可服务市场（更精准的人群+规模）","som":"可获得市场（首期目标+时间线）","competitors":"现有竞品及差距（必须相关）","alignment":"战略一致性（结合项目实际）","notes":"待验证的关键假设"}
+
+直接返回 JSON，不要 markdown 代码块。`;
+
+      try {
+        const raw = await window.AIService.complete(prompt, {
+          system: this._systemPersona(), temperature: 0.6, maxTokens: 800
+        });
+        if (raw && raw.trim()) {
+          // 尝试解析 JSON
+          const jsonMatch = raw.trim().replace(/```json\n?|\n?```/g, '').match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const obj = JSON.parse(jsonMatch[0]);
+            return {
+              tam: obj.tam || '', sam: obj.sam || '', som: obj.som || '',
+              competitors: obj.competitors || '', alignment: obj.alignment || '',
+              notes: obj.notes || '以上为 AI 生成的初步商业假设，建议通过用户调研和竞品分析验证关键假设。'
+            };
+          }
+        }
+      } catch (e) {
+        console.warn('[AI] generateBusinessHypothesis AI failed:', e.message);
+      }
+    }
+
+    // ---- fallback：保留原有模板逻辑但强化上下文关联 ----
     await new Promise(resolve => setTimeout(resolve, 800));
 
     const sceneData = this._getSceneData(project);

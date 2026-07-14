@@ -3,6 +3,38 @@
  * Entry point and router
  */
 
+// 导出全景图时内嵌的自包含样式（含变量与全景图样式，保证下载/图片渲染正确）
+const PANORAMA_EXPORT_CSS = `
+:root{
+  --reveal-primary:#E07A2F;--inspire-primary:#7F77DD;--shape-primary:#0F6E56;--exam-primary:#64748B;
+  --text-primary:#1f2937;--text-secondary:#6b7280;--border-color:#e5e7eb;--surface:#fff;
+  --bg-secondary:#f8fafc;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;
+  --radius-lg:14px;--radius-sm:8px;--shadow-sm:0 1px 3px rgba(0,0,0,.06);
+}
+body{font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;background:#f3f4f6;margin:0;padding:32px 16px;color:var(--text-primary);}
+.panorama-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:1000px;margin:0 auto;}
+@media(max-width:760px){.panorama-grid{grid-template-columns:1fr;}}
+.panorama-block{background:var(--surface);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);}
+.reveal-block{border-top:4px solid var(--reveal-primary);}
+.inspire-block{border-top:4px solid var(--inspire-primary);}
+.shape-block{border-top:4px solid var(--shape-primary);}
+.exam-block{border-top:4px solid var(--exam-primary);}
+.panorama-block-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.panorama-block-head h3{margin:0;font-size:18px;color:var(--text-primary);}
+.panorama-icon{font-size:20px;}
+.panorama-row{display:flex;gap:12px;padding:4px 0;font-size:14px;line-height:1.5;}
+.panorama-key{flex:0 0 96px;color:var(--text-secondary);font-weight:600;}
+.panorama-sub{margin:12px 0 6px;font-weight:700;font-size:14px;color:var(--text-primary);}
+.panorama-list{margin:0;padding-left:18px;font-size:14px;}
+.panorama-list li{margin:3px 0;}
+.panorama-empty{color:var(--text-secondary);list-style:none;padding-left:0;}
+.panorama-pitch{background:var(--bg-secondary);border-left:3px solid var(--exam-primary);padding:12px;border-radius:8px;font-size:14px;line-height:1.6;}
+.panorama-iter-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px;}
+.panorama-iter-table th,.panorama-iter-table td{border:1px solid var(--border-color);padding:6px 8px;text-align:left;vertical-align:top;}
+.panorama-iter-table thead th{background:var(--bg-secondary);font-weight:700;}
+.panorama-iter-table tbody th{background:var(--bg-secondary);font-weight:600;width:120px;}
+`;
+
 // Main App Class
 class EurekaLite {
   constructor() {
@@ -135,6 +167,8 @@ class EurekaLite {
             </button>
           </div>
         </section>
+
+        ${this.getHomeProjectsSection(recentProjects)}
       </main>
 
       <!-- Bottom Input Area -->
@@ -221,6 +255,54 @@ class EurekaLite {
     `;
   }
 
+  // 项目卡片（首页「我的项目」与项目列表页共用）
+  getProjectCardHtml(project) {
+    const stageInfo = Utils.getStageInfo(project.stage);
+    const categoryInfo = Utils.getCategoryInfo(project.category);
+    const progress = Utils.getProjectProgress(project);
+    return `
+      <div class="project-card home-project-card" data-project-id="${project.id}">
+        <div class="project-card-header">
+          <div class="project-card-icon" style="background: ${categoryInfo.color}20; color: ${categoryInfo.color};">
+            ${categoryInfo.icon}
+          </div>
+          <div class="project-card-info">
+            <h3 class="project-card-title">${this.escapeHtml(project.title || '未命名项目')}</h3>
+            <p class="project-card-meta">${categoryInfo.name} · ${stageInfo.name} · ${Utils.formatRelativeTime(project.updatedAt)}</p>
+          </div>
+          <span class="badge badge-${project.status === 'completed' ? 'success' : 'primary'}" style="
+            background: ${project.status === 'completed' ? 'var(--success)' : stageInfo.color};
+          ">
+            ${project.status === 'completed' ? '已完成' : '进行中'}
+          </span>
+        </div>
+        <div class="progress-bar" style="margin-top: var(--space-md);">
+          <div class="progress-bar-fill" style="width: ${progress}%; background: ${stageInfo.color};"></div>
+        </div>
+        <div class="progress-indicator">
+          <span>${stageInfo.name} 第 ${project.currentScreen}/${stageInfo.screens} 屏</span>
+          <span>${progress}%</span>
+        </div>
+      </div>`;
+  }
+
+  // 首页「我的项目」区块
+  getHomeProjectsSection(projects) {
+    const items = (projects && projects.length)
+      ? projects.map(p => this.getProjectCardHtml(p)).join('')
+      : `<div class="home-projects-empty">还没有项目，开始你的第一个 RISE 练习吧
+          <div style="margin-top: var(--space-md);"><button class="btn btn-primary" id="homeStartBtn">立即开始</button></div>
+        </div>`;
+    return `
+      <section class="home-projects">
+        <div class="home-projects-head">
+          <h2 class="home-projects-title">我的项目</h2>
+          <button class="home-projects-more" id="homeProjectsMore">查看全部 ›</button>
+        </div>
+        <div class="home-projects-list">${items}</div>
+      </section>`;
+  }
+
   attachHomeEvents() {
     // Menu button
     document.getElementById('menuBtn')?.addEventListener('click', () => {
@@ -270,6 +352,25 @@ class EurekaLite {
         const projectId = item.dataset.projectId;
         AppState.navigate('reveal', { projectId });
       });
+    });
+
+    // 首页「我的项目」卡片
+    document.querySelectorAll('.home-project-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const projectId = card.dataset.projectId;
+        AppState.navigate('reveal', { projectId });
+      });
+    });
+
+    // 查看全部项目
+    document.getElementById('homeProjectsMore')?.addEventListener('click', () => {
+      AppState.navigate('projects');
+    });
+
+    // 首页空状态「立即开始」
+    document.getElementById('homeStartBtn')?.addEventListener('click', () => {
+      AppState.navigate('home');
+      document.getElementById('mainInput')?.focus();
     });
 
     // Category items
@@ -1443,15 +1544,16 @@ class EurekaLite {
       </header>
 
       <!-- RISE Stepper -->
-      <nav class="rise-stepper">
+      <nav class="rise-stepper" id="riseStepper">
         <div class="rise-stepper-inner">
           ${['reveal', 'inspire', 'shape', 'exam'].map((s, i) => {
             const info = Utils.getStageInfo(s);
             const isActive = s === stageInfo.name.toLowerCase();
             const isCompleted = ['reveal', 'inspire', 'shape', 'exam'].indexOf(s) < ['reveal', 'inspire', 'shape', 'exam'].indexOf(stageInfo.name.toLowerCase());
+            const screenDefs = info.screenDefs || [];
             return `
               <>
-                <div class="rise-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-stage="${s}">
+                <div class="rise-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-stage="${s}" data-screen-count="${screenDefs.length}">
                   <span class="rise-step-dot"></span>
                   <span>${info.name}</span>
                 </div>
@@ -2181,41 +2283,41 @@ class EurekaLite {
         key: 'fact',
         icon: '🔍',
         title: 'F（事实）',
-        desc: 'FIND 逻辑链条起点\n事实（Fact）是整个分析的基础。AI 将根据你输入的事实，逐层推导解释 → 需求 → 洞察。\n请确保事实是具体、可观察的，而非主观判断。',
+        desc: 'FIND 逻辑链条的起点\n\n事实(Fact) = 从用户旅程中观察到的、可验证的具体现象。\n\n⚠️ 注意：请从上方标签页选择一个"关键发现"，将其作为你分析的事实基础。\n\n接下来 AI 会基于这个事实追问：为什么会这样？',
         label: '描述你从用户旅程中发现的关键事实：',
         placeholder: '例如：用户在寻找停车场时，花了15分钟才找到车位，期间查看了3个App...',
-        outputLabel: 'AI 解释建议',
-        btnText: '确认并生成解释建议 →'
+        outputLabel: 'AI 解释建议 →',
+        btnText: '确认事实，生成解释(I) →'
       },
       {
         key: 'interpret',
         icon: '💡',
         title: 'I（解释）',
-        desc: 'Why：这个现象为什么会发生？\n基于 Fact，分析背后的原因和逻辑。不要停留在表面，要追问"为什么"。',
-        label: '这个现象为什么会发生？背后的原因是什么？',
-        placeholder: '例如：因为现有的停车App信息更新不及时，导致用户...',
-        outputLabel: 'AI 需求建议',
-        btnText: '确认并生成需求建议 →'
+        desc: 'Why：这个事实为什么会发生？\n\n解释(Interpretation) = 基于事实挖掘背后的系统性/结构性原因。\n\n📎 要点：不要归因于"用户操作不当"，要问"为什么系统让用户容易出错？"\n\n接下来 AI 会基于事实+解释追问：用户真正需要什么？',
+        label: '结合上方AI解释，补充你认为的根本原因：',
+        placeholder: '例如：因为现有的停车App信息更新不及时，且缺乏实时预测能力...',
+        outputLabel: 'AI 需求建议 →',
+        btnText: '确认解释，生成需求(N) →'
       },
       {
         key: 'need',
         icon: '❤️',
         title: 'N（需求）',
-        desc: 'Need：用户潜意识里真正需要的是什么？\n从解释中提炼出用户的核心需求——不是"想要"，而是"需要"。',
-        label: '用户潜意识里真正需要的是什么？',
-        placeholder: '例如：用户需要的不是一个停车App，而是"停车时的确定感和掌控感"...',
-        outputLabel: 'AI 洞察建议',
-        btnText: '确认并生成洞察建议 →'
+        desc: 'Why：用户潜意识里真正需要的是什么？\n\n需求(Need) = 从事实+解释推导出的核心痛点/渴望，不是用户说想要什么。\n\n📎 要点：区分"想要"(stated want)和"需要"(latent need)\n\n最后一步：凝练为一句洞察(POV)',
+        label: '基于事实+解释，提炼用户的真正需求：',
+        placeholder: '例如：用户需要的不是一个更好的停车App，而是"停车时的确定感和掌控感"...',
+        outputLabel: 'AI 洞察建议(POV) →',
+        btnText: '确认需求，生成洞察(D) →'
       },
       {
         key: 'distill',
         icon: '✨',
-        title: 'D（凝练）',
-        desc: 'Distill：整合为一句结构化的 POV（观点）\n将 Fact + Interpret + Need 凝练成一句话洞察，格式：「用户」需要「需求」，因为「解释」。',
-        label: '整合为一句结构化的洞察：',
-        placeholder: '例如：「25-35岁上班族」需要「在3分钟内找到确定可用的停车位」，因为「现有信息碎片化导致决策焦虑和大量时间浪费」...',
+        title: 'D（凝练为洞察/POV）',
+        desc: 'So What：这意味着什么创新机会？\n\n将 Fact + Interpret + Need 凝练为一句话 POV 陈述。\n\n格式：「目标用户」+「核心需求」，因为「根本原因」。\n\n这就是你的创新北极星！',
+        label: '整合 F-I-N 三步，写出一句话洞察(POV)：',
+        placeholder: '例如：「25-35岁上班族」需要「在3分钟内找到确定可用的停车位」，因为「信息碎片化导致决策焦虑」...',
         outputLabel: '',
-        btnText: '确认并保存 FIND 洞察'
+        btnText: '✅ 确认并保存 FIND 洞察'
       }
     ];
 
@@ -2796,9 +2898,9 @@ class EurekaLite {
   _ncoStateKey(pid) { return `eureka_inspire_nco_${pid}`; }
   _filterKey(pid) { return `eureka_inspire_filter_${pid}`; }
 
-  _readCardJSON(cardType) {
-    const project = window.EurekaStorage.getProject(AppState.currentProjectId);
-    const raw = project?.cards?.[cardType];
+  _readCardJSON(cardType, project) {
+    const proj = project || window.EurekaStorage.getProject(AppState.currentProjectId);
+    const raw = proj?.cards?.[cardType];
     if (!raw) return null;
     let data = raw;
     if (typeof data === 'object' && data !== null && data.content !== undefined) data = data.content;
@@ -3755,37 +3857,116 @@ class EurekaLite {
       } catch (e) {}
     }
 
-    // Extract insight from FIND distill
-    if (project?.cards?.findInsight) {
+    // Extract insight from FIND distill — 多级 fallback（含 AI 输出字段）
+    if (!pov.insight && project?.cards?.findInsight) {
       try {
         let raw = project.cards.findInsight;
         if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
         const findData = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (Array.isArray(findData.findings) && findData.findings.length > 0) {
+        if (Array.isArray(findData.findings)) {
           const first = findData.findings.find(f => f.distill?.trim());
           if (first) { pov.insight = first.distill; pov.from.insight = true; }
-          // Use FIND sourceFinding as user problem if not yet filled by journey
-          if (!pov.userProblem) {
-            const firstFinding = findData.findings.find(f => f.sourceFinding?.trim());
-            if (firstFinding) { pov.userProblem = firstFinding.sourceFinding; pov.from.userProblem = true; }
+          else {
+            // fallback: 取 distillOutput（AI 生成的 D 步输出，优先于用户输入）
+            const withDistillOut = findData.findings.find(f => f.distillOutput?.trim());
+            if (withDistillOut) { pov.insight = withDistillOut.distillOutput; pov.from.insight = true; }
+            else {
+              const withNeed = findData.findings.find(f => f.needOutput?.trim());
+              if (withNeed) { pov.insight = withNeed.needOutput; pov.from.insight = true; }
+              else {
+                const withInterpret = findData.findings.find(f => f.interpretOutput?.trim());
+                if (withInterpret) { pov.insight = withInterpret.interpretOutput; pov.from.insight = true; }
+                // 最后尝试 need（用户输入的 N 步）
+                else {
+                  const withNeedInput = findData.findings.find(f => f.need?.trim());
+                  if (withNeedInput) { pov.insight = withNeedInput.need; pov.from.insight = true; }
+                }
+              }
+            }
           }
-        } else if (findData.distill) {
-          pov.insight = findData.distill; pov.from.insight = true;
+        } else if (findData.distillOutput || findData.distill) {
+          pov.insight = findData.distillOutput || findData.distill; pov.from.insight = true;
+        } else if (findData.needOutput || findData.need) {
+          pov.insight = findData.needOutput || findData.need; pov.from.insight = true;
         }
       } catch (e) {}
     }
 
-    // Extract goal from business goal (Reveal Screen 4)
-    if (project?.cards?.businessGoal) {
+    // 再 fallback：从 projectBriefing 取 insight（Reveal T5 项目简报）
+    if (!pov.insight && project?.cards?.projectBriefing) {
+      try {
+        let raw = project.cards.projectBriefing;
+        if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+        const bg = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (bg?.insight) { pov.insight = bg.insight; pov.from.insight = true; }
+      } catch (e) {}
+    }
+
+    // ★ 关键新增：从 Inspire 屏幕草稿中读取用户手工编辑过的 insight/goal
+    if (AppState.currentProjectId) {
+      try {
+        const draftKey = `draft_${AppState.currentProjectId}_inspire_1`;
+        const draftRaw = localStorage.getItem(draftKey);
+        if (draftRaw) {
+          const draft = JSON.parse(draftRaw);
+          const draftPov = draft?.pov;
+          if (draftPov?.insight?.trim() && !pov.insight) {
+            pov.insight = draftPov.insight.trim(); pov.from.insight = true;
+          }
+          if (draftPov?.goal?.trim() && !pov.goal) {
+            pov.goal = draftPov.goal.trim(); pov.from.goal = true;
+          }
+        }
+      } catch (e) {}
+    }
+    // 也从 hmw card 中读取（saveHmwData 的持久化结果）
+    if ((!pov.insight || !pov.goal) && project?.cards?.hmw) {
+      try {
+        let raw = project.cards.hmw;
+        if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+        const hmwData = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (hmwData?.pov) {
+          if (!pov.insight && hmwData.pov.insight?.trim()) { pov.insight = hmwData.pov.insight.trim(); pov.from.insight = true; }
+          if (!pov.goal && hmwData.pov.goal?.trim()) { pov.goal = hmwData.pov.goal.trim(); pov.from.goal = true; }
+        }
+      } catch (e) {}
+    }
+
+    // Extract goal from business goal (Reveal Screen 4) — 增强解析实际存储结构
+    if (!pov.goal && project?.cards?.businessGoal) {
       try {
         let raw = project.cards.businessGoal;
         if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
         const bg = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        const bgObj = bg?.hypothesis || bg; // businessGoal may wrap under hypothesis
-        if (bgObj?.goal) { pov.goal = bgObj.goal; pov.from.goal = true; }
-        else if (bgObj?.consensus) { pov.goal = bgObj.consensus; pov.from.goal = true; }
-        else if (bg?.goal) { pov.goal = bg.goal; pov.from.goal = true; }
-        else if (bg?.consensus) { pov.goal = bg.consensus; pov.from.goal = true; }
+        // 实际存储结构: { stakeholders: {...}, hypothesis: {...} }
+        // 尝试多层嵌套查找
+        const tryGet = (obj, ...paths) => {
+          for (const p of paths) {
+            const val = p.split('.').reduce((o, k) => o?.[k], obj);
+            if (val && typeof val === 'string' && val.trim()) return val.trim();
+          }
+          return null;
+        };
+        const found = tryGet(bg,
+          'consensus',           // stakeholders.consensus
+          'stakeholders.consensus',
+          'goal',
+          'hypothesis.goal',
+          'hypothesis.alignment'
+        );
+        if (found) { pov.goal = found; pov.from.goal = true; }
+      } catch (e) {}
+    }
+
+    // fallback：从 projectBriefing 取 goal/consensus（合并去重，避免重复块与越界变量）
+    if (!pov.goal && project?.cards?.projectBriefing) {
+      try {
+        let raw = project.cards.projectBriefing;
+        if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+        const bg = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        const g = (typeof bg?.goal === 'string' && bg.goal.trim()) ? bg.goal.trim()
+          : (typeof bg?.consensus === 'string' && bg.consensus.trim()) ? bg.consensus.trim() : '';
+        if (g) { pov.goal = g; pov.from.goal = true; }
       } catch (e) {}
     }
 
@@ -3865,11 +4046,63 @@ class EurekaLite {
       AppState.navigate('home');
     });
 
-    // Step navigation
-    document.querySelectorAll('.rise-step').forEach(step => {
-      step.addEventListener('click', () => {
+    // Step navigation — 点击弹出屏幕选择菜单（支持直达具体任务）
+    const stepperEl = document.getElementById('riseStepper');
+    document.querySelectorAll('#riseStepper .rise-step').forEach(step => {
+      step.addEventListener('click', (e) => {
         const targetStage = step.dataset.stage;
-        AppState.navigate(targetStage, { projectId: AppState.currentProjectId });
+        const screenCount = parseInt(step.dataset.screenCount) || 1;
+        const stageInfo = Utils.getStageInfo(targetStage);
+        const screenDefs = stageInfo.screenDefs || [];
+
+        // 如果只有1屏或当前已在目标模块首屏，直接跳转
+        if (screenCount <= 1) {
+          AppState.navigate(targetStage, { projectId: AppState.currentProjectId, stage: targetStage });
+          return;
+        }
+
+        // 移除已有菜单
+        const existing = document.getElementById('riseScreenPicker');
+        if (existing) { existing.remove(); return; }
+
+        // 创建屏幕选择下拉菜单
+        const picker = document.createElement('div');
+        picker.id = 'riseScreenPicker';
+        picker.className = 'rise-screen-picker';
+        picker.innerHTML = `
+          <div class="rise-picker-header">跳转到 ${stageInfo.name} 的任务</div>
+          ${screenDefs.map((def, idx) => `
+            <div class="rise-picker-item" data-stage="${targetStage}" data-screen="${idx + 1}">
+              <span class="rise-picker-num">${idx + 1}</span>
+              <span class="rise-picker-info">
+                <span class="rise-picker-title">${def.title}</span>
+                <span class="rise-picker-sub">${def.subtitle}</span>
+              </span>
+            </div>
+          `).join('')}
+        `;
+        stepperEl.appendChild(picker);
+
+        // 点击屏幕项 → 跳转
+        picker.querySelectorAll('.rise-picker-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const s = item.dataset.stage;
+            const sc = parseInt(item.dataset.screen);
+            picker.remove();
+            this.goToScreen(s, sc);
+          });
+        });
+
+        // 点击外部关闭
+        setTimeout(() => {
+          const closePicker = (ev) => {
+            if (!picker.contains(ev.target) && !ev.target.closest('.rise-step')) {
+              picker.remove();
+              document.removeEventListener('click', closePicker);
+            }
+          };
+          document.addEventListener('click', closePicker);
+        }, 0);
       });
     });
 
@@ -4586,6 +4819,9 @@ class EurekaLite {
    * Save current screen content helper
    */
   saveCurrentScreenContent(stage, screen) {
+    // 获取当前 project（函数参数可能没有传入，从存储补取）
+    const _p = window.EurekaStorage.getProject(AppState.currentProjectId);
+
     // Inspire 重构屏：数据已随交互即时持久化，这里做镜像兜底
     if (stage === 'inspire') {
       const sc = screen || AppState.currentScreen || 1;
@@ -4599,9 +4835,9 @@ class EurekaLite {
     // Shape 四屏：数据已随交互即时持久化
     if (stage === 'shape') {
       const sc = screen || AppState.currentScreen || 1;
-      if (sc === 1) { this.saveShapeFourDimData(project); return; }
-      if (sc === 2) { this.saveShapeMinConceptData(project); return; }
-      if (sc === 3) { this.saveShapeStoryboardData(project); return; }
+      if (sc === 1) { this.saveShapeFourDimData(_p); return; }
+      if (sc === 2) { this.saveShapeMinConceptData(_p); return; }
+      if (sc === 3) { this.saveShapeStoryboardData(_p); return; }
       // Screen 4 仅在用户确认时写入 shapeSummary
       return;
     }
@@ -4609,10 +4845,10 @@ class EurekaLite {
     // Exam 五屏：自定义屏即时持久化
     if (stage === 'exam') {
       const sc = screen || AppState.currentScreen || 1;
-      if (sc === 1) { this.saveExamTestPlanData(project); return; }
-      if (sc === 2) { this.saveExamTestReportData(project); return; }
-      if (sc === 3) { this.saveExamFourDimData(project); return; }
-      if (sc === 4) { this.saveExamElevatorData(project); return; }
+      if (sc === 1) { this.saveExamTestPlanData(_p); return; }
+      if (sc === 2) { this.saveExamTestReportData(_p); return; }
+      if (sc === 3) { this.saveExamFourDimData(_p); return; }
+      if (sc === 4) { this.saveExamElevatorData(_p); return; }
       if (sc === 5) return; // 仅在用户确认时写入 examSummary
     }
 
@@ -4876,9 +5112,9 @@ class EurekaLite {
               stepBody.insertBefore(outputEl, btn);
             }
 
-            const outputLabel = stepKey === 'fact' ? 'AI 解释建议' :
-              stepKey === 'interpret' ? 'AI 需求建议' :
-              stepKey === 'need' ? 'AI 洞察建议' : '';
+            const outputLabel = stepKey === 'fact' ? 'I 解释（Why? 为什么会发生）' :
+              stepKey === 'interpret' ? 'N 需求（Why? 真正需要什么）' :
+              stepKey === 'need' ? 'D 洞察/POV（So What? 创新机会）' : '';
 
             if (outputEl) {
               outputEl.innerHTML = `<div class="find-step-output-label">${outputLabel}</div>${result}`;
@@ -5148,6 +5384,7 @@ class EurekaLite {
             this.updateHmwDimensionCount(dimKey);
             this.updateHmwTotalCount();
             this.saveHmwData(stage);
+            this.renderModule('inspire');
             this.showToast('✨ AI 已生成 ' + suggestions.length + ' 条建议');
           }
         } catch (e) {
@@ -5178,6 +5415,7 @@ class EurekaLite {
         this.updateHmwDimensionCount(dimKey);
         this.updateHmwTotalCount();
         this.saveHmwData(stage);
+        this.renderModule('inspire');
       });
     });
 
@@ -5196,6 +5434,7 @@ class EurekaLite {
           }
           this.updateHmwTotalCount();
           this.saveHmwData(stage);
+          this.renderModule('inspire');
         }
       }
     });
@@ -6869,18 +7108,26 @@ class EurekaLite {
   // ========== EXAM 屏4：电梯演讲 & 迭代计划 ==========
 
   getExamElevatorTemplate(project) {
-    let data = { pitch: '', iteration: [{ actions: ['', '', ''] }] };
-    const saved = this._readCardJSON('examElevator');
-    if (saved) {
-      data = {
-        pitch: saved.pitch || '',
-        iteration: (Array.isArray(saved.iteration) && saved.iteration.length) ? saved.iteration : [{ actions: ['', '', ''] }]
-      };
+    const categories = ['阶段聚焦', '优先事项', '目标产出', '衡量成功', '学习收获'];
+    const phases = ['30 天', '60 天', '90 天'];
+    let saved = this._readCardJSON('examElevator');
+    let iteration = (saved && Array.isArray(saved.iteration)) ? saved.iteration : [];
+    if (iteration.length === 0) {
+      // 默认 5 行固定维度，呼应 30-60-90 迭代规划参考图
+      iteration = categories.map(cat => ({ category: cat, actions: ['', '', ''] }));
+    } else {
+      iteration = iteration.map((r, i) => ({
+        category: r.category || categories[i] || ('阶段 ' + (i + 1)),
+        actions: ((Array.isArray(r.actions) ? r.actions : [])).map(a => a || '')
+          .concat(['', '', '']).slice(0, 3)
+      }));
     }
-    const phases = ['0-30天', '31-60天', '61-90天'];
-    const rowsHtml = data.iteration.map((row, ri) => `
+    const pitch = saved?.pitch || '';
+
+    const rowsHtml = iteration.map((row, ri) => `
       <div class="iter-row" data-ri="${ri}">
-        ${phases.map((p, ci) => `<textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="${ci}" rows="2" placeholder="${p}的行动...">${this.escapeHtml((row.actions && row.actions[ci]) || '')}</textarea>`).join('')}
+        <input class="input iter-cat" data-ri="${ri}" value="${this.escapeHtml(row.category)}" placeholder="维度..." />
+        ${phases.map((p, ci) => `<textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="${ci}" rows="2" placeholder="${p}...">${this.escapeHtml((row.actions && row.actions[ci]) || '')}</textarea>`).join('')}
         <button class="iter-del" data-ri="${ri}" title="删除该行">✕</button>
       </div>`).join('');
 
@@ -6888,20 +7135,24 @@ class EurekaLite {
       <div class="screen-content animate-fade-in-up">
         <h2 class="screen-title">电梯演讲 & 迭代计划</h2>
         <p class="screen-subtitle">30 秒讲清价值，规划下一步</p>
-        <div class="screen-hint"><span class="hint-icon">💡</span><span>用模板或「✨ AI 生成电梯演讲」；下方填写 30-60-90 天迭代计划（可增删行）。</span></div>
+        <div class="screen-hint"><span class="hint-icon">💡</span><span>用模板或「✨ AI 生成电梯演讲」；下方按「阶段聚焦 / 优先事项 / 目标产出 / 衡量成功 / 学习收获」五类填写 30-60-90 天迭代计划。</span></div>
         <div class="exam-field">
           <label class="input-label">电梯演讲模板</label>
           <div class="elevator-template">我们为【目标用户】提供了【方案】，解决了【问题】，带来【价值】。</div>
         </div>
         <button class="btn btn-ai" id="genPitchBtn">✨ AI 生成电梯演讲</button>
-        <div class="exam-field"><label class="input-label">电梯演讲（pitch）</label><textarea class="input textarea" id="el_pitch" rows="3" placeholder="我们为...">${this.escapeHtml(data.pitch)}</textarea></div>
+        <div class="exam-field"><label class="input-label">电梯演讲（pitch）</label><textarea class="input textarea" id="el_pitch" rows="3" placeholder="我们为...">${this.escapeHtml(pitch)}</textarea></div>
         <div class="exam-field">
           <label class="input-label">30-60-90 天迭代计划</label>
           <div class="iter-table">
-            <div class="iter-head"><span>0-30天</span><span>31-60天</span><span>61-90天</span><span></span></div>
+            <div class="iter-head">
+              <span class="iter-cat-head">维度 ＼ 阶段</span>
+              ${phases.map(p => `<span class="iter-phase">${p}</span>`).join('')}
+              <span class="iter-del-head"></span>
+            </div>
             <div id="iterBody">${rowsHtml}</div>
           </div>
-          <button class="btn-add" id="iterAddRow">➕ 添加行动项</button>
+          <button class="btn-add" id="iterAddRow">➕ 添加一行</button>
         </div>
         <button class="btn btn-secondary" id="saveElevatorBtn">保存</button>
       </div>`;
@@ -6930,9 +7181,10 @@ class EurekaLite {
       row.className = 'iter-row';
       row.dataset.ri = ri;
       row.innerHTML = `
-        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="0" rows="2" placeholder="0-30天行动..."></textarea>
-        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="1" rows="2" placeholder="31-60天行动..."></textarea>
-        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="2" rows="2" placeholder="61-90天行动..."></textarea>
+        <input class="input iter-cat" data-ri="${ri}" value="自定义维度" placeholder="维度..." />
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="0" rows="2" placeholder="30 天行动..."></textarea>
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="1" rows="2" placeholder="60 天行动..."></textarea>
+        <textarea class="input textarea iter-cell" data-ri="${ri}" data-ci="2" rows="2" placeholder="90 天行动..."></textarea>
         <button class="iter-del" data-ri="${ri}" title="删除该行">✕</button>`;
       body.appendChild(row);
       bindCells();
@@ -6967,8 +7219,9 @@ class EurekaLite {
     if (!AppState.currentProjectId) return;
     const pitch = document.getElementById('el_pitch')?.value?.trim() || '';
     const iteration = Array.from(document.querySelectorAll('#iterBody .iter-row')).map(row => {
+      const cat = row.querySelector('.iter-cat')?.value?.trim() || '';
       const cells = Array.from(row.querySelectorAll('.iter-cell')).map(ta => (ta.value || '').trim());
-      return { actions: cells };
+      return { category: cat, actions: cells };
     });
     if (!pitch && iteration.every(r => r.actions.every(a => !a))) return;
     window.EurekaStorage.updateCard(AppState.currentProjectId, 'examElevator', {
@@ -7002,7 +7255,8 @@ class EurekaLite {
     const iterRows = (el && Array.isArray(el.iteration)) ? el.iteration : [];
     const iterHtml = iterRows.length ? iterRows.map(r => {
       const acts = (r.actions || []).map(a => a.trim()).filter(Boolean);
-      return acts.length ? `<div class="summary-idea-item">${acts.map(a => '· ' + this.escapeHtml(a)).join('；')}</div>` : '';
+      const cat = r.category ? `<strong>${this.escapeHtml(r.category)}：</strong>` : '';
+      return acts.length ? `<div class="summary-idea-item">${cat}${acts.map(a => '· ' + this.escapeHtml(a)).join('；')}</div>` : '';
     }).join('') : '<div class="summary-empty">暂无迭代计划</div>';
 
     return `
@@ -7065,37 +7319,56 @@ class EurekaLite {
   showPanorama(project) {
     if (!project) { AppState.navigate('home'); return; }
 
+    const safe = (fn, fallback) => { try { return fn(); } catch (e) { console.warn('[panorama]', e); return fallback; } };
+
     // Reveal
-    const briefing = this.getProjectBriefing(project) || {};
-    const pov = this.extractPovFromProject(project);
-    const bgRaw = this._readCardJSON('businessGoal');
+    const briefing = safe(() => this.getProjectBriefing(project) || {}, {});
+    const pov = safe(() => this.extractPovFromProject(project), { targetUser: '', sceneChallenge: '', insight: '' });
+    const bgRaw = safe(() => this._readCardJSON('businessGoal', project), null);
     const businessGoal = (bgRaw && (bgRaw.hypothesis || bgRaw)) ? (bgRaw.hypothesis || bgRaw) : {};
 
     // Inspire
-    const hmws = this.getSelectedHmws(project);
-    const bestIdeas = this.getBestIdeas(project);
+    const hmws = safe(() => this.getSelectedHmws(project), []);
+    const bestIdeas = safe(() => this.getBestIdeas(project), []);
 
     // Shape（优先 summary）
-    const shapeSummary = this._readCardJSON('shapeSummary');
-    const minConcept = this._readCardJSON('shapeMinConcept');
-    const storyboard = this._readCardJSON('shapeStoryboard');
+    const shapeSummary = safe(() => this._readCardJSON('shapeSummary', project), null);
+    const minConcept = safe(() => this._readCardJSON('shapeMinConcept', project), null);
+    const storyboard = safe(() => this._readCardJSON('shapeStoryboard', project), null);
     const concept = (shapeSummary && shapeSummary.concept) || (minConcept && minConcept.concept) || { oneLiner: '', features: [], characteristics: [], boundaries: [] };
     const storyCards = (shapeSummary && Array.isArray(shapeSummary.storyboard)) ? shapeSummary.storyboard
       : (storyboard && Array.isArray(storyboard.cards) ? storyboard.cards : []);
 
     // Exam（优先 summary）
-    const examSummary = this._readCardJSON('examSummary');
-    const testPlan = (examSummary && examSummary.testPlan) || this._readCardJSON('examTestPlan') || {};
-    const testReport = (examSummary && examSummary.testReport) || this._readCardJSON('examTestReport') || {};
-    const elevator = (examSummary && examSummary.elevator) || this._readCardJSON('examElevator') || { pitch: '', iteration: [] };
+    const examSummary = safe(() => this._readCardJSON('examSummary', project), null);
+    const testPlan = (examSummary && examSummary.testPlan) || safe(() => this._readCardJSON('examTestPlan', project), null) || {};
+    const testReport = (examSummary && examSummary.testReport) || safe(() => this._readCardJSON('examTestReport', project), null) || {};
+    const elevator = (examSummary && examSummary.elevator) || safe(() => this._readCardJSON('examElevator', project), null) || { pitch: '', iteration: [] };
 
-    const fdEval = this._readCardJSON('examFourDimEval');
+    const fdEval = safe(() => this._readCardJSON('examFourDimEval', project), null);
     const fdHtml = fdEval && fdEval.scores ? (() => {
       const labels = { userValue: '用户价值', businessValue: '商业价值', feasibility: '技术可行性', innovation: '创新程度' };
       const order = ['userValue', 'businessValue', 'feasibility', 'innovation'];
       const total = order.reduce((s, k) => s + (Number(fdEval.scores[k]) || 0), 0);
       const rows = order.map(k => `<li>${labels[k]}：${Number(fdEval.scores[k]) || 0}/5${fdEval.reasons && fdEval.reasons[k] ? ' — ' + this.escapeHtml(fdEval.reasons[k]) : ''}</li>`).join('');
       return `<div class="panorama-sub">四维评价（综合 ${total}/20）</div><ul class="panorama-list">${rows}</ul>`;
+    })() : '';
+
+    // 30-60-90 天迭代计划
+    const iteration = Array.isArray(elevator.iteration) ? elevator.iteration : [];
+    const stages = ['0-30天', '31-60天', '61-90天'];
+    const iterationHtml = iteration.length ? (() => {
+      const rows = iteration.map(row => {
+        const acts = Array.isArray(row.actions) ? row.actions : [];
+        const cells = stages.map((s, si) => `<td>${this.escapeHtml(acts[si] || '—')}</td>`).join('');
+        return `<tr><th>${this.escapeHtml(row.category || '—')}</th>${cells}</tr>`;
+      }).join('');
+      return `
+        <div class="panorama-sub">30-60-90 天迭代计划</div>
+        <table class="panorama-iter-table">
+          <thead><tr><th>维度</th>${stages.map(s => `<th>${s}</th>`).join('')}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
     })() : '';
 
     const listHtml = (arr) => (arr && arr.length)
@@ -7142,23 +7415,27 @@ class EurekaLite {
           <li>新机会：${this.escapeHtml(testReport.newOpportunities || '—')}</li>
         </ul>
         ${fdHtml}
+        ${iterationHtml}
         <div class="panorama-sub">电梯演讲</div>
         <div class="panorama-pitch">${this.escapeHtml(elevator.pitch || '—')}</div>
       </div>`;
 
     this.setContent(`
-      <div class="panorama-view">
+      <div class="panorama-view" id="panoramaView">
         <header class="panorama-header">
           <h1 class="panorama-title">🎉 项目全景图</h1>
           <p class="panorama-subtitle">${this.escapeHtml(project.title || '未命名项目')} · 完整 RISE 创新旅程</p>
         </header>
-        <div class="panorama-grid">
+        <div class="panorama-grid" id="panoramaGrid">
           ${revealBlock}
           ${inspireBlock}
           ${shapeBlock}
           ${examBlock}
         </div>
-        <div class="panorama-footer">
+        <div class="panorama-toolbar no-print">
+          <button class="btn btn-secondary" id="panoramaImgBtn">🖼️ 保存为图片</button>
+          <button class="btn btn-secondary" id="panoramaDownloadBtn">📥 下载 HTML</button>
+          <button class="btn btn-secondary" id="panoramaPrintBtn">🖨️ 打印 / PDF</button>
           <button class="btn btn-primary" id="panoramaHomeBtn" style="background: var(--exam-primary);">返回首页</button>
         </div>
       </div>
@@ -7167,12 +7444,94 @@ class EurekaLite {
     document.getElementById('panoramaHomeBtn')?.addEventListener('click', () => {
       AppState.navigate('home');
     });
+
+    document.getElementById('panoramaPrintBtn')?.addEventListener('click', () => {
+      window.print();
+    });
+
+    document.getElementById('panoramaDownloadBtn')?.addEventListener('click', () => {
+      this.downloadPanoramaHtml(project);
+    });
+
+    document.getElementById('panoramaImgBtn')?.addEventListener('click', () => {
+      this.downloadPanoramaImage(project);
+    });
+  }
+
+  // 生成自包含 HTML 文件并下载
+  downloadPanoramaHtml(project) {
+    const grid = document.getElementById('panoramaGrid');
+    if (!grid) return;
+    const title = this.escapeHtml(project.title || '未命名项目');
+    const html = `<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>${title} - 项目全景图</title>
+<style>${PANORAMA_EXPORT_CSS}</style></head>
+<body>
+<h1 style="text-align:center;font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;color:#1f2937;">🎉 项目全景图</h1>
+<p style="text-align:center;color:#6b7280;font-family:system-ui,sans-serif;">${title} · 完整 RISE 创新旅程</p>
+${grid.outerHTML}
+</body></html>`;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title}-项目全景图.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // 通过 SVG foreignObject 导出 PNG（best-effort，失败回退提示）
+  downloadPanoramaImage(project) {
+    try {
+      const grid = document.getElementById('panoramaGrid');
+      if (!grid) return;
+      const title = this.escapeHtml(project.title || '未命名项目');
+      const clone = grid.cloneNode(true);
+      const xml = new XMLSerializer().serializeToString(clone);
+      const width = grid.scrollWidth || 1000;
+      const height = grid.scrollHeight || 600;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">${xml}</div></foreignObject></svg>`;
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const scale = 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((b) => {
+          if (!b) { alert('图片导出失败，请改用「下载 HTML」或「打印 / PDF」。'); return; }
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(b);
+          a.download = `${title}-项目全景图.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }, 'image/png');
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        alert('图片导出失败，请改用「下载 HTML」或「打印 / PDF」。');
+      };
+      img.src = url;
+    } catch (e) {
+      console.warn('[panorama image]', e);
+      alert('图片导出失败，请改用「下载 HTML」或「打印 / PDF」。');
+    }
   }
 
 }
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('%c🚀 Eureka Lite v20260714.3 %c(全景图数据修复+迭代计划+下载+首页项目卡片)', 'color:#E07A2F;font-size:14px;font-weight:bold', 'color:#666;font-size:12px');
+  console.log('%c💡 提示：FIND 推导输出如显示 [📋 本地模板] = AI未生效；[🤖 DeepSeek] = AI正常', 'color:#888;font-size:11px');
   window.app = new EurekaLite();
   window.app.start();
 });
