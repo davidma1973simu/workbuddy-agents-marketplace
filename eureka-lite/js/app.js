@@ -738,9 +738,76 @@ class EurekaLite {
   }
 
   /**
-   * Start voice input (Web Speech API)
+   * 语音输入入口：优先讯飞（国内稳定），未配置则回退 Web Speech API
+   * 交互：点击开始录音，再次点击结束（切换式）
    */
   startVoiceInput() {
+    // 已在录音中 → 结束
+    if (this._voiceRecording) {
+      this._stopVoiceInput();
+      return;
+    }
+    // 优先讯飞
+    if (window.XfyunIAT && window.XfyunIAT.isConfigured(window.VOICE_CONFIG)) {
+      this._startXfyunVoice();
+      return;
+    }
+    // 回退浏览器原生
+    this._startWebSpeech();
+  }
+
+  _setVoiceBtnState(active) {
+    const btn = document.getElementById('voiceBtn');
+    if (btn) btn.classList.toggle('recording', !!active);
+    this._voiceRecording = !!active;
+  }
+
+  _stopVoiceInput() {
+    if (this._xfyunIat) { try { this._xfyunIat.stop(); } catch (e) {} }
+    if (this._webRecognition) { try { this._webRecognition.stop(); } catch (e) {} }
+  }
+
+  _startXfyunVoice() {
+    const input = document.getElementById('mainInput');
+    const baseText = input ? input.value : '';
+    const iat = new window.XfyunIAT(window.VOICE_CONFIG);
+    this._xfyunIat = iat;
+
+    iat.on('start', () => {
+      this._setVoiceBtnState(true);
+      this.showToast('🎤 正在聆听，说完再点一次麦克风结束', 'toast-success');
+    });
+    iat.on('partial', ({ text }) => {
+      if (input && text) {
+        input.value = (baseText ? baseText : '') + text;
+        input.dispatchEvent(new Event('input'));
+      }
+    });
+    iat.on('result', ({ text }) => {
+      if (input && text) {
+        input.value = (baseText ? baseText : '') + text;
+        input.dispatchEvent(new Event('input'));
+        this.saveHomeInput(input.value);
+      }
+      this.showToast('✓ 已识别', 'toast-success');
+    });
+    iat.on('error', ({ code, message }) => {
+      this._setVoiceBtnState(false);
+      this._xfyunIat = null;
+      this.showToast('语音识别出错：' + (message || code));
+    });
+    iat.on('end', () => {
+      this._setVoiceBtnState(false);
+      this._xfyunIat = null;
+    });
+
+    iat.start();
+  }
+
+  /**
+   * Fallback: Web Speech API（Google，国内/非Chrome可能不可用）
+   */
+  _startWebSpeech() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       this.showToast('抱歉，您的浏览器不支持语音输入');
       return;
@@ -748,12 +815,14 @@ class EurekaLite {
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+    this._webRecognition = recognition;
 
     recognition.lang = 'zh-CN';
     recognition.continuous = false;
     recognition.interimResults = false;
 
     recognition.onstart = () => {
+      this._setVoiceBtnState(true);
       this.showToast('🎤 请说话...', 'toast-success');
     };
 
@@ -769,20 +838,28 @@ class EurekaLite {
     };
 
     recognition.onerror = (event) => {
+      this._setVoiceBtnState(false);
+      this._webRecognition = null;
       if (event.error === 'no-speech') {
         this.showToast('未检测到语音，请重试');
+      } else if (event.error === 'network') {
+        this.showToast('语音服务连接失败（Web Speech 需连 Google，国内建议配置讯飞）');
+      } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        this.showToast('麦克风未授权，请在浏览器允许麦克风权限');
       } else {
         this.showToast('语音识别出错');
       }
     };
 
     recognition.onend = () => {
-      // Recognition ended
+      this._setVoiceBtnState(false);
+      this._webRecognition = null;
     };
 
     try {
       recognition.start();
     } catch (e) {
+      this._setVoiceBtnState(false);
       this.showToast('语音输入启动失败');
     }
   }

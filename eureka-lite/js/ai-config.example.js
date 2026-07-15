@@ -18,3 +18,19 @@ window.AI_CONFIG = {
   timeoutMs: 30000,
   allowUserOverride: true
 };
+
+/**
+ * 讯飞语音听写（IAT）配置 —— 首页输入框的语音输入
+ * 使用方法：
+ *   1. 在 https://www.xfyun.cn 控制台创建「语音听写」应用
+ *   2. 复制 APPID / APIKey / APISecret 填入下方
+ *   3. 若不配置，语音按钮会自动回退到浏览器原生 Web Speech API
+ */
+window.VOICE_CONFIG = {
+  provider: 'xfyun',
+  appId: 'YOUR_XFYUN_APPID',
+  apiKey: 'YOUR_XFYUN_APIKEY',
+  apiSecret: 'YOUR_XFYUN_APISECRET',
+  language: 'zh_cn',
+  accent: 'mandarin'
+};

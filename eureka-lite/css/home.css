@@ -578,6 +578,19 @@
   color: var(--reveal-primary);
 }
 
+/* 录音中：脉冲红点动画 */
+.home-input-btn.voice.recording {
+  color: #fff;
+  background: #e5484d;
+  animation: voicePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(229, 72, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0); }
+}
+
 .home-submit-btn {
   width: 36px;
   height: 36px;
