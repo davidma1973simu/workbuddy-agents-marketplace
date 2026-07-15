@@ -2852,16 +2852,16 @@ class EurekaLite {
             </div>
             <div class="briefing-card-body">
               <div class="briefing-field-compact">
-                <label>目标用户</label>
+                <label class="briefing-field-label">👤 目标用户</label>
                 <textarea id="briefingTargetUser" rows="2" placeholder="目标用户描述...">${this.escapeHtml(targetUser)}</textarea>
               </div>
               <div class="briefing-field-compact">
-                <label>场景挑战</label>
+                <label class="briefing-field-label">📍 场景挑战</label>
                 <textarea id="briefingScene" rows="2" placeholder="场景描述...">${this.escapeHtml(sceneDesc)}</textarea>
               </div>
               ${keyFindings.length > 0 ? `
               <div class="briefing-field-compact">
-                <label>关键发现 (${keyFindings.length}) — 可直接编辑</label>
+                <label class="briefing-field-label">💡 关键发现 (${keyFindings.length}) — 可直接编辑</label>
                 <div class="briefing-mini-list">
                   ${keyFindings.map((f, i) => `
                     <div class="briefing-mini-item" style="border-left-color: var(--reveal-primary);">
@@ -2874,7 +2874,7 @@ class EurekaLite {
               ` : ''}
               ${allDistills.length > 0 ? `
               <div class="briefing-field-compact">
-                <label>FIND 洞察 (${allDistills.length}) — 可直接编辑</label>
+                <label class="briefing-field-label">🔍 FIND 洞察 (${allDistills.length}) — 可直接编辑</label>
                 <div class="briefing-mini-list">
                   ${allDistills.map((d, i) => `
                     <div class="briefing-mini-item" style="border-left-color: var(--inspire-primary);">
@@ -2911,7 +2911,7 @@ class EurekaLite {
                 `;
               }).join('') : '<div class="briefing-empty">暂无利益相关方</div>'}
               <div class="briefing-field-compact" style="margin-top: var(--space-sm);">
-                <label>团队愿景共识</label>
+                <label class="briefing-field-label">🤝 团队愿景共识</label>
                 <textarea id="briefingConsensus" rows="3" placeholder="团队达成的共识...">${this.escapeHtml(businessGoalData.consensus || '')}</textarea>
               </div>
             </div>
@@ -3653,14 +3653,15 @@ class EurekaLite {
       overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:var(--space-md);';
       const fieldHtml = fields.map(f => {
         const id = 'fm_' + f.key;
+        const lblStyle = 'display:block;font-size:var(--font-size-base);font-weight:700;color:var(--text-primary);margin-bottom:6px;margin-top:4px;padding-left:8px;border-left:3px solid var(--reveal-primary);';
         if (f.type === 'textarea') {
-          return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><textarea id="${id}" rows="3" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;"></textarea></div>`;
+          return `<div style="margin-bottom:var(--space-md)"><label style="${lblStyle}">${this.escapeHtml(f.label)}</label><textarea id="${id}" rows="3" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;"></textarea></div>`;
         }
         if (f.type === 'select') {
           const opts = (f.options || []).map(o => `<option value="${this.escapeHtml(o)}">${this.escapeHtml(o)}</option>`).join('');
-          return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><select id="${id}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;">${opts}</select></div>`;
+          return `<div style="margin-bottom:var(--space-md)"><label style="${lblStyle}">${this.escapeHtml(f.label)}</label><select id="${id}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;">${opts}</select></div>`;
         }
-        return `<div style="margin-bottom:var(--space-md)"><label style="display:block;font-size:var(--font-size-sm);color:var(--text-secondary);margin-bottom:6px;">${this.escapeHtml(f.label)}</label><input id="${id}" type="text" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;" /></div>`;
+        return `<div style="margin-bottom:var(--space-md)"><label style="${lblStyle}">${this.escapeHtml(f.label)}</label><input id="${id}" type="text" placeholder="${this.escapeHtml(f.placeholder || '')}" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:var(--text-primary);padding:var(--space-sm);font-family:inherit;" /></div>`;
       }).join('');
 
       overlay.innerHTML = `

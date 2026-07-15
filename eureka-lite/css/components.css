@@ -147,12 +147,17 @@
   width: 100%;
 }
 
+/* 通用表单提示标签 — 高对比度、清晰可辨 */
 .input-label {
   display: block;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: var(--space-xs);
+  margin-top: var(--space-sm);
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--reveal-primary);
+  line-height: 1.4;
 }
 
 .input {
@@ -1048,6 +1053,16 @@
   text-overflow: ellipsis;
 }
 
+/* 屏幕副标题 — 所有模块通用，高可读性 */
+.screen-subtitle {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
+  opacity: 0.9;
+}
+
 .dialogue-question {
   margin-bottom: var(--space-sm);
 }
@@ -1061,9 +1076,11 @@
 }
 
 .dialogue-question .screen-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: var(--space-md);
 }
 
 .dialogue-input-wrapper {
@@ -1073,9 +1090,11 @@
 }
 
 .dialogue-input-wrapper .input-label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: 700;
   color: var(--text-primary);
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--inspire-primary);
 }
 
 .ai-prefill-btn {
@@ -1212,7 +1231,8 @@
 }
 
 .journey-context-label {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: var(--font-size-base);
   color: var(--reveal-primary);
   flex-shrink: 0;
 }
@@ -1387,8 +1407,9 @@
 }
 
 .journey-keyfinding-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1578,9 +1599,11 @@
 }
 
 .find-step-input-label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: 700;
   color: var(--text-primary);
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--reveal-primary);
 }
 
 .find-step-input {
@@ -2425,9 +2448,11 @@
 }
 
 .briefing-field-label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--reveal-primary);
 }
 
 .briefing-field-input {
@@ -2463,6 +2488,25 @@
 .briefing-field-textarea:focus {
   outline: none;
   border-color: var(--reveal-primary);
+}
+
+/* Exam 模块表单字段 */
+.exam-field {
+  margin-bottom: var(--space-md);
+}
+.exam-field > .input-label,
+.exam-field > label {
+  font-size: var(--font-size-base) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--exam-primary);
+  display: block;
+  margin-bottom: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+.exam-input {
+  width: 100%;
 }
 
 .briefing-insight {
@@ -3048,9 +3092,11 @@
 }
 
 .hmw-pov-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: 700;
+  padding-left: var(--space-sm);
+  border-left: 3px solid var(--inspire-primary);
 }
 
 .hmw-pov-input {
@@ -4024,3 +4070,25 @@
 }
 .iter-del:hover { color: #ef4444; }
 .iter-del-head { border-left: 1px solid #dbe6f7; }
+
+/* ========== 移动端标签增强（手机屏幕上进一步放大间距和可读性）========== */
+@media (max-width: 640px) {
+  .input-label,
+  .find-step-input-label,
+  .briefing-field-label,
+  .hmw-pov-label,
+  .journey-keyfinding-label,
+  .journey-context-label,
+  .exam-field > .input-label,
+  .exam-field > label {
+    font-size: var(--font-size-base) !important;
+    margin-top: var(--space-md) !important;
+    margin-bottom: var(--space-sm) !important;
+    padding-top: var(--space-xs);
+    padding-bottom: var(--space-xs);
+  }
+
+  /* Shape / Exam 模块中的 input-label 也用模块主题色左边框 */
+  .shape-screen .input-label { border-left-color: var(--shape-primary); }
+  .exam-screen .input-label  { border-left-color: var(--exam-primary); }
+}
