@@ -692,64 +692,92 @@ const AIAssistant = {
     console.log(`[FIND-AI] context=`, JSON.stringify(context));
     console.log(`[FIND-AI] userInput="${(userInput || '').trim().slice(0, 100)}"`);
 
-    // 优先使用 DeepSeek 真实推理 —— 重写版 prompt 强制链式推导
+    // 优先使用 DeepSeek 真实推理 —— 严格链式推导版
     if (this._hasAI()) {
       const stepPrompts = {
         fact: {
-          guide: `你是一位资深创新洞察分析师。用户输入了一个"事实(Fact)"——从用户旅程中观察到的具体、可验证的现象。
+          guide: `你是一位资深创新洞察分析师，精通设计思维和用户研究方法。用户刚刚从用户旅程地图中标记了一个"关键发现(Fact)"——这是一个可验证的具体现象。
 
-【你的唯一任务】对这个事实进行深层"解释(Interpretation)"，回答：**Why: 这个现象为什么会发生？**
+【你的唯一任务】对这个事实进行深层"解释(Interpretation)"——回答 **Why: 这个现象为什么会发生？**
 
-【严格规则】
-1. 必须直接基于下面用户输入的「事实原文」来分析原因，绝对不要泛泛而谈
-2. 挖掘表面现象背后的系统性/结构性/流程性原因（归因于系统设计，而非个人能力）
-3. 输出一句话解释，50-80字，严格使用"因为...导致...所以..."的因果链句式
-4. 禁止使用"可能""也许""或许"等模糊词，必须给出确定性的判断
-
-【用户输入的事实】
+【用户输入的事实原文】
 ${(userInput || '').trim()}
 
-请直接输出解释结论，不要任何前缀：`,
+【严格分析规则 — 必须逐条遵守】
+1. 🔍 挖掘根因：不要停留在表面现象。追问3层 Why：
+   - 第1层：直接原因是什么？（用户行为层面）
+   - 第2层：系统/产品/流程哪里出了问题？（设计缺陷层面）
+   - 第3层：为什么这个设计缺陷会存在？（假设/约束层面）
+2. 🚫 禁止归因于用户："用户操作不当""用户没仔细看""用户习惯问题"——这些都是偷懒的回答
+3. 🎯 归因于系统：必须是产品/服务/流程/环境的设计或缺失导致了这个现象
+4. 🔗 因果链条：用"因为 A（系统问题），导致 B（用户遭遇），所以 C（观察到的现象）"的结构
+5. ✂️ 一段话，80-120字，精炼有力
+
+请直接输出解释结论，不要任何前缀、不要编号列表、不要"以下是分析"之类的废话：`,
           outputLabel: 'I 解释'
         },
         interpret: {
-          guide: `你是一位资深创新洞察分析师。我们现在有了"事实(Fact)"和它的"解释(Interpretation)"。
-
-【你的唯一任务】基于已知的「事实+解释」，提炼用户的真正"需求(Need)"——回答：**Why Not: 用户潜意识里真正需要的到底是什么？（不是"说想要"，而是"离不开"）**
-
-【已知的前序推导结果】
+          guide: `你是一位资深创新洞察分析师。我们现在已经完成了前两步：
 - 🔍 事实(F)：${context?.fact || '（前序步骤未填写）'}
 - 💡 解释(I)：${context?.interpret || '（前序步骤未填写）'}
-- 📝 用户本步输入：${(userInput || '').trim()}
 
-【严格规则】
-1. 需求必须从上面的「事实→解释」因果链逻辑推导出来，不能跳跃到无关领域
-2. 需求应该是一个可以被产品/服务解决的具体痛点或深层渴望
-3. 一句话，40-60字，格式如"用户真正需要的不是A表面需求，而是B深层本质"
-4. 禁止输出与上面事实和解释无关的需求
+【你的唯一任务】基于以上「事实+解释」因果链，提炼用户的真正"需求(Need)"——回答 **Why Not: 用户潜意识里真正需要的到底是什么？**
+
+注意：用户本步输入了补充思考：${(userInput || '').trim() || '（无补充）'}
+
+【严格规则 — 必须逐条遵守】
+1. ⚔️ 区分 Want vs Need：
+   - Stated Want（说想要）= 表面诉求，如"我要一个更好的搜索功能"
+   - Latent Need（真正需要）= 深层动机，如"我在信息过载时需要确定感和掌控感"
+   - 你的任务是找到 Latent Need！
+2. 🔗 从 F→I 逻辑推导：需求必须能从上面的事实+解释中自然推出，不能跳跃到无关领域
+3. 💊 需求必须是一个具体的痛点/渴望/缺失感，是可以被产品/服务解决的
+4. ✂️ 一句话，50-80字，格式如"用户真正需要的不是[A表面诉求]，而是[B深层本质/感受]"
+5. 🎯 这句话应该让产品团队立刻明白方向
 
 请直接输出需求结论，不要任何前缀：`,
           outputLabel: 'N 需求'
         },
         need: {
-          guide: `你是一位资深创新洞察分析师。我们已完成三步推导：事实(Fact) → 解释(Interpretation) → 需要(Need)。
-
-【你的唯一任务】将以上三者凝练为一句直击本质的核心"洞察(Distill/POV)"——回答：**So What: 这意味着什么具体的创新机会？**
-
-【完整的 F→I→N 推导链】
+          guide: `你是一位资深创新洞察分析师。我们已经完成了 FIND 前三步推导：
 - 🔍 事实(F)：${context?.fact || '（缺失）'}
 - 💡 解释(I)：${context?.interpret || '（缺失）'}
 - ❤️ 需要(N)：${context?.need || '（缺失）'}
-- 📝 用户本步输入：${(userInput || '').trim()}
 
-【严格规则】
-1. 洞察必须是 POV 陈述句，固定格式：「目标用户」需要「核心需求/体验」，因为「根本原因」
-2. 这句话应该能让团队立刻明白创新方向和产品机会点
-3. 一句话，50-80字，要有冲击力，像电梯演讲一样有力
-4. 必须综合引用 F-I-N 三步的全部内容，缺一不可
+【你的唯一任务】将以上三者凝练为一句直击本质的核心**洞察(Distill/POV)**——回答 **So What: 这意味着什么具体的创新机会？**
 
-请直接输出洞察POV结论，不要任何前缀：`,
+用户本步输入了补充思考：${(userInput || '').trim() || '（无补充）'}
+
+【严格规则 — 必须逐条遵守】
+1. 📐 POV 固定格式：「目标用户」+ 需要 + 「核心需求/体验」，因为 + 「根本原因导致现有方式失败」。
+2. 🎯 目标用户要具体（不用"用户"，用"25岁上班族新手妈妈"这类具体画像）
+3. ⚡ 核心需求要有情感张力（不是"更好的XX"，而是"在XX场景下的确定感/掌控感/尊严感"）
+4. 🔗 根因必须引用前面 F-I-N 的推导结果
+5. ✂️ 一句话，60-100字，要有电梯演讲的力度——陌生人听完后会说"这确实是个问题"
+6. ❌ 禁止输出模板化/空洞/万能套话
+
+请直接输出 POV 陈述句，不要任何前缀：`,
           outputLabel: 'D 洞察(POV)'
+        },
+        distill: {
+          guide: `你是一位资深创新洞察分析师。FIND 四步法已接近完成，前三步已产出：
+
+- 🔍 事实(F)：${context?.fact || '（缺失）'}
+- 💡 解释(I)：${context?.interpret || '（缺失）'}
+- ❤️ 需要(N)：${context?.need || '（缺失）'}
+- 📝 用户当前 POV 草稿：${(userInput || '').trim() || '（无草稿）'}
+
+【你的唯一任务】对上述 POV 进行**最终凝练和强化**，使其成为可以直接指导后续 HMW 创新设计的北极星陈述。
+
+【严格规则 — 必须逐条遵守】
+1. 🎯 如果用户已有不错的 POV 草稿 → 在其基础上精炼强化（更精准/更有力）
+2. ✍️ 如果用户的 POV 太泛/太弱 → 基于 F-I-N 重写一个更强的版本
+3. 📐 最终格式：POV = 「具体目标用户」+ 在「特定场景下」+ 迫切需要「核心体验/能力」，+ 因为「根本原因导致现有方案失效」。
+4. ⚡ 质量标准：读完这句话，团队应该能立刻开始 brainstorm 解决方案
+5. ✂️ 一句话，60-100字
+
+请直接输出最终的 POV 陈述，不要任何前缀：`,
+          outputLabel: 'D 最终凝练(POV)'
         }
       };
       const sp = stepPrompts[stepKey];
@@ -1075,69 +1103,51 @@ ${(userInput || '').trim()}
       }
     }
 
-    // ---- fallback：保留原有模板逻辑但强化上下文关联 ----
+    // ---- fallback：基于实际项目数据（不再用关键词猜测领域） ----
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    const sceneData = this._getSceneData(project);
-    const insight = findData?.distill || findData?.need || '';
-    const fact = findData?.fact || '';
-    const targetUser = sceneData.targetUser || '目标用户';
-    const scene = sceneData.sceneDesc || '';
+    const sceneData2 = this._getSceneData(project);
+    const insight2 = findData?.distill || findData?.need || '';
+    const fact2 = findData?.fact || '';
+    const targetUser2 = sceneData2.targetUser || project?.targetUser || '目标用户';
+    const scene2 = sceneData2.sceneDesc || project?.sceneDesc || '';
+    const projectName2 = project?.title || project?.originalTitle || '本项目';
 
-    // Extract core problem/pain from fact
-    let coreProblem = '';
-    const problemMatch = fact.match(/(?:面临|遇到|存在|导致|造成)(.+?)(?:问题|困难|挑战|痛点|不便)/)
-      || fact.match(/(?:无法|不能|很难|不容易)(.+?)(?:，|,|。|$)/)
-      || fact.match(/(?:花费|消耗|浪费|花了)(.+?)(?:时间|精力|金钱)/);
-    if (problemMatch) {
-      coreProblem = problemMatch[1] || problemMatch[0];
+    // Extract core problem from fact or insight
+    let coreProblem2 = '';
+    const sourceText2 = fact2 || insight2;
+    if (sourceText2) {
+      const pm1 = sourceText2.match(/(?:面临|遇到|存在|导致|造成)(.+?)(?:问题|困难|挑战|痛点|不便)/)
+        || sourceText2.match(/(?:无法|不能|很难|不容易)(.+?)(?:，|,|。|$)/)
+        || sourceText2.match(/(?:花费|消耗|浪费|花了)(.+?)(?:时间|精力|金钱)/);
+      if (pm1) coreProblem2 = pm1[1] || pm1[0];
+    }
+    if (!coreProblem2 && insight2) {
+      const pm2 = insight2.match(/需要「(.+?)」/) || insight2.match(/需要(.+?)，因为/);
+      if (pm2) coreProblem2 = pm2[1];
     }
 
-    // Generate contextual market hypothesis based on project context
-    let tam = '', sam = '', som = '', competitors = '', alignment = '', notes = '';
+    let tam2, sam2, som2, competitors2, alignment2, notes2;
 
-    // Infer domain from fact + scene
-    const text = (fact + ' ' + scene + ' ' + targetUser).toLowerCase();
-
-    if (text.includes('老人') || text.includes('老年') || text.includes('养老') || text.includes('银发')) {
-      tam = '中国60岁以上老年人口约2.8亿，其中活力老人（60-75岁）约1.5亿，对品质生活服务有持续需求。';
-      sam = `聚焦${targetUser}所在的一二线城市，约3000万目标人群，具备一定消费能力和数字产品使用基础。`;
-      som = '第一阶段（1-2年）聚焦单城市验证，目标触达1%即30万用户，建立口碑后快速复制。';
-      competitors = '现有方案多为传统社区服务或子女代办，缺乏专为老年人设计的友好产品；部分智能设备操作复杂，老人使用门槛高。';
-      alignment = '符合国家积极应对人口老龄化战略，契合"银发经济"政策支持方向，易获得政府和社会资源支持。';
-    } else if (text.includes('车') || text.includes('驾驶') || text.includes('出行') || text.includes('交通')) {
-      tam = '全国机动车保有量超4亿辆，私家车车主约2.5亿人，年新增购车用户超2000万。';
-      sam = `聚焦${targetUser}，城市有车一族约8000万人，对智能驾驶辅助和出行效率提升有明确付费意愿。`;
-      som = '第一阶段切入高端车型用户（年销约200万辆），目标获取10%份额即20万用户，验证模式后下探中低端市场。';
-      competitors = '现有方案以传统导航和辅助驾驶为主，功能割裂、数据不互通；高端方案价格昂贵，中低端市场存在明显空白。';
-      alignment = '与智能化、新能源车的行业大趋势一致，符合车企差异化竞争和用户运营转型的战略方向。';
-    } else if (text.includes('健康') || text.includes('运动') || text.includes('健身') || text.includes('饮食')) {
-      tam = '全国健康意识觉醒人群超5亿，其中愿意为健康管理付费的用户约1.5亿，年市场规模超万亿。';
-      sam = `聚焦${targetUser}，对个性化、科学化健康管理有强需求的人群约3000万，具备持续付费能力。`;
-      som = '第一年通过内容社区和免费工具获客100万，转化率5%即5万付费用户，验证单位经济模型后规模化投放。';
-      competitors = '市场上健康App众多但同质化严重，多为信息聚合缺少个性化干预；竞品用户留存率低，缺少科学闭环。';
-      alignment = '符合"健康中国2030"国家战略，契合消费升级和健康生活方式的社会趋势，具备长期价值。';
-    } else if (text.includes('教育') || text.includes('学习') || text.includes('培训') || text.includes('知识')) {
-      tam = '中国终身学习人群超3亿，包括职场人士、学生、兴趣爱好者，年教育支出持续增长。';
-      sam = `聚焦${targetUser}，对高效、实用学习体验有明确需求的细分人群约5000万。`;
-      som = '首年通过精准获客获取10万种子用户，付费率20%即2万用户，验证产品价值后拓展企业培训市场。';
-      competitors = '在线教育平台众多但多为视频录播，缺少互动和个性化；用户完课率低，学习效果难以衡量。';
-      alignment = '符合国家终身学习和职业技能提升政策导向，企业培训预算持续增长，B端+C端双轮驱动。';
+    if (fact2 || insight2 || scene2) {
+      const pd = coreProblem2 || '核心痛点';
+      const ib = insight2 ? insight2.slice(0, 60) + (insight2.length > 60 ? '...' : '') : '';
+      tam2 = `基于「${projectName2}」的定位，面向${targetUser2}的潜在市场。全国范围内具有${pd}的人群规模达数千万至数亿级别，市场需求持续增长。`;
+      sam2 = `精准聚焦${targetUser2}中${scene2 ? '在「' + scene2.slice(0, 30) + '」场景下' : ''}对${pd}有强痛点的细分人群，具备明确付费意愿或决策影响力，规模约数百万至千万级别。`;
+      som2 = `首阶段通过MVP验证核心假设——${ib ? '基于"' + ib + '"的洞察' : '解决' + pd}，目标在1年内获取首批种子用户（1-10万），建立标杆案例后逐步规模化。`;
+      competitors2 = `现有解决方案多为传统方式或通用工具，未能精准解决${targetUser2}在${pd}上的深层痛点；市场分散，尚无绝对领先者，存在创新切入点。`;
+      alignment2 = `${ib ? '基于FIND洞察——' + ib + '——' : ''}该方向与创新目标高度一致，具备清晰的验证路径和可量化的成功指标。`;
+      notes2 = `⚠️ 此为基于当前项目信息的初步商业假设。建议完成 FIND 四步法获得深度洞察后再生成更精准版本。待验证：1) TAM/SAM 准确性；2) 用户付费意愿；3) 竞品壁垒。`;
     } else {
-      // Generic contextual generation based on actual input
-      const userGroup = targetUser || '目标用户群体';
-      const problemDesc = coreProblem || '待解决的核心问题';
-
-      tam = `基于${userGroup}的广泛需求，全国/全球范围内潜在受影响人群达数千万至数亿级别，涉及${problemDesc}的用户基数庞大。`;
-      sam = `聚焦对${problemDesc}有强痛点、且具备一定付费意愿或影响力的${userGroup}，细分人群约数百万至千万级别。`;
-      som = '第一阶段通过MVP验证核心假设，目标在1-2年内获取首批1-10万种子用户，建立案例和口碑后快速规模化。';
-      competitors = '现有解决方案多为传统方式或通用工具，未能精准解决${userGroup}在${problemDesc}上的深层痛点；市场分散，尚无绝对领先者。';
-      alignment = `该方向与用户体验驱动创新的组织目标高度一致，${insight ? '基于' + insight.slice(0, 30) + '...的洞察' : '基于用户真实需求'}，具备清晰的验证路径和可量化的成功指标。`;
+      tam2 = '⚠️ 暂无足够信息。请先完成用户旅程 → 标记关键发现 → 完成 FIND 洞察后再生成的商业假设。';
+      sam2 = '⚠️ 需要先定义目标用户和服务场景才能估算可服务市场。';
+      som2 = '⚠️ 建议先用 MVP 验证核心假设，再规划可获得市场。';
+      competitors2 = '⚠️ 需要先明确产品定位和目标场景后才能分析竞品格局。';
+      alignment2 = '⚠️ 请先完成 Reveal 阶段的用户研究和 FIND 洞察，确保商业假设建立在真实需求基础上。';
+      notes2 = '📌 商业假设必须基于真实的 FIND 洞察才有意义。请返回上一步完成 FIND 分析。';
     }
 
-    notes = '以上为初步市场假设，后续需通过用户调研、竞品分析和 MVP 测试进一步验证关键假设。建议优先验证 SAM 和 SOM 的可达性。';
-
-    return { tam, sam, som, competitors, alignment, notes };
+    return { tam: tam2, sam: sam2, som: som2, competitors: competitors2, alignment: alignment2, notes: notes2 };
   },
 
   // ==========================================================================

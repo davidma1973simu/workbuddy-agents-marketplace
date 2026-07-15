@@ -2346,6 +2346,16 @@ class EurekaLite {
         needOutput: '',
         distillOutput: ''
       }));
+      // 🔴 关键修复：立即将新创建的 findings 持久化到 storage
+      // 否则 saveFindData() 会因 findings 为空而提前 return，导致 AI 结果永远无法保存
+      try {
+        const initJson = JSON.stringify({ findings, activeFindingIndex: 0 });
+        this.saveScreenContent('reveal', 3, initJson);
+        this.autoSaveScreenContent('reveal', 3, initJson);
+        console.log(`[FIND] ✅ 初始化并持久化了 ${findings.length} 个关键发现的 FIND 数据`);
+      } catch (e) {
+        console.warn('[FIND] ⚠️ 初始化 findings 持久化失败:', e);
+      }
     }
 
     // Ensure activeFindingIndex is valid
@@ -5192,7 +5202,8 @@ class EurekaLite {
 
             const outputLabel = stepKey === 'fact' ? 'I 解释（Why? 为什么会发生）' :
               stepKey === 'interpret' ? 'N 需求（Why? 真正需要什么）' :
-              stepKey === 'need' ? 'D 洞察/POV（So What? 创新机会）' : '';
+              stepKey === 'need' ? 'D 洞察/POV（So What? 创新机会）' :
+              stepKey === 'distill' ? '✨ 最终 POV（创新北极星）' : '';
 
             if (outputEl) {
               outputEl.innerHTML = `<div class="find-step-output-label">${outputLabel}</div>${result}`;
