@@ -100,11 +100,31 @@ class EurekaLite {
 
     this.setContent(this.getHomeTemplate(user, recentProjects));
     this.attachHomeEvents();
+
+    // 【R4】首访自动展示新手引导
+    try {
+      if (!localStorage.getItem('eureka_seen_intro')) {
+        setTimeout(() => {
+          this.showIntroModal();
+          localStorage.setItem('eureka_seen_intro', 'true');
+        }, 600);
+      }
+    } catch (e) {}
   }
 
   getHomeTemplate(user, recentProjects) {
     const greeting = AppState.getGreeting();
     const userName = user?.name || '朋友';
+    const aiStatus = (window.AIService && window.AIService.status()) || { ready: false };
+    const aiBanner = aiStatus.ready
+      ? `<div class="ai-banner ai-banner-ok" id="aiBanner">
+           <span>🟢 AI 已就绪：${aiStatus.providerLabel}${aiStatus.model ? ' · ' + aiStatus.model : ''}</span>
+           <button class="ai-banner-btn" id="aiBannerSettings">⚙ 更换</button>
+         </div>`
+      : `<div class="ai-banner ai-banner-warn" id="aiBanner">
+           <span>⚠️ AI 尚未配置：所有「AI 帮我…」功能暂不可用</span>
+           <button class="ai-banner-btn" id="aiBannerSettings">去配置</button>
+         </div>`;
 
     return `
       <!-- Header -->
@@ -136,6 +156,7 @@ class EurekaLite {
 
       <!-- Main Content -->
       <main class="home-main">
+        ${aiBanner}
         <!-- Greeting -->
         <section class="home-greeting">
           <h1 class="greeting-time">${greeting}${userName !== '朋友' ? '，' + userName : ''}</h1>
@@ -212,15 +233,19 @@ class EurekaLite {
       <div class="ai-panel" id="aiPanel">
         <div class="ai-panel-header">
           <span class="ai-panel-title">💡 AI 助手</span>
-          <button class="ai-panel-close" id="aiPanelClose">✕</button>
+          <div class="ai-panel-header-actions">
+            <button class="ai-settings-btn" id="aiSettingsBtn" title="配置 AI 模型">⚙</button>
+            <button class="ai-panel-close" id="aiPanelClose">✕</button>
+          </div>
         </div>
         <div class="ai-panel-body">
+          <div class="ai-panel-status" id="aiPanelStatus"></div>
           <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
             我在这里帮助你。有什么可以问我的：
           </p>
           <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
           <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
-          <button class="ai-suggestion-btn" data-action="prefill">✨ 帮我预填</button>
+          <button class="ai-suggestion-btn" data-action="prefill" id="homePrefillBtn">✨ 帮我预填</button>
           <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
         </div>
       </div>
@@ -291,7 +316,10 @@ class EurekaLite {
     const items = (projects && projects.length)
       ? projects.map(p => this.getProjectCardHtml(p)).join('')
       : `<div class="home-projects-empty">还没有项目，开始你的第一个 RISE 练习吧
-          <div style="margin-top: var(--space-md);"><button class="btn btn-primary" id="homeStartBtn">立即开始</button></div>
+          <div style="margin-top: var(--space-md); display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" id="homeStartBtn">立即开始</button>
+            <button class="btn btn-secondary" id="homeExampleBtn">📋 加载示例项目</button>
+          </div>
         </div>`;
     return `
       <section class="home-projects">
@@ -373,6 +401,11 @@ class EurekaLite {
       document.getElementById('mainInput')?.focus();
     });
 
+    // 首页空状态「加载示例项目」
+    document.getElementById('homeExampleBtn')?.addEventListener('click', () => {
+      this.loadExampleProject();
+    });
+
     // Category items
     document.querySelectorAll('.category-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -432,6 +465,17 @@ class EurekaLite {
         this.handleAiAction(action);
       });
     });
+
+    // AI 设置入口（AI 面板内的齿轮按钮 + 首页横幅按钮）
+    document.getElementById('aiSettingsBtn')?.addEventListener('click', () => {
+      this.showAIConfigModal();
+    });
+    document.getElementById('aiBannerSettings')?.addEventListener('click', () => {
+      this.showAIConfigModal();
+    });
+
+    // 刷新 AI 状态展示
+    this.refreshAiStatusUI();
 
     // Drawer overlay
     document.getElementById('drawerOverlay')?.addEventListener('click', () => {
@@ -887,6 +931,38 @@ class EurekaLite {
   }
 
   /**
+   * 【R6】加载示例项目：一键体验完整 Reveal 数据，供新手照学
+   */
+  loadExampleProject() {
+    const sceneContent = `【目标用户】经常在不同生活场景间切换的城市青年（25-35岁，上班族/租房族）
+【场景描述】每天在「家→通勤→公司→健身/社交→回家」多个场景间切换，常因习惯忘记带当场景才需要的东西（钥匙、充电宝、水杯、门禁卡），导致反复折返或借物，产生焦虑与效率损失。`;
+
+    const journeyCards = [
+      { stage: '出门前', challenge: '急着出门，随手抓几样就走', think: '应该都带齐了吧', feel: '有点不确定但不想再检查', do: '直接出门', discovery: '有些物品对转换场景至关重要，但人因习惯总是忘记不同场景需要不同的东西', isKeyFinding: true },
+      { stage: '通勤路上', challenge: '发现没带充电宝', think: '手机快没电了怎么办', feel: '焦虑', do: '找共享充电宝', discovery: '关键物品缺失会直接打断整段行程节奏', isKeyFinding: true },
+      { stage: '公司', challenge: '忘记带门禁卡', think: '又得找前台借', feel: '麻烦', do: '借卡进入', discovery: '身份/权限类物品忘记的成本最高', isKeyFinding: false },
+      { stage: '健身', challenge: '忘带水杯', think: '只能买瓶装水', feel: '不环保且浪费', do: '买水', discovery: '高频刚需小物最容易被忽略', isKeyFinding: false },
+      { stage: '回家', challenge: '忘带钥匙', think: '只能等家人回来', feel: '无奈', do: '在门口等', discovery: '回家这一刻的遗忘最让人崩溃', isKeyFinding: true }
+    ];
+
+    const project = window.EurekaStorage.createProject({
+      title: '示例：帮城市青年不再「忘带东西」',
+      category: 'product',
+      description: '一个帮人在多场景切换时不再忘记关键物品的解决方案（示例项目，可放心修改）',
+      stage: 'reveal',
+      currentScreen: 1
+    });
+    const id = project.id;
+    window.EurekaStorage.updateProject(id, { project });
+
+    window.EurekaStorage.updateCard(id, 'scene', { content: sceneContent });
+    window.EurekaStorage.updateCard(id, 'journey', { content: JSON.stringify(journeyCards) });
+
+    this.showToast('已加载示例项目，照着它学一遍吧～');
+    AppState.navigate('reveal', { projectId: id });
+  }
+
+  /**
    * Show AI analysis modal before creating project
    * 1. Repeat and understand user input
    * 2. Classify into category
@@ -911,7 +987,7 @@ class EurekaLite {
     modal.innerHTML = `
       <div class="modal" style="max-width: 460px;">
         <div class="modal-header">
-          <span class="modal-title">🤖 AI 分析你的输入</span>
+          <span class="modal-title">🧩 智能梳理你的输入（本地）</span>
           <button class="ai-panel-close" id="analysisClose">✕</button>
         </div>
         <div class="modal-body">
@@ -1306,6 +1382,14 @@ class EurekaLite {
             <span class="drawer-nav-item-icon">👤</span>
             <span>个人中心</span>
           </div>
+          <div class="drawer-nav-item" data-action="glossary">
+            <span class="drawer-nav-item-icon">📖</span>
+            <span>术语表（RISE/POV/HMW…）</span>
+          </div>
+          <div class="drawer-nav-item" data-action="intro">
+            <span class="drawer-nav-item-icon">👋</span>
+            <span>新手引导（3分钟看懂）</span>
+          </div>
         </nav>
       </div>
     `;
@@ -1324,8 +1408,11 @@ class EurekaLite {
     document.querySelectorAll('.drawer-nav-item').forEach(item => {
       item.addEventListener('click', () => {
         const page = item.dataset.page;
+        const action = item.dataset.action;
         AppState.closeDrawer();
-        AppState.navigate(page);
+        if (action === 'glossary') { this.showGlossaryModal(); return; }
+        if (action === 'intro') { this.showIntroModal(); return; }
+        if (page) AppState.navigate(page);
       });
     });
   }
@@ -1340,12 +1427,247 @@ class EurekaLite {
     overlay?.classList.toggle('open', AppState.drawerOpen);
   }
 
+  /**
+   * 术语表弹窗（R4）
+   */
+  showGlossaryModal() {
+    const terms = [
+      { t: 'RISE', d: '产品创新的四阶段框架：Reveal(洞察) → Inspire(启发) → Shape(构建) → Exam(验证)，像海浪一样循环推进。' },
+      { t: 'Reveal 揭示', d: '第一阶段：深入挖掘用户真实需求，从表面现象找到真正的创新机会。' },
+      { t: 'Inspire 启发', d: '第二阶段：把洞察转化为大量创意点子，先求量再求质。' },
+      { t: 'Shape 构建', d: '第三阶段：把创意打磨成可验证的最小概念方案(MVP)与用户故事。' },
+      { t: 'Exam 验证', d: '第四阶段：用真实用户测试方案，收集反馈并决定迭代 / 转型 / 推进。' },
+      { t: 'FIND', d: '洞察四步法：Fact 事实 → Interpret 解释 → Need 需求 → Distill 凝练(POV)。从观察到本质。' },
+      { t: 'POV', d: 'Point of View 观点陈述：用「目标用户 + 需要 + 核心需求，因为 + 根本原因」一句话讲清创新机会。' },
+      { t: 'HMW', d: 'How Might We 我们如何能够：把洞察改写成可发散的提问句式，例如「我们如何帮助…」。' },
+      { t: 'NCO', d: '寻找灵感的三个视角：New(新) / Cool(酷) / Outsider(局外人)，打破思维定式。' },
+      { t: 'TAM/SAM/SOM', d: '市场规模三层：TAM 总市场 / SAM 可服务市场 / SOM 可获取市场，由大到小逐层收敛。' },
+      { t: 'MVP', d: 'Minimum Viable Product 最小可行产品：用最低成本验证核心假设的原型。' }
+    ];
+    const items = terms.map(x => `
+      <div class="glossary-item">
+        <div class="glossary-term">${x.t}</div>
+        <div class="glossary-desc">${x.d}</div>
+      </div>`).join('');
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay open';
+    modal.innerHTML = `
+      <div class="modal glossary-modal">
+        <div class="modal-header">
+          <span class="modal-title">📖 术语表</span>
+          <button class="ai-panel-close" id="glossaryClose">✕</button>
+        </div>
+        <div class="modal-body glossary-body">${items}</div>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.querySelector('#glossaryClose')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+  }
+
+  /**
+   * 新手引导弹窗（R4）：3 分钟看懂 RISE
+   */
+  showIntroModal() {
+    const steps = [
+      { icon: '🔍', name: 'Reveal 洞察', desc: '先搞懂「为谁、在什么场景下、有什么痛点」。用 FIND 四步把观察到的事实挖成真正的用户需求。' },
+      { icon: '💡', name: 'Inspire 启发', desc: '把需求变成「我们如何帮助…」的提问，再用 New/Cool/Outsider 视角发散出一堆创意，选出最值得做的。' },
+      { icon: '🛠️', name: 'Shape 构建', desc: '把创意打磨成最小可行方案(MVP)和用户体验故事板，讲清楚产品长什么样、怎么用。' },
+      { icon: '✅', name: 'Exam 验证', desc: '找真实用户来用，记录成功与失败，做四维度评价，最后用电梯演讲讲清价值并规划下一步。' }
+    ];
+    const cards = steps.map(s => `
+      <div class="intro-step">
+        <div class="intro-step-icon">${s.icon}</div>
+        <div class="intro-step-name">${s.name}</div>
+        <div class="intro-step-desc">${s.desc}</div>
+      </div>`).join('');
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay open';
+    modal.innerHTML = `
+      <div class="modal intro-modal">
+        <div class="modal-header">
+          <span class="modal-title">👋 3 分钟看懂 Eureka</span>
+          <button class="ai-panel-close" id="introClose">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="ai-config-tip">Eureka 用 <b>RISE 四步</b> 帮你把一个模糊的想法，变成可验证的方案。每一步屏幕顶部都会告诉你「这步要做什么」，跟着走就行。</p>
+          <div class="intro-steps">${cards}</div>
+          <p class="ai-config-tip" style="margin-top:16px">提示：点右下角 🤖 可随时唤出 AI 助手；第一次进每个阶段会看到阶段指引。AI 功能需要你在 ⚙ 里填入自己的大模型 Key。</p>
+          <div style="text-align:right"><button class="btn btn-primary" id="introGot" style="background:var(--accent)">开始我的创新 →</button></div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.querySelector('#introClose')?.addEventListener('click', close);
+    modal.querySelector('#introGot')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+  }
+
   updateAiPanel() {
     const fab = document.getElementById('aiFab');
     const panel = document.getElementById('aiPanel');
 
     fab?.classList.toggle('active', AppState.aiPanelOpen);
     panel?.classList.toggle('open', AppState.aiPanelOpen);
+  }
+
+  /**
+   * 刷新所有 AI 状态展示（首页横幅 + AI 面板状态条）
+   */
+  refreshAiStatusUI() {
+    const st = (window.AIService && window.AIService.status()) || { ready: false };
+    // 首页横幅
+    const banner = document.getElementById('aiBanner');
+    if (banner) {
+      if (st.ready) {
+        banner.className = 'ai-banner ai-banner-ok';
+        banner.innerHTML = `<span>🟢 AI 已就绪：${st.providerLabel}${st.model ? ' · ' + st.model : ''}${st.fromUser ? '（你的 Key）' : ''}</span>
+          <button class="ai-banner-btn" id="aiBannerSettings">⚙ 更换</button>`;
+      } else {
+        banner.className = 'ai-banner ai-banner-warn';
+        banner.innerHTML = `<span>⚠️ AI 尚未配置：所有「AI 帮我…」功能暂不可用</span>
+          <button class="ai-banner-btn" id="aiBannerSettings">去配置</button>`;
+      }
+      banner.querySelector('#aiBannerSettings')?.addEventListener('click', () => this.showAIConfigModal());
+    }
+    // AI 面板状态条
+    document.querySelectorAll('#aiPanelStatus').forEach(el => {
+      if (st.ready) {
+        el.className = 'ai-panel-status ok';
+        el.innerHTML = `🟢 已配置：${st.providerLabel}${st.model ? ' · ' + st.model : ''} · <a href="javascript:void(0)" id="panelAiSettings">更换</a>`;
+      } else {
+        el.className = 'ai-panel-status warn';
+        el.innerHTML = `⚠️ 未配置 Key · <a href="javascript:void(0)" id="panelAiSettings">去配置</a>`;
+      }
+      el.querySelector('#panelAiSettings')?.addEventListener('click', () => this.showAIConfigModal());
+    });
+  }
+
+  /**
+   * AI 配置弹窗：仅含「大模型品牌选择 + API Key 输入」
+   */
+  showAIConfigModal() {
+    const providers = (window.AIService && window.AIService.getProviders()) || [];
+    const saved = (window.AIService && window.AIService.getUserConfig()) || null;
+    const defaultProvider = saved?.provider || 'deepseek';
+
+    const brandCards = providers.map(p => `
+      <div class="ai-brand-card ${p.id === defaultProvider ? 'selected' : ''}" data-provider="${p.id}" data-baseurl="${p.baseUrl}">
+        <div class="ai-brand-name">${p.label}</div>
+        <div class="ai-brand-desc">${p.desc}</div>
+      </div>`).join('');
+
+    const provider = providers.find(p => p.id === defaultProvider) || providers[0];
+    const modelOptions = (provider?.models || []).map(m => `<option value="${m}" ${m === (saved?.model || provider.model) ? 'selected' : ''}>${m}</option>`).join('');
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay open ai-config-overlay';
+    modal.id = 'aiConfigModal';
+    modal.innerHTML = `
+      <div class="modal ai-config-modal">
+        <div class="modal-header ai-config-header">
+          <span class="modal-title">⚙ 配置 AI 大模型</span>
+          <button class="ai-panel-close" id="aiConfigClose">✕</button>
+        </div>
+        <div class="modal-body ai-config-body">
+          <p class="ai-config-tip">选择你的大模型品牌，填入自己的 API Key 即可启用全部「AI 帮我…」功能。Key 仅保存在本机浏览器（localStorage），不会上传。</p>
+
+          <div class="ai-config-section-title">① 选择大模型品牌</div>
+          <div class="ai-brand-grid">${brandCards}</div>
+
+          <div class="ai-config-section-title">② 填入 API Key</div>
+          <div class="ai-config-row">
+            <input type="password" class="ai-config-key" id="aiConfigKey" placeholder="${provider?.keyHint || '粘贴你的 API Key'}" value="${saved?.apiKey || ''}" autocomplete="off" />
+            <a class="ai-config-doclink" id="aiConfigDoc" href="${provider?.docUrl || '#'}" target="_blank" rel="noopener">如何获取 ↗</a>
+          </div>
+
+          <div class="ai-config-section-title">③ 选择模型（默认即可）</div>
+          <select class="ai-config-model" id="aiConfigModel">
+            ${modelOptions}
+          </select>
+
+          <div class="ai-config-status" id="aiConfigStatus"></div>
+
+          <div class="ai-config-actions">
+            <button class="btn btn-ghost" id="aiConfigClear">清除配置</button>
+            <button class="btn btn-primary" id="aiConfigSave" style="background: var(--accent);">保存并测试连接</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const close = () => { modal.remove(); this.refreshAiStatusUI(); };
+    modal.querySelector('#aiConfigClose')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); }
+    });
+
+    // 品牌选择
+    let selectedProvider = defaultProvider;
+    const brandEls = modal.querySelectorAll('.ai-brand-card');
+    const keyInput = modal.querySelector('#aiConfigKey');
+    const modelSelect = modal.querySelector('#aiConfigModel');
+    const docLink = modal.querySelector('#aiConfigDoc');
+    const statusEl = modal.querySelector('#aiConfigStatus');
+
+    brandEls.forEach(card => {
+      card.addEventListener('click', () => {
+        brandEls.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedProvider = card.dataset.provider;
+        const p = providers.find(x => x.id === selectedProvider);
+        if (p) {
+          keyInput.placeholder = p.keyHint || '粘贴你的 API Key';
+          docLink.href = p.docUrl || '#';
+          modelSelect.innerHTML = (p.models || []).map(m => `<option value="${m}">${m}</option>`).join('');
+        }
+      });
+    });
+
+    // 保存 + 测试
+    modal.querySelector('#aiConfigSave')?.addEventListener('click', async () => {
+      const apiKey = keyInput.value.trim();
+      const p = providers.find(x => x.id === selectedProvider);
+      if (!apiKey) {
+        statusEl.className = 'ai-config-status err';
+        statusEl.textContent = '❌ 请先填入 API Key';
+        return;
+      }
+      if (p?.keyPrefix && !apiKey.startsWith(p.keyPrefix)) {
+        statusEl.className = 'ai-config-status err';
+        statusEl.textContent = `❌ Key 格式不正确，应以「${p.keyPrefix}」开头`;
+        return;
+      }
+      const model = modelSelect.value || p?.model;
+      statusEl.className = 'ai-config-status loading';
+      statusEl.textContent = '⏳ 正在保存并测试连接...';
+      const ok = window.AIService.saveUserConfig({ provider: selectedProvider, apiKey, model });
+      if (!ok) {
+        statusEl.className = 'ai-config-status err';
+        statusEl.textContent = '❌ 保存失败（浏览器存储不可用）';
+        return;
+      }
+      const res = await window.AIService.test();
+      if (res.ok) {
+        statusEl.className = 'ai-config-status ok';
+        statusEl.textContent = `✅ 连接成功！${res.message} AI 已就绪。`;
+        setTimeout(close, 1200);
+      } else {
+        statusEl.className = 'ai-config-status err';
+        statusEl.textContent = `⚠️ 已保存，但连接测试失败：${res.message}（Key 已保存，可稍后重试）`;
+      }
+    });
+
+    // 清除
+    modal.querySelector('#aiConfigClear')?.addEventListener('click', () => {
+      window.AIService.clearUserConfig();
+      keyInput.value = '';
+      statusEl.className = 'ai-config-status';
+      statusEl.textContent = '已清除本地配置';
+      this.refreshAiStatusUI();
+    });
   }
 
   async handleAiAction(action) {
@@ -1400,7 +1722,12 @@ class EurekaLite {
           }
         } catch (e) {
           console.error('[AI] prefill failed:', e);
-          this.showToast('AI 生成失败：' + (e.message || '请检查网络或 API Key'));
+          if (e.message === 'AI_NOT_CONFIGURED') {
+            this.showToast('AI 尚未配置：点右下角 🤖 → ⚙ 填入你的大模型 Key 即可启用');
+            setTimeout(() => this.showAIConfigModal(), 800);
+          } else {
+            this.showToast('AI 生成失败：' + (e.message || '请检查网络或 API Key'));
+          }
         }
         break;
       }
@@ -1741,15 +2068,19 @@ class EurekaLite {
       <div class="ai-panel ai-panel-dark" id="aiPanel">
         <div class="ai-panel-header">
           <span class="ai-panel-title">💡 AI 助手</span>
-          <button class="ai-panel-close" id="aiPanelClose">✕</button>
+          <div class="ai-panel-header-actions">
+            <button class="ai-settings-btn" id="aiSettingsBtn" title="配置 AI 模型">⚙</button>
+            <button class="ai-panel-close" id="aiPanelClose">✕</button>
+          </div>
         </div>
         <div class="ai-panel-body">
+          <div class="ai-panel-status" id="aiPanelStatus"></div>
           <p style="color: #A1A1A1; font-size: 14px; margin-bottom: 16px;">
             我在这里帮助你。有什么可以问我的：
           </p>
           <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
           <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
-          <button class="ai-suggestion-btn" data-action="prefill">✨ 帮我预填</button>
+          <button class="ai-suggestion-btn" data-action="prefill" id="modulePrefillBtn">✨ 帮我预填</button>
           <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
         </div>
       </div>
@@ -1836,6 +2167,7 @@ class EurekaLite {
     return `
       <div class="stage-brief-overlay" id="stageBriefOverlay">
         <div class="stage-brief-modal">
+          <button class="stage-brief-close" id="stageBriefClose" title="关闭">✕</button>
           <div class="stage-brief-header" style="border-bottom: 3px solid ${brief.themeColor};">
             <div class="stage-brief-icon">${brief.icon}</div>
             <div>
@@ -1913,6 +2245,22 @@ class EurekaLite {
     if (capsule) capsule.style.display = 'none';
     if (fab) fab.style.display = 'none';
 
+    const closeBrief = () => {
+      overlay.style.display = 'none';
+      if (capsule) capsule.style.display = '';
+      if (fab) fab.style.display = '';
+      document.removeEventListener('keydown', briefEsc);
+    };
+    const briefEsc = (e) => { if (e.key === 'Escape') closeBrief(); };
+
+    // 关闭按钮（X）
+    const closeBtn = document.getElementById('stageBriefClose');
+    if (closeBtn) closeBtn.onclick = closeBrief;
+    // 点击遮罩空白区域关闭
+    overlay.onclick = (e) => { if (e.target === overlay) closeBrief(); };
+    // ESC 关闭
+    document.addEventListener('keydown', briefEsc);
+
     // Bind start button
     const startBtn = document.getElementById('startStageBtn');
     if (startBtn) {
@@ -1921,10 +2269,7 @@ class EurekaLite {
         if (dontShow?.checked) {
           localStorage.setItem(`stage_brief_dismissed_${stage}`, 'true');
         }
-        overlay.style.display = 'none';
-        // Restore fixed buttons
-        if (capsule) capsule.style.display = '';
-        if (fab) fab.style.display = '';
+        closeBrief();
       };
     }
   }
@@ -2160,7 +2505,7 @@ class EurekaLite {
               <label class="input-label">👤 目标用户是谁？</label>
               <input type="text" class="input" id="targetUserInput" placeholder="例如：25-35岁的上班族、大学生、新手妈妈..." />
               <button class="ai-prefill-btn" id="aiPrefillTargetUser" data-field="targetUser">
-                <span>⚡ AI 帮我预填</span>
+                <span>🧩 智能预填（本地）</span>
               </button>
             </div>
 
@@ -2168,7 +2513,7 @@ class EurekaLite {
               <label class="input-label">📍 在什么场景下使用？</label>
               <textarea class="input textarea" id="sceneDescInput" placeholder="例如：在通勤路上，用户经常因为忘记带水杯而口渴..." rows="3"></textarea>
               <button class="ai-prefill-btn" id="aiPrefillSceneDesc" data-field="sceneDesc">
-                <span>⚡ AI 帮我预填</span>
+                <span>🧩 智能预填（本地）</span>
               </button>
             </div>
           </div>
@@ -4143,6 +4488,20 @@ class EurekaLite {
         const stageInfo = Utils.getStageInfo(targetStage);
         const screenDefs = stageInfo.screenDefs || [];
 
+        // 【R5 导航守卫】未完成的阶段禁止向前跳转
+        const order = ['reveal', 'inspire', 'shape', 'exam'];
+        const targetIdx = order.indexOf(targetStage);
+        const currentStage = AppState.currentStage || project?.stage || 'reveal';
+        const currentIdx = order.indexOf(currentStage);
+        if (targetIdx > currentIdx) {
+          const completed = project?.completedStages || [];
+          const priorDone = order.slice(0, targetIdx).every(s => completed.includes(s));
+          if (!priorDone) {
+            this.showToast(`请先完成「${Utils.getStageInfo(order[targetIdx - 1]).name}」阶段，再进入「${stageInfo.name}」`);
+            return;
+          }
+        }
+
         // 如果只有1屏或当前已在目标模块首屏，直接跳转
         if (screenCount <= 1) {
           AppState.navigate(targetStage, { projectId: AppState.currentProjectId, stage: targetStage });
@@ -4151,7 +4510,10 @@ class EurekaLite {
 
         // 移除已有菜单
         const existing = document.getElementById('riseScreenPicker');
-        if (existing) { existing.remove(); return; }
+        if (existing) { existing.remove(); }
+        // 再次点击同一阶段则关闭菜单
+        if (step._pickerOpen) { step._pickerOpen = false; return; }
+        step._pickerOpen = true;
 
         // 创建屏幕选择下拉菜单
         const picker = document.createElement('div');
@@ -4177,6 +4539,7 @@ class EurekaLite {
             const s = item.dataset.stage;
             const sc = parseInt(item.dataset.screen);
             picker.remove();
+            step._pickerOpen = false;
             this.goToScreen(s, sc);
           });
         });
@@ -4186,6 +4549,7 @@ class EurekaLite {
           const closePicker = (ev) => {
             if (!picker.contains(ev.target) && !ev.target.closest('.rise-step')) {
               picker.remove();
+              step._pickerOpen = false;
               document.removeEventListener('click', closePicker);
             }
           };
@@ -4249,7 +4613,12 @@ class EurekaLite {
         }
       } catch (err) {
         console.error('[AI] aiPrefillBtn failed:', err);
-        this.showToast('AI 生成失败：' + (err.message || '请检查网络或 API Key'));
+        if (err.message === 'AI_NOT_CONFIGURED') {
+          this.showToast('AI 尚未配置：点右下角 🤖 → ⚙ 填入你的大模型 Key 即可启用');
+          setTimeout(() => this.showAIConfigModal(), 800);
+        } else {
+          this.showToast('AI 生成失败：' + (err.message || '请检查网络或 API Key'));
+        }
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -4266,7 +4635,7 @@ class EurekaLite {
         if (prefill) {
           input.value = prefill;
           input.dispatchEvent(new Event('input'));
-          this.showToast('✨ AI已预填目标用户，你可以编辑修订');
+          this.showToast('✨ 已智能预填（本地），你可以编辑修订');
         }
       }
     });
@@ -4281,7 +4650,7 @@ class EurekaLite {
         if (prefill) {
           input.value = prefill;
           input.dispatchEvent(new Event('input'));
-          this.showToast('✨ AI已预填场景描述，你可以编辑修订');
+          this.showToast('✨ 已智能预填（本地），你可以编辑修订');
         }
       }
     });
@@ -4382,6 +4751,14 @@ class EurekaLite {
         this.handleAiAction(action);
       });
     });
+
+    // AI 设置入口（模块内 AI 面板齿轮）
+    document.getElementById('aiSettingsBtn')?.addEventListener('click', () => {
+      this.showAIConfigModal();
+    });
+
+    // 刷新 AI 状态展示
+    this.refreshAiStatusUI();
 
     // Auto-save: Input event listeners for real-time saving
     const currentScreenNum = AppState.currentScreen || project?.currentScreen || 1;
@@ -5253,7 +5630,7 @@ class EurekaLite {
             // Update tab badge without full re-render
             this.updateFindTabBadges();
           } else {
-            this.showToast('AI 生成失败，请重试');
+            this.showToast('AI 生成失败：请确认已在 ⚙ 配置大模型 Key（右下角 🤖 → ⚙）');
           }
         } catch (err) {
           console.error('[FIND] Button click handler error:', err);
@@ -5333,7 +5710,7 @@ class EurekaLite {
         this.saveStakeholderData(stage);
         this.attachStakeholderCardEvents(stage);
       } else {
-        this.showToast('AI 生成失败，请重试');
+        this.showToast('AI 生成失败：请确认已在 ⚙ 配置大模型 Key（右下角 🤖 → ⚙）');
       }
     });
 
@@ -5372,7 +5749,7 @@ class EurekaLite {
         this.saveStakeholderData(stage);
         this.attachHypothesisCardEvents(stage);
       } else {
-        this.showToast('AI 生成失败，请重试');
+        this.showToast('AI 生成失败：请确认已在 ⚙ 配置大模型 Key（右下角 🤖 → ⚙）');
       }
     });
 
@@ -5478,7 +5855,7 @@ class EurekaLite {
           }
         } catch (e) {
           console.error('AI HMW generation failed:', e);
-          this.showToast('AI 生成失败，请重试');
+          this.showToast('AI 生成失败：请确认已在 ⚙ 配置大模型 Key（右下角 🤖 → ⚙）');
         }
 
         btn.classList.remove('loading');
@@ -6002,7 +6379,59 @@ class EurekaLite {
     return { fact, interpret, need };
   }
 
+  /**
+   * 检查当前屏幕是否已有内容（防止"空跑到终点"）
+   * 规则：屏幕上任意一个输入框/文本域/下拉有非空白内容，或存在勾选项，即视为已填写。
+   */
+  screenHasContent() {
+    const root = document.getElementById('moduleContent');
+    if (!root) return true; // 找不到容器时放行，避免误伤
+    const fields = root.querySelectorAll('input, textarea, select');
+    for (const f of fields) {
+      if (f.type === 'checkbox' || f.type === 'radio') {
+        if (f.checked) return true;
+      } else if ((f.value || '').trim().length > 0) {
+        return true;
+      }
+    }
+    // 卡片型屏幕（旅程/NCO/灵感/创意）可能没有 input（用 contenteditable 或 JS 渲染）
+    if (root.querySelector('.journey-card, .nco-card, .idea-card, .stakeholder-row, .briefing-field')) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 检查某阶段是否已有实质内容（用于完成阶段守卫）
+   */
+  stageHasContent(stage) {
+    const project = window.EurekaStorage.getProject(AppState.currentProjectId);
+    if (!project?.cards) return false;
+    const map = {
+      reveal: ['scene', 'journey', 'findInsight', 'businessGoal', 'projectBriefing'],
+      inspire: ['hmw', 'ncoInspiration', 'ideas', 'filteredIdeas', 'bestIdea'],
+      shape: ['shapeFourDim', 'shapeMinConcept', 'shapeStoryboard', 'shapeSummary'],
+      exam: ['examTestPlan', 'examTestReport', 'examFourDimEval', 'examElevator', 'examSummary']
+    };
+    const types = map[stage] || [];
+    for (const t of types) {
+      const c = project.cards[t];
+      const raw = c?.content;
+      if (typeof raw === 'string' && raw.trim().length > 15) return true;
+      if (raw && typeof raw === 'object' && Object.keys(raw).length) return true;
+    }
+    return false;
+  }
+
   saveAndGoNext(stage, screen) {
+    // 【R3 流程校验】当前屏完全空白时禁止进入下一步
+    if (!this.screenHasContent()) {
+      this.showToast('这一屏还没有内容，先填写一点再继续吧～');
+      const capsule = document.getElementById('taskCompletionCapsule');
+      if (capsule) capsule.classList.remove('show');
+      return;
+    }
+
     // Save current screen content
     const currentScreen = AppState.currentScreen || 1;
     this.saveCurrentScreenContent(stage, currentScreen);
@@ -6168,6 +6597,12 @@ class EurekaLite {
   completeStage(stage) {
     if (!AppState.currentProjectId) return;
 
+    // 【R3 流程校验】阶段整体为空时禁止完成
+    if (!this.stageHasContent(stage)) {
+      this.showToast('本阶段似乎还是空的，先把前面的任务做一点再完成吧～');
+      return;
+    }
+
     // Save and clear all drafts for this stage
     const stageInfo = Utils.getStageInfo(stage);
     for (let i = 1; i <= stageInfo.screens; i++) {
@@ -6188,9 +6623,12 @@ class EurekaLite {
 
       setTimeout(() => {
         this.hideTaskCompletionCapsule();
+        const completed = window.EurekaStorage.getProject(AppState.currentProjectId)?.completedStages || [];
+        if (!completed.includes(stage)) completed.push(stage);
         window.EurekaStorage.updateProject(AppState.currentProjectId, {
           stage: nextStage,
-          currentScreen: 1
+          currentScreen: 1,
+          completedStages: completed
         });
 
         this.showToast(`🎉 ${stageInfo.name} 完成！+50 积分`);
@@ -6351,12 +6789,12 @@ class EurekaLite {
         </div>
 
         <div class="profile-progress">
-          <h3 class="section-title">Pro 解锁进度</h3>
+          <h3 class="section-title">练习积分</h3>
           <div class="progress-bar" style="height: 8px; margin-top: var(--space-sm);">
-            <div class="progress-bar-fill" style="width: ${Math.min((user?.points || 0) / 5, 100)}%;"></div>
+            <div class="progress-bar-fill" style="width: ${Math.min((user?.points || 0) / 500 * 100, 100)}%;"></div>
           </div>
           <p style="font-size: 12px; color: var(--text-muted); margin-top: var(--space-xs);">
-            ${500 - (user?.points || 0)} 积分后可解锁 Pro
+            完成每个阶段 +50 分，完成整个 RISE 项目 +100 分。积分用于记录你的创新练习历程 🏅
           </p>
         </div>
 
@@ -6793,7 +7231,7 @@ class EurekaLite {
             <div class="storyboard-card" data-key="${c.key}">
               <div class="storyboard-card-head"><span class="storyboard-num">${i + 1}</span><span class="storyboard-title">${this.escapeHtml(c.title)}</span></div>
               <textarea class="input textarea storyboard-desc" data-key="${c.key}" rows="3" placeholder="描述这一刻的用户经历...">${this.escapeHtml(c.desc || '')}</textarea>
-              <div class="storyboard-img-placeholder">🖼️ 图片占位（待接入 AI 生成）</div>
+              <div class="storyboard-img-placeholder" title="图片生成功能开发中">🖼️ 图片生成功能开发中（敬请期待）</div>
             </div>`).join('')}
         </div>
         <button class="btn btn-secondary" id="saveStoryboardBtn">保存故事板</button>

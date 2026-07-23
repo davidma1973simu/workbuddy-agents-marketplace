@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka-Lite 产品体验测试与修订报告</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --card2:#1d212b; --line:#2a2f3a;
+    --txt:#e8eaed; --sub:#9aa3b2; --accent:#E07A2F;
+    --p0:#ff4d4f; --p1:#ff9f0a; --p2:#34c759; --info:#5ac8fa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;padding:0 0 80px}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px}
+  header{padding:40px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+  h1{font-size:28px;font-weight:700;letter-spacing:.5px}
+  .sub{color:var(--sub);margin-top:8px;font-size:14px}
+  h2{font-size:21px;margin:40px 0 14px;padding-left:12px;border-left:4px solid var(--accent)}
+  h3{font-size:16px;margin:24px 0 10px;color:#fff}
+  p{margin:8px 0;color:#d6dae2;font-size:14.5px}
+  .muted{color:var(--sub);font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0}
+  .card.alert{border-color:var(--p0);background:linear-gradient(180deg,#2a1416,#171a21)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:var(--card2);color:#fff;font-weight:600}
+  td code{background:#0c0e12;color:#7fd1ff;padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700}
+  .p0{background:rgba(255,77,79,.15);color:var(--p0);border:1px solid var(--p0)}
+  .p1{background:rgba(255,159,10,.15);color:var(--p1);border:1px solid var(--p1)}
+  .p2{background:rgba(52,199,89,.15);color:var(--p2);border:1px solid var(--p2)}
+  .tag{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--sub);margin:2px}
+  .quote{border-left:3px solid var(--accent);padding:8px 14px;background:#14171e;color:#cdd3dc;font-size:13.5px;margin:10px 0;border-radius:0 8px 8px 0}
+  .score{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+  .sc{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;flex:1;min-width:140px}
+  .sc .n{font-size:22px;font-weight:700}
+  .sc .l{font-size:12px;color:var(--sub);margin-top:2px}
+  .ok{color:var(--p2)} .warn{color:var(--p1)} .bad{color:var(--p0)}
+  ul{margin:8px 0 8px 20px} li{margin:5px 0;font-size:14px;color:#d6dae2}
+  .kbd{background:#0c0e12;border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-size:12px;color:#9aa3b2}
+  .foot{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--sub);font-size:12.5px}
+  .toc a{color:var(--info);text-decoration:none;font-size:13.5px;display:block;padding:3px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Eureka-Lite 产品体验测试与修订报告</h1>
+  <div class="sub">测试视角：零设计思维基础、但好学进取的青年人 &nbsp;·&nbsp; 对象：<code>https://davidma1973simu.github.io/eureka-lite/</code> &nbsp;·&nbsp; 2026-07-23</div>
+</header>
+
+<div class="card">
+  <h3 style="margin-top:0">测试基线（方法论透明）</h3>
+  <ul>
+    <li><b>测试者人设</b>：22 岁、爱折腾、没学过设计思维/创新方法论，但能理解"用户痛点/价值/场景"等基础概念。</li>
+    <li><b>测试方法</b>：线上站点实勘 + 全量源码逐行走查审计（<code>app.js</code> 7626 行 / <code>ai-assistant.js</code> / <code>ai-service.js</code> / <code>index.html</code>）。当前环境无浏览器自动化工具，采用 PM 标准 <b>walkthrough + 实现核对</b>，每条结论标注真实代码位置与 UI 文案，便于复核。</li>
+    <li><b>设备视角</b>：移动端（手机浏览为主）+ 桌面端对照。</li>
+  </ul>
+</div>
+
+<div class="card alert">
+  <h3 style="margin-top:0;color:var(--p0)">⚠️ 测试前置重大发现：线上版 AI 完全不可用</h3>
+  <ul>
+    <li>实勘：<code>https://davidma1973simu.github.io/eureka-lite/js/ai-config.js</code> → <b>HTTP 404</b>。该文件被仓库 <code>.gitignore</code> 排除，从未部署。</li>
+    <li>代码：<code>AIService._cfg()</code> 读取 <code>window.AI_CONFIG</code>，缺失时 <code>apiKey=''</code> → <code>isReady()</code> 恒为 <code>false</code>（<code>ai-service.js:15-35</code>）。</li>
+    <li>后果：所有"⚡ AI 帮我…"按钮对真实访客<b>全部降级</b>——少数有本地模板兜底（FIND / HMW 创意），多数直接弹"生成失败 / AI 评分失败"toast。</li>
+    <li>影响：产品标语是"<b>AI 时代的创新练习</b>"，但新用户开箱即遭遇"AI 全失效"，第一印象崩塌。<b>这是本次测试最严重的体验问题。</b></li>
+  </ul>
+</div>
+
+<h2>一、产品全局观感（Global）</h2>
+
+<div class="card">
+  <h3 style="margin-top:0">1.1 第一眼 Landing</h3>
+  <p>首页 = 问候语 + 5 个分类胶囊（产品创新 / 服务体验 / 复杂问题 / 探索验证 / ⚡给我的一天注入活力）+ "我的项目"空状态 + 底部输入框 + 右下角 AI 浮动按钮。</p>
+  <p class="muted">零基础感受：知道这是"创新工具"，但<b>不知道它要我干什么、从哪里开始、最终产出什么</b>。5 个分类胶囊不点开完全无感，点了才弹提示词——首屏没有"30 秒看懂这是什么 / 怎么玩"的全局引导。</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">1.2 信息架构与术语密度</h3>
+  <p>4 阶段 × 5 屏 ≈ <b>19 屏</b>，靠顶部 RISE 步骤条 + 底部"上一步/下一步"导航。</p>
+  <p>满屏大写缩写：<span class="tag">RISE</span><span class="tag">Reveal</span><span class="tag">Inspire</span><span class="tag">Shape</span><span class="tag">Exam</span><span class="tag">FIND</span><span class="tag">POV</span><span class="tag">HMW</span><span class="tag">NCO</span><span class="tag">TAM/SAM/SOM</span>。</p>
+  <p class="muted">步骤条仅显示英文 + 中文副名（揭示/启发/构建/验证），<b>无 tooltip、无"什么是 RISE"入口</b>。对零基础用户，这些缩写是认知门槛而非帮助。</p>
+  <p class="ok">✅ 友好处：FIND 四步在屏内有完整释义；TAM/SAM/SOM 有中文说明；NCO 副标题直接展开 New/Cool/Outsider。</p>
+</div>
+
+<h2>二、逐模块 / 逐屏走查（零基础视角叙事）</h2>
+<p class="muted">以"我想做个帮人在不同场景下不忘记带东西的产品"为例，模拟走通全流程。</p>
+
+<div class="card">
+  <h3 style="margin-top:0">2.0 新手入口 —— 最大的卡点："我该填什么"</h3>
+  <ul>
+    <li>5 类入口，但<b>空状态"立即开始"按钮仅 <code>focus()</code> 输入框</b>（<code>app.js:371</code>），不引导选分类、不给示例项目。</li>
+    <li><b>没有"示例项目一键体验"</b>。零基础用户最大的障碍不是"不会操作"，是"不知道往里填什么才对"。</li>
+    <li>"⚡ 给我的一天注入活力"只能给随机励志语，不能直接生成一个示例项目让用户"照着学"。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">2.1 Reveal 揭示阶段（5 屏）</h3>
+  <p><b>屏1 描述场景</b>：填"目标用户 / 场景"两框。<span class="bad">"⚡ AI 帮我预填"是假 AI</span>——调用本地同步函数 <code>generateRevealPrefill()</code>（<code>app.js:4263</code>），无任何网络请求，却命名为"AI"。</p>
+  <p><b>屏2 用户旅程</b>：5 张卡填触点/挑战/所思所感所做/发现，可勾"关键发现"。无 AI、无预填引导。</p>
+  <p><b>屏3 FIND（方法论心脏）</b>：每个关键发现一套 FIND 四步。✅ 屏内有 FIND 释义；<span class="warn">❌ 若屏2 没勾关键发现，空状态文案自相矛盾</span>："请先在用户旅程地图中勾选关键发现，或直接在此输入 Fact 事实" —— 前半句让用户以为"必须先回去"，后半句才说可直接输入。</p>
+  <p><b>屏4 商业目标</b>：利益相关方 + TAM/SAM/SOM。<span class="ok">✅ 这屏术语友好</span>，每张卡有中文释义。</p>
+  <p><b>屏5 项目简报</b>：汇总卡，可编辑保存。</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">2.2 Inspire 启发阶段（5 屏）</h3>
+  <p><b>屏1 POV + HMW</b>：POV 5 框多标"来自 Reveal"；HMW 四维各有"✨ AI 生成"→ <span class="bad">线上离线直接失败</span>。</p>
+  <p><b>屏2 NCO</b>：New/Cool/Outsider 9 张灵感卡（本地库），可刷新/收藏——这是离线也能用的少数亮点。</p>
+  <p><b>屏3 强制连接</b>：基于 HMW × 灵感生成创意 → 离线失败。</p>
+  <p><b>屏4 / 屏5</b>：四维打分筛选 / 阶段总结。</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">2.3 Shape 构建阶段（4 屏）</h3>
+  <p>四维拷问 / 最小概念方案 / 用户体验故事板 / 整合确认。</p>
+  <p><span class="warn">故事板"🖼️ 图片占位（待接入 AI 生成）"未实现</span>（<code>app.js:6796</code>），点击无反应。新手会反复点期待出图。</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">2.4 Exam 验证阶段（5 屏）</h3>
+  <p>测试计划 / 测试报告 / 四维评价 / 电梯演讲 / 整合确认。大量"✨ AI 生成"按钮 → 线上离线全部失败。</p>
+</div>
+
+<h2>三、八维度测试评分</h2>
+<div class="score">
+  <div class="sc"><div class="n bad">2.5</div><div class="l">使用方式与场景</div></div>
+  <div class="sc"><div class="n warn">3.0</div><div class="l">产品全局清晰度</div></div>
+  <div class="sc"><div class="n warn">3.0</div><div class="l">模块/逐页任务</div></div>
+  <div class="sc"><div class="n warn">3.5</div><div class="l">任务清晰度</div></div>
+  <div class="sc"><div class="n bad">2.5</div><div class="l">界面与互动体验</div></div>
+  <div class="sc"><div class="n warn">3.0</div><div class="l">有效信息密度</div></div>
+  <div class="sc"><div class="n bad">2.0</div><div class="l">产出质量（线上）</div></div>
+  <div class="sc"><div class="n warn">3.0</div><div class="l">逻辑清晰度</div></div>
+</div>
+<p class="muted">评分说明：5 = 优秀开箱即用；3 = 可用但需摸索；2 = 有明显障碍。线上因 AI 不可用，产出质量被严重拉低；若配置 AI 后，FIND/简报/概念等产出可达 4 分。</p>
+
+<h2>四、严重问题清单（按优先级）</h2>
+
+<table>
+<tr><th style="width:38px">级</th><th>问题</th><th>零基础用户视角</th><th>根因（代码）</th><th>修订建议</th></tr>
+
+<tr><td><span class="pill p0">P0</span></td><td><b>线上 AI 完全不可用</b></td><td>"这产品吹 AI，结果每个 AI 按钮都失败/空白，是骗子吗？"</td><td><code>ai-config.js</code> 被 gitignore 未部署，<code>isReady()=false</code>（<code>ai-service.js:15-35</code>）</td><td>① 部署一个"公开演示 Key"或提供免费额度；② 至少在所有 AI 按钮上诚实标注"需配置 AI"；③ 用 GitHub Pages 也部署一份带占位 key 的 ai-config.js（不推荐含真实 key）</td></tr>
+
+<tr><td><span class="pill p0">P0</span></td><td><b>"假 AI"误导</b></td><td>"首页说 AI 分析我的输入，结果只是把我的话改了几个字？"</td><td>首页"AI 分析"= 本地规则 <code>classifyAndRewrite()</code>（<code>app.js:1044</code>）；屏1"AI 预填"= 本地函数（<code>app.js:4263</code>）</td><td>要么改名（"智能建议"而非"AI 分析"），要么在这些入口明确标注"本地模式 / 非大模型"。禁止用"AI"命名纯规则逻辑</td></tr>
+
+<tr><td><span class="pill p0">P0</span></td><td><b>流程无校验，可空跑到终点</b></td><td>"我啥都没填，一路点下一步，居然出了个'项目完成全景图'？"</td><td><code>saveAndGoNext()</code> / <code>completeStage()</code>（<code>app.js:6005/6168</code>）不检查当前屏是否填写</td><td>① 关键屏设"必填"校验，未填禁止下一步；② 完成阶段时校验前序阶段 completeness，缺则提示"先完成 X"</td></tr>
+
+<tr><td><span class="pill p1">P1</span></td><td><b>术语无统一解释</b></td><td>"RISE、POV、HMW 都是啥？满屏大写看不懂"</td><td>步骤条只显示英文+副名，无 tooltip / 术语表（<code>app.js:1626</code>）</td><td>① 顶部加"？"术语悬浮卡；② 首屏加"3 分钟看懂 RISE"引导页；③ 每个阶段首屏的"阶段指引"里加术语速查</td></tr>
+
+<tr><td><span class="pill p1">P1</span></td><td><b>导航可乱跳 + 阶段指引卡死</b></td><td>"我从 Reveal 直接跳到 Exam，一片空白；阶段指引弹窗关不掉，只能刷新"</td><td>步骤条 <code>goToScreen()</code> 不校验前置（<code>app.js:4838</code>）；指引弹窗无关闭叉、点遮罩不关（<code>app.js:1837-1930</code>）</td><td>① 未完成的阶段禁止跳转；② 指引弹窗加关闭 X + 点遮罩关闭 + ESC 关闭</td></tr>
+
+<tr><td><span class="pill p1">P1</span></td><td><b>新手引导缺位</b></td><td>"空状态只让我 focus 输入框，我还是不知道填啥"</td><td>"立即开始"仅 <code>focus()</code>（<code>app.js:371</code>）；无示例项目</td><td>① 提供 1-2 个"示例项目"一键加载（预填好 Reveal 数据）；② 空状态改为"选一个方向开始 / 加载示例"</td></tr>
+
+<tr><td><span class="pill p2">P2</span></td><td><b>降级策略不一致</b></td><td>"同是 AI 面板按钮，一个失败弹错，一个却给本地建议"</td><td>"帮我预填"离线抛错无兜底；"建议/反馈"有兜底（<code>app.js:1383-1403</code>）</td><td>统一所有 AI 入口的离线行为：要么都静默本地、要么都诚实提示"需配置 AI"</td></tr>
+
+<tr><td><span class="pill p2">P2</span></td><td><b>故事板图片占位未实现</b></td><td>"点了图片占位没反应，还以为坏了"</td><td><code>app.js:6796</code> 纯占位</td><td>明确文案"图片功能开发中"，或接入图片生成；不要让用户误以为可点</td></tr>
+
+<tr><td><span class="pill p2">P2</span></td><td><b>Pro / 积分体系无意义</b></td><td>"满 500 分解锁 Pro？Pro 是啥？"</td><td>积分逻辑在（<code>storage.js:276/293</code>），但全程无 Pro 说明</td><td>要么移除 Pro 概念，要么在设置/关于里讲清"Pro 解锁什么"</td></tr>
+
+<tr><td><span class="pill p2">P2</span></td><td><b>数据模型死字段</b></td><td>（维护/测试隐患）</td><td><code>createProject</code> 默认 cards 含 <code>keyFindings/painInsight/bestIdea</code> 等从未被读取字段</td><td>清理死字段，避免后续维护者被误导</td></tr>
+</table>
+
+<h2>五、修订优先级 Backlog</h2>
+<table>
+<tr><th>ID</th><th>修订项</th><th>优先级</th><th>建议方案</th><th>工作量</th></tr>
+<tr><td>R1</td><td>线上 AI 可用性</td><td><span class="pill p0">P0</span></td><td>部署演示 Key / 免费额度；或全量诚实标注"需配置"</td><td>M</td></tr>
+<tr><td>R2</td><td>去除"假 AI"命名</td><td><span class="pill p0">P0</span></td><td>本地逻辑改名"智能建议"，禁用"AI"前缀</td><td>S</td></tr>
+<tr><td>R3</td><td>流程必填校验</td><td><span class="pill p0">P0</span></td><td>关键屏必填 + 完成阶段校验前置 completeness</td><td>M</td></tr>
+<tr><td>R4</td><td>术语体系</td><td><span class="pill p1">P1</span></td><td>术语悬浮卡 + "3 分钟看懂 RISE"引导页</td><td>M</td></tr>
+<tr><td>R5</td><td>导航守卫 + 弹窗关闭</td><td><span class="pill p1">P1</span></td><td>未完成阶段禁跳；指引弹窗加 X/遮罩/ESC 关闭</td><td>S</td></tr>
+<tr><td>R6</td><td>示例项目一键体验</td><td><span class="pill p1">P1</span></td><td>预置 1-2 个完整示例项目，空状态改为"加载示例"</td><td>M</td></tr>
+<tr><td>R7</td><td>AI 降级统一</td><td><span class="pill p2">P2</span></td><td>所有 AI 入口离线行为一致化</td><td>S</td></tr>
+<tr><td>R8</td><td>故事板占位说明</td><td><span class="pill p2">P2</span></td><td>明确"开发中"或接入图片生成</td><td>S</td></tr>
+<tr><td>R9</td><td>Pro/积分说明</td><td><span class="pill p2">P2</span></td><td>说明 Pro 价值或移除</td><td>S</td></tr>
+</table>
+
+<h2>六、给"零基础青年"的理想首屏流程（重设计草图）</h2>
+<div class="card">
+  <p><b>Step 0 · 3 分钟看懂</b>：首访弹出轻量引导——"Eureka 帮你用 RISE 四步把想法变成可验证的方案"，配 4 张图解释 Reveal→Inspire→Shape→Exam，每个配一句人话。</p>
+  <p><b>Step 1 · 选方向 or 加载示例</b>：空状态不再是"focus 输入框"，而是"① 我有个想法（填一句）→ ② 不知从哪下手？加载示例项目"。</p>
+  <p><b>Step 2 · 每屏只问一件事</b>：每屏顶部一句"你这步要做的唯一一件事是…"，下方才展开输入框。避免零基础用户被多框淹没。</p>
+  <p><b>Step 3 · AI 透明化</b>：AI 按钮统一状态——已配置（亮）/ 未配置（灰+提示"去设置填 Key"）/ 本地模式（标"本地建议"）。绝不出现"名为 AI 实为规则"。</p>
+  <p><b>Step 4 · 防呆校验</b>：必填未填时，"下一步"变灰并提示"先填 X 才能继续"，杜绝空项目。</p>
+</div>
+
+<div class="foot">
+  测试结论：Eureka-Lite 的<b>方法论骨架（RISE + FIND + HMW）设计扎实</b>，屏内释义（FIND/TAM-SAM-SOM/NCO）对零基础相对友好，是真实价值所在。但<b>交付层面三大 P0 问题（AI 不可用、假 AI 误导、流程无校验）</b>严重损害新用户第一印象与信任。优先解决 R1-R3，再以 R4-R6 补齐引导，产品即可从"懂行人才玩得转"进化为"好奇青年也能上手"的创新练习场。
+  <br><br>报告生成方式：线上站点实勘 + 源码逐行审计（app.js / ai-assistant.js / ai-service.js / index.html）。所有结论附代码位置，可供工程复核。
+</div>
+
+</div>
+</body>
+</html>

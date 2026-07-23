@@ -1,44 +1,247 @@
 /**
- * Eureka Lite - AI Service (DeepSeek)
+ * Eureka Lite - AI Service（多品牌大模型接入层）
  * ---------------------------------------------------------------
- * 真实的大模型调用层，封装 DeepSeek（OpenAI 兼容）chat/completions 接口。
+ * 支持用户自带 Key 配置任意兼容 OpenAI Chat Completions 协议的大模型。
  * - chat(messages, options)      : 通用对话，返回纯文本
  * - complete(prompt, options)    : 单轮补全（system + user）
  * - completeJSON(prompt, options): 要求返回 JSON，自动解析
  * - isReady()                    : 是否已配置可用的 Key
+ * - getProviders()               : 返回可选品牌清单
+ * - saveUserConfig(cfg)          : 保存用户配置到 localStorage
+ * - getUserConfig()              : 读取用户配置
+ * - clearUserConfig()            : 清除用户配置
+ * - test()                       : 连接测试
  *
  * 设计原则：
  * - 任何错误都以 throw 抛出，由调用方决定是否回退到本地模板（graceful degradation）。
  * - 不在控制台打印 Key。
+ * - 用户配置（localStorage 'eureka_ai_config'）优先于部署者内置的 window.AI_CONFIG。
  */
 const AIService = {
-  _cfg() {
-    const base = window.AI_CONFIG || {};
-    // 允许用户用自己的 Key 覆盖（存 localStorage）
-    let userKey = null;
+  // 可选大模型品牌（均为 OpenAI Chat Completions 兼容协议）
+  PROVIDERS: {
+    deepseek: {
+      id: 'deepseek',
+      label: 'DeepSeek',
+      desc: '国产高性价比推理模型，适合中文创新分析',
+      baseUrl: 'https://api.deepseek.com/chat/completions',
+      model: 'deepseek-chat',
+      models: ['deepseek-chat', 'deepseek-reasoner'],
+      keyPrefix: 'sk-',
+      docUrl: 'https://platform.deepseek.com/api_keys',
+      keyHint: '以 sk- 开头，在 platform.deepseek.com 获取'
+    },
+    openai: {
+      id: 'openai',
+      label: 'OpenAI',
+      desc: 'GPT 系列，全球通用',
+      baseUrl: 'https://api.openai.com/v1/chat/completions',
+      model: 'gpt-4o-mini',
+      models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+      keyPrefix: 'sk-',
+      docUrl: 'https://platform.openai.com/api-keys',
+      keyHint: '以 sk- 开头，在 platform.openai.com 获取'
+    },
+    qwen: {
+      id: 'qwen',
+      label: '通义千问（阿里云）',
+      desc: '阿里云百炼平台，中文表现优秀',
+      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+      model: 'qwen-plus',
+      models: ['qwen-plus', 'qwen-max', 'qwen-turbo', 'qwen-long'],
+      keyPrefix: 'sk-',
+      docUrl: 'https://dashscope.console.aliyun.com/apiKey',
+      keyHint: '以 sk- 开头，在阿里云百炼控制台获取'
+    },
+    ernie: {
+      id: 'ernie',
+      label: '文心一言（百度）',
+      desc: '百度千帆平台',
+      baseUrl: 'https://qianfan.baidubce.com/v2/chat/completions',
+      model: 'ernie-4.0-8k',
+      models: ['ernie-4.0-8k', 'ernie-3.5-8k', 'ernie-speed-8k'],
+      keyPrefix: 'eb-',
+      docUrl: 'https://console.bce.baidu.com/qianfan/ais/console/application',
+      keyHint: '在百度智能云千帆控制台获取 API Key'
+    },
+    glm: {
+      id: 'glm',
+      label: '智谱 GLM',
+      desc: '智谱 AI 开放平台',
+      baseUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+      model: 'glm-4-flash',
+      models: ['glm-4-flash', 'glm-4-plus', 'glm-4-air', 'glm-4'],
+      keyPrefix: '',
+      docUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
+      keyHint: '在智谱开放平台获取 API Key'
+    },
+    moonshot: {
+      id: 'moonshot',
+      label: 'Kimi（Moonshot）',
+      desc: '超长上下文，适合长文分析',
+      baseUrl: 'https://api.moonshot.cn/v1/chat/completions',
+      model: 'moonshot-v1-8k',
+      models: ['moonshot-v1-8k', 'moonshot-v1-32k', 'moonshot-v1-128k'],
+      keyPrefix: 'sk-',
+      docUrl: 'https://platform.moonshot.cn/console/api-keys',
+      keyHint: '以 sk- 开头，在 Kimi 开放平台获取'
+    },
+    doubao: {
+      id: 'doubao',
+      label: '豆包（字节）',
+      desc: '火山方舟平台',
+      baseUrl: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+      model: 'doubao-seed-1-6-250615',
+      models: ['doubao-seed-1-6-250615', 'doubao-pro-32k', 'doubao-lite-32k'],
+      keyPrefix: '',
+      docUrl: 'https://console.volcengine.com/ark',
+      keyHint: '在火山方舟控制台获取 API Key'
+    },
+    hunyuan: {
+      id: 'hunyuan',
+      label: '腾讯混元',
+      desc: '腾讯云大模型',
+      baseUrl: 'https://api.hunyuan.cloud.tencent.com/v1/chat/completions',
+      model: 'hunyuan-lite',
+      models: ['hunyuan-lite', 'hunyuan-standard', 'hunyuan-pro'],
+      keyPrefix: '',
+      docUrl: 'https://console.cloud.tencent.com/hunyuan/api-key',
+      keyHint: '在腾讯云混元控制台获取 API Key'
+    }
+  },
+
+  // 用户配置存储键
+  USER_CFG_KEY: 'eureka_ai_config',
+
+  /**
+   * 读取用户自定义配置（localStorage）
+   */
+  getUserConfig() {
     try {
-      if (base.allowUserOverride) userKey = localStorage.getItem('eureka_user_api_key');
+      const raw = localStorage.getItem(this.USER_CFG_KEY);
+      if (!raw) return null;
+      const cfg = JSON.parse(raw);
+      if (cfg && cfg.provider && cfg.apiKey) return cfg;
     } catch (e) {}
+    return null;
+  },
+
+  /**
+   * 保存用户配置到 localStorage
+   */
+  saveUserConfig(cfg) {
+    try {
+      localStorage.setItem(this.USER_CFG_KEY, JSON.stringify({
+        provider: cfg.provider,
+        apiKey: (cfg.apiKey || '').trim(),
+        model: cfg.model || (this.PROVIDERS[cfg.provider]?.model || ''),
+        savedAt: Date.now()
+      }));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  /**
+   * 清除用户配置
+   */
+  clearUserConfig() {
+    try { localStorage.removeItem(this.USER_CFG_KEY); } catch (e) {}
+  },
+
+  /**
+   * 返回可选品牌清单
+   */
+  getProviders() {
+    return Object.values(this.PROVIDERS);
+  },
+
+  getProvider(id) {
+    return this.PROVIDERS[id] || null;
+  },
+
+  /**
+   * 内部：解析最终生效的配置
+   * 优先级：用户 localStorage 配置 > 部署者内置 window.AI_CONFIG > 空
+   */
+  _cfg() {
+    // 1) 用户自带 Key（最优先）
+    const user = this.getUserConfig();
+    if (user && user.apiKey) {
+      const p = this.PROVIDERS[user.provider];
+      if (p) {
+        return {
+          apiKey: user.apiKey,
+          baseUrl: p.baseUrl,
+          model: user.model || p.model,
+          provider: p.id,
+          providerLabel: p.label,
+          temperature: 0.7,
+          maxTokens: 1200,
+          timeoutMs: 30000
+        };
+      }
+    }
+
+    // 2) 部署者内置配置（如本地 ai-config.js 含真实 key）
+    const base = window.AI_CONFIG || {};
+    if (base && base.apiKey) {
+      return {
+        apiKey: base.apiKey,
+        baseUrl: base.baseUrl || this.PROVIDERS[base.provider || {}] && (this.PROVIDERS[base.provider]?.baseUrl) || 'https://api.deepseek.com/chat/completions',
+        model: base.model || 'deepseek-chat',
+        provider: base.provider || 'deepseek',
+        providerLabel: this.PROVIDERS[base.provider]?.label || 'DeepSeek',
+        temperature: typeof base.temperature === 'number' ? base.temperature : 0.7,
+        maxTokens: base.maxTokens || 1200,
+        timeoutMs: base.timeoutMs || 30000
+      };
+    }
+
+    // 3) 空配置
     return {
-      apiKey: (userKey && userKey.trim()) || base.apiKey || '',
-      baseUrl: base.baseUrl || 'https://api.deepseek.com/chat/completions',
-      model: base.model || 'deepseek-chat',
-      temperature: typeof base.temperature === 'number' ? base.temperature : 0.7,
-      maxTokens: base.maxTokens || 1200,
-      timeoutMs: base.timeoutMs || 30000
+      apiKey: '',
+      baseUrl: 'https://api.deepseek.com/chat/completions',
+      model: 'deepseek-chat',
+      provider: 'deepseek',
+      providerLabel: 'DeepSeek',
+      temperature: 0.7,
+      maxTokens: 1200,
+      timeoutMs: 30000
     };
   },
 
+  /**
+   * 是否已配置可用 Key（含用户自带 + 内置）
+   */
   isReady() {
     const c = this._cfg();
-    return !!(c.apiKey && c.apiKey.startsWith('sk-') && c.apiKey.length > 20);
+    if (!c.apiKey || c.apiKey.length < 20) return false;
+    const p = this.PROVIDERS[c.provider];
+    if (p && p.keyPrefix) {
+      return c.apiKey.startsWith(p.keyPrefix);
+    }
+    return true;
+  },
+
+  /**
+   * 当前生效的 provider 概要（用于 UI 展示）
+   */
+  status() {
+    const user = this.getUserConfig();
+    const c = this._cfg();
+    return {
+      ready: this.isReady(),
+      provider: c.provider,
+      providerLabel: c.providerLabel,
+      fromUser: !!user,
+      model: c.model
+    };
   },
 
   /**
    * 通用对话
-   * @param {Array<{role:string, content:string}>} messages
-   * @param {Object} options - { temperature, maxTokens, json }
-   * @returns {Promise<string>} 模型返回的文本
    */
   async chat(messages, options = {}) {
     const c = this._cfg();
@@ -96,8 +299,6 @@ const AIService = {
 
   /**
    * 单轮补全
-   * @param {string} prompt - 用户内容
-   * @param {Object} options - { system, temperature, maxTokens }
    */
   async complete(prompt, options = {}) {
     const messages = [];
@@ -108,7 +309,6 @@ const AIService = {
 
   /**
    * 要求返回 JSON 并解析
-   * @returns {Promise<Object>}
    */
   async completeJSON(prompt, options = {}) {
     const sys = (options.system ? options.system + '\n\n' : '') +
@@ -120,12 +320,10 @@ const AIService = {
   _parseJSON(text) {
     if (!text) throw new Error('AI_EMPTY_RESPONSE');
     let t = text.trim();
-    // 去除 ```json ... ``` 包裹
     t = t.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
     try {
       return JSON.parse(t);
     } catch (e) {
-      // 尝试截取第一个 { 到最后一个 }
       const start = t.indexOf('{');
       const end = t.lastIndexOf('}');
       if (start !== -1 && end !== -1 && end > start) {
@@ -137,7 +335,6 @@ const AIService = {
 
   /**
    * 连接测试
-   * @returns {Promise<{ok:boolean, message:string}>}
    */
   async test() {
     if (!this.isReady()) {
