@@ -2279,31 +2279,31 @@ class EurekaLite {
     const screens = {
       reveal: [
         {
-          title: '描述你的场景',
+          title: 'R1 描述你的场景',
           subtitle: '描述一个具体的用户场景或挑战',
           dialogue: true,
           hint: '越具体越好，可以描述一个真实发生过的场景'
         },
         {
-          title: '探索用户旅程',
+          title: 'R2 探索用户旅程',
           subtitle: '从用户视角走一遍完整流程',
           journey: true,
           hint: '标注关键触点和可能的体验断裂点'
         },
         {
-          title: '洞察用户痛点',
+          title: 'R3 洞察用户痛点',
           subtitle: '用 FIND 框架挖掘深层需求',
           find: true,
           hint: '从 Fact → Interpret → Need → Distill 逐步推导'
         },
         {
-          title: '对齐商业目标',
+          title: 'R4 对齐商业目标',
           subtitle: '探索利益相关方需求，生成可验证的商业假设',
           stakeholder: true,
           hint: '先探索利益相关方需求，再基于洞察生成可验证的商业假设'
         },
         {
-          title: '项目简报',
+          title: 'R5 项目简报',
           subtitle: '汇总你的创新资产',
           briefing: true,
           hint: '查看、编辑和保存你的项目简报，作为创新资产留存'
@@ -2311,31 +2311,31 @@ class EurekaLite {
       ],
       inspire: [
         {
-          title: '重构用户问题',
+          title: 'I1 重构用户问题',
           subtitle: '从 POV 出发，四维重构创新机遇',
           hmw: true,
           hint: '基于 Reveal 洞察，从四个维度重构 HMW 问题，勾选最多 2 个最佳 HMW'
         },
         {
-          title: '寻找灵感',
+          title: 'I2 寻找灵感',
           subtitle: 'NCO：New / Cool / Outsider',
           type: 'nco',
           hint: '每类 3 张共 9 张灵感卡片，收藏喜欢的、刷新或自定义添加'
         },
         {
-          title: '生成创意',
+          title: 'I3 生成创意',
           subtitle: '基于灵感，做"强制连接"',
           type: 'ideas',
           hint: '用已选 HMW + 已收藏灵感，让 AI 做交叉创新，也可手动添加'
         },
         {
-          title: '筛选最佳创意',
+          title: 'I4 筛选最佳创意',
           subtitle: '四维打分，选出最佳',
           type: 'filter',
           hint: '对创意进行可行性/用户价值/商业价值/创新程度打分，勾选最佳创意'
         },
         {
-          title: 'Inspire 阶段总结',
+          title: 'I5 Inspire 阶段总结',
           subtitle: '确认启发成果',
           type: 'summary',
           hint: '核对 POV、最佳 HMW 与最佳创意，确认后进入 Shape'
@@ -2343,25 +2343,25 @@ class EurekaLite {
       ],
       shape: [
         {
-          title: '四维拷问',
+          title: 'S1 四维拷问',
           subtitle: '从用户 / 商业 / 技术 / 生态 四个维度拷问你的创意',
           type: 'shapeFourDim',
           hint: '点击「AI 帮我生成拷问问题」，然后逐题填写你的回答'
         },
         {
-          title: '最小概念方案',
+          title: 'S2 最小概念方案',
           subtitle: '定义核心功能与边界（什么做，什么不做）',
           type: 'shapeMinConcept',
           hint: '基于前面所有内容，明确方案一句话定义、功能特性与边界'
         },
         {
-          title: '用户体验故事板',
+          title: 'S3 用户体验故事板',
           subtitle: '六个场景讲完一个完整故事',
           type: 'shapeStoryboard',
           hint: '每行 3 张共 2 行；每屏一张卡片，描述用户经历的关键时刻'
         },
         {
-          title: 'Shape 整合确认',
+          title: 'S4 Shape 整合确认',
           subtitle: '确认你的构建成果',
           type: 'shapeSummary',
           hint: '核对概念方案与用户故事，确认后进入 Exam'
@@ -2369,31 +2369,31 @@ class EurekaLite {
       ],
       exam: [
         {
-          title: '设计测试计划',
+          title: 'E1 设计测试计划',
           subtitle: '为验证做好准备',
           type: 'examTestPlan',
           hint: '明确测试目的、场景、待验证假设与用户价值'
         },
         {
-          title: '测试报告',
+          title: 'E2 测试报告',
           subtitle: '记录真实的测试发现',
           type: 'examTestReport',
           hint: '诚实记录：验证了什么、错在哪里、发现了什么'
         },
         {
-          title: '四维度评价',
+          title: 'E3 四维度评价',
           subtitle: '基于测试发现，对方案做四维评估',
           type: 'examFourDimEval',
           hint: '用事实和数据支撑每个维度的评分'
         },
         {
-          title: '电梯演讲 & 迭代计划',
+          title: 'E4 电梯演讲 & 迭代计划',
           subtitle: '30秒讲清价值，规划下一步',
           type: 'examElevator',
           hint: '用模板或 AI 生成电梯演讲，制定 30-60-90 天迭代计划'
         },
         {
-          title: 'Exam 整合确认',
+          title: 'E5 Exam 整合确认',
           subtitle: '确认你的验证成果',
           type: 'examSummary',
           hint: '核对测试产出与呈现计划，确认完成项目'
@@ -2492,7 +2492,7 @@ class EurekaLite {
             </div>
 
             <div class="dialogue-question">
-              <h2 class="screen-title">你期望「${categoryLabel}」，但你能告诉我...</h2>
+              <h2 class="screen-title">R1 你期望「${categoryLabel}」，但你能告诉我...</h2>
               <p class="screen-subtitle">目标用户是谁？他在什么场景下使用呢？</p>
             </div>
 
@@ -2757,7 +2757,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">洞察用户痛点</h2>
+        <h2 class="screen-title">R3 洞察用户痛点</h2>
         <p class="screen-subtitle">用 FIND 框架从关键发现中挖掘深层需求</p>
 
         <div class="screen-hint">
@@ -2896,7 +2896,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">对齐商业目标</h2>
+        <h2 class="screen-title">R4 对齐商业目标</h2>
         <p class="screen-subtitle">探索利益相关方需求，生成可验证的商业假设</p>
 
         <div class="screen-hint">
@@ -3191,7 +3191,7 @@ class EurekaLite {
     return `
       <div class="screen-content animate-fade-in-up">
         <div class="briefing-header">
-          <h2 class="screen-title">📋 项目简报</h2>
+          <h2 class="screen-title">R5 📋 项目简报</h2>
           <p class="screen-subtitle">创新资产汇总 - 可查看、编辑和保存</p>
           <button class="btn btn-primary" id="saveBriefingBtn" style="margin-top: var(--space-md);">
             💾 保存简报
@@ -3455,7 +3455,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">寻找灵感</h2>
+        <h2 class="screen-title">I2 寻找灵感</h2>
         <p class="screen-subtitle">NCO：New / Cool / Outsider —— 从不同视角收集启发</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>每类 3 张共 9 张灵感卡片，点击 ☆ 收藏喜欢的；也可用「刷新」获取新灵感，或「添加」自定义灵感。</span></div>
         <div class="nco-toolbar">
@@ -3621,7 +3621,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">生成创意</h2>
+        <h2 class="screen-title">I3 生成创意</h2>
         <p class="screen-subtitle">基于最佳 HMW 与已收藏灵感，做"强制连接"</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>把 HMW 问题与灵感卡片交叉组合，产生大量创意；先求量，再求质。</span></div>
         <div class="inspire-context-bar">
@@ -3725,7 +3725,7 @@ class EurekaLite {
     if (!ideas.length) {
       return `
         <div class="screen-content animate-fade-in-up">
-          <h2 class="screen-title">筛选最佳创意</h2>
+          <h2 class="screen-title">I4 筛选最佳创意</h2>
           <p class="screen-subtitle">四维打分，选出最佳</p>
           <div class="screen-hint"><span class="hint-icon">💡</span><span>请先在上一屏（生成创意）产生一些创意，再回来打分筛选。</span></div>
         </div>`;
@@ -3743,7 +3743,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">筛选最佳创意</h2>
+        <h2 class="screen-title">I4 筛选最佳创意</h2>
         <p class="screen-subtitle">四维打分，选出最值得深入的创意</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>对每条创意从可行性 / 用户价值 / 商业价值 / 创新程度打分（1-5），可让 AI 辅助评分，勾选最佳创意（可多选）。</span></div>
         <div class="filter-grid" id="filterGrid">${cardsHtml}</div>
@@ -3937,7 +3937,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">Inspire 阶段总结</h2>
+        <h2 class="screen-title">I5 Inspire 阶段总结</h2>
         <p class="screen-subtitle">确认你的启发成果，准备进入 Shape</p>
 
         <div class="inspire-summary-card">
@@ -4025,7 +4025,7 @@ class EurekaLite {
           ${fieldHtml}
           <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-md);">
             <button id="fmCancel" class="btn btn-secondary" style="flex:1;">取消</button>
-            <button id="fmSave" class="btn-ai" style="flex:1;">保存</button>
+            <button id="fmSave" class="btn btn-primary" style="flex:1;">保存</button>
           </div>
         </div>`;
       document.body.appendChild(overlay);
@@ -4073,7 +4073,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">重构用户问题</h2>
+        <h2 class="screen-title">I1 重构用户问题</h2>
         <p class="screen-subtitle">从 POV 出发，四维重构创新机遇</p>
 
         <!-- POV Section -->
@@ -5537,18 +5537,22 @@ class EurekaLite {
           const originalText = btn.textContent;
           btn.textContent = 'AI 思考中...';
 
-          // Collect context from previous steps of the CURRENT finding
+          // Collect context from previous steps of the CURRENT finding + project context
           const findings = this.getFindFindings();
           const container = document.getElementById('findContainer');
           const activeIndex = container ? parseInt(container.dataset.activeIndex) || 0 : 0;
           const currentFinding = findings[activeIndex] || {};
+          const project = window.EurekaStorage.getProject(AppState.currentProjectId);
+          const projectCtx = this.getProjectContext(project);
           const context = {
             fact: currentFinding.fact || '',
             interpret: currentFinding.interpret || '',
             need: currentFinding.need || '',
             distill: currentFinding.distill || '',
             scene: this.getSceneContext(),
-            finding: currentFinding.sourceFinding || input.value.trim()
+            finding: currentFinding.sourceFinding || input.value.trim(),
+            targetUser: projectCtx.targetUser || '',
+            sceneDesc: projectCtx.sceneDesc || ''
           };
 
           // Call AI to generate next step
@@ -6370,13 +6374,19 @@ class EurekaLite {
   }
 
   /**
-   * Get FIND context from previous steps
+   * Get FIND context from previous steps + project context
    */
   getFindContext() {
     const fact = document.getElementById('findInput_fact')?.value?.trim() || '';
     const interpret = document.getElementById('findInput_interpret')?.value?.trim() || '';
     const need = document.getElementById('findInput_need')?.value?.trim() || '';
-    return { fact, interpret, need };
+    const project = window.EurekaStorage.getProject(AppState.currentProjectId);
+    const projectCtx = this.getProjectContext(project);
+    return {
+      fact, interpret, need,
+      targetUser: projectCtx.targetUser || '',
+      sceneDesc: projectCtx.sceneDesc || ''
+    };
   }
 
   /**
@@ -6395,7 +6405,7 @@ class EurekaLite {
       }
     }
     // 卡片型屏幕（旅程/NCO/灵感/创意）可能没有 input（用 contenteditable 或 JS 渲染）
-    if (root.querySelector('.journey-card, .nco-card, .idea-card, .stakeholder-row, .briefing-field')) {
+    if (root.querySelector('.journey-card, .nco-card, .insp-card, .idea-card, .stakeholder-row, .briefing-field')) {
       return true;
     }
     return false;
@@ -6907,7 +6917,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">四维拷问</h2>
+        <h2 class="screen-title">S1 四维拷问</h2>
         <p class="screen-subtitle">从用户 / 商业 / 技术 / 生态 四个维度，拷问你的最佳创意</p>
         <div class="shape-context-card">
           <div class="shape-context-row"><span class="shape-context-label">用户问题</span><span>${this.escapeHtml(pov.userProblem || '—')}</span></div>
@@ -7076,7 +7086,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">最小概念方案</h2>
+        <h2 class="screen-title">S2 最小概念方案</h2>
         <p class="screen-subtitle">基于前面所有内容，定义你的概念方案</p>
         <details class="shape-example" open>
           <summary>📐 范例 / 前面内容汇总（点此收起）</summary>
@@ -7222,7 +7232,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">用户体验故事板</h2>
+        <h2 class="screen-title">S3 用户体验故事板</h2>
         <p class="screen-subtitle">基于最小概念方案，用 6 个场景讲完用户故事</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 生成故事板」自动生成 6 卡描述，可自由编辑；图片占位区后续接入 AI 生图。</span></div>
         <button class="btn btn-ai" id="genStoryboardBtn">✨ AI 生成故事板</button>
@@ -7303,7 +7313,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">Shape 整合确认卡</h2>
+        <h2 class="screen-title">S4 Shape 整合确认卡</h2>
         <p class="screen-subtitle">确认你的构建成果，准备进入 Exam</p>
         <div class="inspire-summary-card">
           <div class="summary-block-title">🎯 概念方案</div>
@@ -7355,7 +7365,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">设计测试计划</h2>
+        <h2 class="screen-title">E1 设计测试计划</h2>
         <p class="screen-subtitle">${this.escapeHtml(oneLiner || '基于概念方案设计验证计划')}</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 生成测试计划」基于概念方案生成初稿，再编辑。</span></div>
         <button class="btn btn-ai" id="genTestPlanBtn">✨ AI 生成测试计划</button>
@@ -7431,7 +7441,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">测试报告</h2>
+        <h2 class="screen-title">E2 测试报告</h2>
         <p class="screen-subtitle">记录真实的测试发现，诚实不自我欺骗</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>点击「✨ AI 辅助撰写测试报告」基于测试计划+观察生成 4 类内容，再编辑。</span></div>
         <button class="btn btn-ai" id="genTestReportBtn">✨ AI 辅助撰写测试报告</button>
@@ -7525,7 +7535,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">四维度评价</h2>
+        <h2 class="screen-title">E3 四维度评价</h2>
         <p class="screen-subtitle">基于测试发现，对方案做四维评估</p>
         <div class="info-panel exam-dim-context">
           <div class="info-panel-title">🎯 评价对象</div>
@@ -7660,7 +7670,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">电梯演讲 & 迭代计划</h2>
+        <h2 class="screen-title">E4 电梯演讲 & 迭代计划</h2>
         <p class="screen-subtitle">30 秒讲清价值，规划下一步</p>
         <div class="screen-hint"><span class="hint-icon">💡</span><span>用模板或「✨ AI 生成电梯演讲」；下方按「阶段聚焦 / 优先事项 / 目标产出 / 衡量成功 / 学习收获」五类填写 30-60-90 天迭代计划。</span></div>
         <div class="exam-field">
@@ -7788,7 +7798,7 @@ class EurekaLite {
 
     return `
       <div class="screen-content animate-fade-in-up">
-        <h2 class="screen-title">Exam 整合确认卡</h2>
+        <h2 class="screen-title">E5 Exam 整合确认卡</h2>
         <p class="screen-subtitle">确认你的验证成果，准备完成项目</p>
         <div class="inspire-summary-card">
           <div class="summary-block-title">🧪 测试目的</div>
