@@ -35,8 +35,8 @@ body{font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;background
 .panorama-iter-table tbody th{background:var(--bg-secondary);font-weight:600;width:120px;}
 `;
 
-// TODO: 替换为真实 Eureka Pro 产品地址
-const EUREKA_PRO_URL = 'https://davidma1973simu.github.io/eureka-pro/';
+// Eureka Pro 产品地址（Pro Dashboard 线上版）
+const EUREKA_PRO_URL = 'https://davidma1973simu.github.io/workbuddy-agents-marketplace/eureka-dashboard/';
 const PRO_UNLOCK_POINTS = 1200;
 const PROJECT_COMPLETE_POINTS = 600;
 
@@ -75,6 +75,11 @@ class EurekaLite {
     // Listen to state changes
     AppState.events.on('pageChange', ({ currentPage }) => {
       this.render(currentPage);
+    });
+
+    // 抽屉状态变化时同步 DOM
+    AppState.events.on('drawerToggle', () => {
+      this.updateDrawer();
     });
   }
 

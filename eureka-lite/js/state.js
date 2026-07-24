@@ -75,6 +75,11 @@ const AppState = {
     const prevPage = this.currentPage;
     this.currentPage = page;
 
+    // 切换页面时自动收起左侧抽屉，避免遮挡工作区
+    if (this.drawerOpen) {
+      this.closeDrawer();
+    }
+
     if (options.projectId) {
       this.currentProjectId = options.projectId;
       this.currentProject = window.EurekaStorage.getProject(options.projectId);
