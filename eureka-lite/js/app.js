@@ -93,6 +93,8 @@ class EurekaLite {
     } else {
       this.renderHome();
     }
+    // 渲染完成后确保 drawer DOM 状态与 AppState 一致
+    this.updateDrawer();
   }
 
   /**
@@ -1465,7 +1467,7 @@ class EurekaLite {
     const userName = user?.name || '朋友';
 
     const drawerHTML = `
-      <div class="drawer open" id="drawer">
+      <div class="drawer" id="drawer">
         <div class="drawer-header">
           <div class="drawer-user">
             <div class="drawer-avatar">${userName.charAt(0)}</div>
