@@ -330,7 +330,10 @@ class EurekaLite {
       <section class="home-projects">
         <div class="home-projects-head">
           <h2 class="home-projects-title">我的项目</h2>
-          <button class="home-projects-more" id="homeProjectsMore">查看全部 ›</button>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="home-projects-more" id="homeExampleBtnTop" style="color:#E07A2F;border-color:rgba(224,122,47,0.45)">📋 体验示例项目</button>
+            <button class="home-projects-more" id="homeProjectsMore">查看全部 ›</button>
+          </div>
         </div>
         <div class="home-projects-list">${items}</div>
       </section>`;
@@ -408,6 +411,10 @@ class EurekaLite {
 
     // 首页空状态「加载示例项目」
     document.getElementById('homeExampleBtn')?.addEventListener('click', () => {
+      this.loadExampleProject();
+    });
+    // 首页「我的项目」头部「体验示例项目」入口（始终可见，不依赖空状态）
+    document.getElementById('homeExampleBtnTop')?.addEventListener('click', () => {
       this.loadExampleProject();
     });
 
@@ -953,18 +960,94 @@ class EurekaLite {
     const project = window.EurekaStorage.createProject({
       title: '示例：帮城市青年不再「忘带东西」',
       category: 'product',
-      description: '一个帮人在多场景切换时不再忘记关键物品的解决方案（示例项目，可放心修改）',
+      description: '一个帮人在多场景切换时不再忘记关键物品的解决方案（完整示例项目，可放心修改、照着学）',
       stage: 'reveal',
       currentScreen: 1
     });
     const id = project.id;
-    window.EurekaStorage.updateProject(id, { project });
 
+    // —— Reveal 阶段 ——
     window.EurekaStorage.updateCard(id, 'scene', { content: sceneContent });
     window.EurekaStorage.updateCard(id, 'journey', { content: JSON.stringify(journeyCards) });
+    window.EurekaStorage.updateCard(id, 'projectBriefing', { content: JSON.stringify({
+      targetUser: '经常在不同生活场景间切换的城市青年（25-35岁，上班族/租房族）',
+      scene: '每天在家→通勤→公司→健身/社交→回家多场景切换，常因习惯忘记带当场景才需要的关键物品',
+      insight: '人的遗忘往往不是记性差，而是"场景-物品"的映射关系从未被显式管理'
+    }) });
+    window.EurekaStorage.updateCard(id, 'businessGoal', { content: JSON.stringify({
+      goal: '做一款在场景切换前自动提醒、帮用户打包关键物品的工具',
+      consensus: '用户愿意为"不再折返焦虑"付费，清单/提醒类工具的付费意愿已被市场验证'
+    }) });
+    window.EurekaStorage.updateCard(id, 'findInsight', { content: JSON.stringify({
+      findings: [{ need: '用户不知道每个场景到底需要带什么', distill: '把"遗忘"显性化：管理好"场景→物品"的映射，就能在切换前主动提醒' }]
+    }) });
 
-    this.showToast('已加载示例项目，照着它学一遍吧～');
-    AppState.navigate('reveal', { projectId: id });
+    // —— Inspire 阶段 ——
+    window.EurekaStorage.updateCard(id, 'hmw', { content: JSON.stringify({
+      dimensions: {
+        user: [{ id: 'hmw1', text: '我们如何帮城市青年记住每个场景的关键物品？' }],
+        scenario: [{ id: 'hmw2', text: '我们如何让"切换场景前打包"变成无脑操作？' }],
+        ecosystem: [{ id: 'hmw3', text: '我们如何在忘带时提供即时兜底？' }]
+      },
+      selectedIds: ['hmw1', 'hmw2']
+    }) });
+    window.EurekaStorage.updateCard(id, 'ideas', { content: JSON.stringify([
+      { id: 'idea1', title: '场景智能清单：根据日程+定位自动生成待带清单', description: '绑定日历与定位，出门前推送清单，可勾选确认' },
+      { id: 'idea2', title: '一包搞定：按场景分装的模块化收纳包', description: '通勤包/健身包/办公包，每包预置该场景高频物品' },
+      { id: 'idea3', title: '忘带兜底：扫码借/即时配送关键物品', description: '与便利店、共享充电宝网络合作实现即时补给' }
+    ]) });
+
+    // —— Shape 阶段 ——
+    window.EurekaStorage.updateCard(id, 'shapeSummary', { content: JSON.stringify({
+      concept: {
+        oneLiner: 'ScenePack：基于场景与日程，在切换前自动提醒并帮你打包关键物品的创新工具',
+        features: ['场景-物品映射库', '出门前智能清单推送', '一键勾选确认', '常忘物品提醒', '共享兜底网络接入'],
+        characteristics: ['轻量无感', '本地优先、隐私友好', '跨场景连续记忆'],
+        boundaries: ['不做全品类购物', '不替代旅行箱', '首版仅覆盖城市高频场景']
+      },
+      storyboard: [
+        { title: '早晨出门', desc: 'App 根据日历判断今天有健身，推送"健身包清单：运动服/水杯/毛巾"' },
+        { title: '通勤前', desc: '检测到已离家，提醒"别忘带门禁卡"，用户勾选确认' },
+        { title: '到公司', desc: '自动标记门禁卡已带，沉淀用户习惯' },
+        { title: '健身', desc: '出示清单逐项核对，未带水杯则推送附近便利店' },
+        { title: '回家', desc: '提醒带钥匙，并与家人共享"已到家"状态' },
+        { title: '每周复盘', desc: '周报展示"本周帮你避免 N 次折返"' }
+      ]
+    }) });
+
+    // —— Exam 阶段 ——
+    window.EurekaStorage.updateCard(id, 'examSummary', { content: JSON.stringify({
+      testPlan: { purpose: '验证"自动清单是否真能减少忘带与折返焦虑"' },
+      testReport: {
+        effectiveValue: '8/10 测试者表示出门前清单让他们更安心，折返次数明显下降',
+        invalidValue: '2 人认为清单推送时机过早反而造成打扰',
+        newProblems: '部分场景识别不准（如临时会议、突发约会）',
+        newOpportunities: '可接入智能家居，离家自动锁门并提醒带钥匙'
+      },
+      elevator: {
+        pitch: 'ScenePack 帮城市青年在场景切换前自动打包关键物品——你只管出门，我们管你别忘带。内测已帮用户减少约 70% 的折返焦虑。',
+        iteration: [
+          { category: '产品', actions: ['打磨清单推送时机算法', '深度接入日历与定位', '上线场景模板市场'] },
+          { category: '增长', actions: ['校园/通勤社群冷启动', '与共享充电宝品牌合作', '发起"场景打包挑战"话题'] },
+          { category: '商业', actions: ['基础免费 + Pro 高级场景订阅', 'B 端企业员工关怀方案', '匿名场景数据增值服务'] }
+        ]
+      }
+    }) });
+    window.EurekaStorage.updateCard(id, 'examFourDimEval', { content: JSON.stringify({
+      scores: { userValue: 5, businessValue: 4, feasibility: 4, innovation: 4 },
+      reasons: {
+        userValue: '直击高频痛点，体验提升明显',
+        businessValue: '付费意愿明确，可延展订阅模式',
+        feasibility: 'MVP 可用现有提醒与日历能力实现',
+        innovation: '把"遗忘"显性化为场景-物品管理'
+      }
+    }) });
+
+    // 取回最新项目（含全部卡片），直接展示完整全景图供"一键体验"
+    AppState.currentProjectId = id;
+    const saved = window.EurekaStorage.getProject(id);
+    this.showToast('已加载完整示例项目，先看全景图，再回到各阶段照着学～');
+    this.showPanorama(saved);
   }
 
   /**
