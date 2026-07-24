@@ -35,6 +35,11 @@ body{font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;background
 .panorama-iter-table tbody th{background:var(--bg-secondary);font-weight:600;width:120px;}
 `;
 
+// TODO: 替换为真实 Eureka Pro 产品地址
+const EUREKA_PRO_URL = 'https://davidma1973simu.github.io/eureka-pro/';
+const PRO_UNLOCK_POINTS = 1200;
+const PROJECT_COMPLETE_POINTS = 600;
+
 // Main App Class
 class EurekaLite {
   constructor() {
@@ -1361,10 +1366,12 @@ class EurekaLite {
             <div>
               <div class="drawer-user-name">${userName}</div>
               <div class="drawer-user-stats">
-                <span class="points-display">
+                <span class="points-display" title="完成 2 个 Lite 项目解锁 Eureka Pro">
                   <span class="points-icon">⭐</span>
                   <span class="points-value">${user?.points || 0}</span>
+                  <span class="points-target">/ ${PRO_UNLOCK_POINTS}</span>
                 </span>
+                ${user?.unlockedPro ? '<span class="pro-badge">✨ Pro 已解锁</span>' : ''}
               </div>
             </div>
           </div>
@@ -1466,40 +1473,64 @@ class EurekaLite {
   }
 
   /**
-   * 新手引导弹窗（R4）：3 分钟看懂 RISE
+   * 新手引导弹窗（R4）：一张图看懂 RISE
    */
   showIntroModal() {
-    const steps = [
-      { icon: '🔍', name: 'Reveal 洞察', desc: '先搞懂「为谁、在什么场景下、有什么痛点」。用 FIND 四步把观察到的事实挖成真正的用户需求。' },
-      { icon: '💡', name: 'Inspire 启发', desc: '把需求变成「我们如何帮助…」的提问，再用 New/Cool/Outsider 视角发散出一堆创意，选出最值得做的。' },
-      { icon: '🛠️', name: 'Shape 构建', desc: '把创意打磨成最小可行方案(MVP)和用户体验故事板，讲清楚产品长什么样、怎么用。' },
-      { icon: '✅', name: 'Exam 验证', desc: '找真实用户来用，记录成功与失败，做四维度评价，最后用电梯演讲讲清价值并规划下一步。' }
+    const flow = [
+      { key: 'reveal', icon: '🔍', name: 'Reveal', tag: '洞察', tip: '为谁 / 什么场景 / 什么痛点', color: '#E07A2F' },
+      { key: 'inspire', icon: '💡', name: 'Inspire', tag: '启发', tip: '提出 HMW，发散并筛选创意', color: '#7F77DD' },
+      { key: 'shape', icon: '🛠️', name: 'Shape', tag: '构建', tip: '打磨 MVP 与用户体验故事板', color: '#0F6E56' },
+      { key: 'exam', icon: '✅', name: 'Exam', tag: '验证', tip: '真实测试、四维评价、电梯演讲', color: '#64748B' }
     ];
-    const cards = steps.map(s => `
-      <div class="intro-step">
-        <div class="intro-step-icon">${s.icon}</div>
-        <div class="intro-step-name">${s.name}</div>
-        <div class="intro-step-desc">${s.desc}</div>
+    const nodes = flow.map((s, i) => `
+      <div class="intro-flow-node" style="--node-color:${s.color}">
+        <div class="intro-flow-badge" style="background:${s.color}">${s.icon}</div>
+        <div class="intro-flow-name">${s.name} <span class="intro-flow-tag">${s.tag}</span></div>
+        <div class="intro-flow-tip">${s.tip}</div>
+        ${i < flow.length - 1 ? '<div class="intro-flow-arrow">→</div>' : ''}
       </div>`).join('');
     const modal = document.createElement('div');
     modal.className = 'modal-overlay open';
     modal.innerHTML = `
       <div class="modal intro-modal">
         <div class="modal-header">
-          <span class="modal-title">👋 3 分钟看懂 Eureka</span>
+          <span class="modal-title">👋 一张图看懂 Eureka</span>
           <button class="ai-panel-close" id="introClose">✕</button>
         </div>
         <div class="modal-body">
-          <p class="ai-config-tip">Eureka 用 <b>RISE 四步</b> 帮你把一个模糊的想法，变成可验证的方案。每一步屏幕顶部都会告诉你「这步要做什么」，跟着走就行。</p>
-          <div class="intro-steps">${cards}</div>
-          <p class="ai-config-tip" style="margin-top:16px">提示：点右下角 🤖 可随时唤出 AI 助手；第一次进每个阶段会看到阶段指引。AI 功能需要你在 ⚙ 里填入自己的大模型 Key。</p>
-          <div style="text-align:right"><button class="btn btn-primary" id="introGot" style="background:#E07A2F;color:#fff;border:none;box-shadow:0 2px 8px rgba(224,122,47,0.35)">开始我的创新 →</button></div>
+          <p class="ai-config-tip" style="text-align:center;margin-bottom:18px">Eureka 用 <b>RISE 四步</b> 把一个模糊想法变成可验证方案。<br>跟着顶部指引，一步一步走就行。</p>
+          <div class="intro-flow">${nodes}</div>
+          <p class="ai-config-tip" style="margin-top:18px;text-align:center">提示：右下角 🤖 唤出 AI 助手；首次进入每个阶段会有阶段指引。AI 需在 ⚙ 配置 Key。</p>
+          <div style="text-align:center;margin-top:22px"><button class="btn btn-primary" id="introGot" style="background:#E07A2F !important;color:#fff !important;border:none;box-shadow:0 2px 8px rgba(224,122,47,0.35)">开始我的创新 →</button></div>
         </div>
       </div>`;
     document.body.appendChild(modal);
     const close = () => modal.remove();
     modal.querySelector('#introClose')?.addEventListener('click', close);
     modal.querySelector('#introGot')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+  }
+
+  /**
+   * Pro 解锁祝贺弹窗
+   */
+  showProUnlockModal(points) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay open';
+    modal.innerHTML = `
+      <div class="modal pro-unlock-modal">
+        <div class="pro-unlock-hero">🎉</div>
+        <h2 class="pro-unlock-title">恭喜解锁 Eureka Pro！</h2>
+        <p class="pro-unlock-body">你已完成 2 个完整的 RISE 创新项目，累计获得 <b>${points}</b> 积分。</p>
+        <p class="pro-unlock-body">感谢你持续的参与和实践——从模糊想法到可验证方案，每一步都在沉淀真正的产品创新能力。</p>
+        <div class="pro-unlock-actions">
+          <button class="btn btn-secondary" id="proUnlockClose">稍后再说</button>
+          <a class="btn btn-primary" id="proUnlockGo" href="${EUREKA_PRO_URL}" target="_blank" rel="noopener" style="background:#E07A2F !important;color:#fff !important;border:none;box-shadow:0 2px 8px rgba(224,122,47,0.35)">🚀 进入 Eureka Pro</a>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.querySelector('#proUnlockClose')?.addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
   }
 
@@ -6652,13 +6683,19 @@ class EurekaLite {
 
       setTimeout(() => {
         this.hideTaskCompletionCapsule();
-        window.EurekaStorage.addPoints(100, '完成完整 RISE 项目');
+        const wasProUnlocked = window.EurekaStorage.getUser()?.unlockedPro;
+        const newPoints = window.EurekaStorage.addPoints(PROJECT_COMPLETE_POINTS, '完成完整 RISE 项目');
         window.EurekaStorage.updateProject(AppState.currentProjectId, {
           status: 'completed'
         });
 
-        this.showToast('🎉 恭喜完成完整项目！+100 积分');
+        this.showToast(`🎉 恭喜完成完整项目！+${PROJECT_COMPLETE_POINTS} 积分`);
         this.showPanorama(window.EurekaStorage.getProject(AppState.currentProjectId));
+
+        // 若刚解锁 Pro，在全景图之后弹出祝贺
+        if (!wasProUnlocked && newPoints >= PRO_UNLOCK_POINTS) {
+          setTimeout(() => this.showProUnlockModal(newPoints), 600);
+        }
       }, 2500);
     }
   }

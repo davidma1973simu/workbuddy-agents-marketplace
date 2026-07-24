@@ -289,8 +289,8 @@ const storage = {
       ]
     });
 
-    // Check if unlocked Pro
-    if (newPoints >= 500 && !user.unlockedPro) {
+    // Check if unlocked Pro (完成 2 个完整 Lite 项目：2 × 600 = 1200 分)
+    if (newPoints >= 1200 && !user.unlockedPro) {
       this.updateUser({ unlockedPro: true });
     }
 

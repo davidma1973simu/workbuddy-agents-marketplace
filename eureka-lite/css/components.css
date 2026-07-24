@@ -826,6 +826,131 @@
 .intro-step-desc { font-size: var(--font-size-xs); color: var(--text-secondary); line-height: 1.5; }
 .intro-step > div:last-child { flex: 1; }
 
+/* ---- 一张图看懂 RISE 流程图 ---- */
+.intro-flow {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.intro-flow-node {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--node-color, var(--reveal-primary));
+  border-radius: var(--radius-md);
+  padding: 14px 8px 12px;
+  text-align: center;
+}
+.intro-flow-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.18);
+}
+.intro-flow-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.intro-flow-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--node-color, var(--reveal-primary));
+  background: rgba(224,122,47,.1);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: 2px;
+}
+.intro-flow-tip {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.intro-flow-arrow {
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  z-index: 2;
+}
+@media (max-width: 520px) {
+  .intro-flow { flex-wrap: wrap; gap: 12px; }
+  .intro-flow-node { flex: 1 1 45%; min-width: 120px; }
+  .intro-flow-arrow { display: none; }
+}
+
+/* ---- Pro 解锁祝贺弹窗 ---- */
+.pro-unlock-modal {
+  max-width: 420px;
+  text-align: center;
+  padding: 28px 24px 22px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+.pro-unlock-hero {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E07A2F, #F59E0B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  box-shadow: 0 8px 20px rgba(224,122,47,.35);
+}
+.pro-unlock-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+.pro-unlock-body {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.pro-unlock-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.pro-unlock-actions .btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  text-decoration: none;
+}
+.pro-unlock-actions .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
 /* ---- 阶段指引弹窗关闭按钮 ---- */
 .stage-brief-close {
   position: absolute;
@@ -1162,6 +1287,22 @@
 }
 
 .points-value {
+  color: var(--reveal-primary);
+}
+.points-target {
+  color: var(--text-secondary);
+  opacity: 0.8;
+  font-weight: 400;
+}
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, rgba(224,122,47,.18), rgba(127,119,221,.18));
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
   color: var(--reveal-primary);
 }
 
