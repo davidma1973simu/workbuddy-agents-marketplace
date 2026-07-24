@@ -305,6 +305,14 @@ class EurekaLite {
           ">
             ${project.status === 'completed' ? '已完成' : '进行中'}
           </span>
+          <button class="project-delete-btn" data-project-id="${project.id}" title="删除项目" aria-label="删除项目">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
         </div>
         <div class="progress-bar" style="margin-top: var(--space-md);">
           <div class="progress-bar-fill" style="width: ${progress}%; background: ${stageInfo.color};"></div>
@@ -395,6 +403,16 @@ class EurekaLite {
       card.addEventListener('click', () => {
         const projectId = card.dataset.projectId;
         AppState.navigate('reveal', { projectId });
+      });
+    });
+
+    // 首页「我的项目」卡片删除按钮
+    document.querySelectorAll('.project-delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const projectId = btn.dataset.projectId;
+        const project = window.EurekaStorage.getProject(projectId);
+        if (project) this.showDeleteConfirmModal(project);
       });
     });
 
@@ -1615,6 +1633,44 @@ class EurekaLite {
     const close = () => modal.remove();
     modal.querySelector('#proUnlockClose')?.addEventListener('click', close);
     modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+  }
+
+  /**
+   * 删除项目二次确认弹窗
+   */
+  showDeleteConfirmModal(project) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay open';
+    modal.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">确认删除项目？</span>
+          <button class="ai-panel-close" id="deleteConfirmClose">✕</button>
+        </div>
+        <div class="modal-body">
+          <p>你即将删除项目 <b>${this.escapeHtml(project.title || '未命名项目')}</b>。</p>
+          <p class="ai-config-tip" style="color:var(--error);margin-top:8px">删除后数据将无法恢复，请确认。</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="deleteConfirmCancel">取消</button>
+          <button class="btn btn-danger" id="deleteConfirmOk">确认删除</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.querySelector('#deleteConfirmClose')?.addEventListener('click', close);
+    modal.querySelector('#deleteConfirmCancel')?.addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    modal.querySelector('#deleteConfirmOk')?.addEventListener('click', () => {
+      window.EurekaStorage.deleteProject(project.id);
+      this.showToast('项目已删除');
+      close();
+      if (AppState.currentPage === 'projects') {
+        this.renderProjects();
+      } else {
+        this.renderHome();
+      }
+    });
   }
 
   updateAiPanel() {
@@ -6862,6 +6918,15 @@ class EurekaLite {
       card.addEventListener('click', () => {
         const projectId = card.dataset.projectId;
         AppState.navigate('reveal', { projectId });
+      });
+    });
+
+    document.querySelectorAll('.project-delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const projectId = btn.dataset.projectId;
+        const project = window.EurekaStorage.getProject(projectId);
+        if (project) this.showDeleteConfirmModal(project);
       });
     });
 

@@ -40,6 +40,15 @@
   background: var(--bg-hover);
 }
 
+.btn-danger {
+  background: var(--error, #EF4444);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #DC2626;
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -378,6 +387,15 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .project-card-meta { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary, #6b7280); }
+.project-delete-btn {
+  width: 32px; height: 32px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--text-secondary, #9ca3af);
+  border: 1px solid transparent; border-radius: 50%;
+  cursor: pointer; transition: all .15s ease; flex-shrink: 0;
+}
+.project-delete-btn:hover { background: rgba(239, 68, 68, .12); color: var(--error, #EF4444); }
+.project-delete-btn svg { width: 16px; height: 16px; }
 .project-panorama-btn { background: var(--surface) !important; color: var(--exam-primary, #64748B) !important; border: 1px solid var(--border-color, #e5e7eb) !important; }
 
 /* ==================== Home 我的项目 ==================== */
