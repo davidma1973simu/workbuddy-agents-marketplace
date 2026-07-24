@@ -1493,7 +1493,7 @@ class EurekaLite {
           <p class="ai-config-tip">Eureka 用 <b>RISE 四步</b> 帮你把一个模糊的想法，变成可验证的方案。每一步屏幕顶部都会告诉你「这步要做什么」，跟着走就行。</p>
           <div class="intro-steps">${cards}</div>
           <p class="ai-config-tip" style="margin-top:16px">提示：点右下角 🤖 可随时唤出 AI 助手；第一次进每个阶段会看到阶段指引。AI 功能需要你在 ⚙ 里填入自己的大模型 Key。</p>
-          <div style="text-align:right"><button class="btn btn-primary" id="introGot" style="background:var(--accent)">开始我的创新 →</button></div>
+          <div style="text-align:right"><button class="btn btn-primary" id="introGot" style="background:#E07A2F;color:#fff;border:none;box-shadow:0 2px 8px rgba(224,122,47,0.35)">开始我的创新 →</button></div>
         </div>
       </div>`;
     document.body.appendChild(modal);
@@ -1590,7 +1590,7 @@ class EurekaLite {
 
           <div class="ai-config-actions">
             <button class="btn btn-ghost" id="aiConfigClear">清除配置</button>
-            <button class="btn btn-primary" id="aiConfigSave" style="background: var(--accent);">保存并测试连接</button>
+            <button class="btn btn-primary" id="aiConfigSave" style="background: #E07A2F; color: #fff; border: none; box-shadow: 0 2px 8px rgba(224,122,47,0.35);">保存并测试连接</button>
           </div>
         </div>
       </div>
@@ -1917,14 +1917,16 @@ class EurekaLite {
       AppState.currentProject = project;
     }
 
-    this.setContent(this.getModuleTemplate(stageInfo, project));
+    this.setContent(this.getModuleTemplate(stage, stageInfo, project));
     this.attachModuleEvents(stage, stageInfo, project);
   }
 
-  getModuleTemplate(stageInfo, project) {
+  getModuleTemplate(stage, stageInfo, project) {
     const totalScreens = stageInfo.screens;
     const currentScreen = project?.currentScreen || 1;
     const progress = totalScreens > 0 ? (currentScreen / totalScreens) * 100 : 0;
+    const stageOrder = ['reveal', 'inspire', 'shape', 'exam'];
+    const stageIdx = stageOrder.indexOf(stage);
 
     return `
       <!-- Header -->
@@ -1950,19 +1952,19 @@ class EurekaLite {
       <!-- RISE Stepper -->
       <nav class="rise-stepper" id="riseStepper">
         <div class="rise-stepper-inner">
-          ${['reveal', 'inspire', 'shape', 'exam'].map((s, i) => {
+          ${stageOrder.map((s, i) => {
             const info = Utils.getStageInfo(s);
-            const isActive = s === stageInfo.name.toLowerCase();
-            const isCompleted = ['reveal', 'inspire', 'shape', 'exam'].indexOf(s) < ['reveal', 'inspire', 'shape', 'exam'].indexOf(stageInfo.name.toLowerCase());
+            const isActive = s === stage;
+            const isCompleted = i < stageIdx;
             const screenDefs = info.screenDefs || [];
+            const activeStyle = isActive ? ` style="color: ${info.color};"` : '';
+            const dotStyle = isActive ? ` style="background: ${info.color}; box-shadow: 0 0 0 3px ${info.color}33;"` : '';
             return `
-              <>
-                <div class="rise-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-stage="${s}" data-screen-count="${screenDefs.length}">
-                  <span class="rise-step-dot"></span>
-                  <span>${info.name}</span>
-                </div>
-                ${i < 3 ? '<span class="rise-step-arrow">›</span>' : ''}
-              </>
+              <div class="rise-step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-stage="${s}" data-screen-count="${screenDefs.length}"${activeStyle}>
+                <span class="rise-step-dot"${dotStyle}></span>
+                <span>${info.name}</span>
+              </div>
+              ${i < 3 ? '<span class="rise-step-arrow">›</span>' : ''}
             `;
           }).join('')}
         </div>
