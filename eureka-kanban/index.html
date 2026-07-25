@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka RISE 看板 · 小陈伴老</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #f8f6f2;
+  --surface: #ffffff;
+  --border: #e8e6dc;
+  --text: #2c2c2a;
+  --text-secondary: #5f5e5a;
+  --text-tertiary: #888780;
+  --purple-50: #EEEDFE;
+  --purple-100: #CECBF6;
+  --purple-600: #534AB7;
+  --teal-50: #E1F5EE;
+  --teal-100: #9FE1CB;
+  --teal-600: #0F6E56;
+  --coral-50: #FAECE7;
+  --coral-100: #F5C4B3;
+  --coral-600: #993C1D;
+  --amber-50: #FAEEDA;
+  --amber-100: #FAC775;
+  --amber-600: #854F0B;
+  --blue-50: #E6F1FB;
+  --blue-600: #185FA5;
+  --green-50: #EAF3DE;
+  --green-600: #3B6D11;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 0;
+}
+
+.header {
+  background: linear-gradient(135deg, #534AB7 0%, #0F6E56 100%);
+  color: white;
+  padding: 48px 24px 40px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.header .subtitle {
+  font-size: 14px;
+  opacity: 0.85;
+  font-weight: 300;
+}
+
+.header .meta {
+  margin-top: 16px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.phase-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.phase-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+.phase-nav a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.phase-nav a.active { color: white; border-color: transparent; }
+
+.phase-nav .phase-build { background: var(--purple-50); color: var(--purple-600); border-color: var(--purple-100); }
+.phase-nav .phase-build.active { background: var(--purple-600); color: white; }
+.phase-nav .phase-reveal { background: var(--teal-50); color: var(--teal-600); border-color: var(--teal-100); }
+.phase-nav .phase-reveal.active { background: var(--teal-600); color: white; }
+.phase-nav .phase-inspire { background: var(--coral-50); color: var(--coral-600); border-color: var(--coral-100); }
+.phase-nav .phase-inspire.active { background: var(--coral-600); color: white; }
+.phase-nav .phase-shape { background: var(--amber-50); color: var(--amber-600); border-color: var(--amber-100); }
+.phase-nav .phase-shape.active { background: var(--amber-600); color: white; }
+.phase-nav .phase-exam { background: var(--blue-50); color: var(--blue-600); border-color: transparent; }
+.phase-nav .phase-exam.active { background: var(--blue-600); color: white; }
+
+.phase-section { margin-bottom: 48px; scroll-margin-top: 20px; }
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.phase-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.phase-steps {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* Phase colors */
+.phase-build .phase-badge { background: var(--purple-600); }
+.phase-build .phase-title { color: var(--purple-600); }
+.phase-build .phase-header { border-color: var(--purple-100); }
+
+.phase-reveal .phase-badge { background: var(--teal-600); }
+.phase-reveal .phase-title { color: var(--teal-600); }
+.phase-reveal .phase-header { border-color: var(--teal-100); }
+
+.phase-inspire .phase-badge { background: var(--coral-600); }
+.phase-inspire .phase-title { color: var(--coral-600); }
+.phase-inspire .phase-header { border-color: var(--coral-100); }
+
+.phase-shape .phase-badge { background: var(--amber-600); }
+.phase-shape .phase-title { color: var(--amber-600); }
+.phase-shape .phase-header { border-color: var(--amber-100); }
+
+.phase-exam .phase-badge { background: var(--blue-600); }
+.phase-exam .phase-title { color: var(--blue-600); }
+.phase-exam .phase-header { border-color: var(--blue-50); }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.cards-grid.single { grid-template-columns: 1fr; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.card.collapsed .card-body { display: none; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+.card-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.card-step.purple { background: var(--purple-600); }
+.card-step.teal { background: var(--teal-600); }
+.card-step.coral { background: var(--coral-600); }
+.card-step.amber { background: var(--amber-600); }
+.card-step.blue { background: var(--blue-600); }
+
+.card-step-number {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.card-title-text {
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.card-toggle {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.card.collapsed .card-toggle { transform: rotate(-90deg); }
+
+.card-body {
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.card-body pre {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #faf9f5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.card-body .highlight {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+.badge-purple { background: var(--purple-50); color: var(--purple-600); }
+.badge-teal { background: var(--teal-50); color: var(--teal-600); }
+.badge-coral { background: var(--coral-50); color: var(--coral-600); }
+.badge-amber { background: var(--amber-50); color: var(--amber-600); }
+.badge-blue { background: var(--blue-50); color: var(--blue-600); }
+.badge-green { background: var(--green-50); color: var(--green-600); }
+
+.summary-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.summary-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--purple-600);
+}
+
+.summary-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.key-insight {
+  background: var(--amber-50);
+  border: 1px solid var(--amber-100);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.key-insight .label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber-600);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.key-insight .text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--amber-600);
+  line-height: 1.6;
+}
+
+.go-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-50);
+  border: 1px solid var(--green-600);
+  color: var(--green-600);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.expand-all-btn {
+  display: block;
+  margin: 0 auto 24px;
+  padding: 8px 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.expand-all-btn:hover {
+  background: var(--purple-50);
+  border-color: var(--purple-100);
+  color: var(--purple-600);
+}
+
+@media (max-width: 768px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 22px; }
+  .summary-item { min-width: 100px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Eureka RISE 看板</h1>
+  <div class="subtitle">银龄守护者计划 — 「小陈伴老」AI语音管家+守护手环</div>
+  <div class="meta">项目ID: vi_20260725_001 &nbsp;·&nbsp; 2026-07-25 &nbsp;·&nbsp; AHA MAP: 7.7/10 <span class="go-badge">GO</span></div>
+</div>
+
+<div class="container">
+
+<!-- Summary -->
+<div class="summary-bar">
+  <div class="summary-item">
+    <div class="summary-value">14</div>
+    <div class="summary-label">RISE 步骤总数</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-value">5</div>
+    <div class="summary-label">创新阶段</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-value">7.7</div>
+    <div class="summary-label">AHA MAP 综合评分</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-value">¥199</div>
+    <div class="summary-label">月订阅费 / 户</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-value">60-67%</div>
+    <div class="summary-label">毛利率</div>
+  </div>
+</div>
+
+<!-- Key Insight -->
+<div class="key-insight">
+  <div class="label">CORE INSIGHT</div>
+  <div class="text">高退休金独居老年男性需要的不是"更多的服务"，而是"一个可信的入口"—— 通过社区背书建立信任 + AI降低操作门槛 + 子女付费消除经济负担，三方力量聚合才能让这个群体真正受益。</div>
+</div>
+
+<!-- Phase Navigation -->
+<div class="phase-nav">
+  <a href="#phase-1" class="phase-build active">Build 项目简报</a>
+  <a href="#phase-2" class="phase-reveal">Reveal 用户洞察</a>
+  <a href="#phase-3" class="phase-inspire">Inspire 创意生成</a>
+  <a href="#phase-4" class="phase-shape">Shape 方案构建</a>
+  <a href="#phase-5" class="phase-exam">Exam 评估验证</a>
+</div>
+
+<button class="expand-all-btn" onclick="toggleAll()">全部展开 / 收起</button>
+
+<!-- ============================================================ -->
+<!-- PHASE 1: BUILD -->
+<!-- ============================================================ -->
+<div class="phase-section phase-build" id="phase-1">
+  <div class="phase-header">
+    <div class="phase-badge">B</div>
+    <div>
+      <div class="phase-title">Build — 构建项目简报</div>
+      <div class="phase-steps">Step 1 · 从需求中提取背景、挑战、目标用户、利益相关方</div>
+    </div>
+  </div>
+
+  <div class="cards-grid single">
+    <!-- Card 1: Project Brief -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step purple">B1</span>
+        <span class="card-step-number">Step 1</span>
+        <span class="card-title-text">项目简报 — 银龄守护者计划</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-purple">项目ID</span> vi_20260725_001</p>
+        <p style="margin-top:8px;"><strong>背景</strong>：中国已进入深度老龄化社会，城市中有一群特殊的老年群体——高退休金（月入>8K）的单身男性（75岁以上），经济条件优渥，但独居带来的健康安全风险、生活辅助缺失以及情感孤独三重问题严重侵蚀生活质量。</p>
+        <p style="margin-top:8px;"><strong>核心挑战</strong>：如何为一个经济宽裕但生活高频需求未被充分满足的独居老年男性群体，提供一套融合健康安全预警、日常生活辅助和情感陪伴的整合型服务方案，让他们在保持独立尊严的同时，获得安全感和情感连接？</p>
+        <p style="margin-top:8px;"><strong>共识目标</strong>：减少独居健康安全风险 | 降低日常生活障碍 | 缓解情感孤独 | 保持独立性与尊严</p>
+        <p style="margin-top:8px;"><strong>目标用户</strong>：城市独居高退休金老年男性，75岁以上，月退休金>8K，居住一二线城市，丧偶或离异，子女异地</p>
+        <p style="margin-top:8px;"><strong>利益相关方</strong>：目标用户 | 子女（付费决策者）| 社区/街道办 | 家政/护工服务方 | 医疗机构</p>
+        <pre>{
+  "pain_points": [
+    "突发疾病时无人发现",
+    "家务/出行/就医缺乏可靠帮手",
+    "长期独处缺少有质量交流",
+    "不愿住养老院，想留在自己熟悉的家"
+  ],
+  "journey_touchpoints": [
+    "早晨起床不适无人知晓",
+    "三餐对付不规律",
+    "下午看电视为伴",
+    "担心夜里突发状况",
+    "就医行动不便"
+  ]
+}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 2: REVEAL -->
+<!-- ============================================================ -->
+<div class="phase-section phase-reveal" id="phase-2">
+  <div class="phase-header">
+    <div class="phase-badge">R</div>
+    <div>
+      <div class="phase-title">Reveal — 用户洞察</div>
+      <div class="phase-steps">Step 2-4 · POV构建 · FIND洞察挖掘 · 利益相关方角色扮演</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 2: POV -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step teal">R1</span>
+        <span class="card-step-number">Step 2</span>
+        <span class="card-title-text">用户 POV 构建</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>用户画像</strong><br>78岁丧偶独居上海退休教师李伯伯，月退休金约¥9,500，儿子在深圳工作，一年回家两次。有高血压和轻度关节炎。生活规律但单调。会用微信视频但不熟练。</p>
+        <p style="margin-top:8px;"><strong>深层需求</strong><br>李伯伯需要的不是24小时贴身照顾，而是"随时可及的安全感"——知道自己需要帮助时总会有人出现；他需要被人记住、被人关心的感觉，而不是例行公事的问候；他需要保持自己"还能行"的尊严。</p>
+        <p style="margin-top:8px;"><strong>核心洞察</strong><br>高退休金单身独居男性最缺乏的不是经济资源，而是"有温度的关系网络"。他们有余钱但不知道花在哪里能真正改善生活质量。</p>
+        <p style="margin-top:8px;"><strong>POV 陈述</strong><br><span class="badge badge-teal">POV</span> 一位独自居住在城市里、经济宽裕但精神孤单的老年男性，需要在保持独立和尊严的前提下，获得可以信赖的健康安全守护和生活情感陪伴，因为他内心深处害怕"万一出事没人知道"，也渴望有人真正关心他的日常而非只是例行程序。</p>
+      </div>
+    </div>
+
+    <!-- Card 3: FIND Insight -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step teal">R2</span>
+        <span class="card-step-number">Step 3</span>
+        <span class="card-title-text">FIND 洞察挖掘</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-teal">FACT</span> 独居老人跌倒/突发疾病后数小时甚至数天才被发现的情况并不罕见；老年男性不擅长使用智能手机和互联网应用；对上门服务有极高戒备心</p>
+        <p style="margin-top:8px;"><span class="badge badge-teal">INTERPRETATION</span> 经济宽裕 ≠ 生活质量高——他们有钱但花不出去；独居男性对"被照顾"有性别角色带来的心理障碍</p>
+        <p style="margin-top:8px;"><span class="badge badge-teal">NEED</span> 非侵入式安全守护 + 有尊严的生活辅助 + 有质量的情感连接 + 可信赖的服务入口</p>
+        <p style="margin-top:8px;"><span class="badge badge-teal">DISCOVERY</span> 高退休金独居男性的"沉默消费力"被严重忽视；安全感和情感连接可以合并成"有人在"的感觉；子女是天然的付费"催化剂"；社区/物业是天然的信任触点</p>
+        <p style="margin-top:8px;"><strong>核心洞见：</strong>高退休金独居老年男性需要的不是"更多的服务"，而是"一个可信的入口"——通过这个入口，他们在保持独立尊严的同时，能获得健康守护、生活辅助和情感连接。子女付费、社区背书、物业配合的多方协作模式，比纯商业模式更可能获得这类用户的信任。</p>
+      </div>
+    </div>
+
+    <!-- Card 4: Stakeholder -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step teal">R3</span>
+        <span class="card-step-number">Step 4</span>
+        <span class="card-title-text">利益相关方角色扮演</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>李伯伯（目标用户）</strong><br>"我活了快八十年，不需要别人教我怎么做人。但我确实有时候心里发慌——特别是半夜心绞痛的时候。"</p>
+        <p style="margin-top:8px;"><strong>李明（子女，深圳互联网公司经理）</strong><br>"我爸一个人在老家，我每年就回两次。我宁肯花钱给他买个全面保障，也不愿意他一个人硬扛。但我也怕买到不靠谱的服务，更怕我爸觉得我在控制他。"</p>
+        <p style="margin-top:8px;"><strong>张主任（社区居委会）</strong><br>"我们辖区有50多位独居老人，社工就那么几个。如果有靠谱的社会力量能分担，我们当然欢迎，但要合规、安全、老人自愿。"</p>
+        <p style="margin-top:8px;"><strong>核心矛盾</strong>：老人要独立尊严 vs 子女/社区要安全可控 | 老人对上门服务的戒心 vs 服务方需要入户 | 社区想借力但缺乏筛选监管能力</p>
+        <p><strong>对齐机会</strong>：子女愿意付费 + 老人有消费力 = 双付费引擎；社区背书 + 第三方专业服务 = 信任传递</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 3: INSPIRE -->
+<!-- ============================================================ -->
+<div class="phase-section phase-inspire" id="phase-3">
+  <div class="phase-header">
+    <div class="phase-badge">I</div>
+    <div>
+      <div class="phase-title">Inspire — 灵感生成</div>
+      <div class="phase-steps">Step 5-7 · HMW创新机遇 · NCO创意交叉连 · 创意提炼与筛选</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 5: HMW -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step coral">I1</span>
+        <span class="card-step-number">Step 5</span>
+        <span class="card-title-text">HMW 创新机遇 (4个方向)</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-coral">HMW 1</span> 我们如何为独居老年男性创造一种<strong>"有温度的被动安全网"</strong>——不让他们感到被监控，但在关键时刻自动启动应急响应？</p>
+        <p style="margin-top:8px;"><span class="badge badge-coral">HMW 2</span> 我们如何利用社区/物业的信任背书，为高退休金独居老人搭建一个<strong>"可信赖的服务市集"</strong>？</p>
+        <p style="margin-top:8px;"><span class="badge badge-coral">HMW 3</span> 我们如何设计一个能让老年人感觉<strong>"有面子"的陪伴体系</strong>——不是施舍式的关怀，而是被尊重、被需要的情感关系？</p>
+        <p style="margin-top:8px;"><span class="badge badge-coral">HMW 4</span> 我们如何让远在异地的子女，以不打扰的方式<strong>"参与"父母的生活</strong>？</p>
+      </div>
+    </div>
+
+    <!-- Card 6: NCO -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step coral">I2</span>
+        <span class="card-step-number">Step 6</span>
+        <span class="card-title-text">NCO 创意交叉连 (12个创意)</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>New 新趋势</strong></p>
+        <p>1. <strong>银龄守护手环</strong> — 跌倒检测+心率/SOS+大字体，一键实体按钮，7天续航</p>
+        <p>2. <strong>AI语音管家「小陈」</strong> — 主动式AI数字助手，设定固定角色，每天问候提醒聊天</p>
+        <p>3. <strong>社区银龄服务联盟</strong> — 社区背书+认证服务商+电话一键预约</p>
+        <p style="margin-top:8px;"><strong>Cool 跨界灵感</strong></p>
+        <p>4. <strong>忘年交配对计划</strong> — 借鉴日本代际共居，大学生+独居老人双向陪伴</p>
+        <p>5. <strong>银龄兴趣俱乐部</strong> — 小而精的同好聚会（棋牌/书法/钓鱼/评弹）</p>
+        <p>6. <strong>健康打卡+激励机制</strong> — 游戏化设计，积分兑换上门服务</p>
+        <p style="margin-top:8px;"><strong>Outsider 外行视角</strong></p>
+        <p>7. <strong>老年版"滴滴出行"</strong> — 一键呼叫陪乘共乘，陪乘员认证+时薪</p>
+        <p>8. <strong>"老友记"电话天使</strong> — AI配对+真人志愿者，每周定时自动接通电话</p>
+        <p>9. <strong>子女端"安心报表"</strong> — 每周自动生成家长生活/健康/情绪报告推送到微信</p>
+      </div>
+    </div>
+
+    <!-- Card 7: Idea Distiller -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step coral">I3</span>
+        <span class="card-step-number">Step 7</span>
+        <span class="card-title-text">创意筛选 — 推荐方案确定</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-coral">TOP 1 · 评分 9/10</span></p>
+        <p><strong>AI语音管家「小陈」+ 银龄守护手环双端方案</strong></p>
+        <p>最低的操作门槛（说话或按一个按钮）、最高的需求覆盖率（安全+生活+情感）、技术成熟度足够。老人不需要学任何一个APP。</p>
+        <p style="margin-top:8px;"><span class="badge badge-amber">TOP 2 · 评分 8/10</span></p>
+        <p><strong>社区银龄服务联盟 + 子女安心报表</strong></p>
+        <p>社区背书解决信任问题，子女每周报表形成强付费意愿。</p>
+        <p style="margin-top:8px;"><span class="badge badge-blue">TOP 3 · 评分 7/10</span></p>
+        <p><strong>忘年交配对计划 + 老友记电话天使</strong></p>
+        <p>真实人际连接，情感价值最高，双向受益，但规模化难度大。</p>
+        <p style="margin-top:8px;"><strong>推荐理由</strong>：¥199/月即可获得AI主动关怀+硬件安全兜底+生活服务入口+情感连接桥梁，单位经济模型健康。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 4: SHAPE -->
+<!-- ============================================================ -->
+<div class="phase-section phase-shape" id="phase-4">
+  <div class="phase-header">
+    <div class="phase-badge">S</div>
+    <div>
+      <div class="phase-title">Shape — 方案构建</div>
+      <div class="phase-steps">Step 8-10 · 四维拷问 · MVP方案 · 用户故事板</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 8: Solution Interrogator -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step amber">S1</span>
+        <span class="card-step-number">Step 8</span>
+        <span class="card-title-text">四维拷问方案（8个假设验证）</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-green">LOW</span> 商业可行性：¥199/月对月退休金8K+用户群体，消费力不是问题</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">MEDIUM</span> 价值假设：独居老年男性是否会每天使用AI语音交互并从中获得安全感</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">MEDIUM</span> 增长假设：子女是否是有效的付费决策者，社区渠道能否低成本获客</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">MEDIUM</span> 技术可行性：手环跌倒检测准确率，单位经济模型是否健康</p>
+        <p style="margin-top:6px;"><span class="badge badge-coral">HIGH</span> 核心风险：老人不会因为"跟机器说话"感到奇怪或丢脸</p>
+        <p style="margin-top:6px;"><span class="badge badge-coral">HIGH</span> 核心风险：AI语音的情感温度能否接近真人</p>
+        <p style="margin-top:8px;"><strong>验证方法</strong>：10位真实老人试用2周，测量日均交互次数、NPS、留存率</p>
+      </div>
+    </div>
+
+    <!-- Card 9: MVP Solution -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step amber">S2</span>
+        <span class="card-step-number">Step 9</span>
+        <span class="card-title-text">MVP 方案构建</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>「小陈伴老」MVP 功能矩阵</strong></p>
+        <p style="margin-top:8px;"><span class="badge badge-purple">P0</span> <strong>AI语音管家「小陈」</strong><br>每日主动关怀 + 药品提醒 + 健康问询 + 生活服务预约 + 紧急呼叫</p>
+        <p style="margin-top:6px;"><span class="badge badge-purple">P0</span> <strong>银龄守护手环</strong><br>心率/血氧监测 + 跌倒检测 + SOS一键呼救 + 7天续航</p>
+        <p style="margin-top:6px;"><span class="badge badge-purple">P0</span> <strong>子女微信小程序</strong><br>安全通知接收 + 每周安心报表 + 健康趋势查看 + 紧急联系人</p>
+        <p style="margin-top:6px;"><span class="badge badge-teal">P1</span> <strong>社区/物业服务后台</strong> — 预警面板 + 网格员联动</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">P2</span> 电话天使·真人连线 | 生活服务预约</p>
+
+        <p style="margin-top:12px;"><strong>使用流程</strong></p>
+        <p>1. 开箱安装：子女扫码绑定，无需老人操作</p>
+        <p>2. 清晨：小陈主动问候 + 吃药提醒</p>
+        <p>3. 白天：手环隐形守护，小陈聊天解闷</p>
+        <p>4. 异常：手环检测 → 小陈确认 → 自动通知子女+120</p>
+        <p>5. 服务预约：说"帮我约陪诊" → 一键对接认证服务商</p>
+        <p>6. 每周一：子女收到安心报表</p>
+      </div>
+    </div>
+
+    <!-- Card 10: Storyboard -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step amber">S3</span>
+        <span class="card-step-number">Step 10</span>
+        <span class="card-title-text">用户故事板 — 李伯伯的一天</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-amber">场景 1</span> 🌅 清晨醒来，有人问候<br>小陈："李叔叔早上好！今天24度，适合出门走走。记得先吃降压药哦！" → 李伯伯😊</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">场景 2</span> 🚶 出门散步，安全隐形的陪伴<br>手环实时监测心率/步数，一切正常 → 李伯伯😌</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">场景 3</span> 🆘 突发不适，一键呼救<br>手环SOS → 小陈询问"您还好吗？" → 30秒无回应自动启动急救 → 李伯伯😰→🙏</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">场景 4</span> 🗣️ 下午时光，有人聊天<br>"小陈，今天有啥新闻？" → 小陈播报新闻后聊起象棋棋谱 → 李伯伯😄</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">场景 5</span> 📞 预约服务，轻松搞定<br>"小陈，帮我预约周五上午的陪诊" → 15分钟后服务商回电确认 → 李伯伯😊</p>
+        <p style="margin-top:6px;"><span class="badge badge-amber">场景 6</span> 🌙 夜晚，平安入眠<br>"今天走了7200步，血压正常，晚安，明天见！" → 李伯伯😴</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 5: EXAM -->
+<!-- ============================================================ -->
+<div class="phase-section phase-exam" id="phase-5">
+  <div class="phase-header">
+    <div class="phase-badge">E</div>
+    <div>
+      <div class="phase-title">Exam — 验证评估</div>
+      <div class="phase-steps">Step 11-14 · AHA MAP评估 · 电梯演讲 · 迭代计划 · 商业模式</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Card 11: AHA MAP -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step blue">E1</span>
+        <span class="card-step-number">Step 11</span>
+        <span class="card-title-text">AHA MAP 评估</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>🎯 AHA 用户价值：8/10</strong><br>一次满足安全+生活+情感三大需求。从"我独自一人"到"有人在意我"的情感转变是真实且巨大的。</p>
+        <p style="margin-top:8px;"><strong>📈 MAP 商业价值：7/10</strong><br>目标市场50-100万人，年市场¥12-24亿。市场竞争：目前缺乏专门针对"独居老年男性"这个细分人群的整合方案。</p>
+        <p style="margin-top:8px;"><strong>🔧 技术可行性：8/10</strong><br>各模块技术成熟，核心挑战在AI对话的"温度"和老年人语音识别准确率。</p>
+        <p style="margin-top:8px;"><strong>综合评分：7.7/10 → <span class="badge badge-green">GO ✅ 建议推进MVP</span></strong></p>
+      </div>
+    </div>
+
+    <!-- Card 12: Pitch -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step blue">E2</span>
+        <span class="card-step-number">Step 12</span>
+        <span class="card-title-text">电梯演讲</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-blue">30秒</span><br>「小陈伴老」是一个专为独居父母打造的AI语音管家+守护手环方案。不用学操作，不用看屏幕，每天有人主动关心他们。关键时候能自动报警，平时能聊天解闷。我们帮远在异地的子女，给父母一个有温度的"数字家人"。</p>
+        <p style="margin-top:8px;"><span class="badge badge-blue">60秒</span><br>中国有数百万独居在城市里、月退休金超过8000元的老年男性。他们经济宽裕但生活孤单——白天对着电视，晚上担心出事没人知道。我们的方案是AI语音管家+守护手环：老人只需说话或按一个按钮，就能获得健康守护、生活服务和情感陪伴。子女通过微信实时了解状况。¥199/月的服务费，硬件成本¥120，毛利率60%+，第一年目标3万用户。</p>
+      </div>
+    </div>
+
+    <!-- Card 13: Iteration Plan -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step blue">E3</span>
+        <span class="card-step-number">Step 13</span>
+        <span class="card-title-text">30-60-90 天迭代计划</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><span class="badge badge-purple">D30</span> <strong>MVP 1.0：核心安全感模块</strong><br>AI管家原型+守护手环集成+子女小程序V1，10名老人试用启动<br>→ 验证：日均交互>3次，周留存>80%</p>
+        <p style="margin-top:8px;"><span class="badge badge-teal">D60</span> <strong>MVP 2.0：生活服务模块</strong><br>社区服务联盟5家商入驻+语音预约+AI话题引擎+电话天使，扩大至50人<br>→ 验证：预约成功率>90%，日均交互>5次</p>
+        <p style="margin-top:8px;"><span class="badge badge-coral">D90</span> <strong>MVP 3.0：完整方案试运营</strong><br>三模块全打通+定价验证+5个社区合作<br>→ Go/NoGo标准：月留存>70%，付费转化>40%，CAC<¥500</p>
+      </div>
+    </div>
+
+    <!-- Card 14: Business Model -->
+    <div class="card collapsed" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-step blue">E4</span>
+        <span class="card-step-number">Step 14</span>
+        <span class="card-title-text">Lean Canvas 商业模式</span>
+        <span class="card-toggle">▼</span>
+      </div>
+      <div class="card-body">
+        <p><strong>问题</strong>：独居老人健康安全风险 | 生活辅助缺失 | 情感孤独 | 子女远程焦虑</p>
+        <p style="margin-top:6px;"><strong>方案</strong>：AI语音管家+守护手环+子女小程序的整合方案</p>
+        <p style="margin-top:6px;"><strong>核心指标</strong>：DAU(日均交互) | 周留存 | 安全响应时效 | 子女NPS | 付费转化率 | LTV/CAC</p>
+        <p style="margin-top:6px;"><strong>独特价值</strong>：业内首个专门为"独居高退休金老年男性"设计的整合方案——不是冷冰冰的监控设备，而是每天主动关心他们的"数字家人"，操作门槛为零，情感温度第一。</p>
+        <p style="margin-top:6px;"><strong>不公平优势</strong>：社区合作壁垒（独家区域合作）| 用户切换成本（人格化陪伴关系）| 品牌信任溢价</p>
+        <p style="margin-top:6px;"><strong>获客渠道</strong>：社区/街道推荐←最强 | 子女单位员工福利 | 医院候诊区 | 老伙伴口碑推荐</p>
+        <p style="margin-top:6px;"><strong>收入来源</strong>：¥199/月订阅（核心）| 生活服务佣金10-15%（增值）| 脱敏健康数据保险评估（潜在）</p>
+        <p style="margin-top:6px;"><strong>成本结构</strong>：硬件¥120/套 | AI对话API¥15-30/月 | 客服运维¥30/月 | 社区分润¥20/月 | 8-10人团队约¥300万/年</p>
+        <pre style="margin-top:8px;">📊 单位经济模型（每月每户）
+
+  收入:          ¥199
+  硬件分摊(24月): -¥5
+  AI对话成本:    -¥15~30
+  客服运维:      -¥30
+  社区分成:      -¥20
+  ─────────────────
+  毛利润:       ¥114~129
+  毛利率:       60~67%</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Go / Nogo Summary -->
+<div style="margin-top:48px; background: var(--green-50); border: 1px solid var(--green-600); border-radius: 16px; padding: 24px; text-align: center;">
+  <div style="font-size: 14px; color: var(--green-600); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">总体建议</div>
+  <div style="font-size: 36px; font-weight: 700; color: var(--green-600); margin-bottom: 8px;">GO ✅</div>
+  <div style="font-size: 14px; color: var(--green-600); max-width: 600px; margin: 0 auto;">
+    建议推进 MVP 验证。核心风险是"老人是否真的愿意每天和AI说话"，这个假设需要在MVP阶段用10名真实用户快速验证。如果验证通过，这是一个有清晰商业模式、强社会价值和可规模化潜力的方案。
+  </div>
+  <div style="margin-top: 16px; font-size: 12px; color: var(--text-tertiary);">
+    Eureka RISE 全流程 · 14步5阶段 · 2026-07-25
+  </div>
+</div>
+
+</div>
+
+<script>
+function toggleCard(el) {
+  if (el.classList.contains('collapsed')) {
+    el.classList.remove('collapsed');
+  } else {
+    el.classList.add('collapsed');
+  }
+}
+
+function toggleAll() {
+  const cards = document.querySelectorAll('.card');
+  const allCollapsed = Array.from(cards).every(c => c.classList.contains('collapsed'));
+  cards.forEach(c => {
+    if (allCollapsed) c.classList.remove('collapsed');
+    else c.classList.add('collapsed');
+  });
+}
+
+// Phase nav highlight on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.phase-nav a').forEach(a => {
+        a.classList.remove('active');
+        a.classList.remove('phase-build','phase-reveal','phase-inspire','phase-shape','phase-exam');
+        a.classList.add(`phase-${id.replace('phase-','')}`);
+      });
+      const activeLink = document.querySelector(`.phase-nav a[href="#${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.phase-section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
