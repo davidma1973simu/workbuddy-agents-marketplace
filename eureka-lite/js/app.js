@@ -40,6 +40,40 @@ const EUREKA_PRO_URL = 'https://davidma1973simu.github.io/workbuddy-agents-marke
 const PRO_UNLOCK_POINTS = 1200;
 const PROJECT_COMPLETE_POINTS = 600;
 
+/**
+ * 示例项目每屏操作指南（isExample 时显示）
+ * 结构: { stage: { screenNum: { action, input, output, reason } } }
+ */
+const SCREEN_GUIDES = {
+  reveal: {
+    1: { action: '描述目标用户与场景', input: '用户在什么场景下、有什么痛点', output: '场景卡片（目标用户+场景描述）', reason: '定义创新的起点，明确"为谁、在哪儿、有什么问题"' },
+    2: { action: '绘制用户旅程地图', input: '用户在不同接触点上的行为/思考/感受', output: '5格用户旅程（含关键发现）', reason: '可视化用户的全流程体验，找到干预的最佳触点' },
+    3: { action: 'FIND 四步推导洞察', input: '旅程中的关键发现', output: 'FIND 洞察链（事实→解读→需求→洞见）', reason: '从表面现象深入到根因，确保方案打中真正的问题' },
+    4: { action: '设定商业假设', input: '项目的商业目标和成功假设', output: '商业目标+共识假设', reason: '把创新与商业价值挂钩，确保方向可行' },
+    5: { action: '全局回顾确认', input: '前四屏的产出汇总', output: 'Reveal 整合确认卡', reason: '串联所有洞察，确保进入下一阶段前方向一致' }
+  },
+  inspire: {
+    1: { action: '从 POV 重构 HMW 机遇', input: 'Reveal 产出的 POV（目标用户/场景/洞察）', output: '3-4 个维度的 HMW 创新机遇问题', reason: '把用户洞察转化为可行动的创新方向，拓宽思路' },
+    2: { action: '收集灵感卡片', input: 'HMW 方向', output: '三组灵感源（新趋势/跨界/外行视角）', reason: '用外部知识激发创意，避免闭门造车' },
+    3: { action: 'NCO 交叉生成创意', input: '灵感卡片 + HMW 方向', output: '3 个具体创意方案', reason: '将灵感与方向交叉组合，产出可落地的创意' },
+    4: { action: '四维打分筛选最佳创意', input: '所有创意', output: 'Top 2 最佳创意 + 评分', reason: '用结构化评估选择最值得深入的方向' },
+    5: { action: '阶段总结确认', input: '最佳创意', output: 'Inspire 整合确认卡', reason: '确认创意方向，为 Shape 阶段做准备' }
+  },
+  shape: {
+    1: { action: '四维拷问方案假设', input: '最佳创意', output: '价值/增长/技术/商业四维假设清单', reason: '暴露方案的潜在风险，提前识别关键假设' },
+    2: { action: '构建概念方案', input: '四维拷问结果', output: 'MVP 方案描述（核心功能/特性/边界）', reason: '把创意打磨成可执行的最小可行方案' },
+    3: { action: '绘制用户故事板', input: 'MVP 方案', output: '6 格用户故事板', reason: '从用户视角审视方案，确保体验流畅' },
+    4: { action: '阶段总结确认', input: '概念方案 + 故事板', output: 'Shape 整合确认卡', reason: '锁定方案，进入验证阶段' }
+  },
+  exam: {
+    1: { action: '制定测试计划', input: '概念方案', output: '测试目的/方法/标准', reason: '明确要验证什么、怎么验证、成功的标准' },
+    2: { action: '记录测试报告', input: '测试执行情况', output: '有效价值/无效价值/新问题/新机会', reason: '用真实反馈验证方案，发现盲点和新机会' },
+    3: { action: '四维度评价', input: '测试结论', output: '用户/商业/可行/创新四维评分', reason: '结构化评估方案的综合价值' },
+    4: { action: '撰写电梯演讲 + 迭代计划', input: '方案 + 验证结论', output: '30秒/60秒演讲 + 30-60-90天迭代计划', reason: '把方案价值讲清楚，规划下一步行动' },
+    5: { action: '确认完成项目', input: '全部 Exam 产出', output: 'Exam 整合确认卡', reason: '回顾验证成果，决定是否 Go/No-Go' }
+  }
+};
+
 // Main App Class
 class EurekaLite {
   constructor() {
@@ -297,6 +331,15 @@ class EurekaLite {
     const stageInfo = Utils.getStageInfo(project.stage);
     const categoryInfo = Utils.getCategoryInfo(project.category);
     const progress = Utils.getProjectProgress(project);
+    const actionHtml = project.isExample
+      ? '<span class="badge badge-example" style="background:#F59E0B;color:#fff;font-size:11px;">📘 示例</span>'
+      : '<button class="project-delete-btn" data-project-id="' + project.id + '" title="删除项目" aria-label="删除项目">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<polyline points="3 6 5 6 21 6"></polyline>'
+        + '<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>'
+        + '<line x1="10" y1="11" x2="10" y2="17"></line>'
+        + '<line x1="14" y1="11" x2="14" y2="17"></line>'
+        + '</svg></button>';
     return `
       <div class="project-card home-project-card" data-project-id="${project.id}">
         <div class="project-card-header">
@@ -312,15 +355,7 @@ class EurekaLite {
           ">
             ${project.status === 'completed' ? '已完成' : '进行中'}
           </span>
-          <button class="project-delete-btn" data-project-id="${project.id}" title="删除项目" aria-label="删除项目">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
-        </div>
+          ${actionHtml}
         <div class="progress-bar" style="margin-top: var(--space-md);">
           <div class="progress-bar-fill" style="width: ${progress}%; background: ${stageInfo.color};"></div>
         </div>
@@ -985,9 +1020,10 @@ class EurekaLite {
     const project = window.EurekaStorage.addProject({
       title: '示例：MOMOS — 智能碎片信息聚合与知识管理',
       category: 'product',
-      description: '一个帮知识工作者自动聚合散落各处的碎片信息，按主题/项目智能归档的知识管理工具（完整四阶段示例，可放心修改照着学）',
+      description: '一个帮知识工作者自动聚合散落各处的碎片信息，按主题/项目智能归档的知识管理工具（完整四阶段示例，仅供查看学习，不可修改）',
       stage: 'reveal',
-      currentScreen: 1
+      currentScreen: 1,
+      isExample: true
     });
     const id = project.id;
 
@@ -1671,6 +1707,11 @@ class EurekaLite {
    * 删除项目二次确认弹窗
    */
   showDeleteConfirmModal(project) {
+    // 示例项目不可删除
+    if (project.isExample) {
+      this.showToast('📋 示例项目仅供查看，不可删除');
+      return;
+    }
     const modal = document.createElement('div');
     modal.className = 'modal-overlay open';
     modal.innerHTML = `
@@ -2186,6 +2227,22 @@ class EurekaLite {
       <!-- Main Content -->
       <main class="module-main theme-${stageInfo.theme}" style="padding: 140px var(--space-md) 100px;">
         <div class="module-content" id="moduleContent">
+          ${project?.isExample ? (() => {
+            const guide = (SCREEN_GUIDES[stage] || {})[currentScreen];
+            return `
+              <div class="example-banner">
+                <span class="example-banner-icon">📘</span>
+                <span><b>示例项目 · 仅供查看</b> — 点右上角 ✕ 或左下按钮退出，自己创建一个新项目来动手实践。</span>
+              </div>
+              ${guide ? `
+              <div class="example-step-guide">
+                <div class="example-step-guide-row"><span class="example-step-guide-label">🎯 做什么</span><span>${guide.action}</span></div>
+                <div class="example-step-guide-row"><span class="example-step-guide-label">📥 输入什么</span><span>${guide.input}</span></div>
+                <div class="example-step-guide-row"><span class="example-step-guide-label">📤 产出什么</span><span>${guide.output}</span></div>
+                <div class="example-step-guide-row"><span class="example-step-guide-label">❓ 为什么</span><span>${guide.reason}</span></div>
+              </div>` : ''}
+            `;
+          })() : ''}
           ${this.getScreenContent(stageInfo.name.toLowerCase(), currentScreen, project)}
         </div>
       </main>
