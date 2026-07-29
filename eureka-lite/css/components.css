@@ -4261,7 +4261,7 @@
 .panorama-iter-table th, .panorama-iter-table td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; vertical-align: top; }
 .panorama-iter-table thead th { background: #f8fafc; font-weight: 700; color: #1f2937; }
 .panorama-iter-table tbody th { background: #f8fafc; font-weight: 600; color: #1f2937; }
-.panorama-iter-table tbody th { background: var(--bg-secondary, #f8fafc); font-weight: 600; width: 120px; }
+.panorama-iter-table tbody th { background: #f8fafc; font-weight: 600; color: #1f2937; width: 120px; }
 @media print {
   .no-print { display: none !important; }
   .panorama-view { max-width: 100%; padding: 0; }
