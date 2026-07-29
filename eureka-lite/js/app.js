@@ -356,6 +356,7 @@ class EurekaLite {
             ${project.status === 'completed' ? '已完成' : '进行中'}
           </span>
           ${actionHtml}
+        </div>
         <div class="progress-bar" style="margin-top: var(--space-md);">
           <div class="progress-bar-fill" style="width: ${progress}%; background: ${stageInfo.color};"></div>
         </div>
