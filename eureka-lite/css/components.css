@@ -386,7 +386,7 @@
   margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary, #1f2937);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.project-card-meta { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary, #6b7280); }
+.project-card-meta { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary, #6b7280); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .project-delete-btn {
   width: 32px; height: 32px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
@@ -1276,6 +1276,8 @@
   border-radius: var(--radius-full);
   background: var(--bg-hover);
   color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .badge-primary {

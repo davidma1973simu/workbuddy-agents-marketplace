@@ -144,7 +144,13 @@ const storage = {
   // ========== Projects ==========
 
   getProjects() {
-    return this.get(STORAGE_KEYS.PROJECTS) || [];
+    const list = this.get(STORAGE_KEYS.PROJECTS) || [];
+    // 示例项目始终排在最前，其余按 updatedAt 倒序
+    return list.slice().sort((a, b) => {
+      if (a.isExample && !b.isExample) return -1;
+      if (!a.isExample && b.isExample) return 1;
+      return (b.updatedAt || 0) - (a.updatedAt || 0);
+    });
   },
 
   setProjects(projects) {

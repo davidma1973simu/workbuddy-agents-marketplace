@@ -665,7 +665,7 @@ class EurekaLite {
           <!-- Example -->
           <div style="margin-bottom: var(--space-md);">
             <div style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: var(--space-sm);">参考示例：</div>
-            <div id="energyExample" style="padding: var(--space-md); background: var(--bg-hover); border-radius: var(--radius-md); cursor: pointer; border: 1px solid transparent; transition: all var(--transition-fast);" data-example="${randomExample.text}" data-category="${randomExample.category}">
+            <div id="energyExample" style="padding: var(--space-md); background: rgba(224,122,47,0.08); border: 1px solid rgba(224,122,47,0.4); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast);" data-example="${randomExample.text}" data-category="${randomExample.category}">
               <div style="font-size: var(--font-size-sm); color: var(--text-primary); margin-bottom: var(--space-xs);">${randomExample.text}</div>
               <div style="font-size: var(--font-size-xs); color: var(--reveal-primary);">点击填入输入框 ↓</div>
             </div>
@@ -798,7 +798,7 @@ class EurekaLite {
           <div style="margin-bottom: var(--space-md);">
             <div style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: var(--space-sm);">参考示例：</div>
             ${config.examples.map(ex => `
-              <div class="category-example" style="padding: var(--space-sm); background: var(--bg-hover); border-radius: var(--radius-sm); margin-bottom: var(--space-xs); font-size: var(--font-size-sm); color: var(--text-secondary); cursor: pointer; border: 1px solid transparent; transition: all var(--transition-fast);" data-example="${ex}">
+              <div class="category-example" style="padding: var(--space-sm); background: ${config.color}12; border: 1px solid ${config.color}55; border-radius: var(--radius-sm); margin-bottom: var(--space-xs); font-size: var(--font-size-sm); color: var(--text-primary); cursor: pointer; transition: all var(--transition-fast);" data-example="${ex}">
                 ${ex}
               </div>
             `).join('')}
@@ -1006,6 +1006,15 @@ class EurekaLite {
    * 【R6】加载示例项目：基于 MOMOS 完整四阶段数据，供新手照学
    */
   loadExampleProject() {
+    // 去重：如果已存在示例项目，直接打开，不再重复创建
+    const existing = window.EurekaStorage.getProjects().find(p => p.isExample);
+    if (existing) {
+      AppState.currentProjectId = existing.id;
+      this.showToast('已为您打开示例项目（避免重复创建）');
+      this.showPanorama(existing);
+      return;
+    }
+
     const sceneContent = `【目标用户】25-35岁职场知识工作者（产品经理/设计师/自由职业者/管理者）
 【场景描述】每天在工作中需要处理大量碎片信息（会议纪要、灵感想法、待办事项、项目反馈等），这些信息散布在微信、飞书、邮件、白板、备忘录等多个工具中。用户经常"记得有过这个想法/信息，但找不到了"，导致重复讨论、决策遗漏、思路断层。`;
 
