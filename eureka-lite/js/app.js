@@ -1007,9 +1007,15 @@ class EurekaLite {
    * 【R6】加载示例项目：基于 MOMOS 完整四阶段数据，供新手照学
    */
   loadExampleProject() {
-    // 去重：如果已存在示例项目，直接打开，不再重复创建
-    const existing = window.EurekaStorage.getProjects().find(p => p.isExample);
+    // 去重：如果已存在示例项目（通过 isExample 标记，或标题以"示例："开头），直接打开不再重复创建
+    const all = window.EurekaStorage.getProjects();
+    const existing = all.find(p => p.isExample) || all.find(p => (p.title || '').startsWith('示例：'));
     if (existing) {
+      // 如果老示例没 isExample 标记，升级它
+      if (!existing.isExample) {
+        window.EurekaStorage.updateProject(existing.id, { isExample: true });
+        existing.isExample = true;
+      }
       AppState.currentProjectId = existing.id;
       this.showToast('已为您打开示例项目（避免重复创建）');
       this.showPanorama(existing);

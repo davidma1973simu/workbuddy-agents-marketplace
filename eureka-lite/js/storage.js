@@ -35,6 +35,7 @@ function createProject(data = {}) {
     type: data.type || 'practice', // practice | project
     category: data.category || null, // product | service | problem | explore
     title: data.title || '',
+    originalTitle: data.originalTitle || '',
     description: data.description || '',
     stage: data.stage || 'reveal', // reveal | inspire | shape | exam
     currentScreen: data.currentScreen || 1,
@@ -59,6 +60,7 @@ function createProject(data = {}) {
       elevatorPitch: {},
       iterationPlan: {}
     },
+    isExample: data.isExample === true,
     createdAt: data.createdAt || Date.now(),
     updatedAt: data.updatedAt || Date.now()
   };
