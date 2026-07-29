@@ -982,7 +982,7 @@ class EurekaLite {
       { stage: '个人复盘', challenge: '每周回顾自己做了哪些输出、有什么成长', think: '我这一周到底完成了什么', feel: '模糊', do: '翻日历/项目管理的多个入口', discovery: '个人知识管理需要"自动聚合"而非"手动整理"', isKeyFinding: true }
     ];
 
-    const project = window.EurekaStorage.createProject({
+    const project = window.EurekaStorage.addProject({
       title: '示例：MOMOS — 智能碎片信息聚合与知识管理',
       category: 'product',
       description: '一个帮知识工作者自动聚合散落各处的碎片信息，按主题/项目智能归档的知识管理工具（完整四阶段示例，可放心修改照着学）',
