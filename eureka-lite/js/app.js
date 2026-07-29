@@ -346,7 +346,7 @@ class EurekaLite {
         <div class="home-projects-head">
           <h2 class="home-projects-title">我的项目</h2>
           <div style="display:flex;gap:10px;align-items:center">
-            <button class="home-projects-more" id="homeExampleBtnTop" style="color:#E07A2F;border-color:rgba(224,122,47,0.45)">📋 体验示例项目</button>
+            <button class="home-projects-more" id="homeExampleBtnTop" style="color:#fff;background:#E07A2F;border:1px solid #E07A2F;border-radius:20px;padding:4px 16px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(224,122,47,0.3)">📋 体验示例项目</button>
             <button class="home-projects-more" id="homeProjectsMore">查看全部 ›</button>
           </div>
         </div>
@@ -968,24 +968,24 @@ class EurekaLite {
   }
 
   /**
-   * 【R6】加载示例项目：一键体验完整 Reveal 数据，供新手照学
+   * 【R6】加载示例项目：基于 MOMOS 完整四阶段数据，供新手照学
    */
   loadExampleProject() {
-    const sceneContent = `【目标用户】经常在不同生活场景间切换的城市青年（25-35岁，上班族/租房族）
-【场景描述】每天在「家→通勤→公司→健身/社交→回家」多个场景间切换，常因习惯忘记带当场景才需要的东西（钥匙、充电宝、水杯、门禁卡），导致反复折返或借物，产生焦虑与效率损失。`;
+    const sceneContent = `【目标用户】25-35岁职场知识工作者（产品经理/设计师/自由职业者/管理者）
+【场景描述】每天在工作中需要处理大量碎片信息（会议纪要、灵感想法、待办事项、项目反馈等），这些信息散布在微信、飞书、邮件、白板、备忘录等多个工具中。用户经常"记得有过这个想法/信息，但找不到了"，导致重复讨论、决策遗漏、思路断层。`;
 
     const journeyCards = [
-      { stage: '出门前', challenge: '急着出门，随手抓几样就走', think: '应该都带齐了吧', feel: '有点不确定但不想再检查', do: '直接出门', discovery: '有些物品对转换场景至关重要，但人因习惯总是忘记不同场景需要不同的东西', isKeyFinding: true },
-      { stage: '通勤路上', challenge: '发现没带充电宝', think: '手机快没电了怎么办', feel: '焦虑', do: '找共享充电宝', discovery: '关键物品缺失会直接打断整段行程节奏', isKeyFinding: true },
-      { stage: '公司', challenge: '忘记带门禁卡', think: '又得找前台借', feel: '麻烦', do: '借卡进入', discovery: '身份/权限类物品忘记的成本最高', isKeyFinding: false },
-      { stage: '健身', challenge: '忘带水杯', think: '只能买瓶装水', feel: '不环保且浪费', do: '买水', discovery: '高频刚需小物最容易被忽略', isKeyFinding: false },
-      { stage: '回家', challenge: '忘带钥匙', think: '只能等家人回来', feel: '无奈', do: '在门口等', discovery: '回家这一刻的遗忘最让人崩溃', isKeyFinding: true }
+      { stage: '晨会', challenge: '讨论时想起一个相关数据/结论，但找不到来源', think: '我记得看过，但……在哪来着', feel: '尴尬 + 焦虑', do: '先跳过去，会后翻遍各个工具找', discovery: '信息的跨工具分散是最大的生产力杀手', isKeyFinding: true },
+      { stage: '灵感时刻', challenge: '突然有一个好想法，但没法快速记下来', think: '先记在微信上/给自己发个消息', feel: '担心流失', do: '随手记在随便一个地方', discovery: '记录越随意，找回越困难', isKeyFinding: true },
+      { stage: '项目复盘', challenge: '需要回顾项目关键决策和讨论过程', think: '当时大家的讨论记录去哪了', feel: '无力感', do: '翻遍各个聊天记录和文档', discovery: '信息需要按主题/项目自动归档，而非按工具', isKeyFinding: true },
+      { stage: '协同时', challenge: '同事提到一个之前讨论过的方案，但自己忘了细节', think: '我们当时为什么选A不选B来着', feel: '不确定', do: '再讨论一次，浪费团队时间', discovery: '决策背后的推理过程比结论更有价值', isKeyFinding: false },
+      { stage: '个人复盘', challenge: '每周回顾自己做了哪些输出、有什么成长', think: '我这一周到底完成了什么', feel: '模糊', do: '翻日历/项目管理的多个入口', discovery: '个人知识管理需要"自动聚合"而非"手动整理"', isKeyFinding: true }
     ];
 
     const project = window.EurekaStorage.createProject({
-      title: '示例：帮城市青年不再「忘带东西」',
+      title: '示例：MOMOS — 智能碎片信息聚合与知识管理',
       category: 'product',
-      description: '一个帮人在多场景切换时不再忘记关键物品的解决方案（完整示例项目，可放心修改、照着学）',
+      description: '一个帮知识工作者自动聚合散落各处的碎片信息，按主题/项目智能归档的知识管理工具（完整四阶段示例，可放心修改照着学）',
       stage: 'reveal',
       currentScreen: 1
     });
@@ -995,83 +995,106 @@ class EurekaLite {
     window.EurekaStorage.updateCard(id, 'scene', { content: sceneContent });
     window.EurekaStorage.updateCard(id, 'journey', { content: JSON.stringify(journeyCards) });
     window.EurekaStorage.updateCard(id, 'projectBriefing', { content: JSON.stringify({
-      targetUser: '经常在不同生活场景间切换的城市青年（25-35岁，上班族/租房族）',
-      scene: '每天在家→通勤→公司→健身/社交→回家多场景切换，常因习惯忘记带当场景才需要的关键物品',
-      insight: '人的遗忘往往不是记性差，而是"场景-物品"的映射关系从未被显式管理'
+      targetUser: '25-35岁职场知识工作者（产品经理/设计师/管理者），使用多个工具处理碎片信息',
+      scene: '信息散布在微信/飞书/邮件/备忘录/白板等多个工具，导致查找困难、重复讨论、决策遗漏',
+      insight: '用户的痛点不是"信息太少"，而是"信息太多太散"——真正缺失的不是记录工具，而是自动聚合与主题归档'
     }) });
     window.EurekaStorage.updateCard(id, 'businessGoal', { content: JSON.stringify({
-      goal: '做一款在场景切换前自动提醒、帮用户打包关键物品的工具',
-      consensus: '用户愿意为"不再折返焦虑"付费，清单/提醒类工具的付费意愿已被市场验证'
+      goal: '做一款能自动跨工具聚合碎片信息、按主题/项目智能归档、且支持快速回顾与检索的知识管理工具',
+      consensus: '知识工作者为"节省翻找时间"有明显的付费意愿，Notion/飞书文档的普及已教育了市场'
     }) });
     window.EurekaStorage.updateCard(id, 'findInsight', { content: JSON.stringify({
-      findings: [{ need: '用户不知道每个场景到底需要带什么', distill: '把"遗忘"显性化：管理好"场景→物品"的映射，就能在切换前主动提醒' }]
+      findings: [
+        { need: '用户需要"一次记录，多端可取"，而非每个工具记一点', distill: '信息的价值不在于被记录，而在于被需要时能立刻出现' },
+        { need: '用户需要信息自动按主题归类，而非手动分类', distill: '降低"整理"的心理门槛比增加"记录"功能更重要' }
+      ]
     }) });
 
     // —— Inspire 阶段 ——
     window.EurekaStorage.updateCard(id, 'hmw', { content: JSON.stringify({
       dimensions: {
-        user: [{ id: 'hmw1', text: '我们如何帮城市青年记住每个场景的关键物品？' }],
-        scenario: [{ id: 'hmw2', text: '我们如何让"切换场景前打包"变成无脑操作？' }],
-        ecosystem: [{ id: 'hmw3', text: '我们如何在忘带时提供即时兜底？' }]
+        user: [
+          { id: 'hmw1', text: '我们如何让知识工作者不再"记得有过，但找不到"？' },
+          { id: 'hmw2', text: '我们如何让信息的记录与归档变得无感？' }
+        ],
+        scenario: [
+          { id: 'hmw3', text: '我们如何在用户需要某条信息时，让它以零成本的方式出现？' }
+        ],
+        ecosystem: [
+          { id: 'hmw4', text: '我们如何在不开发现成的情况下，通过集成已有工具实现跨平台信息聚合？' }
+        ]
       },
-      selectedIds: ['hmw1', 'hmw2']
+      selectedIds: ['hmw1', 'hmw3']
     }) });
     window.EurekaStorage.updateCard(id, 'ideas', { content: JSON.stringify([
-      { id: 'idea1', title: '场景智能清单：根据日程+定位自动生成待带清单', description: '绑定日历与定位，出门前推送清单，可勾选确认' },
-      { id: 'idea2', title: '一包搞定：按场景分装的模块化收纳包', description: '通勤包/健身包/办公包，每包预置该场景高频物品' },
-      { id: 'idea3', title: '忘带兜底：扫码借/即时配送关键物品', description: '与便利店、共享充电宝网络合作实现即时补给' }
+      { id: 'idea1', title: 'MOMOS 信息中台：浏览器插件+微信bot+飞书bot，一键转发自动归档', description: '通过插件和聊天机器人在各端捕获信息，AI 自动提取主题标签并归档，无需打开 App' },
+      { id: 'idea2', title: '智能周报回顾：每周自动生成"信息地图"，展示重要主题和关联', description: '基于本周捕获信息，用 AI 生成主题脉络图、关键决策点、待办进展摘要' },
+      { id: 'idea3', title: '主题卡片搜索：用自然语言即可搜到之前记过的任何内容', description: '支持模糊语义搜索，"上次提到的那个关于用户增长的方案"即可搜到，无需精确关键词' }
     ]) });
 
     // —— Shape 阶段 ——
     window.EurekaStorage.updateCard(id, 'shapeSummary', { content: JSON.stringify({
       concept: {
-        oneLiner: 'ScenePack：基于场景与日程，在切换前自动提醒并帮你打包关键物品的创新工具',
-        features: ['场景-物品映射库', '出门前智能清单推送', '一键勾选确认', '常忘物品提醒', '共享兜底网络接入'],
-        characteristics: ['轻量无感', '本地优先、隐私友好', '跨场景连续记忆'],
-        boundaries: ['不做全品类购物', '不替代旅行箱', '首版仅覆盖城市高频场景']
+        oneLiner: 'MOMOS：一个让知识工作者不再"找东西"的智能信息聚合器——你只管记录，我们管整理与检索',
+        features: [
+          '浏览器一键转发插件（Chrome/Edge）',
+          '微信/飞书 Bot 转发归档',
+          'AI 自动提取主题标签与摘要',
+          '自然语言语义搜索',
+          '每周"信息地图"智能回顾',
+          '主题卡片式浏览与关联推荐'
+        ],
+        characteristics: ['无感记录（无需打开 App）', 'AI 自动整理（零手动）', '跨工具聚合（不做新工具，连接现有工具）', '隐私优先（本地+可选云同步）'],
+        boundaries: ['不做聊天工具（不替代微信/飞书）', '不做文档编辑器（不替代 Notion/飞书文档）', '首版仅支持文本类信息转发，不支持文件'] ,
+        feasibility: '浏览器侧栏 + Bot 方案可在不开发新 App 的情况下快速验证MVP'
       },
       storyboard: [
-        { title: '早晨出门', desc: 'App 根据日历判断今天有健身，推送"健身包清单：运动服/水杯/毛巾"' },
-        { title: '通勤前', desc: '检测到已离家，提醒"别忘带门禁卡"，用户勾选确认' },
-        { title: '到公司', desc: '自动标记门禁卡已带，沉淀用户习惯' },
-        { title: '健身', desc: '出示清单逐项核对，未带水杯则推送附近便利店' },
-        { title: '回家', desc: '提醒带钥匙，并与家人共享"已到家"状态' },
-        { title: '每周复盘', desc: '周报展示"本周帮你避免 N 次折返"' }
+        { title: '安装插件', desc: '用户安装 MOMOS 浏览器插件，授权连接微信 Bot 和飞书 Bot' },
+        { title: '日常捕获', desc: '开会时看到一个有价值的观点，选中文字按快捷键 → 自动发送到 MOMOS，AI 打标签归档' },
+        { title: '微信转发', desc: '在微信看到一篇文章，转发给 MOMOS Bot → 自动提取摘要并归类到对应主题' },
+        { title: '回顾查找', desc: '项目复盘时，在 MOMOS 搜索"用户分层 决策依据" → 瞬间找到 3 个月前讨论的截图和结论' },
+        { title: '信息地图', desc: '周日收到智能回顾推送，本周捕获 42 条信息，自动归纳为 5 个主题，附带关联图谱' },
+        { title: '决策回溯', desc: '每次项目决策时，MOMOS 自动推送相关历史信息，帮助做更全面的判断' }
       ]
     }) });
 
     // —— Exam 阶段 ——
     window.EurekaStorage.updateCard(id, 'examSummary', { content: JSON.stringify({
-      testPlan: { purpose: '验证"自动清单是否真能减少忘带与折返焦虑"' },
+      testPlan: {
+        purpose: '验证"一键转发自动归档"是否能真正减少信息查找耗时',
+        duration: '14天',
+        participants: '8人（产品经理3人、设计师2人、管理者3人）',
+        method: '前7天不使用 MOMOS，记录每日"找信息"耗时；后7天使用 MOMOS，对比变化'
+      },
       testReport: {
-        effectiveValue: '8/10 测试者表示出门前清单让他们更安心，折返次数明显下降',
-        invalidValue: '2 人认为清单推送时机过早反而造成打扰',
-        newProblems: '部分场景识别不准（如临时会议、突发约会）',
-        newOpportunities: '可接入智能家居，离家自动锁门并提醒带钥匙'
+        effectiveValue: '7/8 测试者日均"找信息"耗时从 23 分钟降至 4 分钟，降低 83%；"信息安全感"评分从 5.2 增至 8.7',
+        invalidValue: '1 人认为 AI 标签不够精准，部分内容归类到错误主题，需要手动调整',
+        newProblems: '浏览器插件在部分企业内网环境下无法安装；Bot 转发偶尔有延迟',
+        newOpportunities: '有 2 名测试者提出"希望能共享团队信息地图"，表明团队协作版本有需求空间'
       },
       elevator: {
-        pitch: 'ScenePack 帮城市青年在场景切换前自动打包关键物品——你只管出门，我们管你别忘带。内测已帮用户减少约 70% 的折返焦虑。',
+        pitch: 'MOMOS 让知识工作者在 4 秒内找到任何之前记过的信息——不用翻聊天记录、不用找文档、不用回忆在哪存的。内测显示日均"找信息"耗时从 23 分钟降至 4 分钟。',
         iteration: [
-          { category: '产品', actions: ['打磨清单推送时机算法', '深度接入日历与定位', '上线场景模板市场'] },
-          { category: '增长', actions: ['校园/通勤社群冷启动', '与共享充电宝品牌合作', '发起"场景打包挑战"话题'] },
-          { category: '商业', actions: ['基础免费 + Pro 高级场景订阅', 'B 端企业员工关怀方案', '匿名场景数据增值服务'] }
+          { category: '产品', actions: ['打磨 AI 标签准确率', '支持企业内网部署插件', '增加团队信息地图功能'] },
+          { category: '增长', actions: ['产品经理/设计师社群内测推广', '发布"信息找人"效率对比工具', '与飞书/Notion 社区合作推广'] },
+          { category: '商业', actions: ['个人版免费（基础功能） + Pro 智能分析订阅', '团队版按席位收费', '企业版支持私有化部署'] }
         ]
       }
     }) });
     window.EurekaStorage.updateCard(id, 'examFourDimEval', { content: JSON.stringify({
       scores: { userValue: 5, businessValue: 4, feasibility: 4, innovation: 4 },
       reasons: {
-        userValue: '直击高频痛点，体验提升明显',
-        businessValue: '付费意愿明确，可延展订阅模式',
-        feasibility: 'MVP 可用现有提醒与日历能力实现',
-        innovation: '把"遗忘"显性化为场景-物品管理'
+        userValue: '直击知识工作者的高频痛点，"找东西"时间减少 83% 的体验提升非常显著',
+        businessValue: '个人版免费引流 + Pro/团队版收费模式清晰；企业私有化部署有溢价空间',
+        feasibility: '浏览器插件+Bot MVP 可在 4 周内完成，无需开发新 App',
+        innovation: '"无感记录 + AI 自动归档 + 多维回顾"三合一的方案差异化明显'
       }
     }) });
 
     // 取回最新项目（含全部卡片），直接展示完整全景图供"一键体验"
     AppState.currentProjectId = id;
     const saved = window.EurekaStorage.getProject(id);
-    this.showToast('已加载完整示例项目，先看全景图，再回到各阶段照着学～');
+    this.showToast('已加载 MOMOS 示例项目，完整四阶段数据就位，可直接查看全景图～');
     this.showPanorama(saved);
   }
 
@@ -1530,6 +1553,8 @@ class EurekaLite {
         if (page) AppState.navigate(page);
       });
     });
+    // 同步 drawer open 状态（因模板没有硬编码 open）
+    this.updateDrawer();
   }
 
   updateDrawer() {
