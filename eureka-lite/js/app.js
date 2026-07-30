@@ -2060,6 +2060,10 @@ class EurekaLite {
     this.currentAIMode = mode;
     this.aiModeHistory = [];
 
+    // 清空上一模式的 DOM 消息，避免所有模式的内容堆叠展示
+    const messagesContainer = document.getElementById('aiModeMessages');
+    if (messagesContainer) messagesContainer.innerHTML = '';
+
     // Update UI
     const chat = document.getElementById('aiModeChat');
     const buttons = document.querySelectorAll('.ai-mode-btn');
@@ -2073,7 +2077,10 @@ class EurekaLite {
       document.getElementById('aiModeChatTitle').textContent = info.title;
       document.getElementById('aiModeChatSubtitle').textContent = info.subtitle;
       const input = document.getElementById('aiModeInput');
-      if (input) input.placeholder = info.placeholder;
+      if (input) {
+        input.placeholder = info.placeholder;
+        input.value = '';
+      }
 
       // 自动滚动到对话区，让用户看到点击后的反馈
       const body = document.querySelector('.ai-panel-body');
@@ -2090,8 +2097,11 @@ class EurekaLite {
     this.addAIModeMessage('ai', '...', true);
     try {
       const result = await AIAssistant.generateAIModeResponse(mode, ctxLines.join('\n'), initialPrompt);
+      // 若用户已切换模式，则丢弃过期回复
+      if (this.currentAIMode !== mode) return;
       this.updateLastAIMessage(result);
     } catch (e) {
+      if (this.currentAIMode !== mode) return;
       const fallback = await AIAssistant.generateAIModeResponse(mode, '', '');
       this.updateLastAIMessage(typeof fallback === 'string' ? fallback : 'AI 模式暂不可用');
     }
@@ -2113,11 +2123,14 @@ class EurekaLite {
     const history = this.aiModeHistory.map(m => `${m.role === 'user' ? '用户' : 'AI'}：${m.text}`).join('\n');
     const prompt = `以下是我们之前的对话：\n${history}\n\n请基于当前项目上下文继续回应用户。`;
 
+    const requestMode = this.currentAIMode;
     this.addAIModeMessage('ai', '...', true);
     try {
-      const result = await AIAssistant.generateAIModeResponse(this.currentAIMode, ctxLines.join('\n'), prompt);
+      const result = await AIAssistant.generateAIModeResponse(requestMode, ctxLines.join('\n'), prompt);
+      if (this.currentAIMode !== requestMode) return;
       this.updateLastAIMessage(result);
     } catch (e) {
+      if (this.currentAIMode !== requestMode) return;
       this.updateLastAIMessage('抱歉，AI 响应失败，请检查网络或 API Key 配置。');
     }
   }
@@ -2134,10 +2147,33 @@ class EurekaLite {
     const div = document.createElement('div');
     div.className = `ai-message ${role}`;
     div.dataset.loading = isLoading ? 'true' : 'false';
-    div.innerHTML = `<div>${this.escapeHtml(text).replace(/\n/g, '<br>')}</div><div class="ai-message-time">${msg.time}</div>`;
+
+    if (role === 'ai') {
+      // AI 回复放在可编辑文本域中，方便用户修改、复制
+      div.innerHTML = `<textarea class="ai-message-textarea" rows="4" ${isLoading ? 'disabled' : ''}>${this.escapeHtml(text)}</textarea><div class="ai-message-time">${msg.time}</div>`;
+    } else {
+      div.innerHTML = `<div>${this.escapeHtml(text).replace(/\n/g, '<br>')}</div><div class="ai-message-time">${msg.time}</div>`;
+    }
     container.appendChild(div);
+
+    // AI 文本域自动撑开高度，并监听用户编辑
+    const textarea = div.querySelector('.ai-message-textarea');
+    if (textarea) {
+      this.autoResizeTextarea(textarea);
+      textarea.addEventListener('input', () => this.autoResizeTextarea(textarea));
+    }
+
     container.scrollTop = container.scrollHeight;
     return div;
+  }
+
+  /**
+   * Auto-resize a textarea to fit its content
+   */
+  autoResizeTextarea(textarea) {
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 240) + 'px';
   }
 
   /**
@@ -2149,7 +2185,14 @@ class EurekaLite {
     const lastAi = Array.from(container.querySelectorAll('.ai-message.ai')).pop();
     if (lastAi) {
       lastAi.dataset.loading = 'false';
-      lastAi.querySelector('div').innerHTML = this.escapeHtml(text).replace(/\n/g, '<br>');
+      const textarea = lastAi.querySelector('.ai-message-textarea');
+      if (textarea) {
+        textarea.disabled = false;
+        textarea.value = text;
+        this.autoResizeTextarea(textarea);
+      } else {
+        lastAi.querySelector('div').innerHTML = this.escapeHtml(text).replace(/\n/g, '<br>');
+      }
       const msg = this.aiModeHistory.filter(m => m.role === 'ai').pop();
       if (msg) msg.text = text;
     } else {
