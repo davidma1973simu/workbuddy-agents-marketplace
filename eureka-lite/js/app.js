@@ -307,13 +307,6 @@ class EurekaLite {
 
           <!-- 模式对话区 -->
           <div class="ai-mode-chat ${this.currentAIMode ? 'active' : ''}" id="aiModeChat">
-            <div class="ai-mode-chat-header">
-              <div class="ai-mode-chat-icon" id="aiModeChatIcon">💭</div>
-              <div>
-                <div class="ai-mode-chat-title" id="aiModeChatTitle">帮我想</div>
-                <div class="ai-mode-chat-subtitle" id="aiModeChatSubtitle">智能提问，补充思考维度，提供创意激发和案例推荐</div>
-              </div>
-            </div>
             <div class="ai-mode-messages" id="aiModeMessages"></div>
             <div class="ai-input-area">
               <textarea id="aiModeInput" rows="1" placeholder="描述你的想法，我会帮你补充思考角度..."></textarea>
@@ -2073,9 +2066,6 @@ class EurekaLite {
 
     if (chat) {
       chat.classList.add('active');
-      document.getElementById('aiModeChatIcon').textContent = info.icon;
-      document.getElementById('aiModeChatTitle').textContent = info.title;
-      document.getElementById('aiModeChatSubtitle').textContent = info.subtitle;
       const input = document.getElementById('aiModeInput');
       if (input) {
         input.placeholder = info.placeholder;
@@ -2173,7 +2163,7 @@ class EurekaLite {
   autoResizeTextarea(textarea) {
     if (!textarea) return;
     textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 240) + 'px';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 
   /**
@@ -2672,13 +2662,6 @@ class EurekaLite {
 
           <!-- 模式对话区 -->
           <div class="ai-mode-chat ${this.currentAIMode ? 'active' : ''}" id="aiModeChat">
-            <div class="ai-mode-chat-header">
-              <div class="ai-mode-chat-icon" id="aiModeChatIcon">💭</div>
-              <div>
-                <div class="ai-mode-chat-title" id="aiModeChatTitle">帮我想</div>
-                <div class="ai-mode-chat-subtitle" id="aiModeChatSubtitle">智能提问，补充思考维度，提供创意激发和案例推荐</div>
-              </div>
-            </div>
             <div class="ai-mode-messages" id="aiModeMessages"></div>
             <div class="ai-input-area">
               <textarea id="aiModeInput" rows="1" placeholder="描述你的想法，我会帮你补充思考角度..."></textarea>
