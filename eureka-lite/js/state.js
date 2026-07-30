@@ -154,6 +154,11 @@ const AppState = {
     this.events.emit('aiPanelToggle', this.aiPanelOpen);
   },
 
+  openAiPanel() {
+    this.aiPanelOpen = true;
+    this.events.emit('aiPanelToggle', true);
+  },
+
   closeAiPanel() {
     this.aiPanelOpen = false;
     this.events.emit('aiPanelToggle', false);
