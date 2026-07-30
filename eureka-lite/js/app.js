@@ -79,6 +79,8 @@ class EurekaLite {
   constructor() {
     this.container = document.getElementById('app');
     this.router = this.initRouter();
+    this.currentAIMode = null;
+    this.aiModeHistory = [];
   }
 
   /**
@@ -286,25 +288,47 @@ class EurekaLite {
         </div>
         <div class="ai-panel-body">
           <div class="ai-panel-status" id="aiPanelStatus"></div>
-          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
-            我在这里帮助你。有什么可以问我的：
-          </p>
-          <div class="ai-mode-buttons">
-            <button class="ai-mode-btn" data-action="brainstorm" style="background:rgba(224,122,47,0.15);border:1px solid rgba(224,122,47,0.4);color:#E07A2F;">
-              💭 帮我想
+
+          <!-- 模式选择（纵向卡片） -->
+          <div class="ai-mode-buttons" id="aiModeButtons">
+            <button class="ai-mode-btn ${this.currentAIMode === 'brainstorm' ? 'active' : ''}" data-action="brainstorm">
+              <span class="ai-mode-card-title">💭 帮我想</span>
+              <span class="ai-mode-card-subtitle">智能提问，补充思考维度</span>
             </button>
-            <button class="ai-mode-btn" data-action="critique" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#EF4444;">
-              🔍 批判我
+            <button class="ai-mode-btn ${this.currentAIMode === 'critique' ? 'active' : ''}" data-action="critique">
+              <span class="ai-mode-card-title">🔍 批判我</span>
+              <span class="ai-mode-card-subtitle">识别盲点与潜在风险</span>
             </button>
-            <button class="ai-mode-btn" data-action="research" style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.35);color:#3B82F6;">
-              🔎 查一查
+            <button class="ai-mode-btn ${this.currentAIMode === 'research' ? 'active' : ''}" data-action="research">
+              <span class="ai-mode-card-title">🔎 查一查</span>
+              <span class="ai-mode-card-subtitle">补充事实依据与案例</span>
             </button>
           </div>
-          <div class="ai-mode-divider" style="height:1px;background:var(--border-color,#333);margin:12px 0;"></div>
-          <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
-          <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
-          <button class="ai-suggestion-btn" data-action="prefill" id="homePrefillBtn">✨ 帮我预填</button>
-          <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
+
+          <!-- 模式对话区 -->
+          <div class="ai-mode-chat ${this.currentAIMode ? 'active' : ''}" id="aiModeChat">
+            <div class="ai-mode-chat-header">
+              <div class="ai-mode-chat-icon" id="aiModeChatIcon">💭</div>
+              <div>
+                <div class="ai-mode-chat-title" id="aiModeChatTitle">帮我想</div>
+                <div class="ai-mode-chat-subtitle" id="aiModeChatSubtitle">智能提问，补充思考维度，提供创意激发和案例推荐</div>
+              </div>
+            </div>
+            <div class="ai-mode-messages" id="aiModeMessages"></div>
+            <div class="ai-input-area">
+              <textarea id="aiModeInput" rows="1" placeholder="描述你的想法，我会帮你补充思考角度..."></textarea>
+              <button id="aiModeSendBtn">发送</button>
+            </div>
+          </div>
+
+          <!-- 快捷操作 -->
+          <div class="ai-suggestion-section">
+            <div class="ai-suggestion-section-title">快捷操作</div>
+            <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
+            <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
+            <button class="ai-suggestion-btn" data-action="prefill" id="homePrefillBtn">✨ 帮我预填</button>
+            <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
+          </div>
         </div>
       </div>
 
@@ -553,7 +577,19 @@ class EurekaLite {
 
     // AI mode buttons
     document.querySelectorAll('.ai-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => { AppState.openAiPanel(); this.updateAiPanel(); this.handleAiAction(btn.dataset.action); });
+      btn.addEventListener('click', () => {
+        AppState.openAiPanel();
+        this.selectAIMode(btn.dataset.action);
+      });
+    });
+
+    // AI mode chat send button
+    document.getElementById('aiModeSendBtn')?.addEventListener('click', () => this.sendAIModeMessage());
+    document.getElementById('aiModeInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.sendAIModeMessage();
+      }
     });
 
     // AI 设置入口（AI 面板内的齿轮按钮 + 首页横幅按钮）
@@ -1951,9 +1987,8 @@ class EurekaLite {
     const screen = AppState.currentScreen || 1;
     const project = AppState.currentProject;
 
-    // Get user's current input
-    const input = document.getElementById('screenInput');
-    const userInput = input?.value || project?.title || '';
+    // Get user's current input (handles screenInput / targetUserInput+sceneDescInput / screenInput2)
+    const userInput = this.getCurrentScreenUserInput() || project?.title || '';
     const aiOn = !!(window.AIService && window.AIService.isReady());
 
     switch (action) {
@@ -2007,69 +2042,217 @@ class EurekaLite {
         }
         break;
       }
-      // AI 预设模式：帮我想 / 批判我 / 查一查
-      case 'brainstorm':
-      case 'critique':
-      case 'research': {
-        const modeLabels = { brainstorm: '💭 帮我想', critique: '🔍 批判我', research: '🔎 查一查' };
-        this.showLoadingToast(`🤖 ${modeLabels[action]} 模式思考中...`);
-        try {
-          // 收集当前上下文
-          const stageInfo = Utils.getStageInfo(stage);
-          const ctxLines = [
-            `当前阶段: ${stageInfo?.name || stage}`,
-            `当前屏: ${screen}`,
-            `项目标题: ${project?.title || '未命名'}`,
-            `项目类别: ${project?.category || '未设定'}`
-          ];
-          if (project?.cards) {
-            const brief = project.cards.projectBriefing;
-            if (brief) {
-              let b = brief;
-              if (typeof b === 'object' && b.content) b = b.content;
-              if (typeof b === 'string') { try { b = JSON.parse(b); } catch(e) {} }
-              if (b && b.targetUser) ctxLines.push(`目标用户: ${String(b.targetUser).slice(0, 80)}`);
-            }
-          }
-          const result = await AIAssistant.generateAIModeResponse(action, ctxLines.join('\n'), userInput);
-          this.showAiModeResult(action, result, userInput);
-        } catch (e) {
-          const fallback = AIAssistant.generateAIModeResponse(action, '', '');
-          if (typeof fallback === 'string') this.showAiModeResult(action, fallback, userInput);
-          else this.showToast('AI 模式暂不可用');
-        }
-        break;
-      }
     }
   }
 
   /**
-   * Show AI mode result in the AI panel
+   * Select an AI mode and show the chat interface
    */
-  showAiModeResult(mode, result, userInput) {
-    const body = document.querySelector('.ai-panel-body');
-    if (!body) return;
-    const icons = { brainstorm: '💭', critique: '🔍', research: '🔎' };
-    const labels = { brainstorm: '帮我想', critique: '批判我', research: '查一查' };
-    const existing = body.querySelector('.ai-mode-result');
-    if (existing) existing.remove();
-    const div = document.createElement('div');
-    div.className = 'ai-mode-result';
-    div.style.cssText = 'padding:12px;background:var(--bg-card);border-radius:12px;margin-top:12px;border:1px solid var(--border-color);';
-    const processed = result.split('\n').filter(Boolean).map(l => l.trim()).join('<br>');
-    div.innerHTML = '<div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-primary);">' + (icons[mode] || '💡') + ' ' + (labels[mode] || mode) + '</div><div style="font-size:14px;color:var(--text-secondary);line-height:1.7;">' + processed + '</div>' + (userInput ? '<button class="btn btn-sm" id="useModeResultBtn" style="margin-top:10px;background:var(--reveal-primary);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;">📋 应用到输入框</button>' : '');
-    body.appendChild(div);
-    div.querySelector('#useModeResultBtn')?.addEventListener('click', () => {
-      const input = document.getElementById('screenInput');
-      if (input) {
-        const lines = result.split('\n').filter(l => l.trim().startsWith('✅') || l.trim().startsWith('⚠️') || l.trim().startsWith('🔎'));
-        const text = lines.length ? lines.join('\n') : result;
-        input.value = (input.value ? input.value + '\n---\n' : '') + text;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        this.showToast('已应用到输入框');
-      }
+  async selectAIMode(mode) {
+    const modes = {
+      brainstorm: { icon: '💭', title: '帮我想', subtitle: '智能提问，补充思考维度，提供创意激发和案例推荐', placeholder: '描述你的想法，我会帮你补充思考角度...' },
+      critique: { icon: '🔍', title: '批判我', subtitle: '像投资人一样诚恳质疑，帮你识别盲点和潜在风险', placeholder: '抛出你的方案或假设，我会帮你挑刺...' },
+      research: { icon: '🔎', title: '查一查', subtitle: '补充事实依据，指出需要验证的假设和调研方向', placeholder: '告诉我你想验证什么，我会帮你找方向...' }
+    };
+    const info = modes[mode];
+    if (!info) return;
+
+    this.currentAIMode = mode;
+    this.aiModeHistory = [];
+
+    // Update UI
+    const chat = document.getElementById('aiModeChat');
+    const buttons = document.querySelectorAll('.ai-mode-btn');
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.action === mode);
     });
-    body.scrollTop = body.scrollHeight;
+
+    if (chat) {
+      chat.classList.add('active');
+      document.getElementById('aiModeChatIcon').textContent = info.icon;
+      document.getElementById('aiModeChatTitle').textContent = info.title;
+      document.getElementById('aiModeChatSubtitle').textContent = info.subtitle;
+      const input = document.getElementById('aiModeInput');
+      if (input) input.placeholder = info.placeholder;
+
+      // 自动滚动到对话区，让用户看到点击后的反馈
+      const body = document.querySelector('.ai-panel-body');
+      if (body) {
+        setTimeout(() => chat.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+      }
+    }
+
+    // Generate initial AI message based on current context
+    const { stage, screen, project } = this.getAIContext();
+    const ctxLines = this.buildAIContextLines(stage, screen, project);
+    const initialPrompt = `基于当前项目上下文，请主动提出引导性问题或建议，帮助用户开始思考。不要问"你想聊什么"，直接给出有价值的切入点。`;
+
+    this.addAIModeMessage('ai', '...', true);
+    try {
+      const result = await AIAssistant.generateAIModeResponse(mode, ctxLines.join('\n'), initialPrompt);
+      this.updateLastAIMessage(result);
+    } catch (e) {
+      const fallback = await AIAssistant.generateAIModeResponse(mode, '', '');
+      this.updateLastAIMessage(typeof fallback === 'string' ? fallback : 'AI 模式暂不可用');
+    }
+  }
+
+  /**
+   * Send a message in the current AI mode chat
+   */
+  async sendAIModeMessage() {
+    const input = document.getElementById('aiModeInput');
+    const text = input?.value.trim();
+    if (!text || !this.currentAIMode) return;
+
+    this.addAIModeMessage('user', text);
+    input.value = '';
+
+    const { stage, screen, project } = this.getAIContext();
+    const ctxLines = this.buildAIContextLines(stage, screen, project);
+    const history = this.aiModeHistory.map(m => `${m.role === 'user' ? '用户' : 'AI'}：${m.text}`).join('\n');
+    const prompt = `以下是我们之前的对话：\n${history}\n\n请基于当前项目上下文继续回应用户。`;
+
+    this.addAIModeMessage('ai', '...', true);
+    try {
+      const result = await AIAssistant.generateAIModeResponse(this.currentAIMode, ctxLines.join('\n'), prompt);
+      this.updateLastAIMessage(result);
+    } catch (e) {
+      this.updateLastAIMessage('抱歉，AI 响应失败，请检查网络或 API Key 配置。');
+    }
+  }
+
+  /**
+   * Add a message to the AI mode chat
+   */
+  addAIModeMessage(role, text, isLoading = false) {
+    const container = document.getElementById('aiModeMessages');
+    if (!container) return;
+    const msg = { role, text, time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }), isLoading };
+    this.aiModeHistory.push(msg);
+
+    const div = document.createElement('div');
+    div.className = `ai-message ${role}`;
+    div.dataset.loading = isLoading ? 'true' : 'false';
+    div.innerHTML = `<div>${this.escapeHtml(text).replace(/\n/g, '<br>')}</div><div class="ai-message-time">${msg.time}</div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+  }
+
+  /**
+   * Update the last AI message (used for streaming/fallback)
+   */
+  updateLastAIMessage(text) {
+    const container = document.getElementById('aiModeMessages');
+    if (!container) return;
+    const lastAi = Array.from(container.querySelectorAll('.ai-message.ai')).pop();
+    if (lastAi) {
+      lastAi.dataset.loading = 'false';
+      lastAi.querySelector('div').innerHTML = this.escapeHtml(text).replace(/\n/g, '<br>');
+      const msg = this.aiModeHistory.filter(m => m.role === 'ai').pop();
+      if (msg) msg.text = text;
+    } else {
+      this.addAIModeMessage('ai', text);
+    }
+  }
+
+  /**
+   * Get current AI context
+   */
+  getAIContext() {
+    return {
+      stage: AppState.currentStage || 'reveal',
+      screen: AppState.currentScreen || 1,
+      project: AppState.currentProject
+    };
+  }
+
+  /**
+   * Build context lines for AI mode
+   */
+  buildAIContextLines(stage, screen, project) {
+    const stageInfo = Utils.getStageInfo(stage);
+    const ctxLines = [
+      `当前阶段: ${stageInfo?.name || stage}`,
+      `当前屏: ${screen}`,
+      `项目标题: ${project?.title || '未命名'}`,
+      `项目类别: ${project?.category || '未设定'}`
+    ];
+    if (project?.cards) {
+      const brief = project.cards.projectBriefing;
+      if (brief) {
+        let b = brief;
+        if (typeof b === 'object' && b.content) b = b.content;
+        if (typeof b === 'string') { try { b = JSON.parse(b); } catch(e) {} }
+        if (b && b.targetUser) ctxLines.push(`目标用户: ${String(b.targetUser).slice(0, 80)}`);
+      }
+    }
+    const input = document.getElementById('screenInput');
+    if (input?.value?.trim()) ctxLines.push(`当前输入框内容: ${input.value.trim().slice(0, 200)}`);
+    return ctxLines;
+  }
+
+  /**
+   * Get the current user input text for AI prefill, accounting for different screen layouts
+   */
+  getCurrentScreenUserInput() {
+    const targetUserInput = document.getElementById('targetUserInput');
+    const sceneDescInput = document.getElementById('sceneDescInput');
+    if (targetUserInput || sceneDescInput) {
+      const targetUser = targetUserInput?.value?.trim() || '';
+      const sceneDesc = sceneDescInput?.value?.trim() || '';
+      if (targetUser || sceneDesc) {
+        return `【目标用户】${targetUser}\n【场景描述】${sceneDesc}`;
+      }
+    }
+    const screenInput = document.getElementById('screenInput');
+    if (screenInput) return screenInput.value || '';
+    const screenInput2 = document.getElementById('screenInput2');
+    return screenInput2?.value || AppState.currentProject?.title || '';
+  }
+
+  /**
+   * Apply AI prefill content to the correct input fields for the current screen
+   */
+  applyPrefillContent(content) {
+    const stage = AppState.currentStage;
+    const screen = AppState.currentScreen;
+    const targetUserInput = document.getElementById('targetUserInput');
+    const sceneDescInput = document.getElementById('sceneDescInput');
+    const screenInput = document.getElementById('screenInput');
+    const screenInput2 = document.getElementById('screenInput2');
+
+    if (targetUserInput || sceneDescInput) {
+      // Reveal Screen 1: parse structured sections and apply to the two fields
+      const targetMatch = content.match(/【目标用户】\s*([\s\S]*?)(?=\n\s*【|$)/);
+      const sceneMatch = content.match(/【(?:场景描述|使用场景)】\s*([\s\S]*?)(?=\n\s*【|$)/);
+      const painMatch = content.match(/【(?:痛点\/挑战|痛点)】\s*([\s\S]*?)(?=\n\s*【|$)/);
+
+      if (targetMatch && targetUserInput) {
+        targetUserInput.value = targetMatch[1].trim();
+        targetUserInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (sceneDescInput) {
+        const parts = [sceneMatch?.[1], painMatch?.[1]].filter(Boolean).map(s => s.trim()).filter(Boolean);
+        if (parts.length) {
+          sceneDescInput.value = parts.join('\n\n');
+          sceneDescInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+      this.saveCurrentScreenContent(stage, screen);
+      return;
+    }
+
+    if (screenInput) {
+      screenInput.value = content;
+      screenInput.dispatchEvent(new Event('input', { bubbles: true }));
+      this.saveCurrentScreenContent(stage, screen);
+    } else if (screenInput2) {
+      screenInput2.value = content;
+      screenInput2.dispatchEvent(new Event('input', { bubbles: true }));
+      this.saveCurrentScreenContent(stage, screen);
+    }
   }
 
   /**
@@ -2106,11 +2289,7 @@ class EurekaLite {
     modal.querySelector('.ai-panel-close')?.addEventListener('click', () => modal.remove());
     modal.querySelector('#prefillCancel')?.addEventListener('click', () => modal.remove());
     modal.querySelector('#prefillApply')?.addEventListener('click', () => {
-      const input = document.getElementById('screenInput');
-      if (input) {
-        input.value = prefill.content;
-        this.autoSaveScreenContent(AppState.currentStage, AppState.currentScreen, prefill.content);
-      }
+      this.applyPrefillContent(prefill.content);
       modal.remove();
       this.showToast('✨ 内容已更新');
     });
@@ -2431,13 +2610,47 @@ class EurekaLite {
         </div>
         <div class="ai-panel-body">
           <div class="ai-panel-status" id="aiPanelStatus"></div>
-          <p style="color: #A1A1A1; font-size: 14px; margin-bottom: 16px;">
-            我在这里帮助你。有什么可以问我的：
-          </p>
-          <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
-          <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
-          <button class="ai-suggestion-btn" data-action="prefill" id="modulePrefillBtn">✨ 帮我预填</button>
-          <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
+
+          <!-- 模式选择（纵向卡片） -->
+          <div class="ai-mode-buttons" id="aiModeButtons">
+            <button class="ai-mode-btn ${this.currentAIMode === 'brainstorm' ? 'active' : ''}" data-action="brainstorm">
+              <span class="ai-mode-card-title">💭 帮我想</span>
+              <span class="ai-mode-card-subtitle">智能提问，补充思考维度</span>
+            </button>
+            <button class="ai-mode-btn ${this.currentAIMode === 'critique' ? 'active' : ''}" data-action="critique">
+              <span class="ai-mode-card-title">🔍 批判我</span>
+              <span class="ai-mode-card-subtitle">识别盲点与潜在风险</span>
+            </button>
+            <button class="ai-mode-btn ${this.currentAIMode === 'research' ? 'active' : ''}" data-action="research">
+              <span class="ai-mode-card-title">🔎 查一查</span>
+              <span class="ai-mode-card-subtitle">补充事实依据与案例</span>
+            </button>
+          </div>
+
+          <!-- 模式对话区 -->
+          <div class="ai-mode-chat ${this.currentAIMode ? 'active' : ''}" id="aiModeChat">
+            <div class="ai-mode-chat-header">
+              <div class="ai-mode-chat-icon" id="aiModeChatIcon">💭</div>
+              <div>
+                <div class="ai-mode-chat-title" id="aiModeChatTitle">帮我想</div>
+                <div class="ai-mode-chat-subtitle" id="aiModeChatSubtitle">智能提问，补充思考维度，提供创意激发和案例推荐</div>
+              </div>
+            </div>
+            <div class="ai-mode-messages" id="aiModeMessages"></div>
+            <div class="ai-input-area">
+              <textarea id="aiModeInput" rows="1" placeholder="描述你的想法，我会帮你补充思考角度..."></textarea>
+              <button id="aiModeSendBtn">发送</button>
+            </div>
+          </div>
+
+          <!-- 快捷操作 -->
+          <div class="ai-suggestion-section">
+            <div class="ai-suggestion-section-title">快捷操作</div>
+            <button class="ai-suggestion-btn" data-action="suggest">📝 给我填写建议</button>
+            <button class="ai-suggestion-btn" data-action="example">📚 参考案例</button>
+            <button class="ai-suggestion-btn" data-action="prefill" id="modulePrefillBtn">✨ 帮我预填</button>
+            <button class="ai-suggestion-btn" data-action="feedback">💬 给我反馈</button>
+          </div>
         </div>
       </div>
 
@@ -4968,29 +5181,28 @@ class EurekaLite {
       this.completeStage(stage);
     });
 
-    // AI Prefill button (generic screenInput) - now powered by DeepSeek
+    // AI Prefill button (generic) - handles screenInput / targetUserInput+sceneDescInput / screenInput2
     document.getElementById('aiPrefillBtn')?.addEventListener('click', async (e) => {
-      const input = document.getElementById('screenInput');
       const screenNum = getCurrentScreen();
-      if (!input) return;
+      const hasInput = document.getElementById('screenInput') || document.getElementById('screenInput2') || document.getElementById('targetUserInput') || document.getElementById('sceneDescInput');
+      if (!hasInput) return;
       const btn = e.currentTarget;
       const aiOn = !!(window.AIService && window.AIService.isReady());
       const originalText = btn.textContent;
       btn.disabled = true;
       btn.textContent = aiOn ? '🤖 DeepSeek 生成中...' : 'AI 生成中...';
       try {
+        const originalInput = this.getCurrentScreenUserInput();
         const prefill = await AIAssistant.generatePrefillContentAI(
           { stage, screen: screenNum, type: 'text' },
-          input.value,
+          originalInput,
           AppState.currentProject
         );
         if (prefill?.content) {
-          if (input.value && input.value.trim().length >= 5) {
-            this.showPrefillDiff(input.value, prefill);
+          if (originalInput && originalInput.trim().length >= 5) {
+            this.showPrefillDiff(originalInput, prefill);
           } else {
-            input.value = prefill.content;
-            input.dispatchEvent(new Event('input'));
-            this.autoSaveScreenContent(stage, screenNum, input.value);
+            this.applyPrefillContent(prefill.content);
             this.showToast('✨ AI 已生成初稿，你可以继续编辑修订');
           }
         } else {
@@ -5139,7 +5351,19 @@ class EurekaLite {
 
     // AI mode buttons
     document.querySelectorAll('.ai-mode-btn').forEach(btn => {
-      btn.addEventListener('click', () => { AppState.openAiPanel(); this.updateAiPanel(); this.handleAiAction(btn.dataset.action); });
+      btn.addEventListener('click', () => {
+        AppState.openAiPanel();
+        this.selectAIMode(btn.dataset.action);
+      });
+    });
+
+    // AI mode chat send button
+    document.getElementById('aiModeSendBtn')?.addEventListener('click', () => this.sendAIModeMessage());
+    document.getElementById('aiModeInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.sendAIModeMessage();
+      }
     });
 
     // AI 设置入口（模块内 AI 面板齿轮）
