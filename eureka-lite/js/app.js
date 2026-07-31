@@ -1062,6 +1062,9 @@ class EurekaLite {
         window.EurekaStorage.updateProject(existing.id, { isExample: true });
         existing.isExample = true;
       }
+      // 兼容旧示例：将 HMW 维度键标准化为 4 维模型，
+      // 否则 Inspire 的 HMW 屏渲染会崩溃，导致无法从 Reveal 跳转到 Inspire
+      this.normalizeExampleHmw(existing.id);
       AppState.currentProjectId = existing.id;
       this.showToast('已为您打开示例项目（避免重复创建）');
       this.showPanorama(existing);
@@ -1101,28 +1104,27 @@ class EurekaLite {
       goal: '做一款能自动跨工具聚合碎片信息、按主题/项目智能归档、且支持快速回顾与检索的知识管理工具',
       consensus: '知识工作者为"节省翻找时间"有明显的付费意愿，Notion/飞书文档的普及已教育了市场'
     }) });
-    window.EurekaStorage.updateCard(id, 'findInsight', { content: JSON.stringify({
-      findings: [
-        { need: '用户需要"一次记录，多端可取"，而非每个工具记一点', distill: '信息的价值不在于被记录，而在于被需要时能立刻出现' },
-        { need: '用户需要信息自动按主题归类，而非手动分类', distill: '降低"整理"的心理门槛比增加"记录"功能更重要' }
-      ]
-    }) });
+    // 注意：findInsight 不在这里预置数据，R3 会严格从 R2 旅程地图的「关键发现」自动生成，
+    // 避免示例项目出现与 R2 不一致的多余 FIND 标签页。
 
     // —— Inspire 阶段 ——
     window.EurekaStorage.updateCard(id, 'hmw', { content: JSON.stringify({
       dimensions: {
-        user: [
-          { id: 'hmw1', text: '我们如何让知识工作者不再"记得有过，但找不到"？' },
-          { id: 'hmw2', text: '我们如何让信息的记录与归档变得无感？' }
+        amplify: [
+          { id: 'hmw1', text: '我们如何让信息的记录与归档变得无感，让知识自然沉淀？' },
+          { id: 'hmw3', text: '我们如何在用户需要某条信息时，让它以零成本的方式自动出现？' }
         ],
-        scenario: [
-          { id: 'hmw3', text: '我们如何在用户需要某条信息时，让它以零成本的方式出现？' }
+        remove: [
+          { id: 'hmw2', text: '我们如何让知识工作者不再"记得有过，但找不到"？' }
         ],
-        ecosystem: [
-          { id: 'hmw4', text: '我们如何在不开发现成的情况下，通过集成已有工具实现跨平台信息聚合？' }
+        flip: [
+          { id: 'hmw4', text: '我们如何在不自研底层存储的情况下，通过集成已有工具实现跨平台信息聚合？' }
+        ],
+        diverge: [
+          { id: 'hmw5', text: '如果信息能像"第二大脑"一样主动推送相关上下文，工作会变成什么样？' }
         ]
       },
-      selectedIds: ['hmw1', 'hmw3']
+      selectedIds: ['hmw2', 'hmw3']
     }) });
     window.EurekaStorage.updateCard(id, 'ideas', { content: JSON.stringify([
       { id: 'idea1', title: 'MOMOS 信息中台：浏览器插件+微信bot+飞书bot，一键转发自动归档', description: '通过插件和聊天机器人在各端捕获信息，AI 自动提取主题标签并归档，无需打开 App' },
@@ -1194,6 +1196,36 @@ class EurekaLite {
     const saved = window.EurekaStorage.getProject(id);
     this.showToast('已加载 MOMOS 示例项目，完整四阶段数据就位，可直接查看全景图～');
     this.showPanorama(saved);
+  }
+
+  /**
+   * 兼容旧示例项目：将 HMW 维度键归一到标准 4 维（amplify/remove/flip/diverge）。
+   * 旧示例曾使用 user/scenario/ecosystem 等键，会导致 Inspire 的 HMW 屏渲染崩溃，
+   * 进而使 Reveal「完成」后无法跳转到 Inspire 阶段。该方法幂等、非破坏（保留条目内容）。
+   */
+  normalizeExampleHmw(id) {
+    const STANDARD = ['amplify', 'remove', 'flip', 'diverge'];
+    const LEGACY = { user: 'amplify', scenario: 'remove', ecosystem: 'flip' };
+    const proj = window.EurekaStorage.getProject(id);
+    if (!proj || !proj.cards || !proj.cards.hmw) return;
+    let raw = proj.cards.hmw;
+    if (typeof raw === 'object' && raw !== null && raw.content) raw = raw.content;
+    let data;
+    try { data = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { return; }
+    if (!data || !data.dimensions) return;
+    const hasLegacy = Object.keys(data.dimensions).some(k => !STANDARD.includes(k));
+    if (!hasLegacy) return; // 已是标准结构，无需处理
+    const newDims = { amplify: [], remove: [], flip: [], diverge: [] };
+    let n = 1;
+    Object.keys(data.dimensions).forEach(k => {
+      const target = LEGACY[k] || 'diverge';
+      (data.dimensions[k] || []).forEach(item => {
+        newDims[target].push({ id: item.id || ('hmw' + n), text: item.text });
+        n++;
+      });
+    });
+    data.dimensions = newDims;
+    window.EurekaStorage.updateCard(id, 'hmw', { content: JSON.stringify(data) });
   }
 
   /**
@@ -3275,53 +3307,68 @@ class EurekaLite {
       }
     }
 
-    // 🔄 增量同步：每次渲染时都将旅程图中的关键发现合并进 findings
-    // 1) 新勾选的关键发现 → 追加为新的 FIND 标签页（fact 自动预填）
-    // 2) 已存在但 fact 为空的 → 自动补填 fact
-    // 3) 用户已填写的内容一律不覆盖
+    // 🔄 严格同步：R3 的关键发现必须完全来自上一屏（R2 用户旅程地图）的关键发现产出。
+    // 1) 以当前 R2 的关键发现为唯一来源重建 findings 列表
+    // 2) 已填写的内容按 sourceFinding/fact 匹配后完整保留
+    // 3) 不在 R2 中的旧/示例数据会被清理，避免多出莫名其妙的标签页
     let findingsChanged = false;
-    if (keyFindings.length > 0) {
-      keyFindings.forEach(kf => {
-        const src = (kf.discovery || '').trim();
-        if (!src) return;
-        const existing = findings.find(f =>
-          (f.sourceFinding || '').trim() === src || (f.fact || '').trim() === src
-        );
-        if (!existing) {
-          findings.push({
-            sourceFinding: src,
-            fact: src,
-            interpret: '',
-            need: '',
-            distill: '',
-            completedSteps: [],
-            factOutput: '',
-            interpretOutput: '',
-            needOutput: '',
-            distillOutput: ''
-          });
+    const oldFindings = findings.slice();
+    const newFindings = [];
+    keyFindings.forEach(kf => {
+      const src = (kf.discovery || '').trim();
+      if (!src) return;
+      const existing = oldFindings.find(f =>
+        (f.sourceFinding || '').trim() === src || (f.fact || '').trim() === src
+      );
+      if (existing) {
+        newFindings.push({
+          ...existing,
+          sourceFinding: src,
+          fact: (existing.fact || '').trim() ? existing.fact : src
+        });
+      } else {
+        newFindings.push({
+          sourceFinding: src,
+          fact: src,
+          interpret: '',
+          need: '',
+          distill: '',
+          completedSteps: [],
+          factOutput: '',
+          interpretOutput: '',
+          needOutput: '',
+          distillOutput: ''
+        });
+      }
+    });
+
+    if (newFindings.length !== oldFindings.length) {
+      findingsChanged = true;
+    } else {
+      for (let i = 0; i < newFindings.length; i++) {
+        if ((newFindings[i].sourceFinding || '').trim() !== (oldFindings[i].sourceFinding || '').trim()) {
           findingsChanged = true;
-        } else {
-          if (!(existing.fact || '').trim()) {
-            existing.fact = src;
-            findingsChanged = true;
-          }
-          if (!(existing.sourceFinding || '').trim()) {
-            existing.sourceFinding = src;
-            findingsChanged = true;
-          }
+          break;
         }
-      });
+      }
+    }
+    findings = newFindings;
+
+    // 如果当前激活的标签页已被清理，回到第一个
+    const stillActive = findings[activeFindingIndex];
+    if (!stillActive && findings.length > 0) {
+      activeFindingIndex = 0;
+      findingsChanged = true;
     }
 
-    // 🔴 持久化：新建或同步后的 findings 立即写入 storage
+    // 🔴 持久化：同步后的 findings 立即写入 storage
     // 否则 saveFindData() 会因 findings 为空而提前 return，导致 AI 结果永远无法保存
     if (findingsChanged) {
       try {
         const initJson = JSON.stringify({ findings, activeFindingIndex });
         this.saveScreenContent('reveal', 3, initJson);
         this.autoSaveScreenContent('reveal', 3, initJson);
-        console.log(`[FIND] ✅ 已同步 ${findings.length} 个关键发现的 FIND 数据（含新增/补填）`);
+        console.log(`[FIND] ✅ 已严格同步 ${findings.length} 个关键发现（仅来自 R2 用户旅程）`);
       } catch (e) {
         console.warn('[FIND] ⚠️ findings 同步持久化失败:', e);
       }
@@ -4689,10 +4736,17 @@ class EurekaLite {
     };
 
     // Collect all items for evaluation matrix
+    // 防御：示例项目历史数据中维度键可能不是标准的 4 维，
+    // 用兼容配置兜底，避免渲染 Inspire 时整体崩溃（否则会导致无法跳转到 Inspire 阶段）
+    const effConfig = { ...dimConfig };
+    Object.keys(dimensions || {}).forEach(k => {
+      if (!effConfig[k]) effConfig[k] = { icon: '💡', label: k, desc: '', color: '#E07A2F' };
+    });
+
     const allItems = [];
     Object.keys(dimensions).forEach(key => {
-      dimensions[key].forEach(item => {
-        allItems.push({ ...item, dimKey: key, dimLabel: dimConfig[key].label });
+      (dimensions[key] || []).forEach(item => {
+        allItems.push({ ...item, dimKey: key, dimLabel: (effConfig[key] || effConfig[k] || dimConfig[key] || { label: key }).label });
       });
     });
 
@@ -4745,8 +4799,8 @@ class EurekaLite {
             点击各维度展开，AI 生成建议或手动添加 HMW。目标：每个维度 1-2 条，总计 6-8 条。
           </div>
           <div class="hmw-dimensions-list">
-            ${Object.keys(dimConfig).map(key => {
-              const cfg = dimConfig[key];
+            ${Object.keys(effConfig).map(key => {
+              const cfg = effConfig[key];
               const items = dimensions[key] || [];
               return `
                 <div class="hmw-dimension-card" data-dim="${key}">
@@ -4810,7 +4864,7 @@ class EurekaLite {
                         <input type="checkbox" class="hmw-eval-check" data-id="${item.id}" ${isSelected ? 'checked' : ''} />
                       </td>
                       <td>
-                        <span class="hmw-eval-dim-tag" style="background:${dimConfig[item.dimKey].color}20;color:${dimConfig[item.dimKey].color}">${item.dimLabel}</span>
+                        <span class="hmw-eval-dim-tag" style="background:${(effConfig[item.dimKey] || dimConfig[item.dimKey] || { color: '#E07A2F' }).color}20;color:${(effConfig[item.dimKey] || dimConfig[item.dimKey] || { color: '#E07A2F' }).color}">${item.dimLabel}</span>
                         <span class="hmw-eval-text">${this.escapeHtml(item.text)}</span>
                       </td>
                       <td>
