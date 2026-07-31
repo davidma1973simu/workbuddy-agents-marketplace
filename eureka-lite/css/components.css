@@ -3319,23 +3319,44 @@
 .briefing-market-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: var(--space-sm);
-  background: var(--bg-input);
-  border-radius: var(--radius-md);
+  gap: 6px;
+  padding: var(--space-sm) 0;
+  background: transparent;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.briefing-market-cell:last-child,
+.briefing-market-cell.full {
+  border-bottom: none;
 }
 
 .briefing-market-cell strong {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--reveal-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.briefing-market-cell span {
-  font-size: var(--font-size-sm);
+.briefing-market-cell textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-xs) 0;
+  border: none;
+  border-bottom: 1px dashed var(--border-color);
+  border-radius: 0;
+  background: transparent;
   color: var(--text-primary);
-  line-height: 1.4;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  resize: none;
+  font-family: inherit;
+  outline: none;
+}
+
+.briefing-market-cell textarea:focus {
+  border-bottom-style: solid;
+  border-color: var(--reveal-primary);
 }
 
 .briefing-market-cell.full {

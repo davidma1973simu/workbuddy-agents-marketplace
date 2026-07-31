@@ -3399,11 +3399,14 @@ class EurekaLite {
             ${findings.map((f, i) => {
               const isCompleted = (f.completedSteps || []).length === 4;
               const stepCount = (f.completedSteps || []).length;
+              const tabTextRaw = (f.sourceFinding || f.fact || f.need || f.distill || `发现${i + 1}`).trim();
+              const tabText = this.escapeHtml(tabTextRaw.substring(0, 30));
+              const showEllipsis = tabTextRaw.length > 30 ? '...' : '';
               return `
                 <div class="find-tab ${i === activeFindingIndex ? 'active' : ''} ${isCompleted ? 'completed' : ''}"
                      data-index="${i}" id="findTab_${i}">
                   <span class="find-tab-badge">${isCompleted ? '✓' : (stepCount || '〇')}</span>
-                  <span class="find-tab-text">${this.escapeHtml((f.sourceFinding || `发现${i + 1}`).substring(0, 30))}${(f.sourceFinding || '').length > 30 ? '...' : ''}</span>
+                  <span class="find-tab-text">${tabText}${showEllipsis}</span>
                 </div>
               `;
             }).join('')}
@@ -7275,14 +7278,27 @@ class EurekaLite {
         this.hideTaskCompletionCapsule();
         const completed = window.EurekaStorage.getProject(AppState.currentProjectId)?.completedStages || [];
         if (!completed.includes(stage)) completed.push(stage);
-        window.EurekaStorage.updateProject(AppState.currentProjectId, {
+        const updatedProject = window.EurekaStorage.updateProject(AppState.currentProjectId, {
           stage: nextStage,
           currentScreen: 1,
           completedStages: completed
         });
 
+        // 同步到 AppState，避免 navigate 时重新读取旧缓存导致停留在原阶段
+        if (updatedProject) {
+          AppState.currentProject = updatedProject;
+          AppState.currentStage = nextStage;
+          AppState.currentScreen = 1;
+        }
+
         this.showToast(`🎉 ${stageInfo.name} 完成！+50 积分`);
-        AppState.navigate(nextStage, { projectId: AppState.currentProjectId });
+        try {
+          AppState.navigate(nextStage, { projectId: AppState.currentProjectId, stage: nextStage, screen: 1 });
+        } catch (err) {
+          console.error('[completeStage] navigate failed:', err);
+          // 兜底：直接渲染下一模块
+          this.renderModule(nextStage);
+        }
       }, 2500);
     } else {
       // Project complete - show panorama
