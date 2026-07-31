@@ -8792,7 +8792,7 @@ ${grid.outerHTML}
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('%c🚀 Eureka Lite v20260714.3 %c(全景图数据修复+迭代计划+下载+首页项目卡片)', 'color:#E07A2F;font-size:14px;font-weight:bold', 'color:#666;font-size:12px');
+  console.log('%c🚀 Eureka Lite v1.1 %c(全景图数据修复+迭代计划+下载+首页项目卡片)', 'color:#E07A2F;font-size:14px;font-weight:bold', 'color:#666;font-size:12px');
   console.log('%c💡 提示：FIND 推导输出如显示 [📋 本地模板] = AI未生效；[🤖 DeepSeek] = AI正常', 'color:#888;font-size:11px');
   window.app = new EurekaLite();
   window.app.start();
