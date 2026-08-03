@@ -1289,7 +1289,7 @@ function renderAllQuestions() {
       <div class="q-text">${escapeHtml(q)}</div>
       <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(state.data.insightAnswers[i] || '')}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行的三个能力（输入后可用）：</span>
+        <span class="q-ai-label">知行可以帮助你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
@@ -1327,7 +1327,10 @@ async function aiInspireQ(idx, cap, btn) {
     const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}`);
     state.data.insightAiInspirations[idx] = r;
     const result = document.querySelector('.q-ai-result[data-qi="' + idx + '"]');
-    if (result) result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\\n/g, '<br>');
+    if (result) {
+      result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\\n/g, '<br>');
+      result.classList.add('show');
+    }
     saveDraft();
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
