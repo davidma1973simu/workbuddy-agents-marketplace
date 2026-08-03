@@ -340,7 +340,7 @@
   .lb-status-row { font-size: 12.5px; color: var(--ink-3); margin-top: 12px; padding: 8px 14px; background: var(--bg); border-radius: var(--radius-sm); text-align: right; }
   .label-block .lb-status-row.ok { color: var(--green-deep); font-weight: 600; background: var(--green-soft); }
 
-  /* v9 应用步骤 */
+  /* v10 应用步骤样式（按截图：白底 + 浅绿 pill 按钮） */
   .insight-highlight {
     background: var(--green-soft);
     border-radius: var(--radius-lg);
@@ -369,6 +369,42 @@
   .scene-card .sc-type.far { background: var(--coral); color: #fff; }
   .scene-card .sc-title { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 6px; line-height: 1.5; }
   .scene-card .sc-desc { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+
+  /* 核心产出盒（v10：浅绿 background + 边框，无深绿渐变；textarea 白底） */
+  .lb-essence-box {
+    background: var(--green-soft);
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
+    margin: 14px 0;
+    border: 1px solid var(--green-light);
+  }
+  .lb-essence-box::before { display: none; }
+  .lb-essence-label {
+    font-size: 12px; font-weight: 700; color: var(--green-deep);
+    letter-spacing: 1px; margin: 12px 0 6px; text-transform: uppercase;
+  }
+  .lb-essence-label:first-child { margin-top: 4px; }
+  .essence-nature, .essence-insight {
+    width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    background: #fff; padding: 12px 14px; font-size: 14.5px;
+    font-family: inherit; color: var(--ink); font-weight: 400;
+    resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; min-height: 50px;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .essence-nature:focus, .essence-insight:focus {
+    border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1);
+  }
+  .lb-essence-box.locked .essence-nature, .lb-essence-box.locked .essence-insight {
+    background: #fff; border-color: var(--green-light);
+  }
+  .essence-confirm-row { display: flex; justify-content: flex-start; margin-top: 8px; }
+  .btn-essence-confirm {
+    background: var(--green-soft); color: var(--green-deep); border: 1.5px solid var(--green-light);
+    padding: 8px 22px; border-radius: 999px; font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all .15s;
+  }
+  .btn-essence-confirm:hover { background: var(--green); color: #fff; }
+  .lb-essence-box.locked .essence-confirm-row { display: none; }
 
   /* v8 盒内确认按钮（白底深绿字） */
   .essence-confirm-row { display: flex; justify-content: flex-start; margin-top: 6px; }
