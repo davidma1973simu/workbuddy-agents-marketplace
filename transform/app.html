@@ -251,6 +251,20 @@
   .label-block .lb-scale button.sel { background: var(--green); color: #fff; border-color: var(--green); }
   .label-block .lb-status { font-size: 11.5px; color: var(--ink-3); margin-top: 10px; text-align: right; }
   .label-block .lb-status.ok { color: var(--green-deep); font-weight: 600; }
+  .label-block .lb-essence { margin-top: 4px; }
+  .label-block .essence-nature, .label-block .essence-insight {
+    width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    background: #fff; padding: 10px 12px; font-size: 13.5px; font-family: inherit; color: var(--ink);
+    resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; transition: border .2s;
+  }
+  .label-block .essence-nature:focus, .label-block .essence-insight:focus { border-color: var(--green); }
+  .label-block .essence-nature::placeholder, .label-block .essence-insight::placeholder { color: var(--ink-3); }
+  .label-block .essence-row { display: flex; align-items: center; gap: 12px; }
+  .label-block .essence-state { font-size: 12.5px; font-weight: 600; color: var(--green-deep); }
+  .label-block .essence-state.confirmed { color: var(--green-deep); }
+  .label-block .lb-essence.locked .essence-nature, .label-block .lb-essence.locked .essence-insight {
+    background: var(--green-soft); border-color: var(--green-light);
+  }
 
   /* v4 洞察列表（每条独立编辑框） */
   .insight-row {
@@ -742,12 +756,12 @@ function goStep(n) {
     }
   }
   if (n === 2) {
-    // 按每个标签展示洞察摘要
+    // 展示每个类别的本质认知（essence）
     const labels = state.data.selectedLabels || [];
     const parts = labels.map(l => {
-      const pl = state.data.perLabel[l] || { insights: [] };
-      const items = (pl.insights || []).filter(x => x.text.trim()).map(x => '  • ' + x.text).join('\n');
-      return items ? `【${l}】\n${items}` : '';
+      const pl = state.data.perLabel[l] || {};
+      if (!pl.confirmed || !pl.essence) return '';
+      return `【${l}】\n现象背后的本质：${pl.essence.nature}\n新洞察和认知：${pl.essence.insight}`;
     }).filter(Boolean);
     $('insightRef').innerHTML = escapeHtml(parts.join('\n\n'));
   }
@@ -943,7 +957,8 @@ function ensurePerLabel() {
     if (!state.data.perLabel[l]) {
       state.data.perLabel[l] = {
         questions: [], answers: [], aiInspirations: [],
-        insights: [], impact: 0, effort: 0
+        insights: [], impact: 0, effort: 0,
+        essence: { nature: '', insight: '' }, confirmed: false
       };
     }
   });
@@ -1009,7 +1024,7 @@ async function aiAskQuestions() {
   setAILoading('aiQuestion', true);
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n每个类别的信息：\n${groupsStr}\n\n任务：针对每个类别，单独抛 2 个简短、单一、精确的启发式问题（每个类别独立，不要复用）。\n\n严格要求：\n1. 每个问题必须简短（10-25 字）、准确、单一（一次只问一件事）\n2. 不同类别的问题必须不同（针对各自的现象）\n3. 严格按 JSON 数组输出（每个对象含 label 和 questions）：\n[{"label":"类别名","questions":["问题1","问题2"]},...]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n每个类别的信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n任务：针对每个类别，单独抛 2 个启发式问题（每个类别独立）。\n\n严格要求：\n1. 每个问题必须**直接基于该类别下面列出的现象便签原文**，用词贴近原文，不得自行发挥或替换关键词（例如原文是"AI+定制化的课程方案"，问题就必须是"AI+定制化的课程方案"，不能改成"AI课程"）\n2. 问题要简短（10-25 字）、单一（一次只问一件事）、精确\n3. 不同类别的问题必须不同\n4. 严格按 JSON 数组输出：\n[{"label":"类别名","questions":["问题1","问题2"]},...]`
     );
     const data = parsePerLabelQuestions(r);
     if (data.length) {
@@ -1126,6 +1141,16 @@ function renderLabelBlock(label, group, pl) {
       </div>
       <button class="ai-btn" onclick="addInsightL('${safe}')" style="margin-top:8px;">+ 添加洞察</button>
 
+      <div class="lb-section-title">现象背后的本质（整合产出，可编辑）</div>
+      <div class="lb-essence" data-lb="${safe}">
+        <textarea class="essence-nature" placeholder="这个类别的这些现象背后的本质是……">${escapeHtml((pl.essence && pl.essence.nature) || '')}</textarea>
+        <textarea class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……">${escapeHtml((pl.essence && pl.essence.insight) || '')}</textarea>
+        <div class="essence-row">
+          <button class="btn btn-next" onclick="confirmEssence('${safe}')" style="padding:8px 18px;">保存确认</button>
+          <span class="essence-state" data-lb="${safe}">${pl.confirmed ? '✓ 已确认' : ''}</span>
+        </div>
+      </div>
+
       <div class="lb-score">
         <div>
           <label>这个认知多重要？</label>
@@ -1176,6 +1201,15 @@ function bindLabelBlockEvents() {
         saveDraft();
       });
     });
+    // essence 输入（未确认时可编辑）
+    const nature = block.querySelector('.essence-nature');
+    const ins = block.querySelector('.essence-insight');
+    if (nature && !pl.confirmed) {
+      nature.addEventListener('input', e => { pl.essence = pl.essence || {}; pl.essence.nature = e.target.value; autoGrow(e.target); saveDraft(); });
+    }
+    if (ins && !pl.confirmed) {
+      ins.addEventListener('input', e => { pl.essence = pl.essence || {}; pl.essence.insight = e.target.value; autoGrow(e.target); saveDraft(); });
+    }
     updateLabelStatus(label);
   });
 }
@@ -1265,18 +1299,26 @@ async function aiIntegrate() {
   btn.classList.add('loading');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n用户在每个类别下的思考：\n${allQA}\n\n任务：从用户每个类别的思考中，**按类别**提炼 2-4 条"新认知"（每条 15-35 字）。所有认知都来自用户实际写的思考。\n\n严格按 JSON 数组输出：\n[{"label":"类别名","insights":["洞察1","洞察2"]},...]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n用户在每个类别下的思考：\n${allQA}\n\n任务：**按类别**做两件事：\n\n一、从用户该类别思考中提炼 2-4 条"新认知"（每条 15-35 字，来自用户实际写的思考）\n二、整合出该类别的一个**最终认知**（严格按格式）：\n- nature（现象本质）：这个类别的这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新认知）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n严格按 JSON 数组输出：\n[{"label":"类别名","insights":["洞察1","洞察2"],"nature":"现象背后的本质","newInsight":"新洞察和认知"},...]`
     );
     const data = parsePerLabelInsights(r);
     if (data.length) {
       data.forEach(d => {
         if (state.data.perLabel[d.label]) {
-          state.data.perLabel[d.label].insights = d.insights.map(t => ({ text: (t || '').trim().slice(0, 35) })).filter(x => x.text);
+          state.data.perLabel[d.label].insights = (d.insights || []).map(t => ({ text: (t || '').trim().slice(0, 35) })).filter(x => x.text);
+          // 预填 essence（用户可修订，未确认状态）
+          if (d.nature || d.newInsight) {
+            state.data.perLabel[d.label].essence = {
+              nature: (d.nature || '').trim(),
+              insight: (d.newInsight || '').trim()
+            };
+            state.data.perLabel[d.label].confirmed = false;
+          }
         }
       });
       renderPerLabelCards();
       checkNext1();
-      toast(`知行提炼完成`);
+      toast(`知行提炼完成，请确认每个类别的本质认知`);
     } else {
       showAIResult('aiIntegrateResult', r);
     }
@@ -1289,10 +1331,36 @@ function parsePerLabelInsights(text) {
     if (!m) throw new Error('no JSON');
     const arr = JSON.parse(m[0]);
     if (!Array.isArray(arr)) throw new Error('not array');
-    return arr.map(d => ({ label: (d.label || '').trim(), insights: (d.insights || []) }));
+    return arr.map(d => ({
+      label: (d.label || '').trim(),
+      insights: (d.insights || []),
+      nature: (d.nature || d.essence || '').trim(),
+      newInsight: (d.newInsight || d.insight || '').trim()
+    }));
   } catch(e) {
     return [];
   }
+}
+
+function confirmEssence(label) {
+  const pl = state.data.perLabel[label];
+  if (!pl) return;
+  pl.essence = pl.essence || {};
+  if (!pl.essence.nature.trim() || !pl.essence.insight.trim()) {
+    toast('先把"现象本质"和"新洞察"都写完整'); return;
+  }
+  pl.confirmed = true;
+  // 锁定编辑
+  const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+  if (block) {
+    block.querySelector('.lb-essence').classList.add('locked');
+    const state = block.querySelector('.essence-state');
+    state.textContent = '✓ 已确认';
+  }
+  updateLabelStatus(label);
+  checkNext1();
+  saveDraft();
+  toast('已保存确认');
 }
 
 function checkNext1() {
@@ -1300,7 +1368,8 @@ function checkNext1() {
   const ok = labels.length > 0 && labels.every(l => {
     const pl = state.data.perLabel[l] || {};
     const hasInsight = (pl.insights || []).some(x => x.text.trim() && x.text.length <= 35);
-    return hasInsight && pl.impact > 0 && pl.effort > 0;
+    const essenceOk = pl.confirmed && pl.essence && pl.essence.nature.trim() && pl.essence.insight.trim();
+    return hasInsight && pl.impact > 0 && pl.effort > 0 && essenceOk;
   });
   $('next1').disabled = !ok;
   if (ok) $('signal1').style.display = 'inline-flex';
