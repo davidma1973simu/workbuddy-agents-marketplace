@@ -266,6 +266,53 @@
     background: var(--green-soft); border-color: var(--green-light);
   }
 
+  /* v6 突出 essence + 个人看法 */
+  .label-block .personal-view {
+    width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    background: var(--bg); padding: 12px 14px; font-size: 14px; font-family: inherit; color: var(--ink);
+    resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; min-height: 60px; transition: border .2s;
+  }
+  .label-block .personal-view:focus { border-color: var(--green); background: #fff; }
+  .label-block .ai-btn-integrate {
+    width: 100%; justify-content: center; padding: 12px 20px;
+    font-size: 14px; font-weight: 600;
+  }
+  .label-block .lb-essence-box {
+    background: linear-gradient(135deg, #1D9E75 0%, #0E6B50 100%);
+    border-radius: var(--radius-lg); padding: 18px 20px 16px; margin: 12px 0 14px;
+    box-shadow: 0 6px 18px rgba(14,107,80,.25);
+    position: relative;
+  }
+  .label-block .lb-essence-box::before {
+    content: '核心产出'; position: absolute; top: -10px; left: 16px;
+    background: linear-gradient(135deg, #D97B29 0%, #C05B3C 100%);
+    color: #fff; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    letter-spacing: 1px;
+  }
+  .label-block .lb-essence-label {
+    color: rgba(255,255,255,.85); font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    margin: 8px 0 6px; text-transform: uppercase;
+  }
+  .label-block .lb-essence-label:first-child { margin-top: 4px; }
+  .label-block .essence-nature, .label-block .essence-insight {
+    width: 100%; border: none; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,.95); padding: 12px 14px; font-size: 15.5px;
+    font-family: inherit; color: var(--ink); font-weight: 500;
+    resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; min-height: 50px;
+    transition: box-shadow .2s;
+  }
+  .label-block .essence-nature:focus, .label-block .essence-insight:focus {
+    box-shadow: 0 0 0 3px rgba(255,255,255,.4);
+  }
+  .label-block .lb-essence-box.locked .essence-nature,
+  .label-block .lb-essence-box.locked .essence-insight {
+    background: #fff; border: 1.5px solid #fff;
+  }
+  .label-block .essence-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+  .label-block .essence-row .btn-next { background: #fff; color: var(--green-deep); }
+  .label-block .essence-row .btn-next:hover { background: var(--green-soft); }
+  .label-block .essence-state { font-size: 13px; font-weight: 600; color: #fff; }
+
   /* v4 洞察列表（每条独立编辑框） */
   .insight-row {
     display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;
@@ -546,11 +593,7 @@
         <!-- ③ 每个标签独立卡片（问题 + 答案 + 洞察 + 评分） -->
         <div id="perLabelArea" style="display:none;"></div>
 
-        <!-- 知行总结按钮 -->
-        <div class="btn-row" id="integrateRow" style="display:none;">
-          <div></div>
-          <button class="btn btn-next" onclick="aiIntegrate()" style="padding:10px 24px;">让知行总结 →</button>
-        </div>
+        <!-- 每个标签自己整合（aiIntegrateLabel 按钮在每张卡片里） -->
         <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
         <div class="signal" id="signal1" style="display:none;">
@@ -745,12 +788,10 @@ function goStep(n) {
       if (anyLabelHasQuestions()) {
         $('guideCard').style.display = 'none';
         $('perLabelArea').style.display = 'block';
-        $('integrateRow').style.display = 'flex';
         renderPerLabelCards();
       } else {
         $('guideCard').style.display = 'flex';
         $('perLabelArea').style.display = 'none';
-        $('integrateRow').style.display = 'none';
       }
       checkNext1();
     }
@@ -957,7 +998,8 @@ function ensurePerLabel() {
     if (!state.data.perLabel[l]) {
       state.data.perLabel[l] = {
         questions: [], answers: [], aiInspirations: [],
-        insights: [], impact: 0, effort: 0,
+        personalView: '',
+        impact: 0, effort: 0,
         essence: { nature: '', insight: '' }, confirmed: false
       };
     }
@@ -991,13 +1033,11 @@ function toggleLabel(label) {
     if (anyLabelHasQuestions()) {
       $('guideCard').style.display = 'none';
       $('perLabelArea').style.display = 'block';
-      $('integrateRow').style.display = 'flex';
       $('nextBtnArea').style.display = 'flex';
       renderPerLabelCards();
     } else {
       $('guideCard').style.display = 'flex';
       $('perLabelArea').style.display = 'none';
-      $('integrateRow').style.display = 'none';
       $('nextBtnArea').style.display = 'none';
     }
   } else {
@@ -1038,7 +1078,6 @@ async function aiAskQuestions() {
       });
       $('guideCard').style.display = 'none';
       $('perLabelArea').style.display = 'block';
-      $('integrateRow').style.display = 'flex';
       $('nextBtnArea').style.display = 'flex';
       renderPerLabelCards();
       saveDraft();
@@ -1105,13 +1144,13 @@ function renderLabelBlock(label, group, pl) {
     <div class="label-block" data-lb="${safe}">
       <div class="lb-head">
         <span class="lb-title">${escapeHtml(label)}</span>
-        <span class="lb-meta">${(pl.questions || []).length} 题 · ${(pl.insights || []).length} 洞察</span>
+        <span class="lb-meta">${(pl.questions || []).length} 题</span>
       </div>
       <div class="lb-notes">
         ${group.notes.slice(0, 6).map(n => `<span class="lb-note">[${n.type}] ${escapeHtml(n.text)}</span>`).join('')}
       </div>
 
-      <div class="lb-section-title">知行抛的问题</div>
+      <div class="lb-section-title">知行抛的问题 · 你的思考</div>
       <div class="lb-questions">
         ${(pl.questions || []).map((q, i) => `
           <div class="q-block" data-qi="${i}">
@@ -1129,21 +1168,19 @@ function renderLabelBlock(label, group, pl) {
         `).join('')}
       </div>
 
-      <div class="lb-section-title">你的核心新认知（每条 ≤ 35 字）</div>
-      <div class="lb-insights" data-li-wrap="${safe}">
-        ${(pl.insights || []).map((it, i) => `
-          <div class="insight-row" data-ii="${i}">
-            <textarea class="insight-input" placeholder="你的核心新认知（≤ 35 字）" rows="1">${escapeHtml(it.text || '')}</textarea>
-            <button class="rm-insight" onclick="removeInsightL('${safe}', ${i})" title="删除">×</button>
-          </div>
-          <div class="insight-meta" data-ii="${i}">${(it.text || '').length} / 35 字</div>
-        `).join('')}
-      </div>
-      <button class="ai-btn" onclick="addInsightL('${safe}')" style="margin-top:8px;">+ 添加洞察</button>
+      <div class="lb-section-title">我的个人看法（基于以上问题 + 该标签下所有信息）</div>
+      <textarea class="personal-view" data-lb="${safe}" placeholder="写下你对这个类别的整体看法、感受、判断……（可空，会作为知行总结的输入之一）">${escapeHtml(pl.personalView || '')}</textarea>
 
-      <div class="lb-section-title">现象背后的本质（整合产出，可编辑）</div>
-      <div class="lb-essence" data-lb="${safe}">
+      <div class="lb-section-title">知行总结（整合所有输入 → 现象本质 + 新洞察）</div>
+      <button class="ai-btn ai-btn-integrate" onclick="aiIntegrateLabel('${safe}', this)" style="margin-bottom:14px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        让知行总结这一类
+      </button>
+
+      <div class="lb-essence-box">
+        <div class="lb-essence-label">现象背后的本质（AI 整合产出，可编辑）</div>
         <textarea class="essence-nature" placeholder="这个类别的这些现象背后的本质是……">${escapeHtml((pl.essence && pl.essence.nature) || '')}</textarea>
+        <div class="lb-essence-label">新洞察和新认知（AI 整合产出，可编辑）</div>
         <textarea class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……">${escapeHtml((pl.essence && pl.essence.insight) || '')}</textarea>
         <div class="essence-row">
           <button class="btn btn-next" onclick="confirmEssence('${safe}')" style="padding:8px 18px;">保存确认</button>
@@ -1183,24 +1220,12 @@ function bindLabelBlockEvents() {
         saveDraft();
       });
     });
-    // 洞察输入
-    block.querySelectorAll('.insight-input').forEach((ta, i) => {
-      autoGrow(ta);
-      ta.addEventListener('input', e => {
-        const v = e.target.value;
-        pl.insights[i].text = v;
-        autoGrow(e.target);
-        const meta = ta.parentElement.nextElementSibling;
-        if (meta) {
-          meta.textContent = v.length + ' / 35 字';
-          meta.classList.toggle('over', v.length > 35);
-        }
-        ta.classList.toggle('over', v.length > 35);
-        updateLabelStatus(label);
-        checkNext1();
-        saveDraft();
-      });
-    });
+    // 个人看法输入
+    const pv = block.querySelector('.personal-view');
+    if (pv) {
+      autoGrow(pv);
+      pv.addEventListener('input', e => { pl.personalView = e.target.value; autoGrow(e.target); saveDraft(); });
+    }
     // essence 输入（未确认时可编辑）
     const nature = block.querySelector('.essence-nature');
     const ins = block.querySelector('.essence-insight');
@@ -1217,12 +1242,12 @@ function updateLabelStatus(label) {
   const block = document.querySelector(`.label-block[data-lb="${label}"]`);
   if (!block) return;
   const pl = state.data.perLabel[label];
-  const hasInsight = (pl.insights || []).some(x => x.text.trim() && x.text.length <= 35);
-  const ok = hasInsight && pl.impact > 0 && pl.effort > 0;
+  const hasEssence = pl.confirmed && pl.essence && pl.essence.nature.trim() && pl.essence.insight.trim();
+  const ok = hasEssence && pl.impact > 0 && pl.effort > 0;
   const status = block.querySelector('.lb-status');
   status.classList.toggle('ok', ok);
-  status.textContent = ok ? '✓ 已完成（评分 + 至少 1 条洞察）' : '还需要：' +
-    (!hasInsight ? '至少 1 条洞察 ' : '') +
+  status.textContent = ok ? '✓ 已完成（评分 + 整合认知已确认）' : '还需要：' +
+    (!hasEssence ? '整合认知（让知行总结并确认） ' : '') +
     (!pl.impact ? '重要性 ' : '') +
     (!pl.effort ? '费力程度' : '');
 }
@@ -1282,48 +1307,43 @@ async function aiInspireQL(label, idx, cap, btn) {
   btn.classList.remove('loading');
 }
 
-// ④ 知行总结：按每个标签提炼洞察
-async function aiIntegrate() {
-  if (!anyLabelHasQuestions()) { toast('先抛问题'); return; }
-  const labels = state.data.selectedLabels || [];
-  const allQA = labels.map(l => {
-    const pl = state.data.perLabel[l];
-    const qa = (pl.questions || []).map((q, i) => {
-      const a = pl.answers[i] || '（未填）';
-      const ai = pl.aiInspirations[i];
-      return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
-    }).join('\n');
-    return `【${l}】\n${qa}`;
-  }).join('\n\n');
-  const btn = event.target;
+// ④ 知行整合：按标签把便签+问题答案+个人看法 → 现象本质 + 新洞察
+async function aiIntegrateLabel(label, btn) {
+  const pl = state.data.perLabel[label];
+  const group = state.data.groups.find(g => g.label === label) || { notes: [] };
+  if (!pl || !pl.questions || !pl.questions.length) { toast('先抛问题'); return; }
   btn.classList.add('loading');
+  const notesStr = group.notes.map(n => `[${n.type}] ${n.text}`).join('; ');
+  const qa = pl.questions.map((q, i) => {
+    const a = pl.answers[i] || '（未填）';
+    const ai = pl.aiInspirations[i];
+    return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
+  }).join('\n');
+  const personal = pl.personalView || '（未填）';
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n用户在每个类别下的思考：\n${allQA}\n\n任务：**按类别**做两件事：\n\n一、从用户该类别思考中提炼 2-4 条"新认知"（每条 15-35 字，来自用户实际写的思考）\n二、整合出该类别的一个**最终认知**（严格按格式）：\n- nature（现象本质）：这个类别的这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新认知）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n严格按 JSON 数组输出：\n[{"label":"类别名","insights":["洞察1","洞察2"],"nature":"现象背后的本质","newInsight":"新洞察和认知"},...]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n【${label}】类别的信息：\n${notesStr}\n\n用户对这一类别的问题与回答：\n${qa}\n\n用户的个人看法：\n${personal}\n\n任务：综合以上所有输入（标签下便签 + 问题答案 + AI 启发 + 用户个人看法），整合出该类别的两个产出（严格按 JSON 输出）：\n- nature（现象本质）：这个类别的这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"label":"${label}","nature":"...","newInsight":"..."}`
     );
-    const data = parsePerLabelInsights(r);
-    if (data.length) {
-      data.forEach(d => {
-        if (state.data.perLabel[d.label]) {
-          state.data.perLabel[d.label].insights = (d.insights || []).map(t => ({ text: (t || '').trim().slice(0, 35) })).filter(x => x.text);
-          // 预填 essence（用户可修订，未确认状态）
-          if (d.nature || d.newInsight) {
-            state.data.perLabel[d.label].essence = {
-              nature: (d.nature || '').trim(),
-              insight: (d.newInsight || '').trim()
-            };
-            state.data.perLabel[d.label].confirmed = false;
-          }
-        }
-      });
+    const data = parseSingleLabelEssence(r, label);
+    if (data) {
+      pl.essence = { nature: data.nature || '', insight: data.newInsight || '' };
+      pl.confirmed = false;
       renderPerLabelCards();
       checkNext1();
-      toast(`知行提炼完成，请确认每个类别的本质认知`);
+      toast('知行整合完成，请修订并确认');
     } else {
-      showAIResult('aiIntegrateResult', r);
+      toast('AI 没返回有效内容，重试');
     }
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
+}
+function parseSingleLabelEssence(text, label) {
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    return { nature: (d.nature || d.essence || '').trim(), newInsight: (d.newInsight || d.insight || '').trim() };
+  } catch(e) { return null; }
 }
 function parsePerLabelInsights(text) {
   try {
@@ -1353,7 +1373,8 @@ function confirmEssence(label) {
   // 锁定编辑
   const block = document.querySelector(`.label-block[data-lb="${label}"]`);
   if (block) {
-    block.querySelector('.lb-essence').classList.add('locked');
+    const box = block.querySelector('.lb-essence-box');
+    if (box) box.classList.add('locked');
     const state = block.querySelector('.essence-state');
     state.textContent = '✓ 已确认';
   }
@@ -1367,13 +1388,12 @@ function checkNext1() {
   const labels = state.data.selectedLabels || [];
   const ok = labels.length > 0 && labels.every(l => {
     const pl = state.data.perLabel[l] || {};
-    const hasInsight = (pl.insights || []).some(x => x.text.trim() && x.text.length <= 35);
     const essenceOk = pl.confirmed && pl.essence && pl.essence.nature.trim() && pl.essence.insight.trim();
-    return hasInsight && pl.impact > 0 && pl.effort > 0 && essenceOk;
+    return pl.impact > 0 && pl.effort > 0 && essenceOk;
   });
   $('next1').disabled = !ok;
   if (ok) $('signal1').style.display = 'inline-flex';
-}/* ============ Step 2 应用（认知推演） ============ */
+}
 async function aiScenes() {
   const labels = state.data.selectedLabels || [];
   const allInsights = [];
