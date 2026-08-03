@@ -830,6 +830,87 @@
     } catch(e){}
   })();
 </script>
+<link rel="icon" href="data:,">
+<style id="phase2-css">
+/* ===== Phase 2-A 知行拟人化头像 + AI 消息体 ===== */
+.zhx-avatar {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(14,107,80,.35); color: #fff;
+}
+.zhx-avatar svg { width: 17px; height: 17px; }
+.ai-msg { display: flex; gap: 10px; align-items: flex-start; }
+.ai-msg-body { flex: 1; min-width: 0; }
+.ai-msg-name { font-size: 12px; font-weight: 800; color: var(--green-deep); margin-bottom: 5px; letter-spacing: .3px; }
+.ai-result .ai-msg { animation: rise .35s var(--ease); }
+
+/* ===== Phase 2-A 统一微交互（节奏一致） ===== */
+.btn, .ai-btn, .ai-btn-primary, .type-chip, .label-chip, .ai-btn-cap, .mini, .session-menu, .theme-toggle, .back {
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.btn:active, .ai-btn:active, .ai-btn-primary:active, .type-chip:active, .label-chip:active, .ai-btn-cap:active, .mini:active { transform: scale(.97); }
+.panel { animation: rise .45s var(--ease); }
+.rec-card, .session, .app-feedback-result, .resource-result { transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+
+/* ===== Phase 2-E 桌面响应式副栏（移动端默认隐藏，≥1024px 出现） ===== */
+.app-aside { display: none; }
+@media (min-width: 1024px) {
+  .wrap {
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 36px;
+    align-items: start;
+    padding-top: 28px;
+  }
+  .topbar, .path, .app-panel { grid-column: 1; }
+  .app-aside {
+    display: block; grid-column: 2; grid-row: 1 / -1;
+    position: sticky; top: 28px;
+  }
+}
+.aside-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.aside-title { font-size: 12px; font-weight: 800; color: var(--green-deep); letter-spacing: .6px; margin-bottom: 12px; }
+.aside-steps { display: flex; flex-direction: column; gap: 2px; }
+.aside-step { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; font-size: 13.5px; color: var(--ink-2); }
+.aside-step .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--ink-3); flex-shrink: 0; }
+.aside-step.active { background: var(--green-soft); color: var(--green-deep); font-weight: 700; }
+.aside-step.active .dot { border-color: var(--green); background: var(--green); color: #fff; }
+.aside-step.done .dot { border-color: var(--green); color: var(--green); }
+.aside-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.aside-tag { font-size: 12px; padding: 5px 11px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-2); }
+.aside-insight { font-size: 13.5px; color: var(--ink); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+/* ===== Phase 2-C 首次引导 ===== */
+.onboard-mask {
+  position: fixed; inset: 0; z-index: 80; background: rgba(20,30,27,.55);
+  backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.onboard-mask.show { display: flex; animation: fade .25s ease; }
+.onboard-card {
+  background: var(--bg); width: 100%; max-width: 420px; border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; animation: pop .32s var(--ease);
+}
+.onboard-visual { height: 122px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--green-deep), var(--green)); }
+.onboard-visual .zhx-avatar { width: 66px; height: 66px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.onboard-visual .zhx-avatar svg { width: 38px; height: 38px; }
+.onboard-body { padding: 22px 24px 6px; }
+.onboard-h { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+.onboard-p { font-size: 14px; color: var(--ink-2); line-height: 1.75; }
+.onboard-dots { display: flex; gap: 7px; justify-content: center; padding: 16px 0 4px; }
+.onboard-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all var(--dur-fast) var(--ease); }
+.onboard-dots i.on { background: var(--green); width: 20px; border-radius: 4px; }
+.onboard-foot { display: flex; padding: 8px 24px 22px; gap: 10px; }
+.onboard-foot .btn { flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1179,6 +1260,9 @@
       </div>
     </div>
   </div>
+
+  <!-- 桌面端副栏：进度 / 主题沉淀 / 最近洞察（移动端隐藏） -->
+  <aside class="app-aside" id="appAside"></aside>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1257,6 +1341,7 @@ function uid() { return 'n' + Date.now() + Math.floor(Math.random()*1000); }
 /* ============ 步骤导航 ============ */
 function goStep(n) {
   state.step = n;
+  renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
   document.querySelectorAll('.p-node').forEach((s, i) => {
@@ -2014,8 +2099,10 @@ function renderAppFeedback(type, data) {
   const title = type === 'near' ? '近应用反馈' : '远应用反馈';
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
-  let html = '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span><span class="fb-reason" style="margin-left:8px;font-weight:600;">' + title + '</span></div>';
-  html += '<div style="font-size:12px;color:var(--ink-3);margin-bottom:10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
+  let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
+  html += '<div class="ai-msg-name">知行 · ' + title + '</div>';
+  html += '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span></div>';
+  html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
   html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
   html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
   html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
@@ -2024,6 +2111,7 @@ function renderAppFeedback(type, data) {
     data.actions.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
     html += '</ol></div>';
   }
+  html += '</div></div>';
   box.innerHTML = html;
   box.classList.add('show');
   box.style.display = 'block';
@@ -2169,9 +2257,11 @@ function setAILoading(btnId, loading) {
   if (!btn) return;
   btn.classList.toggle('loading', loading);
 }
+const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
+
 function showAIResult(elId, text) {
   const el = $(elId);
-  el.innerHTML = `<span class="ai-tag">AI 助手</span>` + escapeHtml(text).replace(/\n/g, '<br>');
+  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">知行</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
   el.classList.add('show');
 }
 
@@ -2309,6 +2399,70 @@ async function saveSettings() {
 if (new URLSearchParams(location.search).get('settings')) openSettings();
 
 /* ============ 初始化 ============ */
+/* ============ Phase 2-E 桌面副栏渲染（只读，取自我已完成的数据） ============ */
+function renderAppAside() {
+  const aside = $('appAside');
+  if (!aside) return;
+  const steps = ['归类', '洞察', '应用', '产出'];
+  const cur = state.step || 0;
+  const stepsHtml = steps.map((s, i) => {
+    let cls = 'aside-step';
+    if (i === cur) cls += ' active';
+    else if (i < cur) cls += ' done';
+    const mark = i < cur ? '✓' : (i + 1);
+    return '<div class="' + cls + '"><span class="dot">' + mark + '</span>' + s + '</div>';
+  }).join('');
+  let tags = [];
+  try {
+    const arc = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
+    arc.forEach(function (s) { (s.tags || []).forEach(function (t) { if (t && tags.indexOf(t) < 0) tags.push(t); }); });
+  } catch (e) {}
+  const tagsHtml = tags.length
+    ? '<div class="aside-tags">' + tags.slice(0, 14).map(function (t) { return '<span class="aside-tag">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
+    : '<div style="font-size:13px;color:var(--ink-3);">完成一次后会自动沉淀主题标签</div>';
+  let recent = '—';
+  try {
+    const arc = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
+    if (arc.length) {
+      const s = arc[0];
+      recent = (s.essence && s.essence.insight) ? s.essence.insight : (s.insight || '');
+    }
+  } catch (e) {}
+  aside.innerHTML =
+    '<div class="aside-card"><div class="aside-title">🧭 当前进度</div><div class="aside-steps">' + stepsHtml + '</div></div>' +
+    '<div class="aside-card"><div class="aside-title">🏷️ 主题沉淀</div>' + tagsHtml + '</div>' +
+    '<div class="aside-card"><div class="aside-title">💡 最近一次洞察</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
+}
+
+/* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
+const OB_SLIDES = [
+  { h: '想清楚，做得到', p: '知行会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
+  { h: '四步，一次想通一件事', p: '① 归类：把现象/事实/猜测/假设摊开理顺；② 洞察：透过现象看本质；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源和你期待的身份。' },
+  { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
+];
+let obIdx = 0;
+function maybeShowOnboard() {
+  try { if (localStorage.getItem('trf_onboarded') === '1') return; } catch (e) {}
+  obIdx = 0;
+  const av = $('obAvatar'); if (av) av.innerHTML = ZHIXING_AVATAR;
+  renderOnboard();
+  $('onboardMask').classList.add('show');
+}
+function renderOnboard() {
+  const s = OB_SLIDES[obIdx];
+  $('obH').textContent = s.h; $('obP').textContent = s.p;
+  document.querySelectorAll('.onboard-dots i').forEach(function (d, i) { d.classList.toggle('on', i === obIdx); });
+  $('obNext').textContent = obIdx === OB_SLIDES.length - 1 ? '开始 →' : '下一步';
+}
+function nextOnboard() {
+  if (obIdx < OB_SLIDES.length - 1) { obIdx++; renderOnboard(); }
+  else closeOnboard();
+}
+function closeOnboard() {
+  const m = $('onboardMask'); if (m) m.classList.remove('show');
+  try { localStorage.setItem('trf_onboarded', '1'); } catch (e) {}
+}
+
 loadDraft();
 $('scenario').value = state.data.scenario;
 $('scenario').addEventListener('input', e => { state.data.scenario = e.target.value; saveDraft(); });
@@ -2319,6 +2473,8 @@ renderIdentityVote();
 if (state.data.impact) { document.querySelectorAll('#impactScale button')[state.data.impact-1]?.classList.add('sel'); }
 if (state.data.effort) { document.querySelectorAll('#effortScale button')[state.data.effort-1]?.classList.add('sel'); }
 checkNext0(); checkNext1(); checkNext2();
+renderAppAside();
+window.addEventListener('DOMContentLoaded', maybeShowOnboard);
 // Step 3 产出页渲染
 const origGo = window.goStep || goStep;
 window.goStep = function(n) {
@@ -2406,6 +2562,21 @@ function updateVoteStats(text) {
   }
 }
 </script>
+<!-- 首次引导（纯增量，可跳过/关闭，不影响功能） -->
+<div class="onboard-mask" id="onboardMask">
+  <div class="onboard-card">
+    <div class="onboard-visual"><span class="zhx-avatar" id="obAvatar"></span></div>
+    <div class="onboard-body">
+      <div class="onboard-h" id="obH"></div>
+      <div class="onboard-p" id="obP"></div>
+    </div>
+    <div class="onboard-dots"><i class="on"></i><i></i><i></i></div>
+    <div class="onboard-foot">
+      <button class="btn btn-prev" onclick="closeOnboard()">跳过</button>
+      <button class="btn btn-next" id="obNext" onclick="nextOnboard()">下一步</button>
+    </div>
+  </div>
+</div>
 <a class="fab-archive" href="archive.html" title="随时查看我的认知档案">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   我的档案

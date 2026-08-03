@@ -314,6 +314,22 @@
     .session, .identity-card, .stat { box-shadow: none; break-inside: avoid; }
     .session { cursor: default; }
   }
+
+  /* ===== Phase 2-E 桌面响应式：放宽并分栏 ===== */
+  @media (min-width: 900px) {
+    .wrap { max-width: 940px; }
+    #sessionList { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .session { margin-bottom: 0; }
+  }
+  @media (min-width: 1200px) {
+    .wrap { max-width: 1100px; }
+    #sessionList { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* ===== Phase 2-A 动效守卫（尊重无障碍偏好） ===== */
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
 </style>
 <script>
   (function(){
@@ -324,6 +340,7 @@
     } catch(e){}
   })();
 </script>
+<link rel="icon" href="data:,">
 </head>
 <body>
 <div class="wrap">
@@ -391,7 +408,9 @@
     <div class="big">
       <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#1D9E75" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="#1D9E75"/></svg>
     </div>
-    还没有认知记录。<br><a href="app.html">花 5 分钟，把一件事想通 →</a>
+    还没有认知记录。<br>
+    每一次「想清楚」，都会在这里留下一张卡片——带主题标签、可回看、可调用。<br>
+    <a href="app.html">花 5 分钟，把眼前这件复杂挑战想通 →</a>
   </div>
 </div>
 
