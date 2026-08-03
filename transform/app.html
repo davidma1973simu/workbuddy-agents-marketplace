@@ -407,6 +407,50 @@
   .fb-actions li { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
   .app-feedback-result { margin-top: 12px; }
 
+  /* Step 2 打分可视化 */
+  .score-display {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--green-soft); border: 1px solid var(--green-light);
+    border-radius: var(--radius-md); padding: 12px 16px; margin: 14px 0;
+  }
+  .score-display .sd-item { display: flex; align-items: center; gap: 8px; }
+  .score-display .sd-label { font-size: 12.5px; color: var(--ink-2); }
+  .score-display .sd-val {
+    font-size: 16px; font-weight: 700; color: var(--green-deep);
+    background: #fff; border: 1.5px solid var(--green-light); border-radius: 999px;
+    width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .score-display .sd-desc { font-size: 12px; color: var(--ink-3); max-width: 260px; line-height: 1.4; }
+
+  /* 资源建议区 */
+  .resource-section { margin-top: 18px; }
+  .resource-block { background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; }
+  .resource-block label { display: block; font-size: 12px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; letter-spacing: .5px; }
+  .resource-block textarea {
+    width: 100%; min-height: 58px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 12px; font-family: inherit; font-size: 13px; resize: vertical; box-sizing: border-box;
+    background: #fff;
+  }
+  .resource-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .resource-actions .btn { flex: 1; }
+  .resource-confirm { background: var(--green-deep) !important; color: #fff !important; }
+
+  /* Step 3 产出页 */
+  .outcome-section { background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px; margin: 12px 0 18px; }
+  .outcome-section .os-empty { color: var(--ink-3); font-size: 13px; }
+  .outcome-section .os-block { margin-bottom: 14px; }
+  .outcome-section .os-block:last-child { margin-bottom: 0; }
+  .outcome-section .os-title { font-size: 12px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; letter-spacing: .5px; }
+  .outcome-section .os-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--ink); }
+  .outcome-section .os-list li { margin-bottom: 4px; }
+  .identity-vote { background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 18px; margin: 14px 0; }
+  .identity-vote input {
+    width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 12px; font-size: 14px; font-family: inherit; margin: 8px 0 12px; box-sizing: border-box;
+  }
+  .identity-vote .vote-line { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .identity-vote .vote-line em { color: var(--green-deep); font-style: normal; font-weight: 700; }
+
   /* 场景推荐弹窗 */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,.45);
@@ -698,7 +742,7 @@
     </div>
     <div class="p-node" data-step="3">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg></div>
-      <span class="p-label">身份</span>
+      <span class="p-label">产出</span>
     </div>
   </div>
 
@@ -821,6 +865,11 @@
 
       <label>① 你的新认知</label>
       <div class="insight-highlight" id="insightRef"></div>
+      <div class="score-display" id="scoreDisplay" style="display:none;">
+        <div class="sd-item"><span class="sd-label">重要性</span><span class="sd-val" id="sdImpact">—</span></div>
+        <div class="sd-item"><span class="sd-label">接受费力</span><span class="sd-val" id="sdEffort">—</span></div>
+        <div class="sd-desc">知行会结合这两个评分来评价你的应用计划</div>
+      </div>
 
       <!-- ② 近应用：用户熟悉的场景（用户写） -->
       <label>② 近应用：你<u>熟悉的场景</u>，这个新认知能用吗？</label>
@@ -896,6 +945,16 @@
         <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
       </div>
 
+      <!-- ④ 支持资源与条件 -->
+      <label>④ 知行建议：为了落地这些应用计划，你需要找什么人、资源和条件？</label>
+      <div class="resource-section">
+        <button class="ai-btn-primary" id="aiResources" onclick="aiSuggestResources()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          让知行建议支持资源
+        </button>
+        <div class="ai-result resource-result" id="resourcesResult" style="display:none;"></div>
+      </div>
+
       <div class="signal" id="signal2" style="display:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         认知已推演到场景，闭环完成
@@ -906,23 +965,19 @@
       </div>
     </div>
 
-    <!-- Step 3    <!-- Step 3 身份设定 -->
+    <!-- Step 3 产出：支持资源 + 身份投票 -->
     <div class="panel" id="panel-3" style="display:none;">
-      <h1>这次想清楚，意味着你是谁</h1>
-      <div class="hint">每次想通一件事，你都在重新定义自己。写下来。</div>
+      <h1>这次想清楚，我要带走的产出</h1>
+      <div class="hint">把洞察落地为可动员的资源，并为你期待的身份投一票。</div>
 
-      <div class="summary-box" id="summaryBox"></div>
+      <label>① 知行建议的支持资源</label>
+      <div class="outcome-section" id="resourcesOutcome"></div>
 
-      <div class="identity-form">
-        <label>我把自己重新定义为：</label>
-        <div class="identity-line">经过这次想清楚，我把自己重新定义为「<input type="text" id="identityText" placeholder="会用第一性原理思考的人">」的人</div>
-      </div>
-
-      <div class="ai-row">
-        <span style="font-size:12.5px;color:var(--ink-3);align-self:center;display:inline-flex;gap:6px;align-items:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          这一步 AI 不参与，完全由你自己得出
-        </span>
+      <label>② 为期待的身份投票</label>
+      <div class="identity-vote">
+        <label style="font-size:12.5px;color:var(--ink-2);font-weight:600;">我期待自己成为：</label>
+        <input type="text" id="identityText" placeholder="例：会用第一性原理思考的人">
+        <div class="vote-line">经过这次想清楚，我给自己期待的身份 <em id="identityPreview">（尚未填写）</em> 投了一票。</div>
       </div>
 
       <div class="btn-row">
@@ -1027,6 +1082,7 @@ const state = {
     nearFeedback: null,
     farFeedback: null,
     aiFeedback: null,    // 应用（旧字段，保留兼容）
+    resourcesPlan: null, // { people, resources, conditions, note, confirmed }
     identity: ''
   }
 };
@@ -1102,9 +1158,11 @@ function goStep(n) {
     } else {
       $('insightRef').innerHTML = '<div style="color:var(--ink-3);font-size:13px;">（先去洞察步骤确认核心认知）</div>';
     }
+    renderScoreDisplay();
     bindAppInputs();
     if (state.data.nearFeedback) renderAppFeedback('near', state.data.nearFeedback);
     if (state.data.farFeedback) renderAppFeedback('far', state.data.farFeedback);
+    if (state.data.resourcesPlan) renderResourcesResult(state.data.resourcesPlan);
     checkNext2();
   }
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -1720,11 +1778,13 @@ async function aiAppFeedback(type) {
     toast('先填写这个应用的场景 + 计划'); return;
   }
   const e = state.data.essence || {};
+  const impact = state.data.impact || 0;
+  const effort = state.data.effort || 0;
   const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n【${label}】\n场景：${obj.scenario}\n计划：${obj.plan}\n时间：${obj.when || '未填'}\n验证标准：${obj.howToVerify || '未填'}\n\n任务：针对这个应用计划，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景：${obj.scenario}\n计划：${obj.plan}\n时间：${obj.when || '未填'}\n验证标准：${obj.howToVerify || '未填'}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高，如何降低阻力；如果重要性低，是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
     );
     const data = parseAppFeedback(r);
     if (data) {
@@ -1759,7 +1819,10 @@ function parseAppFeedback(text) {
 function renderAppFeedback(type, data) {
   const box = $(type + 'FeedbackResult');
   const title = type === 'near' ? '近应用反馈' : '远应用反馈';
+  const impact = state.data.impact || 0;
+  const effort = state.data.effort || 0;
   let html = '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span><span class="fb-reason" style="margin-left:8px;font-weight:600;">' + title + '</span></div>';
+  html += '<div style="font-size:12px;color:var(--ink-3);margin-bottom:10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
   html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
   html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
   html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
@@ -1773,18 +1836,119 @@ function renderAppFeedback(type, data) {
   box.style.display = 'block';
 }
 
+function renderScoreDisplay() {
+  const sd = $('scoreDisplay');
+  const impact = state.data.impact || 0;
+  const effort = state.data.effort || 0;
+  if (!impact && !effort) { sd.style.display = 'none'; return; }
+  $('sdImpact').textContent = impact || '—';
+  $('sdEffort').textContent = effort || '—';
+  sd.style.display = 'flex';
+}
+
+// AI 建议支持资源（人 / 资源 / 条件）
+async function aiSuggestResources() {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const near = state.data.nearScenario || {};
+  const far = state.data.farScenario || {};
+  const nearFb = state.data.nearFeedback || {};
+  const farFb = state.data.farFeedback || {};
+  if (!near.scenario && !far.scenario) {
+    toast('先至少完成一个应用计划'); return;
+  }
+  const e = state.data.essence || {};
+  const impact = state.data.impact || 0;
+  const effort = state.data.effort || 0;
+  setAILoading('aiResources', true);
+  try {
+    const r = await aiCall(
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【近应用计划】\n场景：${near.scenario || '未填'}\n计划：${near.plan || '未填'}\n知行反馈：${nearFb.suggestion || '未填'}\n下一步行动：${(nearFb.actions || []).join('；') || '未填'}\n\n【远应用计划】\n场景：${far.scenario || '未填'}\n计划：${far.plan || '未填'}\n知行反馈：${farFb.suggestion || '未填'}\n下一步行动：${(farFb.actions || []).join('；') || '未填'}\n\n任务：基于上面的全部信息，建议用户为了真正落地这些应用计划，需要去找什么人、争取什么资源、满足什么条件。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+    );
+    const data = parseResources(r);
+    if (data) {
+      state.data.resourcesPlan = { ...data, confirmed: false };
+      renderResourcesResult(state.data.resourcesPlan);
+      saveDraft();
+      checkNext2();
+      toast('知行建议已生成，可编辑后确认');
+    } else {
+      showAIResult('resourcesResult', r);
+    }
+  } catch(e) {
+    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    else toast('资源建议失败：' + (e.message || '未知错误'));
+  }
+  setAILoading('aiResources', false);
+}
+function parseResources(text) {
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    return {
+      people: Array.isArray(d.people) ? d.people : [],
+      resources: Array.isArray(d.resources) ? d.resources : [],
+      conditions: Array.isArray(d.conditions) ? d.conditions : [],
+      note: (d.note || '').trim()
+    };
+  } catch(e) { return null; }
+}
+function arrToTextarea(arr) {
+  return (Array.isArray(arr) ? arr : []).join('\n');
+}
+function textareaToArr(el) {
+  return el.value.split(/\n/).map(s => s.trim()).filter(Boolean);
+}
+function renderResourcesResult(rp) {
+  const box = $('resourcesResult');
+  if (!box) return;
+  let html = '';
+  html += '<div class="resource-block"><label>需要找的关键人</label><textarea id="rpPeople" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>需要的资源 / 工具 / 平台</label><textarea id="rpResources" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>需要满足的条件 / 前提</label><textarea id="rpConditions" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>知行补充说明</label><textarea id="rpNote" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-actions">';
+  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources()">确认支持资源</button>';
+  html += '<button class="btn btn-prev" onclick="aiSuggestResources()">重新让知行建议</button>';
+  html += '</div>';
+  box.innerHTML = html;
+  box.classList.add('show');
+  box.style.display = 'block';
+}
+function confirmResources() {
+  state.data.resourcesPlan = {
+    people: textareaToArr($('rpPeople')),
+    resources: textareaToArr($('rpResources')),
+    conditions: textareaToArr($('rpConditions')),
+    note: ($('rpNote').value || '').trim(),
+    confirmed: true
+  };
+  saveDraft();
+  checkNext2();
+  toast('支持资源已确认');
+}
+
 function checkNext2() {
   const near = state.data.nearScenario || {};
   const far = state.data.farScenario || {};
   const nearOk = near.scenario && near.scenario.trim() && near.plan && near.plan.trim() && state.data.nearFeedback;
   const farOk = far.scenario && far.scenario.trim() && far.plan && far.plan.trim() && state.data.farFeedback;
-  const ok = nearOk || farOk;
+  const appOk = nearOk || farOk;
+  const resourcesOk = state.data.resourcesPlan && state.data.resourcesPlan.confirmed;
+  const ok = appOk && resourcesOk;
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
 }
 
-/* ============ Step 3 身份 ============ */
-$('identityText').addEventListener('input', e => { state.data.identity = e.target.value; saveDraft(); });
+/* ============ Step 3 产出页 ============ */
+$('identityText').addEventListener('input', e => {
+  state.data.identity = e.target.value;
+  const v = e.target.value.trim();
+  const p = $('identityPreview');
+  if (p) p.textContent = v ? '「' + v + '」' : '（尚未填写）';
+  saveDraft();
+});
 
 /* ============ AI 基础 ============ */
 async function aiCall(prompt) {
@@ -1822,7 +1986,7 @@ function showAIResult(elId, text) {
 
 /* ============ 完成 ============ */
 function complete() {
-  if (!state.data.identity.trim()) { toast('写下你的身份定义，这一步很重要'); return; }
+  if (!state.data.identity.trim()) { toast('写下你期待成为的身份，这一步很重要'); return; }
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -1838,6 +2002,11 @@ function complete() {
     effort: state.data.effort,
     scene: state.data.scene,
     expectedOutcome: state.data.expectedOutcome,
+    nearScenario: state.data.nearScenario,
+    farScenario: state.data.farScenario,
+    nearFeedback: state.data.nearFeedback,
+    farFeedback: state.data.farFeedback,
+    resourcesPlan: state.data.resourcesPlan,
     identity: state.data.identity,
     completedAt: new Date().toISOString()
   };
@@ -1958,22 +2127,32 @@ renderScenes();
 if (state.data.impact) { document.querySelectorAll('#impactScale button')[state.data.impact-1]?.classList.add('sel'); }
 if (state.data.effort) { document.querySelectorAll('#effortScale button')[state.data.effort-1]?.classList.add('sel'); }
 checkNext0(); checkNext1(); checkNext2();
-// 完成页摘要
+// Step 3 产出页渲染
 const origGo = window.goStep || goStep;
 window.goStep = function(n) {
   if (n === 3) {
     const d = state.data;
-    $('summaryBox').innerHTML = `
-      <div class="k">面对的挑战</div>${escapeHtml(d.scenario)}<br>
-      <div class="k">归类（${d.groups.length} 类）</div>${d.groups.map(g => `${escapeHtml(g.label)}：${g.notes.length}条`).join(' · ')}<br>
-      <div class="k">洞察方法</div>${escapeHtml(d.method)}<br>
-      <div class="k">你的新认知</div>${escapeHtml(d.insight)}<br>
-      <div class="k">重要性 ${d.impact}/5 · 接受难度 ${d.effort}/5</div>
-      <div class="k">陌生场景推演</div>${escapeHtml(d.scene)}<br>
-      <div class="k">期待的应用产出</div>${escapeHtml(d.expectedOutcome)}`;
+    const rp = d.resourcesPlan;
+    const ro = $('resourcesOutcome');
+    if (rp && rp.confirmed) {
+      ro.innerHTML =
+        '<div class="os-block"><div class="os-title">需要找的关键人</div>' + listToHtml(rp.people) + '</div>' +
+        '<div class="os-block"><div class="os-title">需要的资源 / 工具 / 平台</div>' + listToHtml(rp.resources) + '</div>' +
+        '<div class="os-block"><div class="os-title">需要满足的条件 / 前提</div>' + listToHtml(rp.conditions) + '</div>' +
+        (rp.note ? '<div class="os-block"><div class="os-title">知行补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+    } else {
+      ro.innerHTML = '<div class="os-empty">（请先回到上一步，让知行建议支持资源并确认）</div>';
+    }
+    const preview = $('identityPreview');
+    if (preview) preview.textContent = d.identity.trim() ? '「' + d.identity.trim() + '」' : '（尚未填写）';
   }
   origGo(n);
 };
+function listToHtml(arr) {
+  const items = Array.isArray(arr) ? arr.filter(Boolean) : (arr || '').split(/\n/).map(s => s.trim()).filter(Boolean);
+  if (!items.length) return '<p style="margin:0;font-size:13px;color:var(--ink-3);">—</p>';
+  return '<ol class="os-list">' + items.map(x => '<li>' + escapeHtml(x) + '</li>').join('') + '</ol>';
+}
 </script>
 </body>
 </html>
