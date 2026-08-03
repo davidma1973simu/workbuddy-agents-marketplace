@@ -279,10 +279,14 @@
     resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; min-height: 60px; transition: border .2s;
   }
   .label-block .personal-view:focus { border-color: var(--green); background: #fff; }
-  .label-block .ai-btn-integrate {
-    width: 100%; justify-content: center; padding: 12px 20px;
-    font-size: 14px; font-weight: 600;
+  .ai-btn-integrate {
+    width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;
+    padding: 14px 20px; font-size: 16px; font-weight: 700;
+    background: var(--green-deep); color: #fff; border: none; border-radius: 999px;
+    cursor: pointer; transition: all .2s; font-family: inherit;
   }
+  .ai-btn-integrate:hover { background: var(--green); }
+  .ai-btn-integrate.loading { opacity: .65; pointer-events: none; }
   .label-block .lb-essence-box {
     background: var(--green-soft);
     border-radius: var(--radius-lg); padding: 18px 20px; margin: 12px 0 14px;
@@ -1014,7 +1018,7 @@ function goStep(n) {
   if (n === 2) {
     // ① 新认知（凸显：浅绿盒 + 加粗标签）
     const e = state.data.essence || {};
-    if (state.data.confirmed && (e.nature || e.insight)) {
+    if (e.nature || e.insight) {
       $('insightRef').innerHTML =
         '<div class="ih-nature"><span class="ih-label">现象背后的本质：</span>' + escapeHtml(e.nature || '') + '</div>' +
         '<div class="ih-insight"><span class="ih-label">新洞察和新认知：</span>' + escapeHtml(e.insight || '') + '</div>';
@@ -1473,10 +1477,14 @@ function updateStatus() {
     status.classList.add('ok');
     return;
   }
+  if (hasEssence && scored) {
+    status.textContent = '可以前往应用，建议先点“保存确认”';
+    status.classList.remove('ok');
+    return;
+  }
   const missing = [];
   if (!hasEssence) missing.push('让知行总结');
   if (!scored) missing.push('完成打分');
-  if (!missing.length) missing.push('点"保存确认"');
   status.textContent = '还需要：' + missing.join(' + ');
   status.classList.remove('ok');
 }
@@ -1503,7 +1511,7 @@ function confirmEssence() {
 function checkNext1() {
   const e = state.data.essence || {};
   const hasEssence = (e.nature || '').trim() && (e.insight || '').trim();
-  const ok = state.data.confirmed && hasEssence && state.data.impact > 0 && state.data.effort > 0;
+  const ok = hasEssence && state.data.impact > 0 && state.data.effort > 0;
   $('next1').disabled = !ok;
 }
 // 初始化应用数据
