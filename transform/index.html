@@ -194,5 +194,19 @@
     </a>
   </div>
 </div>
+<a class="fab-archive" href="archive.html" title="随时查看我的认知档案">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+  我的档案
+</a>
+<style>
+  .fab-archive {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
+    padding: 13px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 10px 26px rgba(14,107,80,.4); transition: transform .2s, box-shadow .2s; font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
+</style>
 </body>
 </html>

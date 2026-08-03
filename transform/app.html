@@ -444,12 +444,42 @@
   .outcome-section .os-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--ink); }
   .outcome-section .os-list li { margin-bottom: 4px; }
   .identity-vote { background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 18px; margin: 14px 0; }
+  .identity-vote .identity-input-wrap { margin-bottom: 14px; }
   .identity-vote input {
     width: 100%; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
-    padding: 10px 12px; font-size: 14px; font-family: inherit; margin: 8px 0 12px; box-sizing: border-box;
+    padding: 12px 14px; font-size: 15px; font-family: inherit; box-sizing: border-box;
+    background: #fff;
   }
+  .identity-vote input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1); outline: none; }
+  .identity-vote .identity-hint { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
   .identity-vote .vote-line { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
   .identity-vote .vote-line em { color: var(--green-deep); font-style: normal; font-weight: 700; }
+
+  .identity-badge {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border: 1.5px dashed var(--green); border-radius: var(--radius-md);
+    padding: 14px 16px; animation: rise .4s cubic-bezier(.16,1,.3,1);
+  }
+  .identity-badge .badge-icon { font-size: 28px; line-height: 1; }
+  .identity-badge .badge-body { flex: 1; min-width: 0; }
+  .identity-badge .badge-k { font-size: 11px; font-weight: 700; color: var(--ink-3); letter-spacing: .6px; }
+  .identity-badge .badge-v { font-size: 15px; font-weight: 700; color: var(--green-deep); margin-top: 2px; word-break: break-word; }
+  .identity-badge .badge-vote-btn {
+    flex-shrink: 0; border: none; background: var(--green-deep); color: #fff;
+    padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s; font-family: inherit;
+    box-shadow: 0 4px 12px rgba(14,107,80,.25);
+  }
+  .identity-badge .badge-vote-btn:hover { background: var(--green); transform: translateY(-1px); }
+  .identity-badge .badge-vote-btn.voted { background: var(--ink-3); box-shadow: none; cursor: default; }
+  .identity-badge .badge-vote-btn .vote-done { display: none; }
+  .identity-badge .badge-vote-btn.voted .vote-text { display: none; }
+  .identity-badge .badge-vote-btn.voted .vote-done { display: inline; }
+  .vote-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .vote-stats .stat-pill {
+    font-size: 12px; font-weight: 600; color: var(--green-deep);
+    background: #fff; border: 1px solid var(--green-light); padding: 5px 12px; border-radius: 999px;
+  }
 
   /* 场景推荐弹窗 */
   .modal-overlay {
@@ -473,8 +503,13 @@
     cursor: pointer; transition: all .2s;
   }
   .rec-card:hover { border-color: var(--green); background: var(--green-soft); }
-  .rec-card .rec-title { font-size: 14px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; line-height: 1.5; }
-  .rec-card .rec-challenge { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 10px; }
+  .rec-card .rec-title { font-size: 15px; font-weight: 700; color: var(--green-deep); margin-bottom: 10px; line-height: 1.5; }
+  .rec-sections { display: grid; gap: 10px; margin-bottom: 12px; }
+  .rec-sec { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .rec-sec-title { font-size: 11px; font-weight: 800; color: var(--green-deep); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 6px; }
+  .rec-line { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; margin-bottom: 4px; }
+  .rec-line:last-child { margin-bottom: 0; }
+  .rec-line b { color: var(--ink); font-weight: 600; margin-right: 6px; }
   .rec-use { width: 100%; display: block; padding: 9px 14px; font-size: 13.5px; }
   .rec-manual { border-top: 1px dashed var(--line); padding-top: 14px; }
   .rec-manual textarea {
@@ -965,19 +1000,38 @@
       </div>
     </div>
 
-    <!-- Step 3 产出：支持资源 + 身份投票 -->
+    <!-- Step 3 产出：行动建议 + 支持资源 + 身份投票 -->
     <div class="panel" id="panel-3" style="display:none;">
       <h1>这次想清楚，我要带走的产出</h1>
-      <div class="hint">把洞察落地为可动员的资源，并为你期待的身份投一票。</div>
+      <div class="hint">把洞察落地为几条可执行的行动，并为你期待的身份投上一票。</div>
 
-      <label>① 知行建议的支持资源</label>
+      <label>① 知行建议的下一步行动</label>
+      <div class="outcome-section" id="actionsOutcome"></div>
+
+      <label>② 需要的支持资源</label>
       <div class="outcome-section" id="resourcesOutcome"></div>
 
-      <label>② 为期待的身份投票</label>
-      <div class="identity-vote">
-        <label style="font-size:12.5px;color:var(--ink-2);font-weight:600;">我期待自己成为：</label>
-        <input type="text" id="identityText" placeholder="例：会用第一性原理思考的人">
-        <div class="vote-line">经过这次想清楚，我给自己期待的身份 <em id="identityPreview">（尚未填写）</em> 投了一票。</div>
+      <label>③ 为期待的身份投票</label>
+      <div class="identity-vote" id="identityVoteArea">
+        <div class="identity-input-wrap">
+          <input type="text" id="identityText" placeholder="例：会用第一性原理思考的人">
+          <div class="identity-hint">写下你期待自己成为什么样的人</div>
+        </div>
+        <div class="identity-badge" id="identityBadge" style="display:none;">
+          <div class="badge-icon">🗳️</div>
+          <div class="badge-body">
+            <div class="badge-k">我投给</div>
+            <div class="badge-v" id="identityBadgeText">—</div>
+          </div>
+          <button class="badge-vote-btn" id="voteBtn" onclick="castIdentityVote()">
+            <span class="vote-text">投一票</span>
+            <span class="vote-done">✓ 已投票</span>
+          </button>
+        </div>
+        <div class="vote-stats" id="voteStats" style="display:none;">
+          <div class="stat-pill"><span id="voteCount">0</span> 票</div>
+          <div class="stat-pill">最近 <span id="voteDays">—</span></div>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -1696,7 +1750,26 @@ async function aiRecommendScenes(type) {
   setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n任务：请针对上面的核心认知，推荐 3 个${label}，每个场景附带一个核心挑战。要求场景具体、可想象，挑战是这个场景下应用新认知时最可能遇到的阻力。\n\n格式（严格按 JSON 数组）：\n[{"scenario":"...","challenge":"..."},{"scenario":"...","challenge":"..."},{"scenario":"...","challenge":"..."}]`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n任务：请针对上面的核心认知，推荐 3 个${label}。
+
+每个推荐必须包含：
+1. scene（场景）：按以下字段简洁填写
+   - 时间：什么时候
+   - 地点：在哪里
+   - 人物：涉及谁
+   - 挑战（汇总）：一句话概括要面对的核心张力
+   - 期望达到的目的：如果成功，会看到什么
+   - 背后的需求或价值：这件事对用户为什么重要
+2. challenge（挑战）：按以下字段简洁填写
+   - 现状：目前是什么情况
+   - 目标：想要变成什么样
+   - 差距：现状和目标之间差了什么
+   - 弥补差距的困难所在：为什么难
+
+要求：每个字段用 1-2 句话，避免冗长；整体要具体、可想象。
+
+格式（严格按 JSON 数组）：
+[{"scene":{"time":"...","place":"...","people":"...","summary":"...","goal":"...","value":"..."},"challenge":{"current":"...","target":"...","gap":"...","difficulty":"..."}},{...}]`
     );
     const list = parseRecommendations(r);
     if (list && list.length) {
@@ -1716,22 +1789,60 @@ function parseRecommendations(text) {
     if (!m) return null;
     const arr = JSON.parse(m[0]);
     if (!Array.isArray(arr)) return null;
-    return arr.map(item => ({
-      scenario: (item.scenario || item.title || '').trim(),
-      challenge: (item.challenge || item.difficulty || '').trim()
-    })).filter(item => item.scenario);
+    return arr.map(item => {
+      const s = item.scene || {};
+      const c = item.challenge || {};
+      const scenario = (s.summary || item.scenario || item.title || '').trim();
+      return {
+        scenario,
+        scene: {
+          time: (s.time || '').trim(),
+          place: (s.place || '').trim(),
+          people: (s.people || '').trim(),
+          summary: scenario,
+          goal: (s.goal || '').trim(),
+          value: (s.value || '').trim()
+        },
+        challenge: {
+          current: (c.current || '').trim(),
+          target: (c.target || '').trim(),
+          gap: (c.gap || '').trim(),
+          difficulty: (c.difficulty || '').trim()
+        }
+      };
+    }).filter(item => item.scenario);
   } catch(e) { return null; }
 }
 function openRecommendModal(type, list) {
   const modal = $('recommendModal');
   $('recommendModalTitle').textContent = type === 'near' ? '知行推荐的熟悉场景与挑战' : '知行推荐的陌生场景与挑战';
-  $('recommendList').innerHTML = list.map((item, i) => `
+  $('recommendList').innerHTML = list.map((item, i) => {
+    const s = item.scene || {};
+    const c = item.challenge || {};
+    return `
     <div class="rec-card" onclick="useRecommendation('${type}', ${i})">
       <div class="rec-title">${escapeHtml(item.scenario)}</div>
-      <div class="rec-challenge"><b>挑战：</b>${escapeHtml(item.challenge || '—')}</div>
+      <div class="rec-sections">
+        <div class="rec-sec">
+          <div class="rec-sec-title">场景</div>
+          ${s.time ? '<div class="rec-line"><b>时间</b>' + escapeHtml(s.time) + '</div>' : ''}
+          ${s.place ? '<div class="rec-line"><b>地点</b>' + escapeHtml(s.place) + '</div>' : ''}
+          ${s.people ? '<div class="rec-line"><b>人物</b>' + escapeHtml(s.people) + '</div>' : ''}
+          ${s.goal ? '<div class="rec-line"><b>目的</b>' + escapeHtml(s.goal) + '</div>' : ''}
+          ${s.value ? '<div class="rec-line"><b>价值</b>' + escapeHtml(s.value) + '</div>' : ''}
+        </div>
+        <div class="rec-sec">
+          <div class="rec-sec-title">挑战</div>
+          ${c.current ? '<div class="rec-line"><b>现状</b>' + escapeHtml(c.current) + '</div>' : ''}
+          ${c.target ? '<div class="rec-line"><b>目标</b>' + escapeHtml(c.target) + '</div>' : ''}
+          ${c.gap ? '<div class="rec-line"><b>差距</b>' + escapeHtml(c.gap) + '</div>' : ''}
+          ${c.difficulty ? '<div class="rec-line"><b>困难</b>' + escapeHtml(c.difficulty) + '</div>' : ''}
+        </div>
+      </div>
       <button class="btn btn-next rec-use" onclick="event.stopPropagation(); useRecommendation('${type}', ${i})">选用此场景</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
   modal.dataset.list = JSON.stringify(list);
   modal.dataset.type = type;
   $('recommendManual').value = '';
@@ -1759,7 +1870,7 @@ function useManualRecommendation() {
 function fillAppScenario(type, item) {
   const obj = ensureAppScenario(type);
   obj.scenario = item.scenario || '';
-  obj.plan = item.challenge ? `挑战：${item.challenge}` : (obj.plan || '');
+  // 选择推荐场景后，「打算怎么做」保持空白，由用户自行填写
   saveDraft();
   document.querySelectorAll(`[data-app="${type}"]`).forEach(el => {
     const key = el.dataset.key;
@@ -1944,9 +2055,7 @@ function checkNext2() {
 /* ============ Step 3 产出页 ============ */
 $('identityText').addEventListener('input', e => {
   state.data.identity = e.target.value;
-  const v = e.target.value.trim();
-  const p = $('identityPreview');
-  if (p) p.textContent = v ? '「' + v + '」' : '（尚未填写）';
+  renderIdentityVote();
   saveDraft();
 });
 
@@ -2008,6 +2117,7 @@ function complete() {
     farFeedback: state.data.farFeedback,
     resourcesPlan: state.data.resourcesPlan,
     identity: state.data.identity,
+    tags: state.data.tags || [],
     completedAt: new Date().toISOString()
   };
   let archive = [];
@@ -2123,7 +2233,7 @@ $('scenario').addEventListener('input', e => { state.data.scenario = e.target.va
 renderNotes(); renderGroups();
 // $('expectedOutcome').value = state.data.expectedOutcome;  // 旧字段已删除
 $('identityText').value = state.data.identity;
-renderScenes();
+renderIdentityVote();
 if (state.data.impact) { document.querySelectorAll('#impactScale button')[state.data.impact-1]?.classList.add('sel'); }
 if (state.data.effort) { document.querySelectorAll('#effortScale button')[state.data.effort-1]?.classList.add('sel'); }
 checkNext0(); checkNext1(); checkNext2();
@@ -2132,6 +2242,19 @@ const origGo = window.goStep || goStep;
 window.goStep = function(n) {
   if (n === 3) {
     const d = state.data;
+
+    // ① 行动建议：合并近/远应用反馈的 actions
+    const ao = $('actionsOutcome');
+    const actions = [];
+    if (d.nearFeedback && d.nearFeedback.actions) actions.push(...d.nearFeedback.actions);
+    if (d.farFeedback && d.farFeedback.actions) actions.push(...d.farFeedback.actions);
+    if (actions.length) {
+      ao.innerHTML = '<ol class="os-list">' + actions.filter(Boolean).map((a, i) => '<li><b>行动 ' + (i + 1) + '</b>：' + escapeHtml(a) + '</li>').join('') + '</ol>';
+    } else {
+      ao.innerHTML = '<div class="os-empty">（请先回到上一步，让知行为应用计划打分并给出行动建议）</div>';
+    }
+
+    // ② 支持资源
     const rp = d.resourcesPlan;
     const ro = $('resourcesOutcome');
     if (rp && rp.confirmed) {
@@ -2143,8 +2266,9 @@ window.goStep = function(n) {
     } else {
       ro.innerHTML = '<div class="os-empty">（请先回到上一步，让知行建议支持资源并确认）</div>';
     }
-    const preview = $('identityPreview');
-    if (preview) preview.textContent = d.identity.trim() ? '「' + d.identity.trim() + '」' : '（尚未填写）';
+
+    // ③ 身份投票
+    renderIdentityVote();
   }
   origGo(n);
 };
@@ -2153,6 +2277,66 @@ function listToHtml(arr) {
   if (!items.length) return '<p style="margin:0;font-size:13px;color:var(--ink-3);">—</p>';
   return '<ol class="os-list">' + items.map(x => '<li>' + escapeHtml(x) + '</li>').join('') + '</ol>';
 }
+
+// 身份投票交互
+function renderIdentityVote() {
+  const v = (state.data.identity || '').trim();
+  const badge = $('identityBadge');
+  const stats = $('voteStats');
+  const badgeText = $('identityBadgeText');
+  if (!badge) return;
+  if (v) {
+    badgeText.textContent = '「' + v + '」';
+    badge.style.display = 'flex';
+    stats.style.display = 'flex';
+    updateVoteStats(v);
+  } else {
+    badge.style.display = 'none';
+    stats.style.display = 'none';
+  }
+  const btn = $('voteBtn');
+  if (btn) btn.classList.remove('voted');
+}
+function castIdentityVote() {
+  const v = (state.data.identity || '').trim();
+  if (!v) { toast('先写下你期待的身份'); return; }
+  const btn = $('voteBtn');
+  if (btn) btn.classList.add('voted');
+  updateVoteStats(v);
+  toast('已为你期待的身份投下一票');
+}
+function updateVoteStats(text) {
+  let profile = { identityStatements: [] };
+  try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
+  const list = profile.identityStatements || [];
+  const same = list.filter(s => s.text === text);
+  const countEl = $('voteCount');
+  const daysEl = $('voteDays');
+  if (countEl) countEl.textContent = (same.length || 0) + 1; // 本次投票 + 历史同身份
+  if (daysEl) {
+    const latest = same[0] || list[0];
+    if (latest && latest.date) {
+      const days = Math.max(0, Math.floor((Date.now() - new Date(latest.date).getTime()) / (86400000)));
+      daysEl.textContent = days === 0 ? '今天' : days + ' 天前';
+    } else {
+      daysEl.textContent = '今天';
+    }
+  }
+}
 </script>
+<a class="fab-archive" href="archive.html" title="随时查看我的认知档案">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+  我的档案
+</a>
+<style>
+  .fab-archive {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
+    padding: 13px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 10px 26px rgba(14,107,80,.4); transition: transform .2s, box-shadow .2s; font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
+</style>
 </body>
 </html>
