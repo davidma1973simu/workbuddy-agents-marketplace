@@ -188,6 +188,21 @@
   .question-item .thinking-input:focus { border-color: var(--green); }
   .question-item .q-meta { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
 
+  /* v3 引导卡片 */
+  .guide-card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--green-50); border: 1.5px dashed var(--green-light);
+    border-radius: var(--radius-md); padding: 16px 18px;
+  }
+  .guide-icon {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--green);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .guide-text { flex: 1; }
+  .guide-title { font-size: 14.5px; font-weight: 700; color: var(--green-deep); margin-bottom: 2px; }
+  .guide-desc { font-size: 12.5px; color: var(--ink-2); }
+
   /* v3 逐题交互 */
   .progress-bar {
     background: var(--green-soft); padding: 6px 14px; border-radius: 999px;
@@ -432,16 +447,33 @@
       <label>① 选择要深入洞察的类别（可多选）</label>
       <div class="label-picker" id="labelPicker"></div>
 
-      <!-- ② 逐题界面 -->
+      <!-- ② 逐题界面：选完标签后展开，先看到引导卡片，等 AI 抛出问题再展开问题区 -->
       <div id="thinkingArea" style="display:none;">
-        <div class="progress-bar">
-          <span id="progressText">0 / 0</span>
+        <!-- 引导卡片：用户选完标签还没生成问题时显示 -->
+        <div class="guide-card" id="guideCard">
+          <div class="guide-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
+          </div>
+          <div class="guide-text">
+            <div class="guide-title">已选好要洞察的类别</div>
+            <div class="guide-desc">点下方按钮，<b>知行</b>会基于这些类别抛出 3-5 个启发式问题，让你逐题思考。</div>
+          </div>
+          <button class="btn btn-next" onclick="aiAskQuestions()" id="aiQuestion" style="padding:10px 20px;flex-shrink:0;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px;margin-right:4px;"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            让知行启发我
+          </button>
         </div>
 
-        <div class="current-question">
-          <div class="q-tag" id="qTag">问题 1 / 共 5</div>
-          <div class="q-text" id="currentQuestionText"></div>
-        </div>
+        <!-- 真正的逐题界面（AI 生成问题后才显示） -->
+        <div id="questionArea" style="display:none;">
+          <div class="progress-bar">
+            <span id="progressText">0 / 0</span>
+          </div>
+
+          <div class="current-question">
+            <div class="q-tag" id="qTag">问题 1 / 共 0</div>
+            <div class="q-text" id="currentQuestionText"></div>
+          </div>
 
         <textarea id="currentAnswer" placeholder="写下你对这个问题的思考..."></textarea>
 
@@ -461,6 +493,7 @@
         <div class="skip-hint" id="skipHint" style="display:none;">
           <button class="btn-link" onclick="finishQuestions()">够用了，让知行总结 →</button>
         </div>
+        </div><!-- /questionArea -->
       </div>
 
       <!-- ③ 最终总结 -->
@@ -898,6 +931,14 @@ function toggleLabel(label) {
   renderLabelPicker();
   if (state.data.selectedLabels.length) {
     $('thinkingArea').style.display = 'block';
+    // 已生成问题 → 显示问题区；未生成 → 显示引导卡片
+    if (state.data.questions && state.data.questions.length) {
+      $('guideCard').style.display = 'none';
+      $('questionArea').style.display = 'block';
+    } else {
+      $('guideCard').style.display = 'flex';
+      $('questionArea').style.display = 'none';
+    }
   } else {
     $('thinkingArea').style.display = 'none';
   }
@@ -924,6 +965,9 @@ async function aiAskQuestions() {
       state.data.thinkingAnswers = new Array(state.data.questions.length).fill('');
       state.data.aiInspirations = new Array(state.data.questions.length).fill(null);
       state.data.currentQuestionIdx = 0;
+      // AI 抛完问题后：隐藏引导卡片，显示问题区
+      $('guideCard').style.display = 'none';
+      $('questionArea').style.display = 'block';
       renderCurrentQuestion();
       saveDraft();
       toast(`知行抛出了 ${state.data.questions.length} 题`);
