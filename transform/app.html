@@ -225,6 +225,11 @@
   .q-block .q-ai-result.show { display: block; }
   .q-block .q-meta { font-size: 11px; color: var(--green-deep); margin-top: 8px; display: none; }
   .q-block .q-meta.show { display: block; }
+  .q-block .q-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .q-block .q-state { font-size: 11px; color: var(--ink-3); }
+  .q-block.q-done { border-color: var(--green-light); background: rgba(29,158,117,.04); }
+  .q-block.q-done .q-state { color: var(--green-deep); font-weight: 600; }
+  .q-block .q-action-row { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
 
   /* v5 按标签独立卡片 */
   .label-block {
@@ -1053,42 +1058,87 @@ function anyLabelHasQuestions() {
 }
 
 // ② AI 按每个标签抛 2 个简短问题
-async function aiAskQuestions() {
-  if (!state.data.selectedLabels || !state.data.selectedLabels.length) {
-    toast('先选要洞察的类别'); return;
+// ② AI 渐进式抛题（每标签独立：先抛第 1 题，回答完保存后才出第 2 题）
+async function aiAskFirstQ(label, btn) {
+  ensurePerLabel();
+  if ((state.data.perLabel[label].questions || []).length >= 5) {
+    toast('本标签已达 5 题上限，可点"够了，让知行总结"'); return;
   }
-  const selectedGroups = state.data.groups.filter(g => state.data.selectedLabels.includes(g.label));
-  const groupsStr = selectedGroups.map(g =>
-    `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
-  ).join('\n');
-  setAILoading('aiQuestion', true);
+  await generateNextQuestion(label, btn, false);
+}
+async function saveAndNextQ(label, btn) {
+  const pl = state.data.perLabel[label];
+  // 保存当前题
+  const idx = (pl.questions || []).length - 1;
+  if (idx < 0) return;
+  // 强制读取 textarea 落盘（onblur 已处理，但双保险）
+  const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+  const lastTa = block.querySelectorAll('.q-answer')[idx];
+  if (lastTa) pl.answers[idx] = lastTa.value;
+  // 检查是否回答
+  if (!(pl.answers[idx] || '').trim()) {
+    toast('先写下你的思考再继续'); lastTa && lastTa.focus(); return;
+  }
+  saveDraft();
+  // 生成下一题
+  if ((pl.questions || []).length >= 5) {
+    toast('已达 5 题上限，点"够了，让知行总结"'); return;
+  }
+  await generateNextQuestion(label, btn, true);
+}
+function saveAnswerL(label, idx) {
+  const pl = state.data.perLabel[label];
+  if (!pl) return;
+  const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+  const ta = block.querySelectorAll('.q-answer')[idx];
+  if (ta) pl.answers[idx] = ta.value;
+  // 更新状态
+  if (ta && ta.value.trim()) {
+    const qb = block.querySelectorAll('.q-block')[idx];
+    if (qb) { qb.classList.add('q-done'); const st = qb.querySelector('.q-state'); if (st) st.textContent = '✓ 已回答'; }
+  }
+  saveDraft();
+}
+function finishQuestionsL(label) {
+  renderPerLabelCards();
+  checkNext1();
+  saveDraft();
+  toast('已停止本题，进入整合环节');
+}
+async function generateNextQuestion(label, btn, append) {
+  const pl = state.data.perLabel[label];
+  const group = state.data.groups.find(g => g.label === label) || { notes: [] };
+  const notesStr = group.notes.map(n => `[${n.type}] ${n.text}`).join('; ');
+  // 上下文：已有问题 + 答案（避免重复）
+  const existing = (pl.questions || []).map((q, i) => {
+    const a = pl.answers[i] || '（未填）';
+    return `已问 ${i+1}：${q} | 用户答：${a}`;
+  }).join('\n');
+  if (btn) btn.classList.add('loading');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n每个类别的信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n任务：针对每个类别，单独抛 2 个启发式问题（每个类别独立）。\n\n严格要求：\n1. 每个问题必须**直接基于该类别下面列出的现象便签原文**，用词贴近原文，不得自行发挥或替换关键词（例如原文是"AI+定制化的课程方案"，问题就必须是"AI+定制化的课程方案"，不能改成"AI课程"）\n2. 问题要简短（10-25 字）、单一（一次只问一件事）、精确\n3. 不同类别的问题必须不同\n4. 严格按 JSON 数组输出：\n[{"label":"类别名","questions":["问题1","问题2"]},...]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n类别：「${label}」\n该类别信息（严格以此为据）：\n${notesStr}\n\n${existing ? '已经问过这些问题：\n' + existing + '\n\n' : ''}任务：基于该类别下面的现象便签原文，抛 1 个新的启发式问题（不能重复之前问过的角度）。\n\n严格要求：\n1. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n2. 简短（10-25 字）、单一（一次只问一件事）\n3. 不要重复已问过的问题\n4. 严格按 JSON 输出（只一个问题）：\n{"q":"问题"}`
     );
-    const data = parsePerLabelQuestions(r);
-    if (data.length) {
-      ensurePerLabel();
-      data.forEach(d => {
-        if (state.data.perLabel[d.label]) {
-          state.data.perLabel[d.label].questions = (d.questions || []).slice(0, 3);
-          state.data.perLabel[d.label].answers = new Array(state.data.perLabel[d.label].questions.length).fill('');
-          state.data.perLabel[d.label].aiInspirations = new Array(state.data.perLabel[d.label].questions.length).fill(null);
-        }
-      });
-      $('guideCard').style.display = 'none';
-      $('perLabelArea').style.display = 'block';
-      $('nextBtnArea').style.display = 'flex';
-      renderPerLabelCards();
-      saveDraft();
-      toast(`知行抛出了 ${data.reduce((n, d) => n + (d.questions || []).length, 0)} 题`);
-    } else {
-      toast('AI 没解析到问题，重试');
-    }
+    const q = parseSingleQuestion(r);
+    if (!q) { toast('AI 没生成问题，重试'); return; }
+    pl.questions = pl.questions || [];
+    pl.questions.push(q);
+    pl.answers = pl.answers || [];
+    pl.answers.push('');
+    pl.aiInspirations = pl.aiInspirations || [];
+    pl.aiInspirations.push(null);
+    renderPerLabelCards();
+    saveDraft();
+    // 滚动到新题
+    setTimeout(() => {
+      const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+      const lastQ = block.querySelectorAll('.q-block');
+      if (lastQ.length) lastQ[lastQ.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   } catch(e) { toast(e.message); }
-  setAILoading('aiQuestion', false);
+  if (btn) btn.classList.remove('loading');
 }
-function parsePerLabelQuestions(text) {
+function parseSingleQuestion(text) {
   function clean(s) {
     if (typeof s !== 'string') s = String(s || '');
     s = s.trim().replace(/^["「『'"]+|["」』'"]+$/g, '');
@@ -1097,35 +1147,16 @@ function parsePerLabelQuestions(text) {
     return s;
   }
   try {
-    const m = text.match(/[\{\[][\s\S]*[\}\]]/);
-    if (!m) throw new Error('no JSON');
-    const arr = JSON.parse(m[0]);
-    if (!Array.isArray(arr)) throw new Error('not array');
-    return arr.map(d => ({
-      label: (d.label || '').trim(),
-      questions: (d.questions || []).map(clean).filter(Boolean)
-    })).filter(d => d.label && d.questions.length);
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    return clean(d.q || d.question || d.text || '');
   } catch(e) {
-    // fallback：行级
-    const result = [];
-    let cur = null;
-    text.split('\n').forEach(l => {
-      const m = l.match(/^[【\[](.+?)[】\]]\s*(.*)$/);
-      if (m) {
-        if (cur && cur.questions.length) result.push(cur);
-        cur = { label: m[1].trim(), questions: [] };
-        const q = clean(m[2]);
-        if (q) cur.questions.push(q);
-      } else if (cur) {
-        const q = clean(l.trim());
-        if (q) cur.questions.push(q);
-      }
-    });
-    if (cur && cur.questions.length) result.push(cur);
-    return result;
+    // fallback：取第一个含问号或中文的行
+    const lines = text.split('\n').map(l => clean(l.replace(/^[-0-9.、\s]+/, ''))).filter(Boolean);
+    return lines[0] || null;
   }
 }
-
 // ③ 渲染每个标签的独立卡片（问题 + 答案 + 洞察 + 评分）
 function renderPerLabelCards() {
   const wrap = $('perLabelArea');
@@ -1150,22 +1181,36 @@ function renderLabelBlock(label, group, pl) {
         ${group.notes.slice(0, 6).map(n => `<span class="lb-note">[${n.type}] ${escapeHtml(n.text)}</span>`).join('')}
       </div>
 
-      <div class="lb-section-title">知行抛的问题 · 你的思考</div>
+      <div class="lb-section-title">知行抛的问题 · 你的思考（一题一题回答）</div>
       <div class="lb-questions">
         ${(pl.questions || []).map((q, i) => `
-          <div class="q-block" data-qi="${i}">
-            <span class="q-tag">问题 ${i+1}</span>
+          <div class="q-block ${pl.answers[i] && pl.answers[i].trim() ? 'q-done' : ''}" data-qi="${i}">
+            <div class="q-head">
+              <span class="q-tag">问题 ${i+1}</span>
+              <span class="q-state">${pl.answers[i] && pl.answers[i].trim() ? '✓ 已回答' : '未答'}</span>
+            </div>
             <div class="q-text">${escapeHtml(q)}</div>
-            <textarea class="q-answer" placeholder="写下你的思考...">${escapeHtml((pl.answers || [])[i] || '')}</textarea>
+            <textarea class="q-answer" placeholder="写下你的思考..." onblur="autoGrow(this); if(this.value.trim()) saveAnswerL('${safe}', ${i});">${escapeHtml((pl.answers || [])[i] || '')}</textarea>
             <div class="q-ai-row">
               <span class="q-ai-label">知行的三个能力（输入后可用）：</span>
               <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '理清', this)">理清</button>
               <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '质疑', this)">质疑</button>
               <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '查证', this)">查证</button>
             </div>
-            <div class="q-ai-result" data-qi="${i}"></div>
+            <div class="q-ai-result" data-qi="${i}">${pl.aiInspirations[i] ? '<span class="ai-tag">知行回应</span>' + escapeHtml(pl.aiInspirations[i]).replace(/\n/g, '<br>') : ''}</div>
+            ${i === (pl.questions || []).length - 1 ? `
+              <div class="q-action-row">
+                <button class="btn btn-next" onclick="saveAndNextQ('${safe}', this)" style="padding:8px 18px;">${(pl.answers[i] && pl.answers[i].trim()) ? '让知行提下一题 →' : '保存并继续'}</button>
+                <button class="btn-link" onclick="finishQuestionsL('${safe}')">够了，让知行总结</button>
+              </div>
+            ` : ''}
           </div>
         `).join('')}
+        ${(!pl.questions || !pl.questions.length) ? `
+          <div class="q-block" style="text-align:center;padding:18px;">
+            <button class="btn btn-next" onclick="aiAskFirstQ('${safe}', this)" style="padding:10px 22px;">让知行提第一题</button>
+          </div>
+        ` : ''}
       </div>
 
       <div class="lb-section-title">我的个人看法（基于以上问题 + 该标签下所有信息）</div>
