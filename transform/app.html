@@ -592,7 +592,7 @@
             <div class="guide-title">已选好要洞察的类别</div>
             <div class="guide-desc">点下方按钮，<b>知行</b>会针对每个类别分别抛问题、提炼洞察、给出评分。</div>
           </div>
-          <button class="btn btn-next" onclick="aiAskQuestions()" id="aiQuestion" style="padding:10px 20px;flex-shrink:0;">让知行启发我</button>
+          <button class="btn btn-next" onclick="aiAskFirstForSelected()" id="aiQuestion" style="padding:10px 20px;flex-shrink:0;">让知行启发我</button>
         </div>
 
         <!-- ③ 每个标签独立卡片（问题 + 答案 + 洞察 + 评分） -->
@@ -1065,6 +1065,48 @@ async function aiAskFirstQ(label, btn) {
     toast('本标签已达 5 题上限，可点"够了，让知行总结"'); return;
   }
   await generateNextQuestion(label, btn, false);
+}
+// 顶部"让知行启发我"按钮：为每个已选标签生成第一题
+async function aiAskFirstForSelected() {
+  const labels = state.data.selectedLabels || [];
+  if (!labels.length) { toast('先选要洞察的类别'); return; }
+  ensurePerLabel();
+  $('guideCard').style.display = 'none';
+  $('perLabelArea').style.display = 'block';
+  renderPerLabelCards();
+  setAILoading('aiQuestion', true);
+  try {
+    // 并行为每个标签生成第一题
+    await Promise.all(labels.map(async l => {
+      if ((state.data.perLabel[l].questions || []).length >= 5) return;
+      await generateNextQuestionForLabel(l);
+    }));
+    saveDraft();
+    toast(`知行为 ${labels.length} 个标签各抛了第 1 题`);
+  } catch(e) { toast(e.message); }
+  setAILoading('aiQuestion', false);
+}
+async function generateNextQuestionForLabel(label) {
+  const pl = state.data.perLabel[label];
+  const group = state.data.groups.find(g => g.label === label) || { notes: [] };
+  const notesStr = group.notes.map(n => `[${n.type}] ${n.text}`).join('; ');
+  const existing = (pl.questions || []).map((q, i) => {
+    const a = pl.answers[i] || '（未填）';
+    return `已问 ${i+1}：${q} | 用户答：${a}`;
+  }).join('\n');
+  try {
+    const r = await aiCall(
+      `场景：「${state.data.scenario || '未提供'}」\n\n类别：「${label}」\n该类别信息（严格以此为据）：\n${notesStr}\n\n${existing ? '已经问过这些问题：\n' + existing + '\n\n' : ''}任务：基于该类别下面的现象便签原文，抛 1 个新的启发式问题（不能重复之前问过的角度）。\n\n严格要求：\n1. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n2. 简短（10-25 字）、单一（一次只问一件事）\n3. 不要重复已问过的问题\n4. 严格按 JSON 输出（只一个问题）：\n{"q":"问题"}`
+    );
+    const q = parseSingleQuestion(r);
+    if (!q) return;
+    pl.questions = pl.questions || [];
+    pl.questions.push(q);
+    pl.answers = pl.answers || [];
+    pl.answers.push('');
+    pl.aiInspirations = pl.aiInspirations || [];
+    pl.aiInspirations.push(null);
+  } catch(e) { /* 单个失败不影响其他 */ }
 }
 async function saveAndNextQ(label, btn) {
   const pl = state.data.perLabel[label];
