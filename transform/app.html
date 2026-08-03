@@ -175,6 +175,7 @@
   .label-chip { padding: 10px 16px; border: 1.5px solid var(--line); border-radius: 999px; font-size: 13.5px; cursor: pointer; background: var(--surface); color: var(--ink-2); transition: all .2s; user-select: none; }
   .label-chip:hover { border-color: var(--green); }
   .label-chip.sel { background: var(--green); color: #fff; border-color: var(--green); }
+  .label-chip.chip-static { cursor: default; background: var(--green-soft); color: var(--green-deep); border-color: var(--green-light); }
 
   .ai-capabilities { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
   .cap-label { font-size: 12.5px; color: var(--ink-3); }
@@ -594,36 +595,31 @@
       <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去洞察 →</button></div>
     </div>
 
-    <!-- Step 1 洞察（用户主导，知行辅助启发）简化版：5 题统一 + 单一整合 -->
+    <!-- Step 1 洞察（用户主导，知行辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
     <div class="panel" id="panel-1" style="display:none;">
       <h1>透过现象看本质</h1>
-      <div class="hint">选要洞察的类别后，<b>知行</b>会基于所有类别抛出 5 个启发式问题让你集中思考。你可召唤知行的三个能力，最后知行帮你整合成核心洞察。</div>
+      <div class="hint">上面的归类会全部参与。知行会<b>一题一题</b>抛启发问题，回答过的题会留在页面上。你可以一直回答，直到说"可以了"，知行再整合成核心洞察。</div>
 
-      <!-- ① 选标签 -->
-      <label>① 选择要洞察的类别（可多选）</label>
+      <!-- ① 归类罗列（只读，全部参与） -->
+      <label>① 你的归类（全部参与思考）</label>
       <div class="label-picker" id="labelPicker"></div>
 
-      <!-- ② 引导卡片 -->
+      <!-- ② 渐进式提问区 -->
       <div id="thinkingArea" style="display:none;">
-        <div class="guide-card" id="guideCard">
-          <div class="guide-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
-          </div>
-          <div class="guide-text">
-            <div class="guide-title">已选好要洞察的类别</div>
-            <div class="guide-desc">点下方按钮，<b>知行</b>会基于所有类别抛 5 个启发式问题。</div>
-          </div>
-          <button class="btn btn-next" onclick="aiAskQuestions()" id="aiQuestion" style="padding:10px 20px;flex-shrink:0;">让知行启发我</button>
+        <div class="lb-section-title">知行抛的问题 · 你的思考</div>
+        <div id="allQuestions"></div>
+
+        <!-- 出题控制：第一题 / 下一题 / 够了 -->
+        <div class="q-action-row" id="askRow" style="justify-content:flex-start;border:none;padding-top:0;">
+          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">让知行提第一题</button>
+          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">可以了，让知行总结 →</button>
         </div>
 
-        <!-- ③ 5 题统一显示 -->
-        <div id="questionsArea" style="display:none;">
-          <div class="lb-section-title">知行抛的问题 · 你的思考</div>
-          <div id="allQuestions"></div>
+        <div class="lb-section-title">我的整体看法（可空，会作为知行总结的输入）</div>
+        <textarea id="personalView" class="personal-view-main" placeholder="写下你对整个场景的整体看法、感受、判断……"></textarea>
 
-          <div class="lb-section-title">我的整体看法（基于以上问题 + 所有标签的信息）</div>
-          <textarea id="personalView" class="personal-view-main" placeholder="写下你对这个场景的整体看法、感受、判断……（作为知行总结的输入之一）"></textarea>
-
+        <!-- ③ 知行总结按钮 + 凸显 essence 盒 -->
+        <div id="integrateArea" style="display:none;">
           <div class="lb-section-title">让知行整合（基于所有问答 + 整体看法）</div>
           <button class="ai-btn ai-btn-integrate" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -631,7 +627,6 @@
           </button>
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
-          <!-- ④ 核心产出盒（评分在外部，保存确认在评分之后） -->
           <div class="lb-essence-box" id="essenceBox">
             <div class="lb-essence-label">现象背后的本质（AI 整合产出，可编辑）</div>
             <textarea id="essenceNature" class="essence-nature" placeholder="这些现象背后的本质是……"></textarea>
@@ -656,20 +651,20 @@
             <div></div>
             <button class="btn btn-next" onclick="confirmEssence()" id="confirmBtn" style="padding:10px 24px;">保存确认 ✓</button>
           </div>
+        </div>
 
-          <div class="signal" id="signal1" style="display:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            认知 +1，你看到了现象背后的东西
-          </div>
-          <div class="btn-row" id="nextBtnArea" style="display:none;">
-            <button class="btn btn-prev" onclick="goStep(0)">上一步</button>
-            <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>去应用 →</button>
-          </div>
+        <div class="signal" id="signal1" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          认知 +1，你看到了现象背后的东西
+        </div>
+        <div class="btn-row" id="nextBtnArea" style="display:none;">
+          <button class="btn btn-prev" onclick="goStep(0)">上一步</button>
+          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>去应用 →</button>
         </div>
       </div>
     </div>
 
-    <!-- Step 2    <!-- Step 2    <!-- Step 2    <!-- Step 2 应用（认知应用推演） -->
+    <!-- Step 2    <!-- Step 2    <!-- Step 2    <!-- Step 2    <!-- Step 2 应用（认知应用推演） -->
     <div class="panel" id="panel-2" style="display:none;">
       <h1>把新认知用向陌生场景</h1>
       <div class="hint">这一步不是让你去行动，而是<u>在认知层面推演</u>：带着这个新认知，去面对陌生的场景和挑战，它会改变什么？</div>
@@ -843,19 +838,21 @@ function goStep(n) {
   $('stepsBar').dataset.progress = n + 1;
   if (n === 1) {
     renderLabelPicker();
-    if (state.data.selectedLabels && state.data.selectedLabels.length) {
+    if ((state.data.groups || []).length) {
       $('thinkingArea').style.display = 'block';
       $('nextBtnArea').style.display = 'flex';
+      renderAllQuestions();
+      bindPersonalView();
       if ((state.data.insightQuestions || []).length) {
-        $('guideCard').style.display = 'none';
-        $('questionsArea').style.display = 'block';
-        renderAllQuestions();
-        bindPersonalView();
-        restoreEssenceUI();
-      } else {
-        $('guideCard').style.display = 'flex';
-        $('questionsArea').style.display = 'none';
+        $('askNextBtn').textContent = '让知行提下一题 →';
+        $('finishBtn').style.display = 'inline-block';
       }
+      // 已进入整合阶段
+      if (state.data.integrateDone || state.data.confirmed) {
+        $('askRow').style.display = 'none';
+        $('integrateArea').style.display = 'block';
+      }
+      restoreEssenceUI();
       checkNext1();
     }
   }
@@ -1046,92 +1043,60 @@ function checkNext0() {
   if (hasValidGroup) $('signal0').style.display = 'inline-flex';
 }
 
-/* ============ Step 1 洞察（用户主导，知行辅助）简化版 ============ */
+/* ============ Step 1 洞察（用户主导，知行辅助）v8：只读标签 + 渐进出题 ============ */
 
-// 自动高度
 function autoGrow(el) {
   el.style.height = 'auto';
   el.style.height = (el.scrollHeight + 4) + 'px';
 }
 
-// ① 选标签
+// ① 标签只读罗列（全部参与，无需选择）
 function renderLabelPicker() {
   const box = $('labelPicker');
-  const sel = state.data.selectedLabels || [];
-  box.innerHTML = state.data.groups.map(g => {
-    const safe = escapeHtml(g.label).replace(/'/g, '&#39;');
-    return `<span class="label-chip ${sel.includes(g.label) ? 'sel' : ''}" onclick="toggleLabel('${safe}')">${escapeHtml(g.label)}（${g.notes.length} 条）</span>`;
-  }).join('');
-}
-function toggleLabel(label) {
-  state.data.selectedLabels = state.data.selectedLabels || [];
-  const i = state.data.selectedLabels.indexOf(label);
-  if (i >= 0) state.data.selectedLabels.splice(i, 1);
-  else state.data.selectedLabels.push(label);
-  renderLabelPicker();
-  if (state.data.selectedLabels.length) {
-    $('thinkingArea').style.display = 'block';
-    $('nextBtnArea').style.display = 'flex';
-    if ((state.data.insightQuestions || []).length) {
-      $('guideCard').style.display = 'none';
-      $('questionsArea').style.display = 'block';
-      renderAllQuestions();
-      restoreEssenceUI();
-    } else {
-      $('guideCard').style.display = 'flex';
-      $('questionsArea').style.display = 'none';
-    }
-  } else {
-    $('thinkingArea').style.display = 'none';
-    $('questionsArea').style.display = 'none';
-  }
-  checkNext1();
-  saveDraft();
+  box.innerHTML = state.data.groups.map(g =>
+    `<span class="label-chip chip-static">${escapeHtml(g.label)}（${g.notes.length} 条）</span>`
+  ).join('');
 }
 
-// ② 让知行抛 5 个问题（基于所有标签）
-async function aiAskQuestions() {
-  if (!state.data.selectedLabels || !state.data.selectedLabels.length) {
-    toast('先选要洞察的类别'); return;
-  }
-  const selectedGroups = state.data.groups.filter(g => state.data.selectedLabels.includes(g.label));
-  const groupsStr = selectedGroups.map(g =>
+// ② 渐进式出题（一题一题）
+async function aiAskNext(btn) {
+  const groups = state.data.groups || [];
+  if (!groups.length) { toast('先完成归类'); return; }
+  btn.classList.add('loading');
+  const groupsStr = groups.map(g =>
     `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
   ).join('\n');
-  setAILoading('aiQuestion', true);
+  const existing = (state.data.insightQuestions || []).map((q, i) => {
+    const a = state.data.insightAnswers[i] || '（未填）';
+    return `已问 ${i+1}：${q} | 用户答：${a}`;
+  }).join('\n');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n所有类别信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n任务：基于以上所有信息，抛出 5 个启发式问题，帮助用户透过现象看本质。\n\n严格要求：\n1. 每个问题必须**直接基于现象便签原文**，用词贴近原文，不得自行引申或替换关键词\n2. 简短（10-25 字）、单一（一次只问一件事）、精确\n3. 5 个问题覆盖不同角度，避免重复\n4. 严格按 JSON 数组输出：\n["问题1","问题2","问题3","问题4","问题5"]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n${existing ? '已经问过这些问题：\n' + existing + '\n\n' : ''}任务：基于以上所有信息，抛 1 个新的启发式问题（不能重复之前问过的角度）。\n\n严格要求：\n1. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n2. 简短（10-25 字）、单一（一次只问一件事）、精确\n3. 严格按 JSON 输出：\n{"q":"问题"}`
     );
-    const questions = parseQuestions(r);
-    if (!questions.length) { toast('AI 没生成问题，重试'); return; }
-    state.data.insightQuestions = questions.slice(0, 5);
-    state.data.insightAnswers = new Array(state.data.insightQuestions.length).fill('');
-    state.data.insightAiInspirations = new Array(state.data.insightQuestions.length).fill(null);
-    state.data.insightPersonalView = state.data.insightPersonalView || '';
-    state.data.essence = state.data.essence || { nature: '', insight: '' };
-    state.data.confirmed = state.data.confirmed || false;
-    $('guideCard').style.display = 'none';
-    $('questionsArea').style.display = 'block';
+    const q = parseSingleQuestion(r);
+    if (!q) { toast('AI 没生成问题，重试'); return; }
+    state.data.insightQuestions = state.data.insightQuestions || [];
+    state.data.insightAnswers = state.data.insightAnswers || [];
+    state.data.insightAiInspirations = state.data.insightAiInspirations || [];
+    state.data.insightQuestions.push(q);
+    state.data.insightAnswers.push('');
+    state.data.insightAiInspirations.push(null);
+    // 更新按钮文字为"下一题"
+    const nextBtn = $('askNextBtn');
+    nextBtn.textContent = '让知行提下一题 →';
+    nextBtn.style.display = 'inline-flex';
+    $('finishBtn').style.display = 'inline-block';
     renderAllQuestions();
-    restoreEssenceUI();
     saveDraft();
-    toast(`知行抛出了 ${questions.length} 题`);
+    setTimeout(() => {
+      const lastQ = document.querySelectorAll('#allQuestions .q-block');
+      if (lastQ.length) lastQ[lastQ.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   } catch(e) { toast(e.message); }
-  setAILoading('aiQuestion', false);
+  btn.classList.remove('loading');
 }
-function parseQuestions(text) {
-  function deepExtract(x) {
-    if (typeof x === 'string') return [x];
-    if (Array.isArray(x)) return x.flatMap(deepExtract);
-    if (x && typeof x === 'object') {
-      for (const k of ['q', 'question', 'text', 'value']) {
-        if (x[k] != null) return deepExtract(x[k]);
-      }
-      return Object.values(x).flatMap(deepExtract);
-    }
-    return [];
-  }
+function parseSingleQuestion(text) {
   function clean(s) {
     if (typeof s !== 'string') s = String(s || '');
     s = s.trim().replace(/^["「『'"]+|["」』'"]+$/g, '');
@@ -1140,16 +1105,17 @@ function parseQuestions(text) {
     return s;
   }
   try {
-    const m = text.match(/[\{\[][\s\S]*[\}\]]/);
-    if (!m) throw new Error('no JSON');
-    const data = JSON.parse(m[0]);
-    return deepExtract(data).map(clean).filter(Boolean);
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    return clean(d.q || d.question || d.text || '');
   } catch(e) {
-    return text.split('\n').map(l => l.trim().replace(/^[-0-9.、\s]+/, '')).map(clean).filter(Boolean);
+    const lines = text.split('\n').map(l => clean(l.replace(/^[-0-9.、\s]+/, ''))).filter(Boolean);
+    return lines[0] || null;
   }
 }
 
-// ③ 渲染 5 题（统一）
+// ③ 渲染所有已答问题（留在页面）
 function renderAllQuestions() {
   const box = $('allQuestions');
   const qs = state.data.insightQuestions || [];
@@ -1173,7 +1139,6 @@ function renderAllQuestions() {
     </div>
   `;
   }).join('');
-  // 自动高度 + 绑定
   box.querySelectorAll('.q-answer').forEach((ta, i) => {
     autoGrow(ta);
     ta.addEventListener('input', e => {
@@ -1188,7 +1153,7 @@ function renderAllQuestions() {
   });
 }
 
-// AI 三个能力（针对第 i 题）
+// AI 三个能力
 async function aiInspireQ(idx, cap, btn) {
   const qs = state.data.insightQuestions || [];
   const a = (state.data.insightAnswers || [])[idx] || '';
@@ -1203,15 +1168,13 @@ async function aiInspireQ(idx, cap, btn) {
     const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}`);
     state.data.insightAiInspirations[idx] = r;
     const result = document.querySelector('.q-ai-result[data-qi="' + idx + '"]');
-    if (result) {
-      result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\\n/g, '<br>');
-    }
+    if (result) result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\\n/g, '<br>');
     saveDraft();
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
 
-// 个人看法 textarea
+// 个人看法
 function bindPersonalView() {
   const pv = $('personalView');
   if (!pv) return;
@@ -1224,26 +1187,37 @@ function bindPersonalView() {
   });
 }
 
-// ④ 让知行总结 → 整合 5 题答案 + 个人看法 → 现象本质 + 新洞察
+// ④ 可以了，让知行总结
+function finishQuestions() {
+  if (!(state.data.insightQuestions || []).length) { toast('先回答至少一个问题'); return; }
+  state.data.integrateDone = true;
+  $('askRow').style.display = 'none';
+  $('integrateArea').style.display = 'block';
+  $('nextBtnArea').style.display = 'flex';
+  restoreEssenceUI();
+  saveDraft();
+  window.scrollTo({ top: $('integrateArea').offsetTop - 20, behavior: 'smooth' });
+}
+
+// ⑤ 知行整合 → 现象本质 + 新洞察
 async function aiIntegrate(btn) {
   if (!state.data.insightQuestions || !state.data.insightQuestions.length) {
-    toast('先让知行抛题'); return;
+    toast('先回答至少一个问题'); return;
   }
+  const groups = state.data.groups || [];
+  const groupsStr = groups.map(g =>
+    `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
+  ).join('\n');
   const qaPairs = state.data.insightQuestions.map((q, i) => {
     const a = state.data.insightAnswers[i] || '（未填）';
     const ai = state.data.insightAiInspirations[i];
     return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '（未填）';
-  const labels = state.data.selectedLabels || [];
-  const groupsStr = labels.map(l => {
-    const g = state.data.groups.find(x => x.label === l);
-    return g ? `[${l}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}` : '';
-  }).filter(Boolean).join('\n');
   btn.classList.add('loading');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n所有标签信息：\n${groupsStr}\n\n用户在 5 个问题下的思考：\n${qaPairs}\n\n用户的整体看法：\n${personal}\n\n任务：综合以上所有输入（5 题答案 + AI 启发 + 用户整体看法 + 标签便签），整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
+      `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息：\n${groupsStr}\n\n用户在问题下的思考：\n${qaPairs}\n\n用户的整体看法：\n${personal}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
     );
     const data = parseSingleEssence(r);
     if (data) {
@@ -1267,14 +1241,12 @@ function parseSingleEssence(text) {
   } catch(e) { return null; }
 }
 
-// ⑤ 恢复 essence UI
+// ⑥ 恢复 essence UI
 function restoreEssenceUI() {
   $('essenceNature').value = (state.data.essence && state.data.essence.nature) || '';
   $('essenceInsight').value = (state.data.essence && state.data.essence.insight) || '';
   autoGrow($('essenceNature'));
   autoGrow($('essenceInsight'));
-  $('personalView').value = state.data.insightPersonalView || '';
-  autoGrow($('personalView'));
   ['impact', 'effort'].forEach(key => {
     const scale = $(key + 'Scale');
     scale.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.textContent === (state.data[key] || 0)));
@@ -1293,7 +1265,6 @@ function restoreEssenceUI() {
   updateStatus();
 }
 
-// essence 输入监听
 $('essenceNature').addEventListener('input', e => {
   state.data.essence = state.data.essence || {};
   state.data.essence.nature = e.target.value;
@@ -1331,7 +1302,6 @@ function buildScale(id, key) {
 buildScale('impactScale', 'impact');
 buildScale('effortScale', 'effort');
 
-// 状态文字
 function updateStatus() {
   const status = $('statusRow');
   if (!status) return;
@@ -1351,7 +1321,7 @@ function updateStatus() {
   status.classList.remove('ok');
 }
 
-// ⑥ 保存确认（在评分之后）
+// ⑦ 保存确认
 function confirmEssence() {
   const e = state.data.essence || {};
   if (!(e.nature || '').trim() || !(e.insight || '').trim()) {
