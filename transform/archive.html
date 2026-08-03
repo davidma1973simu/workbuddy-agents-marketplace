@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的认知档案 · Transform</title>
+<style>
+  :root {
+    --bg: #F6F5F1;
+    --surface: #FFFFFF;
+    --ink: #1E2A26;
+    --ink-2: #5A6B64;
+    --ink-3: #93A09A;
+    --line: #E4E8E3;
+    --green: #1D9E75;
+    --green-deep: #0E6B50;
+    --green-soft: #E3F3EC;
+    --amber: #D97B29;
+    --amber-soft: #FBF0E2;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 20px 20px 80px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--ink-2); font-size: 14px;
+    padding: 8px 14px; border-radius: 999px; background: var(--surface);
+    border: 1px solid var(--line); transition: all .2s;
+  }
+  .nav-link:hover { color: var(--green-deep); border-color: var(--green); }
+  .nav-link.primary { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -.4px; margin-bottom: 4px; }
+  .page-sub { font-size: 14px; color: var(--ink-2); margin-bottom: 24px; }
+
+  /* 身份卡 */
+  .identity-card {
+    background: linear-gradient(135deg, var(--green-deep), var(--green));
+    border-radius: var(--radius-lg); padding: 28px; color: #fff;
+    box-shadow: 0 8px 24px rgba(14,107,80,.3); margin-bottom: 20px;
+    animation: rise .45s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .identity-card .k { font-size: 12.5px; opacity: .75; font-weight: 600; letter-spacing: 1px; }
+  .identity-card .v { font-size: 20px; font-weight: 700; margin-top: 10px; line-height: 1.5; }
+  .identity-card .v em { font-style: normal; border-bottom: 2px solid rgba(255,255,255,.5); padding-bottom: 2px; }
+  .identity-card .count { font-size: 12.5px; opacity: .75; margin-top: 14px; display: flex; align-items: center; gap: 6px; }
+  .identity-empty {
+    background: var(--green-soft); color: var(--green-deep); padding: 22px;
+    border-radius: var(--radius-md); font-size: 14.5px; margin-bottom: 20px;
+    display: flex; gap: 14px; align-items: flex-start; line-height: 1.7;
+  }
+  .identity-empty svg { flex-shrink: 0; margin-top: 3px; }
+
+  /* 回顾卡 */
+  .review-card {
+    background: var(--amber-soft); border: 1px solid #F0D9B8; border-radius: var(--radius-lg);
+    padding: 22px 24px; margin-bottom: 20px; display: none;
+    animation: rise .45s cubic-bezier(.16,1,.3,1);
+  }
+  .review-card .k { font-size: 12.5px; color: #9A6216; font-weight: 700; letter-spacing: .5px; display: flex; align-items: center; gap: 7px; }
+  .review-card .q { font-size: 14.5px; color: #6B4510; margin-top: 10px; line-height: 1.7; }
+  .review-card .actions { margin-top: 16px; display: flex; gap: 10px; }
+  .review-card button {
+    padding: 10px 20px; border: none; border-radius: var(--radius-sm); font-size: 14px;
+    cursor: pointer; transition: all .2s; font-family: inherit; font-weight: 600;
+  }
+  .btn-yes { background: var(--amber); color: #fff; }
+  .btn-yes:hover { background: #B8691E; }
+  .btn-no { background: #fff; color: #9A6216; border: 1.5px solid #E5C99E; }
+  .btn-no:hover { border-color: var(--amber); }
+  .review-card .done-tip { font-size: 13.5px; color: #9A6216; margin-top: 12px; display: none; font-weight: 600; }
+
+  /* 历史身份 */
+  .history { margin-bottom: 24px; }
+  .history .title { font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: .5px; margin-bottom: 10px; }
+  .history-item {
+    display: flex; gap: 12px; align-items: flex-start; padding: 10px 0;
+    border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-item .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-top: 8px; flex-shrink: 0; }
+  .history-item .date { color: var(--ink-3); font-size: 12.5px; white-space: nowrap; }
+
+  /* 会话时间线 */
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; margin: 26px 0 16px; }
+  .section-title svg { color: var(--green); }
+  .session {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow);
+    animation: rise .45s cubic-bezier(.16,1,.3,1);
+  }
+  .session .date { font-size: 12.5px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+  .session .q { font-size: 16px; font-weight: 700; margin: 8px 0; letter-spacing: -.2px; }
+  .session .insight {
+    font-size: 14.5px; color: var(--green-deep); background: var(--green-soft);
+    padding: 14px 16px; border-radius: var(--radius-sm); margin: 10px 0;
+    display: flex; gap: 10px; align-items: flex-start; line-height: 1.7;
+  }
+  .session .insight svg { flex-shrink: 0; margin-top: 3px; }
+  .session .meta { display: flex; gap: 14px; font-size: 12.5px; color: var(--ink-3); margin-top: 10px; }
+  .session .app { font-size: 13.5px; color: var(--ink-2); margin-top: 8px; line-height: 1.7; }
+  .session .app .tag {
+    display: inline-block; font-size: 11px; font-weight: 600; color: var(--ink-3);
+    background: var(--bg); padding: 2px 8px; border-radius: 6px; margin-right: 6px;
+  }
+  .session .id { font-size: 13px; color: var(--green-deep); margin-top: 12px; font-weight: 500; background: var(--green-soft); display: inline-block; padding: 6px 12px; border-radius: 8px; }
+
+  /* 空状态 */
+  .empty { text-align: center; color: var(--ink-3); padding: 70px 20px; font-size: 14.5px; }
+  .empty .big { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 22px; background: var(--green-soft); display: flex; align-items: center; justify-content: center; }
+  .empty a { color: var(--green); text-decoration: none; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="nav-link" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      首页
+    </a>
+    <a class="nav-link primary" href="app.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      再来一次
+    </a>
+  </div>
+
+  <h1>我的认知档案</h1>
+  <div class="page-sub">每一次想清楚，都在这里留下痕迹</div>
+
+  <!-- 身份区 -->
+  <div id="identityArea"></div>
+
+  <!-- 回顾卡 -->
+  <div class="review-card" id="reviewCard">
+    <div class="k">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+      该验证你的洞察了
+    </div>
+    <div class="q" id="reviewText"></div>
+    <div class="actions">
+      <button class="btn-yes" onclick="markReviewed()">我试了，有效</button>
+      <button class="btn-no" onclick="markReviewed()">还没试</button>
+    </div>
+    <div class="done-tip" id="reviewDone">已记录，很好</div>
+  </div>
+
+  <!-- 会话列表 -->
+  <div class="section-title" id="listTitle">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    想清楚过的
+  </div>
+  <div id="sessionList"></div>
+  <div class="empty" id="emptyBox" style="display:none;">
+    <div class="big">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#1D9E75" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="#1D9E75"/></svg>
+    </div>
+    还没有认知记录。<br><a href="app.html">花 5 分钟，把一件事想通 →</a>
+  </div>
+</div>
+
+<script>
+const LS_ARCHIVE = 'trf_archive';
+const LS_PROFILE = 'trf_profile';
+const LS_REVIEW = 'trf_reviewed';
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return ''; }
+}
+
+function renderIdentity() {
+  let profile = { identityStatements: [] };
+  try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
+  const list = profile.identityStatements || [];
+  const area = document.getElementById('identityArea');
+  if (!list.length) {
+    area.innerHTML = `<div class="identity-empty">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
+      完成一次「帮我清楚」，你会在这里看到自己的身份如何被重新定义。
+    </div>`;
+    return;
+  }
+  const latest = list[0];
+  const others = list.slice(1);
+  area.innerHTML = `
+    <div class="identity-card">
+      <div class="k">我把自己重新定义为</div>
+      <div class="v">「<em>${escapeHtml(latest.text)}</em>」的人</div>
+      <div class="count">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        已重新定义 ${list.length} 次 · ${fmtDate(latest.date)}
+      </div>
+    </div>
+    ${others.length ? `<div class="history"><div class="title">过去的定义</div>${others.map(o =>
+      `<div class="history-item"><span class="dot"></span><span>「${escapeHtml(o.text)}」</span><span class="date">${fmtDate(o.date)}</span></div>`
+    ).join('')}</div>` : ''}
+  `;
+}
+
+function renderReview() {
+  let archive = [];
+  try { archive = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e) {}
+  if (!archive.length) return;
+  const reviewed = JSON.parse(localStorage.getItem(LS_REVIEW) || '[]');
+  const now = Date.now();
+  const due = archive.find(s => {
+    if (reviewed.includes(s.id)) return false;
+    const age = now - new Date(s.completedAt).getTime();
+    return age > 48 * 3600 * 1000;
+  });
+  if (!due) return;
+  const card = document.getElementById('reviewCard');
+  card.style.display = 'block';
+  const sc = due.scene || due.question || '';
+  const out = due.expectedOutcome || due.nearScenario || '';
+  document.getElementById('reviewText').innerHTML =
+    `「${escapeHtml(sc)}」——你的新认知「${escapeHtml(due.insight || '')}」有没有在真实世界应验？期待看到${escapeHtml(out || '一些变化')}。`;
+  window.__dueId = due.id;
+}
+function markReviewed() {
+  const id = window.__dueId;
+  if (!id) return;
+  const reviewed = JSON.parse(localStorage.getItem(LS_REVIEW) || '[]');
+  reviewed.push(id);
+  localStorage.setItem(LS_REVIEW, JSON.stringify(reviewed));
+  document.getElementById('reviewDone').style.display = 'block';
+  setTimeout(() => { document.getElementById('reviewCard').style.display = 'none'; }, 1500);
+}
+
+function renderSessions() {
+  let archive = [];
+  try { archive = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e) {}
+  const box = document.getElementById('sessionList');
+  const empty = document.getElementById('emptyBox');
+  const title = document.getElementById('listTitle');
+  if (!archive.length) { box.innerHTML = ''; empty.style.display = 'block'; title.style.display = 'none'; return; }
+  empty.style.display = 'none';
+  box.innerHTML = archive.map(s => `
+    <div class="session">
+      <div class="date">${fmtDate(s.completedAt)} · ${escapeHtml(s.method || '')}</div>
+      <div class="q">${escapeHtml(s.scenario || s.question || '')}</div>
+      <div class="insight">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
+        ${escapeHtml(s.insight)}
+      </div>
+      <div class="meta">
+        <span>重要性 ${s.impact || '—'}/5</span>
+        <span>接受难度 ${s.effort || '—'}/5</span>
+        <span>${s.groups ? (s.groups.length + ' 类') : ''}</span>
+      </div>
+      ${s.groups && s.groups.length ? `<div class="app"><span class="tag">归类</span>${s.groups.map(g => escapeHtml(g.label)).join(' · ')}</div>` : ''}
+      <div class="app"><span class="tag">陌生场景</span>${escapeHtml(s.scene || '—')}</div>
+      <div class="app"><span class="tag">期待产出</span>${escapeHtml(s.expectedOutcome || '—')}</div>
+      <div class="id">身份：${escapeHtml(s.identity || '—')}</div>
+    </div>
+  `).join('');
+}
+
+renderIdentity();
+renderReview();
+renderSessions();
+</script>
+</body>
+</html>
