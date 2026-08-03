@@ -279,14 +279,14 @@
     resize: none; overflow: hidden; outline: none; margin-bottom: 8px; box-sizing: border-box; min-height: 60px; transition: border .2s;
   }
   .label-block .personal-view:focus { border-color: var(--green); background: #fff; }
-  .ai-btn-integrate {
+  .ai-btn-primary {
     width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;
     padding: 14px 20px; font-size: 16px; font-weight: 700;
     background: var(--green-deep); color: #fff; border: none; border-radius: 999px;
     cursor: pointer; transition: all .2s; font-family: inherit;
   }
-  .ai-btn-integrate:hover { background: var(--green); }
-  .ai-btn-integrate.loading { opacity: .65; pointer-events: none; }
+  .ai-btn-primary:hover { background: var(--green); }
+  .ai-btn-primary.loading { opacity: .65; pointer-events: none; }
   .label-block .lb-essence-box {
     background: var(--green-soft);
     border-radius: var(--radius-lg); padding: 18px 20px; margin: 12px 0 14px;
@@ -405,6 +405,38 @@
   .fb-actions { background: var(--surface); border: 1px dashed var(--green-light); border-radius: var(--radius-md); padding: 12px 16px; }
   .fb-actions ol { margin: 8px 0 0 20px; padding: 0; }
   .fb-actions li { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
+  .app-feedback-result { margin-top: 12px; }
+
+  /* 场景推荐弹窗 */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px; box-sizing: border-box;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: var(--radius-lg);
+    max-width: 580px; width: 100%; max-height: 84vh; overflow: auto;
+    padding: 22px; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    box-sizing: border-box;
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .modal-close { background: none; border: none; font-size: 24px; color: var(--ink-3); cursor: pointer; line-height: 1; }
+  .rec-list { display: grid; gap: 12px; margin-bottom: 16px; }
+  .rec-card {
+    border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 14px;
+    cursor: pointer; transition: all .2s;
+  }
+  .rec-card:hover { border-color: var(--green); background: var(--green-soft); }
+  .rec-card .rec-title { font-size: 14px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; line-height: 1.5; }
+  .rec-card .rec-challenge { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 10px; }
+  .rec-use { width: 100%; display: block; padding: 9px 14px; font-size: 13.5px; }
+  .rec-manual { border-top: 1px dashed var(--line); padding-top: 14px; }
+  .rec-manual textarea {
+    width: 100%; min-height: 60px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 12px; font-family: inherit; font-size: 13.5px; resize: vertical; box-sizing: border-box; margin-bottom: 8px;
+  }
 
   /* 核心产出盒（v10：浅绿 background + 边框，无深绿渐变；textarea 白底） */
   .lb-essence-box {
@@ -733,7 +765,7 @@
         <!-- ③ 知行总结按钮 + 凸显 essence 盒 -->
         <div id="integrateArea" style="display:none;">
           <div class="lb-section-title">让知行整合（基于所有问答 + 整体看法）</div>
-          <button class="ai-btn ai-btn-integrate" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
+          <button class="ai-btn-primary" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             让知行总结
           </button>
@@ -792,6 +824,12 @@
           <textarea class="app-input app-scenario" data-app="near" data-key="scenario" placeholder="例：客户质疑我的培训方案价值，要求压价"></textarea>
         </div>
         <div class="app-row">
+          <button class="ai-btn" id="aiRecommendNear" onclick="aiRecommendScenes('near')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            让知行推荐熟悉的场景和挑战
+          </button>
+        </div>
+        <div class="app-row">
           <span class="app-label">打算怎么做？</span>
           <textarea class="app-input app-plan" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段，让客户先感受到'激发行动与情感连接'"></textarea>
         </div>
@@ -805,6 +843,13 @@
             <input type="text" class="app-input-sm" data-app="near" data-key="howToVerify" placeholder="例：客户主动续约第二阶段">
           </div>
         </div>
+        <div class="app-row" style="margin-top:14px;">
+          <button class="ai-btn-primary" id="aiAppFeedbackNear" onclick="aiAppFeedback('near')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            让知行打分 + 给反馈 + 行动建议
+          </button>
+        </div>
+        <div class="ai-result app-feedback-result" id="nearFeedbackResult" style="display:none;"></div>
       </div>
 
       <!-- ③ 远应用：陌生但主题关联的场景（用户写） -->
@@ -814,6 +859,12 @@
         <div class="app-row">
           <span class="app-label">场景是什么？</span>
           <textarea class="app-input app-scenario" data-app="far" data-key="scenario" placeholder="例：公司内部的销售管理系统需要面对 AI 替代——培训师'激发行动与情感连接'的思路能迁移过去吗？"></textarea>
+        </div>
+        <div class="app-row">
+          <button class="ai-btn" id="aiRecommendFar" onclick="aiRecommendScenes('far')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            让知行推荐陌生的场景和挑战
+          </button>
         </div>
         <div class="app-row">
           <span class="app-label">打算怎么做？</span>
@@ -829,19 +880,18 @@
             <input type="text" class="app-input-sm" data-app="far" data-key="howToVerify" placeholder="例：销售反馈客户复购率提升">
           </div>
         </div>
+        <div class="app-row" style="margin-top:14px;">
+          <button class="ai-btn-primary" id="aiAppFeedbackFar" onclick="aiAppFeedback('far')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            让知行打分 + 给反馈 + 行动建议
+          </button>
+        </div>
+        <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
       </div>
-
-      <!-- ④ AI 评价和反馈 -->
-      <label>④ 让知行评价你的应用计划</label>
-      <button class="ai-btn" id="aiFeedback" onclick="aiFeedback()" style="margin-bottom:14px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        让知行打分 + 给反馈 + 行动建议
-      </button>
-      <div class="ai-result" id="aiFeedbackResult" style="display:none;"></div>
 
       <div class="signal" id="signal2" style="display:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        认知已推演到两个场景，闭环完成
+        认知已推演到场景，闭环完成
       </div>
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(1)">上一步</button>
@@ -871,6 +921,22 @@
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(2)">上一步</button>
         <button class="btn btn-next" onclick="complete()" id="finishBtn">完成并存入档案</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 场景推荐弹窗 -->
+  <div class="modal-overlay" id="recommendModal" onclick="if(event.target===this) closeRecommendModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="recommendModalTitle">知行推荐的场景与挑战</div>
+        <button class="modal-close" onclick="closeRecommendModal()">&times;</button>
+      </div>
+      <div class="rec-list" id="recommendList"></div>
+      <div class="rec-manual">
+        <div class="app-label">或者自己写场景</div>
+        <textarea id="recommendManual" placeholder="写下你自己的场景…"></textarea>
+        <button class="btn btn-next" onclick="useManualRecommendation()" style="width:100%;">使用这个场景</button>
       </div>
     </div>
   </div>
@@ -949,7 +1015,9 @@ const state = {
     scene: '', scenes: [], expectedOutcome: '',
     nearScenario: { scenario: '', plan: '', when: '', howToVerify: '' },
     farScenario: { scenario: '', plan: '', when: '', howToVerify: '' },
-    aiFeedback: null,    // 应用
+    nearFeedback: null,
+    farFeedback: null,
+    aiFeedback: null,    // 应用（旧字段，保留兼容）
     identity: ''
   }
 };
@@ -1026,7 +1094,8 @@ function goStep(n) {
       $('insightRef').innerHTML = '<div style="color:var(--ink-3);font-size:13px;">（先去洞察步骤确认核心认知）</div>';
     }
     bindAppInputs();
-    if (state.data.aiFeedback) renderFeedback(state.data.aiFeedback);
+    if (state.data.nearFeedback) renderAppFeedback('near', state.data.nearFeedback);
+    if (state.data.farFeedback) renderAppFeedback('far', state.data.farFeedback);
     checkNext2();
   }
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -1543,64 +1612,142 @@ function bindAppInputs() {
   });
 }
 
-// AI 评价和反馈
-async function aiFeedback() {
-  const near = ensureAppScenario('near');
-  const far = ensureAppScenario('far');
-  if (!near.scenario.trim() || !near.plan.trim()) {
-    toast('先完成"近应用"的场景 + 计划'); return;
-  }
-  if (!far.scenario.trim() || !far.plan.trim()) {
-    toast('先完成"远应用"的场景 + 计划'); return;
-  }
-  // 收集主题 + 认知上下文
-  const groupsStr = (state.data.groups || []).map(g =>
+// 构建归类上下文
+function buildGroupsContext() {
+  return (state.data.groups || []).map(g =>
     `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
   ).join('\n');
+}
+
+// AI 推荐场景与挑战（弹窗）
+async function aiRecommendScenes(type) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const e = state.data.essence || {};
-  setAILoading('aiFeedback', true);
+  if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
+  const label = type === 'near' ? '熟悉的场景' : '陌生但主题关联的场景';
+  setAILoading('aiRecommend' + type, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息（请仔细阅读理解）：\n${groupsStr}\n\n用户的核心认知（已确认）：\n现象背后的本质：${e.nature}\n新洞察和新认知：${e.insight}\n\n【近应用】（用户熟悉的场景）：\n场景：${near.scenario}\n计划：${near.plan}\n时间：${near.when || '未填'}\n验证标准：${near.howToVerify || '未填'}\n\n【远应用】（用户写的陌生但主题关联的场景）：\n场景：${far.scenario}\n计划：${far.plan}\n时间：${far.when || '未填'}\n验证标准：${far.howToVerify || '未填'}\n\n任务：根据用户填写的应用计划，结合主题、本质、共识的新认知，给出：\n1. 总体评分（1-5 分 + 一句话理由）\n2. 近应用的具体反馈：哪里做得好、哪里能改进\n3. 远应用的具体反馈：哪里做得好、哪里能改进\n4. 行动建议：下一步 1-3 条具体可执行的动作\n\n格式（严格按 JSON）：\n{"overallScore":4,"overallReason":"...","near":{"pros":"...","improvements":"...","suggestion":"..."},"far":{"pros":"...","improvements":"...","suggestion":"..."},"actions":["行动1","行动2","行动3"]}`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n任务：请针对上面的核心认知，推荐 3 个${label}，每个场景附带一个核心挑战。要求场景具体、可想象，挑战是这个场景下应用新认知时最可能遇到的阻力。\n\n格式（严格按 JSON 数组）：\n[{"scenario":"...","challenge":"..."},{"scenario":"...","challenge":"..."},{"scenario":"...","challenge":"..."}]`
     );
-    const data = parseFeedback(r);
+    const list = parseRecommendations(r);
+    if (list && list.length) {
+      openRecommendModal(type, list);
+    } else {
+      toast('AI 没返回有效推荐，重试');
+    }
+  } catch(e) { toast(e.message); }
+  setAILoading('aiRecommend' + type, false);
+}
+function parseRecommendations(text) {
+  try {
+    const m = text.match(/\[[\s\S]*\]/);
+    if (!m) return null;
+    const arr = JSON.parse(m[0]);
+    if (!Array.isArray(arr)) return null;
+    return arr.map(item => ({
+      scenario: (item.scenario || item.title || '').trim(),
+      challenge: (item.challenge || item.difficulty || '').trim()
+    })).filter(item => item.scenario);
+  } catch(e) { return null; }
+}
+function openRecommendModal(type, list) {
+  const modal = $('recommendModal');
+  $('recommendModalTitle').textContent = type === 'near' ? '知行推荐的熟悉场景与挑战' : '知行推荐的陌生场景与挑战';
+  $('recommendList').innerHTML = list.map((item, i) => `
+    <div class="rec-card" onclick="useRecommendation('${type}', ${i})">
+      <div class="rec-title">${escapeHtml(item.scenario)}</div>
+      <div class="rec-challenge"><b>挑战：</b>${escapeHtml(item.challenge || '—')}</div>
+      <button class="btn btn-next rec-use" onclick="event.stopPropagation(); useRecommendation('${type}', ${i})">选用此场景</button>
+    </div>
+  `).join('');
+  modal.dataset.list = JSON.stringify(list);
+  modal.dataset.type = type;
+  $('recommendManual').value = '';
+  modal.classList.add('show');
+}
+function closeRecommendModal() {
+  $('recommendModal').classList.remove('show');
+}
+function useRecommendation(type, idx) {
+  const list = JSON.parse($('recommendModal').dataset.list || '[]');
+  const item = list[idx];
+  if (!item) return;
+  fillAppScenario(type, item);
+  closeRecommendModal();
+  toast('已填入推荐场景');
+}
+function useManualRecommendation() {
+  const type = $('recommendModal').dataset.type || 'near';
+  const val = $('recommendManual').value.trim();
+  if (!val) { toast('先写下场景'); return; }
+  fillAppScenario(type, { scenario: val, challenge: '' });
+  closeRecommendModal();
+  toast('已使用自定义场景');
+}
+function fillAppScenario(type, item) {
+  const obj = ensureAppScenario(type);
+  obj.scenario = item.scenario || '';
+  obj.plan = item.challenge ? `挑战：${item.challenge}` : (obj.plan || '');
+  saveDraft();
+  document.querySelectorAll(`[data-app="${type}"]`).forEach(el => {
+    const key = el.dataset.key;
+    el.value = obj[key] || '';
+    if (el.tagName === 'TEXTAREA') autoGrowApp(el);
+  });
+  checkNext2();
+}
+
+// AI 评价和反馈（每个应用独立）
+async function aiAppFeedback(type) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const obj = ensureAppScenario(type);
+  if (!obj.scenario.trim() || !obj.plan.trim()) {
+    toast('先填写这个应用的场景 + 计划'); return;
+  }
+  const e = state.data.essence || {};
+  const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
+  setAILoading('aiAppFeedback' + type, true);
+  try {
+    const r = await aiCall(
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n【${label}】\n场景：${obj.scenario}\n计划：${obj.plan}\n时间：${obj.when || '未填'}\n验证标准：${obj.howToVerify || '未填'}\n\n任务：针对这个应用计划，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+    );
+    const data = parseAppFeedback(r);
     if (data) {
-      state.data.aiFeedback = data;
-      renderFeedback(data);
+      state.data[type + 'Feedback'] = data;
+      renderAppFeedback(type, data);
       checkNext2();
       saveDraft();
       toast('知行评价完成');
     } else {
-      showAIResult('aiFeedbackResult', r);
+      showAIResult(type + 'FeedbackResult', r);
     }
   } catch(e) { toast(e.message); }
-  setAILoading('aiFeedback', false);
+  setAILoading('aiAppFeedback' + type, false);
 }
-function parseFeedback(text) {
+function parseAppFeedback(text) {
   try {
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return null;
     const d = JSON.parse(m[0]);
     return {
-      overallScore: d.overallScore || 0,
-      overallReason: (d.overallReason || '').trim(),
-      near: d.near || {},
-      far: d.far || {},
+      score: d.score || 0,
+      pros: (d.pros || '').trim(),
+      improvements: (d.improvements || '').trim(),
+      suggestion: (d.suggestion || '').trim(),
       actions: Array.isArray(d.actions) ? d.actions : []
     };
   } catch(e) { return null; }
 }
-function renderFeedback(data) {
-  const box = $('aiFeedbackResult');
-  let html = '<div class="fb-overall"><span class="fb-score">' + (data.overallScore || 0) + '</span><span class="fb-score-label">/ 5</span><span class="fb-reason">' + escapeHtml(data.overallReason || '') + '</span></div>';
-  html += '<div class="fb-block"><div class="fb-title">近应用反馈</div>';
-  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml((data.near && data.near.pros) || '—') + '</div>';
-  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml((data.near && data.near.improvements) || '—') + '</div>';
-  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml((data.near && data.near.suggestion) || '—') + '</div></div>';
-  html += '<div class="fb-block"><div class="fb-title">远应用反馈</div>';
-  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml((data.far && data.far.pros) || '—') + '</div>';
-  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml((data.far && data.far.improvements) || '—') + '</div>';
-  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml((data.far && data.far.suggestion) || '—') + '</div></div>';
+function renderAppFeedback(type, data) {
+  const box = $(type + 'FeedbackResult');
+  const title = type === 'near' ? '近应用反馈' : '远应用反馈';
+  let html = '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span><span class="fb-reason" style="margin-left:8px;font-weight:600;">' + title + '</span></div>';
+  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
+  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
+  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
   if (data.actions && data.actions.length) {
     html += '<div class="fb-actions"><div class="fb-title">下一步行动</div><ol>';
     data.actions.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
@@ -1612,11 +1759,11 @@ function renderFeedback(data) {
 }
 
 function checkNext2() {
-  const near = (state.data.nearScenario || {});
-  const far = (state.data.farScenario || {});
-  const ok = near.scenario && near.scenario.trim() && near.plan && near.plan.trim() &&
-              far.scenario && far.scenario.trim() && far.plan && far.plan.trim() &&
-              state.data.aiFeedback;
+  const near = state.data.nearScenario || {};
+  const far = state.data.farScenario || {};
+  const nearOk = near.scenario && near.scenario.trim() && near.plan && near.plan.trim() && state.data.nearFeedback;
+  const farOk = far.scenario && far.scenario.trim() && far.plan && far.plan.trim() && state.data.farFeedback;
+  const ok = nearOk || farOk;
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
 }
