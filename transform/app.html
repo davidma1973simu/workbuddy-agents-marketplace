@@ -338,7 +338,17 @@
   .lb-score-row .lb-scale button:hover { border-color: var(--green); }
   .lb-score-row .lb-scale button.sel { background: var(--green); color: #fff; border-color: var(--green); }
   .lb-status-row { font-size: 12.5px; color: var(--ink-3); margin-top: 12px; padding: 8px 14px; background: var(--bg); border-radius: var(--radius-sm); text-align: right; }
-  .lb-status-row.ok { color: var(--green-deep); font-weight: 600; background: var(--green-soft); }
+  .label-block .lb-status-row.ok { color: var(--green-deep); font-weight: 600; background: var(--green-soft); }
+
+  /* v8 盒内确认按钮（白底深绿字） */
+  .essence-confirm-row { display: flex; justify-content: flex-start; margin-top: 6px; }
+  .btn-essence-confirm {
+    background: #fff; color: var(--green-deep); border: none; padding: 9px 22px;
+    border-radius: 999px; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all .15s;
+  }
+  .btn-essence-confirm:hover { background: var(--green-soft); transform: translateY(-1px); }
+  .lb-essence-box.locked .essence-confirm-row { display: none; }
 
   /* v4 洞察列表（每条独立编辑框） */
   .insight-row {
@@ -629,9 +639,12 @@
 
           <div class="lb-essence-box" id="essenceBox">
             <div class="lb-essence-label">现象背后的本质（AI 整合产出，可编辑）</div>
-            <textarea id="essenceNature" class="essence-nature" placeholder="这些现象背后的本质是……"></textarea>
+            <textarea id="essenceNature" class="essence-nature" placeholder="这个类别的这些现象背后的本质是……"></textarea>
             <div class="lb-essence-label">新洞察和新认知（AI 整合产出，可编辑）</div>
             <textarea id="essenceInsight" class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……"></textarea>
+            <div class="essence-confirm-row">
+              <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">保存确认</button>
+            </div>
           </div>
 
           <div class="lb-score-row">
@@ -647,10 +660,6 @@
 
           <div class="lb-status-row" id="statusRow">还需要：让知行总结</div>
 
-          <div class="btn-row" id="confirmRow" style="display:none;">
-            <div></div>
-            <button class="btn btn-next" onclick="confirmEssence()" id="confirmBtn" style="padding:10px 24px;">保存确认 ✓</button>
-          </div>
         </div>
 
         <div class="signal" id="signal1" style="display:none;">
@@ -1254,12 +1263,10 @@ function restoreEssenceUI() {
   const box = $('essenceBox');
   if (state.data.confirmed) {
     box.classList.add('locked');
-    $('confirmRow').style.display = 'none';
     $('statusRow').textContent = '✓ 已确认';
     $('statusRow').classList.add('ok');
   } else {
     box.classList.remove('locked');
-    $('confirmRow').style.display = 'flex';
     $('statusRow').classList.remove('ok');
   }
   updateStatus();
@@ -1321,7 +1328,7 @@ function updateStatus() {
   status.classList.remove('ok');
 }
 
-// ⑦ 保存确认
+// ⑦ 保存确认（盒内按钮）
 function confirmEssence() {
   const e = state.data.essence || {};
   if (!(e.nature || '').trim() || !(e.insight || '').trim()) {
@@ -1332,7 +1339,6 @@ function confirmEssence() {
   }
   state.data.confirmed = true;
   $('essenceBox').classList.add('locked');
-  $('confirmRow').style.display = 'none';
   $('statusRow').textContent = '✓ 已确认';
   $('statusRow').classList.add('ok');
   $('signal1').style.display = 'inline-flex';
