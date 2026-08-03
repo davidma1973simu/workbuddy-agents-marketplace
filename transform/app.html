@@ -650,6 +650,13 @@
   body.settings .app-panel, body.settings .path { display: none; }
   body.settings .settings-panel { display: block; }
   .save-tip { color: var(--green-deep); font-size: 13.5px; margin-top: 14px; display: none; font-weight: 600; }
+  .conn-status { margin-top: 14px; padding: 11px 14px; border-radius: 10px; font-size: 13.5px; display: none; align-items: center; gap: 8px; font-weight: 600; line-height: 1.4; }
+  .conn-status.show { display: flex; }
+  .conn-status.testing { background: var(--green-soft); color: var(--green-deep); }
+  .conn-status.ok { background: #e7f7ee; color: #0E8A4E; }
+  .conn-status.err { background: #fdecec; color: #c0392b; }
+  .conn-status .spin { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* toast */
   .toast {
@@ -972,10 +979,12 @@
       </div>
       <label>API Key</label>
       <input type="text" id="cfgApiKey" placeholder="sk-...">
+      <button class="test-btn" type="button" onclick="runConnectionTest()" style="margin-top:10px;">先测试连接</button>
+      <div class="conn-status" id="connStatus"></div>
       <div class="save-tip" id="saveTip">已保存</div>
       <div class="btn-row">
         <button class="btn btn-prev" onclick="closeSettings()">返回</button>
-        <button class="btn btn-next" onclick="saveSettings()">保存设置</button>
+        <button class="btn btn-next" id="saveBtn" onclick="saveSettings()">保存设置</button>
       </div>
     </div>
   </div>
@@ -1637,7 +1646,10 @@ async function aiRecommendScenes(type) {
     } else {
       toast('AI 没返回有效推荐，重试');
     }
-  } catch(e) { toast(e.message); }
+  } catch(e) {
+    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    else toast('推荐失败：' + (e.message || '未知错误'));
+  }
   setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), false);
 }
 function parseRecommendations(text) {
@@ -1724,7 +1736,10 @@ async function aiAppFeedback(type) {
     } else {
       showAIResult(type + 'FeedbackResult', r);
     }
-  } catch(e) { toast(e.message); }
+  } catch(e) {
+    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    else toast('评价失败：' + (e.message || '未知错误'));
+  }
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), false);
 }
 function parseAppFeedback(text) {
@@ -1864,15 +1879,71 @@ document.querySelectorAll('#brandList .brand').forEach(b => {
 function closeSettings() {
   document.body.classList.remove('settings');
 }
-function saveSettings() {
+
+// 连接测试：用最小请求验证品牌端点 + Key 是否有效
+async function testAIConnection() {
+  const cfg = getAI();
+  if (!cfg.apiKey) return { ok: false, msg: '请先填写 API Key' };
+  const brand = cfg.brand;
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role: 'user', content: 'ping' }], max_tokens: 8, temperature: 0 })
+    });
+    if (!res.ok) {
+      let detail = '';
+      try { const j = await res.json(); detail = (j.error && j.error.message) || ''; } catch(e) {}
+      if (res.status === 401) return { ok: false, msg: brand + ' 连接失败：Key 无效（401 未授权），请检查 Key 是否正确' };
+      return { ok: false, msg: brand + ' 连接失败：HTTP ' + res.status + (detail ? '（' + detail + '）' : '') };
+    }
+    const data = await res.json();
+    if (!data.choices || !data.choices[0]) return { ok: false, msg: brand + ' 连接成功但返回格式异常' };
+    return { ok: true, msg: brand + ' 连接成功，Key 有效 ✓（模型：' + cfg.model + '）' };
+  } catch(e) {
+    const cors = (e.message || '').includes('Failed to fetch');
+    return {
+      ok: false,
+      msg: cors
+        ? brand + ' 连接失败：浏览器无法访问该接口（可能是网络限制或该 API 不支持浏览器直连，需开启 CORS 或换用支持跨域的端点）'
+        : brand + ' 连接失败：' + (e.message || '未知错误')
+    };
+  }
+}
+function showConnStatus(running, msg, kind) {
+  const cs = $('connStatus');
+  cs.className = 'conn-status show' + (kind ? ' ' + kind : '');
+  cs.innerHTML = (running ? '<span class="spin"></span>' : '') + (msg || '');
+}
+// 独立测试按钮
+async function runConnectionTest() {
+  const keyInput = $('cfgApiKey').value.trim();
   const sel = document.querySelector('#brandList .brand.sel');
   const brand = sel ? sel.dataset.v : DEFAULT_AI.brand;
-  localStorage.setItem(LS_AI, JSON.stringify({
-    brand,
-    apiKey: $('cfgApiKey').value.trim()
-  }));
-  $('saveTip').style.display = 'block';
-  setTimeout(() => { $('saveTip').style.display = 'none'; closeSettings(); }, 800);
+  // 临时写入，让 getAI() 能读到当前输入
+  localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey: keyInput }));
+  showConnStatus(true, '正在测试 ' + brand + ' 连接…', 'testing');
+  const r = await testAIConnection();
+  showConnStatus(false, r.msg, r.ok ? 'ok' : 'err');
+}
+// 保存设置：保存后自动跑连接测试并反馈
+async function saveSettings() {
+  const sel = document.querySelector('#brandList .brand.sel');
+  const brand = sel ? sel.dataset.v : DEFAULT_AI.brand;
+  const apiKey = $('cfgApiKey').value.trim();
+  localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey }));
+  $('saveTip').style.display = 'none';
+  showConnStatus(true, '正在保存并测试 ' + brand + ' 连接…', 'testing');
+  $('saveBtn').disabled = true;
+  const r = await testAIConnection();
+  $('saveBtn').disabled = false;
+  if (r.ok) {
+    showConnStatus(false, r.msg, 'ok');
+    setTimeout(() => { closeSettings(); }, 1100);
+  } else {
+    showConnStatus(false, r.msg, 'err');
+  }
 }
 if (new URLSearchParams(location.search).get('settings')) openSettings();
 
