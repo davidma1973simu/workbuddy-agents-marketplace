@@ -945,7 +945,7 @@ function toggleLabel(label) {
   saveDraft();
 }
 
-// ② AI 抛启发式问题（一次性生成最多 5 个到队列，逐题展示）
+// ② AI 抛启发式问题（一次性生成 3 个到队列，逐题展示）
 async function aiAskQuestions() {
   if (!state.data.selectedLabels || !state.data.selectedLabels.length) {
     toast('先选要洞察的类别'); return;
@@ -957,7 +957,7 @@ async function aiAskQuestions() {
   setAILoading('aiQuestion', true);
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n用户归类（已选）：\n${groupsStr}\n\n任务：针对这些类别，一次性抛出最多 5 个尖锐的启发式问题，帮助用户透过现象看本质。每个问题针对一个具体的思维角度（不是事实层面，而是本质层面）。\n\n严格按 JSON 格式输出，不要任何解释：\n{"questions":[{"q":"问题1"},{"q":"问题2"},...]}\n数量 3-5 个，不要少于 3 个。`
+      `场景：「${state.data.scenario || '未提供'}」\n\n用户归类（已选）：\n${groupsStr}\n\n任务：抛 3 个简短、单一、精确的启发式问题，帮用户透过现象看本质。\n\n严格要求：\n1. 每个问题必须简短（10-25 个字）、准确、单一（一次只问一件事）\n2. 问题针对本质层面（不是事实层面），不要套话、不要复述归类\n3. 严格按 JSON 数组格式输出，不要任何解释、不要嵌套对象：\n["问题1","问题2","问题3"]`
     );
     const questions = parseQuestions(r);
     if (questions.length) {
@@ -965,7 +965,6 @@ async function aiAskQuestions() {
       state.data.thinkingAnswers = new Array(state.data.questions.length).fill('');
       state.data.aiInspirations = new Array(state.data.questions.length).fill(null);
       state.data.currentQuestionIdx = 0;
-      // AI 抛完问题后：隐藏引导卡片，显示问题区
       $('guideCard').style.display = 'none';
       $('questionArea').style.display = 'block';
       renderCurrentQuestion();
@@ -978,13 +977,37 @@ async function aiAskQuestions() {
   setAILoading('aiQuestion', false);
 }
 function parseQuestions(text) {
+  // 容错解析：支持纯数组、对象嵌套、任意深度嵌套
+  function deepExtract(x) {
+    if (typeof x === 'string') return [x];
+    if (Array.isArray(x)) return x.flatMap(deepExtract);
+    if (x && typeof x === 'object') {
+      // 优先级：q / question / text / value
+      for (const k of ['q', 'question', 'text', 'value']) {
+        if (x[k] != null) return deepExtract(x[k]);
+      }
+      // 否则把所有字段值合并
+      return Object.values(x).flatMap(deepExtract);
+    }
+    return [];
+  }
+  function clean(s) {
+    if (typeof s !== 'string') return String(s || '').slice(0, 200);
+    s = s.trim().replace(/^["「『'"]+|["」』'"]+$/g, '');
+    if (s.length > 200) s = s.slice(0, 200);
+    if (!s) return null;
+    if (!/[?？\u4e00-\u9fff]/.test(s)) return null;  // 必须含问号或中文
+    return s;
+  }
+  // 优先 JSON 解析
   try {
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) return [];
+    const m = text.match(/[\{\[][\s\S]*[\}\]]/);
+    if (!m) throw new Error('no JSON');
     const data = JSON.parse(m[0]);
-    return (data.questions || []).map(x => x.q).filter(Boolean);
+    return deepExtract(data).map(clean).filter(Boolean);
   } catch(e) {
-    return text.split('\n').map(l => l.trim().replace(/^[-0-9.、\s]+/, '')).filter(l => l.includes('?') || l.includes('？'));
+    // fallback：从纯文本提取
+    return text.split('\n').map(l => l.trim().replace(/^[-0-9.、\s]+/, '')).map(clean).filter(Boolean);
   }
 }
 
