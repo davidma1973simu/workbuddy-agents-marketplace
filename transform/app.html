@@ -284,17 +284,11 @@
     font-size: 14px; font-weight: 600;
   }
   .label-block .lb-essence-box {
-    background: linear-gradient(135deg, #1D9E75 0%, #0E6B50 100%);
-    border-radius: var(--radius-lg); padding: 18px 20px 16px; margin: 12px 0 14px;
-    box-shadow: 0 6px 18px rgba(14,107,80,.25);
-    position: relative;
+    background: var(--green-soft);
+    border-radius: var(--radius-lg); padding: 18px 20px; margin: 12px 0 14px;
+    border: 1px solid var(--green-light);
   }
-  .label-block .lb-essence-box::before {
-    content: '核心产出'; position: absolute; top: -10px; left: 16px;
-    background: linear-gradient(135deg, #D97B29 0%, #C05B3C 100%);
-    color: #fff; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-    letter-spacing: 1px;
-  }
+  .label-block .lb-essence-box::before { display: none; }
   .label-block .lb-essence-label {
     color: rgba(255,255,255,.85); font-size: 12px; font-weight: 700; letter-spacing: 1px;
     margin: 8px 0 6px; text-transform: uppercase;
