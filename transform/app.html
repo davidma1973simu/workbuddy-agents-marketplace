@@ -578,7 +578,7 @@
   }
   .modal-overlay.show { display: flex; }
   .modal {
-    background: #fff; border-radius: var(--radius-lg);
+    background: var(--surface); border-radius: var(--radius-lg);
     max-width: 580px; width: 100%; max-height: 84vh; overflow: auto;
     padding: 22px; box-shadow: 0 20px 60px rgba(0,0,0,.2);
     box-sizing: border-box;
@@ -1998,7 +1998,8 @@ async function aiRecommendScenes(type) {
     if (list && list.length) {
       openRecommendModal(type, list);
     } else {
-      toast('AI 没返回有效推荐，重试');
+      toast('AI 没返回有效推荐格式，已把原始回复显示在下方，你可手动复制使用');
+      showAIResult((type === 'near' ? 'near' : 'far') + 'FeedbackResult', r);
     }
   } catch(e) {
     if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
@@ -2007,33 +2008,70 @@ async function aiRecommendScenes(type) {
   setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), false);
 }
 function parseRecommendations(text) {
+  if (!text) return null;
+  // 大小写不敏感取值辅助
+  const pick = (obj, ...keys) => {
+    if (!obj || typeof obj !== 'object') return '';
+    const lowerKeys = Object.keys(obj).reduce((m, k) => { m[k.toLowerCase()] = obj[k]; return m; }, {});
+    for (const k of keys) {
+      const lk = k.toLowerCase();
+      if (lk in lowerKeys) {
+        const v = lowerKeys[lk];
+        return typeof v === 'string' ? v.trim() : (v || '');
+      }
+    }
+    return '';
+  };
   try {
-    const m = text.match(/\[[\s\S]*\]/);
-    if (!m) return null;
-    const arr = JSON.parse(m[0]);
-    if (!Array.isArray(arr)) return null;
+    // 1. 优先从 markdown 代码块提取 JSON
+    let source = text;
+    const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (codeBlock && codeBlock[1].trim()) source = codeBlock[1].trim();
+
+    // 2. 找第一个能成功解析为数组的 JSON 片段（避免贪婪匹配导致包含后续文本）
+    let arr = null;
+    for (let i = 0; i < source.length; i++) {
+      if (source[i] !== '[') continue;
+      for (let j = i + 2; j <= source.length; j++) {
+        if (source[j - 1] !== ']') continue;
+        const slice = source.slice(i, j);
+        try {
+          const parsed = JSON.parse(slice);
+          if (Array.isArray(parsed) && parsed.length) {
+            arr = parsed;
+            break;
+          }
+        } catch(e) {}
+      }
+      if (arr) break;
+    }
+    if (!arr) return null;
+
     return arr.map(item => {
-      const s = item.scene || {};
-      const c = item.challenge || {};
-      const scenario = (s.summary || item.scenario || item.title || '').trim();
+      if (!item || typeof item !== 'object') return null;
+      const s = item.scene || item.Scene || {};
+      const c = item.challenge || item.Challenge || {};
+      const scenario = pick(s, 'summary', 'challenge', 'title', 'desc', 'description') ||
+                       pick(item, 'scenario', 'title', 'summary', 'description');
+      if (!scenario) return null;
       return {
         scenario,
         scene: {
-          time: (s.time || '').trim(),
-          place: (s.place || '').trim(),
-          people: (s.people || '').trim(),
+          time: pick(s, 'time', 'when'),
+          place: pick(s, 'place', 'where', 'location'),
+          people: pick(s, 'people', 'who', 'person', 'characters'),
           summary: scenario,
-          goal: (s.goal || '').trim(),
-          value: (s.value || '').trim()
+          goal: pick(s, 'goal', 'purpose', 'aim', 'objective'),
+          value: pick(s, 'value', 'values', 'need', 'needs', 'why')
         },
         challenge: {
-          current: (c.current || '').trim(),
-          target: (c.target || '').trim(),
-          gap: (c.gap || '').trim(),
-          difficulty: (c.difficulty || '').trim()
+          current: pick(c, 'current', 'now', 'status', 'situation'),
+          target: pick(c, 'target', 'goal', 'aim', 'expected'),
+          gap: pick(c, 'gap', 'difference', 'diff', 'missing'),
+          difficulty: pick(c, 'difficulty', 'hard', 'obstacle', 'barrier', 'challenge')
         }
       };
-    }).filter(item => item.scenario);
+    }).filter(item => item && item.scenario);
   } catch(e) { return null; }
 }
 function openRecommendModal(type, list) {
