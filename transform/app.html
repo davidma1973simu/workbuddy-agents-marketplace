@@ -1073,6 +1073,7 @@ async function aiAskFirstForSelected() {
   ensurePerLabel();
   $('guideCard').style.display = 'none';
   $('perLabelArea').style.display = 'block';
+  $('nextBtnArea').style.display = 'flex';
   renderPerLabelCards();
   setAILoading('aiQuestion', true);
   try {
