@@ -226,6 +226,32 @@
   .q-block .q-meta { font-size: 11px; color: var(--green-deep); margin-top: 8px; display: none; }
   .q-block .q-meta.show { display: block; }
 
+  /* v5 按标签独立卡片 */
+  .label-block {
+    background: var(--surface); border: 1.5px solid var(--green-light); border-radius: var(--radius-lg);
+    padding: 18px 20px; margin-bottom: 16px;
+  }
+  .label-block .lb-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+  .label-block .lb-title { font-size: 16px; font-weight: 700; color: var(--green-deep); }
+  .label-block .lb-meta { font-size: 11.5px; color: var(--ink-3); }
+  .label-block .lb-notes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .label-block .lb-note { font-size: 11px; background: var(--bg); padding: 3px 8px; border-radius: 6px; color: var(--ink-2); }
+  .label-block .lb-section-title { font-size: 11.5px; font-weight: 700; color: var(--ink-3); letter-spacing: 1px; margin: 14px 0 8px; text-transform: uppercase; }
+  .label-block .lb-insights { margin-top: 4px; }
+  .label-block .lb-score { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); display: flex; gap: 16px; }
+  .label-block .lb-score > div { flex: 1; }
+  .label-block .lb-score label { margin-top: 0; font-size: 11.5px; }
+  .label-block .lb-scale { display: flex; gap: 6px; margin-top: 4px; }
+  .label-block .lb-scale button {
+    flex: 1; padding: 7px 0; border: 1.5px solid var(--line); background: var(--surface);
+    border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--ink-3);
+    transition: all .15s; font-family: inherit;
+  }
+  .label-block .lb-scale button:hover { border-color: var(--green); }
+  .label-block .lb-scale button.sel { background: var(--green); color: #fff; border-color: var(--green); }
+  .label-block .lb-status { font-size: 11.5px; color: var(--ink-3); margin-top: 10px; text-align: right; }
+  .label-block .lb-status.ok { color: var(--green-deep); font-weight: 600; }
+
   /* v4 洞察列表（每条独立编辑框） */
   .insight-row {
     display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;
@@ -481,10 +507,10 @@
       <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去洞察 →</button></div>
     </div>
 
-    <!-- Step 1 洞察（用户主导，知行辅助启发） -->
+    <!-- Step 1 洞察（用户主导，知行辅助启发）按标签独立 -->
     <div class="panel" id="panel-1" style="display:none;">
       <h1>透过现象看本质</h1>
-      <div class="hint">选要洞察的类别，<b>知行</b>会抛 3 个简短、单一的问题帮用户思考。所有题同时显示，可逐题作答 + 召唤知行的三个能力。</div>
+      <div class="hint">选要洞察的类别，<b>知行</b>会针对每个类别单独抛启发式问题、提炼各自的洞察、给出各自的评分。</div>
 
       <!-- ① 选标签 -->
       <label>① 选择要深入洞察的类别（可多选）</label>
@@ -498,43 +524,20 @@
           </div>
           <div class="guide-text">
             <div class="guide-title">已选好要洞察的类别</div>
-            <div class="guide-desc">点下方按钮，<b>知行</b>会抛 3 个启发式问题。</div>
+            <div class="guide-desc">点下方按钮，<b>知行</b>会针对每个类别分别抛问题、提炼洞察、给出评分。</div>
           </div>
           <button class="btn btn-next" onclick="aiAskQuestions()" id="aiQuestion" style="padding:10px 20px;flex-shrink:0;">让知行启发我</button>
         </div>
 
-        <!-- ③ 所有题同时显示 -->
-        <div id="questionsArea" style="display:none;">
-          <div id="allQuestions"></div>
-          <div class="btn-row" style="margin-top:14px;">
-            <div></div>
-            <button class="btn btn-next" onclick="aiIntegrate()" style="padding:10px 24px;">让知行总结 →</button>
-          </div>
-          <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
-        </div>
+        <!-- ③ 每个标签独立卡片（问题 + 答案 + 洞察 + 评分） -->
+        <div id="perLabelArea" style="display:none;"></div>
 
-        <!-- ④ 洞察列表（每条独立编辑框，≤35字） -->
-        <div id="insightsArea" style="display:none;">
-          <label>② 你的核心新认知（每条 ≤ 35 字，可编辑/删除/添加）</label>
-          <div id="insightsList"></div>
-          <button class="ai-btn" onclick="addInsight()" style="margin-top:8px;">+ 添加洞察</button>
+        <!-- 知行总结按钮 -->
+        <div class="btn-row" id="integrateRow" style="display:none;">
+          <div></div>
+          <button class="btn btn-next" onclick="aiIntegrate()" style="padding:10px 24px;">让知行总结 →</button>
         </div>
-
-        <!-- ⑤ 评分 -->
-        <div id="scoreArea" style="display:none;">
-          <div style="display:flex;gap:20px;margin-top:14px;">
-            <div style="flex:1;">
-              <label style="margin-top:0;">这个认知多重要？</label>
-              <div class="scale" id="impactScale"></div>
-              <div class="scale-label"><span>1 不太重要</span><span>5 非常重要</span></div>
-            </div>
-            <div style="flex:1;">
-              <label style="margin-top:0;">接受它多费力？</label>
-              <div class="scale" id="effortScale"></div>
-              <div class="scale-label"><span>1 很轻松</span><span>5 很费力</span></div>
-            </div>
-          </div>
-        </div>
+        <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
         <div class="signal" id="signal1" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -547,7 +550,7 @@
       </div>
     </div>
 
-    <!-- Step 2    <!-- Step 2 应用（认知应用推演） -->
+    <!-- Step 2    <!-- Step 2    <!-- Step 2 应用（认知应用推演） -->
     <div class="panel" id="panel-2" style="display:none;">
       <h1>把新认知用向陌生场景</h1>
       <div class="hint">这一步不是让你去行动，而是<u>在认知层面推演</u>：带着这个新认知，去面对陌生的场景和挑战，它会改变什么？</div>
@@ -721,27 +724,32 @@ function goStep(n) {
   $('stepsBar').dataset.progress = n + 1;
   if (n === 1) {
     renderLabelPicker();
+    ensurePerLabel();
     if (state.data.selectedLabels && state.data.selectedLabels.length) {
       $('thinkingArea').style.display = 'block';
-      if (state.data.questions && state.data.questions.length) {
+      $('nextBtnArea').style.display = 'flex';
+      if (anyLabelHasQuestions()) {
         $('guideCard').style.display = 'none';
-        $('questionsArea').style.display = 'block';
-        renderAllQuestions();
+        $('perLabelArea').style.display = 'block';
+        $('integrateRow').style.display = 'flex';
+        renderPerLabelCards();
+      } else {
+        $('guideCard').style.display = 'flex';
+        $('perLabelArea').style.display = 'none';
+        $('integrateRow').style.display = 'none';
       }
-      if (state.data.insights && state.data.insights.length) {
-        $('insightsArea').style.display = 'block';
-        $('scoreArea').style.display = 'block';
-        $('nextBtnArea').style.display = 'flex';
-        renderInsights();
-        checkNext1();
-      }
+      checkNext1();
     }
   }
   if (n === 2) {
-    // 把新认知列表合并成摘要展示
-    const ins = state.data.insights || [];
-    const txt = ins.length ? ins.map(x => '• ' + x.text).join('\n') : '';
-    $('insightRef').innerHTML = escapeHtml(txt);
+    // 按每个标签展示洞察摘要
+    const labels = state.data.selectedLabels || [];
+    const parts = labels.map(l => {
+      const pl = state.data.perLabel[l] || { insights: [] };
+      const items = (pl.insights || []).filter(x => x.text.trim()).map(x => '  • ' + x.text).join('\n');
+      return items ? `【${l}】\n${items}` : '';
+    }).filter(Boolean);
+    $('insightRef').innerHTML = escapeHtml(parts.join('\n\n'));
   }
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
@@ -920,32 +928,34 @@ function checkNext0() {
   if (hasValidGroup) $('signal0').style.display = 'inline-flex';
 }
 
-/* ============ Step 1 洞察（用户主导，知行辅助启发） ============ */
-function buildScale(id, key) {
-  const box = $(id);
-  box.innerHTML = '';
-  for (let i = 1; i <= 5; i++) {
-    const b = document.createElement('button');
-    b.textContent = i;
-    b.onclick = () => {
-      box.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
-      b.classList.add('sel');
-      state.data[key] = i;
-      checkNext1(); saveDraft();
-    };
-    box.appendChild(b);
-  }
-}
-buildScale('impactScale', 'impact');
-buildScale('effortScale', 'effort');
+/* ============ Step 1 洞察（用户主导，按标签独立） ============ */
 
-// 自动高度（textarea/input）
+// 自动高度
 function autoGrow(el) {
   el.style.height = 'auto';
   el.style.height = (el.scrollHeight + 4) + 'px';
 }
 
-// ① 选标签
+// 初始化 perLabel（如果不存在）
+function ensurePerLabel() {
+  state.data.perLabel = state.data.perLabel || {};
+  (state.data.selectedLabels || []).forEach(l => {
+    if (!state.data.perLabel[l]) {
+      state.data.perLabel[l] = {
+        questions: [], answers: [], aiInspirations: [],
+        insights: [], impact: 0, effort: 0
+      };
+    }
+  });
+  // 删除未选标签的数据
+  Object.keys(state.data.perLabel).forEach(l => {
+    if (!(state.data.selectedLabels || []).includes(l)) {
+      delete state.data.perLabel[l];
+    }
+  });
+}
+
+// 选标签
 function renderLabelPicker() {
   const box = $('labelPicker');
   const sel = state.data.selectedLabels || [];
@@ -959,28 +969,35 @@ function toggleLabel(label) {
   const i = state.data.selectedLabels.indexOf(label);
   if (i >= 0) state.data.selectedLabels.splice(i, 1);
   else state.data.selectedLabels.push(label);
+  ensurePerLabel();
   renderLabelPicker();
   if (state.data.selectedLabels.length) {
     $('thinkingArea').style.display = 'block';
-    if (state.data.questions && state.data.questions.length) {
+    if (anyLabelHasQuestions()) {
       $('guideCard').style.display = 'none';
-      $('questionsArea').style.display = 'block';
-      renderAllQuestions();
-      $('insightsArea').style.display = state.data.insights && state.data.insights.length ? 'block' : 'none';
-      $('scoreArea').style.display = state.data.insights && state.data.insights.length ? 'block' : 'none';
+      $('perLabelArea').style.display = 'block';
+      $('integrateRow').style.display = 'flex';
       $('nextBtnArea').style.display = 'flex';
-      checkNext1();
+      renderPerLabelCards();
     } else {
       $('guideCard').style.display = 'flex';
-      $('questionsArea').style.display = 'none';
+      $('perLabelArea').style.display = 'none';
+      $('integrateRow').style.display = 'none';
+      $('nextBtnArea').style.display = 'none';
     }
   } else {
     $('thinkingArea').style.display = 'none';
+    $('perLabelArea').style.display = 'none';
   }
+  checkNext1();
   saveDraft();
 }
+function anyLabelHasQuestions() {
+  const pl = state.data.perLabel || {};
+  return Object.values(pl).some(x => (x.questions || []).length > 0);
+}
 
-// ② AI 抛 3 个问题
+// ② AI 按每个标签抛 2 个简短问题
 async function aiAskQuestions() {
   if (!state.data.selectedLabels || !state.data.selectedLabels.length) {
     toast('先选要洞察的类别'); return;
@@ -992,37 +1009,32 @@ async function aiAskQuestions() {
   setAILoading('aiQuestion', true);
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n用户归类（已选）：\n${groupsStr}\n\n任务：抛 3 个简短、单一、精确的启发式问题。\n严格要求：\n1. 每个问题必须简短（10-25 个字）、准确、单一（一次只问一件事）\n2. 不要套话、不要复述归类\n3. 严格按 JSON 数组格式输出：\n["问题1","问题2","问题3"]`
+      `场景：「${state.data.scenario || '未提供'}」\n\n每个类别的信息：\n${groupsStr}\n\n任务：针对每个类别，单独抛 2 个简短、单一、精确的启发式问题（每个类别独立，不要复用）。\n\n严格要求：\n1. 每个问题必须简短（10-25 字）、准确、单一（一次只问一件事）\n2. 不同类别的问题必须不同（针对各自的现象）\n3. 严格按 JSON 数组输出（每个对象含 label 和 questions）：\n[{"label":"类别名","questions":["问题1","问题2"]},...]`
     );
-    const questions = parseQuestions(r);
-    if (questions.length) {
-      state.data.questions = questions.slice(0, 3);
-      state.data.thinkingAnswers = new Array(state.data.questions.length).fill('');
-      state.data.aiInspirations = new Array(state.data.questions.length).fill(null);
-      state.data.insights = state.data.insights || [];
+    const data = parsePerLabelQuestions(r);
+    if (data.length) {
+      ensurePerLabel();
+      data.forEach(d => {
+        if (state.data.perLabel[d.label]) {
+          state.data.perLabel[d.label].questions = (d.questions || []).slice(0, 3);
+          state.data.perLabel[d.label].answers = new Array(state.data.perLabel[d.label].questions.length).fill('');
+          state.data.perLabel[d.label].aiInspirations = new Array(state.data.perLabel[d.label].questions.length).fill(null);
+        }
+      });
       $('guideCard').style.display = 'none';
-      $('questionsArea').style.display = 'block';
-      renderAllQuestions();
+      $('perLabelArea').style.display = 'block';
+      $('integrateRow').style.display = 'flex';
+      $('nextBtnArea').style.display = 'flex';
+      renderPerLabelCards();
       saveDraft();
-      toast(`知行抛出了 ${state.data.questions.length} 题`);
+      toast(`知行抛出了 ${data.reduce((n, d) => n + (d.questions || []).length, 0)} 题`);
     } else {
       toast('AI 没解析到问题，重试');
     }
   } catch(e) { toast(e.message); }
   setAILoading('aiQuestion', false);
 }
-function parseQuestions(text) {
-  function deepExtract(x) {
-    if (typeof x === 'string') return [x];
-    if (Array.isArray(x)) return x.flatMap(deepExtract);
-    if (x && typeof x === 'object') {
-      for (const k of ['q', 'question', 'text', 'value']) {
-        if (x[k] != null) return deepExtract(x[k]);
-      }
-      return Object.values(x).flatMap(deepExtract);
-    }
-    return [];
-  }
+function parsePerLabelQuestions(text) {
   function clean(s) {
     if (typeof s !== 'string') s = String(s || '');
     s = s.trim().replace(/^["「『'"]+|["」』'"]+$/g, '');
@@ -1033,161 +1045,281 @@ function parseQuestions(text) {
   try {
     const m = text.match(/[\{\[][\s\S]*[\}\]]/);
     if (!m) throw new Error('no JSON');
-    const data = JSON.parse(m[0]);
-    return deepExtract(data).map(clean).filter(Boolean);
+    const arr = JSON.parse(m[0]);
+    if (!Array.isArray(arr)) throw new Error('not array');
+    return arr.map(d => ({
+      label: (d.label || '').trim(),
+      questions: (d.questions || []).map(clean).filter(Boolean)
+    })).filter(d => d.label && d.questions.length);
   } catch(e) {
-    return text.split('\n').map(l => l.trim().replace(/^[-0-9.、\s]+/, '')).map(clean).filter(Boolean);
+    // fallback：行级
+    const result = [];
+    let cur = null;
+    text.split('\n').forEach(l => {
+      const m = l.match(/^[【\[](.+?)[】\]]\s*(.*)$/);
+      if (m) {
+        if (cur && cur.questions.length) result.push(cur);
+        cur = { label: m[1].trim(), questions: [] };
+        const q = clean(m[2]);
+        if (q) cur.questions.push(q);
+      } else if (cur) {
+        const q = clean(l.trim());
+        if (q) cur.questions.push(q);
+      }
+    });
+    if (cur && cur.questions.length) result.push(cur);
+    return result;
   }
 }
 
-// ③ 所有题同时显示
-function renderAllQuestions() {
-  const box = $('allQuestions');
-  const questions = state.data.questions || [];
-  box.innerHTML = questions.map((q, i) => `
-    <div class="q-block" data-qi="${i}">
-      <span class="q-tag">问题 ${i+1}</span>
-      <div class="q-text">${escapeHtml(q)}</div>
-      <textarea class="q-answer" data-qi="${i}" placeholder="写下你对这个问题的思考...">${escapeHtml((state.data.thinkingAnswers || [])[i] || '')}</textarea>
-      <div class="q-ai-row">
-        <span class="q-ai-label">知行的三个能力（输入后可用）：</span>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
+// ③ 渲染每个标签的独立卡片（问题 + 答案 + 洞察 + 评分）
+function renderPerLabelCards() {
+  const wrap = $('perLabelArea');
+  const labels = state.data.selectedLabels || [];
+  wrap.innerHTML = labels.map(label => {
+    const group = state.data.groups.find(g => g.label === label) || { notes: [] };
+    const pl = state.data.perLabel[label] || { questions: [], answers: [], insights: [], impact: 0, effort: 0 };
+    return renderLabelBlock(label, group, pl);
+  }).join('');
+  bindLabelBlockEvents();
+  checkNext1();
+}
+function renderLabelBlock(label, group, pl) {
+  const safe = escapeHtml(label).replace(/'/g, '&#39;');
+  return `
+    <div class="label-block" data-lb="${safe}">
+      <div class="lb-head">
+        <span class="lb-title">${escapeHtml(label)}</span>
+        <span class="lb-meta">${(pl.questions || []).length} 题 · ${(pl.insights || []).length} 洞察</span>
       </div>
-      <div class="q-ai-result" data-qi="${i}"></div>
-      <div class="q-meta" data-qi="${i}">✓ 已记录</div>
+      <div class="lb-notes">
+        ${group.notes.slice(0, 6).map(n => `<span class="lb-note">[${n.type}] ${escapeHtml(n.text)}</span>`).join('')}
+      </div>
+
+      <div class="lb-section-title">知行抛的问题</div>
+      <div class="lb-questions">
+        ${(pl.questions || []).map((q, i) => `
+          <div class="q-block" data-qi="${i}">
+            <span class="q-tag">问题 ${i+1}</span>
+            <div class="q-text">${escapeHtml(q)}</div>
+            <textarea class="q-answer" placeholder="写下你的思考...">${escapeHtml((pl.answers || [])[i] || '')}</textarea>
+            <div class="q-ai-row">
+              <span class="q-ai-label">知行的三个能力（输入后可用）：</span>
+              <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '理清', this)">理清</button>
+              <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '质疑', this)">质疑</button>
+              <button class="ai-btn-cap" onclick="aiInspireQL('${safe}', ${i}, '查证', this)">查证</button>
+            </div>
+            <div class="q-ai-result" data-qi="${i}"></div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="lb-section-title">你的核心新认知（每条 ≤ 35 字）</div>
+      <div class="lb-insights" data-li-wrap="${safe}">
+        ${(pl.insights || []).map((it, i) => `
+          <div class="insight-row" data-ii="${i}">
+            <textarea class="insight-input" placeholder="你的核心新认知（≤ 35 字）" rows="1">${escapeHtml(it.text || '')}</textarea>
+            <button class="rm-insight" onclick="removeInsightL('${safe}', ${i})" title="删除">×</button>
+          </div>
+          <div class="insight-meta" data-ii="${i}">${(it.text || '').length} / 35 字</div>
+        `).join('')}
+      </div>
+      <button class="ai-btn" onclick="addInsightL('${safe}')" style="margin-top:8px;">+ 添加洞察</button>
+
+      <div class="lb-score">
+        <div>
+          <label>这个认知多重要？</label>
+          <div class="lb-scale" data-key="impact" data-lb="${safe}">
+            ${[1,2,3,4,5].map(n => `<button onclick="setScore('${safe}', 'impact', ${n}, this)" class="${pl.impact === n ? 'sel' : ''}">${n}</button>`).join('')}
+          </div>
+        </div>
+        <div>
+          <label>接受它多费力？</label>
+          <div class="lb-scale" data-key="effort" data-lb="${safe}">
+            ${[1,2,3,4,5].map(n => `<button onclick="setScore('${safe}', 'effort', ${n}, this)" class="${pl.effort === n ? 'sel' : ''}">${n}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="lb-status" data-lb="${safe}"></div>
     </div>
-  `).join('');
-  // 自动高度 + 绑定 input 事件
-  box.querySelectorAll('.q-answer').forEach((ta, i) => {
-    autoGrow(ta);
-    ta.addEventListener('input', e => {
-      state.data.thinkingAnswers[i] = e.target.value;
-      autoGrow(e.target);
-      saveDraft();
+  `;
+}
+function bindLabelBlockEvents() {
+  // 答案 textarea 自动高度 + 同步
+  document.querySelectorAll('.label-block').forEach(block => {
+    const label = block.dataset.lb;
+    const pl = state.data.perLabel[label];
+    if (!pl) return;
+    block.querySelectorAll('.q-answer').forEach((ta, i) => {
+      autoGrow(ta);
+      ta.addEventListener('input', e => {
+        pl.answers[i] = e.target.value;
+        autoGrow(e.target);
+        saveDraft();
+      });
     });
+    // 洞察输入
+    block.querySelectorAll('.insight-input').forEach((ta, i) => {
+      autoGrow(ta);
+      ta.addEventListener('input', e => {
+        const v = e.target.value;
+        pl.insights[i].text = v;
+        autoGrow(e.target);
+        const meta = ta.parentElement.nextElementSibling;
+        if (meta) {
+          meta.textContent = v.length + ' / 35 字';
+          meta.classList.toggle('over', v.length > 35);
+        }
+        ta.classList.toggle('over', v.length > 35);
+        updateLabelStatus(label);
+        checkNext1();
+        saveDraft();
+      });
+    });
+    updateLabelStatus(label);
   });
 }
+function updateLabelStatus(label) {
+  const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+  if (!block) return;
+  const pl = state.data.perLabel[label];
+  const hasInsight = (pl.insights || []).some(x => x.text.trim() && x.text.length <= 35);
+  const ok = hasInsight && pl.impact > 0 && pl.effort > 0;
+  const status = block.querySelector('.lb-status');
+  status.classList.toggle('ok', ok);
+  status.textContent = ok ? '✓ 已完成（评分 + 至少 1 条洞察）' : '还需要：' +
+    (!hasInsight ? '至少 1 条洞察 ' : '') +
+    (!pl.impact ? '重要性 ' : '') +
+    (!pl.effort ? '费力程度' : '');
+}
+function addInsightL(label) {
+  const pl = state.data.perLabel[label];
+  if (!pl) return;
+  pl.insights = pl.insights || [];
+  pl.insights.push({ text: '' });
+  renderPerLabelCards();
+  setTimeout(() => {
+    const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+    const inputs = block.querySelectorAll('.insight-input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }, 50);
+}
+function removeInsightL(label, i) {
+  const pl = state.data.perLabel[label];
+  pl.insights.splice(i, 1);
+  renderPerLabelCards();
+  checkNext1();
+  saveDraft();
+}
+function setScore(label, key, n, btn) {
+  const pl = state.data.perLabel[label];
+  pl[key] = n;
+  const scale = btn.parentElement;
+  scale.querySelectorAll('button').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  updateLabelStatus(label);
+  checkNext1();
+  saveDraft();
+}
 
-// AI 三个能力（针对第 i 题）
-async function aiInspireQ(idx, cap, btn) {
-  const q = (state.data.questions || [])[idx] || '';
-  const a = (state.data.thinkingAnswers || [])[idx] || '';
+// AI 三个能力（针对标签+问题索引）
+async function aiInspireQL(label, idx, cap, btn) {
+  const pl = state.data.perLabel[label];
+  const q = (pl.questions || [])[idx] || '';
+  const a = (pl.answers || [])[idx] || '';
   if (!a.trim()) { toast('先写下你的思考'); return; }
-  if (btn) btn.classList.add('loading');
+  btn.classList.add('loading');
   const prompts = {
     '理清': `帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。`,
     '质疑': `苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考——指出前提假设、盲点、逻辑跳跃。只问问题，不给答案。`,
-    '查证': `检索 1-2 个相关的事实、原则或案例，能帮助用户验证或深化思考。客观陈述，不替用户做判断。`
+    '查证': `检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。`
   };
   try {
-    const r = await aiCall(`问题：${q}\n用户的回答：${a}\n\n${prompts[cap]}`);
-    state.data.aiInspirations[idx] = r;
-    const box = document.querySelector(`.q-ai-result[data-qi="${idx}"]`);
-    box.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\n/g, '<br>');
-    box.classList.add('show');
+    const r = await aiCall(`类别：${label}\n问题：${q}\n用户的回答：${a}\n\n${prompts[cap]}`);
+    pl.aiInspirations[idx] = r;
+    const block = document.querySelector(`.label-block[data-lb="${label}"]`);
+    const result = block.querySelectorAll('.q-ai-result')[idx];
+    if (result) {
+      result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\n/g, '<br>');
+      result.classList.add('show');
+    }
     saveDraft();
   } catch(e) { toast(e.message); }
-  if (btn) btn.classList.remove('loading');
+  btn.classList.remove('loading');
 }
 
-// ④ 让知行总结 → 生成多个洞察
+// ④ 知行总结：按每个标签提炼洞察
 async function aiIntegrate() {
-  if (!state.data.questions || !state.data.questions.length) {
-    toast('先抛问题'); return;
-  }
-  const qaPairs = state.data.questions.map((q, i) => {
-    const a = state.data.thinkingAnswers[i] || '（未填）';
-    const ai = state.data.aiInspirations[i];
-    return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
+  if (!anyLabelHasQuestions()) { toast('先抛问题'); return; }
+  const labels = state.data.selectedLabels || [];
+  const allQA = labels.map(l => {
+    const pl = state.data.perLabel[l];
+    const qa = (pl.questions || []).map((q, i) => {
+      const a = pl.answers[i] || '（未填）';
+      const ai = pl.aiInspirations[i];
+      return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
+    }).join('\n');
+    return `【${l}】\n${qa}`;
   }).join('\n\n');
   const btn = event.target;
   btn.classList.add('loading');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n用户的思考：\n${qaPairs}\n\n任务：从用户的所有输入中，提取 3-5 条"新认知"（用户的洞察，每条 15-35 字）。每条认知都来自用户实际写的思考，不凭空添加。\n\n严格按 JSON 数组输出，每条认知是一个独立对象：\n{"insights":[{"text":"洞察1"},{"text":"洞察2"},...]}`
+      `场景：「${state.data.scenario || '未提供'}」\n\n用户在每个类别下的思考：\n${allQA}\n\n任务：从用户每个类别的思考中，**按类别**提炼 2-4 条"新认知"（每条 15-35 字）。所有认知都来自用户实际写的思考。\n\n严格按 JSON 数组输出：\n[{"label":"类别名","insights":["洞察1","洞察2"]},...]`
     );
-    const m = r.match(/[\{\[][\s\S]*[\}\]]/);
-    if (m) {
-      const data = JSON.parse(m[0]);
-      const arr = (data.insights || []).map(x => (typeof x === 'string' ? {text: x} : x)).map(x => ({text: (x.text || '').trim().slice(0, 35)})).filter(x => x.text);
-      if (arr.length) {
-        state.data.insights = arr;
-        renderInsights();
-        $('insightsArea').style.display = 'block';
-        $('scoreArea').style.display = 'block';
-        $('nextBtnArea').style.display = 'flex';
-        checkNext1();
-        toast(`知行提炼了 ${arr.length} 条洞察`);
-      }
+    const data = parsePerLabelInsights(r);
+    if (data.length) {
+      data.forEach(d => {
+        if (state.data.perLabel[d.label]) {
+          state.data.perLabel[d.label].insights = d.insights.map(t => ({ text: (t || '').trim().slice(0, 35) })).filter(x => x.text);
+        }
+      });
+      renderPerLabelCards();
+      checkNext1();
+      toast(`知行提炼完成`);
     } else {
       showAIResult('aiIntegrateResult', r);
     }
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
-
-// ⑤ 渲染洞察列表（每条独立编辑框，≤35字，可编辑/删除/添加）
-function renderInsights() {
-  const box = $('insightsList');
-  const arr = state.data.insights || [];
-  box.innerHTML = arr.map((it, i) => `
-    <div class="insight-row" data-ii="${i}">
-      <textarea class="insight-input" data-ii="${i}" placeholder="你的核心新认知（≤ 35 字）" rows="1">${escapeHtml(it.text)}</textarea>
-      <button class="rm-insight" onclick="removeInsight(${i})" title="删除">×</button>
-    </div>
-    <div class="insight-meta" data-ii="${i}">${(it.text || '').length} / 35 字</div>
-  `).join('');
-  box.querySelectorAll('.insight-input').forEach((ta, i) => {
-    autoGrow(ta);
-    ta.addEventListener('input', e => {
-      const v = e.target.value;
-      state.data.insights[i].text = v;
-      autoGrow(e.target);
-      const meta = document.querySelector(`.insight-meta[data-ii="${i}"]`);
-      meta.textContent = v.length + ' / 35 字';
-      meta.classList.toggle('over', v.length > 35);
-      e.target.classList.toggle('over', v.length > 35);
-      checkNext1();
-      saveDraft();
-    });
-  });
-  checkNext1();
-}
-function addInsight() {
-  state.data.insights = state.data.insights || [];
-  state.data.insights.push({text: ''});
-  renderInsights();
-  const last = $('insightsList').querySelectorAll('.insight-input');
-  if (last.length) last[last.length - 1].focus();
-  saveDraft();
-}
-function removeInsight(i) {
-  state.data.insights.splice(i, 1);
-  if (!state.data.insights.length) $('insightsArea').style.display = 'none';
-  renderInsights();
-  saveDraft();
+function parsePerLabelInsights(text) {
+  try {
+    const m = text.match(/[\{\[][\s\S]*[\}\]]/);
+    if (!m) throw new Error('no JSON');
+    const arr = JSON.parse(m[0]);
+    if (!Array.isArray(arr)) throw new Error('not array');
+    return arr.map(d => ({ label: (d.label || '').trim(), insights: (d.insights || []) }));
+  } catch(e) {
+    return [];
+  }
 }
 
 function checkNext1() {
-  // 至少 1 条非空且 ≤35 字的洞察 + 评分
-  const arr = state.data.insights || [];
-  const hasInsight = arr.some(x => x.text.trim() && x.text.length <= 35);
-  const ok = hasInsight && state.data.impact > 0 && state.data.effort > 0;
+  const labels = state.data.selectedLabels || [];
+  const ok = labels.length > 0 && labels.every(l => {
+    const pl = state.data.perLabel[l] || {};
+    const hasInsight = (pl.insights || []).some(x => x.text.trim() && x.text.length <= 35);
+    return hasInsight && pl.impact > 0 && pl.effort > 0;
+  });
   $('next1').disabled = !ok;
   if (ok) $('signal1').style.display = 'inline-flex';
 }/* ============ Step 2 应用（认知推演） ============ */
 async function aiScenes() {
-  const insights = state.data.insights || [];
-  if (!insights.length || !insights.some(x => x.text.trim())) {
+  const labels = state.data.selectedLabels || [];
+  const allInsights = [];
+  labels.forEach(l => {
+    const pl = state.data.perLabel[l];
+    (pl.insights || []).forEach(it => { if (it.text.trim()) allInsights.push({ label: l, text: it.text }); });
+  });
+  if (!allInsights.length) {
     toast('先在洞察步骤产出新认知'); return;
   }
   setAILoading('aiScenes', true);
   try {
-    const insightText = insights.map(x => '• ' + x.text).join('\n');
+    const insightText = allInsights.map(x => `【${x.label}】${x.text}`).join('\n');
     const r = await aiCall(
-      `用户获得了以下新认知：\n${insightText}\n\n任务：推荐 3 个"陌生场景或挑战"，让用户去检验这些认知。要求：\n1. 场景必须与用户当前场景有显著差异（家庭/健康/学习/理财/社交/创作等不同领域）\n2. 每个场景说明：这个场景的挑战是什么\n3. 每个场景一句话说明"为什么这个场景能检验这些认知"\n输出格式：每行一个场景，格式「场景名：挑战说明 —— 为什么能检验」\n这是认知推演，不涉及行动执行。`
+      `用户在每个类别获得的新认知：\n${insightText}\n\n任务：推荐 3 个"陌生场景或挑战"，让用户去检验这些认知。要求：\n1. 场景必须与用户当前场景有显著差异（家庭/健康/学习/理财/社交/创作等不同领域）\n2. 每个场景说明：这个场景的挑战是什么\n3. 每个场景一句话说明"为什么这个场景能检验这些认知"\n输出格式：每行一个场景，格式「场景名：挑战说明 —— 为什么能检验」\n这是认知推演，不涉及行动执行。`
     );
     // 解析场景
     const scenes = r.split('\n').map(l => l.trim()).filter(l => l.length > 3 && l.includes('：'));
@@ -1267,12 +1399,8 @@ function complete() {
     scenario: state.data.scenario,
     notes: state.data.notes,
     groups: state.data.groups,
-    questions: state.data.questions,
-    thinkingAnswers: state.data.thinkingAnswers,
-    aiInspirations: state.data.aiInspirations,
-    insights: state.data.insights,
-    impact: state.data.impact,
-    effort: state.data.effort,
+    selectedLabels: state.data.selectedLabels,
+    perLabel: state.data.perLabel,
     scene: state.data.scene,
     expectedOutcome: state.data.expectedOutcome,
     identity: state.data.identity,
