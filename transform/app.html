@@ -6,15 +6,23 @@
 <title>帮我清楚 · Transform</title>
 <style>
   :root {
+    /* ===== 设计令牌 Design Tokens · Transform（统一来源，app / archive 共用同一套值） ===== */
+    /* 中性色 / 背景 */
     --bg: #F6F5F1;
     --surface: #FFFFFF;
     --ink: #1E2A26;
     --ink-2: #5A6B64;
     --ink-3: #93A09A;
     --line: #E4E8E3;
+
+    /* 品牌绿（修正：补充此前缺失的 --green-50 / --green-light，修复静默失效的边框/背景） */
     --green: #1D9E75;
     --green-deep: #0E6B50;
     --green-soft: #E3F3EC;
+    --green-50: #ECF8F3;
+    --green-light: #BFE9D8;
+
+    /* 语义色 */
     --amber: #D97B29;
     --amber-soft: #FBF0E2;
     --coral: #C05B3C;
@@ -23,11 +31,60 @@
     --blue-soft: #E8F0F8;
     --purple: #6B4FA0;
     --purple-soft: #EFEAF8;
+
+    /* 圆角（app 与档案页统一） */
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 12px;
+
+    /* 阴影 */
     --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
+
+    /* 字号阶梯（排版系统基础，逐步替换散落 px） */
+    --fs-xs: 12px;
+    --fs-sm: 13px;
+    --fs-base: 14px;
+    --fs-md: 15px;
+    --fs-lg: 17px;
+    --fs-xl: 22px;
+    --fs-2xl: 27px;
+
+    /* 动效曲线（统一微交互节奏） */
+    --ease: cubic-bezier(.16,1,.3,1);
+    --dur-fast: .2s;
+    --dur: .3s;
+
+    /* 触控目标最小尺寸 */
+    --touch: 44px;
   }
+
+  /* ===== 深色模式（纯增量：默认不激活，仅用户点开关或 data-theme="dark" 时生效） ===== */
+  [data-theme="dark"] {
+    --bg: #13171A;
+    --surface: #1E2422;
+    --ink: #E8EFEB;
+    --ink-2: #A9B8B2;
+    --ink-3: #6E7E78;
+    --line: #2C3633;
+    --green: #2BBB8A;
+    --green-deep: #34D29E;
+    --green-soft: #16302A;
+    --green-50: #10221D;
+    --green-light: #1E4A3E;
+    --amber: #E8943F;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --blue: #5B92C9;
+    --blue-soft: #16242F;
+    --purple: #9B7FD0;
+    --purple-soft: #211A30;
+    --shadow: 0 2px 8px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.55);
+  }
+  [data-theme="dark"] input[type="text"],
+  [data-theme="dark"] textarea { background: var(--surface); }
+  [data-theme="dark"] input:focus,
+  [data-theme="dark"] textarea:focus { background: #0F1311; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-font-smoothing: antialiased; }
   body {
@@ -45,6 +102,19 @@
     border: 1px solid var(--line); transition: all .2s;
   }
   .back:hover { color: var(--green-deep); border-color: var(--green); }
+
+  /* 主题切换 */
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line);
+    transition: all var(--dur-fast); font-family: inherit;
+  }
+  .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
 
   /* 路径式步骤条 */
   .path { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 30px; position: relative; }
@@ -751,6 +821,15 @@
     .p-node { width: 48px; }
   }
 </style>
+<script>
+  (function(){
+    try {
+      if (localStorage.getItem('trf_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    } catch(e){}
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -759,6 +838,9 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
+      <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
+    </button>
   </div>
 
   <!-- 路径步骤条 -->
@@ -2338,5 +2420,13 @@ function updateVoteStats(text) {
   }
   .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
 </style>
+<script>
+  function toggleTheme() {
+    var root = document.documentElement;
+    var isDark = root.getAttribute('data-theme') === 'dark';
+    if (isDark) { root.removeAttribute('data-theme'); localStorage.setItem('trf_theme','light'); }
+    else { root.setAttribute('data-theme','dark'); localStorage.setItem('trf_theme','dark'); }
+  }
+</script>
 </body>
 </html>

@@ -6,25 +6,79 @@
 <title>我的认知档案 · Transform</title>
 <style>
   :root {
-    --bg: #F4F3EE;
+    /* ===== 设计令牌 Design Tokens · Transform（与 app.html 统一同一套值） ===== */
+    --bg: #F6F5F1;
     --surface: #FFFFFF;
     --ink: #1E2A26;
     --ink-2: #5A6B64;
     --ink-3: #93A09A;
-    --line: #E6E9E4;
+    --line: #E4E8E3;
+
     --green: #1D9E75;
     --green-deep: #0E6B50;
-    --green-soft: #E6F4EE;
+    --green-soft: #E3F3EC;
+    --green-50: #ECF8F3;
+    --green-light: #BFE9D8;
+
     --amber: #D97B29;
     --amber-soft: #FBF0E2;
     --coral: #C05B3C;
     --coral-soft: #F9EBE5;
-    --radius-lg: 26px;
-    --radius-md: 18px;
+    --blue: #3B6FA0;
+    --blue-soft: #E8F0F8;
+    --purple: #6B4FA0;
+    --purple-soft: #EFEAF8;
+
+    --radius-lg: 24px;
+    --radius-md: 16px;
     --radius-sm: 12px;
-    --shadow: 0 2px 8px rgba(30,42,38,.05), 0 14px 36px rgba(30,42,38,.08);
+
+    --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
     --shadow-hover: 0 6px 16px rgba(30,42,38,.09), 0 26px 60px rgba(30,42,38,.14);
+
+    --fs-xs: 12px;
+    --fs-sm: 13px;
+    --fs-base: 14px;
+    --fs-md: 15px;
+    --fs-lg: 17px;
+    --fs-xl: 22px;
+    --fs-2xl: 27px;
+
+    --ease: cubic-bezier(.16,1,.3,1);
+    --dur-fast: .2s;
+    --dur: .3s;
+
+    --touch: 44px;
   }
+
+  /* ===== 深色模式（纯增量：默认不激活，仅用户点开关或 data-theme="dark" 时生效） ===== */
+  [data-theme="dark"] {
+    --bg: #13171A;
+    --surface: #1E2422;
+    --ink: #E8EFEB;
+    --ink-2: #A9B8B2;
+    --ink-3: #6E7E78;
+    --line: #2C3633;
+    --green: #2BBB8A;
+    --green-deep: #34D29E;
+    --green-soft: #16302A;
+    --green-50: #10221D;
+    --green-light: #1E4A3E;
+    --amber: #E8943F;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --blue: #5B92C9;
+    --blue-soft: #16242F;
+    --purple: #9B7FD0;
+    --purple-soft: #211A30;
+    --shadow: 0 2px 8px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.55);
+    --shadow-hover: 0 6px 16px rgba(0,0,0,.4), 0 26px 60px rgba(0,0,0,.6);
+  }
+  /* 档案页硬编码浅色渐变在深色下修正 */
+  [data-theme="dark"] .session .insight,
+  [data-theme="dark"] .d-insight { background: linear-gradient(180deg, var(--green-soft), #0F2620); }
+  [data-theme="dark"] .review-card { background: linear-gradient(180deg, #2E2417, #241C12); border-color: #4A3A22; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-font-smoothing: antialiased; }
   body {
@@ -46,6 +100,19 @@
     border: 1px solid var(--line); transition: all .2s;
   }
   .nav-link:hover { color: var(--green-deep); border-color: var(--green); }
+
+  /* 主题切换 */
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); font-family: inherit;
+    transition: all var(--dur-fast); margin-left: auto;
+  }
+  .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
   .nav-link.primary { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
 
   .page-head { margin: 14px 0 18px; }
@@ -159,13 +226,13 @@
     padding: 3px 10px; border-radius: 999px;
   }
   .session-menu {
-    width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line);
-    background: var(--surface); color: var(--ink-3); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink-3); cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .session-menu:hover { color: var(--green-deep); border-color: var(--green); }
   .session-menu-popover {
-    position: absolute; right: 18px; top: 44px;
+    position: absolute; right: 18px; top: 50px;
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
     box-shadow: var(--shadow-hover); overflow: hidden; z-index: 5;
     min-width: 110px;
@@ -183,7 +250,7 @@
   .mini {
     flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line);
-    padding: 9px 8px; border-radius: 10px; cursor: pointer; transition: all .18s; font-family: inherit;
+    padding: 9px 8px; min-height: var(--touch); border-radius: 10px; cursor: pointer; transition: all .18s; font-family: inherit;
   }
   .mini:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
   .mini:active { transform: scale(.97); }
@@ -248,6 +315,15 @@
     .session { cursor: default; }
   }
 </style>
+<script>
+  (function(){
+    try {
+      if (localStorage.getItem('trf_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    } catch(e){}
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -260,6 +336,9 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       再来一次
     </a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
+      <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
+    </button>
   </div>
 
   <div class="page-head">
@@ -836,6 +915,14 @@ renderIdentity();
 renderStats();
 renderReview();
 renderSessions();
+</script>
+<script>
+  function toggleTheme() {
+    var root = document.documentElement;
+    var isDark = root.getAttribute('data-theme') === 'dark';
+    if (isDark) { root.removeAttribute('data-theme'); localStorage.setItem('trf_theme','light'); }
+    else { root.setAttribute('data-theme','dark'); localStorage.setItem('trf_theme','dark'); }
+  }
 </script>
 </body>
 </html>
