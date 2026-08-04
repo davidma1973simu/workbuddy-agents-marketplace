@@ -21,6 +21,7 @@
     --amber-soft: #FBF0E2;
     --radius-lg: 24px;
     --radius-md: 16px;
+    --radius-sm: 12px;
     --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
     --shadow-hover: 0 4px 12px rgba(30,42,38,.08), 0 20px 48px rgba(30,42,38,.12);
     --ease: cubic-bezier(.16,1,.3,1);
@@ -62,7 +63,7 @@
   .bg-deco .orb-3 { width: 220px; height: 220px; background: radial-gradient(circle, var(--amber-soft), transparent 70%); top: 42%; right: 14%; animation-delay: -12s; opacity: .4; }
   @keyframes float { from { transform: translate(0,0); } to { transform: translate(18px,-24px); } }
 
-  .wrap { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 28px; }
 
   /* 导航 */
   .nav {
@@ -90,29 +91,28 @@
 
   /* Hero */
   .hero {
-    display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px;
-    align-items: center; padding: 64px 0 72px;
+    text-align: center; padding: 48px 0 40px;
   }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--green-soft); color: var(--green-deep);
     border: 1px solid var(--green-light);
     padding: 7px 14px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; margin-bottom: 22px;
+    font-size: 13px; font-weight: 700; margin-bottom: 18px;
   }
   .hero h1 {
-    font-size: clamp(38px, 5.2vw, 64px);
-    font-weight: 800; letter-spacing: -1.5px; line-height: 1.12;
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 800; letter-spacing: -1.8px; line-height: 1.1;
   }
   .hero h1 .grad {
     background: linear-gradient(120deg, var(--green-deep), var(--green));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .hero-sub {
-    margin-top: 20px; font-size: clamp(16px, 1.6vw, 19px);
-    color: var(--ink-2); max-width: 460px; line-height: 1.7;
+    margin: 16px auto 0; font-size: clamp(15px, 1.5vw, 18px);
+    color: var(--ink-2); max-width: 520px; line-height: 1.7;
   }
-  .hero-cta { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-cta { margin-top: 28px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
   .btn-primary {
     display: inline-flex; align-items: center; gap: 8px;
     background: linear-gradient(135deg, var(--green-deep), var(--green));
@@ -130,70 +130,38 @@
   }
   .btn-ghost:hover { border-color: var(--green); color: var(--green-deep); background: var(--green-soft); }
 
-  /* Hero 视觉 */
-  .hero-visual {
-    position: relative; display: flex; align-items: center; justify-content: center;
-    min-height: 360px;
-  }
-  .hero-ring {
-    position: absolute; width: 320px; height: 320px; border-radius: 50%;
-    border: 1.5px solid var(--line); opacity: .6;
-    animation: pulse-ring 4s ease-in-out infinite;
-  }
-  .hero-ring:nth-child(2) { width: 260px; height: 260px; animation-delay: 1s; opacity: .4; }
-  .hero-ring:nth-child(3) { width: 380px; height: 380px; animation-delay: 2s; opacity: .3; }
-  @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:.55} 50%{transform:scale(1.04);opacity:.25} }
-  .hero-avatar {
-    position: relative; z-index: 2;
-    width: 160px; height: 160px; border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, #34D29E, #0E6B50);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 24px 70px rgba(14,107,80,.45);
-    animation: bob 5s var(--ease) infinite alternate;
-  }
-  .hero-avatar svg { width: 86px; height: 86px; }
-  @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-  .hero-float {
-    position: absolute; z-index: 3;
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: var(--radius-md); padding: 12px 16px;
-    box-shadow: var(--shadow); font-size: 13px; font-weight: 600; color: var(--ink-2);
-    animation: float2 7s var(--ease) infinite alternate;
-  }
-  .hero-float.f1 { top: 18%; left: 4%; }
-  .hero-float.f2 { bottom: 16%; right: 6%; animation-delay: -3s; }
-  @keyframes float2 { from { transform: translateY(0); } to { transform: translateY(-8px); } }
-
-  /* 入口卡片 */
+  /* 入口区域 */
   .section-title {
     font-size: 13px; font-weight: 800; color: var(--ink-3);
     letter-spacing: 1.5px; text-transform: uppercase;
-    margin-bottom: 18px; text-align: center;
+    margin-bottom: 16px; text-align: center;
   }
-  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-bottom: 80px; }
+  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-bottom: 64px; }
+
   .card {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
-    padding: 30px 28px; display: block; text-decoration: none; color: inherit;
+    padding: 28px; display: block; text-decoration: none; color: inherit;
     transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
     position: relative; overflow: hidden;
   }
   .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--green-light); }
   .card:active { transform: translateY(0) scale(.99); }
+
   .card-a { border-top: 5px solid var(--green); }
   .card-b { border-top: 5px solid var(--amber); opacity: .78; }
   .card-b:hover { opacity: 1; }
 
-  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .card-icon {
-    width: 50px; height: 50px; border-radius: 16px;
+    width: 48px; height: 48px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
   }
   .card-a .card-icon { background: var(--green-soft); }
   .card-b .card-icon { background: var(--amber-soft); }
-  .card h2 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+  .card h2 { font-size: 24px; font-weight: 800; letter-spacing: -.4px; }
   .card .desc { font-size: 15px; color: var(--ink-2); margin-top: 6px; line-height: 1.65; }
-  .card .meta { display: flex; gap: 18px; margin-top: 22px; flex-wrap: wrap; }
-  .meta-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink-3); }
+  .card .meta { display: flex; gap: 16px; margin-top: 18px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-3); }
   .meta-item svg { flex-shrink: 0; }
   .badge {
     font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
@@ -207,23 +175,25 @@
   }
   .card:hover .card-arrow { transform: translateX(4px); background: var(--green-soft); }
 
-  /* 特性条 */
-  .features {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-    margin-bottom: 64px;
+  /* 入口 A 内部的步骤特性 */
+  .entry-steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-top: 22px; padding-top: 22px; border-top: 1px dashed var(--line);
   }
-  .feature {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
-    padding: 22px; text-align: center;
-    transition: transform .25s, box-shadow .25s;
+  .entry-step {
+    text-align: center; padding: 14px 10px; border-radius: var(--radius-md);
+    background: var(--bg); border: 1px solid var(--line);
+    transition: transform .2s, border-color .2s;
   }
-  .feature:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-  .feature-icon {
-    width: 42px; height: 42px; border-radius: 12px; background: var(--green-soft);
-    display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; color: var(--green-deep);
+  .card:hover .entry-step { border-color: var(--green-light); }
+  .entry-step:hover { transform: translateY(-2px); }
+  .entry-step-icon {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--green-soft);
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 10px; color: var(--green-deep);
   }
-  .feature h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .feature p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .entry-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .entry-step p { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
 
   /* 底部 */
   .foot {
@@ -246,25 +216,20 @@
   .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
 
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; text-align: center; padding: 44px 0 56px; }
-    .hero-badge { margin: 0 auto 20px; }
-    .hero-sub { margin-left: auto; margin-right: auto; }
-    .hero-cta { justify-content: center; }
-    .hero-visual { min-height: 280px; order: -1; }
-    .hero-avatar { width: 130px; height: 130px; }
-    .hero-avatar svg { width: 70px; height: 70px; }
-    .hero-float.f1 { left: 8%; }
-    .hero-float.f2 { right: 8%; }
+    .hero { padding: 36px 0 32px; }
     .entrance { grid-template-columns: 1fr; }
-    .features { grid-template-columns: 1fr; }
+    .entry-steps { grid-template-columns: 1fr; }
+    .entry-step { display: flex; align-items: center; gap: 14px; text-align: left; padding: 14px; }
+    .entry-step-icon { margin-bottom: 0; flex-shrink: 0; }
   }
   @media (max-width: 480px) {
     .wrap { padding: 0 18px; }
     .nav { padding: 18px 0; }
     .nav-links a { padding: 8px 12px; font-size: 13px; }
     .nav-links a span { display: none; }
-    .hero h1 { font-size: 34px; }
-    .card { padding: 24px 20px; }
+    .hero h1 { font-size: 36px; }
+    .card { padding: 22px 20px; }
+    .card-arrow { display: none; }
     .fab-archive { right: 14px; bottom: 14px; padding: 12px 16px; }
   }
 
@@ -310,59 +275,18 @@
   </nav>
 
   <section class="hero">
-    <div class="hero-text">
-      <div class="hero-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        AI 认知-行为进化引擎
-      </div>
-      <h1>想清楚，<span class="grad">做得到</span></h1>
-      <p class="hero-sub">把一件复杂的事想通、看透，再拆成可验证的行动。让知行陪你完成从混乱到改变的闭环。</p>
-      <div class="hero-cta">
-        <a class="btn-primary" href="app.html">
-          开始一次梳理
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a class="btn-ghost" href="archive.html">查看认知档案</a>
-      </div>
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      AI 认知-行为进化引擎
     </div>
-
-    <div class="hero-visual">
-      <div class="hero-ring"></div>
-      <div class="hero-ring"></div>
-      <div class="hero-ring"></div>
-      <div class="hero-avatar">
-        <svg viewBox="0 0 64 64" fill="none">
-          <circle cx="32" cy="26" r="10" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
-          <path d="M20 52c0-10 6-16 12-16s12 6 12 16" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
-          <circle cx="32" cy="26" r="3" fill="#fff"/>
-        </svg>
-      </div>
-      <div class="hero-float f1">归类 · 洞察 · 应用</div>
-      <div class="hero-float f2">验证改变真的发生</div>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <h3>把混乱结构化</h3>
-      <p>现象、事实、猜测、假设分类归档，让信息不再是一团乱麻。</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <h3>追问本质</h3>
-      <p>通过渐进式提问，逼出真正重要的认知，而不是停在表面。</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <h3>行动并验证</h3>
-      <p>把洞察落地到具体场景，制定计划、获取反馈、沉淀档案。</p>
+    <h1>想清楚，<span class="grad">做得到</span></h1>
+    <p class="hero-sub">把一件复杂的事想通、看透，再拆成可验证的行动。让知行陪你完成从混乱到改变的闭环。</p>
+    <div class="hero-cta">
+      <a class="btn-primary" href="app.html">
+        开始一次梳理
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn-ghost" href="archive.html">查看认知档案</a>
     </div>
   </section>
 
@@ -394,6 +318,38 @@
           应用验证
         </span>
       </div>
+
+      <!-- 入口 A 的三步骤特性 -->
+      <div class="entry-steps">
+        <div class="entry-step">
+          <div class="entry-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h4>把混乱结构化</h4>
+            <p>现象、事实、猜测、假设分类归档。</p>
+          </div>
+        </div>
+        <div class="entry-step">
+          <div class="entry-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h4>追问本质</h4>
+            <p>渐进式提问，逼出真正重要的认知。</p>
+          </div>
+        </div>
+        <div class="entry-step">
+          <div class="entry-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <h4>行动并验证</h4>
+            <p>把洞察落地到具体场景，获取反馈。</p>
+          </div>
+        </div>
+      </div>
+
       <span class="card-arrow">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#5A6B64" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
