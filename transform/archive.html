@@ -209,6 +209,7 @@
     padding: 22px 22px 16px; margin-bottom: 16px; box-shadow: var(--shadow); cursor: pointer;
     transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s;
     animation: rise .5s cubic-bezier(.16,1,.3,1);
+    display: flex; flex-direction: column; height: 100%;
   }
   .session:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: #CDE6DA; }
   .session .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
@@ -256,8 +257,7 @@
   .session-menu-popover button:hover { background: var(--bg); color: var(--green-deep); }
   .session-menu-popover button.danger { color: var(--coral); }
   .session-menu-popover button.danger:hover { background: var(--coral-soft); }
-  .session { position: relative; }
-  .session .foot { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .session .foot { display: flex; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); }
   .mini {
     flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line);
@@ -329,7 +329,7 @@
   /* ===== Phase 2-E 桌面响应式：放宽并分栏 ===== */
   @media (min-width: 900px) {
     .wrap { max-width: 940px; }
-    #sessionList { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    #sessionList { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; grid-auto-rows: 1fr; }
     .session { margin-bottom: 0; }
   }
   @media (min-width: 1200px) {
