@@ -539,10 +539,24 @@
 
   /* Step 3 产出页 */
   .outcome-section { background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px; margin: 12px 0 18px; }
+  .outcome-section.outcome-core {
+    background: linear-gradient(135deg, var(--green-soft), var(--green-50));
+    border-color: var(--green-light);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+  }
   .outcome-section .os-empty { color: var(--ink-3); font-size: 13px; }
   .outcome-section .os-block { margin-bottom: 14px; }
   .outcome-section .os-block:last-child { margin-bottom: 0; }
   .outcome-section .os-title { font-size: 12px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; letter-spacing: .5px; }
+  .outcome-section .os-core-sentence {
+    font-size: 17px; font-weight: 700; color: var(--green-deep); line-height: 1.7; margin-bottom: 12px;
+  }
+  .outcome-section .os-core-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .outcome-section .os-core-meta span {
+    background: rgba(255,255,255,.7); border: 1px solid var(--green-light); border-radius: 8px;
+    padding: 8px 12px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5;
+  }
+  .outcome-section .os-core-meta b { color: var(--green-deep); font-weight: 700; margin-right: 6px; }
   .outcome-section .os-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--ink); }
   .outcome-section .os-list li { margin-bottom: 4px; }
   .identity-vote { background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 18px; margin: 14px 0; }
@@ -613,6 +627,11 @@
   .rec-line:last-child { margin-bottom: 0; }
   .rec-line b { color: var(--ink); font-weight: 600; margin-right: 6px; }
   .rec-use { width: 100%; display: block; padding: 9px 14px; font-size: 13.5px; }
+  .rec-fallback {
+    background: var(--coral-soft); border: 1.5px solid var(--coral);
+    color: var(--coral); border-radius: var(--radius-sm); padding: 12px 14px;
+    font-size: 13px; line-height: 1.6; margin-bottom: 14px;
+  }
   .rec-manual { border-top: 1px dashed var(--line); padding-top: 14px; }
   .rec-manual textarea {
     width: 100%; min-height: 60px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
@@ -1511,10 +1530,13 @@
       </div>
     </div>
 
-    <!-- Step 3 产出：行动建议 + 支持资源 + 身份投票 -->
+    <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
     <div class="panel" id="panel-3" style="display:none;">
       <h1>这次想清楚，我要带走的产出</h1>
       <div class="hint">把洞察落地为几条可执行的行动，并为你期待的身份投上一票。</div>
+
+      <label>我对「<span id="outcomeScenarioName">—</span>」的全新认知</label>
+      <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
 
       <label>① 知行建议的下一步行动</label>
       <div class="outcome-section" id="actionsOutcome"></div>
@@ -1926,7 +1948,7 @@ function renderLabelPicker() {
   ).join('');
 }
 
-// ② 渐进式出题（一题一题）
+// ② 渐进式出题（一题一题），带自动去重
 async function aiAskNext(btn) {
   const groups = state.data.groups || [];
   if (!groups.length) { toast('先完成归类'); return; }
@@ -1938,31 +1960,66 @@ async function aiAskNext(btn) {
     const a = state.data.insightAnswers[i] || '（未填）';
     return `已问 ${i+1}：${q} | 用户答：${a}`;
   }).join('\n');
-  try {
-    const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n${existing ? '已经问过这些问题：\n' + existing + '\n\n' : ''}任务：基于以上所有信息，抛 1 个新的启发式问题（不能重复之前问过的角度）。\n\n严格要求：\n1. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n2. 简短（10-25 字）、单一（一次只问一件事）、精确\n3. 严格按 JSON 输出：\n{"q":"问题"}`
-    );
-    const q = parseSingleQuestion(r);
-    if (!q) { toast('AI 没生成问题，重试'); return; }
-    state.data.insightQuestions = state.data.insightQuestions || [];
-    state.data.insightAnswers = state.data.insightAnswers || [];
-    state.data.insightAiInspirations = state.data.insightAiInspirations || [];
-    state.data.insightQuestions.push(q);
-    state.data.insightAnswers.push('');
-    state.data.insightAiInspirations.push(null);
-    // 更新按钮文字为"下一题"
-    const nextBtn = $('askNextBtn');
-    nextBtn.textContent = '让知行提下一题 →';
-    nextBtn.style.display = 'inline-flex';
-    $('finishBtn').style.display = 'inline-block';
-    renderAllQuestions();
-    saveDraft();
-    setTimeout(() => {
-      const lastQ = document.querySelectorAll('#allQuestions .q-block');
-      if (lastQ.length) lastQ[lastQ.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  } catch(e) { toast(e.message); }
+
+  let q = null;
+  let attempts = 0;
+  const maxAttempts = 3;
+  while (attempts < maxAttempts && !q) {
+    attempts++;
+    try {
+      const r = await aiCall(
+        `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n${existing ? '已经问过这些问题（绝对禁止重复或微调措辞后再次提问）：\n' + existing + '\n\n' : ''}任务：基于以上所有信息，抛 1 个新的启发式问题。\n\n严格要求：\n1. 必须和上面「已经问过的问题」在措辞、句式、角度上明显不同，禁止换几个字重复提问\n2. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n3. 简短（10-25 字）、单一（一次只问一件事）、精确\n4. 严格按 JSON 输出：\n{"q":"问题"}`
+      );
+      const candidate = parseSingleQuestion(r);
+      if (!candidate) continue;
+      const prev = state.data.insightQuestions || [];
+      if (prev.some(p => isSimilarQuestion(p, candidate))) {
+        if (attempts < maxAttempts) continue;
+      }
+      q = candidate;
+    } catch(e) {
+      btn.classList.remove('loading');
+      toast(e.message || '出题失败');
+      return;
+    }
+  }
+
   btn.classList.remove('loading');
+  if (!q) {
+    toast('AI 暂时提不出不一样的问题，请换个角度手动输入或稍后再试');
+    return;
+  }
+  state.data.insightQuestions = state.data.insightQuestions || [];
+  state.data.insightAnswers = state.data.insightAnswers || [];
+  state.data.insightAiInspirations = state.data.insightAiInspirations || [];
+  state.data.insightQuestions.push(q);
+  state.data.insightAnswers.push('');
+  state.data.insightAiInspirations.push(null);
+  // 更新按钮文字为"下一题"
+  const nextBtn = $('askNextBtn');
+  nextBtn.textContent = '让知行提下一题 →';
+  nextBtn.style.display = 'inline-flex';
+  $('finishBtn').style.display = 'inline-block';
+  renderAllQuestions();
+  saveDraft();
+  setTimeout(() => {
+    const lastQ = document.querySelectorAll('#allQuestions .q-block');
+    if (lastQ.length) lastQ[lastQ.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+// 问题相似度：基于字符集合的 Jaccard 相似度
+function isSimilarQuestion(a, b, threshold = 0.65) {
+  if (!a || !b) return false;
+  const cleanA = a.replace(/[\s?？，,。！!、]/g, '');
+  const cleanB = b.replace(/[\s?？，,。！!、]/g, '');
+  if (cleanA === cleanB) return true;
+  if (cleanA.length < 4 || cleanB.length < 4) return cleanA === cleanB;
+  const setA = new Set(cleanA.split(''));
+  const setB = new Set(cleanB.split(''));
+  const inter = new Set([...setA].filter(x => setB.has(x)));
+  const union = new Set([...setA, ...setB]);
+  return inter.size / union.size >= threshold;
 }
 function parseSingleQuestion(text) {
   function clean(s) {
@@ -2300,9 +2357,14 @@ async function aiRecommendScenes(type) {
     }
   } catch(e) {
     const msg = e.message || '';
-    if (msg.includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
-    else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
-    else toast('推荐失败：' + msg);
+    if (msg.includes('Failed to fetch')) {
+      toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    } else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) {
+      toast('AI 服务暂时不可用，已自动重试。请直接在此写下场景，或稍后重试');
+      openRecommendModal(type, [], '知行推荐服务暂时不可用（' + msg + '）。你可以先在下方写下自己的场景，再继续完成计划。');
+    } else {
+      toast('推荐失败：' + msg);
+    }
   }
   setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), false);
 }
@@ -2373,10 +2435,14 @@ function parseRecommendations(text) {
     }).filter(item => item && item.scenario);
   } catch(e) { return null; }
 }
-function openRecommendModal(type, list) {
+function openRecommendModal(type, list, fallbackHint) {
   const modal = $('recommendModal');
   $('recommendModalTitle').textContent = type === 'near' ? '知行推荐的熟悉场景与挑战' : '知行推荐的陌生场景与挑战';
-  $('recommendList').innerHTML = list.map((item, i) => {
+  let html = '';
+  if (fallbackHint) {
+    html += `<div class="rec-fallback">${escapeHtml(fallbackHint)}</div>`;
+  }
+  html += list.map((item, i) => {
     const s = item.scene || {};
     const c = item.challenge || {};
     return `
@@ -2403,6 +2469,7 @@ function openRecommendModal(type, list) {
     </div>
   `;
   }).join('');
+  $('recommendList').innerHTML = html;
   modal.dataset.list = JSON.stringify(list);
   modal.dataset.type = type;
   $('recommendManual').value = '';
@@ -2644,8 +2711,9 @@ async function aiCall(prompt, attempt = 1) {
     });
     if (!res.ok) {
       // 服务端临时不可用（503/502/429/500）时自动重试，DeepSeek 偶发 503 多为瞬态
-      if (attempt < 3 && (res.status === 503 || res.status === 502 || res.status === 500 || res.status === 429)) {
-        await new Promise(r => setTimeout(r, 700 * attempt));
+      if (attempt < 4 && (res.status === 503 || res.status === 502 || res.status === 500 || res.status === 429)) {
+        // 指数退避：700ms, 1500ms, 3000ms
+        await new Promise(r => setTimeout(r, 350 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
       throw new Error('AI 请求失败：' + res.status);
@@ -2653,8 +2721,8 @@ async function aiCall(prompt, attempt = 1) {
     const data = await res.json();
     return data.choices[0].message.content;
   } catch(e) {
-    if (attempt < 3 && ((e.message || '').includes('Failed to fetch') || (e.message || '').includes('aborted'))) {
-      await new Promise(r => setTimeout(r, 700 * attempt));
+    if (attempt < 4 && ((e.message || '').includes('Failed to fetch') || (e.message || '').includes('aborted'))) {
+      await new Promise(r => setTimeout(r, 350 * Math.pow(2, attempt)));
       return aiCall(prompt, attempt + 1);
     }
     throw e;
@@ -2878,6 +2946,29 @@ const origGo = window.goStep || goStep;
 window.goStep = function(n) {
   if (n === 3) {
     const d = state.data;
+
+    // 0. 顶部核心认知卡片
+    const scenarioName = (d.scenario || '这个挑战').trim();
+    $('outcomeScenarioName').textContent = scenarioName;
+    const co = $('coreInsightOutcome');
+    const e = d.essence || {};
+    const nature = (e.nature || '').trim();
+    const insight = (e.insight || '').trim();
+    if (nature || insight) {
+      let sentence = '';
+      if (nature && insight) {
+        sentence = '现象背后的本质是「' + nature + '」；而新的认知是「' + insight + '」。';
+      } else if (nature) {
+        sentence = '现象背后的本质是「' + nature + '」。';
+      } else {
+        sentence = '新的认知是「' + insight + '」。';
+      }
+      co.innerHTML = '<div class="os-core-sentence">' + escapeHtml(sentence) + '</div>' +
+        '<div class="os-core-meta">' + (nature ? '<span><b>本质</b>' + escapeHtml(nature) + '</span>' : '') +
+        (insight ? '<span><b>洞察</b>' + escapeHtml(insight) + '</span>' : '') + '</div>';
+    } else {
+      co.innerHTML = '<div class="os-empty">（请先回到洞察步骤，确认现象本质和新洞察）</div>';
+    }
 
     // ① 行动建议：合并近/远应用反馈的 actions
     const ao = $('actionsOutcome');
