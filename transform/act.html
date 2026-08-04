@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>开始一次改变 · Transform</title>
+<style>
+  :root {
+    --bg: #F8F7F3;
+    --surface: #FFFFFF;
+    --surface-2: #F2F1EC;
+    --ink: #151B19;
+    --ink-2: #3D4A45;
+    --ink-3: #7A8A83;
+    --line: #E6E9E7;
+    --line-2: #DDE2DF;
+    --green: #0E6B50;
+    --green-2: #158A68;
+    --green-3: #1D9E75;
+    --green-soft: #E8F4EE;
+    --green-light: #C8EBD9;
+    --green-50: #F0F9F4;
+    --amber: #C87A2A;
+    --amber-soft: #FDF3E6;
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow-1: 0 1px 2px rgba(21,27,25,.04);
+    --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
+    --shadow-3: 0 8px 24px rgba(21,27,25,.08), 0 32px 64px rgba(21,27,25,.12);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  [data-theme="dark"] {
+    --bg: #0C100F;
+    --surface: #161C1A;
+    --surface-2: #1E2523;
+    --ink: #EEF4F1;
+    --ink-2: #A7B6B0;
+    --ink-3: #6A7A74;
+    --line: #252E2C;
+    --line-2: #2F3A37;
+    --green: #34D29E;
+    --green-2: #2BBB8A;
+    --green-3: #1D9E75;
+    --green-soft: #132A24;
+    --green-light: #1E4A3E;
+    --green-50: #0F1F1B;
+    --amber: #EAA052;
+    --amber-soft: #2E2417;
+    --shadow-1: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-2: 0 4px 12px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
+    --shadow-3: 0 8px 24px rgba(0,0,0,.5), 0 32px 64px rgba(0,0,0,.6);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 28px 100px; }
+
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+  .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+  .nav-mark {
+    width: 40px; height: 40px; border-radius: 13px;
+    background: linear-gradient(145deg, var(--green-2), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(14,107,80,.28);
+  }
+  .nav-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-links a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; font-weight: 600; color: var(--ink-2); text-decoration: none;
+    padding: 10px 18px; border-radius: 999px; transition: all .2s var(--ease);
+  }
+  .nav-links a:hover { color: var(--green); background: var(--green-soft); }
+
+  .page-head { padding: 24px 0 32px; text-align: center; }
+  .page-head .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--amber-soft); color: var(--amber);
+    border: 1px solid rgba(200,122,42,.18); padding: 8px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; margin-bottom: 20px;
+  }
+  .page-head h1 { font-size: clamp(32px, 5vw, 46px); font-weight: 800; letter-spacing: -1.2px; margin-bottom: 12px; }
+  .page-head p { font-size: 17px; color: var(--ink-2); max-width: 520px; margin: 0 auto; line-height: 1.75; }
+
+  .input-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl);
+    padding: 32px; box-shadow: var(--shadow-2); margin-bottom: 28px;
+  }
+  .input-card label {
+    display: block; font-size: 15px; font-weight: 700; color: var(--ink-2); margin-bottom: 12px;
+  }
+  .input-card textarea {
+    width: 100%; min-height: 120px; resize: vertical;
+    border: 1.5px solid var(--line-2); border-radius: var(--radius-md);
+    padding: 18px; font-size: 16px; line-height: 1.7; color: var(--ink); background: var(--bg);
+    font-family: inherit; transition: border-color .2s, box-shadow .2s;
+  }
+  .input-card textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(29,158,117,.10); }
+  .input-card .hint {
+    display: flex; align-items: center; gap: 8px; margin-top: 12px;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .input-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
+    transition: all .25s var(--ease); font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--green); color: #fff; padding: 16px 30px; border-radius: 999px;
+    box-shadow: 0 12px 32px rgba(14,107,80,.32);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); background: var(--green-2); }
+  .btn-ghost {
+    background: var(--surface); color: var(--ink-2); padding: 15px 26px; border-radius: 999px;
+    border: 1.5px solid var(--line-2);
+  }
+  .btn-ghost:hover { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+
+  .steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;
+  }
+  .step {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 24px 20px; text-align: center; transition: transform .25s, border-color .25s;
+  }
+  .step:hover { transform: translateY(-4px); border-color: var(--green-light); }
+  .step .num {
+    width: 36px; height: 36px; border-radius: 50%; margin: 0 auto 14px;
+    background: var(--green-soft); color: var(--green); font-size: 15px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+  .step p { font-size: 13.5px; color: var(--ink-2); line-height: 1.65; }
+
+  .notice {
+    background: var(--surface-2); border: 1px dashed var(--line-2); border-radius: var(--radius-md);
+    padding: 18px 22px; font-size: 14px; color: var(--ink-2); line-height: 1.7; text-align: center;
+  }
+  .notice a { color: var(--green); text-decoration: none; font-weight: 700; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 0 20px 80px; }
+    .steps { grid-template-columns: 1fr; }
+    .input-card { padding: 24px; }
+    .nav-links a span { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<script>
+  (function(){
+    try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); }
+    catch(e){}
+  })();
+</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">
+      <div class="nav-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="nav-name">Transform</span>
+    </a>
+    <div class="nav-links">
+      <a href="archive.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>认知档案</span>
+      </a>
+      <a href="behavior.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
+        <span>行为档案</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="page-head">
+    <div class="badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      入口 B · 帮我改变
+    </div>
+    <h1>把一件事，拆成 30 秒就能做的行动</h1>
+    <p>一个目标、一段感悟、一个新认知，都可以在这里变成具体的行为。知行会帮你拆到最小、绑到日常、立刻做一次。</p>
+  </div>
+
+  <div class="input-card">
+    <label for="changeInput">你想改变什么？</label>
+    <textarea id="changeInput" placeholder="例如：&#10;• 我想减肥，但总是坚持不下去&#10;• 我理解了 AI 时代培训师要做整体架构，但不知道怎么落地&#10;• 每天睡前刷手机到很晚，想改成阅读 10 分钟"></textarea>
+    <div class="hint">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      可以是一句话、一个目标、一段新认知，或任何你觉得该做却没做的事。
+    </div>
+    <div class="input-actions">
+      <button class="btn btn-primary" onclick="startChange()">
+        开始拆解
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <a class="btn btn-ghost" href="behavior.html">查看行为档案</a>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>拆</h3>
+      <p>把目标拆成 30 秒内不可能失败的小行动，必须通过「现在就能做」校验。</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>绑</h3>
+      <p>把微行动绑到一个已有的日常锚点上，形成「在我……之后，我就……」的触发句。</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>做</h3>
+      <p>立刻做一次，30 秒倒计时。完成即给期待的身份投一票，获得即时反馈。</p>
+    </div>
+  </div>
+
+  <div class="notice">
+    入口 B 正在逐步完善中。现在的版本先帮你记录和拆解；完整的行为闭环（倒计时、打卡、身份投票）将陆续上线。<a href="behavior.html">先去行为档案看看 →</a>
+  </div>
+</div>
+
+<script>
+function startChange() {
+  const val = document.getElementById('changeInput').value.trim();
+  if (!val) {
+    alert('请先写下你想改变的事');
+    return;
+  }
+  // 保存为待拆解的草稿
+  let drafts = [];
+  try { drafts = JSON.parse(localStorage.getItem('trf_change_drafts') || '[]'); } catch(e){}
+  drafts.unshift({ id: 'cd_' + Date.now(), input: val, createdAt: new Date().toISOString() });
+  localStorage.setItem('trf_change_drafts', JSON.stringify(drafts.slice(0, 20)));
+  alert('已记录：「' + val.slice(0, 30) + (val.length > 30 ? '…' : '') + '」。\n\n完整的行为拆解功能即将上线，你现在可以去行为档案查看记录。');
+}
+</script>
+</body>
+</html>

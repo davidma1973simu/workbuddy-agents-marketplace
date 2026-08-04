@@ -164,7 +164,10 @@
     padding: 15px 26px; border-radius: 999px;
     border: 1.5px solid var(--line-2);
   }
-  .btn-ghost:hover { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+  .btn-ghost:hover {
+    background: var(--green); color: #fff; border-color: var(--green);
+    transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42);
+  }
 
   /* Hero visual */
   .hero-visual {
@@ -189,12 +192,13 @@
   .zhx-bubble {
     position: absolute; background: var(--surface); border: 1px solid var(--line);
     border-radius: 18px; padding: 14px 18px; box-shadow: var(--shadow-2);
-    font-size: 13px; color: var(--ink-2); white-space: nowrap;
+    font-size: 13px; color: var(--ink-2);
     animation: bubble-in .8s var(--ease) both;
   }
   .zhx-bubble.b1 { top: 48px; right: 0; animation-delay: .2s; }
   .zhx-bubble.b2 { bottom: 64px; left: 0; animation-delay: .45s; }
   .zhx-bubble strong { color: var(--green); font-weight: 700; }
+  .zhx-bubble .zhx-sub { margin-top: 4px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
   @keyframes bubble-in { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform: none; } }
 
   /* Section label */
@@ -218,8 +222,7 @@
   }
   .entry-card.b::before { background: linear-gradient(90deg, var(--amber), #EAB968); }
   .entry-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-3); border-color: var(--green-light); }
-  .entry-card.b { opacity: .9; }
-  .entry-card.b:hover { opacity: 1; }
+  .entry-card.b:hover { border-color: #F0D9B8; }
   .entry-card:active { transform: translateY(-2px) scale(.995); }
 
   .ec-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
@@ -242,8 +245,15 @@
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 13px; color: var(--ink-3); font-weight: 600;
   }
+  .ec-archive {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 4px; font-size: 14px; font-weight: 700; color: var(--green);
+    text-decoration: none; transition: color .2s;
+  }
+  .entry-card.b .ec-archive { color: var(--amber); }
+  .ec-archive:hover { text-decoration: underline; }
 
-  /* Entry A feature bento */
+  /* Entry feature bento */
   .ec-bento {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     padding-top: 22px; border-top: 1px dashed var(--line-2);
@@ -254,11 +264,14 @@
     transition: transform .25s, border-color .25s, background .25s;
   }
   .entry-card:hover .bento-cell { border-color: var(--green-light); }
+  .entry-card.b:hover .bento-cell { border-color: #F0D9B8; }
   .bento-cell:hover { transform: translateY(-3px); background: var(--green-50); }
+  .entry-card.b .bento-cell:hover { background: var(--amber-soft); }
   .bento-cell .bc-icon {
     width: 40px; height: 40px; border-radius: 12px; background: var(--green-soft); color: var(--green);
     display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;
   }
+  .entry-card.b .bento-cell .bc-icon { background: var(--amber-soft); color: var(--amber); }
   .bento-cell h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
   .bento-cell p { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
 
@@ -390,9 +403,7 @@
         <a class="btn btn-ghost" href="act.html">开始一次改变</a>
       </div>
       <div class="hero-sub-links">
-        <a href="archive.html">查看认知档案</a>
-        <span class="dot"></span>
-        <a href="behavior.html">查看行为改变档案</a>
+        <span>从认知到行为，一次闭环</span>
       </div>
     </div>
     <div class="hero-visual">
@@ -406,8 +417,8 @@
           <path d="M11.2 11.4c.5.3 1.1.3 1.6 0" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
         </svg>
       </div>
-      <div class="zhx-bubble b1"><strong>归类</strong> → 洞察 → 应用</div>
-      <div class="zhx-bubble b2">已帮你沉淀 <strong>12</strong> 条认知</div>
+      <div class="zhx-bubble b1"><strong>归类</strong> → 洞察 → 应用<div class="zhx-sub">已沉淀 <strong id="insightCount">0</strong> 条认知</div></div>
+      <div class="zhx-bubble b2"><strong>拆</strong> → 绑 → 做<div class="zhx-sub">已做到 <strong id="behaviorCount">0</strong> 次</div></div>
     </div>
   </section>
 
@@ -468,6 +479,7 @@
           </div>
         </div>
       </div>
+      <a class="ec-archive" href="archive.html">查看认知档案 →</a>
       <span class="ec-arrow">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
@@ -498,6 +510,36 @@
           即时反馈
         </span>
       </div>
+      <div class="ec-bento">
+        <div class="bento-cell">
+          <div class="bc-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h4>拆到 30 秒</h4>
+            <p>目标、感悟或新认知，拆成现在就能做的最小行动。</p>
+          </div>
+        </div>
+        <div class="bento-cell">
+          <div class="bc-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h4>绑到日常</h4>
+            <p>把微行动锚定在已有习惯之后，不靠意志力启动。</p>
+          </div>
+        </div>
+        <div class="bento-cell">
+          <div class="bc-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <h4>立刻做一次</h4>
+            <p>倒计时 30 秒完成首行动，完成即给身份投票。</p>
+          </div>
+        </div>
+      </div>
+      <a class="ec-archive" href="behavior.html">查看行为改变档案 →</a>
       <span class="ec-arrow">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
@@ -531,5 +573,17 @@
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   我的档案
 </a>
+<script>
+(function(){
+  try {
+    const archive = JSON.parse(localStorage.getItem('trf_archive') || '[]');
+    const actions = JSON.parse(localStorage.getItem('trf_actions') || '[]');
+    const insightEl = document.getElementById('insightCount');
+    const behaviorEl = document.getElementById('behaviorCount');
+    if (insightEl) insightEl.textContent = archive.length || 0;
+    if (behaviorEl) behaviorEl.textContent = actions.filter(a => a && a.completed).length || 0;
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>
