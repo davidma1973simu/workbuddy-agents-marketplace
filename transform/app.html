@@ -2317,56 +2317,94 @@ function buildGroupsContext() {
   ).join('\n');
 }
 
+// 本地兜底推荐：AI 失败/503 时仍能给出可用场景
+function generateLocalRecommendations(type) {
+  const e = state.data.essence || {};
+  const nature = (e.nature || '').trim();
+  const insight = (e.insight || '').trim();
+  const core = nature || insight || '把洞察应用到具体情境中';
+  const scenarioText = (state.data.scenario || '').trim();
+  // 取前 10 个汉字/字符作为主题词，避免标题过长
+  const keyword = scenarioText ? scenarioText.replace(/[，。！？、：；\s]/g, '').slice(0, 10) || scenarioText.slice(0, 10) : '当前主题';
+  const isNear = type === 'near';
+  const templates = isNear ? [
+    {
+      scenario: `明天日常工作中，遇到一个与「${keyword}」直接相关的小场景`,
+      scene: { time: '接下来 1-3 天内', place: '你熟悉的工作/生活环境', people: '你经常互动的同事、家人或朋友', summary: `明天日常工作中，遇到一个与「${keyword}」直接相关的小场景`, goal: '用新认知做出一个与以往不同的微小选择', value: '在低风险环境中先验证认知是否可行' },
+      challenge: { current: '过去遇到类似情况会按惯性反应', target: '能用新洞察指导一次具体行动', gap: '还缺少一次刻意练习和反馈', difficulty: '旧习惯会在压力下自动接管' }
+    },
+    {
+      scenario: `本周一次已有的人际互动中，实践「${core.slice(0, 24)}」`,
+      scene: { time: '本周内', place: '已有的会议、家庭对话或社交场合', people: '你本周本来就要见面的人', summary: `本周一次已有的人际互动中，实践「${core.slice(0, 24)}」`, goal: '在真实互动中观察新认知带来的不同', value: '不用额外安排，利用现有场景低成本试错' },
+      challenge: { current: '互动中容易回到自动模式', target: '能暂停并调用新认知做选择', gap: '需要提前准备一句提醒或一个信号', difficulty: '当下情绪可能让人忘记使用新认知' }
+    },
+    {
+      scenario: `处理一件你已经在拖延的、与「${keyword}」相关的小事`,
+      scene: { time: '今天或明天', place: '你通常处理这件事的地方', people: '主要你自己，可能涉及一两位相关人员', summary: `处理一件你已经在拖延的、与「${keyword}」相关的小事`, goal: '用新洞察重新理解这件事并迈出第一步', value: '把洞察立刻转化为动量，避免继续拖延' },
+      challenge: { current: '这件事被拖延，说明有阻力', target: '用新认知降低启动阻力', gap: '还没把洞察翻译成具体的第一步', difficulty: '拖延带来的焦虑会让人再次逃避' }
+    }
+  ] : [
+    {
+      scenario: `把「${core.slice(0, 24)}」应用到一项你从未尝试过的任务或角色`,
+      scene: { time: '未来 2-4 周', place: '一个你很少涉足的场景', people: '你不常合作但有机会接触的人', summary: `把「${core.slice(0, 24)}」应用到一项你从未尝试过的任务或角色`, goal: '验证核心认知在陌生情境下的迁移能力', value: '拓展认知的适用范围，避免只在舒适区使用' },
+      challenge: { current: '对陌生场景缺乏经验和信心', target: '完成一次跨情境的尝试', gap: '需要把抽象认知翻译成陌生领域的语言', difficulty: '未知因素多，容易因不确定而退缩' }
+    },
+    {
+      scenario: `向一个不了解你当前主题的人解释你的新认知，并观察对方的反应`,
+      scene: { time: '未来 1-2 周', place: '一次非正式的交流机会', people: '对你的主题不太熟悉的朋友或同事', summary: `向一个不了解你当前主题的人解释你的新认知，并观察对方的反应`, goal: '通过外部反馈检验认知是否清晰、有价值', value: '把内化认知外化，发现自己没意识到的盲点' },
+      challenge: { current: '认知在自己脑中很清晰，但未必能讲清楚', target: '让对方理解并给出一个有效反应', gap: '缺少把复杂洞察简化表达的训练', difficulty: '对方可能提出你没有准备的问题' }
+    },
+    {
+      scenario: `设计一个微型实验，在刻意制造的限制条件下测试「${keyword}」`,
+      scene: { time: '未来 1-3 周', place: '你可以控制边界的环境', people: '你自己主导，可邀请 1 位观察者', summary: `设计一个微型实验，在刻意制造的限制条件下测试「${keyword}」`, goal: '通过约束条件加速验证认知的有效性', value: '用小成本获取强反馈，避免大规模投入后才发现问题' },
+      challenge: { current: '习惯于在理想条件下思考问题', target: '能在限制条件下仍推进行动', gap: '需要设计实验、定义成功标准和失败信号', difficulty: '限制条件会让人不舒服，容易放弃' }
+    }
+  ];
+  return templates.map((t, i) => ({
+    scenario: t.scenario,
+    scene: t.scene,
+    challenge: t.challenge,
+    localFallback: true
+  }));
+}
+
 // AI 推荐场景与挑战（弹窗）
 async function aiRecommendScenes(type) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const e = state.data.essence || {};
   if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
-  const label = type === 'near' ? '熟悉的场景' : '陌生但主题关联的场景';
-  setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), true);
+  const label = type === 'near' ? '熟悉场景' : '陌生但主题关联的场景';
+  const btnId = 'aiRecommend' + (type === 'near' ? 'Near' : 'Far');
+  setAILoading(btnId, true);
+  let usedFallback = false;
   try {
+    // 先尝试 AI 推荐；prompt 尽量简短，降低 JSON 失败率和 503 概率
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n任务：请针对上面的核心认知，推荐 3 个${label}。
-
-每个推荐必须包含：
-1. scene（场景）：按以下字段简洁填写
-   - 时间：什么时候
-   - 地点：在哪里
-   - 人物：涉及谁
-   - 挑战（汇总）：一句话概括要面对的核心张力
-   - 期望达到的目的：如果成功，会看到什么
-   - 背后的需求或价值：这件事对用户为什么重要
-2. challenge（挑战）：按以下字段简洁填写
-   - 现状：目前是什么情况
-   - 目标：想要变成什么样
-   - 差距：现状和目标之间差了什么
-   - 弥补差距的困难所在：为什么难
-
-要求：每个字段用 1-2 句话，避免冗长；整体要具体、可想象。
-
-格式（严格按 JSON 数组）：
-[{"scene":{"time":"...","place":"...","people":"...","summary":"...","goal":"...","value":"..."},"challenge":{"current":"...","target":"...","gap":"...","difficulty":"..."}},{...}]`
+      `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n\n推荐 3 个${label}。每个只输出：场景摘要（15 字内）、时间、地点、人物、目标、价值、现状、目标状态、差距、困难。\n严格返回 JSON 数组：\n[{"scene":{"summary":"...","time":"...","place":"...","people":"...","goal":"...","value":"..."},"challenge":{"current":"...","target":"...","gap":"...","difficulty":"..."}}]`
     );
     const list = parseRecommendations(r);
     if (list && list.length) {
       openRecommendModal(type, list);
     } else {
-      toast('AI 没返回有效推荐格式，已把原始回复显示在下方，你可手动复制使用');
-      showAIResult((type === 'near' ? 'near' : 'far') + 'FeedbackResult', r);
+      usedFallback = true;
+      const fallbackList = generateLocalRecommendations(type);
+      openRecommendModal(type, fallbackList, '知行在线推荐未能返回有效格式，已为你生成基于核心认知的推荐场景。');
     }
   } catch(e) {
+    usedFallback = true;
     const msg = e.message || '';
+    const fallbackList = generateLocalRecommendations(type);
     if (msg.includes('Failed to fetch')) {
-      toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+      openRecommendModal(type, fallbackList, '网络无法连接知行在线推荐（可能是 CORS 限制），已切换为本地推荐。你也可以在下方手动填写场景。');
     } else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) {
-      toast('AI 服务暂时不可用，已自动重试。请直接在此写下场景，或稍后重试');
-      openRecommendModal(type, [], '知行推荐服务暂时不可用（' + msg + '）。你可以先在下方写下自己的场景，再继续完成计划。');
+      openRecommendModal(type, fallbackList, '知行在线推荐服务暂时不可用（' + msg + '），已自动切换为本地推荐。你可以直接选用，或在下方写下自己的场景。');
     } else {
-      toast('推荐失败：' + msg);
+      openRecommendModal(type, fallbackList, '知行在线推荐失败（' + msg + '），已切换为本地推荐。');
     }
   }
-  setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), false);
+  setAILoading(btnId, false);
+  if (usedFallback) toast('已使用本地推荐，可继续完成计划');
 }
 function parseRecommendations(text) {
   if (!text) return null;
@@ -2698,6 +2736,7 @@ async function aiCall(prompt, attempt = 1) {
     return null;
   }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  const maxAttempts = 5; // 最多重试 5 次（含首次共 5 次请求）
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -2706,14 +2745,14 @@ async function aiCall(prompt, attempt = 1) {
         model: cfg.model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.6,
-        max_tokens: 700
+        max_tokens: 900
       })
     });
     if (!res.ok) {
       // 服务端临时不可用（503/502/429/500）时自动重试，DeepSeek 偶发 503 多为瞬态
-      if (attempt < 4 && (res.status === 503 || res.status === 502 || res.status === 500 || res.status === 429)) {
-        // 指数退避：700ms, 1500ms, 3000ms
-        await new Promise(r => setTimeout(r, 350 * Math.pow(2, attempt)));
+      if (attempt < maxAttempts && (res.status === 503 || res.status === 502 || res.status === 500 || res.status === 429)) {
+        // 指数退避：500ms, 1000ms, 2000ms, 4000ms
+        await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
       throw new Error('AI 请求失败：' + res.status);
@@ -2721,8 +2760,8 @@ async function aiCall(prompt, attempt = 1) {
     const data = await res.json();
     return data.choices[0].message.content;
   } catch(e) {
-    if (attempt < 4 && ((e.message || '').includes('Failed to fetch') || (e.message || '').includes('aborted'))) {
-      await new Promise(r => setTimeout(r, 350 * Math.pow(2, attempt)));
+    if (attempt < maxAttempts && ((e.message || '').includes('Failed to fetch') || (e.message || '').includes('aborted'))) {
+      await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
       return aiCall(prompt, attempt + 1);
     }
     throw e;
