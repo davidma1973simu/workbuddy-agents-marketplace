@@ -994,6 +994,9 @@
       padding: 28px 32px 100px;
     }
   }
+  /* 设置页打开时，退出三栏网格，让设置面板居中显示 */
+  body.settings .wrap { display: block; max-width: 720px; }
+  body.settings .app-aside { display: none !important; }
   @media (min-width: 1100px) {
     .wrap { grid-template-columns: 190px minmax(0, 1fr) 360px; gap: 40px; }
   }
@@ -1013,6 +1016,9 @@
   }
   .back:hover, .theme-toggle:hover { border-color: var(--green); color: var(--green-deep); background: var(--green-soft); }
 
+  /* 步骤条：去掉进度填充线，仅用节点状态表达进度 */
+  .path::after { display: none; }
+
   /* 步骤条：更像世界级 App 的侧边导航 */
   @media (min-width: 900px) {
     .path {
@@ -1023,24 +1029,35 @@
       top: 22px; bottom: 22px; left: 19px;
       width: 2px; background: var(--line);
     }
-    .path::after {
-      top: 22px; left: 19px; width: 2px;
-      background: linear-gradient(180deg, var(--green), var(--green-3));
-    }
+    /* 完成态不再显示进度填充线，只保留灰轨作为连接 */
+    .path::after { display: none; }
     .p-node {
       flex-direction: row; align-items: center; gap: 12px;
       padding: 10px 12px; border-radius: 14px;
       transition: background .2s var(--ease);
+      background: transparent;
     }
-    .p-node:hover { background: var(--green-50); }
+    .p-node:hover { background: transparent; }
     .p-node.active { background: var(--green-soft); }
     .p-node.active .p-dot {
       border-color: var(--green); background: var(--green); color: #fff;
       box-shadow: 0 0 0 5px rgba(29,158,117,.14);
     }
-    .p-node.done .p-dot { background: var(--green); border-color: var(--green); color: #fff; }
+    /* 完成态：无背景，仅绿色对勾，降低视觉噪音 */
+    .p-node.done { background: transparent; }
+    .p-node.done .p-dot {
+      background: var(--surface); border-color: var(--green); color: var(--green);
+      position: relative;
+    }
+    .p-node.done .p-dot svg { display: none; }
+    .p-node.done .p-dot::after {
+      content: '✓'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
     .p-node .p-label { font-size: 14px; font-weight: 600; }
     .p-node.active .p-label { font-weight: 700; }
+    .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
     .p-dot { width: 40px; height: 40px; border-width: 2px; }
     .p-dot svg { width: 16px; height: 16px; }
   }
@@ -2083,7 +2100,12 @@ async function aiIntegrate(btn) {
     } else {
       toast('AI 没返回有效内容，重试');
     }
-  } catch(e) { toast(e.message); }
+  } catch(e) {
+    const msg = e.message || '';
+    if (msg.includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
+    else toast('知行总结失败：' + msg);
+  }
   btn.classList.remove('loading');
 }
 function parseSingleEssence(text) {
@@ -2277,8 +2299,10 @@ async function aiRecommendScenes(type) {
       showAIResult((type === 'near' ? 'near' : 'far') + 'FeedbackResult', r);
     }
   } catch(e) {
-    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
-    else toast('推荐失败：' + (e.message || '未知错误'));
+    const msg = e.message || '';
+    if (msg.includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
+    else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
+    else toast('推荐失败：' + msg);
   }
   setAILoading('aiRecommend' + (type === 'near' ? 'Near' : 'Far'), false);
 }
@@ -2599,7 +2623,7 @@ $('identityText').addEventListener('input', e => {
 });
 
 /* ============ AI 基础 ============ */
-async function aiCall(prompt) {
+async function aiCall(prompt, attempt = 1) {
   const cfg = getAI();
   if (!cfg.apiKey) {
     toast('请先在设置里配置 API Key');
@@ -2607,19 +2631,34 @@ async function aiCall(prompt) {
     return null;
   }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
-    body: JSON.stringify({
-      model: cfg.model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.6,
-      max_tokens: 700
-    })
-  });
-  if (!res.ok) throw new Error('AI 请求失败：' + res.status);
-  const data = await res.json();
-  return data.choices[0].message.content;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.6,
+        max_tokens: 700
+      })
+    });
+    if (!res.ok) {
+      // 服务端临时不可用（503/502/429/500）时自动重试，DeepSeek 偶发 503 多为瞬态
+      if (attempt < 3 && (res.status === 503 || res.status === 502 || res.status === 500 || res.status === 429)) {
+        await new Promise(r => setTimeout(r, 700 * attempt));
+        return aiCall(prompt, attempt + 1);
+      }
+      throw new Error('AI 请求失败：' + res.status);
+    }
+    const data = await res.json();
+    return data.choices[0].message.content;
+  } catch(e) {
+    if (attempt < 3 && ((e.message || '').includes('Failed to fetch') || (e.message || '').includes('aborted'))) {
+      await new Promise(r => setTimeout(r, 700 * attempt));
+      return aiCall(prompt, attempt + 1);
+    }
+    throw e;
+  }
 }
 function setAILoading(btnId, loading) {
   const btn = $(btnId);
