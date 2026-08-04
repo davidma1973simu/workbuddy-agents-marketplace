@@ -221,7 +221,7 @@
   }
 
   /* Entrance cards */
-  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 80px; }
+  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 80px; align-items: stretch; }
   .entry-card {
     position: relative; background: var(--surface); border: 1px solid var(--line);
     border-radius: var(--radius-xl); padding: 32px; cursor: pointer;
@@ -272,11 +272,13 @@
   .ec-bento {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     padding-top: 22px; border-top: 1px dashed var(--line-2);
+    grid-auto-rows: 1fr;
   }
   .bento-cell {
     background: var(--surface-2); border: 1px solid var(--line);
     border-radius: var(--radius-md); padding: 18px 14px; text-align: center;
     transition: transform .25s, border-color .25s, background .25s;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   }
   .entry-card:hover .bento-cell { border-color: var(--green-light); }
   .entry-card.b:hover .bento-cell { border-color: #F0D9B8; }
@@ -553,7 +555,7 @@
           </div>
           <div>
             <h4>拆解细分</h4>
-            <p>把太大的目标拆成今天就能完成的最小一步，降低复杂度，先动起来。</p>
+            <p>把目标拆成今天就能完成的最小一步。</p>
           </div>
         </div>
         <div class="bento-cell">
@@ -562,7 +564,7 @@
           </div>
           <div>
             <h4>行动锚定</h4>
-            <p>把微行动锚定到必然发生的日常瞬间（如早饭后），让行为被自然触发，不靠意志力。</p>
+            <p>把微行动锚定到已有的日常瞬间。</p>
           </div>
         </div>
         <div class="bento-cell">
@@ -571,7 +573,7 @@
           </div>
           <div>
             <h4>反馈强化</h4>
-            <p>从 AI 和环境中获得即时反馈，在反馈里巩固新的行为，沉淀成习惯与身份。</p>
+            <p>从 AI 和环境获得反馈，巩固新行为。</p>
           </div>
         </div>
       </div>
