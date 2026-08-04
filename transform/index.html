@@ -140,6 +140,13 @@
     color: var(--ink-2); max-width: 500px; line-height: 1.75; margin-bottom: 32px;
   }
   .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-sub-links {
+    display: flex; align-items: center; gap: 14px; margin-top: 18px;
+    font-size: 14px; color: var(--ink-3); font-weight: 600;
+  }
+  .hero-sub-links a { color: var(--ink-2); text-decoration: none; transition: color .2s; }
+  .hero-sub-links a:hover { color: var(--green); }
+  .hero-sub-links .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
@@ -354,7 +361,11 @@
     <div class="nav-links">
       <a href="archive.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-        <span>档案</span>
+        <span>认知档案</span>
+      </a>
+      <a href="behavior.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
+        <span>行为档案</span>
       </a>
       <a href="app.html?settings=1">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -376,7 +387,12 @@
           开始一次梳理
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a class="btn btn-ghost" href="archive.html">查看认知档案</a>
+        <a class="btn btn-ghost" href="act.html">开始一次改变</a>
+      </div>
+      <div class="hero-sub-links">
+        <a href="archive.html">查看认知档案</a>
+        <span class="dot"></span>
+        <a href="behavior.html">查看行为改变档案</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -408,7 +424,7 @@
         <span class="ec-badge live">现在就可用</span>
       </div>
       <h2>帮我清楚</h2>
-      <p class="desc">花 5 分钟，把一件事想通。归类、洞察、应用，产出属于你的洞察，并在真实场景里验证它。</p>
+      <p class="desc">一次专注，把一件事真正想通。归类、洞察、应用，产出属于你的洞察，并在真实场景里验证它。</p>
       <div class="ec-meta">
         <span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -457,17 +473,17 @@
       </span>
     </a>
 
-    <a class="entry-card b" href="#" onclick="alert('入口 B 即将上线：花 30 秒，做成一件事。'); return false;">
+    <a class="entry-card b" href="act.html">
       <div class="ec-top">
         <div class="ec-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
             <path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
           </svg>
         </div>
-        <span class="ec-badge soon">即将上线</span>
+        <span class="ec-badge live">现在就可用</span>
       </div>
       <h2>帮我改变</h2>
-      <p class="desc">花 30 秒，做成一件事。目标拆成不可能失败的小行动，绑定习惯，做，然后被肯定。</p>
+      <p class="desc">30 秒做成一件事。任何想法、目标或新认知，都拆成不可能失败的小行动。</p>
       <div class="ec-meta">
         <span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -504,6 +520,7 @@
     <span class="foot-copy">© Transform · 想清楚，做得到</span>
     <div class="foot-links">
       <a href="archive.html">认知档案</a>
+      <a href="behavior.html">行为改变档案</a>
       <a href="app.html?settings=1">设置</a>
       <a href="https://github.com/davidma1973simu/workbuddy-agents-marketplace" target="_blank" rel="noopener">GitHub</a>
     </div>

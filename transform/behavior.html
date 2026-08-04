@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>我的行为改变档案 · Transform</title>
+<style>
+  :root {
+    --bg: #F6F5F1;
+    --surface: #FFFFFF;
+    --ink: #1E2A26;
+    --ink-2: #5A6B64;
+    --ink-3: #93A09A;
+    --line: #E4E8E3;
+    --green: #1D9E75;
+    --green-deep: #0E6B50;
+    --green-soft: #E3F3EC;
+    --green-50: #ECF8F3;
+    --green-light: #BFE9D8;
+    --amber: #D97B29;
+    --amber-soft: #FBF0E2;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
+    --shadow-hover: 0 6px 16px rgba(30,42,38,.09), 0 26px 60px rgba(30,42,38,.14);
+    --fs-sm: 13px;
+    --fs-base: 14px;
+    --fs-md: 15px;
+    --fs-lg: 17px;
+    --fs-xl: 22px;
+    --ease: cubic-bezier(.16,1,.3,1);
+    --touch: 44px;
+  }
+  [data-theme="dark"] {
+    --bg: #13171A;
+    --surface: #1E2422;
+    --ink: #E8EFEB;
+    --ink-2: #A9B8B2;
+    --ink-3: #6E7E78;
+    --line: #2C3633;
+    --green: #2BBB8A;
+    --green-deep: #34D29E;
+    --green-soft: #16302A;
+    --green-50: #10221D;
+    --green-light: #1E4A3E;
+    --amber: #E8943F;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --shadow: 0 2px 8px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.55);
+    --shadow-hover: 0 6px 16px rgba(0,0,0,.4), 0 26px 60px rgba(0,0,0,.6);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    background:
+      radial-gradient(900px 420px at 100% -8%, rgba(29,158,117,.10), transparent 60%),
+      radial-gradient(720px 380px at -10% 4%, rgba(217,123,41,.08), transparent 55%),
+      var(--bg);
+    color: var(--ink); line-height: 1.62; min-height: 100vh;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 22px 20px 110px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--ink-2); font-size: 14px;
+    padding: 9px 15px; border-radius: 999px; background: var(--surface);
+    border: 1px solid var(--line); transition: all .2s;
+  }
+  .nav-link:hover { color: var(--green-deep); border-color: var(--green); }
+  .nav-link.primary { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); font-family: inherit;
+    transition: all .2s; margin-left: auto;
+  }
+  .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
+
+  .page-head { margin: 14px 0 18px; }
+  h1 { font-size: 27px; font-weight: 800; letter-spacing: -.5px; }
+  .page-sub { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+
+  .toolbar { display: flex; gap: 10px; margin: 16px 0 22px; flex-wrap: wrap; }
+  .toolbar .act {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600;
+    padding: 10px 16px; border-radius: 999px; cursor: pointer; transition: all .2s; font-family: inherit;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); text-decoration: none;
+  }
+  .toolbar .act:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .toolbar .act.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .toolbar .act.solid:hover { background: var(--green); }
+
+  /* 身份英雄卡 */
+  .identity-card {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #0E6B50 0%, #1D9E75 55%, #2BBB8A 100%);
+    border-radius: var(--radius-lg); padding: 26px 24px; color: #fff;
+    box-shadow: 0 12px 34px rgba(14,107,80,.32); margin-bottom: 12px;
+    animation: rise .5s cubic-bezier(.16,1,.3,1);
+  }
+  .identity-card::after {
+    content:""; position:absolute; right:-50px; top:-50px; width:180px; height:180px; border-radius:50%;
+    background: rgba(255,255,255,.10);
+  }
+  .identity-card .k { font-size: 12px; opacity: .8; font-weight: 700; letter-spacing: 1.2px; }
+  .identity-card .v { font-size: 19px; font-weight: 800; margin-top: 8px; line-height: 1.5; position: relative; }
+  .identity-card .v em { font-style: normal; border-bottom: 2px solid rgba(255,255,255,.55); padding-bottom: 2px; }
+  .identity-card .count {
+    font-size: 12px; opacity: .85; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.14); padding: 6px 12px; border-radius: 999px;
+  }
+  .identity-empty {
+    background: var(--green-soft); color: var(--green-deep); padding: 22px 24px;
+    border-radius: var(--radius-md); font-size: 14.5px; margin-bottom: 14px;
+    display: flex; gap: 14px; align-items: flex-start; line-height: 1.7; border: 1px solid #CFE9DC;
+  }
+  .identity-empty svg { flex-shrink: 0; margin-top: 3px; }
+
+  /* 统计 */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0 6px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 14px; text-align: center; box-shadow: var(--shadow); }
+  .stat .num { font-size: 24px; font-weight: 800; color: var(--green-deep); letter-spacing: -.5px; }
+  .stat .lbl { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+
+  /* 行动卡 */
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; margin: 28px 0 14px; }
+  .section-title svg { color: var(--green); }
+  .action {
+    position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 22px 22px 16px; margin-bottom: 16px; box-shadow: var(--shadow);
+    transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s;
+    animation: rise .5s cubic-bezier(.16,1,.3,1);
+    display: flex; flex-direction: column; height: 100%; min-width: 0;
+  }
+  .action:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: #CDE6DA; }
+  .action .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .action .date { font-size: 12.5px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+  .status-chip { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .status-chip.active { color: var(--green-deep); background: var(--green-soft); }
+  .status-chip.graduated { color: #7A5E16; background: var(--amber-soft); }
+  .status-chip.paused { color: var(--ink-3); background: var(--bg); }
+  .action .input { font-size: 15px; font-weight: 700; color: var(--ink-2); margin-bottom: 12px; line-height: 1.5; }
+  .action .tiny {
+    position: relative; font-size: 16px; font-weight: 800; color: var(--green-deep);
+    background: linear-gradient(180deg, var(--green-soft), #F1FAF5); border-left: 4px solid var(--green);
+    padding: 14px 16px 14px 18px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.6;
+  }
+  .action .anchor { font-size: 13.5px; color: var(--ink-2); margin-top: 12px; line-height: 1.6; }
+  .action .meta { display: flex; gap: 16px; font-size: 12.5px; color: var(--ink-3); margin-top: 14px; flex-wrap: wrap; }
+  .action .foot { display: flex; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .mini {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line);
+    padding: 9px 8px; min-height: var(--touch); border-radius: 10px; cursor: pointer; transition: all .18s; font-family: inherit; text-decoration: none;
+  }
+  .mini:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .mini:active { transform: scale(.97); }
+  .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .mini.solid:hover { background: var(--green); }
+
+  .empty { text-align: center; color: var(--ink-3); padding: 70px 20px; font-size: 14.5px; }
+  .empty .big { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 22px; background: var(--green-soft); display: flex; align-items: center; justify-content: center; }
+  .empty a { color: var(--green); text-decoration: none; font-weight: 700; }
+
+  /* 悬浮入口 */
+  .fab-archive {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
+    padding: 13px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 10px 26px rgba(14,107,80,.4); transition: transform .2s, box-shadow .2s; font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
+  .fab-archive svg { flex-shrink: 0; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  @media print {
+    body { background: #fff; }
+    .topbar, .toolbar, .fab-archive, .action .foot { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    .action, .identity-card, .stat { box-shadow: none; break-inside: avoid; }
+  }
+
+  @media (min-width: 900px) {
+    .wrap { max-width: 940px; }
+    #actionList { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; grid-auto-rows: 1fr; }
+    .action { margin-bottom: 0; }
+  }
+  @media (min-width: 1200px) {
+    .wrap { max-width: 1100px; }
+    #actionList { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+<script>
+  (function(){
+    try {
+      if (localStorage.getItem('trf_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme','dark');
+      }
+    } catch(e){}
+  })();
+</script>
+<link rel="icon" href="data:,">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="nav-link" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      首页
+    </a>
+    <a class="nav-link primary" href="act.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      开始改变
+    </a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
+      <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
+    </button>
+  </div>
+
+  <div class="page-head">
+    <h1>我的行为改变档案</h1>
+    <div class="page-sub">每一次做到，都是给「我想成为的人」投一票 · 行动痕迹，都在这里</div>
+  </div>
+
+  <div class="toolbar">
+    <a class="act solid" href="act.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      开始一次改变
+    </a>
+    <button class="act" onclick="downloadJSON()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      存数据
+    </button>
+  </div>
+
+  <!-- 身份区：从行动中投出的票 -->
+  <div id="identityArea"></div>
+
+  <!-- 统计 -->
+  <div class="stats" id="statsArea"></div>
+
+  <!-- 行动列表 -->
+  <div class="section-title" id="listTitle">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    做到过的
+  </div>
+  <div id="actionList"></div>
+  <div class="empty" id="emptyBox" style="display:none;">
+    <div class="big">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="#1D9E75" stroke-width="2" stroke-linejoin="round"/></svg>
+    </div>
+    还没有行动记录。<br>
+    每一次「帮我改变」都会在这里留下一张卡片——输入、微行动、锚点、连续天数、身份票。<br>
+    <a href="act.html">花 30 秒，做成第一件小事 →</a>
+  </div>
+</div>
+
+<script>
+const LS_ACTIONS = 'trf_actions';
+const LS_PROFILE = 'trf_profile';
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return ''; }
+}
+function fmtDateShort(iso) {
+  try { return new Date(iso).toLocaleDateString('zh-CN', {month:'numeric', day:'numeric'}); } catch(e) { return ''; }
+}
+
+function loadActions() {
+  try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e) { return []; }
+}
+
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem(LS_PROFILE)) || { identityStatements: [] }; } catch(e) { return { identityStatements: [] }; }
+}
+
+/* ---------- 身份 ---------- */
+function renderIdentity() {
+  const profile = loadProfile();
+  const actionVotes = (profile.identityStatements || []).filter(s => s.source === 'action');
+  const area = document.getElementById('identityArea');
+  if (!actionVotes.length) {
+    area.innerHTML = `<div class="identity-empty">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
+      完成一次「帮我改变」，你会在这里看到每一次做到都为身份投了票。
+    </div>`;
+    return;
+  }
+  // 按身份聚合票数
+  const map = new Map();
+  actionVotes.forEach(s => {
+    const item = map.get(s.text) || { text: s.text, votes: 0, date: s.date };
+    item.votes += (s.votes || 1);
+    if (new Date(s.date) > new Date(item.date)) item.date = s.date;
+    map.set(s.text, item);
+  });
+  const identities = Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+  area.innerHTML = identities.map(item => `
+    <div class="identity-card">
+      <div class="k">我已经是</div>
+      <div class="v">「<em>${escapeHtml(item.text)}</em>」的人</div>
+      <div class="count">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        已投 ${item.votes} 票 · 最近 ${fmtDate(item.date)}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---------- 统计 ---------- */
+function renderStats() {
+  const actions = loadActions();
+  const box = document.getElementById('statsArea');
+  if (!actions.length) { box.innerHTML = ''; return; }
+  const active = actions.filter(a => a.status === 'active').length;
+  const totalDone = actions.reduce((a, b) => a + (b.totalDone || 0), 0);
+  const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
+  box.innerHTML = `
+    <div class="stat"><div class="num">${active}</div><div class="lbl">进行中的行动</div></div>
+    <div class="stat"><div class="num">${totalDone}</div><div class="lbl">累计做到次数</div></div>
+    <div class="stat"><div class="num">${bestStreak}</div><div class="lbl">最长连续天数</div></div>
+  `;
+}
+
+/* ---------- 列表 ---------- */
+function renderActions() {
+  const actions = loadActions();
+  const box = document.getElementById('actionList');
+  const empty = document.getElementById('emptyBox');
+  const title = document.getElementById('listTitle');
+  if (!actions.length) { box.innerHTML = ''; empty.style.display = 'block'; title.style.display = 'none'; document.getElementById('statsArea').innerHTML=''; return; }
+  empty.style.display = 'none';
+  title.style.display = 'flex';
+  box.innerHTML = actions.map(a => {
+    const status = a.status || 'active';
+    const statusText = { active: '进行中', graduated: '已毕业', paused: '已暂停' }[status] || status;
+    const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
+    const lastLog = (a.logs || []).slice(-1)[0];
+    const lastDate = lastLog ? fmtDateShort(lastLog.date) : fmtDateShort(a.createdAt);
+    return `
+    <div class="action" data-id="${a.id}">
+      <div class="row1">
+        <span class="date">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          ${lastDate}
+        </span>
+        <span class="status-chip ${statusClass}">${statusText}</span>
+      </div>
+      <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
+      <div class="tiny">${escapeHtml((a.tiny && a.tiny.text) || '')}</div>
+      ${a.anchor ? `<div class="anchor">在我 ${escapeHtml(a.anchor.after)} 之后，我就 ${escapeHtml(a.anchor.then)}。</div>` : ''}
+      <div class="meta">
+        <span>连续 ${a.streak || 0} 天</span>
+        <span>累计 ${a.totalDone || 0} 次</span>
+        <span>身份票 ${a.totalDone || 0} 张</span>
+      </div>
+      <div class="foot">
+        <a class="mini solid" href="act.html?id=${a.id}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          去做
+        </a>
+        <button class="mini" onclick="downloadActionJSON('${a.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          存数据
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function downloadJSON() {
+  const data = { actions: loadActions(), profile: loadProfile(), exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'transform-行为改变档案-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('已保存数据文件');
+}
+
+function downloadActionJSON(id) {
+  const actions = loadActions();
+  const a = actions.find(x => x.id === id);
+  if (!a) return;
+  const blob = new Blob([JSON.stringify(a, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = url; el.download = 'transform-行动-' + id + '.json';
+  el.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('已保存行动数据');
+}
+
+let toastTimer = null;
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) { el = document.createElement('div'); el.id = 'toast'; el.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(30,42,38,.92);color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:opacity .2s;'; document.body.appendChild(el); }
+  el.textContent = msg; el.style.opacity = '1';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 1800);
+}
+
+function toggleTheme() {
+  var root = document.documentElement;
+  var isDark = root.getAttribute('data-theme') === 'dark';
+  if (isDark) { root.removeAttribute('data-theme'); localStorage.setItem('trf_theme','light'); }
+  else { root.setAttribute('data-theme','dark'); localStorage.setItem('trf_theme','dark'); }
+}
+
+renderIdentity();
+renderStats();
+renderActions();
+</script>
+</body>
+</html>
