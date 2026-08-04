@@ -548,15 +548,16 @@
   .outcome-section .os-block { margin-bottom: 14px; }
   .outcome-section .os-block:last-child { margin-bottom: 0; }
   .outcome-section .os-title { font-size: 12px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; letter-spacing: .5px; }
-  .outcome-section .os-core-sentence {
-    font-size: 17px; font-weight: 700; color: var(--green-deep); line-height: 1.7; margin-bottom: 12px;
-  }
-  .outcome-section .os-core-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .outcome-section .os-core-meta { display: flex; flex-wrap: wrap; gap: 12px; }
   .outcome-section .os-core-meta span {
-    background: rgba(255,255,255,.7); border: 1px solid var(--green-light); border-radius: 8px;
-    padding: 8px 12px; font-size: 12.5px; color: var(--ink-2); line-height: 1.5;
+    flex: 1 1 260px; background: #fff; border: 1.5px solid var(--green-light); border-radius: var(--radius-md);
+    padding: 16px 18px; font-size: 16.5px; color: var(--ink); line-height: 1.65;
+    box-shadow: 0 2px 8px rgba(29,158,117,.08);
   }
-  .outcome-section .os-core-meta b { color: var(--green-deep); font-weight: 700; margin-right: 6px; }
+  .outcome-section .os-core-meta b {
+    display: block; font-size: 12.5px; color: var(--green-deep); font-weight: 800;
+    letter-spacing: .8px; text-transform: uppercase; margin-bottom: 8px;
+  }
   .outcome-section .os-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--ink); }
   .outcome-section .os-list li { margin-bottom: 4px; }
   .identity-vote { background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 18px; margin: 14px 0; }
@@ -2814,7 +2815,13 @@ function complete() {
   let profile = { identityStatements: [] };
   try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
   profile.identityStatements = profile.identityStatements || [];
-  profile.identityStatements.unshift({ text: state.data.identity, date: new Date().toISOString(), sessionId: session.id });
+  const existing = profile.identityStatements.find(s => s.text === state.data.identity);
+  if (existing) {
+    existing.date = new Date().toISOString();
+    existing.sessionId = session.id;
+  } else {
+    profile.identityStatements.unshift({ text: state.data.identity, date: new Date().toISOString(), sessionId: session.id, votes: 0 });
+  }
   localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
   localStorage.removeItem(LS_SESSION);
   toast('已存入认知档案');
@@ -2994,16 +3001,8 @@ window.goStep = function(n) {
     const nature = (e.nature || '').trim();
     const insight = (e.insight || '').trim();
     if (nature || insight) {
-      let sentence = '';
-      if (nature && insight) {
-        sentence = '现象背后的本质是「' + nature + '」；而新的认知是「' + insight + '」。';
-      } else if (nature) {
-        sentence = '现象背后的本质是「' + nature + '」。';
-      } else {
-        sentence = '新的认知是「' + insight + '」。';
-      }
-      co.innerHTML = '<div class="os-core-sentence">' + escapeHtml(sentence) + '</div>' +
-        '<div class="os-core-meta">' + (nature ? '<span><b>本质</b>' + escapeHtml(nature) + '</span>' : '') +
+      co.innerHTML = '<div class="os-core-meta">' +
+        (nature ? '<span><b>本质</b>' + escapeHtml(nature) + '</span>' : '') +
         (insight ? '<span><b>洞察</b>' + escapeHtml(insight) + '</span>' : '') + '</div>';
     } else {
       co.innerHTML = '<div class="os-empty">（请先回到洞察步骤，确认现象本质和新洞察）</div>';
@@ -3055,7 +3054,7 @@ function renderIdentityVote() {
     badgeText.textContent = '「' + v + '」';
     badge.style.display = 'flex';
     stats.style.display = 'flex';
-    updateVoteStats(v);
+    updateVoteStats(v, true);
   } else {
     badge.style.display = 'none';
     stats.style.display = 'none';
@@ -3071,21 +3070,29 @@ function castIdentityVote() {
   updateVoteStats(v);
   toast('已为你期待的身份投下一票');
 }
-function updateVoteStats(text) {
+function updateVoteStats(text, readOnly) {
   let profile = { identityStatements: [] };
   try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
-  const list = profile.identityStatements || [];
-  const same = list.filter(s => s.text === text);
+  profile.identityStatements = profile.identityStatements || [];
+  let item = profile.identityStatements.find(s => s.text === text);
+  if (!item) {
+    item = { text, date: new Date().toISOString(), sessionId: state.data.sessionId || ('s_' + Date.now()), votes: 0 };
+    profile.identityStatements.unshift(item);
+  }
+  if (!readOnly) {
+    item.votes = (item.votes || 0) + 1;
+    item.date = new Date().toISOString();
+    localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
+  }
   const countEl = $('voteCount');
   const daysEl = $('voteDays');
-  if (countEl) countEl.textContent = (same.length || 0) + 1; // 本次投票 + 历史同身份
+  if (countEl) countEl.textContent = (item.votes || 0) + ' 票';
   if (daysEl) {
-    const latest = same[0] || list[0];
-    if (latest && latest.date) {
-      const days = Math.max(0, Math.floor((Date.now() - new Date(latest.date).getTime()) / (86400000)));
-      daysEl.textContent = days === 0 ? '今天' : days + ' 天前';
+    if (item.date) {
+      const days = Math.max(0, Math.floor((Date.now() - new Date(item.date).getTime()) / (86400000)));
+      daysEl.textContent = days === 0 ? '最近 今天' : '最近 ' + days + ' 天前';
     } else {
-      daysEl.textContent = '今天';
+      daysEl.textContent = '最近 今天';
     }
   }
 }

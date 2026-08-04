@@ -139,19 +139,19 @@
   .identity-card {
     position: relative; overflow: hidden;
     background: linear-gradient(135deg, #0E6B50 0%, #1D9E75 55%, #2BBB8A 100%);
-    border-radius: var(--radius-lg); padding: 30px 28px; color: #fff;
-    box-shadow: 0 12px 34px rgba(14,107,80,.32); margin-bottom: 14px;
+    border-radius: var(--radius-lg); padding: 26px 24px; color: #fff;
+    box-shadow: 0 12px 34px rgba(14,107,80,.32); margin-bottom: 12px;
     animation: rise .5s cubic-bezier(.16,1,.3,1);
   }
   .identity-card::after {
-    content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px; border-radius:50%;
+    content:""; position:absolute; right:-50px; top:-50px; width:180px; height:180px; border-radius:50%;
     background: rgba(255,255,255,.10);
   }
-  .identity-card .k { font-size: 12.5px; opacity: .8; font-weight: 700; letter-spacing: 1.5px; }
-  .identity-card .v { font-size: 22px; font-weight: 800; margin-top: 10px; line-height: 1.5; position: relative; }
+  .identity-card .k { font-size: 12px; opacity: .8; font-weight: 700; letter-spacing: 1.2px; }
+  .identity-card .v { font-size: 19px; font-weight: 800; margin-top: 8px; line-height: 1.5; position: relative; }
   .identity-card .v em { font-style: normal; border-bottom: 2px solid rgba(255,255,255,.55); padding-bottom: 2px; }
   .identity-card .count {
-    font-size: 12.5px; opacity: .85; margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; opacity: .85; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,.14); padding: 6px 12px; border-radius: 999px;
   }
   .identity-empty {
@@ -161,13 +161,24 @@
   }
   .identity-empty svg { flex-shrink: 0; margin-top: 3px; }
 
-  /* 历史身份 */
-  .history { margin-bottom: 8px; }
-  .history .title { font-size: 13px; font-weight: 700; color: var(--ink-3); letter-spacing: .6px; margin: 6px 0 8px; }
-  .history-item { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
-  .history-item:last-child { border-bottom: none; }
-  .history-item .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-top: 8px; flex-shrink: 0; }
-  .history-item .date { color: var(--ink-3); font-size: 12.5px; white-space: nowrap; }
+  /* 角色标签过滤栏 */
+  .role-filter { margin: 18px 0 10px; }
+  .role-filter .rf-title { font-size: 12.5px; font-weight: 700; color: var(--ink-3); letter-spacing: .6px; margin-bottom: 10px; }
+  .role-list { display: flex; flex-wrap: wrap; gap: 10px; }
+  .role-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 999px; cursor: pointer; transition: all .2s;
+    background: var(--surface); border: 1.5px solid var(--line); color: var(--ink-2); font-size: 13.5px;
+  }
+  .role-chip:hover { border-color: var(--green); color: var(--green-deep); }
+  .role-chip.sel { background: var(--green-deep); border-color: var(--green-deep); color: #fff; }
+  .role-chip .rf-count { font-size: 11px; background: rgba(0,0,0,.08); padding: 2px 7px; border-radius: 999px; }
+  .role-chip.sel .rf-count { background: rgba(255,255,255,.22); }
+  .role-chip .rf-tags {
+    display: inline-flex; gap: 4px; font-size: 10.5px; opacity: .75;
+  }
+  .role-chip .rf-tags span { background: rgba(29,158,117,.12); color: var(--green-deep); padding: 1px 6px; border-radius: 999px; }
+  .role-chip.sel .rf-tags span { background: rgba(255,255,255,.2); color: #fff; }
 
   /* 统计条 */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0 6px; }
@@ -378,8 +389,14 @@
     </button>
   </div>
 
-  <!-- 身份区 -->
+  <!-- 身份区：每个角色一张卡片 -->
   <div id="identityArea"></div>
+
+  <!-- 角色标签过滤 -->
+  <div class="role-filter" id="roleFilterArea" style="display:none;">
+    <div class="rf-title">按角色标签筛选档案</div>
+    <div class="role-list" id="roleList"></div>
+  </div>
 
   <!-- 统计 -->
   <div class="stats" id="statsArea"></div>
@@ -486,32 +503,85 @@ function loadArchive() {
 
 /* ---------- 身份 ---------- */
 function renderIdentity() {
-  let profile = { identityStatements: [] };
-  try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
-  const list = profile.identityStatements || [];
+  const archive = loadArchive();
+  const identities = extractIdentities(archive);
   const area = document.getElementById('identityArea');
-  if (!list.length) {
+  if (!identities.length) {
     area.innerHTML = `<div class="identity-empty">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
       完成一次「帮我清楚」，你会在这里看到自己的身份如何被重新定义。
     </div>`;
+    document.getElementById('roleFilterArea').style.display = 'none';
     return;
   }
-  const latest = list[0];
-  const others = list.slice(1);
-  area.innerHTML = `
-    <div class="identity-card">
+  // 每个角色一张卡片
+  area.innerHTML = identities.map(item => `
+    <div class="identity-card" onclick="filterByRole('${escapeHtml(item.text)}')">
       <div class="k">我期待自己成为</div>
-      <div class="v">「<em>${escapeHtml(latest.text)}</em>」的人</div>
+      <div class="v">「<em>${escapeHtml(item.text)}</em>」的人</div>
       <div class="count">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        已投 ${list.length} 票 · 最近 ${fmtDate(latest.date)}
+        已投 ${item.votes || 1} 票 · 最近 ${fmtDate(item.date)}
       </div>
     </div>
-    ${others.length ? `<div class="history"><div class="title">曾经的期待</div>${others.map(o =>
-      `<div class="history-item"><span class="dot"></span><span>「${escapeHtml(o.text)}」</span><span class="date">${fmtDate(o.date)}</span></div>`
-    ).join('')}</div>` : ''}
+  `).join('');
+  renderRoleFilter(identities, archive);
+}
+
+function extractIdentities(archive) {
+  let profile = { identityStatements: [] };
+  try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
+  const statements = profile.identityStatements || [];
+  // 同时从档案中收集身份，确保旧数据也能显示
+  const map = new Map();
+  statements.forEach(s => {
+    if (!s.text) return;
+    const existing = map.get(s.text);
+    if (!existing || new Date(s.date) > new Date(existing.date)) {
+      map.set(s.text, { text: s.text, date: s.date, votes: s.votes || 1, sessionId: s.sessionId });
+    }
+  });
+  archive.forEach(s => {
+    if (!s.identity) return;
+    if (!map.has(s.identity)) {
+      map.set(s.identity, { text: s.identity, date: s.completedAt || s.createdAt, votes: 1, sessionId: s.id });
+    }
+  });
+  return Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+let currentRoleFilter = '';
+function renderRoleFilter(identities, archive) {
+  const box = document.getElementById('roleFilterArea');
+  const list = document.getElementById('roleList');
+  if (!identities.length) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  list.innerHTML = identities.map(item => {
+    const related = archive.filter(s => s.identity === item.text);
+    const tagSet = new Set();
+    related.forEach(s => (s.tags || []).forEach(t => tagSet.add(t)));
+    const tags = Array.from(tagSet).slice(0, 3);
+    const isSel = currentRoleFilter === item.text;
+    return `
+      <div class="role-chip ${isSel ? 'sel' : ''}" onclick="filterByRole('${escapeHtml(item.text)}')">
+        <span>${escapeHtml(item.text)}</span>
+        <span class="rf-count">${related.length}</span>
+        ${tags.length ? `<span class="rf-tags">${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</span>` : ''}
+      </div>
+    `;
+  }).join('') + `
+    <div class="role-chip ${currentRoleFilter === '' ? 'sel' : ''}" onclick="filterByRole('')">全部档案</div>
   `;
+}
+
+function filterByRole(role) {
+  currentRoleFilter = role;
+  renderSessions();
+  const archive = loadArchive();
+  const identities = extractIdentities(archive);
+  renderRoleFilter(identities, archive);
+  // 滚动到档案列表
+  document.getElementById('listTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ---------- 统计 ---------- */
@@ -569,11 +639,20 @@ function renderSessions() {
   const title = document.getElementById('listTitle');
   if (!archive.length) { box.innerHTML = ''; empty.style.display = 'block'; title.style.display = 'none'; document.getElementById('statsArea').innerHTML=''; return; }
   const f = currentFilter.trim().toLowerCase();
-  const filtered = f ? archive.filter(s =>
-    (getScenario(s) + ' ' + getInsight(s) + ' ' + (s.identity || '') + ' ' + (s.tags || []).join(' ') + ' ' + (s.nearScenario && s.nearScenario.scenario || '')).toLowerCase().includes(f)
-  ) : archive;
+  let filtered = archive;
+  if (currentRoleFilter) {
+    filtered = filtered.filter(s => s.identity === currentRoleFilter);
+  }
+  if (f) {
+    filtered = filtered.filter(s =>
+      (getScenario(s) + ' ' + getInsight(s) + ' ' + (s.identity || '') + ' ' + (s.tags || []).join(' ') + ' ' + (s.nearScenario && s.nearScenario.scenario || '')).toLowerCase().includes(f)
+    );
+  }
   empty.style.display = filtered.length ? 'none' : 'block';
   title.style.display = 'flex';
+  title.innerHTML = currentRoleFilter
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>「${escapeHtml(currentRoleFilter)}」想清楚过的`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>想清楚过的`;
   box.innerHTML = filtered.map((s, i) => {
     const groups = (s.groups || []).map(g => g.label).filter(Boolean);
     const near = s.nearScenario || {};
@@ -655,6 +734,21 @@ function saveArchive(archive) {
   renderSessions();
 }
 
+function updateProfileIdentity(session) {
+  if (!session.identity) return;
+  let profile = { identityStatements: [] };
+  try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
+  profile.identityStatements = profile.identityStatements || [];
+  const existing = profile.identityStatements.find(s => s.text === session.identity);
+  if (existing) {
+    existing.date = session.completedAt || session.createdAt || new Date().toISOString();
+    existing.sessionId = session.id;
+  } else {
+    profile.identityStatements.unshift({ text: session.identity, date: session.completedAt || session.createdAt || new Date().toISOString(), sessionId: session.id, votes: 1 });
+  }
+  localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
+}
+
 function confirmDeleteSession(id) {
   const s = findSession(id);
   if (!s) return;
@@ -662,12 +756,15 @@ function confirmDeleteSession(id) {
   let archive = loadArchive();
   archive = archive.filter(x => x.id !== id);
   saveArchive(archive);
-  // 同时从 profile 中移除关联身份
+  // 同时从 profile 中移除关联身份（若该身份已无其他档案引用）
   let profile = { identityStatements: [] };
   try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
   if (profile.identityStatements) {
-    profile.identityStatements = profile.identityStatements.filter(st => st.sessionId !== id);
-    localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
+    const stillUsed = archive.some(s => s.identity && profile.identityStatements.some(st => st.text === s.identity));
+    if (!stillUsed) {
+      profile.identityStatements = profile.identityStatements.filter(st => st.sessionId !== id);
+      localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
+    }
   }
   toast('已删除');
 }
@@ -760,6 +857,7 @@ function saveEdit() {
   const idx = archive.findIndex(x => x.id === s.id);
   if (idx === -1) return;
 
+  const oldIdentity = archive[idx].identity;
   archive[idx].tags = tags;
   archive[idx].scenario = scenario;
   archive[idx].essence = archive[idx].essence || {};
@@ -770,17 +868,17 @@ function saveEdit() {
 
   // 同步更新 profile 中关联的身份
   if (identity) {
+    updateProfileIdentity(archive[idx]);
+  }
+  // 如果身份被清空，且旧身份没有其他档案引用，从 profile 移除
+  if (oldIdentity && !identity) {
     let profile = { identityStatements: [] };
     try { profile = JSON.parse(localStorage.getItem(LS_PROFILE)) || profile; } catch(e) {}
-    profile.identityStatements = profile.identityStatements || [];
-    const existing = profile.identityStatements.find(st => st.sessionId === s.id);
-    if (existing) {
-      existing.text = identity;
-      existing.date = new Date().toISOString();
-    } else {
-      profile.identityStatements.unshift({ text: identity, date: new Date().toISOString(), sessionId: s.id });
+    const stillUsed = archive.some(x => x.id !== s.id && x.identity === oldIdentity);
+    if (!stillUsed) {
+      profile.identityStatements = (profile.identityStatements || []).filter(st => st.text !== oldIdentity);
+      localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
     }
-    localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
   }
 
   saveArchive(archive);
