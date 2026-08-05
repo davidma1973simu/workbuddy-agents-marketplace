@@ -133,6 +133,15 @@
   .insight-context .ic-label { font-size: 12px; font-weight: 700; color: var(--green-deep); letter-spacing: .5px; margin-bottom: 8px; }
   .insight-context .ic-text { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.7; white-space: pre-wrap; }
   .insight-context .ic-tip { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-top: 10px; }
+
+  /* 复盘（评估反馈段） */
+  .reflect-card h2 { font-size: 19px; }
+  .reflect-q { min-height: 64px; }
+  .ai-out {
+    margin: 12px 0; background: var(--green-soft); border: 1px solid rgba(29,158,117,.25);
+    border-radius: var(--radius-md); padding: 12px 14px; font-size: 13.5px; line-height: 1.7;
+    color: var(--ink); white-space: pre-wrap;
+  }
   .fld:first-of-type { margin-top: 0; }
   textarea, input[type=text], input[type=number] {
     width: 100%; font-family: inherit; font-size: 15.5px; line-height: 1.7; color: var(--ink);
@@ -457,6 +466,40 @@
         <h3>计划完成！</h3>
         <p id="gradText"></p>
         <div class="id-tag" id="gradIdentity"></div>
+      </div>
+    </div>
+
+    <!-- 复盘：行为改变的执行结果（评估反馈段，闭合行为循环） -->
+    <div id="reflectWrap" class="hidden">
+      <div class="card reflect-card">
+        <h2>复盘 · 把这次改变沉淀下来</h2>
+        <div class="sub" id="reflectContextB"></div>
+        <div class="hint" style="margin-top:0;margin-bottom:16px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          五个问题想清楚，这次行为实验才算真正结束：发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。
+        </div>
+        <label class="fld">发生了什么？</label>
+        <textarea id="reBWhat" class="reflect-q" placeholder="例如：21 天里做到了 X 天，中途有 X 次没做到，第 X 天最吃力…"></textarea>
+        <label class="fld">为什么？</label>
+        <textarea id="reBWhy" class="reflect-q" placeholder="为什么这件事发生 / 没发生？阻力在哪里？"></textarea>
+        <label class="fld">学到了什么？</label>
+        <textarea id="reBLearned" class="reflect-q" placeholder="这次实验教会了我什么？"></textarea>
+        <label class="fld">做了什么不同的？</label>
+        <textarea id="reBDifferent" class="reflect-q" placeholder="和过去的我相比，这一次哪里不一样？"></textarea>
+        <label class="fld">改变了什么？</label>
+        <textarea id="reBChanged" class="reflect-q" placeholder="我的行为、习惯或对自己的看法，发生了什么变化？"></textarea>
+        <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
+          <button class="btn btn-ai" onclick="aiReflectB()">知行帮我复盘</button>
+        </div>
+        <div id="reBResultBox" class="ai-out hidden"></div>
+        <label class="fld">这次行为实验的结果是</label>
+        <textarea id="reBResultText" class="reflect-q" placeholder="用一句话总结行为改变的执行结果…"></textarea>
+        <label class="fld">新的习惯，融入在哪一步？</label>
+        <textarea id="reBHabit" class="reflect-q" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveReflectionB()">完成复盘 · 沉淀成长资产</button>
+          <button class="btn btn-ghost" onclick="$('reflectWrap').classList.add('hidden')">先放着</button>
+        </div>
       </div>
     </div>
 
@@ -901,9 +944,22 @@ function renderDashboard(){
     $('gradWrap').classList.remove('hidden');
     $('gradText').textContent = '你用 ' + current.targetDays + ' 天，把「' + current.input + '」从想法变成了真实的行动轨迹。';
     $('gradIdentity').textContent = current.identity ? ('我已经是「' + current.identity + '」的人') : '新的习惯与角色已生根';
+    // 复盘区（评估反馈段）：毕业即复盘，已沉淀内容回填（不覆盖正在输入的内容）
+    $('reflectWrap').classList.remove('hidden');
+    $('reflectContextB').textContent = '关于「' + current.input + '」的行为实验' + (current.insight ? '（基于洞察：' + current.insight.replace(/\n+/g, ' · ') + '）' : '');
+    if (current.reflection){
+      if (!$('reBWhat').value) $('reBWhat').value = current.reflection.what || '';
+      if (!$('reBWhy').value) $('reBWhy').value = current.reflection.why || '';
+      if (!$('reBLearned').value) $('reBLearned').value = current.reflection.learned || '';
+      if (!$('reBDifferent').value) $('reBDifferent').value = current.reflection.different || '';
+      if (!$('reBChanged').value) $('reBChanged').value = current.reflection.changed || '';
+      if (!$('reBResultText').value) $('reBResultText').value = current.result || '';
+      if (!$('reBHabit').value) $('reBHabit').value = current.habit || '';
+    }
     $('gradWrap').scrollIntoView({behavior:'smooth'});
   } else {
     $('gradWrap').classList.add('hidden');
+    $('reflectWrap').classList.add('hidden');
   }
   // 当前天行动
   const today = current.plan.find(p => p.day === current.currentDay);
@@ -977,6 +1033,47 @@ function updateDoneBtn(){
     btn.disabled = !allChecked;
     btn.style.opacity = allChecked ? '1' : '.55';
   } else { btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+/* ============ 复盘（评估反馈段，闭合行为循环） ============ */
+async function aiReflectB(){
+  const box = $('reBResultBox');
+  const base = '帮用户复盘一次行为实验（行为改变）。目标/行为：' + current.input + (current.insight ? '\n认知起点（洞察）：' + current.insight.replace(/\n+/g, ' · ') : '') + '\n期待身份：' + (current.identity || '未填') + '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「这次行为实验的结果」和一句「新的习惯融入日常的哪一步」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","result":"…","habit":"…"}';
+  const text = await aiCall(base);
+  if (!text) return;
+  box.classList.remove('hidden');
+  try {
+    const j = JSON.parse(text.replace(/```json|```/g, '').trim());
+    if (!$('reBWhat').value) $('reBWhat').value = j.what || '';
+    if (!$('reBWhy').value) $('reBWhy').value = j.why || '';
+    if (!$('reBLearned').value) $('reBLearned').value = j.learned || '';
+    if (!$('reBDifferent').value) $('reBDifferent').value = j.different || '';
+    if (!$('reBChanged').value) $('reBChanged').value = j.changed || '';
+    if (!$('reBResultText').value) $('reBResultText').value = j.result || '';
+    if (!$('reBHabit').value) $('reBHabit').value = j.habit || '';
+    box.classList.add('hidden');
+    toast('已按你的复盘草稿填入，可再修改');
+  } catch (err) {
+    box.innerHTML = '<b>知行复盘草稿：</b>' + escapeHtml(text);
+  }
+}
+function saveReflectionB(){
+  const r = {
+    what: $('reBWhat').value.trim(), why: $('reBWhy').value.trim(),
+    learned: $('reBLearned').value.trim(), different: $('reBDifferent').value.trim(),
+    changed: $('reBChanged').value.trim()
+  };
+  const result = $('reBResultText').value.trim();
+  const habit = $('reBHabit').value.trim();
+  if (!(r.what || r.why || r.learned || r.different || r.changed || result || habit)){
+    toast('写一点复盘内容再保存吧'); return;
+  }
+  current.reflection = r;
+  current.result = result;
+  current.habit = habit;
+  current.reflectedAt = new Date().toISOString();
+  persistAction();
+  toast('复盘已沉淀进你的成长资产 ✓');
 }
 
 function renderPlanMini(doneDays){

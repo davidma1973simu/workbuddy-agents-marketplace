@@ -838,6 +838,18 @@
   }
   .insight-to-behavior .itb-note { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
 
+  /* 复盘（评估反馈段） */
+  .btn-ghost { background: var(--bg); color: var(--green-deep); border: 1.5px solid var(--green); }
+  .btn-ghost:hover { background: var(--green); color: #fff; }
+  .btn-ai { background: var(--green-soft); color: var(--green); padding: 11px 18px; border-radius: 999px; font-size: 14px; border: 1px solid rgba(29,158,117,.2); }
+  .btn-ai:hover { background: var(--green-light); }
+  .reflect-q { min-height: 64px; }
+  .ai-out {
+    margin: 12px 0; background: var(--green-soft); border: 1px solid rgba(29,158,117,.25);
+    border-radius: var(--radius-md); padding: 12px 14px; font-size: 13.5px; line-height: 1.7;
+    color: var(--ink); white-space: pre-wrap;
+  }
+
   /* 进度信号 */
   .signal {
     display: inline-flex; align-items: center; gap: 7px;
@@ -1588,6 +1600,47 @@
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(2)">上一步</button>
         <button class="btn btn-next" onclick="complete()" id="finishBtn">完成并存入档案</button>
+      </div>
+    </div>
+
+    <!-- Step 4 复盘：把这次想清楚，更新成认知模型（评估反馈段，闭合认知循环） -->
+    <div class="panel" id="panel-4" style="display:none;">
+      <h1>复盘 · 把这次想清楚，沉淀成认知资产</h1>
+      <div class="hint">五个问题想清楚，这次梳理才真正闭环——发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。AI 会用你的挑战与洞察帮你生成复盘草稿。</div>
+
+      <label>我刚刚想清楚的挑战</label>
+      <div class="outcome-section outcome-core">
+        <div style="font-size:15px;font-weight:700;color:var(--ink);">「<span id="reflectScenario">—</span>」</div>
+        <div class="os-core-meta" id="reflectCore" style="margin-top:10px;"></div>
+      </div>
+
+      <label>发生了什么？</label>
+      <textarea id="reWhat" class="reflect-q" placeholder="例如：我把「…」这件事彻底想了一遍，分类时发现…"></textarea>
+
+      <label>为什么？</label>
+      <textarea id="reWhy" class="reflect-q" placeholder="为什么会这样？我过去一直没想通的原因是什么？"></textarea>
+
+      <label>学到了什么？</label>
+      <textarea id="reLearned" class="reflect-q" placeholder="这次梳理让我学到的最重要的一点是…"></textarea>
+
+      <label>做了什么不同的？</label>
+      <textarea id="reDifferent" class="reflect-q" placeholder="和过去的我相比，这次的思考方式哪里不一样？"></textarea>
+
+      <label>改变了什么？</label>
+      <textarea id="reChanged" class="reflect-q" placeholder="我的判断、情绪或对这件事的看法，发生了什么变化？"></textarea>
+
+      <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
+        <button class="btn btn-ai" onclick="aiReflectA()">知行帮我复盘</button>
+      </div>
+      <div id="reReflectResult" class="ai-out hidden"></div>
+
+      <label>我对这类问题的新认知框架（Mental Model）</label>
+      <textarea id="reModel" class="reflect-q" placeholder="例如：对于所有转变，都要经历 接纳 → 实践 → 融合 三个阶段。"></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-prev" onclick="goStep(3)">上一步</button>
+        <button class="btn btn-next" onclick="saveReflection()">完成复盘 · 沉淀成长资产</button>
+        <a class="btn btn-ghost" href="archive.html">稍后再复盘</a>
       </div>
     </div>
   </div>
@@ -2842,7 +2895,69 @@ function complete() {
   localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
   localStorage.removeItem(LS_SESSION);
   toast('已存入认知档案');
-  setTimeout(() => location.href = 'archive.html', 1200);
+  openReflection(session);
+}
+
+/* ============ Step 4 复盘（评估反馈段，闭合认知循环） ============ */
+let pendingSession = null;
+function openReflection(session){
+  pendingSession = session;
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  $('panel-4').style.display = 'block';
+  $('reflectScenario').textContent = session.scenario || '这次挑战';
+  const e = session.essence || {};
+  $('reflectCore').innerHTML =
+    (e.nature ? '<span><b>本质</b>' + escapeHtml(e.nature) + '</span>' : '') +
+    (e.insight ? '<span><b>洞察</b>' + escapeHtml(e.insight) + '</span>' : '');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+async function aiReflectA(){
+  const s = pendingSession; if (!s) return;
+  const e = s.essence || {};
+  const prompt = '帮用户复盘一次认知梳理（Think Better 循环的末尾）。挑战：' + (s.scenario || '未填') +
+    '\n现象本质：' + (e.nature || '未填') + '\n新洞察：' + (e.insight || '未填') +
+    '\n期待身份：' + (s.identity || '未填') +
+    '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「我对这类问题的新认知框架」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","model":"…"}';
+  const text = await aiCall(prompt);
+  const box = $('reReflectResult');
+  if (!text) return;
+  box.classList.remove('hidden');
+  try {
+    const j = JSON.parse(text.replace(/```json|```/g, '').trim());
+    $('reWhat').value = j.what || '';
+    $('reWhy').value = j.why || '';
+    $('reLearned').value = j.learned || '';
+    $('reDifferent').value = j.different || '';
+    $('reChanged').value = j.changed || '';
+    $('reModel').value = j.model || '';
+    box.classList.add('hidden');
+    toast('已按你的复盘草稿填入，可再修改');
+  } catch (err) {
+    box.innerHTML = '<b>知行复盘草稿：</b>' + escapeHtml(text);
+  }
+}
+function saveReflection(){
+  const r = {
+    what: $('reWhat').value.trim(), why: $('reWhy').value.trim(),
+    learned: $('reLearned').value.trim(), different: $('reDifferent').value.trim(),
+    changed: $('reChanged').value.trim()
+  };
+  const model = $('reModel').value.trim();
+  if (!(r.what || r.why || r.learned || r.different || r.changed || model)){
+    toast('写一点复盘内容再保存吧'); return;
+  }
+  try {
+    const archive = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
+    const idx = archive.findIndex(s => s.id === pendingSession.id);
+    if (idx >= 0){
+      archive[idx].reflection = r;
+      archive[idx].mentalModel = model;
+      archive[idx].reflectedAt = new Date().toISOString();
+      localStorage.setItem(LS_ARCHIVE, JSON.stringify(archive));
+    }
+  } catch(e) {}
+  toast('复盘已沉淀进你的成长资产 ✓');
+  setTimeout(() => location.href = 'archive.html', 1100);
 }
 
 /* ============ 设置 ============ */
