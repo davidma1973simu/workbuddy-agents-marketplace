@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>开始一次行为改变 · Transform</title>
+<title>帮我改变 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -25,6 +25,9 @@
     --green-50: #F0F9F4;
     --amber: #C87A2A;
     --amber-soft: #FDF3E6;
+    --amber-2: #EAA052;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
     --radius-xl: 32px;
     --radius-lg: 24px;
     --radius-md: 16px;
@@ -33,6 +36,7 @@
     --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
     --shadow-3: 0 8px 24px rgba(21,27,25,.08), 0 32px 64px rgba(21,27,25,.12);
     --ease: cubic-bezier(.16,1,.3,1);
+    --touch: 44px;
   }
   [data-theme="dark"] {
     --bg: #0C100F;
@@ -51,6 +55,8 @@
     --green-50: #0F1F1B;
     --amber: #EAA052;
     --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
     --shadow-1: 0 1px 2px rgba(0,0,0,.3);
     --shadow-2: 0 4px 12px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
     --shadow-3: 0 8px 24px rgba(0,0,0,.5), 0 32px 64px rgba(0,0,0,.6);
@@ -61,7 +67,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
     background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
   }
-  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 28px 100px; }
+  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 28px 110px; }
 
   .nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
   .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
@@ -73,85 +79,150 @@
   }
   .nav-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
   .nav-links { display: flex; align-items: center; gap: 8px; }
-  .nav-links a {
+  .nav-links a, .nav-links button {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 14px; font-weight: 600; color: var(--ink-2); text-decoration: none;
-    padding: 10px 18px; border-radius: 999px; transition: all .2s var(--ease);
+    padding: 10px 16px; border-radius: 999px; transition: all .2s var(--ease); background: none; border: none; cursor: pointer; font-family: inherit;
   }
-  .nav-links a:hover { color: var(--green); background: var(--green-soft); }
+  .nav-links a:hover, .nav-links button:hover { color: var(--green); background: var(--green-soft); }
 
-  .page-head { padding: 24px 0 32px; text-align: center; }
+  .page-head { padding: 14px 0 30px; text-align: center; }
   .page-head .badge {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--amber-soft); color: var(--amber);
     border: 1px solid rgba(200,122,42,.18); padding: 8px 16px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; margin-bottom: 20px;
+    font-size: 13px; font-weight: 700; margin-bottom: 18px;
   }
-  .page-head h1 { font-size: clamp(32px, 5vw, 46px); font-weight: 800; letter-spacing: -1.2px; margin-bottom: 12px; }
-  .page-head p { font-size: 17px; color: var(--ink-2); max-width: 520px; margin: 0 auto; line-height: 1.75; }
+  .page-head h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+  .page-head p { font-size: 16px; color: var(--ink-2); max-width: 520px; margin: 0 auto; line-height: 1.7; }
 
-  .input-card {
+  /* 步骤条 */
+  .stepbar { display: flex; align-items: center; gap: 8px; margin: 6px 0 28px; }
+  .stepbar .node {
+    flex: 1; display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: var(--radius-md);
+    background: var(--surface); border: 1px solid var(--line); font-size: 14px; font-weight: 700; color: var(--ink-3);
+    transition: all .25s var(--ease);
+  }
+  .stepbar .node .dot {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;
+    background: var(--surface-2); color: var(--ink-3);
+  }
+  .stepbar .node.active { color: var(--green); border-color: var(--green); background: var(--green-50); }
+  .stepbar .node.active .dot { background: var(--green); color: #fff; }
+  .stepbar .node.done { color: var(--ink-2); }
+  .stepbar .node.done .dot { background: var(--green-soft); color: var(--green); }
+  .stepbar .sep { width: 14px; height: 2px; background: var(--line-2); flex-shrink: 0; }
+
+  .card {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl);
-    padding: 32px; box-shadow: var(--shadow-2); margin-bottom: 28px;
+    padding: 30px; box-shadow: var(--shadow-2); margin-bottom: 22px;
   }
-  .input-card label {
-    display: block; font-size: 15px; font-weight: 700; color: var(--ink-2); margin-bottom: 12px;
+  .card h2 { font-size: 21px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 6px; }
+  .card .sub { font-size: 14px; color: var(--ink-3); margin-bottom: 22px; }
+
+  label.fld { display: block; font-size: 14px; font-weight: 700; color: var(--ink-2); margin: 18px 0 10px; }
+  .fld:first-of-type { margin-top: 0; }
+  textarea, input[type=text], input[type=number] {
+    width: 100%; font-family: inherit; font-size: 15.5px; line-height: 1.7; color: var(--ink);
+    background: var(--bg); border: 1.5px solid var(--line-2); border-radius: var(--radius-md);
+    padding: 14px 16px; transition: border-color .2s, box-shadow .2s; resize: vertical;
   }
-  .input-card textarea {
-    width: 100%; min-height: 120px; resize: vertical;
-    border: 1.5px solid var(--line-2); border-radius: var(--radius-md);
-    padding: 18px; font-size: 16px; line-height: 1.7; color: var(--ink); background: var(--bg);
-    font-family: inherit; transition: border-color .2s, box-shadow .2s;
-  }
-  .input-card textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(29,158,117,.10); }
-  .input-card .hint {
-    display: flex; align-items: center; gap: 8px; margin-top: 12px;
-    font-size: 13px; color: var(--ink-3);
-  }
-  .input-actions { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
-    transition: all .25s var(--ease); font-family: inherit;
-  }
-  .btn-primary {
-    background: var(--green); color: #fff; padding: 16px 30px; border-radius: 999px;
-    box-shadow: 0 12px 32px rgba(14,107,80,.32);
-  }
+  textarea:focus, input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(29,158,117,.10); }
+  textarea { min-height: 110px; }
+
+  .hint { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all .25s var(--ease); font-family: inherit; }
+  .btn-primary { background: var(--green); color: #fff; padding: 15px 28px; border-radius: 999px; box-shadow: 0 12px 32px rgba(14,107,80,.32); }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); background: var(--green-2); }
-  .btn-ghost {
-    background: var(--surface); color: var(--ink-2); padding: 15px 26px; border-radius: 999px;
-    border: 1.5px solid var(--line-2);
-  }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-ghost { background: var(--surface); color: var(--ink-2); padding: 14px 24px; border-radius: 999px; border: 1.5px solid var(--line-2); }
   .btn-ghost:hover { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+  .btn-ai { background: var(--green-soft); color: var(--green); padding: 11px 18px; border-radius: 999px; font-size: 14px; border: 1px solid rgba(29,158,117,.2); }
+  .btn-ai:hover { background: var(--green-light); }
+  .btn-ai[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn-amber { background: var(--amber); color: #fff; padding: 15px 28px; border-radius: 999px; box-shadow: 0 12px 32px rgba(200,122,42,.3); }
+  .btn-amber:hover { transform: translateY(-2px); background: var(--amber-2); }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
 
-  .steps {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;
+  .ai-msg { margin-top: 16px; background: var(--green-50); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; font-size: 14.5px; color: var(--ink-2); line-height: 1.75; }
+  .ai-msg .ai-head { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--green); margin-bottom: 8px; font-size: 13px; }
+  .ai-suggestions { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .ai-chip {
+    text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 13px 16px; font-size: 14.5px; color: var(--ink-2); cursor: pointer; transition: all .2s; font-family: inherit; line-height: 1.6;
   }
-  .step {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
-    padding: 24px 20px; text-align: center; transition: transform .25s, border-color .25s;
-  }
-  .step:hover { transform: translateY(-4px); border-color: var(--green-light); }
-  .step .num {
-    width: 36px; height: 36px; border-radius: 50%; margin: 0 auto 14px;
-    background: var(--green-soft); color: var(--green); font-size: 15px; font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .step h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
-  .step p { font-size: 13.5px; color: var(--ink-2); line-height: 1.65; }
+  .ai-chip:hover { border-color: var(--green); background: var(--green-50); }
 
-  .notice {
-    background: var(--surface-2); border: 1px dashed var(--line-2); border-radius: var(--radius-md);
-    padding: 18px 22px; font-size: 14px; color: var(--ink-2); line-height: 1.7; text-align: center;
+  .ladder { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .ladder .lvl { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--line); }
+  .ladder .lvl .score { flex-shrink: 0; width: 40px; text-align: center; font-size: 12px; font-weight: 800; color: var(--green); }
+  .ladder .lvl input { background: var(--surface); font-size: 14.5px; }
+
+  .tiny-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .tiny-row .tiny-text { flex: 1; min-width: 240px; }
+  .tiny-row .tiny-sec { width: 130px; }
+  .tiny-row .tiny-sec input { text-align: center; }
+  .sec-warn { color: var(--coral); font-size: 13px; margin-top: 8px; display: none; }
+
+  /* 行动卡（模块三） */
+  .action-hero {
+    background: linear-gradient(135deg, #0E6B50 0%, #1D9E75 55%, #2BBB8A 100%);
+    border-radius: var(--radius-xl); padding: 28px 26px; color: #fff; box-shadow: 0 14px 40px rgba(14,107,80,.32); margin-bottom: 18px;
   }
-  .notice a { color: var(--green); text-decoration: none; font-weight: 700; }
+  .action-hero .label { font-size: 12px; opacity: .8; font-weight: 700; letter-spacing: 1px; }
+  .action-hero .tiny { font-size: 22px; font-weight: 800; margin: 8px 0 14px; line-height: 1.5; }
+  .action-hero .anchor { font-size: 15px; opacity: .92; }
+  .action-hero .meta { display: flex; gap: 18px; margin-top: 18px; font-size: 13px; opacity: .9; flex-wrap: wrap; }
+  .action-hero .meta b { font-size: 18px; font-weight: 800; }
+
+  .break-banner { display: none; background: var(--coral-soft); color: var(--coral); border: 1px solid rgba(192,91,60,.25); border-radius: var(--radius-md); padding: 16px 18px; font-size: 14px; margin-bottom: 18px; line-height: 1.7; }
+  .break-banner b { color: var(--coral); }
+
+  .block-box { display: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; margin-top: 18px; }
+  .block-box h3 { font-size: 17px; font-weight: 800; margin-bottom: 14px; }
+  .reason-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .reason { padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-2); cursor: pointer; text-align: left; font-family: inherit; font-size: 14.5px; color: var(--ink-2); transition: all .2s; }
+  .reason:hover { border-color: var(--amber); background: var(--amber-soft); }
+  .reason b { display: block; color: var(--ink); font-weight: 800; margin-bottom: 2px; }
+
+  .support-box { margin-top: 14px; }
+  .support-box .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .support-box .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--amber-soft); color: var(--amber); border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600; }
+  .support-box .tag button { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: .7; }
+
+  .identity-vote { display: flex; align-items: center; gap: 12px; background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 18px; }
+  .identity-vote .v-emoji { font-size: 22px; }
+  .identity-vote .v-text { flex: 1; }
+  .identity-vote .v-text b { color: var(--green); font-size: 16px; }
+  .identity-vote .v-count { font-size: 22px; font-weight: 800; color: var(--green); }
+
+  .hidden { display: none !important; }
+
+  /* 设置弹窗 */
+  .modal-mask { position: fixed; inset: 0; background: rgba(10,15,14,.5); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-mask.show { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 28px; width: 100%; max-width: 420px; box-shadow: var(--shadow-3); }
+  .modal h3 { font-size: 19px; font-weight: 800; margin-bottom: 18px; }
+  .modal label { font-size: 13px; font-weight: 700; color: var(--ink-2); display: block; margin: 14px 0 7px; }
+  .modal .row { display: flex; gap: 10px; margin-top: 20px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%) translateY(20px);
+    background: rgba(21,27,25,.94); color: #fff; padding: 12px 22px; border-radius: 999px; font-size: 14px;
+    z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,.25); opacity: 0; transition: all .25s var(--ease); pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   @media (max-width: 720px) {
-    .wrap { padding: 0 20px 80px; }
-    .steps { grid-template-columns: 1fr; }
-    .input-card { padding: 24px; }
-    .nav-links a span { display: none; }
+    .wrap { padding: 0 20px 90px; }
+    .card { padding: 22px; }
+    .stepbar { gap: 4px; }
+    .stepbar .node { padding: 10px 8px; font-size: 12.5px; gap: 6px; }
+    .stepbar .sep { display: none; }
+    .reason-grid { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
@@ -177,77 +248,611 @@
     <div class="nav-links">
       <a href="archive.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-        <span>认知档案</span>
+        认知档案
       </a>
       <a href="behavior.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
-        <span>行为档案</span>
+        行为档案
       </a>
+      <button onclick="openSettings()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        设置
+      </button>
     </div>
   </nav>
 
-  <div class="page-head">
-    <div class="badge">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      入口 B · 帮我改变
+  <!-- 初始输入页 -->
+  <div id="stage-input">
+    <div class="page-head">
+      <div class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        入口 B · 帮我改变
+      </div>
+      <h1>从想明白到真正发生行为改变</h1>
+      <p>经历「拆解细分 → 行动锚定 → 反馈强化」，让知行合一，沉淀成新的习惯和角色。</p>
     </div>
-    <h1>从知到行，把认知变成可累积的行为改变</h1>
-    <p>从想明白到真正发生行为改变，经历「拆解细分 → 行动锚定 → 反馈强化」，让知行合一，沉淀成新的习惯和角色。</p>
+    <div class="card">
+      <label class="fld" for="changeInput">你想改变什么？</label>
+      <textarea id="changeInput" placeholder="例如：&#10;• 我想减肥，但总是坚持不下去&#10;• 我理解了 AI 时代培训师要做整体架构，但不知道怎么落地&#10;• 每天睡前刷手机到很晚，想改成阅读 10 分钟"></textarea>
+      <div class="hint">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        可以是一句话、一个目标、一段新认知，或任何你觉得该做却没做的事。
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startChange()">
+          开始拆解
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <a class="btn btn-ghost" href="behavior.html">查看行为档案</a>
+      </div>
+    </div>
   </div>
 
-  <div class="input-card">
-    <label for="changeInput">你想改变什么？</label>
-    <textarea id="changeInput" placeholder="例如：&#10;• 我想减肥，但总是坚持不下去&#10;• 我理解了 AI 时代培训师要做整体架构，但不知道怎么落地&#10;• 每天睡前刷手机到很晚，想改成阅读 10 分钟"></textarea>
-    <div class="hint">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      可以是一句话、一个目标、一段新认知，或任何你觉得该做却没做的事。
-    </div>
-    <div class="input-actions">
-      <button class="btn btn-primary" onclick="startChange()">
-        开始拆解
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- 步骤条（进入模块后显示） -->
+  <div id="stepbar" class="stepbar hidden">
+    <div class="node" data-step="decompose"><span class="dot">1</span><span>拆解细分</span></div>
+    <div class="sep"></div>
+    <div class="node" data-step="anchor"><span class="dot">2</span><span>行动锚定</span></div>
+    <div class="sep"></div>
+    <div class="node" data-step="dashboard"><span class="dot">3</span><span>反馈强化</span></div>
+  </div>
+
+  <!-- 模块一：拆解细分 -->
+  <div id="stage-decompose" class="hidden">
+    <div class="card">
+      <h2>拆解细分</h2>
+      <div class="sub" id="decInputEcho"></div>
+
+      <label class="fld">把这件事拆成由小到大的阶梯</label>
+      <div class="hint" style="margin-top:0;margin-bottom:12px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        让「知行」先帮你拆，再把它收到今天就能做的最小一步。
+      </div>
+      <button class="btn btn-ai" id="aiDecomposeBtn" onclick="aiDecompose()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        帮我拆
       </button>
-      <a class="btn btn-ghost" href="behavior.html">查看行为档案</a>
+      <div class="ladder" id="ladderBox"></div>
+      <div id="aiDecomposeResult"></div>
+
+      <label class="fld">第一级：今天就能做的最小一步（微行动）</label>
+      <div class="tiny-row">
+        <div class="tiny-text">
+          <input type="text" id="tinyText" placeholder="例如：换上运动鞋，站在门口">
+        </div>
+        <div class="tiny-sec">
+          <input type="number" id="tinySec" placeholder="秒数" min="1" max="30">
+        </div>
+      </div>
+      <div class="hint" style="margin-top:8px;">预计用时（秒），必须 ≤ 30。<button class="btn btn-ai" id="aiSmallerBtn" onclick="aiSmaller()" style="margin-left:auto;">再小一点</button></div>
+      <div class="sec-warn" id="secWarn">这个动作超过 30 秒了，再小一点——做不到，就说明还能拆。</div>
+      <div id="aiSmallerResult"></div>
+
+      <label class="fld">你期待自己成为谁？（每次做到都给这个人投一票）</label>
+      <input type="text" id="identityInput" placeholder="例如：一个说到做到的人 / 一个照顾自己身体的人">
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="toAnchorBtn" onclick="goAnchor()">下一步 · 行动锚定 →</button>
+      </div>
     </div>
   </div>
 
-  <div class="steps">
-    <div class="step">
-      <div class="num">1</div>
-      <h3>拆解细分</h3>
-      <p>把太大的目标拆成今天就能完成的最小一步，降低复杂度，先动起来。</p>
-    </div>
-    <div class="step">
-      <div class="num">2</div>
-      <h3>行动锚定</h3>
-      <p>把微行动锚定到必然发生的日常瞬间（如早饭后），让行为被自然触发，不靠意志力。</p>
-    </div>
-    <div class="step">
-      <div class="num">3</div>
-      <h3>反馈强化</h3>
-      <p>从 AI 和环境中获得即时反馈，在反馈里巩固新的行为，沉淀成习惯与身份。</p>
+  <!-- 模块二：行动锚定 -->
+  <div id="stage-anchor" class="hidden">
+    <div class="card">
+      <h2>行动锚定</h2>
+      <div class="sub">把微行动绑到一个必然发生的日常瞬间，让它被自动触发，不靠意志力。</div>
+
+      <label class="fld">触发句式</label>
+      <div class="hint" style="margin-top:0;margin-bottom:12px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        好的锚点是你每天都会做的事，比如「早饭后」「刷牙后」。
+      </div>
+      <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:2;">
+        在我
+        <input type="text" id="anchorAfter" placeholder="早饭后" style="display:inline-block;width:160px;padding:8px 12px;font-size:16px;">
+        之后，我就
+        <input type="text" id="anchorThen" placeholder="换上运动鞋站在门口" style="display:inline-block;width:220px;padding:8px 12px;font-size:16px;">
+        。
+      </div>
+      <button class="btn btn-ai" id="aiAnchorBtn" onclick="aiFindAnchor()" style="margin-top:14px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        帮我找锚点
+      </button>
+      <div id="aiAnchorResult"></div>
+
+      <label class="fld">环境提示（可选）— 让环境替你记得</label>
+      <input type="text" id="reminderInput" placeholder="例如：把跑鞋放在玄关最显眼的位置">
+
+      <label class="fld">庆祝动作（可选）— 做完给自己一个正反馈</label>
+      <input type="text" id="celebrationInput" placeholder="例如：对自己比个耶，说一句『开始了』">
+
+      <div class="identity-vote">
+        <span class="v-emoji">🎯</span>
+        <div class="v-text">身份：<b id="anchorIdentityEcho"></b></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-amber" onclick="doFirstTime()">
+          立刻做一次
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-ghost" onclick="goDecompose()">← 返回拆</button>
+      </div>
     </div>
   </div>
 
-  <div class="notice">
-    入口 B 正在逐步完善中。现在的版本先帮你记录和拆解；完整的行为闭环（倒计时、打卡、身份投票）将陆续上线。<a href="behavior.html">先去行为档案看看 →</a>
+  <!-- 模块三：反馈强化 -->
+  <div id="stage-dashboard" class="hidden">
+    <div class="action-hero">
+      <div class="label">我的行动</div>
+      <div class="tiny" id="dashTiny"></div>
+      <div class="anchor" id="dashAnchor"></div>
+      <div class="meta">
+        <span>连续 <b id="dashStreak">0</b> 天</span>
+        <span>累计 <b id="dashTotal">0</b> 次</span>
+      </div>
+    </div>
+
+    <div class="break-banner" id="breakBanner"></div>
+
+    <div class="card">
+      <div class="btn-row" style="margin-top:0;justify-content:space-between;">
+        <button class="btn btn-primary" style="flex:1;" onclick="markDone()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          做完了
+        </button>
+        <button class="btn btn-ghost" onclick="showBlock()">今天没做到</button>
+      </div>
+
+      <div class="block-box" id="blockBox">
+        <h3>发生了什么？选一个最接近的</h3>
+        <div class="reason-grid">
+          <button class="reason" onclick="pickReason('忘了')"><b>忘了</b>压根没想起来</button>
+          <button class="reason" onclick="pickReason('太麻烦')"><b>太麻烦</b>步骤太多不想动</button>
+          <button class="reason" onclick="pickReason('不想做')"><b>不想做</b>当下没动力</button>
+          <button class="reason" onclick="pickReason('没时间')"><b>没时间</b>挤不出这 30 秒</button>
+        </div>
+        <div id="aiBlockResult"></div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="hideBlock()">← 返回</button>
+        </div>
+      </div>
+
+      <!-- 身份强化 -->
+      <div class="identity-vote">
+        <span class="v-emoji">🪪</span>
+        <div class="v-text">身份强化：每完成一次，就给「<b id="dashIdentity"></b>」投一票</div>
+        <div class="v-count" id="dashVotes">0</div>
+      </div>
+
+      <!-- 社会支持 -->
+      <div class="support-box">
+        <label class="fld" style="margin-top:22px;">社会支持 · 谁或什么能帮你</label>
+        <input type="text" id="supportInput" placeholder="输入一个人 / 工具 / 信息源，回车添加">
+        <div class="chip-row" id="supportChips"></div>
+        <div class="hint" style="margin-top:10px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          改变很少单独发生。把能支持你的人、工具或信息记下来。
+          <button class="btn btn-ai" id="aiSupportBtn" onclick="aiFindSupport()" style="margin-left:auto;">找人支持</button>
+        </div>
+        <div id="aiSupportResult"></div>
+      </div>
+
+      <div class="btn-row">
+        <a class="btn btn-ghost" href="behavior.html">查看行为档案 →</a>
+        <button class="btn btn-ghost" onclick="goAnchor()">调整锚点</button>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- 设置弹窗 -->
+<div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h3>AI 助手设置</h3>
+    <label>服务商</label>
+    <select id="cfgBrand" style="width:100%;padding:12px 14px;border:1.5px solid var(--line-2);border-radius:var(--radius-md);font-family:inherit;font-size:15px;background:var(--bg);color:var(--ink);">
+      <option value="DeepSeek">DeepSeek</option>
+      <option value="OpenAI">OpenAI</option>
+      <option value="Gemini">Gemini</option>
+    </select>
+    <label>API Key</label>
+    <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key" style="font-size:14px;">
+    <div class="row">
+      <button class="btn btn-primary" style="flex:1;" onclick="saveSettings()">保存</button>
+      <button class="btn btn-ghost" onclick="closeSettings()">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-function startChange() {
-  const val = document.getElementById('changeInput').value.trim();
-  if (!val) {
-    alert('请先写下你想改变的事');
-    return;
-  }
-  // 保存为待拆解的草稿
-  let drafts = [];
-  try { drafts = JSON.parse(localStorage.getItem('trf_change_drafts') || '[]'); } catch(e){}
-  drafts.unshift({ id: 'cd_' + Date.now(), input: val, createdAt: new Date().toISOString() });
-  localStorage.setItem('trf_change_drafts', JSON.stringify(drafts.slice(0, 20)));
-  alert('已记录：「' + val.slice(0, 30) + (val.length > 30 ? '…' : '') + '」。\n\n完整的行为拆解功能即将上线，你现在可以去行为档案查看记录。');
+/* ===================== 数据层 ===================== */
+const LS_ACTIONS = 'trf_actions';
+const LS_PROFILE = 'trf_profile';
+const LS_AI = 'trf_ai_config_v1';
+const BRAND_PROFILES = {
+  'DeepSeek': { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+  'OpenAI':   { baseUrl: 'https://api.openai.com/v1',  model: 'gpt-4o-mini' },
+  'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
+};
+
+let current = null; // 当前 Action
+
+function $(id){ return document.getElementById(id); }
+function uid(){ return 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200);
 }
+
+function getAI(){
+  let cfg; try { cfg = JSON.parse(localStorage.getItem(LS_AI)) || {}; } catch(e){ cfg = {}; }
+  const brand = cfg.brand || 'DeepSeek';
+  const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
+  return { brand, apiKey: cfg.apiKey || '', baseUrl: cfg.baseUrl || profile.baseUrl, model: cfg.model || profile.model };
+}
+function loadActions(){ try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e){ return []; } }
+function saveActions(list){ localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+function loadProfile(){ try { return JSON.parse(localStorage.getItem(LS_PROFILE)) || { identityStatements: [] }; } catch(e){ return { identityStatements: [] }; } }
+function saveProfile(p){ localStorage.setItem(LS_PROFILE, JSON.stringify(p)); }
+
+function persistAction(){
+  if (!current) return;
+  const list = loadActions();
+  const idx = list.findIndex(a => a.id === current.id);
+  if (idx >= 0) list[idx] = current; else list.unshift(current);
+  saveActions(list);
+}
+
+/* ===================== AI 调用（复用 app.html 模式） ===================== */
+async function aiCall(prompt, attempt = 1){
+  const cfg = getAI();
+  if (!cfg.apiKey){ toast('配置 API Key 后知行 AI 才会帮你（现在可手动填写）'); return null; }
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  const maxAttempts = 5;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 900 })
+    });
+    if (!res.ok){
+      if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
+        await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+        return aiCall(prompt, attempt + 1);
+      }
+      throw new Error('AI 请求失败：' + res.status);
+    }
+    return (await res.json()).choices[0].message.content;
+  } catch(e){
+    if (attempt < maxAttempts && ((e.message||'').includes('Failed to fetch') || (e.message||'').includes('aborted'))){
+      await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+      return aiCall(prompt, attempt + 1);
+    }
+    toast('AI 暂时不可用，请稍后重试或手动填写');
+    return null;
+  }
+}
+function showAI(text, html){
+  if (text == null) return;
+  html.innerHTML = '<div class="ai-msg"><div class="ai-head">知行 · 建议</div>' + escapeHtml(text).replace(/\n/g,'<br>') + '</div>';
+}
+
+/* ===================== 流程控制 ===================== */
+function showStage(stage){
+  ['input','decompose','anchor','dashboard'].forEach(s => {
+    $('stage-' + s).classList.toggle('hidden', s !== stage);
+  });
+  $('stepbar').classList.toggle('hidden', stage === 'input');
+  if (stage !== 'input'){
+    document.querySelectorAll('.stepbar .node').forEach(n => {
+      const s = n.dataset.step;
+      n.classList.toggle('active', s === stage);
+      n.classList.toggle('done', ['decompose','anchor','dashboard'].indexOf(stage) > ['decompose','anchor','dashboard'].indexOf(s));
+    });
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startChange(){
+  const val = $('changeInput').value.trim();
+  if (!val){ toast('请先写下你想改变的事'); return; }
+  current = {
+    id: uid(), createdAt: new Date().toISOString(),
+    sourceSessionId: null,
+    input: val, inputType: 'goal',
+    identity: '',
+    ladder: [], tiny: { text:'', seconds: 0 },
+    anchor: { after:'', then:'' }, reminder:'', celebration:'',
+    logs: [], streak:0, bestStreak:0, totalDone:0,
+    status: 'active', graduatedAt: null,
+    support: { people:[], tools:[], info:[] },
+    stage: 'decompose'
+  };
+  persistAction();
+  renderDecompose();
+  showStage('decompose');
+}
+
+function renderDecompose(){
+  $('decInputEcho').textContent = '想改变：' + current.input;
+  // 还原已有
+  if (current.ladder.length){
+    $('ladderBox').innerHTML = current.ladder.map(l => ladderRow(l.score, l.text)).join('');
+  }
+  if (current.tiny.text) $('tinyText').value = current.tiny.text;
+  if (current.tiny.seconds) $('tinySec').value = current.tiny.seconds;
+  if (current.identity) $('identityInput').value = current.identity;
+}
+
+function ladderRow(score, text){
+  return `<div class="lvl"><span class="score">${score}</span><input type="text" value="${escapeHtml(text)}" oninput="onLadderInput(this, ${score})"></div>`;
+}
+function onLadderInput(el, score){
+  const item = current.ladder.find(l => l.score === score);
+  if (item) item.text = el.value;
+  persistAction();
+}
+
+async function aiDecompose(){
+  const btn = $('aiDecomposeBtn'); btn.disabled = true; btn.textContent = '知行拆解中…';
+  const text = await aiCall(`你是一个帮人把改变落地的助手。用户想改变的事是：「${current.input}」。\n请把它拆成从 1 分到 100 分的阶梯，每一步比上一步更具体、更小、更接近「今天就能做」。最后一级尤其要小。\n只输出阶梯，每行一条，格式：分数|动作描述。不要评价、不要说教。`);
+  btn.disabled = false; btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我拆';
+  if (text == null) return;
+  const ladder = [];
+  text.split('\n').map(l => l.trim()).filter(Boolean).forEach(line => {
+    const m = line.split(/[|｜]\s*/);
+    if (m.length >= 2){ const sc = parseInt(m[0].replace(/[^0-9]/g,''),10); ladder.push({ score: isNaN(sc)?ladder.length+1:sc, text: m.slice(1).join('|').trim() }); }
+    else ladder.push({ score: ladder.length+1, text: line.replace(/^[0-9]+[\.\、\-\s]*/, '').trim() });
+  });
+  if (ladder.length){
+    current.ladder = ladder.slice(0, 8);
+    $('ladderBox').innerHTML = current.ladder.map(l => ladderRow(l.score, l.text)).join('');
+    // 自动把第一级填进微行动
+    const first = current.ladder[0];
+    if (first && !current.tiny.text){ $('tinyText').value = first.text; current.tiny.text = first.text; }
+    persistAction();
+    $('aiDecomposeResult').innerHTML = '';
+    toast('已生成阶梯，确认第一级微行动后继续');
+  } else {
+    showAI('没能解析出阶梯，换个说法再试，或手动在下方填写。', $('aiDecomposeResult'));
+  }
+}
+
+async function aiSmaller(){
+  const tiny = $('tinyText').value.trim();
+  if (!tiny){ toast('先在上面写一步微行动'); return; }
+  const btn = $('aiSmallerBtn'); btn.disabled = true; btn.textContent = '生成中…';
+  const text = await aiCall(`用户想做的微行动是：「${tiny}」。请把它拆成 3 个 30 秒内一定能完成的更小版本，每个都要小到不可能失败。\n只输出 3 条，每条一行，不要编号外的多余文字。`);
+  btn.disabled = false; btn.textContent = '再小一点';
+  if (text == null) return;
+  const items = text.split('\n').map(l => l.replace(/^[0-9]+[\.\、\-\s]*/, '').trim()).filter(Boolean).slice(0,3);
+  $('aiSmallerResult').innerHTML = '<div class="ai-suggestions">' + items.map(t =>
+    `<button class="ai-chip" onclick="pickTiny('${escapeHtml(t).replace(/'/g,"\\'")}')">${escapeHtml(t)}</button>`).join('') + '</div>';
+}
+function pickTiny(t){
+  $('tinyText').value = t; current.tiny.text = t; $('tinySec').value = 30; current.tiny.seconds = 30;
+  $('aiSmallerResult').innerHTML = ''; persistAction();
+  toast('已采用，记得确认秒数 ≤ 30');
+}
+
+function goAnchor(){
+  const text = $('tinyText').value.trim();
+  const sec = parseInt($('tinySec').value, 10);
+  if (!text){ toast('先写第一级微行动'); return; }
+  if (!sec || sec <= 0){ toast('填写预计秒数'); return; }
+  if (sec > 30){ $('secWarn').style.display = 'block'; return; }
+  $('secWarn').style.display = 'none';
+  current.tiny = { text, seconds: sec };
+  current.identity = $('identityInput').value.trim();
+  current.stage = 'anchor';
+  persistAction();
+  renderAnchor();
+  showStage('anchor');
+}
+
+function renderAnchor(){
+  $('anchorIdentityEcho').textContent = current.identity || '（未填写）';
+  if (current.anchor.after) $('anchorAfter').value = current.anchor.after;
+  if (current.anchor.then) $('anchorThen').value = current.anchor.then;
+  if (current.reminder) $('reminderInput').value = current.reminder;
+  if (current.celebration) $('celebrationInput').value = current.celebration;
+}
+
+async function aiFindAnchor(){
+  const btn = $('aiAnchorBtn'); btn.disabled = true; btn.textContent = '找锚点中…';
+  const text = await aiCall(`用户要培养的微行动是：「${current.tiny.text}」（约 ${current.tiny.seconds} 秒）。请基于普通人每天必然发生的日常瞬间，给出 3 个可以作为触发点的时机，让这个微行动被自动触发、不靠意志力。\n格式：在___之后。只输出 3 条。`);
+  btn.disabled = false; btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我找锚点';
+  if (text == null) return;
+  const items = text.split('\n').map(l => l.replace(/[.。\s]/g,'').replace(/^在/,'').replace(/之后.*$/,'').trim()).filter(Boolean).slice(0,3);
+  $('aiAnchorResult').innerHTML = '<div class="ai-suggestions">' + items.map(t =>
+    `<button class="ai-chip" onclick="pickAnchor('${escapeHtml(t).replace(/'/g,"\\'")}')">在我 ${escapeHtml(t)} 之后</button>`).join('') + '</div>';
+}
+function pickAnchor(a){
+  $('anchorAfter').value = a; $('aiAnchorResult').innerHTML = '';
+}
+
+function doFirstTime(){
+  const after = $('anchorAfter').value.trim();
+  const then = $('anchorThen').value.trim();
+  if (!after || !then){ toast('把触发句式补充完整'); return; }
+  current.anchor = { after, then };
+  current.reminder = $('reminderInput').value.trim();
+  current.celebration = $('celebrationInput').value.trim();
+  if (!$('identityInput').value.trim() && !current.identity){ current.identity = $('identityInput').value.trim(); }
+  current.stage = 'dashboard';
+  logCompletion(true, null, '');
+  renderDashboard();
+  showStage('dashboard');
+  toast('第一次做到了！身份票 +1');
+}
+
+/* ===================== 模块三：反馈强化 ===================== */
+function logCompletion(done, difficulty, note){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const last = (current.logs || []).slice(-1)[0];
+  if (done){
+    current.logs.push({ date: new Date().toISOString(), done: true, difficulty: difficulty||null, note: note||'' });
+    current.totalDone = (current.totalDone || 0) + 1;
+    // streak 计算
+    const lastDate = last ? new Date(last.date) : null;
+    if (lastDate){
+      const ld = new Date(lastDate); ld.setHours(0,0,0,0);
+      const diff = Math.round((today - ld) / 86400000);
+      if (diff === 1) current.streak = (current.streak || 0) + 1;       // 隔天连续
+      else if (diff > 1) current.streak = 1;                            // 中断后重开
+      // diff === 0：同一天再次完成，连续天数不变，仅累计次数增加
+    } else {
+      current.streak = 1;
+    }
+    current.bestStreak = Math.max(current.bestStreak || 0, current.streak);
+    // 身份投票
+    if (current.identity){
+      const profile = loadProfile();
+      profile.identityStatements = profile.identityStatements || [];
+      const ex = profile.identityStatements.find(s => s.text === current.identity);
+      if (ex){ ex.votes = (ex.votes||0) + 1; ex.date = new Date().toISOString(); ex.source = 'action'; }
+      else profile.identityStatements.push({ text: current.identity, votes: 1, date: new Date().toISOString(), source: 'action' });
+      saveProfile(profile);
+    }
+  } else {
+    current.logs.push({ date: new Date().toISOString(), done: false, difficulty: difficulty||null, note: note||'' });
+    current.streak = 0;
+  }
+  current.status = 'active';
+  persistAction();
+}
+
+function renderDashboard(){
+  $('dashTiny').textContent = current.tiny.text || '';
+  $('dashAnchor').textContent = (current.anchor.after && current.anchor.then)
+    ? `在我 ${current.anchor.after} 之后，我就 ${current.anchor.then}。`
+    : (current.reminder ? '环境提示：' + current.reminder : '');
+  $('dashStreak').textContent = current.streak || 0;
+  $('dashTotal').textContent = current.totalDone || 0;
+  $('dashIdentity').textContent = current.identity || '（未填写）';
+  // 身份票数
+  const profile = loadProfile();
+  const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
+  $('dashVotes').textContent = stmt ? stmt.votes : 0;
+  // 中断检测
+  const banner = $('breakBanner');
+  const last = (current.logs || []).slice(-1)[0];
+  if (last){
+    const lastDate = new Date(last.date); lastDate.setHours(0,0,0,0);
+    const diff = Math.round((new Date().setHours(0,0,0,0) - lastDate) / 86400000);
+    if (diff >= 3){
+      banner.style.display = 'block';
+      banner.innerHTML = `已经 <b>${diff}</b> 天没做到了，别急着清零。今天只做最小的一步：<b>${escapeHtml(current.tiny.text)}</b>，30 秒就够。`;
+    } else { banner.style.display = 'none'; }
+  } else { banner.style.display = 'none'; }
+  renderSupport();
+}
+
+function markDone(){
+  logCompletion(true, null, '');
+  renderDashboard();
+  const cele = current.celebration ? ' ' + current.celebration : '';
+  toast('做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
+}
+
+function showBlock(){ $('blockBox').style.display = 'block'; }
+function hideBlock(){ $('blockBox').style.display = 'none'; }
+
+async function pickReason(reason){
+  logCompletion(false, reason, '');
+  renderDashboard();
+  hideBlock();
+  const btn = event && event.target ? event.target : null;
+  const box = $('aiBlockResult');
+  const text = await aiCall(`用户因为「${reason}」没能做到微行动：「${current.tiny.text}」。\n请给 1 个不靠意志力的调整建议，让下一次更容易发生。不要说加油、坚持之类的话。最多 2 句。`);
+  if (text){
+    box.innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+    setTimeout(()=>{ box.innerHTML=''; }, 6000);
+  }
+  toast('没关系，没做到不是失败。看看上面的调整建议。');
+}
+
+/* 社会支持 */
+function renderSupport(){
+  const box = $('supportChips');
+  const all = [];
+  (current.support.people||[]).forEach(p => all.push({ type:'people', v:p }));
+  (current.support.tools||[]).forEach(p => all.push({ type:'tools', v:p }));
+  (current.support.info||[]).forEach(p => all.push({ type:'info', v:p }));
+  box.innerHTML = all.map((it, i) => `<span class="tag">${escapeHtml(it.v)}<button onclick="removeSupport(${i})">×</button></span>`).join('');
+}
+function addSupport(v, type){
+  v = (v||'').trim(); if (!v) return;
+  current.support[type] = current.support[type] || [];
+  if (!current.support[type].includes(v)) current.support[type].push(v);
+  persistAction(); renderSupport();
+}
+function removeSupport(i){
+  let all = [];
+  (current.support.people||[]).forEach(p=>all.push({type:'people',v:p}));
+  (current.support.tools||[]).forEach(p=>all.push({type:'tools',v:p}));
+  (current.support.info||[]).forEach(p=>all.push({type:'info',v:p}));
+  const it = all[i]; if (it) current.support[it.type] = current.support[it.type].filter(x => x !== it.v);
+  persistAction(); renderSupport();
+}
+$('supportInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); addSupport(e.target.value, 'people'); e.target.value=''; }
+});
+function aiFindSupport(){
+  const btn = $('aiSupportBtn'); btn.disabled = true; btn.textContent = '建议中…';
+  aiCall(`用户正在做的事：「${current.input}」，微行动：「${current.tiny.text}」。\n请建议他可以找谁（具体角色）来获得支持、以及可以说什么来开口。\n列出 2-3 条，每条格式：对象|一句可说的话。不要代写完整消息。`).then(text => {
+    btn.disabled = false; btn.textContent = '找人支持';
+    if (text == null) return;
+    const items = text.split('\n').map(l => l.trim()).filter(Boolean).slice(0,3);
+    $('aiSupportResult').innerHTML = '<div class="ai-suggestions">' + items.map(t => {
+      const parts = t.split(/[|｜]/);
+      const who = parts[0].replace(/^[0-9]+[\.\、\-\s]*/, '').trim();
+      const say = (parts[1]||'').trim();
+      return `<button class="ai-chip" onclick="addSupport('${escapeHtml(who).replace(/'/g,"\\'")}','people')">${escapeHtml(who)}${say? ' — ' + escapeHtml(say):''}</button>`;
+    }).join('') + '</div>';
+  });
+}
+
+/* ===================== 设置 ===================== */
+function openSettings(){
+  const cfg = getAI();
+  $('cfgBrand').value = cfg.brand;
+  $('cfgApiKey').value = cfg.apiKey;
+  $('settingsMask').classList.add('show');
+}
+function closeSettings(){ $('settingsMask').classList.remove('show'); }
+function saveSettings(){
+  const brand = $('cfgBrand').value;
+  const apiKey = $('cfgApiKey').value.trim();
+  localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey }));
+  closeSettings(); toast('已保存 AI 设置');
+}
+function toggleTheme(){
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  if (isDark){ root.removeAttribute('data-theme'); localStorage.setItem('trf_theme','light'); }
+  else { root.setAttribute('data-theme','dark'); localStorage.setItem('trf_theme','dark'); }
+}
+
+/* ===================== 初始化 ===================== */
+(function init(){
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (id){
+    const found = loadActions().find(a => a.id === id);
+    if (found){ current = found; const st = found.stage || 'dashboard'; if (st === 'decompose'){ renderDecompose(); showStage('decompose'); }
+      else if (st === 'anchor'){ renderAnchor(); showStage('anchor'); }
+      else { renderDashboard(); showStage('dashboard'); }
+      return;
+    }
+  }
+  showStage('input');
+})();
 </script>
 </body>
 </html>
