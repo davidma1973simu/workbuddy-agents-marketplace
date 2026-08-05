@@ -120,8 +120,19 @@
   }
   .card h2 { font-size: 21px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 6px; }
   .card .sub { font-size: 14px; color: var(--ink-3); margin-bottom: 22px; }
+  #decInputEcho { white-space: pre-line; line-height: 1.7; }
 
   label.fld { display: block; font-size: 14px; font-weight: 700; color: var(--ink-2); margin: 18px 0 10px; }
+
+  /* 认知→行为 衔接：来自「帮我清楚」的洞察上下文 */
+  .insight-context {
+    background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
+    border: 1.5px solid var(--green); border-radius: var(--radius-md);
+    padding: 16px 18px; margin-bottom: 20px;
+  }
+  .insight-context .ic-label { font-size: 12px; font-weight: 700; color: var(--green-deep); letter-spacing: .5px; margin-bottom: 8px; }
+  .insight-context .ic-text { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.7; white-space: pre-wrap; }
+  .insight-context .ic-tip { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-top: 10px; }
   .fld:first-of-type { margin-top: 0; }
   textarea, input[type=text], input[type=number] {
     width: 100%; font-family: inherit; font-size: 15.5px; line-height: 1.7; color: var(--ink);
@@ -319,7 +330,12 @@
       <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做到的计划，再一天天锚定、强化，沉淀成新的习惯和角色。</p>
     </div>
     <div class="card">
-      <label class="fld" for="changeInput">你想改变或实践什么？（可以是个大问题）</label>
+      <div id="insightContext" class="insight-context hidden">
+        <div class="ic-label">💡 你的认知起点（来自「帮我清楚」）</div>
+        <div class="ic-text" id="insightContextText"></div>
+        <div class="ic-tip">接下来，把这条洞察翻译成一个你决定去做的<strong>行为实验</strong>——这正是「决策生成」的一步：这条洞察，到底意味着你要做什么？</div>
+      </div>
+      <label class="fld" id="changeLabel" for="changeInput">你想改变或实践什么？（可以是个大问题）</label>
       <textarea id="changeInput" placeholder="例如：&#10;• 我要实践掌握小红书运营&#10;• 我要养成每天阅读 30 分钟的习惯&#10;• 我想把『AI 时代要做整体架构』这个认知真正落地"></textarea>
       <div class="hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -552,6 +568,8 @@ const BRAND_PROFILES = {
 };
 
 let current = null; // 当前 Action
+let handoffInsight = '';   // 来自「帮我清楚」的洞察（认知→行为 衔接）
+let handoffScenario = '';  // 原挑战场景名
 
 function $(id){ return document.getElementById(id); }
 function uid(){ return 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
@@ -643,7 +661,8 @@ function startChange(){
   current = {
     id: uid(), createdAt: new Date().toISOString(),
     sourceSessionId: null,
-    input: val, inputType: 'goal',
+    input: val, inputType: handoffInsight ? 'experiment' : 'goal',
+    insight: handoffInsight, source: handoffInsight ? 'clear' : 'direct', sourceScenario: handoffScenario,
     targetDays: N,
     identity: '',
     plan,
@@ -662,7 +681,11 @@ function startChange(){
 
 /* ===================== 模块一：N 天计划 ===================== */
 function renderDecompose(){
-  $('decInputEcho').textContent = '目标：' + current.input + '（用 ' + current.targetDays + ' 天实现）';
+  let echo = '目标：' + current.input + '（用 ' + current.targetDays + ' 天实现）';
+  if (current.insight){
+    echo = '基于洞察：' + current.insight.replace(/\n+/g, ' · ') + '\n' + echo;
+  }
+  $('decInputEcho').textContent = echo;
   $('planDaysEcho').textContent = current.targetDays;
   $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我生成 ' + current.targetDays + ' 天计划';
   if (current.identity) $('identityInput').value = current.identity;
@@ -1071,6 +1094,19 @@ function toggleTheme(){
       else { renderDashboard(); updateDoneBtn(); showStage('dashboard'); }
       return;
     }
+  }
+  // 认知→行为 衔接：从「帮我清楚」带入的洞察
+  handoffInsight = (params.get('insight') || '').trim();
+  handoffScenario = (params.get('scenario') || '').trim();
+  if (handoffInsight){
+    const box = $('insightContext');
+    $('insightContextText').textContent = handoffInsight;
+    box.classList.remove('hidden');
+    $('changeLabel').textContent = '这条洞察意味着你要做什么行为？（把它变成一个可实践的目标）';
+    $('changeInput').placeholder = '例如：未来 21 天，每周访谈 3 个客户来验证这个判断';
+    document.querySelector('.card .hint').innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      + ' 先定下要花多少天，把这条洞察变成一段每天都能做到的计划——下一步会按天数拆解。';
   }
   showStage('input');
 })();

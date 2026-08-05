@@ -829,6 +829,15 @@
   .btn-next:hover { background: var(--green-deep); transform: translateY(-1px); }
   .btn-next:disabled { background: var(--line); color: var(--ink-3); box-shadow: none; cursor: not-allowed; transform: none; }
 
+  /* 洞察 → 行为实验 衔接 CTA */
+  .insight-to-behavior {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
+    border: 1.5px solid var(--green); border-radius: var(--radius-md);
+    padding: 16px 18px; margin: 18px 0 6px;
+  }
+  .insight-to-behavior .itb-note { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+
   /* 进度信号 */
   .signal {
     display: inline-flex; align-items: center; gap: 7px;
@@ -1566,6 +1575,14 @@
           <div class="stat-pill"><span id="voteCount">0</span> 票</div>
           <div class="stat-pill">最近 <span id="voteDays">—</span></div>
         </div>
+      </div>
+
+      <div class="insight-to-behavior">
+        <button class="btn btn-primary" onclick="sendInsightToBehavior()" id="toBehaviorBtn">
+          把这条洞察变成一次行为实验
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="itb-note">知行会带着这条洞察，帮你设计一段「从认知到行为」的实验</span>
       </div>
 
       <div class="btn-row">
@@ -3037,6 +3054,19 @@ window.goStep = function(n) {
   }
   origGo(n);
 };
+// 把当前核心洞察作为"认知起点"带入「帮我改变」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
+function sendInsightToBehavior(){
+  const d = state.data;
+  const e = d.essence || {};
+  const nature = (e.nature || '').trim();
+  const insight = (e.insight || '').trim();
+  const scenario = (d.scenario || '').trim() || ($('outcomeScenarioName') ? $('outcomeScenarioName').textContent.trim() : '');
+  const text = (nature ? ('本质：' + nature + '\n') : '') + (insight ? ('洞察：' + insight) : '');
+  if (!text.trim()){ toast('请先回到洞察步骤，确认现象本质和新洞察'); return; }
+  const params = new URLSearchParams({ insight: text, scenario: scenario });
+  window.location.href = 'act.html?' + params.toString();
+}
+
 function listToHtml(arr) {
   const items = Array.isArray(arr) ? arr.filter(Boolean) : (arr || '').split(/\n/).map(s => s.trim()).filter(Boolean);
   if (!items.length) return '<p style="margin:0;font-size:13px;color:var(--ink-3);">—</p>';
