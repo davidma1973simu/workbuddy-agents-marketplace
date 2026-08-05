@@ -57,7 +57,6 @@
     --amber-soft: #2E2417;
     --coral: #D9714F;
     --coral-soft: #2E1E18;
-    --shadow-1: 0 1px 2px rgba(0,0,0,.3);
     --shadow-2: 0 4px 12px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
     --shadow-3: 0 8px 24px rgba(0,0,0,.5), 0 32px 64px rgba(0,0,0,.6);
   }
@@ -67,7 +66,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
     background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
   }
-  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 28px 110px; }
+  .wrap { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 0 28px 110px; }
 
   .nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
   .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
@@ -86,18 +85,18 @@
   }
   .nav-links a:hover, .nav-links button:hover { color: var(--green); background: var(--green-soft); }
 
-  .page-head { padding: 14px 0 30px; text-align: center; }
+  .page-head { padding: 14px 0 26px; text-align: center; }
   .page-head .badge {
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--amber-soft); color: var(--amber);
     border: 1px solid rgba(200,122,42,.18); padding: 8px 16px; border-radius: 999px;
     font-size: 13px; font-weight: 700; margin-bottom: 18px;
   }
-  .page-head h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
-  .page-head p { font-size: 16px; color: var(--ink-2); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+  .page-head h1 { font-size: clamp(27px, 5vw, 38px); font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+  .page-head p { font-size: 16px; color: var(--ink-2); max-width: 560px; margin: 0 auto; line-height: 1.7; }
 
   /* 步骤条 */
-  .stepbar { display: flex; align-items: center; gap: 8px; margin: 6px 0 28px; }
+  .stepbar { display: flex; align-items: center; gap: 8px; margin: 6px 0 26px; }
   .stepbar .node {
     flex: 1; display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; border-radius: var(--radius-md);
@@ -133,6 +132,15 @@
   textarea { min-height: 110px; }
 
   .hint { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+  .hint.row { justify-content: space-between; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .days-chip {
+    font-family: inherit; font-size: 14px; font-weight: 700; color: var(--ink-2);
+    background: var(--surface-2); border: 1.5px solid var(--line-2); border-radius: 999px;
+    padding: 11px 20px; cursor: pointer; transition: all .2s;
+  }
+  .days-chip:hover { border-color: var(--green); color: var(--green); }
+  .days-chip.active { background: var(--green); color: #fff; border-color: var(--green); }
 
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer; transition: all .25s var(--ease); font-family: inherit; }
   .btn-primary { background: var(--green); color: #fff; padding: 15px 28px; border-radius: 999px; box-shadow: 0 12px 32px rgba(14,107,80,.32); }
@@ -156,16 +164,31 @@
   }
   .ai-chip:hover { border-color: var(--green); background: var(--green-50); }
 
-  .ladder { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
-  .ladder .lvl { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius-sm); border: 1px solid var(--line); }
-  .ladder .lvl .score { flex-shrink: 0; width: 40px; text-align: center; font-size: 12px; font-weight: 800; color: var(--green); }
-  .ladder .lvl input { background: var(--surface); font-size: 14.5px; }
+  /* 计划列表 */
+  .plan-list { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; max-height: 520px; overflow-y: auto; padding: 2px; }
+  .day-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
+  .day-card.today { border-color: var(--green); background: var(--green-50); }
+  .day-card.done { opacity: .72; }
+  .day-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .day-num { font-size: 14px; font-weight: 800; color: var(--ink); }
+  .day-num .tag { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-soft); padding: 2px 8px; border-radius: 999px; margin-left: 8px; }
+  .day-num .tag.done { color: var(--amber); background: var(--amber-soft); }
+  .day-break { font-size: 12.5px; font-weight: 700; color: var(--ink-3); background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-family: inherit; transition: all .2s; }
+  .day-break:hover { color: var(--amber); border-color: var(--amber); }
+  .day-micro { font-size: 15px; font-weight: 600; }
+  .day-sec { font-size: 13px; color: var(--ink-3); margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+  .day-sec input { width: 78px; text-align: center; padding: 7px 8px; font-size: 14px; }
+  .day-sec .mini-hint { color: var(--coral); display: none; }
+  .day-sub { margin-top: 10px; }
+  .day-sub textarea { min-height: 64px; font-size: 14px; background: var(--surface); }
+  .day-sub .lbl { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; display: block; }
+  .day-warn { color: var(--coral); font-size: 12.5px; margin-top: 6px; display: none; }
 
-  .tiny-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .tiny-row .tiny-text { flex: 1; min-width: 240px; }
-  .tiny-row .tiny-sec { width: 130px; }
-  .tiny-row .tiny-sec input { text-align: center; }
-  .sec-warn { color: var(--coral); font-size: 13px; margin-top: 8px; display: none; }
+  /* 进度 */
+  .progress { margin-top: 4px; }
+  .progress-bar { height: 10px; background: var(--surface-2); border-radius: 999px; overflow: hidden; border: 1px solid var(--line); }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green-3), var(--green)); border-radius: 999px; transition: width .5s var(--ease); }
+  .progress-label { font-size: 13px; color: var(--ink-3); margin-top: 8px; display: flex; justify-content: space-between; }
 
   /* 行动卡（模块三） */
   .action-hero {
@@ -178,6 +201,23 @@
   .action-hero .meta { display: flex; gap: 18px; margin-top: 18px; font-size: 13px; opacity: .9; flex-wrap: wrap; }
   .action-hero .meta b { font-size: 18px; font-weight: 800; }
 
+  .sub-steps { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .sub-step { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 14.5px; color: var(--ink-2); cursor: pointer; transition: all .2s; }
+  .sub-step:hover { border-color: var(--green); }
+  .sub-step .box { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--line-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+  .sub-step.checked { color: var(--ink-3); }
+  .sub-step.checked .box { background: var(--green); border-color: var(--green); }
+  .sub-step.checked .txt { text-decoration: line-through; opacity: .7; }
+
+  .grad-card {
+    background: linear-gradient(135deg, #C87A2A 0%, #EAA052 100%); color: #fff;
+    border-radius: var(--radius-xl); padding: 30px 28px; box-shadow: 0 14px 40px rgba(200,122,42,.3); margin-bottom: 18px; text-align: center;
+  }
+  .grad-card .crown { font-size: 34px; }
+  .grad-card h3 { font-size: 22px; font-weight: 800; margin: 8px 0 10px; }
+  .grad-card p { font-size: 15px; opacity: .95; line-height: 1.7; }
+  .grad-card .id-tag { display: inline-block; margin-top: 14px; background: rgba(255,255,255,.18); padding: 8px 16px; border-radius: 999px; font-weight: 700; }
+
   .break-banner { display: none; background: var(--coral-soft); color: var(--coral); border: 1px solid rgba(192,91,60,.25); border-radius: var(--radius-md); padding: 16px 18px; font-size: 14px; margin-bottom: 18px; line-height: 1.7; }
   .break-banner b { color: var(--coral); }
 
@@ -188,10 +228,17 @@
   .reason:hover { border-color: var(--amber); background: var(--amber-soft); }
   .reason b { display: block; color: var(--ink); font-weight: 800; margin-bottom: 2px; }
 
-  .support-box { margin-top: 14px; }
+  .support-box { margin-top: 18px; }
   .support-box .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .support-box .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--amber-soft); color: var(--amber); border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600; }
   .support-box .tag button { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: .7; }
+
+  .plan-mini { margin-top: 18px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
+  .plan-mini .pm-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
+  .plan-mini .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; }
+  .pm-cell { text-align: center; font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-3); }
+  .pm-cell.done { background: var(--green-soft); color: var(--green); border-color: var(--green-light); }
+  .pm-cell.today { background: var(--green); color: #fff; border-color: var(--green); }
 
   .identity-vote { display: flex; align-items: center; gap: 12px; background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 18px; }
   .identity-vote .v-emoji { font-size: 22px; }
@@ -269,15 +316,31 @@
         入口 B · 帮我改变
       </div>
       <h1>从想明白到真正发生行为改变</h1>
-      <p>经历「拆解细分 → 行动锚定 → 反馈强化」，让知行合一，沉淀成新的习惯和角色。</p>
+      <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做到的计划，再一天天锚定、强化，沉淀成新的习惯和角色。</p>
     </div>
     <div class="card">
-      <label class="fld" for="changeInput">你想改变什么？</label>
-      <textarea id="changeInput" placeholder="例如：&#10;• 我想减肥，但总是坚持不下去&#10;• 我理解了 AI 时代培训师要做整体架构，但不知道怎么落地&#10;• 每天睡前刷手机到很晚，想改成阅读 10 分钟"></textarea>
+      <label class="fld" for="changeInput">你想改变或实践什么？（可以是个大问题）</label>
+      <textarea id="changeInput" placeholder="例如：&#10;• 我要实践掌握小红书运营&#10;• 我要养成每天阅读 30 分钟的习惯&#10;• 我想把『AI 时代要做整体架构』这个认知真正落地"></textarea>
       <div class="hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        可以是一句话、一个目标、一段新认知，或任何你觉得该做却没做的事。
+        把大问题写下来，下一步会按你设定的天数，把它拆成一段每天都能做的计划。
       </div>
+
+      <label class="fld">你希望用多少天实现行为改变？</label>
+      <div class="chip-row" id="daysChips">
+        <button class="days-chip" data-d="7" onclick="setDays(7,this)">7 天</button>
+        <button class="days-chip" data-d="14" onclick="setDays(14,this)">14 天</button>
+        <button class="days-chip active" data-d="21" onclick="setDays(21,this)">21 天</button>
+        <button class="days-chip" data-d="30" onclick="setDays(30,this)">30 天</button>
+        <button class="days-chip" data-d="60" onclick="setDays(60,this)">60 天</button>
+        <button class="days-chip" data-d="90" onclick="setDays(90,this)">90 天</button>
+      </div>
+      <div class="hint row" style="margin-top:12px;">
+        或自定义
+        <input type="number" id="daysInput" value="21" min="1" max="365" style="width:120px;">
+        天
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="startChange()">
           开始拆解
@@ -288,7 +351,7 @@
     </div>
   </div>
 
-  <!-- 步骤条（进入模块后显示） -->
+  <!-- 步骤条 -->
   <div id="stepbar" class="stepbar hidden">
     <div class="node" data-step="decompose"><span class="dot">1</span><span>拆解细分</span></div>
     <div class="sep"></div>
@@ -297,38 +360,26 @@
     <div class="node" data-step="dashboard"><span class="dot">3</span><span>反馈强化</span></div>
   </div>
 
-  <!-- 模块一：拆解细分 -->
+  <!-- 模块一：拆解细分（N 天计划） -->
   <div id="stage-decompose" class="hidden">
     <div class="card">
       <h2>拆解细分</h2>
       <div class="sub" id="decInputEcho"></div>
 
-      <label class="fld">把这件事拆成由小到大的阶梯</label>
+      <label class="fld">把这件事拆成 <b id="planDaysEcho">21</b> 天的行动计划</label>
       <div class="hint" style="margin-top:0;margin-bottom:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        让「知行」先帮你拆，再把它收到今天就能做的最小一步。
+        让「知行」先帮你排好每天的微行动；哪一天的动作偏大，就点「再拆细」把它分成几步。
       </div>
-      <button class="btn btn-ai" id="aiDecomposeBtn" onclick="aiDecompose()">
+      <button class="btn btn-ai" id="aiPlanBtn" onclick="aiGeneratePlan()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        帮我拆
+        帮我生成 21 天计划
       </button>
-      <div class="ladder" id="ladderBox"></div>
-      <div id="aiDecomposeResult"></div>
+      <div id="aiPlanResult"></div>
 
-      <label class="fld">第一级：今天就能做的最小一步（微行动）</label>
-      <div class="tiny-row">
-        <div class="tiny-text">
-          <input type="text" id="tinyText" placeholder="例如：换上运动鞋，站在门口">
-        </div>
-        <div class="tiny-sec">
-          <input type="number" id="tinySec" placeholder="秒数" min="1" max="30">
-        </div>
-      </div>
-      <div class="hint" style="margin-top:8px;">预计用时（秒），必须 ≤ 30。<button class="btn btn-ai" id="aiSmallerBtn" onclick="aiSmaller()" style="margin-left:auto;">再小一点</button></div>
-      <div class="sec-warn" id="secWarn">这个动作超过 30 秒了，再小一点——做不到，就说明还能拆。</div>
-      <div id="aiSmallerResult"></div>
+      <div class="plan-list" id="planList"></div>
 
-      <label class="fld">你期待自己成为谁？（每次做到都给这个人投一票）</label>
+      <label class="fld">你期待自己成为谁？（每完成一天都给这个人投一票）</label>
       <input type="text" id="identityInput" placeholder="例如：一个说到做到的人 / 一个照顾自己身体的人">
 
       <div class="btn-row">
@@ -341,19 +392,13 @@
   <div id="stage-anchor" class="hidden">
     <div class="card">
       <h2>行动锚定</h2>
-      <div class="sub">把微行动绑到一个必然发生的日常瞬间，让它被自动触发，不靠意志力。</div>
+      <div class="sub">给整段计划一个稳定的触发点——每天到了那个时刻，就自动开始做「当天的行动」，不靠意志力。</div>
 
-      <label class="fld">触发句式</label>
-      <div class="hint" style="margin-top:0;margin-bottom:12px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        好的锚点是你每天都会做的事，比如「早饭后」「刷牙后」。
-      </div>
+      <label class="fld">稳定触发句式</label>
       <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:2;">
         在我
         <input type="text" id="anchorAfter" placeholder="早饭后" style="display:inline-block;width:160px;padding:8px 12px;font-size:16px;">
-        之后，我就
-        <input type="text" id="anchorThen" placeholder="换上运动鞋站在门口" style="display:inline-block;width:220px;padding:8px 12px;font-size:16px;">
-        。
+        之后，我就做今天的行动。
       </div>
       <button class="btn btn-ai" id="aiAnchorBtn" onclick="aiFindAnchor()" style="margin-top:14px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -361,11 +406,17 @@
       </button>
       <div id="aiAnchorResult"></div>
 
+      <div class="hint" style="margin-top:16px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        每天要做的微行动会随计划推进自动更新：
+      </div>
+      <div id="anchorTodayEcho" style="margin-top:10px;background:var(--green-50);border:1px solid var(--green-light);border-radius:var(--radius-md);padding:14px 16px;font-size:15px;color:var(--ink-2);font-weight:600;"></div>
+
       <label class="fld">环境提示（可选）— 让环境替你记得</label>
-      <input type="text" id="reminderInput" placeholder="例如：把跑鞋放在玄关最显眼的位置">
+      <input type="text" id="reminderInput" placeholder="例如：把笔记本放在床头">
 
       <label class="fld">庆祝动作（可选）— 做完给自己一个正反馈</label>
-      <input type="text" id="celebrationInput" placeholder="例如：对自己比个耶，说一句『开始了』">
+      <input type="text" id="celebrationInput" placeholder="例如：对自己比个耶，说一句『又做到了』">
 
       <div class="identity-vote">
         <span class="v-emoji">🎯</span>
@@ -374,7 +425,7 @@
 
       <div class="btn-row">
         <button class="btn btn-amber" onclick="doFirstTime()">
-          立刻做一次
+          立刻做第 1 天
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <button class="btn btn-ghost" onclick="goDecompose()">← 返回拆</button>
@@ -384,21 +435,37 @@
 
   <!-- 模块三：反馈强化 -->
   <div id="stage-dashboard" class="hidden">
+    <div id="gradWrap" class="hidden">
+      <div class="grad-card">
+        <div class="crown">🎓</div>
+        <h3>计划完成！</h3>
+        <p id="gradText"></p>
+        <div class="id-tag" id="gradIdentity"></div>
+      </div>
+    </div>
+
     <div class="action-hero">
-      <div class="label">我的行动</div>
+      <div class="label" id="dashPhase">我的第 1 天 / 共 21 天</div>
       <div class="tiny" id="dashTiny"></div>
       <div class="anchor" id="dashAnchor"></div>
       <div class="meta">
         <span>连续 <b id="dashStreak">0</b> 天</span>
-        <span>累计 <b id="dashTotal">0</b> 次</span>
+        <span>累计 <b id="dashTotal">0</b> 天</span>
+        <span>身份票 <b id="dashVotes">0</b> 张</span>
       </div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="progText">已完成 0 / 21 天</span><span id="progPct">0%</span></div>
     </div>
 
     <div class="break-banner" id="breakBanner"></div>
 
     <div class="card">
+      <div id="subStepsBox"></div>
       <div class="btn-row" style="margin-top:0;justify-content:space-between;">
-        <button class="btn btn-primary" style="flex:1;" onclick="markDone()">
+        <button class="btn btn-primary" style="flex:1;" id="doneBtn" onclick="markDone()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           做完了
         </button>
@@ -422,8 +489,8 @@
       <!-- 身份强化 -->
       <div class="identity-vote">
         <span class="v-emoji">🪪</span>
-        <div class="v-text">身份强化：每完成一次，就给「<b id="dashIdentity"></b>」投一票</div>
-        <div class="v-count" id="dashVotes">0</div>
+        <div class="v-text">身份强化：每完成一天，就给「<b id="dashIdentity"></b>」投一票</div>
+        <div class="v-count" id="dashVotes2">0</div>
       </div>
 
       <!-- 社会支持 -->
@@ -437,6 +504,11 @@
           <button class="btn btn-ai" id="aiSupportBtn" onclick="aiFindSupport()" style="margin-left:auto;">找人支持</button>
         </div>
         <div id="aiSupportResult"></div>
+      </div>
+
+      <div class="plan-mini">
+        <div class="pm-title">计划全景 · 点任一天可回看行动</div>
+        <div class="pm-grid" id="planMini"></div>
       </div>
 
       <div class="btn-row">
@@ -508,7 +580,7 @@ function persistAction(){
   saveActions(list);
 }
 
-/* ===================== AI 调用（复用 app.html 模式） ===================== */
+/* ===================== AI 调用 ===================== */
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
   if (!cfg.apiKey){ toast('配置 API Key 后知行 AI 才会帮你（现在可手动填写）'); return null; }
@@ -518,7 +590,7 @@ async function aiCall(prompt, attempt = 1){
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
-      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 900 })
+      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 1100 })
     });
     if (!res.ok){
       if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
@@ -537,10 +609,6 @@ async function aiCall(prompt, attempt = 1){
     return null;
   }
 }
-function showAI(text, html){
-  if (text == null) return;
-  html.innerHTML = '<div class="ai-msg"><div class="ai-head">知行 · 建议</div>' + escapeHtml(text).replace(/\n/g,'<br>') + '</div>';
-}
 
 /* ===================== 流程控制 ===================== */
 function showStage(stage){
@@ -551,26 +619,40 @@ function showStage(stage){
   if (stage !== 'input'){
     document.querySelectorAll('.stepbar .node').forEach(n => {
       const s = n.dataset.step;
+      const order = ['decompose','anchor','dashboard'];
       n.classList.toggle('active', s === stage);
-      n.classList.toggle('done', ['decompose','anchor','dashboard'].indexOf(stage) > ['decompose','anchor','dashboard'].indexOf(s));
+      n.classList.toggle('done', order.indexOf(stage) > order.indexOf(s));
     });
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/* ===================== 输入阶段 ===================== */
+function setDays(d, el){
+  $('daysInput').value = d;
+  document.querySelectorAll('#daysChips .days-chip').forEach(c => c.classList.toggle('active', c === el));
+}
+
 function startChange(){
   const val = $('changeInput').value.trim();
   if (!val){ toast('请先写下你想改变的事'); return; }
+  let N = parseInt($('daysInput').value, 10);
+  if (!N || N < 1) N = 21; if (N > 365) N = 365;
+  const plan = [];
+  for (let i = 1; i <= N; i++) plan.push({ day: i, micro: '', seconds: 30, sub: [], subDone: [] });
   current = {
     id: uid(), createdAt: new Date().toISOString(),
     sourceSessionId: null,
     input: val, inputType: 'goal',
+    targetDays: N,
     identity: '',
-    ladder: [], tiny: { text:'', seconds: 0 },
-    anchor: { after:'', then:'' }, reminder:'', celebration:'',
-    logs: [], streak:0, bestStreak:0, totalDone:0,
-    status: 'active', graduatedAt: null,
-    support: { people:[], tools:[], info:[] },
+    plan,
+    anchor: { after:'' },
+    reminder: '', celebration: '',
+    currentDay: 1,
+    logs: [], streak: 0, bestStreak: 0, totalDone: 0,
+    status: 'planning', graduatedAt: null,
+    support: { people: [], tools: [], info: [] },
     stage: 'decompose'
   };
   persistAction();
@@ -578,76 +660,132 @@ function startChange(){
   showStage('decompose');
 }
 
+/* ===================== 模块一：N 天计划 ===================== */
 function renderDecompose(){
-  $('decInputEcho').textContent = '想改变：' + current.input;
-  // 还原已有
-  if (current.ladder.length){
-    $('ladderBox').innerHTML = current.ladder.map(l => ladderRow(l.score, l.text)).join('');
-  }
-  if (current.tiny.text) $('tinyText').value = current.tiny.text;
-  if (current.tiny.seconds) $('tinySec').value = current.tiny.seconds;
+  $('decInputEcho').textContent = '目标：' + current.input + '（用 ' + current.targetDays + ' 天实现）';
+  $('planDaysEcho').textContent = current.targetDays;
+  $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我生成 ' + current.targetDays + ' 天计划';
   if (current.identity) $('identityInput').value = current.identity;
+  renderPlan();
 }
 
-function ladderRow(score, text){
-  return `<div class="lvl"><span class="score">${score}</span><input type="text" value="${escapeHtml(text)}" oninput="onLadderInput(this, ${score})"></div>`;
+function renderPlan(){
+  const box = $('planList');
+  const today = current.currentDay;
+  const doneDays = new Set(current.logs.filter(l => l.done).map(l => l.day));
+  box.innerHTML = current.plan.map(d => {
+    const isToday = d.day === today && current.status !== 'graduated';
+    const isDone = doneDays.has(d.day);
+    const subHtml = (d.sub && d.sub.length)
+      ? `<div class="day-sub"><span class="lbl">这一步可再拆细（每行一步，可手动改）：</span><textarea oninput="onSubEdit(${d.day}, this.value)">${escapeHtml(d.sub.join('\n'))}</textarea></div>
+         <div class="day-warn" id="warn-${d.day}" ${d.seconds > 30 && d.sub.length ? '' : 'style="display:none"'}>已拆成 ${d.sub.length} 步，记得每步都要小到容易启动。</div>`
+      : `<div class="day-sub hidden" id="subwrap-${d.day}"><span class="lbl">这一步可再拆细（每行一步，可手动改）：</span><textarea oninput="onSubEdit(${d.day}, this.value)"></textarea></div>`;
+    return `<div class="day-card${isToday?' today':''}${isDone?' done':''}" data-day="${d.day}">
+      <div class="day-head">
+        <span class="day-num">第 ${d.day} 天${isToday?'<span class="tag">今天</span>':''}${isDone?'<span class="tag done">已做</span>':''}</span>
+        <button class="day-break" onclick="toggleSub(${d.day})">再拆细</button>
+      </div>
+      <input class="day-micro" value="${escapeHtml(d.micro)}" placeholder="今天的微行动…" oninput="onDayMicro(${d.day}, this.value)">
+      <div class="day-sec">预计 <input type="number" min="1" max="600" value="${d.seconds||30}" oninput="onDaySec(${d.day}, this.value)"> 秒（建议 ≤30）${(d.seconds>30 && !(d.sub&&d.sub.length))?'<span class="mini-hint" style="display:inline;color:var(--coral)">· 偏大，可再拆细</span>':''}</div>
+      ${subHtml}
+    </div>`;
+  }).join('');
 }
-function onLadderInput(el, score){
-  const item = current.ladder.find(l => l.score === score);
-  if (item) item.text = el.value;
+
+function onDayMicro(day, val){
+  const d = current.plan.find(p => p.day === day); if (d){ d.micro = val; persistAction(); }
+}
+function onDaySec(day, val){
+  const d = current.plan.find(p => p.day === day); if (d){ d.seconds = parseInt(val,10)||30; persistAction(); }
+}
+function toggleSub(day){
+  const wrap = $('subwrap-' + day);
+  if (wrap) { wrap.classList.toggle('hidden'); return; }
+  // 若尚无 sub 容器，动态插入
+  const d = current.plan.find(p => p.day === day); if (!d) return;
+  const card = document.querySelector(`.day-card[data-day="${day}"]`);
+  const div = document.createElement('div');
+  div.className = 'day-sub'; div.id = 'subwrap-' + day;
+  div.innerHTML = `<span class="lbl">这一步可再拆细（每行一步，可手动改）：</span><textarea oninput="onSubEdit(${day}, this.value)">${escapeHtml((d.sub||[]).join('\n'))}</textarea>`;
+  card.appendChild(div);
+}
+function onSubEdit(day, val){
+  const d = current.plan.find(p => p.day === day); if (!d) return;
+  const lines = val.split('\n').map(s => s.trim()).filter(Boolean);
+  d.sub = lines;
+  d.subDone = lines.map((_,i) => (d.subDone && d.subDone[i]) || false);
+  d.seconds = 30;
+  // 更新卡片上的偏大提示
+  const warn = $('warn-' + day);
+  const secHint = document.querySelector(`.day-card[data-day="${day}"] .day-sec .mini-hint`);
   persistAction();
+  renderPlan();
 }
 
-async function aiDecompose(){
-  const btn = $('aiDecomposeBtn'); btn.disabled = true; btn.textContent = '知行拆解中…';
-  const text = await aiCall(`你是一个帮人把改变落地的助手。用户想改变的事是：「${current.input}」。\n请把它拆成从 1 分到 100 分的阶梯，每一步比上一步更具体、更小、更接近「今天就能做」。最后一级尤其要小。\n只输出阶梯，每行一条，格式：分数|动作描述。不要评价、不要说教。`);
-  btn.disabled = false; btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我拆';
-  if (text == null) return;
-  const ladder = [];
-  text.split('\n').map(l => l.trim()).filter(Boolean).forEach(line => {
-    const m = line.split(/[|｜]\s*/);
-    if (m.length >= 2){ const sc = parseInt(m[0].replace(/[^0-9]/g,''),10); ladder.push({ score: isNaN(sc)?ladder.length+1:sc, text: m.slice(1).join('|').trim() }); }
-    else ladder.push({ score: ladder.length+1, text: line.replace(/^[0-9]+[\.\、\-\s]*/, '').trim() });
+async function aiGeneratePlan(){
+  const btn = $('aiPlanBtn'); btn.disabled = true; const orig = btn.innerHTML;
+  btn.textContent = '知行规划中…';
+  const N = current.targetDays;
+  const map = {};
+  let prevCount = -1, safety = 0;
+  while (Object.keys(map).length < N && safety < 12){
+    safety++;
+    const count = Object.keys(map).length;
+    if (count === prevCount) break;
+    prevCount = count;
+    const start = count ? Math.max(...Object.values(map).map(d=>d.day)) + 1 : 1;
+    const end = Math.min(start + 14, N);
+    const summary = Object.values(map).slice(-6).map(d => `第${d.day}天:${d.micro}`).join('；') || '（无）';
+    const prompt = `用户的大目标：「${current.input}」，计划用 ${N} 天实现行为改变/掌握。\n已规划的前 ${count} 天：${summary}\n请继续规划第 ${start}–${end} 天，每天一个微行动，循序渐进、由小到大，每天动作小到容易启动（建议 30 秒内可完成）。\n每行格式：天数|微行动（简短，≤20字，不要标点结尾）。只输出这些行，不要解释。`;
+    const text = await aiCall(prompt);
+    if (text == null) break;
+    text.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line=>{
+      const m = line.split(/[|｜]/);
+      if (m.length >= 2){
+        const dn = parseInt(m[0].replace(/[^0-9]/g,''),10);
+        const micro = m.slice(1).join('|').trim().replace(/[。.]$/,'');
+        if (dn >= start && dn <= end && micro) map[dn] = { day: dn, micro, seconds: 30, sub: [], subDone: [] };
+      }
+    });
+  }
+  // 写入 plan
+  let filled = 0;
+  current.plan.forEach(p => {
+    if (map[p.day]){ p.micro = map[p.day].micro; p.seconds = 30; filled++; }
   });
-  if (ladder.length){
-    current.ladder = ladder.slice(0, 8);
-    $('ladderBox').innerHTML = current.ladder.map(l => ladderRow(l.score, l.text)).join('');
-    // 自动把第一级填进微行动
-    const first = current.ladder[0];
-    if (first && !current.tiny.text){ $('tinyText').value = first.text; current.tiny.text = first.text; }
-    persistAction();
-    $('aiDecomposeResult').innerHTML = '';
-    toast('已生成阶梯，确认第一级微行动后继续');
+  btn.disabled = false; btn.innerHTML = orig;
+  renderPlan();
+  if (filled > 0){
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 计划草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
+    toast('已生成计划，确认后进入下一步');
   } else {
-    showAI('没能解析出阶梯，换个说法再试，或手动在下方填写。', $('aiDecomposeResult'));
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 提示</div>没能自动生成，可手动在每天的输入框填写，或重试。</div>`;
   }
 }
 
-async function aiSmaller(){
-  const tiny = $('tinyText').value.trim();
-  if (!tiny){ toast('先在上面写一步微行动'); return; }
-  const btn = $('aiSmallerBtn'); btn.disabled = true; btn.textContent = '生成中…';
-  const text = await aiCall(`用户想做的微行动是：「${tiny}」。请把它拆成 3 个 30 秒内一定能完成的更小版本，每个都要小到不可能失败。\n只输出 3 条，每条一行，不要编号外的多余文字。`);
-  btn.disabled = false; btn.textContent = '再小一点';
+async function aiBreakDay(day){
+  const d = current.plan.find(p => p.day === day); if (!d || !d.micro){ toast('先写这一步的行动'); return; }
+  const text = await aiCall(`用户要完成的一步是：「${d.micro}」。请把它拆成 3 个 30 秒内一定能完成的更小步骤，每个都要小到不可能失败。\n只输出 3 条，每条一行，不要编号外的多余文字。`);
   if (text == null) return;
   const items = text.split('\n').map(l => l.replace(/^[0-9]+[\.\、\-\s]*/, '').trim()).filter(Boolean).slice(0,3);
-  $('aiSmallerResult').innerHTML = '<div class="ai-suggestions">' + items.map(t =>
-    `<button class="ai-chip" onclick="pickTiny('${escapeHtml(t).replace(/'/g,"\\'")}')">${escapeHtml(t)}</button>`).join('') + '</div>';
+  if (items.length){
+    d.sub = items; d.subDone = items.map(()=>false); d.seconds = 30;
+    persistAction(); renderPlan();
+    toast('已拆成 ' + items.length + ' 步');
+  }
 }
-function pickTiny(t){
-  $('tinyText').value = t; current.tiny.text = t; $('tinySec').value = 30; current.tiny.seconds = 30;
-  $('aiSmallerResult').innerHTML = ''; persistAction();
-  toast('已采用，记得确认秒数 ≤ 30');
+
+function goDecompose(){
+  current.stage = 'decompose';
+  persistAction();
+  renderDecompose();
+  showStage('decompose');
 }
 
 function goAnchor(){
-  const text = $('tinyText').value.trim();
-  const sec = parseInt($('tinySec').value, 10);
-  if (!text){ toast('先写第一级微行动'); return; }
-  if (!sec || sec <= 0){ toast('填写预计秒数'); return; }
-  if (sec > 30){ $('secWarn').style.display = 'block'; return; }
-  $('secWarn').style.display = 'none';
-  current.tiny = { text, seconds: sec };
+  // 校验：每天都要有微行动
+  const empty = current.plan.filter(p => !p.micro.trim()).length;
+  if (empty > 0){ toast('还有 ' + empty + ' 天没填行动，先把计划补全'); return; }
   current.identity = $('identityInput').value.trim();
   current.stage = 'anchor';
   persistAction();
@@ -655,61 +793,66 @@ function goAnchor(){
   showStage('anchor');
 }
 
+/* ===================== 模块二：行动锚定 ===================== */
 function renderAnchor(){
   $('anchorIdentityEcho').textContent = current.identity || '（未填写）';
   if (current.anchor.after) $('anchorAfter').value = current.anchor.after;
-  if (current.anchor.then) $('anchorThen').value = current.anchor.then;
   if (current.reminder) $('reminderInput').value = current.reminder;
   if (current.celebration) $('celebrationInput').value = current.celebration;
+  renderAnchorToday();
+}
+function renderAnchorToday(){
+  const today = current.plan.find(p => p.day === current.currentDay);
+  $('anchorTodayEcho').textContent = today ? ('第 ' + today.day + ' 天行动：' + (today.micro || '（待填）')) : '计划已全部完成';
 }
 
 async function aiFindAnchor(){
+  const today = current.plan.find(p => p.day === current.currentDay);
   const btn = $('aiAnchorBtn'); btn.disabled = true; btn.textContent = '找锚点中…';
-  const text = await aiCall(`用户要培养的微行动是：「${current.tiny.text}」（约 ${current.tiny.seconds} 秒）。请基于普通人每天必然发生的日常瞬间，给出 3 个可以作为触发点的时机，让这个微行动被自动触发、不靠意志力。\n格式：在___之后。只输出 3 条。`);
+  const text = await aiCall(`用户要培养的微行动是：「${(today&&today.micro)||current.input}」（每天约 ${(today&&today.seconds)||30} 秒）。请基于普通人每天必然发生的日常瞬间，给出 3 个可以作为稳定触发点的时机，让每天到了那个时刻就自然开始。\n格式：在___之后。只输出 3 条。`);
   btn.disabled = false; btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我找锚点';
   if (text == null) return;
   const items = text.split('\n').map(l => l.replace(/[.。\s]/g,'').replace(/^在/,'').replace(/之后.*$/,'').trim()).filter(Boolean).slice(0,3);
   $('aiAnchorResult').innerHTML = '<div class="ai-suggestions">' + items.map(t =>
     `<button class="ai-chip" onclick="pickAnchor('${escapeHtml(t).replace(/'/g,"\\'")}')">在我 ${escapeHtml(t)} 之后</button>`).join('') + '</div>';
 }
-function pickAnchor(a){
-  $('anchorAfter').value = a; $('aiAnchorResult').innerHTML = '';
-}
+function pickAnchor(a){ $('anchorAfter').value = a; $('aiAnchorResult').innerHTML = ''; }
 
 function doFirstTime(){
   const after = $('anchorAfter').value.trim();
-  const then = $('anchorThen').value.trim();
-  if (!after || !then){ toast('把触发句式补充完整'); return; }
-  current.anchor = { after, then };
+  if (!after){ toast('先填稳定触发点'); return; }
+  current.anchor = { after };
   current.reminder = $('reminderInput').value.trim();
   current.celebration = $('celebrationInput').value.trim();
   if (!$('identityInput').value.trim() && !current.identity){ current.identity = $('identityInput').value.trim(); }
   current.stage = 'dashboard';
-  logCompletion(true, null, '');
+  logCompletion(true, 1, null, '');
   renderDashboard();
   showStage('dashboard');
-  toast('第一次做到了！身份票 +1');
+  toast('第 1 天做到了！身份票 +1');
 }
 
 /* ===================== 模块三：反馈强化 ===================== */
-function logCompletion(done, difficulty, note){
+function logCompletion(done, day, difficulty, note){
   const today = new Date(); today.setHours(0,0,0,0);
-  const last = (current.logs || []).slice(-1)[0];
+  const lastDone = (current.logs || []).filter(l => l.done).slice(-1)[0];
   if (done){
-    current.logs.push({ date: new Date().toISOString(), done: true, difficulty: difficulty||null, note: note||'' });
+    current.logs.push({ day, date: new Date().toISOString(), done: true, difficulty: difficulty||null, note: note||'' });
     current.totalDone = (current.totalDone || 0) + 1;
-    // streak 计算
-    const lastDate = last ? new Date(last.date) : null;
-    if (lastDate){
-      const ld = new Date(lastDate); ld.setHours(0,0,0,0);
+    if (lastDone){
+      const ld = new Date(lastDone.date); ld.setHours(0,0,0,0);
       const diff = Math.round((today - ld) / 86400000);
-      if (diff === 1) current.streak = (current.streak || 0) + 1;       // 隔天连续
-      else if (diff > 1) current.streak = 1;                            // 中断后重开
-      // diff === 0：同一天再次完成，连续天数不变，仅累计次数增加
+      if (diff === 1) current.streak = (current.streak || 0) + 1;
+      else if (diff > 1) current.streak = 1;
+      // diff === 0：同一天又完成一天，连续天数不变
     } else {
       current.streak = 1;
     }
     current.bestStreak = Math.max(current.bestStreak || 0, current.streak);
+    current.currentDay = day + 1;
+    if (current.currentDay > current.targetDays){
+      current.status = 'graduated'; current.graduatedAt = new Date().toISOString();
+    } else current.status = 'active';
     // 身份投票
     if (current.identity){
       const profile = loadProfile();
@@ -720,59 +863,134 @@ function logCompletion(done, difficulty, note){
       saveProfile(profile);
     }
   } else {
-    current.logs.push({ date: new Date().toISOString(), done: false, difficulty: difficulty||null, note: note||'' });
+    current.logs.push({ day, date: new Date().toISOString(), done: false, difficulty: difficulty||null, note: note||'' });
     current.streak = 0;
+    // currentDay 不变，仍可重试当天
   }
-  current.status = 'active';
   persistAction();
 }
 
 function renderDashboard(){
-  $('dashTiny').textContent = current.tiny.text || '';
-  $('dashAnchor').textContent = (current.anchor.after && current.anchor.then)
-    ? `在我 ${current.anchor.after} 之后，我就 ${current.anchor.then}。`
-    : (current.reminder ? '环境提示：' + current.reminder : '');
+  const doneDays = current.logs.filter(l => l.done).map(l => l.day);
+  const isGrad = current.status === 'graduated';
+  // 毕业态
+  if (isGrad){
+    $('gradWrap').classList.remove('hidden');
+    $('gradText').textContent = '你用 ' + current.targetDays + ' 天，把「' + current.input + '」从想法变成了真实的行动轨迹。';
+    $('gradIdentity').textContent = current.identity ? ('我已经是「' + current.identity + '」的人') : '新的习惯与角色已生根';
+    $('gradWrap').scrollIntoView({behavior:'smooth'});
+  } else {
+    $('gradWrap').classList.add('hidden');
+  }
+  // 当前天行动
+  const today = current.plan.find(p => p.day === current.currentDay);
+  const phase = isGrad ? ('已完成全部 ' + current.targetDays + ' 天') : ('我的第 ' + current.currentDay + ' 天 / 共 ' + current.targetDays + ' 天');
+  $('dashPhase').textContent = phase;
+  if (today){
+    $('dashTiny').textContent = today.micro || '（待填）';
+    $('dashAnchor').textContent = (current.anchor.after ? '在我 ' + current.anchor.after + ' 之后，我就做这一天的行动。' : '') + (current.reminder ? ' 环境提示：' + current.reminder : '');
+    renderSubSteps(today);
+  } else {
+    $('dashTiny').textContent = '计划已全部完成 🎉';
+    $('dashAnchor').textContent = '';
+    $('subStepsBox').innerHTML = '';
+  }
+  // 统计
   $('dashStreak').textContent = current.streak || 0;
   $('dashTotal').textContent = current.totalDone || 0;
   $('dashIdentity').textContent = current.identity || '（未填写）';
-  // 身份票数
   const profile = loadProfile();
   const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
-  $('dashVotes').textContent = stmt ? stmt.votes : 0;
+  const votes = stmt ? stmt.votes : 0;
+  $('dashVotes').textContent = votes;
+  $('dashVotes2').textContent = votes;
+  // 进度
+  const pct = Math.round((current.totalDone / current.targetDays) * 100);
+  $('progFill').style.width = pct + '%';
+  $('progText').textContent = '已完成 ' + current.totalDone + ' / ' + current.targetDays + ' 天';
+  $('progPct').textContent = pct + '%';
   // 中断检测
   const banner = $('breakBanner');
   const last = (current.logs || []).slice(-1)[0];
-  if (last){
+  if (last && !isGrad){
     const lastDate = new Date(last.date); lastDate.setHours(0,0,0,0);
     const diff = Math.round((new Date().setHours(0,0,0,0) - lastDate) / 86400000);
     if (diff >= 3){
       banner.style.display = 'block';
-      banner.innerHTML = `已经 <b>${diff}</b> 天没做到了，别急着清零。今天只做最小的一步：<b>${escapeHtml(current.tiny.text)}</b>，30 秒就够。`;
+      banner.innerHTML = `已经 <b>${diff}</b> 天没做到了，别急着清零。今天只做第 ${current.currentDay} 天的最小一步：<b>${escapeHtml(today?today.micro:'')}</b>，30 秒就够。`;
     } else { banner.style.display = 'none'; }
   } else { banner.style.display = 'none'; }
+  // 计划全景
+  renderPlanMini(doneDays);
   renderSupport();
+  updateDoneBtn();
+}
+
+function renderSubSteps(dayObj){
+  const box = $('subStepsBox');
+  if (dayObj.sub && dayObj.sub.length){
+    box.innerHTML = '<div class="sub-steps">' + dayObj.sub.map((s, i) => {
+      const checked = dayObj.subDone && dayObj.subDone[i];
+      return `<div class="sub-step${checked?' checked':''}" onclick="toggleSubStep(${dayObj.day}, ${i})">
+        <span class="box">${checked?'✓':''}</span><span class="txt">${escapeHtml(s)}</span>
+      </div>`;
+    }).join('') + '</div>';
+  } else {
+    box.innerHTML = '';
+  }
+}
+function toggleSubStep(day, i){
+  const d = current.plan.find(p => p.day === day); if (!d) return;
+  d.subDone[i] = !d.subDone[i];
+  persistAction();
+  renderSubSteps(d);
+  updateDoneBtn();
+}
+function updateDoneBtn(){
+  const today = current.plan.find(p => p.day === current.currentDay);
+  const btn = $('doneBtn');
+  if (today && today.sub && today.sub.length){
+    const allChecked = today.subDone.every(Boolean);
+    btn.disabled = !allChecked;
+    btn.style.opacity = allChecked ? '1' : '.55';
+  } else { btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+function renderPlanMini(doneDays){
+  const box = $('planMini');
+  const set = new Set(doneDays);
+  box.innerHTML = current.plan.map(p => {
+    const cls = set.has(p.day) ? 'done' : (p.day === current.currentDay && current.status !== 'graduated' ? 'today' : '');
+    return `<div class="pm-cell ${cls}" title="${(p.micro||'')}">${p.day}</div>`;
+  }).join('');
 }
 
 function markDone(){
-  logCompletion(true, null, '');
+  const today = current.plan.find(p => p.day === current.currentDay);
+  if (today && today.sub && today.sub.length){
+    if (!today.subDone.every(Boolean)){ toast('先把今天的几步都勾上'); return; }
+  }
+  logCompletion(true, current.currentDay, null, '');
   renderDashboard();
+  updateDoneBtn();
   const cele = current.celebration ? ' ' + current.celebration : '';
-  toast('做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
+  if (current.status === 'graduated'){ toast('全部完成！新的习惯和角色已生根 🎓'); }
+  else toast('第 ' + (current.currentDay - 1) + ' 天做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
 }
 
 function showBlock(){ $('blockBox').style.display = 'block'; }
 function hideBlock(){ $('blockBox').style.display = 'none'; }
 
 async function pickReason(reason){
-  logCompletion(false, reason, '');
+  const day = current.currentDay;
+  logCompletion(false, day, reason, '');
   renderDashboard();
   hideBlock();
-  const btn = event && event.target ? event.target : null;
-  const box = $('aiBlockResult');
-  const text = await aiCall(`用户因为「${reason}」没能做到微行动：「${current.tiny.text}」。\n请给 1 个不靠意志力的调整建议，让下一次更容易发生。不要说加油、坚持之类的话。最多 2 句。`);
+  const today = current.plan.find(p => p.day === day);
+  const text = await aiCall(`用户因为「${reason}」没能做到今天的行动：「${(today&&today.micro)||current.input}」。\n请给 1 个不靠意志力的调整建议，让下一次更容易发生。不要说加油、坚持之类的话。最多 2 句。`);
   if (text){
-    box.innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
-    setTimeout(()=>{ box.innerHTML=''; }, 6000);
+    $('aiBlockResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+    setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 6000);
   }
   toast('没关系，没做到不是失败。看看上面的调整建议。');
 }
@@ -805,7 +1023,7 @@ $('supportInput').addEventListener('keydown', e => {
 });
 function aiFindSupport(){
   const btn = $('aiSupportBtn'); btn.disabled = true; btn.textContent = '建议中…';
-  aiCall(`用户正在做的事：「${current.input}」，微行动：「${current.tiny.text}」。\n请建议他可以找谁（具体角色）来获得支持、以及可以说什么来开口。\n列出 2-3 条，每条格式：对象|一句可说的话。不要代写完整消息。`).then(text => {
+  aiCall(`用户正在做的事：「${current.input}」，今天的微行动：「${(current.plan.find(p=>p.day===current.currentDay)||{}).micro||''}」。\n请建议他可以找谁（具体角色）来获得支持、以及可以说什么来开口。\n列出 2-3 条，每条格式：对象|一句可说的话。不要代写完整消息。`).then(text => {
     btn.disabled = false; btn.textContent = '找人支持';
     if (text == null) return;
     const items = text.split('\n').map(l => l.trim()).filter(Boolean).slice(0,3);
@@ -845,9 +1063,12 @@ function toggleTheme(){
   const id = params.get('id');
   if (id){
     const found = loadActions().find(a => a.id === id);
-    if (found){ current = found; const st = found.stage || 'dashboard'; if (st === 'decompose'){ renderDecompose(); showStage('decompose'); }
+    if (found){
+      current = found;
+      const st = found.stage || 'dashboard';
+      if (st === 'planning' || st === 'decompose'){ renderDecompose(); showStage('decompose'); }
       else if (st === 'anchor'){ renderAnchor(); showStage('anchor'); }
-      else { renderDashboard(); showStage('dashboard'); }
+      else { renderDashboard(); updateDoneBtn(); showStage('dashboard'); }
       return;
     }
   }

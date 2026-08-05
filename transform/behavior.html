@@ -153,12 +153,21 @@
   .status-chip.graduated { color: #7A5E16; background: var(--amber-soft); }
   .status-chip.paused { color: var(--ink-3); background: var(--bg); }
   .action .input { font-size: 15px; font-weight: 700; color: var(--ink-2); margin-bottom: 12px; line-height: 1.5; }
+  .action .plan-pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    color: var(--green-deep); background: var(--green-soft); border: 1px solid #CFE9DC;
+    padding: 4px 11px; border-radius: 999px; margin-bottom: 12px;
+  }
   .action .tiny {
     position: relative; font-size: 16px; font-weight: 800; color: var(--green-deep);
     background: linear-gradient(180deg, var(--green-soft), #F1FAF5); border-left: 4px solid var(--green);
     padding: 14px 16px 14px 18px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.6;
   }
   .action .anchor { font-size: 13.5px; color: var(--ink-2); margin-top: 12px; line-height: 1.6; }
+  .action .pmini { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 12px; }
+  .action .pmini .pc { width: 18px; height: 18px; border-radius: 5px; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--ink-3); border: 1px solid var(--line); }
+  .action .pmini .pc.done { background: var(--green-soft); color: var(--green-deep); border-color: #CFE9DC; }
+  .action .pmini .pc.today { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
   .action .meta { display: flex; gap: 16px; font-size: 12.5px; color: var(--ink-3); margin-top: 14px; flex-wrap: wrap; }
   .action .foot { display: flex; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); }
   .mini {
@@ -359,6 +368,20 @@ function renderActions() {
     const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
     const lastLog = (a.logs || []).slice(-1)[0];
     const lastDate = lastLog ? fmtDateShort(lastLog.date) : fmtDateShort(a.createdAt);
+    // 计划信息
+    const N = a.targetDays || 0;
+    const totalDone = a.totalDone || 0;
+    const plan = a.plan || [];
+    const curDay = a.currentDay || 1;
+    const doneDays = (a.logs || []).filter(l => l.done).map(l => l.day);
+    const doneSet = new Set(doneDays);
+    const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro
+                     : (plan.length ? plan[plan.length - 1].micro : ((a.tiny && a.tiny.text) || ''));
+    const microText = status === 'graduated' ? '已完成全部 ' + N + ' 天计划 🎓' : (curMicro || '');
+    const pmini = (N && N <= 60) ? `<div class="pmini">${plan.map(p => {
+      const cls = doneSet.has(p.day) ? 'done' : (p.day === curDay && status !== 'graduated' ? 'today' : '');
+      return `<span class="pc ${cls}">${p.day}</span>`;
+    }).join('')}</div>` : (N ? `<div class="pmini"><span class="pc done">✓ ${totalDone}</span><span class="pc today">${N}</span></div>` : '');
     return `
     <div class="action" data-id="${a.id}">
       <div class="row1">
@@ -369,12 +392,14 @@ function renderActions() {
         <span class="status-chip ${statusClass}">${statusText}</span>
       </div>
       <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
-      <div class="tiny">${escapeHtml((a.tiny && a.tiny.text) || '')}</div>
-      ${a.anchor ? `<div class="anchor">在我 ${escapeHtml(a.anchor.after)} 之后，我就 ${escapeHtml(a.anchor.then)}。</div>` : ''}
+      ${N ? `<span class="plan-pill">📅 ${N} 天计划 · 已完成 ${totalDone}/${N}</span>` : ''}
+      <div class="tiny">${escapeHtml(microText)}</div>
+      ${a.anchor && a.anchor.after ? `<div class="anchor">在我 ${escapeHtml(a.anchor.after)} 之后，我就做当天的行动。</div>` : ''}
+      ${pmini}
       <div class="meta">
         <span>连续 ${a.streak || 0} 天</span>
-        <span>累计 ${a.totalDone || 0} 次</span>
-        <span>身份票 ${a.totalDone || 0} 张</span>
+        <span>累计 ${totalDone} 次</span>
+        <span>身份票 ${totalDone} 张</span>
       </div>
       <div class="foot">
         <a class="mini solid" href="act.html?id=${a.id}">
