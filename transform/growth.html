@@ -98,15 +98,92 @@
   .toolbar .act.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
   .toolbar .act.solid:hover { background: var(--green); }
 
-  /* 区块导航 */
-  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
-  .tabs a {
-    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
-    font-size: 13px; font-weight: 600; color: var(--ink-2);
-    padding: 9px 14px; border-radius: 999px; background: var(--surface);
-    border: 1px solid var(--line); transition: all .2s;
+  /* 档案区域 */
+  .archive-section { margin-top: 32px; }
+  .archive-head {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 4px 18px;
   }
-  .tabs a:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .archive-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .archive-section.cog .archive-icon {
+    background: linear-gradient(135deg, var(--green-soft), #D6EFE2); color: var(--green-deep);
+    box-shadow: 0 4px 14px rgba(29,158,117,.18);
+  }
+  .archive-section.beh .archive-icon {
+    background: linear-gradient(135deg, var(--amber-soft), #F8E4C5); color: var(--amber);
+    box-shadow: 0 4px 14px rgba(217,123,41,.18);
+  }
+  .archive-head h2 { font-size: 22px; font-weight: 800; letter-spacing: -.5px; line-height: 1.3; }
+  .archive-head p { font-size: 13px; color: var(--ink-3); margin-top: 3px; line-height: 1.5; }
+
+  /* 紧凑统计条 */
+  .stat-strip {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; margin: 18px 0 6px;
+    box-shadow: 0 1px 2px rgba(30,42,38,.03);
+  }
+  .stat-strip .item {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-2); font-weight: 600;
+  }
+  .stat-strip .num { font-size: 16px; font-weight: 800; color: var(--green-deep); }
+  .stat-strip .sep { color: var(--line); margin: 0 2px; }
+
+  /* 可展开卡（accordion） */
+  .expand-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    margin-bottom: 12px; overflow: hidden;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .expand-card.open { box-shadow: 0 4px 16px rgba(30,42,38,.06); }
+  .expand-card.open.cog { border-color: rgba(29,158,117,.25); }
+  .expand-card.open.beh { border-color: rgba(217,123,41,.25); }
+  .expand-head {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; padding: 16px 20px;
+    background: transparent; border: none; cursor: pointer;
+    text-align: left; font-family: inherit; color: inherit;
+    transition: background .2s;
+  }
+  .expand-head:hover { background: var(--bg); }
+  .expand-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 19px; flex-shrink: 0;
+    background: var(--green-soft); color: var(--green-deep);
+  }
+  .expand-card.beh .expand-icon { background: var(--amber-soft); color: var(--amber); }
+  .expand-card.open.cog .expand-icon { background: var(--green); color: #fff; }
+  .expand-card.open.beh .expand-icon { background: var(--amber); color: #fff; }
+  .expand-title { flex: 1; min-width: 0; }
+  .expand-name { font-size: 15.5px; font-weight: 700; color: var(--ink); }
+  .expand-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; }
+  .expand-count {
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    background: var(--bg); color: var(--ink-2); border: 1px solid var(--line); flex-shrink: 0;
+  }
+  .expand-card.open.cog .expand-count { background: var(--green-soft); color: var(--green-deep); border-color: rgba(29,158,117,.2); }
+  .expand-card.open.beh .expand-count { background: var(--amber-soft); color: #8B5A1B; border-color: rgba(217,123,41,.2); }
+  .expand-chevron { color: var(--ink-3); flex-shrink: 0; transition: transform .3s var(--ease); }
+  .expand-card.open .expand-chevron { transform: rotate(180deg); color: var(--green-deep); }
+  .expand-card.beh.open .expand-chevron { color: var(--amber); }
+  /* body 网格 0fr→1fr 平滑展开 */
+  .expand-body {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows .35s cubic-bezier(.16,1,.3,1);
+  }
+  .expand-card.open .expand-body { grid-template-rows: 1fr; }
+  .expand-body > .inner { overflow: hidden; }
+  .expand-card.open .expand-body > .inner { padding: 4px 20px 20px; }
+  .expand-empty {
+    padding: 28px 20px; text-align: center; color: var(--ink-3); font-size: 13.5px;
+  }
+  .expand-empty a { color: var(--green); text-decoration: none; font-weight: 700; }
 
   /* 身份英雄卡 */
   .identity-card {
@@ -302,52 +379,86 @@
     <button class="act" onclick="openSettings()">AI 设置</button>
   </div>
 
-  <div class="tabs">
-    <a href="#identity">🪪 身份</a>
-    <a href="#models">🧠 认知模型</a>
-    <a href="#insights">💡 洞察库</a>
-    <a href="#experiments">🧪 行为实验</a>
-    <a href="#patterns">🔍 模式识别</a>
-  </div>
-
-  <!-- 身份 -->
+  <!-- 顶部：身份 + 紧凑统计条 -->
   <div id="identityArea" style="scroll-margin-top:14px;"></div>
+  <div class="stat-strip" id="statsArea"></div>
 
-  <!-- 统计 -->
-  <div class="stats" id="statsArea"></div>
+  <!-- 认知档案 -->
+  <section class="archive-section cog">
+    <div class="archive-head">
+      <div class="archive-icon">🧠</div>
+      <div>
+        <h2>认知档案</h2>
+        <p>每一次想清楚，沉淀出的长期认知资产</p>
+      </div>
+    </div>
 
-  <!-- 认知模型 -->
-  <div class="section-title" id="models">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    认知模型 Mental Model
-    <span class="sec-sub">复盘后沉淀的新认知框架</span>
-  </div>
-  <div id="modelList"></div>
+    <div class="expand-card cog open" data-section="models">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">📐</span>
+        <span class="expand-title">
+          <span class="expand-name">认知模型 Mental Model</span>
+          <span class="expand-sub">复盘后沉淀的新认知框架</span>
+        </span>
+        <span class="expand-count" id="modelsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="modelList"></div></div></div>
+    </div>
 
-  <!-- 洞察库 -->
-  <div class="section-title" id="insights">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    洞察库 Insight Library
-    <span class="sec-sub">每一次想清楚的核心认知</span>
-  </div>
-  <div class="filter-row" id="tagFilters"></div>
-  <div id="insightList"></div>
+    <div class="expand-card cog" data-section="insights">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">💡</span>
+        <span class="expand-title">
+          <span class="expand-name">洞察库 Insight Library</span>
+          <span class="expand-sub">每一次想清楚的核心认知</span>
+        </span>
+        <span class="expand-count" id="insightsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner">
+        <div class="filter-row" id="tagFilters"></div>
+        <div id="insightList"></div>
+      </div></div>
+    </div>
+  </section>
 
-  <!-- 行为实验 -->
-  <div class="section-title" id="experiments">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-    行为实验 Behavior Experiment
-    <span class="sec-sub">从认知到行动的转化记录</span>
-  </div>
-  <div id="actionList"></div>
+  <!-- 行为档案 -->
+  <section class="archive-section beh">
+    <div class="archive-head">
+      <div class="archive-icon">🧪</div>
+      <div>
+        <h2>行为档案</h2>
+        <p>每一次做到，沉淀出的长期行为资产</p>
+      </div>
+    </div>
 
-  <!-- 模式识别 -->
-  <div class="section-title" id="patterns">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-7 4 14 2-7h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    模式识别 Pattern Recognition
-    <span class="sec-sub">知行跨时间发现的重复模式</span>
-  </div>
-  <div id="patternArea"></div>
+    <div class="expand-card beh open" data-section="experiments">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">⚡</span>
+        <span class="expand-title">
+          <span class="expand-name">行为实验 Behavior Experiment</span>
+          <span class="expand-sub">从认知到行动的转化记录</span>
+        </span>
+        <span class="expand-count" id="experimentsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="actionList"></div></div></div>
+    </div>
+
+    <div class="expand-card beh" data-section="patterns">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">🔍</span>
+        <span class="expand-title">
+          <span class="expand-name">模式识别 Pattern Recognition</span>
+          <span class="expand-sub">知行跨时间发现的重复模式</span>
+        </span>
+        <span class="expand-count" id="patternsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
+    </div>
+  </section>
 </div>
 
 <!-- 设置弹窗 -->
@@ -446,13 +557,14 @@ function renderIdentity(){
     map.set(s.text, it);
   });
   const list = Array.from(map.values()).sort((a,b) => (b.votes - a.votes) || (new Date(b.date) - new Date(a.date)));
-  area.innerHTML = list.slice(0,3).map(it => `
+  const top = list[0];
+  const rest = list.slice(1);
+  area.innerHTML = `
     <div class="identity-card">
-      <div class="k">我期待成为 · 正在成为</div>
-      <div class="v">「<em>${escapeHtml(it.text)}</em>」的人</div>
-      <div class="count">已投 ${it.votes} 票 · 最近 ${fmtDate(it.date)}</div>
-    </div>
-  `).join('');
+      <div class="k">我正在成为</div>
+      <div class="v">「<em>${escapeHtml(top.text)}</em>」的人</div>
+      <div class="count">已投 ${top.votes} 票${rest.length ? ' · 还有 ' + rest.length + ' 个身份在累积中' : ' · 你正在成为这个人'}</div>
+    </div>`;
 }
 
 /* ===================== 统计 ===================== */
@@ -462,14 +574,33 @@ function renderStats(){
   const graduated = actions.filter(a => a.status === 'graduated').length;
   const totalDone = actions.reduce((a,b) => a + (b.totalDone || 0), 0);
   const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
+  const active = actions.filter(a => a.status === 'active').length;
   $('statsArea').innerHTML = `
-    <div class="stat"><div class="num">${archive.length}</div><div class="lbl">认知洞察</div></div>
-    <div class="stat"><div class="num">${actions.length}</div><div class="lbl">行为实验</div></div>
-    <div class="stat"><div class="num">${graduated}</div><div class="lbl">已毕业</div></div>
-    <div class="stat"><div class="num">${bestStreak}</div><div class="lbl">最长连续</div></div>
-    <div class="stat"><div class="num">${totalDone}</div><div class="lbl">累计做到</div></div>
-    <div class="stat"><div class="num">${actions.filter(a => a.status === 'active').length}</div><div class="lbl">进行中</div></div>
+    <span class="item"><span class="num">${archive.length}</span>认知洞察</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${actions.length}</span>行为实验</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${graduated}</span>已毕业</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${active}</span>进行中</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${bestStreak}</span>最长连续</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${totalDone}</span>累计做到</span>
   `;
+  // 设置四个展开卡的计数徽章
+  const m = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim())).length;
+  $('modelsCount').textContent = m;
+  $('insightsCount').textContent = archive.length;
+  $('experimentsCount').textContent = actions.length;
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  $('patternsCount').textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
+}
+
+/* ===================== 展开 / 收起 ===================== */
+function toggleExpand(head){
+  const card = head.closest('.expand-card');
+  card.classList.toggle('open');
 }
 
 /* ===================== 认知模型（复盘产出） ===================== */
@@ -478,9 +609,7 @@ function renderModels(){
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
   const box = $('modelList');
   if (!models.length){
-    box.innerHTML = `<div class="empty"><div class="big">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-    </div>还没有沉淀的认知模型。<br>完成一次「帮我清楚」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「帮我清楚」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
     return;
   }
   box.innerHTML = models.map(s => {
@@ -511,13 +640,11 @@ function renderInsights(){
   let archive = loadArchive();
   const box = $('insightList');
   if (!archive.length){
-    box.innerHTML = `<div class="empty"><div class="big">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1D9E75" stroke-width="2"/><path d="M12 7v5l3 3" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-    </div>还没有洞察。<br>每一次「帮我清楚」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「帮我清楚」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
-  if (!archive.length){ box.innerHTML = '<div class="empty">该标签下还没有洞察。</div>'; return; }
+  if (!archive.length){ box.innerHTML = '<div class="expand-empty">该标签下还没有洞察。</div>'; return; }
   box.innerHTML = archive.map(s => {
     const e = s.essence || {};
     const nature = (e.nature || '').trim();
@@ -539,9 +666,7 @@ function renderActions(){
   const actions = loadActions();
   const box = $('actionList');
   if (!actions.length){
-    box.innerHTML = `<div class="empty"><div class="big">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="#1D9E75" stroke-width="2" stroke-linejoin="round"/></svg>
-    </div>还没有行为实验。<br>每一次「帮我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「帮我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
     return;
   }
   box.innerHTML = actions.map(a => {
@@ -605,9 +730,7 @@ function renderPatterns(){
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="empty"><div class="big">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-7 4 14 2-7h6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>还没有足够的数据发现模式。<br>先完成几次「帮我清楚」或「帮我改变」，知行才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
+    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「帮我清楚」或「帮我改变」，知行才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">

@@ -292,6 +292,94 @@
     .reason-grid { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* ===== App.html 同款布局：左侧步骤导航 / 主面板 / 右侧工具卡 ===== */
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
+  .back, .theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--ink-2); font-size: 14px;
+    padding: 9px 15px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line);
+    font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .back:hover, .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
+
+  /* 步骤条（桌面端垂直 / 移动端水平） */
+  .path { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; position: relative; }
+  .path::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 14px; height: 2px;
+    background: var(--line); z-index: 0;
+  }
+  .path::after {
+    content: ''; position: absolute; left: 0; top: 14px; height: 2px; width: 0;
+    background: var(--green); z-index: 0;
+    transition: width .5s cubic-bezier(.16,1,.3,1);
+  }
+  .path[data-progress="2"]::after { width: 50%; }
+  .path[data-progress="3"]::after { width: 100%; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; }
+  .p-dot {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--line); color: var(--ink-3);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 13px;
+    transition: all .25s;
+  }
+  .p-node.active .p-dot { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 0 0 5px rgba(29,158,117,.15); }
+  .p-node.done .p-dot { background: var(--green); border-color: var(--green); color: #fff; }
+  .p-node .p-label { font-size: 12.5px; color: var(--ink-3); font-weight: 500; white-space: nowrap; }
+  .p-node.active .p-label { color: var(--green-deep); font-weight: 700; }
+  .p-node.done .p-label { color: var(--ink-2); }
+
+  /* 桌面端三栏 */
+  .app-aside { display: none; }
+  @media (min-width: 900px) {
+    .wrap { max-width: 1280px; display: grid; grid-template-columns: 130px minmax(0, 1fr) 280px; gap: 22px; align-items: start; padding-top: 24px; }
+    .topbar { grid-column: 1 / -1; margin-bottom: 14px; }
+    .path { grid-column: 1; grid-row: 2; flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 0; padding-top: 6px; position: sticky; top: 20px; align-self: start; }
+    .path::before { top: 18px; bottom: 18px; left: 19px; right: auto; width: 2px; height: auto; }
+    .path::after { top: 18px; left: 19px; width: 2px; height: 0; }
+    .path[data-progress="2"]::after { height: 44%; }
+    .path[data-progress="3"]::after { height: 100%; }
+    .p-node { flex-direction: row; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 10px; transition: background .2s; }
+    .p-node.active { background: var(--green-soft); }
+    .p-node .p-label { font-size: 13.5px; }
+    .p-dot { width: 34px; height: 34px; }
+    .app-panel { grid-column: 2; grid-row: 2; min-width: 0; }
+    .app-aside { display: block; grid-column: 3; grid-row: 2; position: sticky; top: 20px; align-self: start; }
+    .stepbar { display: none; } /* 桌面端隐藏原水平步骤条，用左侧 rail 替代 */
+  }
+  @media (min-width: 1100px) {
+    .wrap { grid-template-columns: 150px minmax(0, 1fr) 320px; gap: 32px; padding: 28px 32px 100px; }
+    .p-node .p-label { font-size: 14px; }
+    .p-dot { width: 36px; height: 36px; }
+  }
+  @media (min-width: 1280px) {
+    .wrap { grid-template-columns: 170px minmax(0, 1fr) 340px; gap: 40px; }
+  }
+
+  /* 右侧工具卡 */
+  .aside-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 16px 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .aside-title { font-size: 12px; font-weight: 800; color: var(--green-deep); letter-spacing: .6px; margin-bottom: 10px; }
+  .aside-insight { font-size: 13.5px; color: var(--ink); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+  .aside-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--ink-2); padding: 6px 0; }
+  .aside-row b { color: var(--green-deep); font-size: 15px; font-weight: 800; }
+
+  /* 浮动档案 fab */
+  .fab-archive {
+    position: fixed; right: 22px; bottom: 22px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
+    padding: 14px 22px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 12px 32px rgba(14,107,80,.38); transition: all .25s var(--ease); font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); }
+  @media (max-width: 720px) { .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; } }
 </style>
 <script>
   (function(){
@@ -302,31 +390,41 @@
 </head>
 <body>
 <div class="wrap">
-  <nav class="nav">
-    <a class="nav-brand" href="index.html">
-      <div class="nav-mark">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
-        </svg>
-      </div>
-      <span class="nav-name">Transform</span>
+  <div class="topbar">
+    <a class="back" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      首页
     </a>
-    <div class="nav-links">
-      <a href="growth.html#insights">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-        认知档案
-      </a>
-      <a href="growth.html#experiments">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
-        行为档案
-      </a>
-      <button onclick="openSettings()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-        设置
-      </button>
+    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
+  </div>
+
+  <!-- 左侧步骤导航（桌面垂直 / 移动水平） -->
+  <div class="path" id="stepsBar" data-progress="1">
+    <div class="p-node" data-step="decompose">
+      <div class="p-dot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </div>
+      <span class="p-label">拆解细分</span>
     </div>
-  </nav>
+    <div class="p-node" data-step="anchor">
+      <div class="p-dot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 8v8m-4-4h8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+      </div>
+      <span class="p-label">行动锚定</span>
+    </div>
+    <div class="p-node" data-step="dashboard">
+      <div class="p-dot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="p-label">反馈强化</span>
+    </div>
+  </div>
+
+  <!-- 主面板（包含 4 个 stage：input/decompose/anchor/dashboard） -->
+  <div class="app-panel">
 
   <!-- 初始输入页 -->
   <div id="stage-input">
@@ -374,15 +472,6 @@
         <a class="btn btn-ghost" href="growth.html#experiments">查看行为档案</a>
       </div>
     </div>
-  </div>
-
-  <!-- 步骤条 -->
-  <div id="stepbar" class="stepbar hidden">
-    <div class="node" data-step="decompose"><span class="dot">1</span><span>拆解细分</span></div>
-    <div class="sep"></div>
-    <div class="node" data-step="anchor"><span class="dot">2</span><span>行动锚定</span></div>
-    <div class="sep"></div>
-    <div class="node" data-step="dashboard"><span class="dot">3</span><span>反馈强化</span></div>
   </div>
 
   <!-- 模块一：拆解细分（N 天计划） -->
@@ -576,7 +665,26 @@
       </div>
     </div>
   </div>
-</div>
+</div>  <!-- end app-panel -->
+
+<aside class="app-aside">
+  <div class="aside-card">
+    <div class="aside-title">🎯 锚点提醒</div>
+    <div class="aside-insight" id="asideAnchor">完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。</div>
+  </div>
+  <div class="aside-card">
+    <div class="aside-title">📈 当前进展</div>
+    <div class="aside-insight" id="asideProgress">完成首次打卡后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。</div>
+  </div>
+</aside>
+
+</div>  <!-- end wrap -->
+
+<!-- 浮动档案 -->
+<a class="fab-archive" href="growth.html#experiments" title="随时查看行为档案">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
+  行为档案
+</a>
 
 <!-- 设置弹窗 -->
 <div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
@@ -677,15 +785,40 @@ function showStage(stage){
     $('stage-' + s).classList.toggle('hidden', s !== stage);
   });
   $('stepbar').classList.toggle('hidden', stage === 'input');
-  if (stage !== 'input'){
-    document.querySelectorAll('.stepbar .node').forEach(n => {
-      const s = n.dataset.step;
-      const order = ['decompose','anchor','dashboard'];
-      n.classList.toggle('active', s === stage);
-      n.classList.toggle('done', order.indexOf(stage) > order.indexOf(s));
-    });
-  }
+  updatePath(stage);
+  updateAside(stage);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updatePath(stage){
+  const bar = $('stepsBar'); if (!bar) return;
+  // 步骤映射：input/decompose → 拆解细分；anchor → 行动锚定；dashboard → 反馈强化
+  const map = { input: 'decompose', decompose: 'decompose', anchor: 'anchor', dashboard: 'dashboard' };
+  const order = ['decompose', 'anchor', 'dashboard'];
+  const currentStep = map[stage] || 'decompose';
+  const idx = order.indexOf(currentStep);
+  bar.dataset.progress = (idx + 1);
+  document.querySelectorAll('#stepsBar .p-node').forEach(n => {
+    const s = n.dataset.step;
+    n.classList.toggle('active', s === currentStep);
+    n.classList.toggle('done', order.indexOf(s) < idx);
+  });
+}
+
+function updateAside(stage){
+  const a = $('asideAnchor'), p = $('asideProgress');
+  if (!a || !p) return;
+  if (!current){ a.innerHTML = '完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。'; p.innerHTML = '完成首次打卡后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。'; return; }
+  if (current.anchor && current.anchor.after){
+    a.innerHTML = '稳定触发点：<b style="color:var(--green-deep)">在我 ' + escapeHtml(current.anchor.after) + ' 之后，我就做这一天的行动。</b>';
+  } else {
+    a.innerHTML = '尚未设置触发点。完成「行动锚定」后，这里会自动显示。';
+  }
+  if (stage === 'dashboard' || current.status === 'graduated' || (current.logs && current.logs.length)){
+    p.innerHTML = '连续 <b>' + (current.streak || 0) + '</b> 天 · 累计 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> 天 · 身份票 <b>' + (current.totalDone || 0) + '</b> 张';
+  } else {
+    p.innerHTML = '开始第一次打卡后，这里会实时显示你的连续天数、累计天数与身份票。';
+  }
 }
 
 /* ===================== 输入阶段 ===================== */
