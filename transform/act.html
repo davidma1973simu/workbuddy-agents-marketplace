@@ -318,8 +318,9 @@
     background: var(--green); z-index: 0;
     transition: width .5s cubic-bezier(.16,1,.3,1);
   }
-  .path[data-progress="2"]::after { width: 50%; }
-  .path[data-progress="3"]::after { width: 100%; }
+  .path[data-progress="2"]::after { width: 33%; }
+  .path[data-progress="3"]::after { width: 66%; }
+  .path[data-progress="4"]::after { width: 100%; }
   .p-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; }
   .p-dot {
     width: 30px; height: 30px; border-radius: 50%;
@@ -341,8 +342,9 @@
     .path { grid-column: 1; grid-row: 2; flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 0; padding-top: 6px; position: sticky; top: 20px; align-self: start; }
     .path::before { top: 18px; bottom: 18px; left: 19px; right: auto; width: 2px; height: auto; }
     .path::after { top: 18px; left: 19px; width: 2px; height: 0; }
-    .path[data-progress="2"]::after { height: 44%; }
-    .path[data-progress="3"]::after { height: 100%; }
+    .path[data-progress="2"]::after { height: 33%; }
+    .path[data-progress="3"]::after { height: 66%; }
+    .path[data-progress="4"]::after { height: 100%; }
     .p-node { flex-direction: row; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 10px; transition: background .2s; }
     .p-node.active { background: var(--green-soft); }
     .p-node .p-label { font-size: 13.5px; }
@@ -380,6 +382,37 @@
   }
   .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); }
   @media (max-width: 720px) { .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; } }
+
+  /* 知行拟人化头像 + 首次引导弹窗（与 app.html 同款） */
+  .zhx-avatar {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(14,107,80,.35); color: #fff;
+  }
+  .zhx-avatar svg { width: 17px; height: 17px; }
+  .onboard-mask {
+    position: fixed; inset: 0; z-index: 90; background: rgba(20,30,27,.55);
+    backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .onboard-mask.show { display: flex; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .onboard-card {
+    background: var(--surface); width: 100%; max-width: 420px; border-radius: var(--radius-xl);
+    box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; animation: pop .32s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(.95) translateY(10px); } to { opacity: 1; transform: none; } }
+  .onboard-visual { height: 122px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--green-deep), var(--green)); }
+  .onboard-visual .zhx-avatar { width: 66px; height: 66px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+  .onboard-visual .zhx-avatar svg { width: 38px; height: 38px; }
+  .onboard-body { padding: 22px 24px 6px; }
+  .onboard-h { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+  .onboard-p { font-size: 14px; color: var(--ink-2); line-height: 1.75; }
+  .onboard-dots { display: flex; gap: 7px; justify-content: center; padding: 16px 0 4px; }
+  .onboard-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all .2s; }
+  .onboard-dots i.on { background: var(--green); width: 20px; border-radius: 4px; }
+  .onboard-foot { display: flex; padding: 8px 24px 22px; gap: 10px; }
+  .onboard-foot .btn { flex: 1; }
 </style>
 <script>
   (function(){
@@ -420,6 +453,12 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>
       <span class="p-label">反馈强化</span>
+    </div>
+    <div class="p-node" data-step="reflection">
+      <div class="p-dot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg>
+      </div>
+      <span class="p-label">产出</span>
     </div>
   </div>
 
@@ -558,37 +597,12 @@
       </div>
     </div>
 
-    <!-- 复盘：行为改变的执行结果（评估反馈段，闭合行为循环） -->
-    <div id="reflectWrap" class="hidden">
-      <div class="card reflect-card">
-        <h2>复盘 · 把这次改变沉淀下来</h2>
-        <div class="sub" id="reflectContextB"></div>
-        <div class="hint" style="margin-top:0;margin-bottom:16px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          五个问题想清楚，这次行为实验才算真正结束：发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。
-        </div>
-        <label class="fld">发生了什么？</label>
-        <textarea id="reBWhat" class="reflect-q" placeholder="例如：21 天里做到了 X 天，中途有 X 次没做到，第 X 天最吃力…"></textarea>
-        <label class="fld">为什么？</label>
-        <textarea id="reBWhy" class="reflect-q" placeholder="为什么这件事发生 / 没发生？阻力在哪里？"></textarea>
-        <label class="fld">学到了什么？</label>
-        <textarea id="reBLearned" class="reflect-q" placeholder="这次实验教会了我什么？"></textarea>
-        <label class="fld">做了什么不同的？</label>
-        <textarea id="reBDifferent" class="reflect-q" placeholder="和过去的我相比，这一次哪里不一样？"></textarea>
-        <label class="fld">改变了什么？</label>
-        <textarea id="reBChanged" class="reflect-q" placeholder="我的行为、习惯或对自己的看法，发生了什么变化？"></textarea>
-        <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-          <button class="btn btn-ai" onclick="aiReflectB()">知行帮我复盘</button>
-        </div>
-        <div id="reBResultBox" class="ai-out hidden"></div>
-        <label class="fld">这次行为实验的结果是</label>
-        <textarea id="reBResultText" class="reflect-q" placeholder="用一句话总结行为改变的执行结果…"></textarea>
-        <label class="fld">新的习惯，融入在哪一步？</label>
-        <textarea id="reBHabit" class="reflect-q" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="saveReflectionB()">完成复盘 · 沉淀成长资产</button>
-          <button class="btn btn-ghost" onclick="$('reflectWrap').classList.add('hidden')">先放着</button>
-        </div>
+        <!-- 复盘入口：毕业时引导进入第 4 阶段「产出」 -->
+    <div id="reflectEntry" class="hidden" style="margin-top:14px;">
+      <div class="card" style="text-align:center;padding:22px;">
+        <div style="font-size:16px;font-weight:800;margin-bottom:6px;">行为实验完成，还有最后一步</div>
+        <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">复盘五个问题，把这次改变沉淀成你的成长资产（行为结果 · 新习惯）。</div>
+        <button class="btn btn-primary" onclick="showStage('reflection')">去复盘沉淀 · 产出 →</button>
       </div>
     </div>
 
@@ -665,6 +679,41 @@
       </div>
     </div>
   </div>
+
+  <!-- 模块四：产出（毕业复盘沉淀，与 app.html 的「产出」步骤对应） -->
+  <div id="stage-reflection" class="hidden">
+    <div class="card">
+      <div class="badge" style="margin-bottom:10px;">产出 · 复盘沉淀</div>
+      <h2 style="font-size:24px;">把这次改变，沉淀成你的成长资产</h2>
+      <div class="sub" id="reflectContextB"></div>
+      <div class="hint" style="margin-top:0;margin-bottom:16px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        五个问题想清楚，这次行为实验才算真正结束：发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。
+      </div>
+      <label class="fld">发生了什么？</label>
+      <textarea id="reBWhat" class="reflect-q" placeholder="例如：21 天里做到了 X 天，中途有 X 次没做到，第 X 天最吃力…"></textarea>
+      <label class="fld">为什么？</label>
+      <textarea id="reBWhy" class="reflect-q" placeholder="为什么这件事发生 / 没发生？阻力在哪里？"></textarea>
+      <label class="fld">学到了什么？</label>
+      <textarea id="reBLearned" class="reflect-q" placeholder="这次实验教会了我什么？"></textarea>
+      <label class="fld">做了什么不同的？</label>
+      <textarea id="reBDifferent" class="reflect-q" placeholder="和过去的我相比，这一次哪里不一样？"></textarea>
+      <label class="fld">改变了什么？</label>
+      <textarea id="reBChanged" class="reflect-q" placeholder="我的行为、习惯或对自己的看法，发生了什么变化？"></textarea>
+      <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
+        <button class="btn btn-ai" onclick="aiReflectB()">知行帮我复盘</button>
+      </div>
+      <div id="reBResultBox" class="ai-out hidden"></div>
+      <label class="fld">这次行为实验的结果是</label>
+      <textarea id="reBResultText" class="reflect-q" placeholder="用一句话总结行为改变的执行结果…"></textarea>
+      <label class="fld">新的习惯，融入在哪一步？</label>
+      <textarea id="reBHabit" class="reflect-q" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveReflectionB()">完成复盘 · 沉淀成长资产</button>
+        <button class="btn btn-ghost" onclick="showStage('dashboard')">返回反馈强化</button>
+      </div>
+    </div>
+  </div>
 </div>  <!-- end app-panel -->
 
 <aside class="app-aside">
@@ -685,6 +734,22 @@
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
   行为档案
 </a>
+
+<!-- 首次引导弹窗（与 app.html 同款） -->
+<div class="onboard-mask" id="onboardMask">
+  <div class="onboard-card">
+    <div class="onboard-visual"><span class="zhx-avatar" id="obAvatar"></span></div>
+    <div class="onboard-body">
+      <div class="onboard-h" id="obH"></div>
+      <div class="onboard-p" id="obP"></div>
+    </div>
+    <div class="onboard-dots"><i class="on"></i><i></i><i></i></div>
+    <div class="onboard-foot">
+      <button class="btn btn-ghost" onclick="closeOnboard()">跳过</button>
+      <button class="btn btn-primary" id="obNext" onclick="nextOnboard()">下一步</button>
+    </div>
+  </div>
+</div>
 
 <!-- 设置弹窗 -->
 <div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
@@ -781,10 +846,9 @@ async function aiCall(prompt, attempt = 1){
 
 /* ===================== 流程控制 ===================== */
 function showStage(stage){
-  ['input','decompose','anchor','dashboard'].forEach(s => {
+  ['input','decompose','anchor','dashboard','reflection'].forEach(s => {
     $('stage-' + s).classList.toggle('hidden', s !== stage);
   });
-  $('stepbar').classList.toggle('hidden', stage === 'input');
   updatePath(stage);
   updateAside(stage);
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -792,9 +856,9 @@ function showStage(stage){
 
 function updatePath(stage){
   const bar = $('stepsBar'); if (!bar) return;
-  // 步骤映射：input/decompose → 拆解细分；anchor → 行动锚定；dashboard → 反馈强化
-  const map = { input: 'decompose', decompose: 'decompose', anchor: 'anchor', dashboard: 'dashboard' };
-  const order = ['decompose', 'anchor', 'dashboard'];
+  // 步骤映射：input/decompose → 拆解细分；anchor → 行动锚定；dashboard → 反馈强化；reflection → 产出
+  const map = { input: 'decompose', decompose: 'decompose', anchor: 'anchor', dashboard: 'dashboard', reflection: 'reflection' };
+  const order = ['decompose', 'anchor', 'dashboard', 'reflection'];
   const currentStep = map[stage] || 'decompose';
   const idx = order.indexOf(currentStep);
   bar.dataset.progress = (idx + 1);
@@ -1077,22 +1141,11 @@ function renderDashboard(){
     $('gradWrap').classList.remove('hidden');
     $('gradText').textContent = '你用 ' + current.targetDays + ' 天，把「' + current.input + '」从想法变成了真实的行动轨迹。';
     $('gradIdentity').textContent = current.identity ? ('我已经是「' + current.identity + '」的人') : '新的习惯与角色已生根';
-    // 复盘区（评估反馈段）：毕业即复盘，已沉淀内容回填（不覆盖正在输入的内容）
-    $('reflectWrap').classList.remove('hidden');
-    $('reflectContextB').textContent = '关于「' + current.input + '」的行为实验' + (current.insight ? '（基于洞察：' + current.insight.replace(/\n+/g, ' · ') + '）' : '');
-    if (current.reflection){
-      if (!$('reBWhat').value) $('reBWhat').value = current.reflection.what || '';
-      if (!$('reBWhy').value) $('reBWhy').value = current.reflection.why || '';
-      if (!$('reBLearned').value) $('reBLearned').value = current.reflection.learned || '';
-      if (!$('reBDifferent').value) $('reBDifferent').value = current.reflection.different || '';
-      if (!$('reBChanged').value) $('reBChanged').value = current.reflection.changed || '';
-      if (!$('reBResultText').value) $('reBResultText').value = current.result || '';
-      if (!$('reBHabit').value) $('reBHabit').value = current.habit || '';
-    }
+    $('reflectEntry').classList.remove('hidden');
     $('gradWrap').scrollIntoView({behavior:'smooth'});
   } else {
     $('gradWrap').classList.add('hidden');
-    $('reflectWrap').classList.add('hidden');
+    $('reflectEntry').classList.add('hidden');
   }
   // 当前天行动
   const today = current.plan.find(p => p.day === current.currentDay);
@@ -1168,7 +1221,22 @@ function updateDoneBtn(){
   } else { btn.disabled = false; btn.style.opacity = '1'; }
 }
 
-/* ============ 复盘（评估反馈段，闭合行为循环） ============ */
+/* ============ 复盘（产出阶段 · 评估反馈段，闭合行为循环） ============ */
+function renderReflection(){
+  if (!current) return;
+  $('reflectContextB').textContent = '关于「' + current.input + '」的行为实验' + (current.insight ? '（基于洞察：' + current.insight.replace(/\n+/g, ' · ') + '）' : '');
+  // 已沉淀内容回填（不覆盖正在输入的内容）
+  if (current.reflection){
+    if (!$('reBWhat').value) $('reBWhat').value = current.reflection.what || '';
+    if (!$('reBWhy').value) $('reBWhy').value = current.reflection.why || '';
+    if (!$('reBLearned').value) $('reBLearned').value = current.reflection.learned || '';
+    if (!$('reBDifferent').value) $('reBDifferent').value = current.reflection.different || '';
+    if (!$('reBChanged').value) $('reBChanged').value = current.reflection.changed || '';
+    if (!$('reBResultText').value) $('reBResultText').value = current.result || '';
+    if (!$('reBHabit').value) $('reBHabit').value = current.habit || '';
+  }
+}
+
 async function aiReflectB(){
   const box = $('reBResultBox');
   const base = '帮用户复盘一次行为实验（行为改变）。目标/行为：' + current.input + (current.insight ? '\n认知起点（洞察）：' + current.insight.replace(/\n+/g, ' · ') : '') + '\n期待身份：' + (current.identity || '未填') + '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「这次行为实验的结果」和一句「新的习惯融入日常的哪一步」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","result":"…","habit":"…"}';
@@ -1205,6 +1273,7 @@ function saveReflectionB(){
   current.result = result;
   current.habit = habit;
   current.reflectedAt = new Date().toISOString();
+  current.stage = 'reflection';
   persistAction();
   toast('复盘已沉淀进你的成长资产 ✓');
 }
@@ -1224,11 +1293,19 @@ function markDone(){
     if (!today.subDone.every(Boolean)){ toast('先把今天的几步都勾上'); return; }
   }
   logCompletion(true, current.currentDay, null, '');
+  if (current.status === 'graduated'){
+    // 毕业 → 进入第 4 阶段「产出」（复盘沉淀）
+    current.stage = 'reflection';
+    persistAction();
+    renderReflection();
+    showStage('reflection');
+    toast('全部完成！新的习惯和角色已生根 🎓');
+    return;
+  }
   renderDashboard();
   updateDoneBtn();
   const cele = current.celebration ? ' ' + current.celebration : '';
-  if (current.status === 'graduated'){ toast('全部完成！新的习惯和角色已生根 🎓'); }
-  else toast('第 ' + (current.currentDay - 1) + ' 天做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
+  toast('第 ' + (current.currentDay - 1) + ' 天做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
 }
 
 function showBlock(){ $('blockBox').style.display = 'block'; }
@@ -1311,6 +1388,36 @@ function toggleTheme(){
 }
 
 /* ===================== 初始化 ===================== */
+/* ============ 首次引导（与 app.html 同款） ============ */
+const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const OB_SLIDES = [
+  { h: '从想明白，到真正改变', p: '知行会陪你走完四步：拆解细分 → 行动锚定 → 反馈强化 → 产出复盘。每一步只花几分钟。' },
+  { h: '一个大问题，拆成一段 N 天计划', p: '① 拆解细分：把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 反馈强化：每天做到、拿反馈、投身份票；④ 产出：毕业复盘，沉淀成新的习惯与角色。' },
+  { h: '行为改变档案会越积越厚', p: '每次完成，行为实验、连续天数、身份票都会存进「成长资产」。现在，从想改变的那件大事开始吧。' }
+];
+let obIdx = 0;
+function maybeShowOnboard() {
+  try { if (localStorage.getItem('trf_onboarded_act') === '1') return; } catch (e) {}
+  obIdx = 0;
+  const av = $('obAvatar'); if (av) av.innerHTML = ZHIXING_AVATAR;
+  renderOnboard();
+  $('onboardMask').classList.add('show');
+}
+function renderOnboard() {
+  const s = OB_SLIDES[obIdx];
+  $('obH').textContent = s.h; $('obP').textContent = s.p;
+  document.querySelectorAll('.onboard-dots i').forEach(function (d, i) { d.classList.toggle('on', i === obIdx); });
+  $('obNext').textContent = obIdx === OB_SLIDES.length - 1 ? '开始 →' : '下一步';
+}
+function nextOnboard() {
+  if (obIdx < OB_SLIDES.length - 1) { obIdx++; renderOnboard(); }
+  else closeOnboard();
+}
+function closeOnboard() {
+  const m = $('onboardMask'); if (m) m.classList.remove('show');
+  try { localStorage.setItem('trf_onboarded_act', '1'); } catch (e) {}
+}
+
 (function init(){
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
@@ -1321,6 +1428,7 @@ function toggleTheme(){
       const st = found.stage || 'dashboard';
       if (st === 'planning' || st === 'decompose'){ renderDecompose(); showStage('decompose'); }
       else if (st === 'anchor'){ renderAnchor(); showStage('anchor'); }
+      else if (st === 'reflection' || (found.status === 'graduated')){ renderReflection(); showStage('reflection'); }
       else { renderDashboard(); updateDoneBtn(); showStage('dashboard'); }
       return;
     }
@@ -1340,6 +1448,7 @@ function toggleTheme(){
   }
   showStage('input');
 })();
+window.addEventListener('DOMContentLoaded', maybeShowOnboard);
 </script>
 </body>
 </html>
