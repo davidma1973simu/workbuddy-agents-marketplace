@@ -270,11 +270,83 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ===== 创建态（think 同款风格） ===== */
+  .create-hero {
+    background: linear-gradient(135deg, #0A5A42, var(--green-3));
+    border-radius: var(--radius-lg); padding: 30px 26px; color: #fff; margin-top: 8px;
+  }
+  .create-hero .ch-eyebrow { font-size: 12.5px; opacity: .85; letter-spacing: .5px; margin-bottom: 10px; }
+  .create-hero h1 { font-size: 24px; font-weight: 800; line-height: 1.4; margin-bottom: 8px; }
+  .create-hero p { font-size: 14px; opacity: .92; line-height: 1.7; margin-bottom: 18px; }
+  .create-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px; border: none; font-size: 15px;
+    font-family: inherit; color: var(--ink); outline: none; background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  }
+  .create-input::placeholder { color: var(--ink-3); }
+  .cta-start {
+    display: block; width: 100%; margin-top: 12px; padding: 15px; border: none; border-radius: 12px;
+    background: #fff; color: #0A5A42; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+  .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .ctx-card {
+    background: var(--amber-soft); border: 1.5px solid rgba(200,122,42,.3); border-radius: var(--radius-md);
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .ctx-card .ctx-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--amber); margin-bottom: 6px; text-transform: uppercase; }
+  .ctx-card .ctx-row { font-size: 13.5px; color: var(--ink); line-height: 1.7; }
+  .ctx-card .ctx-row b { color: var(--amber); font-weight: 800; }
+
+  .suggest-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 24px; margin-top: 16px;
+  }
+  .suggest-card .sc-tag {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
+    letter-spacing: 1px; color: var(--green); margin-bottom: 12px; text-transform: uppercase;
+  }
+  .suggest-card .sc-title { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; color: var(--ink); }
+  .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
+  .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
+  .sc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sc-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px;
+    border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+    font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .sc-chip:hover { border-color: var(--green); color: var(--green); background: var(--green-50); }
+  .sc-chip.sel { background: var(--green); border-color: var(--green); color: #fff; }
+  .sc-input {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line-2);
+    background: var(--surface); font-size: 14px; font-family: inherit; color: var(--ink); outline: none;
+  }
+  .sc-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .cta-confirm {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
+    background: var(--green-3); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-confirm:hover { transform: translateY(-2px); background: var(--green-2); }
+  .cta-confirm:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .cta-confirm.loading { opacity: .6; pointer-events: none; }
+  .ai-out-box {
+    margin-top: 12px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px;
+    font-size: 13.5px; line-height: 1.7; display: none;
+  }
+  .ai-out-box.show { display: block; animation: fade-in .3s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
   @media (max-width: 640px) {
     .punch-grid { grid-template-columns: 1fr; }
     .wrap { padding: 0 14px 90px; }
     .punch-hero { padding: 20px 18px 16px; }
     .punch-hero .ph-title { font-size: 21px; }
+    .create-hero { padding: 22px 18px 18px; }
+    .create-hero h1 { font-size: 21px; }
   }
 </style>
 <script>
@@ -362,6 +434,10 @@ async function aiCall(prompt, attempt = 1){
     }
     return (await res.json()).choices[0].message.content;
   } catch(e){ return null; }
+}
+function parseJSON(text){
+  if (!text) return null;
+  try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
 }
 
 /* ===================== 每日进步核心 ===================== */
@@ -650,23 +726,31 @@ async function showTodayFeedback(){
   const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
   const micro = (todayPlan && todayPlan.micro) || current.input;
   const votes = countVotes();
-  const LOCAL_MSGS = [
-    '「' + micro + '」已经从「想做」走到「做到了」。',
-    '连续 ' + streak + ' 天，是行为在替你提醒自己。',
-    '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
-    '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
-  ];
-  $('tfCrown').textContent = (day > 0 && day % 7 === 0) ? '🏆' : '🎉';
-  $('tfTitle').textContent = '第 ' + day + ' 天做到了！';
-  $('tfBody').textContent = LOCAL_MSGS[(day - 1) % LOCAL_MSGS.length];
+  const isFirst = day <= 0;
+  const LOCAL_MSGS = isFirst
+    ? [
+      '今天的行为实验开始了：「' + micro + '」。',
+      '这是「' + (current.identity || '期待的身份') + '」的第一票。',
+      '锚点已就位，30 秒后开始今天的小事。',
+      '第 1 天，先把「' + micro + '」做完。'
+    ]
+    : [
+      '「' + micro + '」已经从「想做」走到「做到了」。',
+      '连续 ' + streak + ' 天，是行为在替你提醒自己。',
+      '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
+      '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
+    ];
+  $('tfCrown').textContent = isFirst ? '🚀' : ((day > 0 && day % 7 === 0) ? '🏆' : '🎉');
+  $('tfTitle').textContent = isFirst ? '今天的行为实验开始了' : ('第 ' + day + ' 天做到了！');
+  $('tfBody').textContent = LOCAL_MSGS[Math.abs((day - 1)) % LOCAL_MSGS.length];
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
-  $('tfSub').textContent = '今天的事已记录在计划全景里，明天的小事已就位。';
+  $('tfSub').textContent = isFirst ? '你今天的目标已记录。做完它，再回来点「做完了」。' : '今天的事已记录在计划全景里，明天的小事已就位。';
   w.classList.remove('hidden');
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
   try {
-    if (getAI().apiKey && micro) {
+    if (getAI().apiKey && micro && !isFirst) {
       const aiText = await aiCall(
         '用户刚完成了一个持续多天的「行为实验」中第 ' + day + ' 天：' + micro + '。\n' +
         '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
@@ -733,10 +817,167 @@ function removeSupport(i){
   renderSupport();
 }
 
+/* ===================== 创建态（行为 Punch · think 同款风格） ===================== */
+let handoffInsight = '';   // 来自 think 的洞察
+let handoffNature = '';    // 来自 think 的本质
+let handoffScenario = '';  // 来自 think 的主题
+let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
+
+function renderCreate(){
+  const area = $('punchArea');
+  const showCtx = handoffNature || handoffInsight;
+  area.innerHTML = `
+    <div class="create-hero">
+      <div class="ch-eyebrow">伴我改变 · 把洞察变成今天的改变</div>
+      <h1>一条认知，变成今天的一小步</h1>
+      <p>知行会基于你<strong>想清楚的事</strong>，帮你定出今天就能完成的最小改变——不搞大计划，只关心今天做得到。</p>
+      ${showCtx ? `
+        <div class="ctx-card">
+          <div class="ctx-label">来自今日洞察 · 认知起点</div>
+          ${handoffNature ? `<div class="ctx-row"><b>本质：</b>${escapeHtml(handoffNature)}</div>` : ''}
+          ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
+        </div>` : ''}
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '你想改变或实践什么？（例如：每天早震喝一杯温水）'}" maxlength="60">
+      <button class="cta-start" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
+    </div>`;
+  const input = $('changeInput');
+  if (handoffScenario) input.value = handoffScenario;
+  input.addEventListener('input', e => {
+    $('startChangeBtn').disabled = e.target.value.trim().length < 4;
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') startChange(); });
+  $('startChangeBtn').disabled = (input.value || '').trim().length < 4;
+  input.focus();
+}
+
+async function startChange(){
+  const goal = ($('changeInput').value || '').trim();
+  if (goal.length < 4) { toast('再多写几个字'); return; }
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
+  const btn = $('startChangeBtn');
+  btn.disabled = true; btn.textContent = '知行正在建议今天的改变…';
+  let sug = null;
+  for (let attempt = 0; attempt < 3 && !sug; attempt++){
+    const r = await aiCall(
+      `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：基于以上，建议 1 个「今天就能完成的最小改变」——一个微行动。\n严格要求：\n1. 微行动一句话（10-25 字），小到不可能失败，30 秒内可完成\n2. 拆成 2-3 个更小步骤（每个 ≤10 字）\n3. 给 3 个稳定锚点时刻（在___之后）\n4. 严格按 JSON 输出：\n{"micro":"...","steps":["...","..."],"anchors":["在早震拿起手机之后","在午饭后","在晚上睡前"]}`
+    );
+    const d = parseJSON(r);
+    if (d && d.micro && d.micro.trim()){
+      sug = {
+        micro: d.micro.trim().slice(0, 60),
+        steps: Array.isArray(d.steps) ? d.steps.map(s => String(s).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+        anchors: Array.isArray(d.anchors) ? d.anchors.map(s => String(s).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : []
+      };
+    }
+  }
+  if (!sug){
+    btn.disabled = false; btn.textContent = '开始改变 →';
+    toast('知行暂时没建议出来，请稍后再试');
+    return;
+  }
+  draft.goal = goal;
+  draft.micro = sug.micro;
+  draft.steps = sug.steps.length ? sug.steps : ['完成这一小步'];
+  draft.seconds = 30;
+  renderSuggest(sug.anchors.length ? sug.anchors : ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+}
+
+function renderSuggest(anchors){
+  const area = $('punchArea');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">知行建议 · 今天的改变</div>
+      <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">小到不可能失败，30 秒内完成。先把它拆成更小的一步：</div>
+      <div class="sc-field">小步骤（可点击完成）</div>
+      <div class="sc-chips" id="stepChips">
+        ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
+      </div>
+      <div class="sc-field">什么时候做？选一个锚点（点击选择）</div>
+      <div class="sc-chips" id="anchorChips">
+        ${anchors.map((a, i) => `<button class="sc-chip ${i === 0 ? 'sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} 之后</button>`).join('')}
+      </div>
+      <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
+      <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
+      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 今天就开始 →</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  draft.anchor = anchors[0] || '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pickAnchorChip(i){
+  const chips = document.querySelectorAll('#anchorChips .sc-chip');
+  chips.forEach((c, j) => c.classList.toggle('sel', j === i));
+  const sel = chips[i];
+  if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
+}
+
+async function confirmChange(){
+  const identity = ($('identityInput').value || '').trim();
+  if (!draft.micro) { toast('先让知行建议今天的改变'); return; }
+  if (!draft.anchor) { toast('选一个锚点时刻'); return; }
+  if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
+  const btn = $('confirmBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  // 生成未来 7 天轻量计划（AI 一次生成，不做大拆解）
+  let plan = null;
+  for (let attempt = 0; attempt < 2 && !plan; attempt++){
+    const r = await aiCall(
+      `用户的改变目标：「${($('changeInput') ? '' : '')}」今日微行动：「${draft.micro}」\n\n任务：围绕这个目标生成未来 7 天每天的微行动（每天 1 句，≤20 字，小到不可能失败，第 1 天就是「${draft.micro}」）。\n严格按 JSON：\n{"days":[{"day":1,"micro":"${draft.micro}"},{"day":2,"micro":"..."},...,{"day":7,"micro":"..."}]}`
+    );
+    const d = parseJSON(r);
+    if (d && Array.isArray(d.days) && d.days.length >= 3){
+      plan = d.days.slice(0, 7).map(x => ({
+        day: parseInt(x.day) || 0,
+        micro: String(x.micro || '').trim().slice(0, 30),
+        sub: [], subDone: []
+      })).filter(x => x.day > 0 && x.micro);
+    }
+  }
+  if (!plan){
+    plan = [{day:1, micro:draft.micro, sub:[], subDone:[]}];
+    for (let d = 2; d <= 7; d++){
+      plan.push({ day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[] });
+    }
+  }
+  // 创建 action（轻量 7 天）
+  const goal = draft.goal || handoffScenario || '行为改变';
+  current = {
+    id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+    input: (goal || '').trim() || draft.micro,
+    createdAt: new Date().toISOString(),
+    targetDays: 7,
+    currentDay: 1,
+    plan,
+    logs: [],
+    status: 'active',
+    streak: 0, totalDone: 0, bestStreak: 0,
+    anchor: { after: draft.anchor },
+    reminder: '',
+    identity: identity,
+    celebration: '',
+    support: { people:[], tools:[], info:[] },
+    source: 'punch',
+    insight: handoffInsight || '',
+    scenario: handoffScenario || ''
+  };
+  persistAction();
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
+  renderPunch();
+  // 第一次：引导完成今天的改变
+  showTodayFeedback();
+}
+
 /* ===================== 初始化 ===================== */
 (function init(){
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
+  // 从 think.html 跳转：携带洞察
+  handoffInsight = (params.get('insight') || '').trim();
+  handoffNature = (params.get('nature') || '').trim();
+  handoffScenario = (params.get('scenario') || '').trim();
   if (id){
     current = loadActions().find(a => a.id === id) || null;
   } else {
@@ -745,7 +986,8 @@ function removeSupport(i){
               list.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0] ||
               list[0] || null;
   }
-  renderPunch();
+  if (current && current.status === 'active') renderPunch();
+  else renderCreate();
 })();
 </script>
 </body>

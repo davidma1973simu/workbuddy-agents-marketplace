@@ -509,8 +509,8 @@ function renderInsightResult(session){
           <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
         </div>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="act.html?insight=${encodeURIComponent(session.essence.insight || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
-            把这个洞察变成一个行为实验 →
+          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
+            把这个洞察变成今天的改变 →
           </a>
           <a class="btn btn-ghost" href="growth.html#insights" style="text-decoration:none;">看认知档案</a>
         </div>
