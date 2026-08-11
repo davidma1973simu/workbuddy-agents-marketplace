@@ -255,10 +255,46 @@
 
   .plan-mini { margin-top: 18px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
   .plan-mini .pm-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
-  .plan-mini .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; }
-  .pm-cell { text-align: center; font-size: 12px; font-weight: 700; padding: 8px 4px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-3); }
+  .plan-mini .pm-hint { font-size: 12px; color: var(--ink-3); margin-top:-6px; margin-bottom: 10px; }
+  .plan-mini .pm-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px;
+  }
+  .pm-cell {
+    text-align: center; font-size: 12px; font-weight: 700; padding: 9px 4px;
+    border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2);
+    cursor: pointer; transition: transform .15s, border-color .15s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .pm-cell:hover { border-color: var(--green); transform: translateY(-2px); }
+  .pm-cell .pm-day { font-size: 14px; font-weight: 800; color: var(--ink-2); }
+  .pm-cell .pm-micro { font-size: 11px; font-weight: 500; opacity: .85; line-height: 1.2; word-break: break-all; }
   .pm-cell.done { background: var(--green-soft); color: var(--green); border-color: var(--green-light); }
-  .pm-cell.today { background: var(--green); color: #fff; border-color: var(--green); }
+  .pm-cell.done .pm-day { color: var(--green); }
+  .pm-cell.today { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 0 0 4px rgba(29,158,117,.18); }
+  .pm-cell.today .pm-day, .pm-cell.today .pm-micro { color: #fff; }
+
+  /* 「今日反馈」卡（每次「做完了」后的强化反馈） */
+  .today-feedback { margin-top: 18px; }
+  .today-feedback.hidden { display: none; }
+  .tf-card {
+    background: linear-gradient(135deg, var(--green-soft) 0%, var(--green-50) 100%);
+    border: 1.5px solid var(--green); border-radius: var(--radius-lg);
+    padding: 22px 22px 14px; text-align: center;
+    box-shadow: 0 8px 28px rgba(29,158,117,.18);
+    animation: tf-slide .6s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes tf-slide { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .tf-crown { font-size: 36px; line-height: 1; margin-bottom: 4px; animation: tf-bounce 1.4s ease infinite; }
+  @keyframes tf-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .tf-title { font-size: 19px; font-weight: 800; color: var(--green-deep); margin-bottom: 8px; }
+  .tf-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; margin-bottom: 14px; }
+  .tf-stats { display: flex; justify-content: center; gap: 16px; padding: 12px 0; border-top: 1px dashed var(--green-light); border-bottom: 1px dashed var(--green-light); }
+  .tf-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tf-stat span { font-size: 11px; color: var(--ink-3); }
+  .tf-stat b { font-size: 22px; font-weight: 800; color: var(--green-deep); line-height: 1; }
+  .tf-stat em { font-size: 10px; color: var(--ink-3); font-style: normal; }
+  .tf-sub { font-size: 12px; color: var(--ink-3); margin-top: 10px; }
 
   .identity-vote { display: flex; align-items: center; gap: 12px; background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 18px; }
   .identity-vote .v-emoji { font-size: 22px; }
@@ -321,7 +357,7 @@
   .path[data-progress="2"]::after { width: 33%; }
   .path[data-progress="3"]::after { width: 66%; }
   .path[data-progress="4"]::after { width: 100%; }
-  .p-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; cursor: default; }
   .p-dot {
     width: 30px; height: 30px; border-radius: 50%;
     background: var(--surface); border: 2px solid var(--line); color: var(--ink-3);
@@ -329,10 +365,17 @@
     transition: all .25s;
   }
   .p-node.active .p-dot { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 0 0 5px rgba(29,158,117,.15); }
-  .p-node.done .p-dot { background: var(--green); border-color: var(--green); color: #fff; }
+  /* 已完成：弱化（浅绿描边 + 浅绿底 + 中心勾），而非深色实心圆 */
+  .p-node.done { cursor: pointer; }
+  .p-node.done .p-dot {
+    background: var(--green-soft); border-color: var(--green); color: var(--green);
+    font-weight: 800;
+  }
+  .p-node.done .p-dot svg { display: none; }
+  .p-node:hover:not(.active) .p-dot { transform: scale(1.07); }
   .p-node .p-label { font-size: 12.5px; color: var(--ink-3); font-weight: 500; white-space: nowrap; }
   .p-node.active .p-label { color: var(--green-deep); font-weight: 700; }
-  .p-node.done .p-label { color: var(--ink-2); }
+  .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
 
   /* 桌面端三栏 */
   .app-aside { display: none; }
@@ -617,6 +660,24 @@
       </div>
     </div>
 
+    <!-- 「反馈强化」核心模块：每次「做完了」立刻出现的强化反馈 -->
+    <div class="today-feedback hidden" id="todayFeedbackWrap">
+      <div class="tf-card">
+        <div class="tf-crown" id="tfCrown">🎉</div>
+        <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
+        <div class="tf-body" id="tfBody">知行反馈一句话</div>
+        <div class="tf-stats">
+          <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
+          <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
+          <div class="tf-stat"><span>身份票</span><b id="tfVotes">+1</b><em>张</em></div>
+        </div>
+        <div class="tf-sub" id="tfSub">明天我会看到今天的微行动被记录在左侧计划全景里。</div>
+        <div class="btn-row" style="justify-content:center;margin-top:14px;">
+          <button class="btn btn-ghost" onclick="hideTodayFeedback()">继续 → 看看明天的小事</button>
+        </div>
+      </div>
+    </div>
+
     <div class="progress">
       <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
       <div class="progress-label"><span id="progText">已完成 0 / 21 天</span><span id="progPct">0%</span></div>
@@ -670,6 +731,7 @@
 
       <div class="plan-mini">
         <div class="pm-title">计划全景 · 点任一天可回看行动</div>
+        <div class="pm-hint">今日已做绿底，今日高亮实心，未来透底，每格里是该天微行动摘要。</div>
         <div class="pm-grid" id="planMini"></div>
       </div>
 
@@ -856,7 +918,7 @@ function showStage(stage){
 
 function updatePath(stage){
   const bar = $('stepsBar'); if (!bar) return;
-  // 步骤映射：input/decompose → 拆解细分；anchor → 行动锚定；dashboard → 反馈强化；reflection → 产出
+  // 步骤映射：input → 待办；decompose → 拆解细分；anchor → 行动锚定；dashboard → 反馈强化；reflection → 产出
   const map = { input: 'decompose', decompose: 'decompose', anchor: 'anchor', dashboard: 'dashboard', reflection: 'reflection' };
   const order = ['decompose', 'anchor', 'dashboard', 'reflection'];
   const currentStep = map[stage] || 'decompose';
@@ -866,6 +928,15 @@ function updatePath(stage){
     const s = n.dataset.step;
     n.classList.toggle('active', s === currentStep);
     n.classList.toggle('done', order.indexOf(s) < idx);
+    // 已完成节点可点击回退查看（仅查看，不影响数据）
+    const canClickBack = order.indexOf(s) < idx; // 已完成
+    n.onclick = canClickBack ? () => {
+      if (s === 'decompose') showStage('decompose');
+      else if (s === 'anchor') showStage('anchor');
+      else if (s === 'dashboard') showStage('dashboard');
+      else if (s === 'reflection') showStage('reflection');
+    } : null;
+    n.title = canClickBack ? '点击查看此阶段' : (n.classList.contains('active') ? '当前阶段' : '尚未到达');
   });
 }
 
@@ -1283,8 +1354,22 @@ function renderPlanMini(doneDays){
   const set = new Set(doneDays);
   box.innerHTML = current.plan.map(p => {
     const cls = set.has(p.day) ? 'done' : (p.day === current.currentDay && current.status !== 'graduated' ? 'today' : '');
-    return `<div class="pm-cell ${cls}" title="${(p.micro||'')}">${p.day}</div>`;
+    const microShort = (p.micro || '').slice(0, 7) || '—';
+    return `<div class="pm-cell ${cls}" title="第 ${p.day} 天 · ${escapeHtml(p.micro || '微行动待定')}" onclick="jumpToDay(${p.day})">
+      <span class="pm-day">${p.day}</span>
+      <span class="pm-micro">${escapeHtml(microShort)}</span>
+    </div>`;
   }).join('');
+}
+
+// 点计划全景某一天 → 切换「当前天」并刷新可视化（只读浏览，不改历史 logs）
+function jumpToDay(day){
+  if (current.status === 'graduated') return;
+  if (day === current.currentDay) return;
+  const prevDay = current.currentDay;
+  current.currentDay = day;
+  renderDashboard();
+  toast(prevDay > day ? '回看第 ' + day + ' 天的微行动' : '跳到第 ' + day + ' 天');
 }
 
 function markDone(){
@@ -1304,8 +1389,53 @@ function markDone(){
   }
   renderDashboard();
   updateDoneBtn();
-  const cele = current.celebration ? ' ' + current.celebration : '';
-  toast('第 ' + (current.currentDay - 1) + ' 天做到了！身份票 +1' + (current.streak > 1 ? ` · 连续 ${current.streak} 天` : '') + (cele ? ' ·' + cele : ''));
+  // 立刻显示「今日反馈」反馈强化卡（不依赖 AI，有 AI 时再加深）
+  showTodayFeedback();
+}
+
+function hideTodayFeedback(){
+  const w = $('todayFeedbackWrap'); if (w) w.classList.add('hidden');
+}
+
+// 标记一天完成 → 弹出今日反馈卡（本地兜底；若有 AI Key 再加深）
+async function showTodayFeedback(){
+  if (!current) return;
+  const w = $('todayFeedbackWrap'); if (!w) return;
+  const day = current.currentDay - 1; // 刚完成的天
+  const streak = current.streak || 0;
+  const total = current.totalDone || 0;
+  const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
+  const micro = (todayPlan && todayPlan.micro) || current.input;
+  const profile = loadProfile();
+  const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
+  const votes = stmt ? stmt.votes : 0;
+  // 本地兜底：4 句话按天轮换，避免每次都刷一样的
+  const LOCAL_MSGS = [
+    '「' + micro + '」已经从「想做」走到「做到了」。',
+    '连续 ' + streak + ' 天，是行为在替你提醒自己。',
+    '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
+    '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
+  ];
+  $('tfCrown').textContent = (day > 0 && day % 7 === 0) ? '🏆' : '🎉';
+  $('tfTitle').textContent = '第 ' + day + ' 天做到了！';
+  $('tfBody').textContent = LOCAL_MSGS[(day - 1) % LOCAL_MSGS.length];
+  $('tfStreak').textContent = streak;
+  $('tfTotal').textContent = total;
+  $('tfVotes').textContent = '+1';
+  $('tfSub').textContent = '今天的事已记录在左侧计划全景，明天的小事自动出现。';
+  w.classList.remove('hidden');
+  w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // 可选：用 AI 给一句真正有针对性的鼓励（无 Key 时回退本地）
+  try {
+    if (getAI().apiKey && micro) {
+      const aiText = await aiCall(
+        '用户刚完成了一个持续多天的「行为实验」中第 ' + day + ' 天：' + micro + '。\n' +
+        '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
+        '请用 1 句话（≤ 30 字）肯定这次完成，强调"具体行为"而非"坚持"。禁用"坚持"这种词。'
+      );
+      if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 120);
+    }
+  } catch(e) {}
 }
 
 function showBlock(){ $('blockBox').style.display = 'block'; }
