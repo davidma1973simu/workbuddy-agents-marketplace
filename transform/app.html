@@ -1575,7 +1575,7 @@
           <div class="title-actions">
             <button class="ai-btn" onclick="recommendApplyTitles('near', this)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              换三个
+              推荐场景
             </button>
             <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
             <button class="ai-btn-primary" onclick="confirmApplyTitle('near')">确认 →</button>
@@ -1632,7 +1632,7 @@
           <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
           <div class="title-list" id="farTitleList"></div>
           <div class="title-actions">
-            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">换三个</button>
+            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">推荐场景</button>
             <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
             <button class="ai-btn-primary" onclick="confirmApplyTitle('far')">确认 →</button>
           </div>
@@ -1678,14 +1678,24 @@
         <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
       </div>
 
-      <!-- ④ 支持资源与条件 -->
-      <label>④ 知行建议：为了落地这些应用计划，你需要找什么人、资源和条件？</label>
+      <!-- ④ 支持资源与条件（近应用专属） -->
+      <label>④ 近应用支持资源：为了落地「<span class="res-label-near"></span>」，你需要找什么人、资源和条件？</label>
       <div class="resource-section">
-        <button class="ai-btn-primary" id="aiResources" onclick="aiSuggestResources()">
+        <button class="ai-btn-primary" id="aiResourcesNear" onclick="aiSuggestResources('near')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          让知行建议支持资源
+          让知行为近应用建议支持资源
         </button>
-        <div class="ai-result resource-result" id="resourcesResult" style="display:none;"></div>
+        <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
+      </div>
+
+      <!-- ⑤ 支持资源与条件（远应用专属，可选） -->
+      <label>⑤ 远应用支持资源：为了落地「<span class="res-label-far"></span>」，你需要找什么人、资源和条件？</label>
+      <div class="resource-section" id="resourceFarSection">
+        <button class="ai-btn-primary" id="aiResourcesFar" onclick="aiSuggestResources('far')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          让知行为远应用建议支持资源
+        </button>
+        <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
       </div>
 
       <div class="signal" id="signal2" style="display:none;">
@@ -1874,7 +1884,9 @@ const state = {
     nearFeedback: null,
     farFeedback: null,
     aiFeedback: null,    // 应用（旧字段，保留兼容）
-    resourcesPlan: null, // { people, resources, conditions, note, confirmed }
+    resourcesPlan: null, // 旧字段：合并版支持资源（保留兼容迁移）
+    nearResourcesPlan: null, // { people, resources, conditions, note, confirmed } 近应用专属
+    farResourcesPlan: null,  // { people, resources, conditions, note, confirmed } 远应用专属
     identity: ''
   }
 };
@@ -1957,7 +1969,13 @@ function goStep(n) {
     renderApplyStages();
     if (state.data.nearFeedback) renderAppFeedback('near', state.data.nearFeedback);
     if (state.data.farFeedback) renderAppFeedback('far', state.data.farFeedback);
-    if (state.data.resourcesPlan) renderResourcesResult(state.data.resourcesPlan);
+    // 支持资源：双区独立渲染；老数据 resourcesPlan 迁移为近应用资源
+    if (!state.data.nearResourcesPlan && !state.data.farResourcesPlan && state.data.resourcesPlan) {
+      state.data.nearResourcesPlan = state.data.resourcesPlan;
+    }
+    if (state.data.nearResourcesPlan) renderResourcesResult('near', state.data.nearResourcesPlan);
+    if (state.data.farResourcesPlan) renderResourcesResult('far', state.data.farResourcesPlan);
+    updateResourceSections();
     checkNext2();
   }
   window.scrollTo({top: 0, behavior: 'smooth'});
@@ -2706,7 +2724,7 @@ function renderApplyTitles(type) {
   const box = $(type + 'TitleList');
   if (!box) return;
   if (!list.length) {
-    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「换三个」让知行推荐场景标题</div>';
+    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「推荐场景」让知行推荐场景标题</div>';
     return;
   }
   box.innerHTML = list.map((t, i) =>
@@ -2859,7 +2877,6 @@ function unlockFarApp() {
   if (label) label.classList.remove('locked-label');
   if (isNearComplete()) toast('近应用完成，远应用已解锁');
 }
-
 function renderApplyStages() {
   ['near', 'far'].forEach(type => {
     const obj = ensureAppScenario(type);
@@ -2899,6 +2916,27 @@ function renderApplyStages() {
       if (el.tagName === 'TEXTAREA') autoGrowApp(el);
     });
   });
+  updateResourceSections();
+}
+
+// 支持资源区：近应用始终可用；远应用在填写了远应用标题后可操作（不强制）
+function updateResourceSections() {
+  const nearTitle = (state.data.nearScenario && state.data.nearScenario.title) || '';
+  const farTitle = (state.data.farScenario && state.data.farScenario.title) || '';
+  const rlNear = document.querySelector('.res-label-near');
+  const rlFar = document.querySelector('.res-label-far');
+  if (rlNear) rlNear.textContent = nearTitle || '近应用场景';
+  if (rlFar) rlFar.textContent = farTitle || '远应用场景';
+  const farSec = $('resourceFarSection');
+  if (farSec) {
+    if (farTitle) {
+      farSec.style.opacity = '1';
+      farSec.style.pointerEvents = 'auto';
+    } else {
+      farSec.style.opacity = '.5';
+      farSec.style.pointerEvents = 'none';
+    }
+  }
 }
 
 function parseAppFeedback(text) {
@@ -2952,40 +2990,44 @@ function renderScoreDisplay() {
   sd.style.display = 'flex';
 }
 
-// AI 建议支持资源（人 / 资源 / 条件）
-async function aiSuggestResources() {
+// AI 建议支持资源（人 / 资源 / 条件）—— 按近/远应用区分，只针对用户输入的内容
+async function aiSuggestResources(type) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
-  const near = state.data.nearScenario || {};
-  const far = state.data.farScenario || {};
-  const nearFb = state.data.nearFeedback || {};
-  const farFb = state.data.farFeedback || {};
-  if (!near.scenario && !far.scenario) {
-    toast('先至少完成一个应用计划'); return;
+  const obj = state.data[type + 'Scenario'] || {};
+  const fb = state.data[type + 'Feedback'] || {};
+  const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
+  const targetLabel = type === 'near' ? '近应用' : '远应用';
+  const btnId = type === 'near' ? 'aiResourcesNear' : 'aiResourcesFar';
+  const resultId = type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult';
+  // 校验：该应用必须已完成计划（标题 + 细节 + 计划 + 时间 + 期待结果）
+  const d = obj.details || {};
+  if (!obj.title || !obj.title.trim() || !d.time || !obj.plan || !obj.plan.trim() || !obj.when || !obj.when.trim() || !obj.expectedOutcome || !obj.expectedOutcome.trim()) {
+    toast('先完成「' + targetLabel + '」的计划（标题/细节/打算怎么做/什么时候试/期待结果）'); return;
   }
   const e = state.data.essence || {};
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
-  setAILoading('aiResources', true);
+  setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【近应用计划】\n场景：${near.scenario || '未填'}\n计划：${near.plan || '未填'}\n知行反馈：${nearFb.suggestion || '未填'}\n下一步行动：${(nearFb.actions || []).join('；') || '未填'}\n\n【远应用计划】\n场景：${far.scenario || '未填'}\n计划：${far.plan || '未填'}\n知行反馈：${farFb.suggestion || '未填'}\n下一步行动：${(farFb.actions || []).join('；') || '未填'}\n\n任务：基于上面的全部信息，建议用户为了真正落地这些应用计划，需要去找什么人、争取什么资源、满足什么条件。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\n知行反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
     );
     const data = parseResources(r);
     if (data) {
-      state.data.resourcesPlan = { ...data, confirmed: false };
-      renderResourcesResult(state.data.resourcesPlan);
+      state.data[type + 'ResourcesPlan'] = { ...data, confirmed: false };
+      renderResourcesResult(type, state.data[type + 'ResourcesPlan']);
       saveDraft();
       checkNext2();
       toast('知行建议已生成，可编辑后确认');
     } else {
-      showAIResult('resourcesResult', r);
+      showAIResult(resultId, r);
     }
   } catch(e) {
     if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
     else toast('资源建议失败：' + (e.message || '未知错误'));
   }
-  setAILoading('aiResources', false);
+  setAILoading(btnId, false);
 }
 function parseResources(text) {
   try {
@@ -3006,41 +3048,45 @@ function arrToTextarea(arr) {
 function textareaToArr(el) {
   return el.value.split(/\n/).map(s => s.trim()).filter(Boolean);
 }
-function renderResourcesResult(rp) {
-  const box = $('resourcesResult');
+function renderResourcesResult(type, rp) {
+  const box = $(type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult');
   if (!box) return;
+  const targetLabel = type === 'near' ? '近应用' : '远应用';
   let html = '';
-  html += '<div class="resource-block"><label>需要找的关键人</label><textarea id="rpPeople" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>需要的资源 / 工具 / 平台</label><textarea id="rpResources" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>需要满足的条件 / 前提</label><textarea id="rpConditions" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>知行补充说明</label><textarea id="rpNote" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-block"><label>「' + targetLabel + '」需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>「' + targetLabel + '」需要的资源 / 工具 / 平台</label><textarea id="rpResources' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>「' + targetLabel + '」需要满足的条件 / 前提</label><textarea id="rpConditions' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>知行补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
   html += '<div class="resource-actions">';
-  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources()">确认支持资源</button>';
-  html += '<button class="btn btn-prev" onclick="aiSuggestResources()">重新让知行建议</button>';
+  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认「' + targetLabel + '」支持资源</button>';
+  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让知行建议</button>';
   html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
   box.style.display = 'block';
 }
-function confirmResources() {
-  state.data.resourcesPlan = {
-    people: textareaToArr($('rpPeople')),
-    resources: textareaToArr($('rpResources')),
-    conditions: textareaToArr($('rpConditions')),
-    note: ($('rpNote').value || '').trim(),
+function confirmResources(type) {
+  state.data[type + 'ResourcesPlan'] = {
+    people: textareaToArr($('rpPeople' + type)),
+    resources: textareaToArr($('rpResources' + type)),
+    conditions: textareaToArr($('rpConditions' + type)),
+    note: ($('rpNote' + type).value || '').trim(),
     confirmed: true
   };
   saveDraft();
   checkNext2();
-  toast('支持资源已确认');
+  toast('「' + (type === 'near' ? '近应用' : '远应用') + '」支持资源已确认');
 }
 
 function checkNext2() {
   const nearOk = isNearComplete();
   const far = state.data.farScenario || {};
   const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && state.data.farFeedback;
+  // 远应用可选：近应用完整即可完成；远应用若填写则也须完整
   const appOk = nearOk || farOk;
-  const resourcesOk = state.data.resourcesPlan && state.data.resourcesPlan.confirmed;
+  const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
+  const farResOk = state.data.farResourcesPlan && state.data.farResourcesPlan.confirmed;
+  const resourcesOk = nearResOk || farResOk;
   const ok = appOk && resourcesOk;
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
@@ -3129,6 +3175,8 @@ function complete() {
     nearFeedback: state.data.nearFeedback,
     farFeedback: state.data.farFeedback,
     resourcesPlan: state.data.resourcesPlan,
+    nearResourcesPlan: state.data.nearResourcesPlan,
+    farResourcesPlan: state.data.farResourcesPlan,
     identity: state.data.identity,
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
@@ -3408,15 +3456,23 @@ window.goStep = function(n) {
       ao.innerHTML = '<div class="os-empty">（请先回到上一步，让知行为应用计划打分并给出行动建议）</div>';
     }
 
-    // ② 支持资源
-    const rp = d.resourcesPlan;
+    // ② 支持资源（近/远应用各自独立）
+    const nearRp = d.nearResourcesPlan;
+    const farRp = d.farResourcesPlan;
+    const nearTitle = (d.nearScenario && d.nearScenario.title) || '近应用';
+    const farTitle = (d.farScenario && d.farScenario.title) || '远应用';
     const ro = $('resourcesOutcome');
-    if (rp && rp.confirmed) {
-      ro.innerHTML =
-        '<div class="os-block"><div class="os-title">需要找的关键人</div>' + listToHtml(rp.people) + '</div>' +
-        '<div class="os-block"><div class="os-title">需要的资源 / 工具 / 平台</div>' + listToHtml(rp.resources) + '</div>' +
-        '<div class="os-block"><div class="os-title">需要满足的条件 / 前提</div>' + listToHtml(rp.conditions) + '</div>' +
-        (rp.note ? '<div class="os-block"><div class="os-title">知行补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+    const renderRpBlock = (title, rp) =>
+      '<div class="os-block" style="margin-bottom:14px;">' +
+      '<div class="os-title">' + escapeHtml(title) + ' · 需要找的关键人</div>' + listToHtml(rp.people) + '</div>' +
+      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要的资源 / 工具 / 平台</div>' + listToHtml(rp.resources) + '</div>' +
+      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要满足的条件 / 前提</div>' + listToHtml(rp.conditions) + '</div>' +
+      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' · 知行补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+    if (nearRp && nearRp.confirmed) {
+      ro.innerHTML = renderRpBlock(nearTitle, nearRp) +
+        (farRp && farRp.confirmed ? '<div style="height:1px;background:var(--line);margin:14px 0;"></div>' + renderRpBlock(farTitle, farRp) : '');
+    } else if (farRp && farRp.confirmed) {
+      ro.innerHTML = renderRpBlock(farTitle, farRp);
     } else {
       ro.innerHTML = '<div class="os-empty">（请先回到上一步，让知行建议支持资源并确认）</div>';
     }
