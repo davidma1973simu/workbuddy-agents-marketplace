@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>每日打卡 · Transform</title>
+<title>每日进步 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -84,7 +84,7 @@
   }
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
 
-  /* ===== 主打卡屏 ===== */
+  /* ===== 每日进步主屏 ===== */
   .punch-hero {
     background: linear-gradient(135deg, var(--green-deep, #0A5A42), var(--green-3));
     border-radius: var(--radius-lg); padding: 26px 26px 20px; color: #fff;
@@ -283,7 +283,7 @@
     <button onclick="location.href='growth.html#experiments'" aria-label="行为档案">📁 行为档案</button>
   </div>
 
-  <!-- 打卡主屏 -->
+  <!-- 每日进步主屏 -->
   <div id="punchArea"></div>
 
   <div id="toast"></div>
@@ -348,7 +348,7 @@ async function aiCall(prompt, attempt = 1){
   } catch(e){ return null; }
 }
 
-/* ===================== 行为打卡核心 ===================== */
+/* ===================== 每日进步核心 ===================== */
 function logCompletion(done, day, difficulty, note){
   const today = new Date(); today.setHours(0,0,0,0);
   const lastDone = (current.logs || []).filter(l => l.done).slice(-1)[0];
@@ -389,7 +389,7 @@ function renderPunch(){
   if (!current){
     area.innerHTML = `<div class="empty-state">
       <div class="big">🧭</div>
-      <h2>还没有正在进行的打卡</h2>
+      <h2>还没有正在进行的进步计划</h2>
       <p>先去「伴我改变」创建你的第一个行为实验：<br>定一个想改变的事 → 拆成每天能做的微行动 → 绑定触发点。</p>
       <a class="btn btn-primary" href="act.html" style="text-decoration:none;">去创建行为实验 →</a>
     </div>`;

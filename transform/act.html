@@ -738,7 +738,7 @@
       <div class="btn-row">
         <a class="btn btn-primary" href="punch.html" style="text-decoration:none;background:linear-gradient(135deg, var(--green-deep), var(--green-3));">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          每日打卡屏 →
+          每日进步屏 →
         </a>
         <a class="btn btn-ghost" href="growth.html#experiments">查看行为档案</a>
         <button class="btn btn-ghost" onclick="goAnchor()">调整锚点</button>
@@ -789,7 +789,7 @@
   </div>
   <div class="aside-card">
     <div class="aside-title">📈 当前进展</div>
-    <div class="aside-insight" id="asideProgress">完成首次打卡后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。</div>
+    <div class="aside-insight" id="asideProgress">完成每日进步后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。</div>
   </div>
 </aside>
 
@@ -947,7 +947,7 @@ function updatePath(stage){
 function updateAside(stage){
   const a = $('asideAnchor'), p = $('asideProgress');
   if (!a || !p) return;
-  if (!current){ a.innerHTML = '完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。'; p.innerHTML = '完成首次打卡后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。'; return; }
+  if (!current){ a.innerHTML = '完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。'; p.innerHTML = '完成每日进步后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。'; return; }
   if (current.anchor && current.anchor.after){
     a.innerHTML = '稳定触发点：<b style="color:var(--green-deep)">在我 ' + escapeHtml(current.anchor.after) + ' 之后，我就做这一天的行动。</b>';
   } else {
@@ -956,7 +956,7 @@ function updateAside(stage){
   if (stage === 'dashboard' || current.status === 'graduated' || (current.logs && current.logs.length)){
     p.innerHTML = '连续 <b>' + (current.streak || 0) + '</b> 天 · 累计 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> 天 · 身份票 <b>' + (current.totalDone || 0) + '</b> 张';
   } else {
-    p.innerHTML = '开始第一次打卡后，这里会实时显示你的连续天数、累计天数与身份票。';
+    p.innerHTML = '完成每日进步后，这里会实时显示你的连续天数、累计天数与身份票。';
   }
 }
 
