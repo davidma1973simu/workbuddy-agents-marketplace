@@ -1591,7 +1591,12 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="detail-card" id="nearDetailCardPlan"></div>
+          <div class="detail-actions">
+            <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
+          </div>
+          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
           <div class="app-row">
             <span class="app-label">打算怎么做？</span>
             <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段，让客户先感受到'激发行动与情感连接'"></textarea>
@@ -1642,7 +1647,12 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="detail-card" id="farDetailCardPlan"></div>
+          <div class="detail-actions">
+            <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
+          </div>
+          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
           <div class="app-row">
             <span class="app-label">打算怎么做？</span>
             <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="例：建议销售团队把'系统工具'升级为'激发客户 + 陪跑过程'，让 AI 做信息处理，销售做情感连接与决策推动"></textarea>
@@ -2727,12 +2737,15 @@ async function confirmApplyTitle(type) {
   obj.title = title;
   obj.titleType = customTitle ? 'custom' : 'rec';
   saveDraft();
+  // 显示 detail 阶段让用户能看到「生成中…」过渡
   applyAppStage(type, 'detail');
   if (!obj.details || !obj.details.time) {
     await generateApplyDetails(type, null);
   } else {
     renderApplyDetail(type);
   }
+  // 详情生成完成后切到 plan 阶段（detail + plan 一屏合并展示）
+  renderApplyStages();
 }
 
 // ③ AI 生成场景细节（弹窗卡片）
@@ -2751,7 +2764,6 @@ async function generateApplyDetails(type, btn) {
       obj.details = j;
       saveDraft();
       renderApplyDetail(type);
-      applyAppStage(type, 'detail');
     } else {
       obj.details = generateLocalDetail(obj.title);
       saveDraft();
@@ -2784,9 +2796,7 @@ function parseDetailJSON(text) {
 function renderApplyDetail(type) {
   const obj = ensureAppScenario(type);
   const d = obj.details || {};
-  const card = $(type + 'DetailCard');
-  if (!card) return;
-  card.innerHTML = `
+  const html = `
     <div class="detail-section">
       <div class="detail-section-title">场景</div>
       <div class="detail-row"><b>标题</b><span contenteditable="true" class="editable" data-field="title" onblur="saveApplyDetail('${type}','title',this.textContent)">${escapeHtml(obj.title || '')}</span></div>
@@ -2804,8 +2814,11 @@ function renderApplyDetail(type) {
       <div class="detail-row"><b>困难</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
     </div>
   `;
-  // 仅在已有 title 时才推进到 detail 阶段（避免误覆盖 title 阶段）
-  if (obj.title && obj.title.trim()) applyAppStage(type, 'detail');
+  // 同时填充 detail 阶段卡 和 plan 阶段卡（避免重复 DOM 节点，避免信息分散在不同 stage）
+  [$(type + 'DetailCard'), $(type + 'DetailCardPlan')]
+    .filter(Boolean)
+    .forEach(card => { card.innerHTML = html; });
+  // 不再此处切换 stage（避免反复把 plan 阶段拉回 detail）
 }
 function saveApplyDetail(type, field, value) {
   const obj = ensureAppScenario(type);
@@ -2865,16 +2878,10 @@ function renderApplyStages() {
     }
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
-    const hasPlan = !!(obj.plan && obj.plan.trim());
-    const hasWhen = !!(obj.when && obj.when.trim());
-    const hasOutcome = !!(obj.expectedOutcome && obj.expectedOutcome.trim());
-    const hasFb = !!state.data[type + 'Feedback'];
     let stage = 'title';
-    if (hasTitle && !hasDetails) stage = 'detail';
-    else if (hasTitle && hasDetails && (!hasPlan || !hasWhen || !hasOutcome)) stage = 'plan';
-    else if (hasFb) stage = 'plan';
+    if (hasTitle && !hasDetails) stage = 'detail';  // 临时：等知行生成场景细节
+    else if (hasTitle) stage = 'plan';              // 标题确定 → 直接进计划阶段（详情感兴趣区可滚上看）
     block.dataset.stage = stage;
-    console.log('DBG_TOGGLE', type, 'stage=', stage, 'dataset_stage_of_each=', JSON.stringify(Array.from(block.querySelectorAll('.app-stage')).map(e=>e.dataset.stage)));
     block.querySelectorAll('.app-stage').forEach(el => {
       const eq = el.dataset.stage !== stage;
         el.classList.toggle('hidden', eq);
