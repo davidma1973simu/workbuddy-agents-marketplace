@@ -334,6 +334,35 @@
   .q-block.q-done .q-state { color: var(--green-deep); font-weight: 600; }
   .q-block .q-action-row { display: flex; align-items: center; gap: 14px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
 
+  /* 洞察闭环：AI 协作历史 + 修订记录区 */
+  .q-block .q-helps { margin-top: 8px; display: none; flex-direction: column; gap: 6px; }
+  .q-block .q-helps.show { display: flex; }
+  .q-block .q-help-item {
+    display: flex; gap: 8px; align-items: flex-start;
+    background: var(--green-soft); border-radius: var(--radius-sm);
+    padding: 8px 10px; font-size: 13px; line-height: 1.6; color: var(--ink);
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .q-block .q-help-cap {
+    flex-shrink: 0; font-size: 11px; font-weight: 700; color: #fff;
+    background: var(--green-deep); border-radius: 999px; padding: 2px 8px; margin-top: 2px;
+  }
+  .q-block .q-rev-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px; font-size: 12.5px; font-weight: 600; color: var(--green-deep);
+    background: none; border: 1.5px dashed rgba(29,158,117,.4); border-radius: 999px;
+    padding: 5px 12px; cursor: pointer; font-family: inherit; transition: all .2s;
+  }
+  .q-block .q-rev-toggle:hover { background: var(--green-soft); border-color: var(--green); }
+  .q-block .q-rev-toggle .cnt { font-weight: 800; }
+  .q-block .q-rev-box { margin-top: 10px; display: none; }
+  .q-block .q-rev-box.show { display: block; }
+  .q-block .q-rev-box textarea { width: 100%; min-height: 66px; resize: vertical; }
+  .q-block .q-rev-note { font-size: 11.5px; color: var(--ink-3); line-height: 1.5; margin: 2px 0 8px; }
+  .q-block .q-rev-row { display: flex; gap: 8px; align-items: center; }
+  .q-block .q-rev-history { margin-top: 8px; font-size: 11.5px; color: var(--ink-3); line-height: 1.6; }
+  .q-block .q-rev-history b { color: var(--green-deep); }
+
   /* v5 按标签独立卡片 */
   .label-block {
     background: var(--surface); border: 1.5px solid var(--green-light); border-radius: var(--radius-lg);
@@ -2116,22 +2145,46 @@ function renderAllQuestions() {
   const box = $('allQuestions');
   const qs = state.data.insightQuestions || [];
   box.innerHTML = qs.map((q, i) => {
-    const aiInsp = state.data.insightAiInspirations[i];
+    // AI 协作历史（兼容旧字段 insightAiInspirations）
+    let helps = state.data.insightAiHelps && state.data.insightAiHelps[i] ? state.data.insightAiHelps[i] : [];
+    if (!helps.length && state.data.insightAiInspirations && state.data.insightAiInspirations[i]) {
+      helps = [{ cap: '知行', text: state.data.insightAiInspirations[i] }];
+    }
+    const helpsHtml = helps.length
+      ? `<div class="q-helps${helps.length ? ' show' : ''}">${helps.map(h =>
+          `<div class="q-help-item"><span class="q-help-cap">${escapeHtml(h.cap)}</span><span>${escapeHtml(h.text).replace(/\n/g, '<br>')}</span></div>`).join('')}</div>`
+      : '';
+    const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
+    const revCount = revs.length;
+    const curAns = state.data.insightAnswers[i] || '';
     return `
-    <div class="q-block ${(state.data.insightAnswers[i] || '').trim() ? 'q-done' : ''}" data-qi="${i}">
+    <div class="q-block ${curAns.trim() ? 'q-done' : ''}" data-qi="${i}">
       <div class="q-head">
         <span class="q-tag">问题 ${i+1}</span>
-        <span class="q-state">${(state.data.insightAnswers[i] || '').trim() ? '✓ 已回答' : '未答'}</span>
+        <span class="q-state">${curAns.trim() ? '✓ 已回答' : '未答'}${revCount ? ` · 已修订 ${revCount} 次` : ''}</span>
       </div>
       <div class="q-text">${escapeHtml(q)}</div>
-      <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(state.data.insightAnswers[i] || '')}</textarea>
+      <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(curAns)}</textarea>
       <div class="q-ai-row">
         <span class="q-ai-label">知行可以帮助你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
       </div>
-      <div class="q-ai-result" data-qi="${i}">${aiInsp ? '<span class="ai-tag">知行回应</span>' + escapeHtml(aiInsp).replace(/\\n/g, '<br>') : ''}</div>
+      ${helpsHtml}
+      <button class="q-rev-toggle" onclick="toggleRevBox(${i})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        修订我的回答<span class="cnt">${revCount || ''}</span>
+      </button>
+      <div class="q-rev-box" data-qi="${i}">
+        <div class="q-rev-note">把知行的启发里有用的部分，融进你的回答。保存后会成为这道题的最终版本，并进入后面的整合。</div>
+        <textarea class="q-rev-input" data-qi="${i}" placeholder="基于知行的启发，修订你的回答...">${escapeHtml(curAns)}</textarea>
+        <div class="q-rev-row">
+          <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">保存修订</button>
+          <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">取消</button>
+        </div>
+        ${revs.length ? `<div class="q-rev-history"><b>修订轨迹：</b>${revs.map((r, j) => `v${j+2}（${fmtTime(r.at)}）`).join(' → ')}</div>` : ''}
+      </div>
     </div>
   `;
   }).join('');
@@ -2147,9 +2200,34 @@ function renderAllQuestions() {
       saveDraft();
     });
   });
+  box.querySelectorAll('.q-rev-input').forEach(ta => autoGrow(ta));
 }
 
-// AI 三个能力
+// 修订区展开 / 收起
+function toggleRevBox(idx) {
+  const box = document.querySelector('.q-rev-box[data-qi="' + idx + '"]');
+  if (!box) return;
+  box.classList.toggle('show');
+  const ta = box.querySelector('.q-rev-input');
+  if (ta) autoGrow(ta);
+}
+
+// 保存修订：更新 canonical 回答 + 记录修订轨迹
+function saveRevision(idx) {
+  const ta = document.querySelector('.q-rev-input[data-qi="' + idx + '"]');
+  if (!ta) return;
+  const v = ta.value.trim();
+  if (!v) { toast('修订不能为空'); return; }
+  state.data.insightRevisions = state.data.insightRevisions || [];
+  state.data.insightRevisions[idx] = state.data.insightRevisions[idx] || [];
+  state.data.insightRevisions[idx].push({ text: v, at: new Date().toISOString() });
+  state.data.insightAnswers[idx] = v; // canonical = 最新修订
+  saveDraft();
+  renderAllQuestions();
+  toast('已保存修订，将作为这道题的最终回答进入整合');
+}
+
+// AI 三个能力（输出必须简洁：≤100 字）
 async function aiInspireQ(idx, cap, btn) {
   const qs = state.data.insightQuestions || [];
   const a = (state.data.insightAnswers || [])[idx] || '';
@@ -2161,16 +2239,26 @@ async function aiInspireQ(idx, cap, btn) {
     '查证': `检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。`
   };
   try {
-    const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}`);
-    state.data.insightAiInspirations[idx] = r;
-    const result = document.querySelector('.q-ai-result[data-qi="' + idx + '"]');
-    if (result) {
-      result.innerHTML = '<span class="ai-tag">知行回应（' + cap + '）</span>' + escapeHtml(r).replace(/\\n/g, '<br>');
-      result.classList.add('show');
-    }
+    const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】回答必须简洁准确，不超过 100 字，直接给内容，不要寒暄、不要重复问题、不要分段太长。`);
+    const text = (r || '').trim();
+    // 追加进协作历史（保留每次帮助）
+    state.data.insightAiHelps = state.data.insightAiHelps || [];
+    state.data.insightAiHelps[idx] = state.data.insightAiHelps[idx] || [];
+    state.data.insightAiHelps[idx].push({ cap: cap, text: text, at: new Date().toISOString() });
+    state.data.insightAiInspirations = state.data.insightAiInspirations || [];
+    state.data.insightAiInspirations[idx] = text; // 兼容旧字段
     saveDraft();
+    renderAllQuestions();
+    // 自动展开修订区，趁热打铁
+    toggleRevBox(idx);
+    toast('知行的启发已记录，可在下面修订你的回答');
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
+}
+
+// 时间格式化（修订轨迹用）
+function fmtTime(iso) {
+  try { return new Date(iso).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return ''; }
 }
 
 // 个人看法
@@ -2209,8 +2297,10 @@ async function aiIntegrate(btn) {
   ).join('\n');
   const qaPairs = state.data.insightQuestions.map((q, i) => {
     const a = state.data.insightAnswers[i] || '（未填）';
-    const ai = state.data.insightAiInspirations[i];
-    return `问题 ${i+1}：${q}\n用户回答：${a}\n${ai ? '知行回应：' + ai : ''}`;
+    const helps = (state.data.insightAiHelps && state.data.insightAiHelps[i]) || [];
+    const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('；') : '';
+    const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
+    return `问题 ${i+1}：${q}\n用户最终回答：${a}${helpsStr ? '\n知行协助过程：' + helpsStr : ''}${revs.length ? `\n（该题经知行启发后由用户主动修订 ${revs.length} 次）` : ''}`;
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '（未填）';
   btn.classList.add('loading');
@@ -2875,6 +2965,8 @@ function complete() {
     farFeedback: state.data.farFeedback,
     resourcesPlan: state.data.resourcesPlan,
     identity: state.data.identity,
+    insightAiHelps: state.data.insightAiHelps || [],
+    insightRevisions: state.data.insightRevisions || [],
     tags: state.data.tags || [],
     completedAt: new Date().toISOString()
   };
