@@ -68,6 +68,19 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 20px 110px; }
 
+  /* 完整版伴我洞察入口（底部小链接） */
+  .full-link-bar {
+    text-align: center; margin-top: 24px; padding: 16px 0 0;
+    border-top: 1px dashed var(--line);
+  }
+  .full-link-bar a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--violet, #5B4AA8);
+    text-decoration: none; padding: 8px 16px; border-radius: 999px;
+    transition: all .2s;
+  }
+  .full-link-bar a:hover { background: var(--violet-soft, #EEECFA); }
+
   .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
     display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
@@ -224,6 +237,9 @@
   </div>
 
   <div id="thinkArea"></div>
+  <div class="full-link-bar">
+    <a href="app.html">完整伴我洞察 →</a>
+  </div>
   <div id="toast"></div>
 </div>
 

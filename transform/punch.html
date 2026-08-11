@@ -69,6 +69,19 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 110px; }
 
+  /* 完整版伴我改变入口（底部小链接） */
+  .full-link-bar {
+    text-align: center; margin-top: 24px; padding: 16px 0 0;
+    border-top: 1px dashed var(--line);
+  }
+  .full-link-bar a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--amber);
+    text-decoration: none; padding: 8px 16px; border-radius: 999px;
+    transition: all .2s;
+  }
+  .full-link-bar a:hover { background: var(--amber-soft); }
+
   /* ===== 顶栏 ===== */
   .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
@@ -285,6 +298,9 @@
 
   <!-- 每日进步主屏 -->
   <div id="punchArea"></div>
+  <div class="full-link-bar">
+    <a href="act.html">完整伴我改变 →</a>
+  </div>
 
   <div id="toast"></div>
 </div>
