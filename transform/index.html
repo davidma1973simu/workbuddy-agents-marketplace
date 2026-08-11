@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Transform · 想清楚，做得到</title>
 <style>
   :root {
@@ -22,15 +25,16 @@
     --green-50: #F0F9F4;
     --amber: #C87A2A;
     --amber-soft: #FDF3E6;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --violet: #5B4AA8;
+    --violet-soft: #EEECFA;
     --radius-xl: 32px;
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 12px;
-    --shadow-1: 0 1px 2px rgba(21,27,25,.04);
     --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
-    --shadow-3: 0 8px 24px rgba(21,27,25,.08), 0 32px 64px rgba(21,27,25,.12);
     --ease: cubic-bezier(.16,1,.3,1);
-    --ease-out: cubic-bezier(.33,1,.68,1);
   }
   [data-theme="dark"] {
     --bg: #0C100F;
@@ -49,373 +53,170 @@
     --green-50: #0F1F1B;
     --amber: #EAA052;
     --amber-soft: #2E2417;
-    --shadow-1: 0 1px 2px rgba(0,0,0,.3);
-    --shadow-2: 0 4px 12px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
-    --shadow-3: 0 8px 24px rgba(0,0,0,.5), 0 32px 64px rgba(0,0,0,.6);
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --violet: #A99BE8;
+    --violet-soft: #23203A;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  html { -webkit-font-smoothing: antialiased; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-    background: var(--bg); color: var(--ink); line-height: 1.6;
-    min-height: 100vh; overflow-x: hidden;
-    font-feature-settings: "tnum" 1, "kern" 1;
+    background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
   }
 
-  /* Background atmosphere */
-  .bg-atmo {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-  }
-  .atmo-blob {
-    position: absolute; border-radius: 50%;
-    filter: blur(100px); opacity: .45;
-    animation: drift 22s var(--ease) infinite alternate;
-  }
-  .atmo-blob.a { width: 640px; height: 640px; background: radial-gradient(circle, var(--green-soft), transparent 68%); top: -180px; right: -160px; }
-  .atmo-blob.b { width: 460px; height: 460px; background: radial-gradient(circle, var(--green-light), transparent 68%); bottom: 8%; left: -140px; animation-delay: -8s; opacity: .32; }
-  .atmo-blob.c { width: 280px; height: 280px; background: radial-gradient(circle, var(--amber-soft), transparent 68%); top: 46%; right: 12%; animation-delay: -14s; opacity: .28; }
-  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(22px,-28px) scale(1.04); } }
-  .grid-overlay {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .018;
-    background-image:
-      linear-gradient(var(--ink-3) 1px, transparent 1px),
-      linear-gradient(90deg, var(--ink-3) 1px, transparent 1px);
-    background-size: 64px 64px;
-  }
-  [data-theme="dark"] .grid-overlay { opacity: .025; }
+  /* 背景氛围（轻量） */
+  .bg-atmo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .atmo-blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .4; }
+  .atmo-blob.a { width: 520px; height: 520px; background: radial-gradient(circle, var(--green-soft), transparent 68%); top: -160px; right: -140px; }
+  .atmo-blob.b { width: 360px; height: 360px; background: radial-gradient(circle, var(--green-light), transparent 68%); bottom: 6%; left: -120px; opacity: .28; }
 
-  .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+  .wrap { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* Navigation */
-  .nav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 24px 0;
-  }
-  .nav-brand {
-    display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink);
-  }
-  .nav-mark {
-    width: 40px; height: 40px; border-radius: 13px;
+  /* 顶部导航 */
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 18px 0 6px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 11px;
     background: linear-gradient(145deg, var(--green-2), var(--green));
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 6px 18px rgba(14,107,80,.28);
-    transition: transform .3s var(--ease), box-shadow .3s;
+    box-shadow: 0 4px 14px rgba(14,107,80,.28);
   }
-  .nav-brand:hover .nav-mark { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(14,107,80,.36); }
-  .nav-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
-  .nav-links { display: flex; align-items: center; gap: 8px; }
-  .nav-links a {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 14px; font-weight: 600; color: var(--ink-2); text-decoration: none;
-    padding: 10px 18px; border-radius: 999px;
-    transition: all .2s var(--ease);
+  .brand-name { font-size: 16px; font-weight: 800; letter-spacing: -.2px; }
+  .brand-slogan { font-size: 11.5px; color: var(--ink-3); font-weight: 500; margin-top: -2px; }
+  .topbar .spacer { flex: 1; }
+  .topbar button {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13px;
+    padding: 8px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line);
+    font-family: inherit; cursor: pointer; transition: all .2s;
   }
-  .nav-links a:hover { color: var(--green); background: var(--green-soft); }
+  .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
 
-  /* Hero — asymmetric split */
-  .hero {
-    display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px;
-    align-items: center; padding: 64px 0 72px;
-  }
-  .hero-main { max-width: 620px; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--green-soft); color: var(--green);
-    border: 1px solid var(--green-light);
-    padding: 8px 16px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; margin-bottom: 24px;
-    backdrop-filter: blur(8px);
-  }
-  .hero h1 {
-    font-size: clamp(44px, 5.6vw, 74px);
-    font-weight: 800; letter-spacing: -2.4px; line-height: 1.05;
-    margin-bottom: 18px;
-  }
-  .hero h1 .grad {
-    background: linear-gradient(110deg, var(--green), var(--green-3));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hero-sub {
-    font-size: clamp(16px, 1.5vw, 19px);
-    color: var(--ink-2); max-width: 500px; line-height: 1.75; margin-bottom: 32px;
-  }
-  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
-  .hero-sub-links {
-    display: flex; align-items: center; gap: 14px; margin-top: 18px;
-    font-size: 14px; color: var(--ink-3); font-weight: 600;
-  }
-  .hero-sub-links a { color: var(--ink-2); text-decoration: none; transition: color .2s; }
-  .hero-sub-links a:hover { color: var(--green); }
-  .hero-sub-links .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
-    transition: all .25s var(--ease); font-family: inherit;
-  }
-  .btn-primary {
-    background: var(--green); color: #fff;
-    padding: 16px 30px; border-radius: 999px;
-    box-shadow: 0 12px 32px rgba(14,107,80,.32);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); background: var(--green-2); }
-  .btn-primary:active { transform: translateY(0) scale(.98); }
-  .btn-ghost {
-    background: var(--surface); color: var(--ink-2);
-    padding: 15px 26px; border-radius: 999px;
-    border: 1.5px solid var(--line-2);
-  }
-  .btn-ghost:hover {
-    background: var(--green); color: #fff; border-color: var(--green);
-    transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42);
-  }
-  .hero-cta:hover .btn { opacity: .15; box-shadow: none; transform: none; }
-  .hero-cta:hover .btn:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); }
+  /* 品牌区 */
+  .motto { padding: 14px 2px 18px; }
+  .motto h1 { font-size: 26px; font-weight: 800; letter-spacing: -.3px; }
+  .motto h1 em { font-style: normal; color: var(--green); }
+  .motto p { font-size: 13.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.7; }
 
-  /* Hero visual */
-  .hero-visual {
-    position: relative; height: 420px; display: flex; align-items: center; justify-content: center;
+  /* ===== 今日卡片（动态主区） ===== */
+  .today-card { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-2); margin-bottom: 14px; }
+  .tc-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 20px; font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase;
   }
-  .zhx-ring {
-    position: absolute; width: 340px; height: 340px; border-radius: 50%;
-    border: 1.5px solid var(--line-2); opacity: .7;
-    animation: pulse-ring 4s var(--ease) infinite;
-  }
-  @keyframes pulse-ring { 0%,100%{ transform: scale(1); opacity:.7; } 50%{ transform: scale(1.04); opacity:.4; } }
-  .zhx-avatar {
-    width: 160px; height: 160px; border-radius: 50%;
-    background: radial-gradient(circle at 32% 22%, var(--green-3), var(--green));
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 24px 70px rgba(14,107,80,.35), inset 0 -8px 24px rgba(0,0,0,.12);
-    position: relative; z-index: 2;
-    animation: float-zhx 6s var(--ease) infinite alternate;
-  }
-  @keyframes float-zhx { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-  .zhx-avatar svg { width: 84px; height: 84px; }
-  .zhx-bubble {
-    position: absolute; background: var(--surface); border: 1px solid var(--line);
-    border-radius: 18px; padding: 12px 16px; box-shadow: var(--shadow-2);
-    font-size: 13px; color: var(--ink-2);
-    animation: bubble-in .8s var(--ease) both;
-    display: flex; align-items: center;
-  }
-  .zhx-bubble.b1 { top: 48px; right: 0; animation-delay: .2s; }
-  .zhx-bubble.b2 { bottom: 64px; left: 0; animation-delay: .45s; }
-  .zhx-bubble-row { display: flex; align-items: center; gap: 10px; }
-  .zhx-char {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--green-soft); color: var(--green);
-    font-size: 22px; font-weight: 800; line-height: 1;
-  }
-  .zhx-bubble-flow { font-size: 13px; color: var(--ink-2); margin-bottom: 2px; white-space: nowrap; }
-  .zhx-bubble-flow strong { color: var(--green); font-weight: 700; }
-  .zhx-bubble .zhx-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
-  .zhx-bubble .zhx-sub strong { color: var(--green); font-weight: 700; }
-  @keyframes bubble-in { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform: none; } }
+  .tc-head .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .tc-body { padding: 20px 22px 24px; }
+  .tc-eyebrow { font-size: 12.5px; opacity: .88; letter-spacing: .5px; margin-bottom: 8px; }
+  .tc-title { font-size: 24px; font-weight: 800; line-height: 1.4; margin-bottom: 10px; }
+  .tc-desc { font-size: 14px; opacity: .92; line-height: 1.7; margin-bottom: 18px; }
+  .tc-stats { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; font-size: 13px; opacity: .95; }
+  .tc-stats b { font-size: 16px; font-weight: 800; margin-right: 3px; }
 
-  /* Section label */
-  .section-label {
-    font-size: 12px; font-weight: 800; color: var(--ink-3);
-    letter-spacing: 2px; text-transform: uppercase;
-    margin-bottom: 20px;
+  .tc-input {
+    width: 100%; padding: 14px 16px; border-radius: 13px; border: none;
+    font-size: 15px; font-family: inherit; color: var(--ink); background: #fff; outline: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
   }
+  .tc-input::placeholder { color: var(--ink-3); }
 
-  /* Entrance cards — 国际水准重设计 */
-  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 80px; align-items: stretch; }
-  .entry-card {
-    position: relative; background: var(--surface); border: 1px solid var(--line);
-    border-radius: 24px; padding: 36px 32px 32px; cursor: pointer; overflow: hidden;
-    box-shadow: 0 1px 2px rgba(30,42,38,.04), 0 8px 24px rgba(30,42,38,.04);
-    transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s, border-color .45s;
+  .tc-cta {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    padding: 16px; margin-top: 12px; border: none; border-radius: 14px;
+    font-size: 16px; font-weight: 800; font-family: inherit; cursor: pointer;
+    transition: all .25s var(--ease);
   }
-  .entry-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--green-deep) 0%, var(--green) 50%, #5DD0A0 100%);
-    opacity: .95;
+  .tc-cta:hover { transform: translateY(-2px); filter: brightness(1.05); }
+  .tc-cta:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .tc-link {
+    display: inline-block; margin-top: 12px; font-size: 13.5px; font-weight: 700;
+    opacity: .92; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px;
   }
-  .entry-card::after {
-    content: ''; position: absolute; top: -40%; right: -20%; width: 320px; height: 320px;
-    background: radial-gradient(circle, rgba(29,158,117,.10) 0%, transparent 70%);
-    pointer-events: none; opacity: .8; transition: opacity .5s;
-  }
-  .entry-card.b::before { background: linear-gradient(90deg, var(--amber) 0%, #EAB968 50%, #F0CC85 100%); }
-  .entry-card.b::after { background: radial-gradient(circle, rgba(217,123,41,.10) 0%, transparent 70%); }
-  .entry-card:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
-  .entry-card.b:focus-visible { outline-color: var(--amber); }
-  .entry-card:hover { transform: translateY(-6px); box-shadow: 0 4px 12px rgba(30,42,38,.06), 0 24px 60px rgba(14,107,80,.12); border-color: var(--green-light); }
-  .entry-card.b:hover { box-shadow: 0 4px 12px rgba(30,42,38,.06), 0 24px 60px rgba(217,123,41,.14); border-color: #F0D9B8; }
-  .entry-card:hover::after { opacity: 1; }
-  .entry-card:active { transform: translateY(-3px) scale(.998); }
+  .tc-link:hover { opacity: 1; }
 
-  .ec-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; position: relative; z-index: 1; }
-  .ec-icon {
-    width: 60px; height: 60px; border-radius: 18px;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, var(--green-soft) 0%, #D6EFE2 100%);
-    color: var(--green-deep);
-    box-shadow: 0 4px 14px rgba(29,158,117,.18), inset 0 1px 0 rgba(255,255,255,.6);
-  }
-  .entry-card.b .ec-icon {
-    background: linear-gradient(135deg, var(--amber-soft) 0%, #F8E4C5 100%);
-    color: var(--amber);
-    box-shadow: 0 4px 14px rgba(217,123,41,.18), inset 0 1px 0 rgba(255,255,255,.6);
-  }
-  .ec-badge {
-    font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
-    letter-spacing: .5px; backdrop-filter: blur(4px);
-  }
-  .ec-badge.live { background: rgba(227,243,236,.85); color: var(--green-deep); border: 1px solid rgba(29,158,117,.18); }
-  .ec-badge.soon { background: rgba(251,240,226,.85); color: #8B5A1B; border: 1px solid rgba(217,123,41,.22); }
+  /* 今日改变（绿色系） */
+  .tc-change .tc-head { background: var(--green-deep, var(--green)); color: #fff; }
+  .tc-change .tc-head .dot { background: #fff; }
+  .tc-change .tc-body { background: linear-gradient(160deg, var(--green-50), var(--green-soft)); }
+  .tc-change .tc-eyebrow, .tc-change .tc-stats { color: var(--green); }
+  .tc-change .tc-title { color: var(--green-deep, var(--green)); }
+  .tc-change .tc-desc { color: var(--ink-2); }
+  .tc-change .tc-cta { background: var(--green-3); color: #fff; box-shadow: 0 8px 22px rgba(29,158,117,.28); }
+  .tc-change .tc-link { color: var(--green); }
 
-  .entry-card h2 {
-    font-size: 32px; font-weight: 800; letter-spacing: -.8px; line-height: 1.2;
-    margin-bottom: 10px; color: var(--ink); position: relative; z-index: 1;
-  }
-  .entry-card .desc {
-    font-size: 15.5px; color: var(--ink-2); line-height: 1.72;
-    margin-bottom: 24px; position: relative; z-index: 1;
-  }
+  /* 今日洞察（紫色系） */
+  .tc-think .tc-head { background: var(--violet); color: #fff; }
+  .tc-think .tc-head .dot { background: #fff; }
+  .tc-think .tc-body { background: linear-gradient(160deg, var(--violet-soft), #FBF9FF); }
+  .tc-think .tc-eyebrow { color: var(--violet); }
+  .tc-think .tc-title { color: #26215C; }
+  .tc-think .tc-desc { color: var(--ink-2); }
+  .tc-think .tc-cta { background: var(--violet); color: #fff; box-shadow: 0 8px 22px rgba(91,74,168,.3); }
+  .tc-think .tc-link { color: var(--violet); }
 
-  /* Meta 优雅的 pill chips */
-  .ec-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; position: relative; z-index: 1; }
-  .ec-meta span {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12.5px; color: var(--ink-2); font-weight: 600;
-    padding: 6px 12px; border-radius: 999px;
-    background: var(--bg); border: 1px solid var(--line);
-    transition: border-color .2s;
-  }
-  .ec-meta span svg { color: var(--green-deep); }
-  .entry-card.b .ec-meta span svg { color: var(--amber); }
+  /* 今日完成（绿色浅） */
+  .tc-done .tc-head { background: var(--green-2); color: #fff; }
+  .tc-done .tc-head .dot { background: #fff; }
+  .tc-done .tc-body { background: linear-gradient(160deg, var(--green-soft), var(--green-50)); text-align: center; }
+  .tc-done .tc-crown { font-size: 34px; line-height: 1; margin-bottom: 6px; }
+  .tc-done .tc-title { color: var(--green-deep, var(--green)); }
+  .tc-done .tc-stats { justify-content: center; color: var(--green); }
+  .tc-done .tc-cta { background: #fff; color: var(--green); border: 1.5px solid var(--green-light); }
+  .tc-done .tc-cta:hover { border-color: var(--green); background: var(--green-50); }
 
-  /* Bento feature list — 横向步骤卡 */
-  .ec-bento {
-    counter-reset: bento;
-    display: flex; flex-direction: column; gap: 4px;
-    padding-top: 24px; border-top: 1px solid var(--line);
-    position: relative; z-index: 1;
+  /* ===== 次级快捷 ===== */
+  .quick-row { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 16px; }
+  .quick-link {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700;
+    color: var(--ink-2); text-decoration: none; transition: color .2s;
   }
-  .bento-cell {
-    counter-increment: bento;
-    display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center;
-    background: transparent; border: none; border-radius: 12px;
-    padding: 10px 12px; margin: 0;
-    transition: background .25s, transform .25s;
-  }
-  .bento-cell:hover { background: var(--green-50); transform: translateX(4px); }
-  .entry-card.b .bento-cell:hover { background: var(--amber-soft); }
-  .bento-cell .bc-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: var(--green-soft); color: var(--green-deep);
-    display: inline-flex; align-items: center; justify-content: center;
-    position: relative; margin: 0;
-    transition: background .25s, color .25s;
-  }
-  .entry-card.b .bento-cell .bc-icon { background: var(--amber-soft); color: var(--amber); }
-  .bento-cell:hover .bc-icon { background: var(--green); color: #fff; }
-  .entry-card.b .bento-cell:hover .bc-icon { background: var(--amber); color: #fff; }
-  /* 编号小角标 */
-  .bento-cell .bc-icon::after {
-    content: counter(bento, decimal-leading-zero);
-    position: absolute; top: -8px; right: -10px;
-    min-width: 26px; height: 24px; padding: 0 6px;
-    background: #0A5A42; color: #fff;
-    border-radius: 999px; font-size: 12.5px; font-weight: 800;
-    display: inline-flex; align-items: center; justify-content: center;
-    border: 2px solid var(--surface);
-    box-shadow: 0 2px 6px rgba(10,90,66,.35);
-  }
-  .entry-card.b .bento-cell .bc-icon::after { background: var(--amber); box-shadow: 0 2px 6px rgba(217,123,41,.35); }
-  .bento-cell h4 { font-size: 14.5px; font-weight: 700; margin: 0 0 3px; color: var(--ink); line-height: 1.4; }
-  .bento-cell p { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin: 0; }
+  .quick-link:hover { color: var(--violet); }
 
-  .ec-archive {
-    display: inline-flex; align-items: center; gap: 8px;
-    margin-top: 26px; font-size: 14px; font-weight: 600; color: var(--green-deep);
-    text-decoration: none; transition: gap .2s, color .2s;
-    position: relative; z-index: 2; padding: 8px 0;
+  /* ===== 深度入口区 ===== */
+  .deep-sec { padding-top: 16px; border-top: 1px dashed var(--line-2); }
+  .deep-label {
+    font-size: 11.5px; font-weight: 800; letter-spacing: 1.5px; color: var(--ink-3);
+    text-transform: uppercase; margin-bottom: 12px;
   }
-  .entry-card.b .ec-archive { color: var(--amber); }
-  .ec-archive::after {
-    content: ''; position: absolute; left: 0; right: 24px; bottom: 6px; height: 1px;
-    background: currentColor; transform: scaleX(.25); transform-origin: left;
-    opacity: .35; transition: transform .3s, opacity .3s;
+  .deep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .deep-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 16px 16px 14px; text-decoration: none; display: block;
+    transition: all .2s var(--ease); position: relative;
   }
-  .ec-archive:hover { gap: 12px; }
-  .ec-archive:hover::after { transform: scaleX(1); opacity: .85; }
+  .deep-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); border-color: var(--line-2); }
+  .deep-card .dc-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;
+  }
+  .deep-card h3 { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 3px; }
+  .deep-card p { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+  .deep-card .dc-badge {
+    position: absolute; top: 14px; right: 14px; font-size: 10.5px; font-weight: 800;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .dc-insight { background: var(--violet-soft); }
+  .dc-insight .dc-icon { background: var(--violet-soft); color: var(--violet); }
+  .dc-insight .dc-badge { background: var(--violet-soft); color: var(--violet); }
+  .dc-change { background: var(--amber-soft); }
+  .dc-change .dc-icon { background: var(--amber-soft); color: var(--amber); }
+  .dc-change .dc-badge { background: var(--amber-soft); color: var(--amber); }
 
-  .ec-arrow {
-    position: absolute; right: 28px; bottom: 28px; width: 44px; height: 44px;
-    border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center;
-    border: 1px solid var(--line); color: var(--ink-3);
-    transition: transform .35s cubic-bezier(.16,1,.3,1), background .35s, border-color .35s, color .35s;
-    z-index: 1;
-  }
-  .entry-card:hover .ec-arrow { transform: translate(4px, -2px); background: var(--green); border-color: var(--green); color: #fff; }
-  .entry-card.b:hover .ec-arrow { background: var(--amber); border-color: var(--amber); }
-
-  /* Manifesto strip */
-  .manifesto {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl);
-    padding: 40px; margin-bottom: 80px; box-shadow: var(--shadow-1);
-    display: grid; grid-template-columns: 1fr 1px 1fr; gap: 40px; align-items: center;
-  }
-  .manifesto-divider { background: var(--line-2); height: 100%; min-height: 80px; }
-  .manifesto-block h3 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 10px; }
-  .manifesto-block p { font-size: 15px; color: var(--ink-2); line-height: 1.7; }
-
-  /* Footer */
-  .foot {
-    border-top: 1px solid var(--line); padding: 32px 0 48px;
-    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-  }
-  .foot-copy { font-size: 13px; color: var(--ink-3); font-weight: 500; }
-  .foot-links { display: flex; gap: 22px; }
-  .foot-links a { font-size: 13px; color: var(--ink-2); text-decoration: none; font-weight: 600; transition: color .2s; }
-  .foot-links a:hover { color: var(--green); }
-
-  /* FAB */
+  /* 成长资产 fab */
   .fab-archive {
-    position: fixed; right: 22px; bottom: 22px; z-index: 40;
+    position: fixed; right: 20px; bottom: 20px; z-index: 40;
     display: inline-flex; align-items: center; gap: 8px;
     background: var(--green); color: #fff;
-    padding: 14px 22px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
-    box-shadow: 0 12px 32px rgba(14,107,80,.38); transition: all .25s var(--ease); font-family: inherit;
+    padding: 13px 20px; border-radius: 999px; font-size: 13.5px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 10px 28px rgba(14,107,80,.36); transition: all .25s var(--ease); font-family: inherit;
   }
-  .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); background: var(--green-2); }
+  .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(14,107,80,.46); background: var(--green-2); }
 
-  @media (max-width: 980px) {
-    .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 0 48px; }
-    .hero-sub { margin-left: auto; margin-right: auto; }
-    .hero-cta { justify-content: center; }
-    .hero-visual { order: -1; height: 280px; }
-    .zhx-avatar { width: 120px; height: 120px; }
-    .zhx-avatar svg { width: 62px; height: 62px; }
-    .zhx-ring { width: 240px; height: 240px; }
-    .zhx-bubble { display: none; }
-    .bento-cell { padding: 10px 8px; }
-    .bento-cell .bc-icon { flex-shrink: 0; }
-    .manifesto { grid-template-columns: 1fr; gap: 24px; }
-    .manifesto-divider { display: none; }
-  }
-  @media (max-width: 720px) {
-    .entrance { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 520px) {
-    .wrap { padding: 0 18px; }
-    .nav { padding: 18px 0; }
-    .nav-links a { padding: 8px 12px; }
-    .nav-links a span { display: none; }
-    .hero h1 { font-size: 38px; letter-spacing: -1.4px; }
-    .entry-card { padding: 24px 22px; }
-    .entry-card h2 { font-size: 22px; }
-    .ec-arrow { display: none; }
-    .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; }
-    .manifesto { padding: 28px 22px; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 14px 100px; }
+    .motto h1 { font-size: 23px; }
+    .deep-grid { grid-template-columns: 1fr; }
+    .tc-title { font-size: 21px; }
   }
 </style>
 <script>
@@ -429,263 +230,191 @@
 <div class="bg-atmo" aria-hidden="true">
   <div class="atmo-blob a"></div>
   <div class="atmo-blob b"></div>
-  <div class="atmo-blob c"></div>
 </div>
-<div class="grid-overlay" aria-hidden="true"></div>
 
 <div class="wrap">
-  <nav class="nav">
-    <a class="nav-brand" href="index.html">
-      <div class="nav-mark">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
-        </svg>
+  <!-- 顶部导航 -->
+  <div class="topbar">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.6" fill="#fff"/></svg>
       </div>
-      <span class="nav-name">Transform</span>
+      <div>
+        <div class="brand-name">Transform</div>
+        <div class="brand-slogan">想清楚，做得到</div>
+      </div>
     </a>
-    <div class="nav-links">
-      <a href="growth.html#insights">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-        <span>认知档案</span>
-      </a>
-      <a href="growth.html#experiments">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
-        <span>行为档案</span>
-      </a>
-      <a href="app.html?settings=1">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <span>设置</span>
-      </a>
-    </div>
-  </nav>
-
-  <section class="hero">
-    <div class="hero-main">
-      <div class="hero-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        AI 认知-行为进化引擎
-      </div>
-      <h1>想清楚，<span class="grad">做得到</span></h1>
-      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让知行陪你完成从洞察到改变的闭环。</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="app.html">
-          开始一次认知提升
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a class="btn btn-ghost" href="act.html">
-          开始一次行为改变
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </div>
-      <div class="hero-sub-links">
-        <span>从认知到行为，一次闭环</span>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="zhx-ring"></div>
-      <div class="zhx-avatar">
-        <svg width="84" height="84" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="10" r="4.5" stroke="#fff" stroke-width="1.6"/>
-          <path d="M7 17c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
-          <circle cx="10.3" cy="9.5" r=".9" fill="#fff"/>
-          <circle cx="13.7" cy="9.5" r=".9" fill="#fff"/>
-          <path d="M11.2 11.4c.5.3 1.1.3 1.6 0" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="zhx-bubble b1">
-        <div class="zhx-bubble-row">
-          <span class="zhx-char">知</span>
-          <div>
-            <div class="zhx-bubble-flow"><strong>归类</strong> → 洞察 → 应用</div>
-            <div class="zhx-sub">已沉淀 <strong id="insightCount">0</strong> 条认知</div>
-          </div>
-        </div>
-      </div>
-      <div class="zhx-bubble b2">
-        <div class="zhx-bubble-row">
-          <span class="zhx-char">行</span>
-          <div>
-            <div class="zhx-bubble-flow"><strong>拆解</strong> → 行动 → 转变</div>
-            <div class="zhx-sub">已做到 <strong id="behaviorCount">0</strong> 次</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-label">选择入口</div>
-  <div class="entrance">
-    <div class="entry-card" data-href="app.html" role="link" tabindex="0" aria-label="伴我洞察：一次专注，把一件事真正想通">
-      <div class="ec-top">
-        <div class="ec-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span class="ec-badge live"><a href="think.html" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">每日洞察的入口 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="margin-left:2px;"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span>
-      </div>
-      <h2>伴我洞察</h2>
-      <p class="desc">一次专注，把一件事真正想通。归类、洞察、应用，产出属于你的洞察，并在真实场景里验证它。</p>
-      <div class="ec-meta">
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          5 分钟
-        </span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 117 0c-1.5 1.2-2 2.4-2 3.5h-3c0-1.1-.5-2.3-2-3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          1 个洞察
-        </span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          应用验证
-        </span>
-      </div>
-      <div class="ec-bento">
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <h4>把混乱结构化</h4>
-            <p>现象、事实、猜测、假设分类归档。</p>
-          </div>
-        </div>
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <h4>追问本质</h4>
-            <p>渐进式提问，逼出真正重要的认知。</p>
-          </div>
-        </div>
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h4>行动并验证</h4>
-            <p>把洞察落地到具体场景，获取反馈。</p>
-          </div>
-        </div>
-      </div>
-      <a class="ec-archive" href="growth.html#insights" onclick="event.stopPropagation()">查看认知洞察档案 →</a>
-      <span class="ec-arrow">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-    </div>
-
-    <div class="entry-card b" data-href="act.html" role="link" tabindex="0" aria-label="伴我改变：从想明白到真正发生行为改变">
-      <div class="ec-top">
-        <div class="ec-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <span class="ec-badge live"><a href="punch.html" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">每日改变的入口 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="margin-left:2px;"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></span>
-      </div>
-      <h2>伴我改变</h2>
-      <p class="desc">从想明白到真正发生行为改变，经历「拆解细分 → 行动锚定 → 反馈强化」，让知行合一，沉淀成新的习惯和角色。</p>
-      <div class="ec-meta">
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          任何起点
-        </span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="2"/><path d="M12 6v2.5M12 15.5V18M6 12h2.5M15.5 12H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          行动锚定
-        </span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 14l4-4 4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          习惯与身份
-        </span>
-      </div>
-      <div class="ec-bento">
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 18h5l3-7 4 4 4-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h4l2-4 3 3 3-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/></svg>
-          </div>
-          <div>
-            <h4>拆解细分</h4>
-            <p>把目标拆成今天就能完成的最小一步。</p>
-          </div>
-        </div>
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.8" stroke="currentColor" stroke-width="2"/><path d="M12 5v3M12 16v3M5 12h3M16 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
-          <div>
-            <h4>行动锚定</h4>
-            <p>把微行动锚定到已有的日常瞬间。</p>
-          </div>
-        </div>
-        <div class="bento-cell">
-          <div class="bc-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 11-2.3-5.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h4>反馈强化</h4>
-            <p>从 AI 和环境获得反馈，巩固新行为。</p>
-          </div>
-        </div>
-      </div>
-      <a class="ec-archive" href="growth.html#experiments" onclick="event.stopPropagation()">查看行为改变档案 →</a>
-      <span class="ec-arrow">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </span>
-    </div>
+    <div class="spacer"></div>
+    <button onclick="toggleTheme()" aria-label="切换深色模式">☾</button>
   </div>
 
-  <section class="manifesto">
-    <div class="manifesto-block">
-      <h3>AI 是脚手架，不是答案</h3>
-      <p>知行不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
-    </div>
-    <div class="manifesto-divider"></div>
-    <div class="manifesto-block">
-      <h3>从认知到行为，一次闭环</h3>
-      <p>想清楚还不够。把洞察放进真实场景推演，获得反馈，再调整认知——这才是真正的改变。</p>
-    </div>
-  </section>
+  <!-- 品牌 motto -->
+  <div class="motto">
+    <h1>今天，<em>进步</em>一点点</h1>
+    <p>一个困惑想理清楚，或一件小事今天做到。知行为你出题、陪你做完，把想法沉淀成成长。</p>
+  </div>
 
-  <footer class="foot">
-    <span class="foot-copy">© Transform · 想清楚，做得到</span>
-    <div class="foot-links">
-      <a href="https://github.com/davidma1973simu/workbuddy-agents-marketplace" target="_blank" rel="noopener">GitHub</a>
+  <!-- 今日卡片（动态主区） -->
+  <div id="todayArea"></div>
+
+  <!-- 次级快捷：每日洞察 -->
+  <div class="quick-row">
+    <a class="quick-link" href="think.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      随时想清楚一件事 → 每日洞察
+    </a>
+  </div>
+
+  <!-- 深度入口 -->
+  <div class="deep-sec">
+    <div class="deep-label">需要认真对待的大事？</div>
+    <div class="deep-grid">
+      <a class="deep-card dc-insight" href="app.html">
+        <div class="dc-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <span class="dc-badge">完整仪式</span>
+        <h3>伴我洞察</h3>
+        <p>职业转型、人生决策这类大事，归类 → 洞察 → 应用，一次想透。</p>
+      </a>
+      <a class="deep-card dc-change" href="act.html">
+        <div class="dc-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="dc-badge">N 天实验</span>
+        <h3>伴我改变</h3>
+        <p>想要真正养成习惯或推动改变，设计一个 N 天行为实验，一天天做。</p>
+      </a>
     </div>
-  </footer>
+  </div>
 </div>
 
 <a class="fab-archive" href="growth.html" title="随时查看我的成长资产">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   成长资产
 </a>
+
 <script>
-(function(){
+/* ===================== 今日导向单屏（v2） ===================== */
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? '' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('trf_theme', next); } catch(e){}
+}
+
+function loadData(){
+  let actions = [], archive = [];
+  try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]'); } catch(e){}
+  try { archive = JSON.parse(localStorage.getItem('trf_archive') || '[]'); } catch(e){}
+  return { actions, archive };
+}
+
+function isTodayDone(action){
+  const today = new Date(); today.setHours(0,0,0,0);
+  return (action.logs || []).some(l => {
+    if (!l.done) return false;
+    const ld = new Date(l.date); ld.setHours(0,0,0,0);
+    return ld.getTime() === today.getTime();
+  });
+}
+
+function renderToday(){
+  const { actions } = loadData();
+  const active = actions.find(a => a && a.status === 'active');
+  const area = $('todayArea');
+  if (active){
+    if (isTodayDone(active)) renderDone(active);
+    else renderChange(active);
+  } else {
+    renderThink();
+  }
+}
+
+/* 状态 1：今日改变（有 active 实验，今天还没做） */
+function renderChange(a){
+  const today = (a.plan || []).find(p => p.day === a.currentDay);
+  const micro = (today && today.micro) || a.input;
+  $('todayArea').innerHTML = `
+    <div class="today-card tc-change">
+      <div class="tc-head"><span class="dot"></span>今日改变 · 第 ${a.currentDay} / ${a.targetDays} 天</div>
+      <div class="tc-body">
+        <div class="tc-eyebrow">今天的最小一步</div>
+        <div class="tc-title">${escapeHtml(micro)}</div>
+        <div class="tc-desc">${a.anchor && a.anchor.after ? ('在我 <b>' + escapeHtml(a.anchor.after) + '</b> 之后，就做这一步。') : '到了锚点时刻，就做这一步。'}</div>
+        <div class="tc-stats">
+          <span>连续 <b>${a.streak || 0}</b> 天</span>
+          <span>累计 <b>${a.totalDone || 0}</b> 天</span>
+          <span>目标 <b>${a.identity ? escapeHtml(a.identity) : '新的自己'}</b></span>
+        </div>
+        <a class="tc-cta" href="punch.html" style="text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          做完了 →
+        </a>
+        <div style="text-align:center;"><a class="tc-link" href="growth.html#experiments">查看行为档案</a></div>
+      </div>
+    </div>`;
+}
+
+/* 状态 2：今日已完成 */
+function renderDone(a){
+  $('todayArea').innerHTML = `
+    <div class="today-card tc-done">
+      <div class="tc-head"><span class="dot"></span>今日 · 已完成</div>
+      <div class="tc-body">
+        <div class="tc-crown">🎉</div>
+        <div class="tc-title">今天做到了！</div>
+        <div class="tc-desc">「${escapeHtml(a.input)}」又前进了一天，连续 ${a.streak || 0} 天。</div>
+        <div class="tc-stats">
+          <span>连续 <b>${a.streak || 0}</b> 天</span>
+          <span>累计 <b>${a.totalDone || 0}</b> 天</span>
+        </div>
+        <a class="tc-cta" href="growth.html#experiments" style="text-decoration:none;">看行为档案 →</a>
+      </div>
+    </div>`;
+}
+
+/* 状态 3：今日洞察（无 active 实验时） */
+function renderThink(){
+  $('todayArea').innerHTML = `
+    <div class="today-card tc-think">
+      <div class="tc-head"><span class="dot"></span>今日洞察 · 30 秒开始</div>
+      <div class="tc-body">
+        <div class="tc-eyebrow">有一个困惑卡住了你</div>
+        <div class="tc-title">写下来，知行帮你想清楚</div>
+        <div class="tc-desc">知行基于它出 1 题，你回答、被理清、被质疑，最后整合成一条属于你的洞察。</div>
+        <input class="tc-input" id="thinkTopic" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60">
+        <button class="tc-cta" id="thinkBtn" onclick="startThink()" disabled>开始想清楚 →</button>
+        <div style="text-align:center;"><a class="tc-link" href="think.html">直接进入每日洞察</a></div>
+      </div>
+    </div>`;
+  const input = $('thinkTopic');
+  input.addEventListener('input', e => {
+    $('thinkBtn').disabled = e.target.value.trim().length < 4;
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') startThink(); });
+  input.focus();
+}
+
+function startThink(){
+  const topic = ($('thinkTopic').value || '').trim();
+  if (topic.length < 4) return;
+  location.href = 'think.html?topic=' + encodeURIComponent(topic);
+}
+
+/* ===================== 初始化 ===================== */
+(function init(){
+  // 归档计数
   try {
-    const archive = JSON.parse(localStorage.getItem('trf_archive') || '[]');
-    const actions = JSON.parse(localStorage.getItem('trf_actions') || '[]');
+    const { archive, actions } = loadData();
     const insightEl = document.getElementById('insightCount');
     const behaviorEl = document.getElementById('behaviorCount');
     if (insightEl) insightEl.textContent = archive.length || 0;
     if (behaviorEl) behaviorEl.textContent = actions.filter(a => a && (a.status === 'graduated' || a.totalDone > 0)).length || 0;
-  } catch(e) {}
-
-  document.querySelectorAll('.entry-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const href = card.dataset.href;
-      if (href) location.href = href;
-    });
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        const href = card.dataset.href;
-        if (href) location.href = href;
-      }
-    });
-  });
+  } catch(e){}
+  renderToday();
 })();
 </script>
 </body>

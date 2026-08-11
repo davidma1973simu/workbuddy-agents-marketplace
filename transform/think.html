@@ -505,7 +505,42 @@ function renderInsightResult(session){
 }
 
 /* ===================== 初始化 ===================== */
-renderInputStage();
+// 初始化：支持 ?topic= 预填主题（来自首页今日卡片）
+(function(){
+  const params = new URLSearchParams(location.search);
+  const prefill = (params.get('topic') || '').trim();
+  if (prefill){
+    topic = prefill;
+    // 预填后自动开始（跳过输入步骤，直接进入 AI 出题）
+    const cfg = getAI();
+    if (cfg.apiKey){
+      startThinkWithTopic(prefill);
+      return;
+    }
+  }
+  renderInputStage();
+})();
+
+async function startThinkWithTopic(t){
+  topic = t;
+  // 出 1 题
+  let q = null;
+  for (let attempt = 0; attempt < 3 && !q; attempt++){
+    const r = await aiCall(
+      `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
+    );
+    const d = parseJSON(r);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+  }
+  if (!q){
+    renderInputStage();
+    toast('知行暂时出不了题，请稍后再试');
+    return;
+  }
+  question = q;
+  answer = ''; aiHelps = []; revisions = [];
+  renderQuestionStage();
+}
 </script>
 </body>
 </html>
