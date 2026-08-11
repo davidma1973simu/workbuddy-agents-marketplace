@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>快速想清楚 · Transform</title>
+<style>
+  :root {
+    --bg: #F8F7F3;
+    --surface: #FFFFFF;
+    --surface-2: #F2F1EC;
+    --ink: #151B19;
+    --ink-2: #3D4A45;
+    --ink-3: #7A8A83;
+    --line: #E6E9E7;
+    --line-2: #DDE2DF;
+    --green: #0E6B50;
+    --green-2: #158A68;
+    --green-3: #1D9E75;
+    --green-soft: #E8F4EE;
+    --green-light: #C8EBD9;
+    --green-50: #F0F9F4;
+    --amber: #C87A2A;
+    --amber-soft: #FDF3E6;
+    --amber-2: #EAA052;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --violet: #5B4AA8;
+    --violet-soft: #EEECFA;
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow-1: 0 1px 2px rgba(21,27,25,.04);
+    --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  [data-theme="dark"] {
+    --bg: #0C100F;
+    --surface: #161C1A;
+    --surface-2: #1E2523;
+    --ink: #EEF4F1;
+    --ink-2: #A7B6B0;
+    --ink-3: #6A7A74;
+    --line: #252E2C;
+    --line-2: #2F3A37;
+    --green: #34D29E;
+    --green-2: #2BBB8A;
+    --green-3: #1D9E75;
+    --green-soft: #132A24;
+    --green-light: #1E4A3E;
+    --green-50: #0F1F1B;
+    --amber: #EAA052;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --violet: #A99BE8;
+    --violet-soft: #23203A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 20px 110px; }
+
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
+    font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s;
+  }
+  .back:hover { background: var(--surface-2); color: var(--ink); }
+  .topbar .spacer { flex: 1; }
+  .topbar button {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13.5px;
+    padding: 9px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line);
+    font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
+
+  /* 阶段 1：输入主题 */
+  .think-hero {
+    background: linear-gradient(135deg, #0A5A42, var(--green-3));
+    border-radius: var(--radius-lg); padding: 30px 26px; color: #fff; margin-top: 8px;
+  }
+  .think-hero .th-eyebrow { font-size: 12.5px; opacity: .85; letter-spacing: .5px; margin-bottom: 10px; }
+  .think-hero h1 { font-size: 24px; font-weight: 800; line-height: 1.4; margin-bottom: 8px; }
+  .think-hero p { font-size: 14px; opacity: .92; line-height: 1.7; margin-bottom: 18px; }
+  .think-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px; border: none; font-size: 15px;
+    font-family: inherit; color: var(--ink); outline: none; background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  }
+  .think-input::placeholder { color: var(--ink-3); }
+  .cta-start {
+    display: block; width: 100%; margin-top: 12px; padding: 15px; border: none; border-radius: 12px;
+    background: #fff; color: #0A5A42; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+  .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* 阶段 2：AI 出题 + 回答 */
+  .q-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 24px; margin-top: 16px;
+  }
+  .q-card .q-tag {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
+    letter-spacing: 1px; color: var(--violet); margin-bottom: 12px;
+  }
+  .q-card .q-text { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 16px; color: var(--ink); }
+  .q-card .q-ctx { font-size: 12.5px; color: var(--ink-3); margin-bottom: 14px; line-height: 1.6; }
+  .q-answer {
+    width: 100%; min-height: 90px; padding: 13px 15px; border-radius: 12px;
+    border: 1.5px solid var(--line-2); background: var(--surface); font-size: 14.5px;
+    font-family: inherit; color: var(--ink); outline: none; resize: vertical; line-height: 1.7;
+    transition: border-color .2s;
+  }
+  .q-answer:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(91,74,168,.1); }
+
+  .q-ai-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .q-ai-label { font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  .ai-btn-cap {
+    display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 999px;
+    border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .ai-btn-cap:hover { border-color: var(--violet); color: var(--violet); background: var(--violet-soft); }
+  .ai-btn-cap.loading { opacity: .5; pointer-events: none; }
+
+  .q-ai-result { margin-top: 12px; padding: 12px 14px; background: var(--violet-soft); border-radius: 12px; font-size: 13.5px; line-height: 1.7; display: none; }
+  .q-ai-result.show { display: block; animation: fade-in .3s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .ai-tag { display: inline-block; font-size: 11px; font-weight: 800; color: var(--violet); margin-bottom: 4px; }
+
+  /* 修订区 */
+  .q-rev-toggle {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+    background: none; border: none; color: var(--green); font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: inherit; padding: 0;
+  }
+  .q-rev-toggle:hover { text-decoration: underline; }
+  .q-rev-box { margin-top: 12px; padding: 14px; background: var(--green-50); border: 1px solid var(--green-light); border-radius: 12px; display: none; }
+  .q-rev-box.show { display: block; }
+  .q-rev-box label { display: block; font-size: 12.5px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+  .q-rev-input {
+    width: 100%; min-height: 70px; padding: 12px 14px; border-radius: 10px;
+    border: 1.5px solid var(--green-light); background: var(--surface); font-size: 14px;
+    font-family: inherit; color: var(--ink); outline: none; line-height: 1.7;
+  }
+  .q-rev-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .q-rev-actions { display: flex; gap: 10px; margin-top: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    font-family: inherit; cursor: pointer; border: none; transition: all .25s var(--ease);
+  }
+  .btn-primary { background: var(--green-3); color: #fff; }
+  .btn-primary:hover { background: var(--green-2); }
+  .btn-ghost { background: var(--surface); color: var(--green); border: 1.5px solid var(--green-light); }
+  .btn-ghost:hover { border-color: var(--green); background: var(--green-50); }
+
+  .cta-integrate {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
+    background: var(--violet); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-integrate:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  .cta-integrate:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .cta-integrate.loading { opacity: .6; pointer-events: none; }
+
+  /* 阶段 3：洞察卡 */
+  .insight-result { margin-top: 16px; }
+  .insight-result.hidden { display: none; }
+  .ir-card {
+    background: linear-gradient(135deg, var(--green-soft) 0%, var(--green-50) 100%);
+    border: 1.5px solid var(--green-light); border-radius: var(--radius-lg);
+    padding: 24px 22px 18px;
+    box-shadow: 0 8px 28px rgba(29,158,117,.14);
+    animation: tf-slide .6s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes tf-slide { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .ir-crown { font-size: 36px; line-height: 1; margin-bottom: 6px; }
+  .ir-title { font-size: 20px; font-weight: 800; color: var(--green); margin-bottom: 14px; }
+  .ir-block { background: var(--surface); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .ir-block .k { font-size: 11.5px; font-weight: 800; letter-spacing: 1px; color: var(--green); margin-bottom: 4px; }
+  .ir-block .v { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.7; }
+  .ir-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .ir-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; text-align: center; }
+
+  /* toast */
+  #toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--surface); padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .3s var(--ease);
+    z-index: 100; max-width: 90vw; text-align: center;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+<script>
+  (function(){
+    try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); }
+    catch(e){}
+  })();
+</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      首页
+    </a>
+    <div class="spacer"></div>
+    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
+    <button onclick="location.href='growth.html#insights'" aria-label="认知档案">📖 认知档案</button>
+  </div>
+
+  <div id="thinkArea"></div>
+  <div id="toast"></div>
+</div>
+
+<script>
+/* ===================== 数据层（与 app.html 完全互通） ===================== */
+const LS_ARCHIVE = 'trf_archive';
+const LS_PROFILE = 'trf_profile';
+const LS_AI = 'trf_ai_config_v1';
+const BRAND_PROFILES = {
+  'DeepSeek': { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+  'OpenAI':   { baseUrl: 'https://api.openai.com/v1',  model: 'gpt-4o-mini' },
+  'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
+};
+
+let topic = '';        // 当前主题
+let question = '';     // AI 出的题
+let answer = '';       // 用户回答（canonical）
+let aiHelps = [];      // 三按钮协助历史 [{cap, text, at}]
+let revisions = [];    // 修订轨迹 [text...]
+let integrating = false;
+
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? '' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('trf_theme', next); } catch(e){}
+}
+function getAI(){
+  let cfg; try { cfg = JSON.parse(localStorage.getItem(LS_AI)) || {}; } catch(e){ cfg = {}; }
+  const brand = cfg.brand || 'DeepSeek';
+  const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
+  return { brand, apiKey: cfg.apiKey || '', baseUrl: cfg.baseUrl || profile.baseUrl, model: cfg.model || profile.model };
+}
+function loadArchive(){ try { return JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e){ return []; } }
+function saveArchive(list){ localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+
+async function aiCall(prompt, attempt = 1){
+  const cfg = getAI();
+  if (!cfg.apiKey) return null;
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  const maxAttempts = 4;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 700 })
+    });
+    if (!res.ok){
+      if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
+        await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+        return aiCall(prompt, attempt + 1);
+      }
+      return null;
+    }
+    return (await res.json()).choices[0].message.content;
+  } catch(e){ return null; }
+}
+function parseJSON(text){
+  if (!text) return null;
+  try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
+}
+
+/* ===================== 阶段 1：输入主题 ===================== */
+function renderInputStage(){
+  $('thinkArea').innerHTML = `
+    <div class="think-hero">
+      <div class="th-eyebrow">伴我洞察 · 快速想清楚</div>
+      <h1>一件让你卡住的事，30 秒开始</h1>
+      <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
+      <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60">
+      <button class="cta-start" id="startBtn" onclick="startThink()">开始想清楚 →</button>
+    </div>`;
+  const input = $('topicInput');
+  input.addEventListener('input', e => {
+    topic = e.target.value.trim();
+    $('startBtn').disabled = topic.length < 4;
+  });
+  $('startBtn').disabled = true;
+  input.focus();
+}
+
+async function startThink(){
+  topic = ($('topicInput').value || '').trim();
+  if (topic.length < 4) { toast('再多写几个字，知行才能出好题'); return; }
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
+  const btn = $('startBtn');
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在出题…';
+  // 出 1 题
+  let q = null;
+  for (let attempt = 0; attempt < 3 && !q; attempt++){
+    const r = await aiCall(
+      `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
+    );
+    const d = parseJSON(r);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+  }
+  if (!q){
+    btn.classList.remove('loading'); btn.textContent = '开始想清楚 →'; btn.disabled = false;
+    toast('知行暂时出不了题，请稍后再试');
+    return;
+  }
+  question = q;
+  answer = ''; aiHelps = []; revisions = [];
+  renderQuestionStage();
+}
+
+/* ===================== 阶段 2：回答 + 三按钮 ===================== */
+function renderQuestionStage(){
+  $('thinkArea').innerHTML = `
+    <div class="q-card">
+      <div class="q-tag">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
+        知行基于你的主题出的第一题
+      </div>
+      <div class="q-text">${escapeHtml(question)}</div>
+      <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
+      <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
+      <div class="q-ai-row">
+        <span class="q-ai-label">知行可以帮助你：</span>
+        <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
+      </div>
+      <div class="q-ai-result" id="qAiResult"></div>
+      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()">📝 修订我的回答</button>
+      <div class="q-rev-box" id="revBox">
+        <label>把刚才的思考，修订成你真正认同的版本</label>
+        <textarea class="q-rev-input" id="revInput">${escapeHtml(answer)}</textarea>
+        <div class="q-rev-actions">
+          <button class="btn btn-primary" onclick="saveRevision()">保存修订</button>
+          <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
+        </div>
+      </div>
+      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让知行整合出洞察 →</button>
+    </div>`;
+  const ta = $('qAnswer');
+  ta.addEventListener('input', e => { answer = e.target.value; });
+  ta.focus();
+  // 回车出结果
+  $('qAiResult').innerHTML = '';
+}
+
+function toggleRevBox(force){
+  const box = $('revBox');
+  const show = force !== undefined ? force : box.classList.contains('show') ? false : true;
+  box.classList.toggle('show', show);
+  if (show) $('revInput').value = answer;
+}
+function saveRevision(){
+  const v = ($('revInput').value || '').trim();
+  if (!v) { toast('写点什么再保存'); return; }
+  if (v !== answer) revisions.push(v);
+  answer = v;
+  $('qAnswer').value = v;
+  toggleRevBox(false);
+  toast('已保存为你的最终回答 ✓');
+}
+
+async function aiInspireQ(cap, btn){
+  const a = answer.trim();
+  if (!a) { toast('先写下你的思考'); return; }
+  btn.classList.add('loading');
+  const prompts = {
+    '理清': '帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。',
+    '质疑': '苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。',
+    '查证': '检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。'
+  };
+  const r = await aiCall(
+    `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
+  );
+  btn.classList.remove('loading');
+  if (!r){ toast('知行暂时没响应，请稍后再试'); return; }
+  const text = r.trim().slice(0, 300);
+  aiHelps.push({ cap, text, at: new Date().toISOString() });
+  const box = $('qAiResult');
+  box.innerHTML = '<span class="ai-tag">知行 · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
+  box.classList.add('show');
+  // 出现后可立即修订
+  $('revToggle').style.display = 'inline-flex';
+}
+
+/* ===================== 阶段 3：整合出洞察 ===================== */
+async function finishThink(){
+  if (integrating) return;
+  const a = answer.trim();
+  if (!a) { toast('先写下你的回答'); return; }
+  integrating = true;
+  const btn = $('integrateBtn');
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在整合…';
+  const qaPairs =
+    `问题：${question}\n用户最终回答：${a}` +
+    (aiHelps.length ? `\n知行协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
+    (revisions.length ? `\n（该题经知行启发后由用户主动修订 ${revisions.length} 次）` : '');
+
+  let essence = null;
+  for (let attempt = 0; attempt < 3 && !essence; attempt++){
+    const r = await aiCall(
+      `主题：「${topic}」\n\n用户在问题下的思考：\n${qaPairs}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
+    );
+    const d = parseJSON(r);
+    if (d && (d.nature || d.newInsight)){
+      essence = { nature: (d.nature || '').trim(), insight: (d.newInsight || '').trim() };
+    }
+  }
+  if (!essence){
+    integrating = false;
+    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让知行整合出洞察 →';
+    toast('知行整合失败，请稍后再试');
+    return;
+  }
+  // 存入认知档案（与 app.html complete() 的条目格式一致）
+  const session = {
+    id: 's_' + Date.now(),
+    createdAt: new Date().toISOString(),
+    scenario: topic,
+    notes: [],
+    groups: [],
+    insightQuestions: [question],
+    insightAnswers: [answer],
+    insightPersonalView: '',
+    essence,
+    confirmed: false,
+    impact: 0,
+    effort: 0,
+    scene: '',
+    expectedOutcome: '',
+    nearScenario: null,
+    farScenario: null,
+    nearFeedback: null,
+    farFeedback: null,
+    resourcesPlan: null,
+    nearResourcesPlan: null,
+    farResourcesPlan: null,
+    identity: '',
+    insightAiHelps: [aiHelps],
+    insightRevisions: [revisions],
+    tags: [],
+    completedAt: new Date().toISOString(),
+    source: 'think'
+  };
+  const archive = loadArchive();
+  archive.unshift(session);
+  saveArchive(archive);
+  integrating = false;
+  renderInsightResult(session);
+}
+
+function renderInsightResult(session){
+  $('thinkArea').innerHTML = `
+    <div class="insight-result">
+      <div class="ir-card">
+        <div class="ir-crown">✨</div>
+        <div class="ir-title">想清楚了：一条新洞察已沉淀</div>
+        <div class="ir-block">
+          <div class="k">现象背后的本质</div>
+          <div class="v">${escapeHtml(session.essence.nature || '（未生成）')}</div>
+        </div>
+        <div class="ir-block">
+          <div class="k">新洞察</div>
+          <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
+        </div>
+        <div class="ir-actions">
+          <a class="btn btn-primary" href="act.html?insight=${encodeURIComponent(session.essence.insight || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
+            把这个洞察变成一个行为实验 →
+          </a>
+          <a class="btn btn-ghost" href="growth.html#insights" style="text-decoration:none;">看认知档案</a>
+        </div>
+        <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===================== 初始化 ===================== */
+renderInputStage();
+</script>
+</body>
+</html>
