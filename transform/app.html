@@ -3424,6 +3424,8 @@ if (state.data.effort) { document.querySelectorAll('#effortScale button')[state.
 checkNext0(); checkNext1(); checkNext2();
 renderAppAside();
 window.addEventListener('DOMContentLoaded', maybeShowOnboard);
+// 从首页「设置」入口来时，自动打开设置弹窗
+try { if (new URLSearchParams(location.search).get('settings') === '1') openSettings(); } catch(e){}
 // Step 3 产出页渲染
 const origGo = window.goStep || goStep;
 window.goStep = function(n) {
