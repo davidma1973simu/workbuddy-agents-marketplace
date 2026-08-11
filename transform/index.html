@@ -384,6 +384,25 @@
   }
   .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); background: var(--green-2); }
 
+  /* 今日打卡 fab（每日入口，强化提醒） */
+  .fab-punch {
+    position: fixed; left: 22px; bottom: 22px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--green-deep, #0A5A42), var(--green));
+    color: #fff;
+    padding: 16px 26px; border-radius: 999px; font-size: 15px; font-weight: 800; text-decoration: none;
+    box-shadow: 0 14px 36px rgba(29,158,117,.42); transition: all .25s var(--ease); font-family: inherit;
+  }
+  .fab-punch:hover { transform: translateY(-3px); box-shadow: 0 20px 48px rgba(29,158,117,.52); }
+  .fab-punch-badge {
+    background: #fff; color: var(--green-deep, var(--green)); min-width: 24px; height: 24px;
+    border-radius: 999px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 800; box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  }
+  .fab-punch-badge.hidden { display: none; }
+  .fab-pump { animation: fab-pump 1.6s ease infinite; }
+  @keyframes fab-pump { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
   @media (max-width: 980px) {
     .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 0 48px; }
     .hero-sub { margin-left: auto; margin-right: auto; }
@@ -397,6 +416,7 @@
     .bento-cell .bc-icon { flex-shrink: 0; }
     .manifesto { grid-template-columns: 1fr; gap: 24px; }
     .manifesto-divider { display: none; }
+    .fab-punch { left: 14px; bottom: 14px; padding: 12px 20px; font-size: 14px; }
   }
   @media (max-width: 720px) {
     .entrance { grid-template-columns: 1fr; }
@@ -662,6 +682,11 @@
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   成长资产
 </a>
+<a class="fab-punch" href="punch.html" id="fabPunch" title="每日打卡">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span>今日打卡</span>
+  <span class="fab-punch-badge hidden" id="punchBadge">0</span>
+</a>
 <script>
 (function(){
   try {
@@ -670,7 +695,33 @@
     const insightEl = document.getElementById('insightCount');
     const behaviorEl = document.getElementById('behaviorCount');
     if (insightEl) insightEl.textContent = archive.length || 0;
-    if (behaviorEl) behaviorEl.textContent = actions.filter(a => a && a.completed).length || 0;
+    if (behaviorEl) behaviorEl.textContent = actions.filter(a => a && (a.status === 'graduated' || a.totalDone > 0)).length || 0;
+
+    // 今日打卡 badge：有 active action 且今日未完成 → 显示连续天数；今日已完成 → 显示「已打卡」
+    const fabPunch = document.getElementById('fabPunch');
+    const punchBadge = document.getElementById('punchBadge');
+    if (fabPunch && punchBadge){
+      const today = new Date(); today.setHours(0,0,0,0);
+      const active = actions.find(a => a && a.status === 'active');
+      const todayDone = active && (active.logs || []).some(l => {
+        if (!l.done) return false;
+        const ld = new Date(l.date); ld.setHours(0,0,0,0);
+        return ld.getTime() === today.getTime();
+      });
+      if (todayDone){
+        punchBadge.textContent = '✓';
+        punchBadge.classList.remove('hidden');
+        fabPunch.classList.add('fab-pump');
+      } else if (active){
+        punchBadge.textContent = (active.streak || 0) + '天';
+        punchBadge.classList.remove('hidden');
+        fabPunch.classList.add('fab-pump');
+      } else {
+        // 没有 active action 时 badge 隐藏，保持低调
+        punchBadge.classList.add('hidden');
+        fabPunch.classList.remove('fab-pump');
+      }
+    }
   } catch(e) {}
 
   document.querySelectorAll('.entry-card').forEach(card => {
