@@ -2804,7 +2804,8 @@ function renderApplyDetail(type) {
       <div class="detail-row"><b>困难</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
     </div>
   `;
-  applyAppStage(type, 'plan');
+  // 仅在已有 title 时才推进到 detail 阶段（避免误覆盖 title 阶段）
+  if (obj.title && obj.title.trim()) applyAppStage(type, 'detail');
 }
 function saveApplyDetail(type, field, value) {
   const obj = ensureAppScenario(type);
