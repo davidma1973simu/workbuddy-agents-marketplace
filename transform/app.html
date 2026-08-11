@@ -525,6 +525,83 @@
   .app-input-sm { min-height: 38px; }
   .app-input:focus, .app-input-sm:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
 
+  /* 应用步骤（标题 → 细节 → 计划） */
+  .app-block { position: relative; }
+  .app-stage { padding: 6px 0 12px; }
+  .app-stage.hidden { display: none; }
+  .app-step-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px; }
+  .app-step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .app-step-label { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+  .title-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .title-chip {
+    text-align: left; padding: 12px 14px;
+    background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md);
+    font-size: 13.5px; color: var(--ink); cursor: pointer;
+    transition: all .2s; font-family: inherit; line-height: 1.5;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .title-chip:hover { border-color: var(--green); background: var(--green-soft); transform: translateX(2px); }
+  .title-chip.selected { border-color: var(--green); background: var(--green-soft); color: var(--green-deep); font-weight: 600; }
+  .title-chip .n { width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--ink-3); flex-shrink: 0; }
+  .title-chip.selected .n { background: var(--green); border-color: var(--green); color: #fff; }
+
+  .title-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .app-title-custom {
+    flex: 1; min-width: 180px;
+    padding: 9px 12px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    background: #fff; font-size: 13.5px; font-family: inherit; color: var(--ink); outline: none;
+  }
+  .app-title-custom:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+
+  /* 场景细节卡 */
+  .detail-card {
+    background: var(--green-50); border: 1px solid var(--green-light);
+    border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 10px;
+  }
+  .detail-card .detail-section + .detail-section { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(29,158,117,.2); }
+  .detail-card .detail-section-title {
+    display: inline-block; font-size: 11.5px; font-weight: 800; color: var(--green-deep);
+    letter-spacing: .8px; text-transform: uppercase; margin-bottom: 10px;
+    padding: 2px 8px; border-radius: 6px; background: var(--green-soft);
+  }
+  .detail-card .detail-row {
+    display: grid; grid-template-columns: 56px 1fr; gap: 8px;
+    font-size: 13.5px; line-height: 1.6; margin-bottom: 6px; align-items: baseline;
+  }
+  .detail-card .detail-row b { color: var(--green-deep); font-weight: 600; text-align: right; font-size: 12.5px; }
+  .detail-card .detail-row span:last-child { color: var(--ink); }
+  .detail-card .detail-row .editable {
+    background: transparent; border: none; padding: 0; font-family: inherit; font-size: 13.5px; color: var(--ink); width: 100%; outline: none;
+  }
+  .detail-card .detail-row .editable:focus { background: #fff; border: 1px dashed var(--green); border-radius: 4px; padding: 2px 6px; }
+  .detail-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+  /* 远应用锁定态 */
+  .app-block.locked .lock-overlay {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    border-radius: inherit; z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; text-align: center; pointer-events: auto;
+  }
+  .app-block.locked .lock-overlay span {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--ink-2);
+    box-shadow: var(--shadow);
+  }
+  .app-block.locked { pointer-events: none; }
+  .app-block.locked .app-title, .app-block.locked .app-stage { pointer-events: auto; }
+  .locked-label { opacity: .55; }
+  .app-block:not(.locked) .lock-overlay { display: none; }
+
+  .app-plan-input { min-height: 72px; }
+
   /* AI 评价反馈 */
   .fb-overall { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--green-soft); border-radius: var(--radius-md); margin-bottom: 12px; }
   .fb-score { font-size: 28px; font-weight: 700; color: var(--green-deep); }
@@ -1487,77 +1564,107 @@
         <div class="sd-desc">知行会结合这两个评分来评价你的应用计划</div>
       </div>
 
-      <!-- ② 近应用：用户熟悉的场景（用户写） -->
+      <!-- ② 近应用：先选场景标题 → 生成细节 → 填计划 → AI 评分 -->
       <label>② 近应用：你<u>熟悉的场景</u>，这个新认知能用吗？</label>
-      <div class="app-block">
-        <div class="app-title">近应用</div>
-        <div class="app-row">
-          <span class="app-label">场景是什么？</span>
-          <textarea class="app-input app-scenario" data-app="near" data-key="scenario" placeholder="例：客户质疑我的培训方案价值，要求压价"></textarea>
-        </div>
-        <div class="app-row">
-          <button class="ai-btn" id="aiRecommendNear" onclick="aiRecommendScenes('near')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行推荐熟悉的场景和挑战
-          </button>
-        </div>
-        <div class="app-row">
-          <span class="app-label">打算怎么做？</span>
-          <textarea class="app-input app-plan" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段，让客户先感受到'激发行动与情感连接'"></textarea>
-        </div>
-        <div class="app-row app-row-grid">
-          <div>
-            <span class="app-label">什么时候试？</span>
-            <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="例：本周五">
-          </div>
-          <div>
-            <span class="app-label">怎么知道有效？</span>
-            <input type="text" class="app-input-sm" data-app="near" data-key="howToVerify" placeholder="例：客户主动续约第二阶段">
+      <div class="app-block" id="nearAppBlock" data-type="near">
+        <div class="app-title">近应用（熟悉的场景）</div>
+
+        <div class="app-stage" data-stage="title">
+          <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
+          <div class="title-list" id="nearTitleList"></div>
+          <div class="title-actions">
+            <button class="ai-btn" onclick="recommendApplyTitles('near', this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              换三个
+            </button>
+            <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
+            <button class="ai-btn-primary" onclick="confirmApplyTitle('near')">确认 →</button>
           </div>
         </div>
-        <div class="app-row" style="margin-top:14px;">
-          <button class="ai-btn-primary" id="aiAppFeedbackNear" onclick="aiAppFeedback('near')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行打分 + 给反馈 + 行动建议
-          </button>
+
+        <div class="app-stage hidden" data-stage="detail">
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="detail-card" id="nearDetailCard"></div>
+          <div class="detail-actions">
+            <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
+          </div>
         </div>
+
+        <div class="app-stage hidden" data-stage="plan">
+          <div class="app-step-row"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-row">
+            <span class="app-label">打算怎么做？</span>
+            <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段，让客户先感受到'激发行动与情感连接'"></textarea>
+          </div>
+          <div class="app-row app-row-grid">
+            <div>
+              <span class="app-label">什么时候试？</span>
+              <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="例：本周五">
+            </div>
+            <div>
+              <span class="app-label">期待产出结果？</span>
+              <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="例：客户主动续约第二阶段">
+            </div>
+          </div>
+          <div class="app-row" style="margin-top:14px;">
+            <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              让知行打分 + 给反馈 + 行动建议
+            </button>
+          </div>
+        </div>
+
         <div class="ai-result app-feedback-result" id="nearFeedbackResult" style="display:none;"></div>
       </div>
 
-      <!-- ③ 远应用：陌生但主题关联的场景（用户写） -->
-      <label>③ 远应用：换个<u>完全不同的场景</u>，这个新认知还能用吗？</label>
-      <div class="app-block">
-        <div class="app-title">远应用</div>
-        <div class="app-row">
-          <span class="app-label">场景是什么？</span>
-          <textarea class="app-input app-scenario" data-app="far" data-key="scenario" placeholder="例：公司内部的销售管理系统需要面对 AI 替代——培训师'激发行动与情感连接'的思路能迁移过去吗？"></textarea>
-        </div>
-        <div class="app-row">
-          <button class="ai-btn" id="aiRecommendFar" onclick="aiRecommendScenes('far')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行推荐陌生的场景和挑战
-          </button>
-        </div>
-        <div class="app-row">
-          <span class="app-label">打算怎么做？</span>
-          <textarea class="app-input app-plan" data-app="far" data-key="plan" placeholder="例：建议销售团队把'系统工具'升级为'激发客户 + 陪跑过程'，让 AI 做信息处理，销售做情感连接与决策推动"></textarea>
-        </div>
-        <div class="app-row app-row-grid">
-          <div>
-            <span class="app-label">什么时候试？</span>
-            <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="例：下周一">
-          </div>
-          <div>
-            <span class="app-label">怎么知道有效？</span>
-            <input type="text" class="app-input-sm" data-app="far" data-key="howToVerify" placeholder="例：销售反馈客户复购率提升">
+      <!-- ③ 远应用：在近应用完整前锁定；同样的流程 -->
+      <label class="locked-label" id="farAppLockLabel">③ 远应用：换个<u>完全不同的场景</u>，这个新认知还能用吗？</label>
+      <div class="app-block locked" id="farAppBlock" data-type="far">
+        <div class="app-title">远应用（陌生的场景）</div>
+        <div class="lock-overlay"><span>先完成近应用，让知行打过分，再解锁这里</span></div>
+
+        <div class="app-stage" data-stage="title">
+          <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
+          <div class="title-list" id="farTitleList"></div>
+          <div class="title-actions">
+            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">换三个</button>
+            <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
+            <button class="ai-btn-primary" onclick="confirmApplyTitle('far')">确认 →</button>
           </div>
         </div>
-        <div class="app-row" style="margin-top:14px;">
-          <button class="ai-btn-primary" id="aiAppFeedbackFar" onclick="aiAppFeedback('far')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行打分 + 给反馈 + 行动建议
-          </button>
+
+        <div class="app-stage hidden" data-stage="detail">
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="detail-card" id="farDetailCard"></div>
+          <div class="detail-actions">
+            <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
+          </div>
         </div>
+
+        <div class="app-stage hidden" data-stage="plan">
+          <div class="app-step-row"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-row">
+            <span class="app-label">打算怎么做？</span>
+            <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="例：建议销售团队把'系统工具'升级为'激发客户 + 陪跑过程'，让 AI 做信息处理，销售做情感连接与决策推动"></textarea>
+          </div>
+          <div class="app-row app-row-grid">
+            <div>
+              <span class="app-label">什么时候试？</span>
+              <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="例：下周一">
+            </div>
+            <div>
+              <span class="app-label">期待产出结果？</span>
+              <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="例：销售反馈客户复购率提升">
+            </div>
+          </div>
+          <div class="app-row" style="margin-top:14px;">
+            <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              让知行打分 + 给反馈 + 行动建议
+            </button>
+          </div>
+        </div>
+
         <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
       </div>
 
@@ -1674,21 +1781,6 @@
     </div>
   </div>
 
-  <!-- 场景推荐弹窗 -->
-  <div class="modal-overlay" id="recommendModal" onclick="if(event.target===this) closeRecommendModal()">
-    <div class="modal">
-      <div class="modal-head">
-        <div class="modal-title" id="recommendModalTitle">知行推荐的场景与挑战</div>
-        <button class="modal-close" onclick="closeRecommendModal()">&times;</button>
-      </div>
-      <div class="rec-list" id="recommendList"></div>
-      <div class="rec-manual">
-        <div class="app-label">或者自己写场景</div>
-        <textarea id="recommendManual" placeholder="写下你自己的场景…"></textarea>
-        <button class="btn btn-next" onclick="useManualRecommendation()" style="width:100%;">使用这个场景</button>
-      </div>
-    </div>
-  </div>
 
   <!-- 设置页 -->
   <div class="settings-panel">
@@ -1767,8 +1859,8 @@ const state = {
     scenario: '', notes: [], groups: [],      // 归类
     method: '', insight: '', impact: 0, effort: 0,  // 洞察
     scene: '', scenes: [], expectedOutcome: '',
-    nearScenario: { scenario: '', plan: '', when: '', howToVerify: '' },
-    farScenario: { scenario: '', plan: '', when: '', howToVerify: '' },
+    nearScenario: { title: '', titleType: 'rec', details: {}, plan: '', when: '', expectedOutcome: '' },
+    farScenario: { title: '', titleType: 'rec', details: {}, plan: '', when: '', expectedOutcome: '' },
     nearFeedback: null,
     farFeedback: null,
     aiFeedback: null,    // 应用（旧字段，保留兼容）
@@ -1776,6 +1868,7 @@ const state = {
     identity: ''
   }
 };
+window.state = state; // 暴露用于测试与调试（不影响产品逻辑）
 
 /* ============ 工具 ============ */
 const $ = id => document.getElementById(id);
@@ -1851,6 +1944,7 @@ function goStep(n) {
     }
     renderScoreDisplay();
     bindAppInputs();
+    renderApplyStages();
     if (state.data.nearFeedback) renderAppFeedback('near', state.data.nearFeedback);
     if (state.data.farFeedback) renderAppFeedback('far', state.data.farFeedback);
     if (state.data.resourcesPlan) renderResourcesResult(state.data.resourcesPlan);
@@ -2444,8 +2538,27 @@ function checkNext1() {
 }
 // 初始化应用数据
 function ensureAppScenario(type) {
-  state.data[type + 'Scenario'] = state.data[type + 'Scenario'] || { scenario: '', plan: '', when: '', howToVerify: '' };
-  return state.data[type + 'Scenario'];
+  let obj = state.data[type + 'Scenario'];
+  if (!obj) {
+    obj = { title: '', titleType: 'rec', details: {}, plan: '', when: '', expectedOutcome: '' };
+    state.data[type + 'Scenario'] = obj;
+    return obj;
+  }
+  // 兼容旧结构（有 scenario 字段而无 title）→ 把旧 scenario 迁到 title
+  if (obj.title === undefined) {
+    obj.title = obj.scenario || '';
+    obj.titleType = obj.scenario ? 'rec' : 'rec';
+    obj.details = {};
+    obj.expectedOutcome = obj.expectedOutcome || obj.howToVerify || '';
+    obj.howToVerify = undefined;
+    obj.scenario = undefined;
+  }
+  if (obj.details === undefined) obj.details = {};
+  if (obj.titleType === undefined) obj.titleType = 'rec';
+  if (obj.expectedOutcome === undefined) obj.expectedOutcome = '';
+  if (obj.plan === undefined) obj.plan = '';
+  if (obj.when === undefined) obj.when = '';
+  return obj;
 }
 
 // 自动高度
@@ -2478,258 +2591,57 @@ function buildGroupsContext() {
   ).join('\n');
 }
 
-// 本地兜底推荐：AI 失败/503 时仍能给出可用场景
-function generateLocalRecommendations(type) {
+// 本地兜底标题（AI 失败/503 时仍能给出 3 个可用的场景标题）
+function generateLocalTitles(type) {
   const e = state.data.essence || {};
   const nature = (e.nature || '').trim();
   const insight = (e.insight || '').trim();
   const core = nature || insight || '把洞察应用到具体情境中';
-  const scenarioText = (state.data.scenario || '').trim();
-  // 取前 10 个汉字/字符作为主题词，避免标题过长
-  const keyword = scenarioText ? scenarioText.replace(/[，。！？、：；\s]/g, '').slice(0, 10) || scenarioText.slice(0, 10) : '当前主题';
-  const isNear = type === 'near';
-  const templates = isNear ? [
-    {
-      scenario: `明天日常工作中，遇到一个与「${keyword}」直接相关的小场景`,
-      scene: { time: '接下来 1-3 天内', place: '你熟悉的工作/生活环境', people: '你经常互动的同事、家人或朋友', summary: `明天日常工作中，遇到一个与「${keyword}」直接相关的小场景`, goal: '用新认知做出一个与以往不同的微小选择', value: '在低风险环境中先验证认知是否可行' },
-      challenge: { current: '过去遇到类似情况会按惯性反应', target: '能用新洞察指导一次具体行动', gap: '还缺少一次刻意练习和反馈', difficulty: '旧习惯会在压力下自动接管' }
-    },
-    {
-      scenario: `本周一次已有的人际互动中，实践「${core.slice(0, 24)}」`,
-      scene: { time: '本周内', place: '已有的会议、家庭对话或社交场合', people: '你本周本来就要见面的人', summary: `本周一次已有的人际互动中，实践「${core.slice(0, 24)}」`, goal: '在真实互动中观察新认知带来的不同', value: '不用额外安排，利用现有场景低成本试错' },
-      challenge: { current: '互动中容易回到自动模式', target: '能暂停并调用新认知做选择', gap: '需要提前准备一句提醒或一个信号', difficulty: '当下情绪可能让人忘记使用新认知' }
-    },
-    {
-      scenario: `处理一件你已经在拖延的、与「${keyword}」相关的小事`,
-      scene: { time: '今天或明天', place: '你通常处理这件事的地方', people: '主要你自己，可能涉及一两位相关人员', summary: `处理一件你已经在拖延的、与「${keyword}」相关的小事`, goal: '用新洞察重新理解这件事并迈出第一步', value: '把洞察立刻转化为动量，避免继续拖延' },
-      challenge: { current: '这件事被拖延，说明有阻力', target: '用新认知降低启动阻力', gap: '还没把洞察翻译成具体的第一步', difficulty: '拖延带来的焦虑会让人再次逃避' }
-    }
+  const scenario = (state.data.scenario || '').trim() || '你当前的复杂挑战';
+  const near = type === 'near';
+  return near ? [
+    '把「' + core + '」用在下周的一个相关项目里',
+    '在「' + scenario + '」相关的团队协作场景中试一次',
+    '把这次认知用到一个我常接触的同行场景'
   ] : [
-    {
-      scenario: `把「${core.slice(0, 24)}」应用到一项你从未尝试过的任务或角色`,
-      scene: { time: '未来 2-4 周', place: '一个你很少涉足的场景', people: '你不常合作但有机会接触的人', summary: `把「${core.slice(0, 24)}」应用到一项你从未尝试过的任务或角色`, goal: '验证核心认知在陌生情境下的迁移能力', value: '拓展认知的适用范围，避免只在舒适区使用' },
-      challenge: { current: '对陌生场景缺乏经验和信心', target: '完成一次跨情境的尝试', gap: '需要把抽象认知翻译成陌生领域的语言', difficulty: '未知因素多，容易因不确定而退缩' }
-    },
-    {
-      scenario: `向一个不了解你当前主题的人解释你的新认知，并观察对方的反应`,
-      scene: { time: '未来 1-2 周', place: '一次非正式的交流机会', people: '对你的主题不太熟悉的朋友或同事', summary: `向一个不了解你当前主题的人解释你的新认知，并观察对方的反应`, goal: '通过外部反馈检验认知是否清晰、有价值', value: '把内化认知外化，发现自己没意识到的盲点' },
-      challenge: { current: '认知在自己脑中很清晰，但未必能讲清楚', target: '让对方理解并给出一个有效反应', gap: '缺少把复杂洞察简化表达的训练', difficulty: '对方可能提出你没有准备的问题' }
-    },
-    {
-      scenario: `设计一个微型实验，在刻意制造的限制条件下测试「${keyword}」`,
-      scene: { time: '未来 1-3 周', place: '你可以控制边界的环境', people: '你自己主导，可邀请 1 位观察者', summary: `设计一个微型实验，在刻意制造的限制条件下测试「${keyword}」`, goal: '通过约束条件加速验证认知的有效性', value: '用小成本获取强反馈，避免大规模投入后才发现问题' },
-      challenge: { current: '习惯于在理想条件下思考问题', target: '能在限制条件下仍推进行动', gap: '需要设计实验、定义成功标准和失败信号', difficulty: '限制条件会让人不舒服，容易放弃' }
-    }
+    '把「' + core + '」迁移到完全不同的领域试一次',
+    '在陌生但结构相似的场景里验证这个判断',
+    '把这次认知用到一个一直回避的挑战上'
   ];
-  return templates.map((t, i) => ({
-    scenario: t.scenario,
-    scene: t.scene,
-    challenge: t.challenge,
-    localFallback: true
-  }));
 }
 
-// AI 推荐场景与挑战（弹窗）
-async function aiRecommendScenes(type) {
-  const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
-  const e = state.data.essence || {};
-  if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
-  const label = type === 'near' ? '熟悉场景' : '陌生但主题关联的场景';
-  const btnId = 'aiRecommend' + (type === 'near' ? 'Near' : 'Far');
-  setAILoading(btnId, true);
-  let usedFallback = false;
-  try {
-    // 先尝试 AI 推荐；prompt 尽量简短，降低 JSON 失败率和 503 概率
-    const r = await aiCall(
-      `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n\n推荐 3 个${label}。每个只输出：场景摘要（15 字内）、时间、地点、人物、目标、价值、现状、目标状态、差距、困难。\n严格返回 JSON 数组：\n[{"scene":{"summary":"...","time":"...","place":"...","people":"...","goal":"...","value":"..."},"challenge":{"current":"...","target":"...","gap":"...","difficulty":"..."}}]`
-    );
-    const list = parseRecommendations(r);
-    if (list && list.length) {
-      openRecommendModal(type, list);
-    } else {
-      usedFallback = true;
-      const fallbackList = generateLocalRecommendations(type);
-      openRecommendModal(type, fallbackList, '知行在线推荐未能返回有效格式，已为你生成基于核心认知的推荐场景。');
-    }
-  } catch(e) {
-    usedFallback = true;
-    const msg = e.message || '';
-    const fallbackList = generateLocalRecommendations(type);
-    if (msg.includes('Failed to fetch')) {
-      openRecommendModal(type, fallbackList, '网络无法连接知行在线推荐（可能是 CORS 限制），已切换为本地推荐。你也可以在下方手动填写场景。');
-    } else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) {
-      openRecommendModal(type, fallbackList, '知行在线推荐服务暂时不可用（' + msg + '），已自动切换为本地推荐。你可以直接选用，或在下方写下自己的场景。');
-    } else {
-      openRecommendModal(type, fallbackList, '知行在线推荐失败（' + msg + '），已切换为本地推荐。');
-    }
-  }
-  setAILoading(btnId, false);
-  if (usedFallback) toast('已使用本地推荐，可继续完成计划');
-}
-function parseRecommendations(text) {
-  if (!text) return null;
-  // 大小写不敏感取值辅助
-  const pick = (obj, ...keys) => {
-    if (!obj || typeof obj !== 'object') return '';
-    const lowerKeys = Object.keys(obj).reduce((m, k) => { m[k.toLowerCase()] = obj[k]; return m; }, {});
-    for (const k of keys) {
-      const lk = k.toLowerCase();
-      if (lk in lowerKeys) {
-        const v = lowerKeys[lk];
-        return typeof v === 'string' ? v.trim() : (v || '');
-      }
-    }
-    return '';
-  };
-  try {
-    // 1. 优先从 markdown 代码块提取 JSON
-    let source = text;
-    const codeBlock = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (codeBlock && codeBlock[1].trim()) source = codeBlock[1].trim();
 
-    // 2. 找第一个能成功解析为数组的 JSON 片段（避免贪婪匹配导致包含后续文本）
-    let arr = null;
-    for (let i = 0; i < source.length; i++) {
-      if (source[i] !== '[') continue;
-      for (let j = i + 2; j <= source.length; j++) {
-        if (source[j - 1] !== ']') continue;
-        const slice = source.slice(i, j);
-        try {
-          const parsed = JSON.parse(slice);
-          if (Array.isArray(parsed) && parsed.length) {
-            arr = parsed;
-            break;
-          }
-        } catch(e) {}
-      }
-      if (arr) break;
-    }
-    if (!arr) return null;
 
-    return arr.map(item => {
-      if (!item || typeof item !== 'object') return null;
-      const s = item.scene || item.Scene || {};
-      const c = item.challenge || item.Challenge || {};
-      const scenario = pick(s, 'summary', 'challenge', 'title', 'desc', 'description') ||
-                       pick(item, 'scenario', 'title', 'summary', 'description');
-      if (!scenario) return null;
-      return {
-        scenario,
-        scene: {
-          time: pick(s, 'time', 'when'),
-          place: pick(s, 'place', 'where', 'location'),
-          people: pick(s, 'people', 'who', 'person', 'characters'),
-          summary: scenario,
-          goal: pick(s, 'goal', 'purpose', 'aim', 'objective'),
-          value: pick(s, 'value', 'values', 'need', 'needs', 'why')
-        },
-        challenge: {
-          current: pick(c, 'current', 'now', 'status', 'situation'),
-          target: pick(c, 'target', 'goal', 'aim', 'expected'),
-          gap: pick(c, 'gap', 'difference', 'diff', 'missing'),
-          difficulty: pick(c, 'difficulty', 'hard', 'obstacle', 'barrier', 'challenge')
-        }
-      };
-    }).filter(item => item && item.scenario);
-  } catch(e) { return null; }
-}
-function openRecommendModal(type, list, fallbackHint) {
-  const modal = $('recommendModal');
-  $('recommendModalTitle').textContent = type === 'near' ? '知行推荐的熟悉场景与挑战' : '知行推荐的陌生场景与挑战';
-  let html = '';
-  if (fallbackHint) {
-    html += `<div class="rec-fallback">${escapeHtml(fallbackHint)}</div>`;
-  }
-  html += list.map((item, i) => {
-    const s = item.scene || {};
-    const c = item.challenge || {};
-    return `
-    <div class="rec-card" onclick="useRecommendation('${type}', ${i})">
-      <div class="rec-title">${escapeHtml(item.scenario)}</div>
-      <div class="rec-sections">
-        <div class="rec-sec">
-          <div class="rec-sec-title">场景</div>
-          ${s.time ? '<div class="rec-line"><b>时间</b>' + escapeHtml(s.time) + '</div>' : ''}
-          ${s.place ? '<div class="rec-line"><b>地点</b>' + escapeHtml(s.place) + '</div>' : ''}
-          ${s.people ? '<div class="rec-line"><b>人物</b>' + escapeHtml(s.people) + '</div>' : ''}
-          ${s.goal ? '<div class="rec-line"><b>目的</b>' + escapeHtml(s.goal) + '</div>' : ''}
-          ${s.value ? '<div class="rec-line"><b>价值</b>' + escapeHtml(s.value) + '</div>' : ''}
-        </div>
-        <div class="rec-sec">
-          <div class="rec-sec-title">挑战</div>
-          ${c.current ? '<div class="rec-line"><b>现状</b>' + escapeHtml(c.current) + '</div>' : ''}
-          ${c.target ? '<div class="rec-line"><b>目标</b>' + escapeHtml(c.target) + '</div>' : ''}
-          ${c.gap ? '<div class="rec-line"><b>差距</b>' + escapeHtml(c.gap) + '</div>' : ''}
-          ${c.difficulty ? '<div class="rec-line"><b>困难</b>' + escapeHtml(c.difficulty) + '</div>' : ''}
-        </div>
-      </div>
-      <button class="btn btn-next rec-use" onclick="event.stopPropagation(); useRecommendation('${type}', ${i})">选用此场景</button>
-    </div>
-  `;
-  }).join('');
-  $('recommendList').innerHTML = html;
-  modal.dataset.list = JSON.stringify(list);
-  modal.dataset.type = type;
-  $('recommendManual').value = '';
-  modal.classList.add('show');
-}
-function closeRecommendModal() {
-  $('recommendModal').classList.remove('show');
-}
-function useRecommendation(type, idx) {
-  const list = JSON.parse($('recommendModal').dataset.list || '[]');
-  const item = list[idx];
-  if (!item) return;
-  fillAppScenario(type, item);
-  closeRecommendModal();
-  toast('已填入推荐场景');
-}
-function useManualRecommendation() {
-  const type = $('recommendModal').dataset.type || 'near';
-  const val = $('recommendManual').value.trim();
-  if (!val) { toast('先写下场景'); return; }
-  fillAppScenario(type, { scenario: val, challenge: '' });
-  closeRecommendModal();
-  toast('已使用自定义场景');
-}
-function fillAppScenario(type, item) {
-  const obj = ensureAppScenario(type);
-  obj.scenario = item.scenario || '';
-  // 选择推荐场景后，「打算怎么做」保持空白，由用户自行填写
-  saveDraft();
-  document.querySelectorAll(`[data-app="${type}"]`).forEach(el => {
-    const key = el.dataset.key;
-    el.value = obj[key] || '';
-    if (el.tagName === 'TEXTAREA') autoGrowApp(el);
-  });
-  checkNext2();
-}
+
 
 // AI 评价和反馈（每个应用独立）
 async function aiAppFeedback(type) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const obj = ensureAppScenario(type);
-  if (!obj.scenario.trim() || !obj.plan.trim()) {
-    toast('先填写这个应用的场景 + 计划'); return;
-  }
+  if (!obj.title || !obj.title.trim()) { toast('先选一个场景标题'); return; }
+  if (!obj.details || !obj.details.time) { toast('先确认场景细节'); return; }
+  if (!obj.plan || !obj.plan.trim()) { toast('先填写打算怎么做'); return; }
+  if (!obj.when || !obj.when.trim()) { toast('先填写什么时候试'); return; }
+  if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) { toast('先填写期待产出结果'); return; }
   const e = state.data.essence || {};
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
   const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), true);
   try {
+    const d = obj.details || {};
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景：${obj.scenario}\n计划：${obj.plan}\n时间：${obj.when || '未填'}\n验证标准：${obj.howToVerify || '未填'}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高，如何降低阻力；如果重要性低，是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景标题：${obj.title}\n场景细节：\n- 时间：${d.time || '未填'}\n- 地点：${d.place || '未填'}\n- 人物：${d.people || '未填'}\n- 目的：${d.purpose || '未填'}\n- 价值：${d.value || '未填'}\n挑战细节：\n- 现状：${d.currentState || '未填'}\n- 目标：${d.goal || '未填'}\n- 差距：${d.gap || '未填'}\n- 困难：${d.difficulty || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 什么时候试：${obj.when}\n- 期待产出结果：${obj.expectedOutcome}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高如何降低阻力；如果重要性低是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
     );
     const data = parseAppFeedback(r);
     if (data) {
-      state.data[type + 'Feedback'] = data;
-      renderAppFeedback(type, data);
-      checkNext2();
-      saveDraft();
-      toast('知行评价完成');
+        state.data[type + 'Feedback'] = data;
+        renderAppFeedback(type, data);
+        saveDraft();
+        if (type === 'near' && isNearComplete()) unlockFarApp();
+        checkNext2();
+        toast('知行评价完成');
     } else {
       showAIResult(type + 'FeedbackResult', r);
     }
@@ -2739,6 +2651,248 @@ async function aiAppFeedback(type) {
   }
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), false);
 }
+// ① AI 推荐 3 个场景标题
+async function recommendApplyTitles(type, btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const e = state.data.essence || {};
+  if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
+  if (btn) btn.classList.add('loading');
+  const label = type === 'near' ? '你熟悉的场景' : '你陌生但主题相关的场景';
+  const baseContext = `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n重要性：${state.data.impact || '?'}/5\n接受费力：${state.data.effort || '?'}/5\n`;
+  try {
+    const r = await aiCall(`${baseContext}\n任务：基于这个新认知，推荐 3 个具体的${label}标题。\n【硬性要求】每个标题 ≤30 字，直接说事，不要寒暄、不要解释为什么。\n返回 JSON 数组（严格）：\n["标题1","标题2","标题3"]`);
+    const arr = parseTitleList(r);
+    if (arr && arr.length === 3) {
+      state.data[type + 'Recommends'] = arr;
+    } else {
+      state.data[type + 'Recommends'] = generateLocalTitles(type);
+      toast('知行推荐未能返回有效格式，已用本地生成');
+    }
+  } catch(err) {
+    state.data[type + 'Recommends'] = generateLocalTitles(type);
+    const msg = (err && err.message) || '';
+    if (msg.includes('Failed to fetch') || /50[234]|429/.test(msg)) toast('知行在线推荐暂不可用，已切换为本地生成');
+    else toast('知行推荐失败，已用本地生成');
+  }
+  if (btn) btn.classList.remove('loading');
+  renderApplyTitles(type);
+  saveDraft();
+}
+function parseTitleList(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\[[\s\S]*\]/);
+    if (!m) return null;
+    const arr = JSON.parse(m[0]);
+    if (!Array.isArray(arr) || arr.length !== 3) return null;
+    return arr.map(x => String(x).trim().slice(0, 30)).filter(Boolean);
+  } catch(e) { return null; }
+}
+function renderApplyTitles(type) {
+  const list = state.data[type + 'Recommends'] || [];
+  const obj = ensureAppScenario(type);
+  const selectedTitle = obj.title || '';
+  const box = $(type + 'TitleList');
+  if (!box) return;
+  if (!list.length) {
+    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「换三个」让知行推荐场景标题</div>';
+    return;
+  }
+  box.innerHTML = list.map((t, i) =>
+    `<button class="title-chip${selectedTitle === t ? ' selected' : ''}" onclick="pickApplyTitle('${type}', ${i})">` +
+    `<span class="n">${i + 1}</span><span>${escapeHtml(t)}</span></button>`
+  ).join('');
+}
+function pickApplyTitle(type, i) {
+  const t = (state.data[type + 'Recommends'] || [])[i];
+  if (!t) return;
+  renderApplyTitles(type);
+  document.querySelectorAll('#' + type + 'TitleList .title-chip').forEach((el, j) => {
+    el.classList.toggle('selected', j === i);
+  });
+}
+
+// ② 用户确认标题 → 生成细节
+async function confirmApplyTitle(type) {
+  const obj = ensureAppScenario(type);
+  const customEl = $(type + 'TitleCustom');
+  const customTitle = (customEl && customEl.value || '').trim();
+  let title = customTitle;
+  if (!title) {
+    const sel = document.querySelector('#' + type + 'TitleList .title-chip.selected');
+    if (sel) title = (sel.querySelector('span:last-child') || {}).textContent || '';
+  }
+  if (!title) { toast('请先选一个标题，或在下方输入自己的标题'); return; }
+  obj.title = title;
+  obj.titleType = customTitle ? 'custom' : 'rec';
+  saveDraft();
+  applyAppStage(type, 'detail');
+  if (!obj.details || !obj.details.time) {
+    await generateApplyDetails(type, null);
+  } else {
+    renderApplyDetail(type);
+  }
+}
+
+// ③ AI 生成场景细节（弹窗卡片）
+async function generateApplyDetails(type, btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const obj = ensureAppScenario(type);
+  if (!obj.title) { toast('先选择场景标题'); return; }
+  if (btn) btn.classList.add('loading');
+  const e = state.data.essence || {};
+  const label = type === 'near' ? '熟悉场景' : '陌生场景';
+  try {
+    const r = await aiCall(`核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n\n选定的场景标题：${obj.title}\n场景类型：${label}\n\n任务：基于以上信息，生成这个应用场景的细节结构。\n【硬性要求】每个字段用 10-25 字，简洁具体，不要寒暄。\n返回 JSON（严格）：\n{"time":"...","place":"...","people":"...","purpose":"...","value":"...","currentState":"...","goal":"...","gap":"...","difficulty":"..."}`);
+    const j = parseDetailJSON(r);
+    if (j) {
+      obj.details = j;
+      saveDraft();
+      renderApplyDetail(type);
+      applyAppStage(type, 'detail');
+    } else {
+      obj.details = generateLocalDetail(obj.title);
+      saveDraft();
+      renderApplyDetail(type);
+      toast('知行细节未能返回有效格式，已用本地生成');
+    }
+  } catch(err) {
+    obj.details = generateLocalDetail(obj.title);
+    saveDraft();
+    renderApplyDetail(type);
+    toast('知行细节生成失败，已用本地生成');
+  }
+  if (btn) btn.classList.remove('loading');
+}
+function parseDetailJSON(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    const pick = (k) => (d[k] && String(d[k]).trim()) || '';
+    return {
+      time: pick('time'), place: pick('place'), people: pick('people'),
+      purpose: pick('purpose'), value: pick('value'),
+      currentState: pick('currentState'), goal: pick('goal'),
+      gap: pick('gap'), difficulty: pick('difficulty')
+    };
+  } catch(e) { return null; }
+}
+function renderApplyDetail(type) {
+  const obj = ensureAppScenario(type);
+  const d = obj.details || {};
+  const card = $(type + 'DetailCard');
+  if (!card) return;
+  card.innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">场景</div>
+      <div class="detail-row"><b>标题</b><span contenteditable="true" class="editable" data-field="title" onblur="saveApplyDetail('${type}','title',this.textContent)">${escapeHtml(obj.title || '')}</span></div>
+      <div class="detail-row"><b>时间</b><span contenteditable="true" class="editable" data-field="time" onblur="saveApplyDetail('${type}','time',this.textContent)">${escapeHtml(d.time || '')}</span></div>
+      <div class="detail-row"><b>地点</b><span contenteditable="true" class="editable" data-field="place" onblur="saveApplyDetail('${type}','place',this.textContent)">${escapeHtml(d.place || '')}</span></div>
+      <div class="detail-row"><b>人物</b><span contenteditable="true" class="editable" data-field="people" onblur="saveApplyDetail('${type}','people',this.textContent)">${escapeHtml(d.people || '')}</span></div>
+      <div class="detail-row"><b>目的</b><span contenteditable="true" class="editable" data-field="purpose" onblur="saveApplyDetail('${type}','purpose',this.textContent)">${escapeHtml(d.purpose || '')}</span></div>
+      <div class="detail-row"><b>价值</b><span contenteditable="true" class="editable" data-field="value" onblur="saveApplyDetail('${type}','value',this.textContent)">${escapeHtml(d.value || '')}</span></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">挑战</div>
+      <div class="detail-row"><b>现状</b><span contenteditable="true" class="editable" data-field="currentState" onblur="saveApplyDetail('${type}','currentState',this.textContent)">${escapeHtml(d.currentState || '')}</span></div>
+      <div class="detail-row"><b>目标</b><span contenteditable="true" class="editable" data-field="goal" onblur="saveApplyDetail('${type}','goal',this.textContent)">${escapeHtml(d.goal || '')}</span></div>
+      <div class="detail-row"><b>差距</b><span contenteditable="true" class="editable" data-field="gap" onblur="saveApplyDetail('${type}','gap',this.textContent)">${escapeHtml(d.gap || '')}</span></div>
+      <div class="detail-row"><b>困难</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
+    </div>
+  `;
+  applyAppStage(type, 'plan');
+}
+function saveApplyDetail(type, field, value) {
+  const obj = ensureAppScenario(type);
+  if (field === 'title') obj.title = (value || '').trim().slice(0, 60);
+  else {
+    obj.details = obj.details || {};
+    obj.details[field] = (value || '').trim().slice(0, 60);
+  }
+  saveDraft();
+}
+
+// 阶段切换
+function applyAppStage(type, stage) {
+  const block = $(type + 'AppBlock');
+  if (!block) return;
+  block.dataset.stage = stage;
+  block.querySelectorAll('.app-stage').forEach(el => {
+    el.classList.toggle('hidden', el.dataset.stage !== stage);
+  });
+}
+
+function isNearComplete() {
+  const obj = ensureAppScenario('near');
+  if (!obj.title || !obj.title.trim()) return false;
+  if (!obj.details || !obj.details.time) return false;
+  if (!obj.plan || !obj.plan.trim()) return false;
+  if (!obj.when || !obj.when.trim()) return false;
+  if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) return false;
+  if (!state.data.nearFeedback) return false;
+  return true;
+}
+function unlockFarApp() {
+  const block = $('farAppBlock');
+  if (!block) return;
+  block.classList.remove('locked');
+  block.querySelectorAll('.app-stage').forEach(el => el.classList.remove('hidden'));
+  const label = $('farAppLockLabel');
+  if (label) label.classList.remove('locked-label');
+  if (isNearComplete()) toast('近应用完成，远应用已解锁');
+}
+
+function renderApplyStages() {
+  ['near', 'far'].forEach(type => {
+    const obj = ensureAppScenario(type);
+    const block = $(type + 'AppBlock');
+    if (!block) return;
+    if (type === 'far' && !isNearComplete()) {
+      block.classList.add('locked');
+      block.querySelectorAll('.app-stage').forEach(el => el.classList.add('hidden'));
+      const label = $('farAppLockLabel');
+      if (label) label.classList.add('locked-label');
+      return;
+    } else if (type === 'far') {
+      block.classList.remove('locked');
+      const label = $('farAppLockLabel');
+      if (label) label.classList.remove('locked-label');
+    }
+    const hasTitle = !!(obj.title && obj.title.trim());
+    const hasDetails = !!(obj.details && obj.details.time);
+    const hasPlan = !!(obj.plan && obj.plan.trim());
+    const hasWhen = !!(obj.when && obj.when.trim());
+    const hasOutcome = !!(obj.expectedOutcome && obj.expectedOutcome.trim());
+    const hasFb = !!state.data[type + 'Feedback'];
+    let stage = 'title';
+    if (hasTitle && !hasDetails) stage = 'detail';
+    else if (hasTitle && hasDetails && (!hasPlan || !hasWhen || !hasOutcome)) stage = 'plan';
+    else if (hasFb) stage = 'plan';
+    block.dataset.stage = stage;
+    console.log('DBG_TOGGLE', type, 'stage=', stage, 'dataset_stage_of_each=', JSON.stringify(Array.from(block.querySelectorAll('.app-stage')).map(e=>e.dataset.stage)));
+    block.querySelectorAll('.app-stage').forEach(el => {
+      const eq = el.dataset.stage !== stage;
+        el.classList.toggle('hidden', eq);
+    });
+  });
+  renderApplyTitles('near');
+  renderApplyTitles('far');
+  renderApplyDetail('near');
+  renderApplyDetail('far');
+  ['near', 'far'].forEach(type => {
+    const obj = ensureAppScenario(type);
+    document.querySelectorAll(`[data-app="${type}"]`).forEach(el => {
+      const key = el.dataset.key;
+      el.value = obj[key] || '';
+      if (el.tagName === 'TEXTAREA') autoGrowApp(el);
+    });
+  });
+}
+
 function parseAppFeedback(text) {
   try {
     const m = text.match(/\{[\s\S]*\}/);
@@ -2758,8 +2912,12 @@ function renderAppFeedback(type, data) {
   const title = type === 'near' ? '近应用反馈' : '远应用反馈';
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
+  const scenario = ensureAppScenario(type);
   let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
   html += '<div class="ai-msg-name">知行 · ' + title + '</div>';
+  if (scenario.title) {
+    html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
+  }
   html += '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span></div>';
   html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
   html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
@@ -2870,10 +3028,9 @@ function confirmResources() {
 }
 
 function checkNext2() {
-  const near = state.data.nearScenario || {};
+  const nearOk = isNearComplete();
   const far = state.data.farScenario || {};
-  const nearOk = near.scenario && near.scenario.trim() && near.plan && near.plan.trim() && state.data.nearFeedback;
-  const farOk = far.scenario && far.scenario.trim() && far.plan && far.plan.trim() && state.data.farFeedback;
+  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && state.data.farFeedback;
   const appOk = nearOk || farOk;
   const resourcesOk = state.data.resourcesPlan && state.data.resourcesPlan.confirmed;
   const ok = appOk && resourcesOk;
