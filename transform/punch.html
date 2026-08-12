@@ -97,72 +97,26 @@
   }
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
 
-  /* ===== 每日进步主屏 ===== */
-  .punch-hero {
-    background: linear-gradient(135deg, var(--green-deep, #0A5A42), var(--green-3));
-    border-radius: var(--radius-lg); padding: 26px 26px 20px; color: #fff;
-    margin-bottom: 16px; position: relative; overflow: hidden;
-  }
-  .punch-hero .ph-eyebrow { font-size: 12.5px; opacity: .85; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .punch-hero .ph-title { font-size: 25px; font-weight: 800; line-height: 1.35; margin-bottom: 10px; }
-  .punch-hero .ph-desc { font-size: 14.5px; opacity: .92; line-height: 1.7; margin-bottom: 14px; }
-  .punch-hero .ph-stats { display: flex; gap: 20px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.22); }
-  .punch-hero .ph-stat { font-size: 13px; opacity: .95; }
-  .punch-hero .ph-stat b { font-size: 17px; font-weight: 800; margin-right: 3px; }
-
-  .punch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-  .p-card {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
-    padding: 16px 18px;
-  }
-  .p-card .pc-label {
-    font-size: 11.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--ink-3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
-  }
-  .p-card .pc-label svg { width: 14px; height: 14px; }
-  .p-card .pc-main { font-size: 15.5px; font-weight: 700; line-height: 1.6; color: var(--ink); }
-  .p-card .pc-sub { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.6; }
-
-  .card-anchor { background: var(--amber-soft); border-color: rgba(200,122,42,.35); }
-  .card-anchor .pc-label { color: var(--amber); }
-  .card-anchor .pc-main { color: var(--ink); }
-  .card-micro { background: var(--green-50); border-color: var(--green-light); }
-  .card-micro .pc-label { color: var(--green); }
-  .card-scene { background: var(--coral-soft); border-color: rgba(192,91,60,.3); }
-  .card-scene .pc-label { color: var(--coral); }
-  .card-moti { background: var(--violet-soft); border-color: rgba(91,74,168,.3); }
-  .card-moti .pc-label { color: var(--violet); }
-
-  /* 微行动步骤 */
-  .micro-steps { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-  .micro-step {
-    display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
-    background: var(--surface); border: 1px solid var(--line); cursor: pointer; transition: all .2s;
-    font-size: 13.5px; color: var(--ink-2);
-  }
-  .micro-step .box {
-    width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line-2);
-    display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: transparent;
-    flex-shrink: 0; transition: all .2s;
-  }
-  .micro-step.checked { background: var(--green-soft); border-color: var(--green-light); color: var(--green-deep, var(--green)); }
-  .micro-step.checked .box { background: var(--green); border-color: var(--green); color: #fff; }
-
-  /* 主 CTA */
+  /* ===== 极简打卡态（think 同款） ===== */
   .cta-done {
     display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 18px; border: none; border-radius: var(--radius-md);
+    width: 100%; padding: 18px; border: none; border-radius: 14px;
     background: var(--green-3); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer;
     font-family: inherit; transition: all .25s var(--ease); box-shadow: 0 8px 24px rgba(29,158,117,.28);
   }
   .cta-done:hover { transform: translateY(-2px); background: var(--green-2); box-shadow: 0 12px 32px rgba(29,158,117,.36); }
   .cta-done:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
   .cta-miss {
-    display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: var(--radius-sm);
+    display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px;
     background: transparent; border: 1.5px dashed var(--line-2); color: var(--ink-3); font-size: 14px;
     cursor: pointer; font-family: inherit; transition: all .2s;
   }
   .cta-miss:hover { border-color: var(--amber); color: var(--amber); }
+  .tf-hint {
+    margin-top: 14px; padding: 12px 14px; background: var(--surface-2); border-radius: 12px;
+    font-size: 13.5px; color: var(--ink-2); line-height: 1.6; text-align: center;
+  }
+  .tf-hint b, .tf-hint strong { color: var(--green); font-weight: 800; }
 
   /* ===== 今日反馈卡 ===== */
   .today-feedback { margin-top: 14px; }
@@ -198,7 +152,7 @@
   .btn-amber { background: var(--amber); color: #fff; }
   .btn-amber:hover { filter: brightness(1.06); }
 
-  /* ===== 没做到 ===== */
+  /* ===== 没做到面板 ===== */
   .block-box { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; display: none; }
   .block-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
   .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -211,63 +165,6 @@
   .reason:hover { border-color: var(--amber); background: var(--amber-soft); }
   .ai-result { margin-top: 12px; background: var(--green-soft); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13.5px; line-height: 1.7; }
 
-  /* ===== 计划全景 ===== */
-  .plan-mini { margin-top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
-  .plan-mini .pm-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
-  .plan-mini .pm-hint { font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
-  .plan-mini .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; max-height: 220px; overflow-y: auto; padding-right: 4px; }
-  .pm-cell {
-    text-align: center; padding: 8px 4px; border-radius: 10px; background: var(--surface-2);
-    border: 1px solid var(--line); cursor: pointer; transition: all .15s;
-    display: flex; flex-direction: column; gap: 2px; align-items: center;
-  }
-  .pm-cell:hover { border-color: var(--green); transform: translateY(-2px); }
-  .pm-cell .pm-day { font-size: 14px; font-weight: 800; color: var(--ink-2); }
-  .pm-cell .pm-micro { font-size: 11px; font-weight: 500; color: var(--ink-3); line-height: 1.2; word-break: break-all; }
-  .pm-cell.done { background: var(--green-soft); border-color: var(--green-light); }
-  .pm-cell.done .pm-day { color: var(--green); }
-  .pm-cell.today { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 4px rgba(29,158,117,.18); }
-  .pm-cell.today .pm-day, .pm-cell.today .pm-micro { color: #fff; }
-
-  /* ===== 社会支持 ===== */
-  .support-box { margin-top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
-  .support-box label { font-size: 13px; font-weight: 700; color: var(--ink-2); display: block; margin-bottom: 8px; }
-  .support-box input {
-    width: 100%; padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--line-2);
-    background: var(--surface); font-size: 14px; font-family: inherit; color: var(--ink); outline: none;
-  }
-  .support-box input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
-  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .tag {
-    display: inline-flex; align-items: center; gap: 6px; background: var(--green-soft); color: var(--green);
-    border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600;
-  }
-  .tag button { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }
-
-  /* ===== 空状态 ===== */
-  .empty-state { text-align: center; padding: 70px 20px; }
-  .empty-state .big { font-size: 46px; margin-bottom: 16px; }
-  .empty-state h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
-  .empty-state p { font-size: 14.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 22px; }
-
-  /* 毕业态 */
-  .grad-card {
-    background: linear-gradient(135deg, var(--amber-soft), var(--coral-soft));
-    border: 1.5px solid rgba(200,122,42,.4); border-radius: var(--radius-lg);
-    padding: 26px 22px; text-align: center; margin-bottom: 16px;
-  }
-  .grad-card .crown { font-size: 46px; margin-bottom: 6px; }
-  .grad-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-  .grad-card p { font-size: 14.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 10px; }
-  .grad-card .id-tag { display: inline-block; background: #fff; color: var(--amber); font-size: 13.5px; font-weight: 700; padding: 7px 16px; border-radius: 999px; }
-
-  /* toast */
-  #toast {
-    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(20px);
-    background: var(--ink); color: var(--surface); padding: 12px 22px; border-radius: 999px;
-    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .3s var(--ease);
-    z-index: 100; max-width: 90vw; text-align: center;
-  }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ===== 创建态（think 同款风格） ===== */
@@ -341,10 +238,7 @@
   @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   @media (max-width: 640px) {
-    .punch-grid { grid-template-columns: 1fr; }
     .wrap { padding: 0 14px 90px; }
-    .punch-hero { padding: 20px 18px 16px; }
-    .punch-hero .ph-title { font-size: 21px; }
     .create-hero { padding: 22px 18px 18px; }
     .create-hero h1 { font-size: 21px; }
   }
@@ -475,113 +369,76 @@ function logCompletion(done, day, difficulty, note){
   persistAction();
 }
 
-/* ===================== 渲染主屏 ===================== */
+/* ===================== 极简打卡态（think 同款） ===================== */
 function renderPunch(){
   const area = $('punchArea');
   if (!current){
-    area.innerHTML = `<div class="empty-state">
-      <div class="big">🧭</div>
-      <h2>还没有正在进行的进步计划</h2>
-      <p>先去「伴我改变」创建你的第一个行为实验：<br>定一个想改变的事 → 拆成每天能做的微行动 → 绑定触发点。</p>
-      <a class="btn btn-primary" href="act.html" style="text-decoration:none;">去创建行为实验 →</a>
+    area.innerHTML = `<div class="create-hero">
+      <div class="ch-eyebrow">伴我改变</div>
+      <h1>还没有开始一次改变</h1>
+      <p>先定一个想改变的事，知行会帮你定出今天就能完成的一小步。</p>
+      <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
     </div>`;
     return;
   }
 
   const isGrad = current.status === 'graduated';
-  const today = current.plan.find(p => p.day === current.currentDay);
-  const phase = isGrad ? ('已完成全部 ' + (current.targetDays||0) + ' 天') : ('第 ' + current.currentDay + ' 天 / 共 ' + (current.targetDays||0) + ' 天');
+  const today = (current.plan || []).find(p => p.day === current.currentDay) || (current.plan || [])[0];
+  const micro = today ? (today.micro || current.input) : current.input;
+  const anchor = current.anchor && current.anchor.after;
+  const phase = isGrad ? '已完成全部 ' + (current.targetDays||0) + ' 天' : '今天 · 第 ' + current.currentDay + ' 天 / 共 ' + (current.targetDays||0) + ' 天';
+  const votes = countVotes();
 
   let html = '';
 
-  // 毕业态
+  // 毕业态（create-hero 风格的极简）
   if (isGrad){
-    html += `<div class="grad-card">
-      <div class="crown">🎓</div>
-      <h3>行为实验完成！</h3>
-      <p id="gradText">你用 ${current.targetDays} 天，把「${escapeHtml(current.input)}」从想法变成了真实的行动轨迹。</p>
-      <div class="id-tag" id="gradIdentity">${current.identity ? ('我已经是「' + escapeHtml(current.identity) + '」的人') : '新的习惯与角色已生根'}</div>
-      <div style="margin-top:16px;">
-        <a class="btn btn-primary" href="act.html?id=${current.id}" style="text-decoration:none;">去复盘沉淀 · 产出 →</a>
-      </div>
+    html += `<div class="create-hero" style="background:linear-gradient(135deg, var(--amber-soft), var(--green-soft));color:var(--ink);">
+      <div class="ch-eyebrow" style="color:var(--amber);">行为实验完成</div>
+      <h1 style="color:var(--ink);">你用 ${current.targetDays} 天，把「${escapeHtml(current.input)}」变成了真实轨迹</h1>
+      <p style="color:var(--ink-2);">${current.identity ? '你已经是「' + escapeHtml(current.identity) + '」的人' : '新的习惯与角色已生根'}</p>
+      <a class="cta-start" href="act.html?id=${current.id}" style="text-decoration:none;color:var(--green-deep);">去复盘沉淀 · 产出 →</a>
     </div>`;
+    area.innerHTML = html;
+    return;
   }
 
-  // Hero
-  html += `
-  <div class="punch-hero">
-    <div class="ph-eyebrow">
-      <span>${escapeHtml(current.input)}</span>
-      <span style="opacity:.75;">·</span>
-      <span>${phase}</span>
-    </div>
-    <div class="ph-title">${today ? escapeHtml(today.micro || '（今天的微行动待填）') : '全部完成 🎉'}</div>
-    <div class="ph-desc">${today ? (current.anchor && current.anchor.after ? '在我 <b>' + escapeHtml(current.anchor.after) + '</b> 之后，我就做这一天的行动。' : '') : ''}</div>
-    <div class="ph-stats">
-      <div class="ph-stat">连续 <b>${current.streak || 0}</b> 天</div>
-      <div class="ph-stat">累计 <b>${current.totalDone || 0}</b> 天</div>
-      <div class="ph-stat">身份票 <b>${countVotes()}</b> 张</div>
+  // 今日 hero（think 同款绿色 gradient）
+  html += `<div class="create-hero">
+    <div class="ch-eyebrow">${escapeHtml(phase)}</div>
+    <h1>${escapeHtml(micro)}</h1>
+    <p>${anchor ? '在我 <b>' + escapeHtml(anchor) + '</b> 之后，我就做这一小步。' : '到了那个时刻，就做这一小步。'}</p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;opacity:.92;">
+      <span>连续 <b style="font-size:16px;">${current.streak || 0}</b> 天</span>
+      <span>累计 <b style="font-size:16px;">${current.totalDone || 0}</b> 天</span>
+      <span>身份票 <b style="font-size:16px;">${votes}</b> 张</span>
     </div>
   </div>`;
 
-  // 4 要素卡
-  html += `<div class="punch-grid">`;
+  // 一行简短提示（think 同款 hint 风格）
+  html += `<div class="tf-hint">今天的目标就是 <strong>${escapeHtml(micro)}</strong>。${today && today.seconds ? '大约 '+today.seconds+' 秒就能完成。' : '小到不可能失败。'}</div>`;
 
-  // 锚点
-  html += `<div class="p-card card-anchor">
-    <div class="pc-label">
-      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v8m-4-4h8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-      锚点 · 什么时候
+  // 大做完了按钮
+  html += `<button class="cta-done" id="doneBtn" onclick="markDone()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    做完了
+  </button>
+  <button class="cta-miss" onclick="showBlock()">今天没做到（拖一拖 / 太麻烦 / 没时间）</button>
+
+  <div class="block-box" id="blockBox">
+    <h3>发生了什么？选一个最接近的</h3>
+    <div class="reason-grid">
+      <button class="reason" onclick="pickReason('忘了')"><b>忘了</b>压根没想起来</button>
+      <button class="reason" onclick="pickReason('太麻烦')"><b>太麻烦</b>步骤太多不想动</button>
+      <button class="reason" onclick="pickReason('不想做')"><b>不想做</b>当下没动力</button>
+      <button class="reason" onclick="pickReason('没时间')"><b>没时间</b>挤不出这 30 秒</button>
     </div>
-    <div class="pc-main">${current.anchor && current.anchor.after ? ('在我 <b>' + escapeHtml(current.anchor.after) + '</b> 之后') : '（尚未设置稳定触发点）'}</div>
-    <div class="pc-sub">${current.reminder ? '环境提示：' + escapeHtml(current.reminder) : '到了那个时刻，就自然地开始。'}</div>
-  </div>`;
+    <div id="aiBlockResult"></div>
+    <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← 返回</div>
+  </div>
 
-  // 微行动
-  let microInner = '';
-  if (today && today.sub && today.sub.length){
-    microInner = `<div class="micro-steps">` + today.sub.map((s, i) => {
-      const checked = today.subDone && today.subDone[i];
-      return `<div class="micro-step${checked?' checked':''}" onclick="toggleSubStep(${today.day}, ${i})">
-        <span class="box">${checked?'✓':''}</span><span>${escapeHtml(s)}</span>
-      </div>`;
-    }).join('') + `</div>`;
-  }
-  html += `<div class="p-card card-micro">
-    <div class="pc-label">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      微行动 · 做什么
-    </div>
-    <div class="pc-main">${today ? escapeHtml(today.micro || '（待填）') : '—'}</div>
-    ${today && today.seconds ? `<div class="pc-sub">每天约 ${today.seconds} 秒，小到不可能失败。</div>` : ''}
-    ${microInner}
-  </div>`;
-
-  // 场景
-  html += `<div class="p-card card-scene">
-    <div class="pc-label">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 10h16v10H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 4h8v6H8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 20h20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      场景 · 什么状态
-    </div>
-    <div class="pc-main">${today ? escapeHtml(today.scene || (current.anchor && current.anchor.after ? '刚完成「' + current.anchor.after + '」的那个瞬间' : '每天固定时刻')) : '—'}</div>
-    <div class="pc-sub">在这个状态下，做这一步是此刻最顺手的动作。</div>
-  </div>`;
-
-  // 激励
-  const lastLog = (current.logs || []).slice().reverse().find(l => l.done);
-  html += `<div class="p-card card-moti">
-    <div class="pc-label">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.4 5 5.6.6-4.1 3.8 1.1 5.6-5-2.9-5 2.9 1.1-5.6L4 8.6l5.6-.6L12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      激励 · 为什么值得
-    </div>
-    <div class="pc-main">${lastLog ? ('昨天：完成了「' + escapeHtml((current.plan.find(p=>p.day===lastLog.day)||{}).micro || '当天的微行动') + '」') : (current.identity ? '为「' + escapeHtml(current.identity) + '」攒票' : '把「' + escapeHtml(current.input) + '」变成真的')}</div>
-    <div class="pc-sub">${current.identity ? '正在成为「' + escapeHtml(current.identity) + '」的人' : '连续天数在累积，习惯在生根'}</div>
-  </div>`;
-
-  html += `</div>`;
-
-  // 今日反馈卡
-  html += `<div class="today-feedback hidden" id="todayFeedbackWrap">
+  <!-- 今日反馈卡（默认隐藏，完成后弹出） -->
+  <div class="today-feedback hidden" id="todayFeedbackWrap">
     <div class="tf-card">
       <div class="tf-crown" id="tfCrown">🎉</div>
       <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
@@ -599,48 +456,7 @@ function renderPunch(){
     </div>
   </div>`;
 
-  // CTA
-  if (!isGrad){
-    html += `<button class="cta-done" id="doneBtn" onclick="markDone()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      做完了
-    </button>
-    <button class="cta-miss" onclick="showBlock()">今天没做到（拖一拖 / 太麻烦 / 没时间）</button>
-
-    <div class="block-box" id="blockBox">
-      <h3>发生了什么？选一个最接近的</h3>
-      <div class="reason-grid">
-        <button class="reason" onclick="pickReason('忘了')"><b>忘了</b>压根没想起来</button>
-        <button class="reason" onclick="pickReason('太麻烦')"><b>太麻烦</b>步骤太多不想动</button>
-        <button class="reason" onclick="pickReason('不想做')"><b>不想做</b>当下没动力</button>
-        <button class="reason" onclick="pickReason('没时间')"><b>没时间</b>挤不出这 30 秒</button>
-      </div>
-      <div id="aiBlockResult"></div>
-      <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← 返回</div>
-    </div>`;
-  }
-
-  // 计划全景
-  html += `<div class="plan-mini">
-    <div class="pm-title">计划全景 · 点任一天可回看</div>
-    <div class="pm-hint">绿底=已完成 · 实心=今天 · 每格里是该天微行动摘要</div>
-    <div class="pm-grid" id="planMini"></div>
-  </div>`;
-
-  // 社会支持
-  html += `<div class="support-box">
-    <label>社会支持 · 谁或什么能帮你</label>
-    <input type="text" id="supportInput" placeholder="输入一个人 / 工具 / 信息源，回车添加">
-    <div class="chip-row" id="supportChips"></div>
-  </div>`;
-
   area.innerHTML = html;
-
-  // 绑定事件 + 渲染子区块
-  bindSupport();
-  renderPlanMini();
-  renderSupport();
-  updateDoneBtn();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -651,55 +467,6 @@ function countVotes(){
   return stmt ? stmt.votes : 0;
 }
 
-function toggleSubStep(day, i){
-  const d = current.plan.find(p => p.day === day); if (!d) return;
-  d.subDone[i] = !d.subDone[i];
-  persistAction();
-  const steps = document.querySelectorAll('.micro-step');
-  const idx = current.plan.findIndex(p => p.day === day);
-  if (idx === current.plan.findIndex(p => p.day === current.currentDay)) updateDoneBtn();
-  renderPunchMicro();
-}
-function renderPunchMicro(){
-  const today = current.plan.find(p => p.day === current.currentDay);
-  if (!today || !today.sub) return;
-  const steps = document.querySelectorAll('.micro-step');
-  steps.forEach((el, i) => {
-    el.classList.toggle('checked', !!today.subDone[i]);
-  });
-}
-function updateDoneBtn(){
-  const btn = $('doneBtn'); if (!btn) return;
-  const today = current.plan.find(p => p.day === current.currentDay);
-  if (today && today.sub && today.sub.length){
-    const allChecked = today.subDone.every(Boolean);
-    btn.disabled = !allChecked;
-    btn.style.opacity = allChecked ? '1' : '.5';
-  } else { btn.disabled = false; btn.style.opacity = '1'; }
-}
-
-function renderPlanMini(){
-  const box = $('planMini'); if (!box || !current) return;
-  const doneDays = new Set((current.logs || []).filter(l => l.done).map(l => l.day));
-  box.innerHTML = (current.plan || []).map(p => {
-    const cls = doneDays.has(p.day) ? 'done' : (p.day === current.currentDay && current.status !== 'graduated' ? 'today' : '');
-    const microShort = (p.micro || '').slice(0, 8) || '—';
-    return `<div class="pm-cell ${cls}" title="第 ${p.day} 天 · ${escapeHtml(p.micro || '微行动待定')}" onclick="jumpToDay(${p.day})">
-      <span class="pm-day">${p.day}</span>
-      <span class="pm-micro">${escapeHtml(microShort)}</span>
-    </div>`;
-  }).join('');
-}
-function jumpToDay(day){
-  if (!current || current.status === 'graduated') return;
-  if (day === current.currentDay) return;
-  current.currentDay = day;
-  persistAction();
-  renderPunch();
-  toast('已切换到第 ' + day + ' 天');
-}
-
-/* ===================== 做完了 / 没做到 ===================== */
 function markDone(){
   const today = current.plan.find(p => p.day === current.currentDay);
   if (today && today.sub && today.sub.length && !today.subDone.every(Boolean)){ toast('先把今天的几步都勾上'); return; }
@@ -779,50 +546,6 @@ async function pickReason(reason){
 }
 
 /* ===================== 社会支持 ===================== */
-function bindSupport(){
-  const input = $('supportInput');
-  if (!input || !current) return;
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter'){
-      const v = input.value.trim(); if (!v) return;
-      current.support = current.support || { people:[], tools:[], info:[] };
-      current.support.people.push(v);
-      persistAction();
-      input.value = '';
-      renderSupport();
-    }
-  });
-}
-function renderSupport(){
-  const box = $('supportChips'); if (!box || !current) return;
-  const s = current.support || {};
-  const all = [
-    ...(s.people||[]).map(v => ({ v, t:'people' })),
-    ...(s.tools||[]).map(v => ({ v, t:'tools' })),
-    ...(s.info||[]).map(v => ({ v, t:'info' }))
-  ];
-  box.innerHTML = all.map((it, i) => `<span class="tag">${escapeHtml(it.v)}<button onclick="removeSupport(${i})">×</button></span>`).join('');
-}
-function removeSupport(i){
-  const s = current.support || {};
-  const all = [
-    ...(s.people||[]).map(v => ({ v, t:'people' })),
-    ...(s.tools||[]).map(v => ({ v, t:'tools' })),
-    ...(s.info||[]).map(v => ({ v, t:'info' }))
-  ];
-  const removed = all[i];
-  if (!removed) return;
-  current.support[removed.t] = (current.support[removed.t] || []).filter(v => v !== removed.v);
-  persistAction();
-  renderSupport();
-}
-
-/* ===================== 创建态（行为 Punch · think 同款风格） ===================== */
-let handoffInsight = '';   // 来自 think 的洞察
-let handoffNature = '';    // 来自 think 的本质
-let handoffScenario = '';  // 来自 think 的主题
-let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
-
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
