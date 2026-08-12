@@ -701,6 +701,11 @@ async function confirmChange(){
   handoffInsight = (params.get('insight') || '').trim();
   handoffNature = (params.get('nature') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
+  // 带 think 来的洞察 → 强制进入创建态（用新洞察创建新的行为实验，不复用已有的 active）
+  if (handoffInsight){
+    renderCreate();
+    return;
+  }
   if (id){
     current = loadActions().find(a => a.id === id) || null;
   } else {
