@@ -81,7 +81,27 @@
   }
   .full-link-bar a:hover { background: var(--violet-soft, #EEECFA); }
 
-  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+  .topbar 
+  /* ===== 全局导航（所有页面互跳） ===== */
+  .gnav {
+    display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
+    padding: 4px; border-radius: 999px; background: var(--surface-2);
+    overflow-x: auto; justify-content: center; scrollbar-width: none;
+  }
+  .gnav::-webkit-scrollbar { display: none; }
+  .gnav .gn-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+    text-decoration: none; white-space: nowrap; transition: all .2s;
+    flex-shrink: 0;
+  }
+  .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
+  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
+  @media (max-width: 560px) {
+    .gnav .gn-item { padding: 6px 9px; font-size: 12px; }
+  }
+{ display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
     display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
     font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s;
@@ -231,7 +251,12 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
-    <div class="spacer"></div>
+  <nav class="gnav" aria-label="全局导航">
+    <a class="gn-item on" href="think.html">每日洞察</a>
+    <a class="gn-item" href="punch.html">每日改变</a>
+    <a class="gn-item" href="app.html">完整洞察</a>
+    <a class="gn-item" href="act.html">完整改变</a>
+  </nav>
     <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button onclick="location.href='growth.html#insights'" aria-label="认知档案">📖 认知档案</button>
   </div>
