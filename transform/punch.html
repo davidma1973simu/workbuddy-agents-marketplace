@@ -593,14 +593,14 @@ function renderCreate(){
     <div class="create-hero">
       <div class="ch-eyebrow">伴我改变 · 开始新的行为实验</div>
       <h1>开启一次新的行为改变</h1>
-      <p>定一件想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
+      <p>小习惯或大目标都可以写下来。Transform 会把它变成 7 天行为实验：先定今天的最小一步，再每天一个小行动。</p>
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">来自今日洞察 · 认知起点</div>
           ${handoffNature ? `<div class="ctx-row"><b>本质：</b>${escapeHtml(handoffNature)}</div>` : ''}
           ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
-      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '你想改变或实践什么？（例如：每天早震喝一杯温水）'}" maxlength="60">
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '例如：每天早上一杯温水，或成为 WorkBuddy 的高手'}" maxlength="120">
       <button class="cta-start" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
     </div>`;
   const input = $('changeInput');

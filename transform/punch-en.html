@@ -294,7 +294,7 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="back" href="index.html">
+    <a class="back" href="index-en.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Home
     </a>
@@ -616,14 +616,14 @@ function renderCreate(){
     <div class="create-hero">
       <div class="ch-eyebrow">Daily Change · start a new step</div>
       <h1>Start a new behavior change</h1>
-      <p>Pick one thing you want to change. Transform will break it into one small step you can do today.</p>
+      <p>Small habit or big ambition \u2014 type it in. Transform breaks any goal into a 7-day experiment: today\u2019s smallest step, then one micro-action per day.</p>
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">From today's insight · starting point</div>
           ${handoffNature ? `<div class="ctx-row"><b>Essence:</b> ${escapeHtml(handoffNature)}</div>` : ''}
           ${handoffInsight ? `<div class="ctx-row"><b>Insight:</b> ${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
-      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('What do you want to change about \u201c' + handoffScenario + '\u201d?') : 'What do you want to change or practice? (e.g. drink a glass of water every morning)'}" maxlength="60">
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('What do you want to change about \u201c' + handoffScenario + '\u201d?') : 'e.g. drink water every morning, or become a master of WorkBuddy'}" maxlength="120">
       <button class="cta-start" id="startChangeBtn" onclick="startChange()">Start Changing →</button>
     </div>`;
   const input = $('changeInput');
