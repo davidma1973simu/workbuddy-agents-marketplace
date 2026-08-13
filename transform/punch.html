@@ -238,6 +238,8 @@
   .suggest-card .sc-title { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; color: var(--ink); }
   .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
   .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
+  .sc-rationale { background: var(--amber-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 6px 0 2px; }
+  .sc-row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .sc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .sc-chip {
     display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px;
@@ -251,6 +253,11 @@
     background: var(--surface); font-size: 14px; font-family: inherit; color: var(--ink); outline: none;
   }
   .sc-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .plan-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; }
+  .plan-day { display: flex; align-items: baseline; gap: 12px; padding: 8px 12px; border-radius: 8px; background: var(--surface); font-size: 13.5px; line-height: 1.5; }
+  .plan-day.today { background: var(--green-50); border-left: 3px solid var(--green); }
+  .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 88px; font-size: 12px; letter-spacing: 0.3px; }
+  .plan-day-text { color: var(--ink); flex: 1; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
   .cta-confirm {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
@@ -583,7 +590,7 @@ async function pickReason(reason){
 let handoffInsight = '';
 let handoffNature = '';
 let handoffScenario = '';
-let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
+let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
 
 function renderCreate(){
   const area = $('punchArea');
@@ -619,54 +626,131 @@ async function startChange(){
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = 'Transform正在建议今天的改变…';
-  let sug = null;
-  for (let attempt = 0; attempt < 3 && !sug; attempt++){
-    const r = await aiCall(
-      `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：基于以上，建议 1 个「今天就能完成的最小改变」——一个微行动。\n严格要求：\n1. 微行动一句话（10-25 字），小到不可能失败，30 秒内可完成\n2. 拆成 2-3 个更小步骤（每个 ≤10 字）\n3. 给 3 个稳定锚点时刻（在___之后）\n4. 严格按 JSON 输出：\n{"micro":"...","steps":["...","..."],"anchors":["在早震拿起手机之后","在午饭后","在晚上睡前"]}`
-    );
+  btn.disabled = true; btn.textContent = 'Transform 正在思考你的目标…';
+  draft.goal = goal;
+  // Stage 1: 请求 AI 拆解建议（长度 + 理由 + 行动列表）
+  let d = await aiExperimentDraft(goal, 0);
+  btn.disabled = false; btn.textContent = '开始改变 →';
+  if (!d){
+    toast('Transform 暂时生成不了计划——请检查设置（API Key）后重试');
+    return;
+  }
+  applyDraft(d);
+  renderPlanDraft();
+}
+
+/* ---------- Stage 1：AI 拆解建议（长度 + 理由 + 每日行动） ---------- */
+async function aiExperimentDraft(goal, lenHint){
+  const lenRule = lenHint > 0
+    ? `\n用户指定实验长度为 ${lenHint} 天，请用 planLength = ${lenHint}。`
+    : `\n- 根据目标自动选择实验长度：\n  * 1 天：一次性动作（如「锁门前检查煤气」）。\n  * 3 天：短期习惯确认（如「专注 10 分钟做一件事」）。\n  * 7 天：真正要养成的习惯（如「每天早上一杯温水」）。\n  * 14-30 天：深度改变（如「成为 WorkBuddy 高手」）。`;
+  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}\n\n要求：\n1. planLength：整数，取 1、3、7、14 或 30。\n2. rationale：一句简短理由（不超过 40 字），说明为什么这个长度适合该目标。\n3. micro：今天的最小行动，一句话（10-25 字），小到不可能失败，30 秒内可完成。\n4. steps：把今天的 micro 拆成 2-3 个更小步骤（每个 ≤10 字）。\n5. anchors：3 个稳定触发时刻（在___之后）。\n6. days：planLength 个条目，每天一条，Day 1 → Day N 循序渐进，每条 ≤20 字、小到不可能失败。Day 1 必须等于 micro 的值。如果 planLength = 1，days 数组只有一条。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["在早震拿起手机之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  for (let attempt = 0; attempt < 3; attempt++){
+    const r = await aiCall(prompt);
     const d = parseJSON(r);
-    if (d && d.micro && d.micro.trim()){
-      sug = {
+    if (d && d.micro && d.micro.trim() && Array.isArray(d.days)){
+      const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
+      return {
+        planLength: N,
+        rationale: String(d.rationale || '').trim().slice(0, 120),
         micro: d.micro.trim().slice(0, 60),
-        steps: Array.isArray(d.steps) ? d.steps.map(s => String(s).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
-        anchors: Array.isArray(d.anchors) ? d.anchors.map(s => String(s).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : []
+        steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+        anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
+        days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N)
       };
     }
   }
-  if (!sug){
-    btn.disabled = false; btn.textContent = '开始改变 →';
-    toast('Transform暂时没建议出来，请稍后再试');
-    return;
-  }
-  draft.goal = goal;
-  draft.micro = sug.micro;
-  draft.steps = sug.steps.length ? sug.steps : ['完成这一小步'];
-  draft.seconds = 30;
-  renderSuggest(sug.anchors.length ? sug.anchors : ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+  return null;
 }
 
-function renderSuggest(anchors){
+function applyDraft(d){
+  draft.micro = d.micro;
+  draft.steps = d.steps.length ? d.steps : ['完成这一小步'];
+  draft.days = d.days;
+  draft.planLength = d.planLength;
+  draft.targetDays = d.planLength;
+  draft.rationale = d.rationale;
+  draft.anchors = d.anchors;
+}
+
+function renderPlanDraft(){
+  const area = $('punchArea');
+  const N = draft.planLength || 7;
+  const dayLabels = ['Day 1（今天）'];
+  for (let i = 2; i <= N; i++) dayLabels.push('Day ' + i);
+  const daysHtml = draft.days.map((d, i) => `
+    <div class="plan-day${i === 0 ? ' today' : ''}">
+      <span class="plan-day-label">${dayLabels[i]}</span>
+      <span class="plan-day-text">${escapeHtml(d)}</span>
+    </div>
+  `).join('');
+  const lengths = [1, 3, 7, 14, 30];
+  const lenChips = lengths.map(L =>
+    `<button class="sc-chip${L === N ? ' sel' : ''}" onclick="resizePlan(${L})">${L} 天</button>`
+  ).join('');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">第 1 步 · 实验拆解建议</div>
+      <div class="sc-title">Transform 建议 <b>${N}</b> 天实验</div>
+      ${draft.rationale ? `<div class="sc-rationale">💡 ${escapeHtml(draft.rationale)}</div>` : ''}
+
+      <div class="sc-field">调整实验长度（Transform 会重新生成计划）</div>
+      <div class="sc-chips" id="lenChips">${lenChips}</div>
+
+      <div class="sc-field">每日行动计划</div>
+      <div class="plan-list">${daysHtml}</div>
+
+      <button class="cta-confirm" onclick="goTodayDraft()">确认拆解 →</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function resizePlan(L){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, L);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('暂时重新生成不了计划，请稍后再试'); return; }
+  applyDraft(d);
+  renderPlanDraft();
+}
+
+/* ---------- Stage 2：今日行动 + 锚点（用户互动） ---------- */
+function goTodayDraft(){
+  if (!draft.micro){ toast('拆解建议还没准备好'); return; }
+  renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+}
+
+function renderTodayDraft(anchors){
   const area = $('punchArea');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">Transform 建议 · 今天的改变</div>
-      <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">小到不可能失败，30 秒内完成。先把它拆成更小的一步：</div>
-      <div class="sc-field">小步骤（可点击完成）</div>
+      <div class="sc-tag">第 2 步 · 今日行动 + 锚点</div>
+      <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">这是今天要做的最小一步。你可以换一个，也可以修订，确认后再进入下一步。</div>
+
+      <div class="sc-field">今日小步骤</div>
       <div class="sc-chips" id="stepChips">
         ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
       </div>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateToday()">↻ 换个今日行动</button>
+        <button class="ai-btn-cap" onclick="reviseToday()">📝 修订</button>
+      </div>
+
       <div class="sc-field">什么时候做？选一个锚点（点击选择）</div>
       <div class="sc-chips" id="anchorChips">
-        ${anchors.map((a, i) => `<button class="sc-chip ${i === 0 ? 'sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} 之后</button>`).join('')}
+        ${anchors.map((a, i) => `<button class="sc-chip ${draft.anchor === a ? 'sel' : (i === 0 && !draft.anchor ? 'sel' : '')}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} 之后</button>`).join('')}
       </div>
-      <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
-      <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
-      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 今天就开始 →</button>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateAnchors()">↻ 换锚点建议</button>
+      </div>
+
+      <button class="cta-confirm" onclick="goIdentityStage()">确认今日计划 →</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
-  draft.anchor = anchors[0] || '';
+  if (!draft.anchor) draft.anchor = anchors[0] || '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -677,41 +761,79 @@ function pickAnchorChip(i){
   if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
 }
 
+async function regenerateToday(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('暂时换不了今日行动，请稍后再试'); return; }
+  applyDraft(d);
+  renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+}
+
+function reviseToday(){
+  const title = $('todayTitle');
+  if (!title) return;
+  const current = draft.micro;
+  const next = prompt('修订今日行动：', current);
+  if (next && next.trim()){
+    draft.micro = next.trim().slice(0, 60);
+    // 同步 days 第 1 天
+    if (draft.days.length) draft.days[0] = draft.micro;
+    renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+  }
+}
+
+async function regenerateAnchors(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('暂时刷新不了锚点，请稍后再试'); return; }
+  draft.anchors = d.anchors;
+  draft.micro = d.micro; draft.steps = d.steps; draft.days = d.days;
+  renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+}
+
+/* ---------- Stage 3：身份 + 最终确认 ---------- */
+function goIdentityStage(){
+  if (!draft.micro){ toast('今日行动还没准备好'); return; }
+  if (!draft.anchor){ toast('先选一个锚点时刻'); return; }
+  const area = $('punchArea');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">第 3 步 · 身份——最终投票</div>
+      <div class="sc-title">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">每完成一天，你就更接近下面这个你想成为的人。</div>
+      <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
+      <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
+      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 开始 ${draft.planLength || 7} 天实验 →</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  $('identityInput').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
-  if (!draft.micro) { toast('先让Transform 建议今天的改变'); return; }
+  if (!draft.micro) { toast('先让 Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
   if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
-  // 生成未来 7 天轻量计划（AI 一次生成，不做大拆解）
-  let plan = null;
-  for (let attempt = 0; attempt < 2 && !plan; attempt++){
-    const r = await aiCall(
-      `用户的改变目标：「${($('changeInput') ? '' : '')}」今日微行动：「${draft.micro}」\n\n任务：围绕这个目标生成未来 7 天每天的微行动（每天 1 句，≤20 字，小到不可能失败，第 1 天就是「${draft.micro}」）。\n严格按 JSON：\n{"days":[{"day":1,"micro":"${draft.micro}"},{"day":2,"micro":"..."},...,{"day":7,"micro":"..."}]}`
-    );
-    const d = parseJSON(r);
-    if (d && Array.isArray(d.days) && d.days.length >= 3){
-      plan = d.days.slice(0, 7).map(x => ({
-        day: parseInt(x.day) || 0,
-        micro: String(x.micro || '').trim().slice(0, 30),
-        sub: [], subDone: []
-      })).filter(x => x.day > 0 && x.micro);
-    }
-  }
-  if (!plan){
-    plan = [{day:1, micro:draft.micro, sub:[], subDone:[]}];
-    for (let d = 2; d <= 7; d++){
-      plan.push({ day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[] });
-    }
-  }
-  // 创建 action（轻量 7 天）
+
+  // 使用 Stage 1 已生成的计划（不再二次 AI 调用）
+  const N = draft.planLength || draft.days.length || 7;
+  const plan = (draft.days && draft.days.length)
+    ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
+    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[]}); return p; })();
+
   const goal = draft.goal || handoffScenario || '行为改变';
   current = {
     id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
     input: (goal || '').trim() || draft.micro,
     createdAt: new Date().toISOString(),
-    targetDays: 7,
+    targetDays: N,
     currentDay: 1,
     plan,
     logs: [],
@@ -727,7 +849,7 @@ async function confirmChange(){
     scenario: handoffScenario || ''
   };
   persistAction();
-  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
   renderPunch();
   // 第一次：引导完成今天的改变
   showTodayFeedback();
