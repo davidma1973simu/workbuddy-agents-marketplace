@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>我的成长资产 · Transform</title>
+<title>My Growth Assets · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -352,32 +352,32 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="nav-link" href="index.html">
+    <a class="nav-link" href="index-en.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      首页
+      Home
     </a>
-    <a class="nav-link primary" href="app.html">
+    <a class="nav-link primary" href="app-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 8a7 7 0 0114 0v2M5 16a7 7 0 0014 0v-2M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      伴我洞察
+      Guided Insight
     </a>
-    <a class="nav-link primary" href="act.html">
+    <a class="nav-link primary" href="act-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-      伴我改变
+      Guided Change
     </a>
-    <a href="growth-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
+    <a href="growth.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
   </div>
 
   <div class="page-head">
-    <h1>我的成长资产</h1>
-    <div class="page-sub">认知模型、洞察、行为实验与跨时间模式，都在这里沉淀为你的长期资产</div>
+    <h1>My Growth Assets</h1>
+    <div class="page-sub">Mental models, insights, behavior experiments, and cross-time patterns \u2014 all banked here as your long-term assets</div>
   </div>
 
   <div class="toolbar">
-    <a class="act solid" href="app.html">开始一次认知提升</a>
-    <a class="act solid" href="act.html">开始一次行为改变</a>
-    <button class="act" onclick="downloadAll()">存数据</button>
-    <button class="act" onclick="openSettings()">AI 设置</button>
+    <a class="act solid" href="app-en.html">Start an Insight Session</a>
+    <a class="act solid" href="act-en.html">Start a Behavior Change</a>
+    <button class="act" onclick="downloadAll()">Export Data</button>
+    <button class="act" onclick="openSettings()">AI Settings</button>
   </div>
 
   <!-- 顶部：身份 + 紧凑统计条 -->
@@ -389,8 +389,8 @@
     <div class="archive-head">
       <div class="archive-icon">🧠</div>
       <div>
-        <h2>认知档案</h2>
-        <p>每一次想清楚，沉淀出的长期认知资产</p>
+        <h2>Insight Archive</h2>
+        <p>Every time you think something through, it becomes a long-term cognitive asset</p>
       </div>
     </div>
 
@@ -398,8 +398,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">📐</span>
         <span class="expand-title">
-          <span class="expand-name">认知模型 Mental Model</span>
-          <span class="expand-sub">复盘后沉淀的新认知框架</span>
+          <span class="expand-name">Mental Model</span>
+          <span class="expand-sub">New cognitive frameworks banked after review</span>
         </span>
         <span class="expand-count" id="modelsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -411,8 +411,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">💡</span>
         <span class="expand-title">
-          <span class="expand-name">洞察库 Insight Library</span>
-          <span class="expand-sub">每一次想清楚的核心认知</span>
+          <span class="expand-name">Insight Library</span>
+          <span class="expand-sub">Core insights from every thinking session</span>
         </span>
         <span class="expand-count" id="insightsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -429,8 +429,8 @@
     <div class="archive-head">
       <div class="archive-icon">🧪</div>
       <div>
-        <h2>行为档案</h2>
-        <p>每一次做到，沉淀出的长期行为资产</p>
+        <h2>Behavior Archive</h2>
+        <p>Every action completed becomes a long-term behavioral asset</p>
       </div>
     </div>
 
@@ -438,8 +438,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">⚡</span>
         <span class="expand-title">
-          <span class="expand-name">行为实验 Behavior Experiment</span>
-          <span class="expand-sub">从认知到行动的转化记录</span>
+          <span class="expand-name">Behavior Experiment</span>
+          <span class="expand-sub">Records of turning insight into action</span>
         </span>
         <span class="expand-count" id="experimentsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -451,8 +451,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">🔍</span>
         <span class="expand-title">
-          <span class="expand-name">模式识别 Pattern Recognition</span>
-          <span class="expand-sub">知行跨时间发现的重复模式</span>
+          <span class="expand-name">Pattern Recognition</span>
+          <span class="expand-sub">Repeated patterns Zhixing finds across time</span>
         </span>
         <span class="expand-count" id="patternsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -465,18 +465,18 @@
 <!-- 设置弹窗 -->
 <div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
-    <h3>AI 助手设置</h3>
-    <label>服务商</label>
+    <h3>AI Assistant Settings</h3>
+    <label>Provider</label>
     <select id="cfgBrand">
       <option value="DeepSeek">DeepSeek</option>
       <option value="OpenAI">OpenAI</option>
       <option value="Gemini">Gemini</option>
     </select>
     <label>API Key</label>
-    <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
+    <input type="text" id="cfgApiKey" placeholder="Paste your API Key">
     <div class="row">
-      <button class="btn-ai" style="flex:1;" onclick="saveSettings()">保存</button>
-      <button class="btn-ghost" onclick="closeSettings()">取消</button>
+      <button class="btn-ai" style="flex:1;" onclick="saveSettings()">Save</button>
+      <button class="btn-ghost" onclick="closeSettings()">Cancel</button>
     </div>
   </div>
 </div>
@@ -511,7 +511,7 @@ function getAI(){
 }
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey){ toast('配置 API Key 后，知行 AI 才能帮你跨时间发现模式'); return null; }
+  if (!cfg.apiKey){ toast('Set your API Key so Zhixing AI can find patterns across time'); return null; }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 5;
   try {
@@ -525,7 +525,7 @@ async function aiCall(prompt, attempt = 1){
         await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
-      throw new Error('AI 请求失败：' + res.status);
+      throw new Error('AI request failed: ' + res.status);
     }
     return (await res.json()).choices[0].message.content;
   } catch(e){
@@ -533,7 +533,7 @@ async function aiCall(prompt, attempt = 1){
       await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
       return aiCall(prompt, attempt + 1);
     }
-    toast('AI 暂时不可用，请稍后重试');
+    toast('AI unavailable right now \u2014 try again later');
     return null;
   }
 }
@@ -546,7 +546,7 @@ function renderIdentity(){
   if (!votes.length){
     area.innerHTML = `<div class="identity-empty">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-      还没有身份票。每完成一次「伴我洞察」或「伴我改变」，都会给「我想成为的人」投一票，票数在这里累积。
+      No identity votes yet. Each completed Guided Insight or Guided Change session casts a vote for \u201cthe person I want to become\u201d \u2014 votes accumulate here.
     </div>`;
     return;
   }
@@ -562,9 +562,9 @@ function renderIdentity(){
   const rest = list.slice(1);
   area.innerHTML = `
     <div class="identity-card">
-      <div class="k">我正在成为</div>
-      <div class="v">「<em>${escapeHtml(top.text)}</em>」的人</div>
-      <div class="count">已投 ${top.votes} 票${rest.length ? ' · 还有 ' + rest.length + ' 个身份在累积中' : ' · 你正在成为这个人'}</div>
+      <div class="k">I am becoming</div>
+      <div class="v">a \u201c<em>${escapeHtml(top.text)}</em>\u201d person</div>
+      <div class="count">${top.votes} votes${rest.length ? ' \u00b7 ' + rest.length + ' more identities building' : ' \u00b7 you are becoming this person'}</div>
     </div>`;
 }
 
@@ -577,17 +577,17 @@ function renderStats(){
   const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
   const active = actions.filter(a => a.status === 'active').length;
   $('statsArea').innerHTML = `
-    <span class="item"><span class="num">${archive.length}</span>认知洞察</span>
+    <span class="item"><span class="num">${archive.length}</span>insights</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${actions.length}</span>行为实验</span>
+    <span class="item"><span class="num">${actions.length}</span>experiments</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${graduated}</span>已毕业</span>
+    <span class="item"><span class="num">${graduated}</span>graduated</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${active}</span>进行中</span>
+    <span class="item"><span class="num">${active}</span>active</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${bestStreak}</span>最长连续</span>
+    <span class="item"><span class="num">${bestStreak}</span>best streak</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${totalDone}</span>累计做到</span>
+    <span class="item"><span class="num">${totalDone}</span>total done</span>
   `;
   // 设置四个展开卡的计数徽章
   const m = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim())).length;
@@ -610,17 +610,17 @@ function renderModels(){
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
   const box = $('modelList');
   if (!models.length){
-    box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「伴我洞察」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No mental models banked yet.<br>Complete a Guided Insight session and review it \u2014 your new framework will appear here.<br><a href="app-en.html">Think something through →</a></div>`;
     return;
   }
   box.innerHTML = models.map(s => {
     const fw = (s.mentalModel || '').trim();
     const changed = (s.reflection && s.reflection.changed || '').trim();
     return `<div class="model">
-      <div class="m-scenario">${escapeHtml(s.scenario || '一次认知梳理')}</div>
+      <div class="m-scenario">${escapeHtml(s.scenario || 'a thinking session')}</div>
       ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
-      ${changed ? `<div class="m-changed"><b>改变了什么：</b>${escapeHtml(changed)}</div>` : ''}
-      <div class="m-date">复盘于 ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+      ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
+      <div class="m-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
     </div>`;
   }).join('');
 }
@@ -633,7 +633,7 @@ function renderTagFilters(){
   archive.forEach(s => (s.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
   const box = $('tagFilters');
   if (!tags.length){ box.innerHTML = ''; return; }
-  box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">全部</button>' +
+  box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">All</button>' +
     tags.map(t => `<button class="filter-chip${insightFilter === t ? ' on' : ''}" onclick="setTagFilter('${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
 }
 function setTagFilter(t){ insightFilter = t; renderTagFilters(); renderInsights(); }
@@ -641,23 +641,23 @@ function renderInsights(){
   let archive = loadArchive();
   const box = $('insightList');
   if (!archive.length){
-    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「伴我洞察」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No insights yet.<br>Every Guided Insight session\u2019s core insight is banked here.<br><a href="app-en.html">Create your first insight →</a></div>`;
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
-  if (!archive.length){ box.innerHTML = '<div class="expand-empty">该标签下还没有洞察。</div>'; return; }
+  if (!archive.length){ box.innerHTML = '<div class="expand-empty">No insights under this tag yet.</div>'; return; }
   box.innerHTML = archive.map(s => {
     const e = s.essence || {};
     const nature = (e.nature || '').trim();
     const insight = (e.insight || '').trim();
     const learned = (s.reflection && s.reflection.learned || '').trim();
     return `<div class="insight">
-      <div class="i-scenario">${escapeHtml(s.scenario || '一次梳理')}</div>
-      ${nature ? `<div class="i-row"><b>本质</b>${escapeHtml(nature)}</div>` : ''}
-      ${insight ? `<div class="i-row"><b>洞察</b>${escapeHtml(insight)}</div>` : ''}
-      ${learned ? `<div class="i-row"><b>学到</b>${escapeHtml(learned)}</div>` : ''}
+      <div class="i-scenario">${escapeHtml(s.scenario || 'a session')}</div>
+      ${nature ? `<div class="i-row"><b>Essence</b>${escapeHtml(nature)}</div>` : ''}
+      ${insight ? `<div class="i-row"><b>Insight</b>${escapeHtml(insight)}</div>` : ''}
+      ${learned ? `<div class="i-row"><b>Learned</b>${escapeHtml(learned)}</div>` : ''}
       ${(s.tags || []).length ? `<div class="i-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' · 已复盘' : ''}</div>
+      <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' \u00b7 reviewed' : ''}</div>
     </div>`;
   }).join('');
 }
@@ -667,12 +667,12 @@ function renderActions(){
   const actions = loadActions();
   const box = $('actionList');
   if (!actions.length){
-    box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「伴我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No behavior experiments yet.<br>Every Guided Change session is a life experiment \u2014 from insight to action, fully recorded here.<br><a href="act-en.html">Start your first experiment →</a></div>`;
     return;
   }
   box.innerHTML = actions.map(a => {
     const status = a.status || 'active';
-    const statusText = { active: '进行中', graduated: '已毕业', paused: '已暂停' }[status] || status;
+    const statusText = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || status;
     const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
     const lastLog = (a.logs || []).slice(-1)[0];
     const lastDate = lastLog ? fmtDate(lastLog.date) : fmtDate(a.createdAt);
@@ -681,30 +681,30 @@ function renderActions(){
     const plan = a.plan || [];
     const curDay = a.currentDay || 1;
     const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro : ((a.tiny && a.tiny.text) || '');
-    const microText = status === 'graduated' ? '已完成全部 ' + N + ' 天计划' : (curMicro || '');
+    const microText = status === 'graduated' ? 'completed all ' + N + ' days' : (curMicro || '');
     return `<div class="action">
       <div class="row1">
         <span class="date">${lastDate}</span>
         <span class="status-chip ${statusClass}">${statusText}</span>
       </div>
       <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
-      ${N ? `<span class="plan-pill">📅 ${N} 天实验 · 已完成 ${totalDone}/${N}</span>` : ''}
+      ${N ? `<span class="plan-pill">📅 ${N}-day experiment \u00b7 ${totalDone}/${N} done</span>` : ''}
       ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
-      ${a.insight ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(a.insight.replace(/\n+/g, ' · '))}</div>` : ''}
-      ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
+      ${a.insight ? `<div class="a-source"><b>From insight:</b> ${escapeHtml(a.insight.replace(/\n+/g, ' \u00b7 '))}</div>` : ''}
+      ${a.anchor && a.anchor.after ? `<div class="anchor">Anchor: after I ${escapeHtml(a.anchor.after)}</div>` : ''}
       ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
-        ${a.result ? `<div><b>结果</b> ${escapeHtml(a.result)}</div>` : ''}
-        ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
-        ${a.reflection && a.reflection.changed ? `<div><b>改变</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
+        ${a.result ? `<div><b>Result</b> ${escapeHtml(a.result)}</div>` : ''}
+        ${a.habit ? `<div><b>New habit</b> ${escapeHtml(a.habit)}</div>` : ''}
+        ${a.reflection && a.reflection.changed ? `<div><b>Change</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
       </div>` : ''}
       <div class="meta">
-        <span>连续 ${a.streak || 0} 天</span>
-        <span>累计 ${totalDone} 天</span>
-        <span>身份票 ${a.totalDone || 0} 张</span>
+        <span>${a.streak || 0}-day streak</span>
+        <span>${totalDone} days total</span>
+        <span>${a.totalDone || 0} identity votes</span>
       </div>
       <div class="foot">
-        <a class="mini solid" href="act.html?id=${a.id}">去做 / 续接</a>
-        <button class="mini" onclick="exportOne('${a.id}')">导出</button>
+        <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
+        <button class="mini" onclick="exportOne('${a.id}')">Export</button>
       </div>
     </div>`;
   }).join('');
@@ -719,47 +719,47 @@ function renderPatterns(){
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
     area.innerHTML = `<div class="pattern-cta">
-      <h3>知行发现的跨时间模式</h3>
-      <p>基于你 ${archive.length} 次认知梳理 + ${actions.length} 个行为实验，识别到 ${saved.patterns.length} 个重复模式。分析于 ${fmtDate(saved.generatedAt)}。</p>
-      <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">重新分析</button><button class="btn-ghost" onclick="clearPatterns()">清除</button></div>
+      <h3>Patterns Zhixing found across time</h3>
+      <p>Based on your ${archive.length} insight sessions + ${actions.length} behavior experiments, ${saved.patterns.length} repeating patterns identified. Analyzed on ${fmtDate(saved.generatedAt)}。</p>
+      <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">Re-analyze</button><button class="btn-ghost" onclick="clearPatterns()">Clear</button></div>
     </div>` +
     saved.patterns.map((p, i) => `<div class="pattern">
-      <div class="p-title">${escapeHtml(p.title)}<span class="tag">模式 ${i+1}</span></div>
+      <div class="p-title">${escapeHtml(p.title)}<span class="tag">Pattern ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
-    </div>`).join('') + `<div class="pattern-meta">知行 · Growth Memory Agent</div>`;
+    </div>`).join('') + `<div class="pattern-meta">Zhixing · Growth Memory Agent</div>`;
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「伴我洞察」或「伴我改变」，知行才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
+    area.innerHTML = `<div class="expand-empty">Not enough data to find patterns yet.<br>Complete a few Guided Insight or Guided Change sessions first, so Zhixing can see the problems, roles, and obstacles that keep recurring across time.</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">
-    <h3>知行帮你跨时间发现模式</h3>
-    <p>AI 会阅读你全部 ${archive.length} 次认知梳理与 ${actions.length} 个行为实验，找出「你反复出现的问题」「一直想成为的角色」「重复踩过的阻力」——这才是成长资产的长期价值。</p>
-    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">知行帮我发现模式</button></div>
+    <h3>Zhixing finds patterns across time</h3>
+    <p>AI reads all your ${archive.length} insight sessions and ${actions.length} behavior experiments to find \u201cproblems that keep recurring\u201d, \u201cthe role you keep wanting to become\u201d, and \u201cobstacles you keep tripping on\u201d \u2014 the real long-term value of growth assets.</p>
+    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Zhixing, find my patterns</button></div>
   </div>
   <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
   // 无 API Key 时给出基础素材提示
   const cfg = getAI();
-  if (!cfg.apiKey) $('patternHint').innerHTML = '（未配置 API Key：可先看「身份」与「洞察库」里的标签，作为基础素材）';
+  if (!cfg.apiKey) $('patternHint').innerHTML = '(API Key not set: check the tags in \u201cIdentity\u201d and \u201cInsight Library\u201d as starter material)';
 }
 function buildPatternSource(){
   const archive = loadArchive(); const actions = loadActions();
   const parts = [];
   archive.slice(0, 30).forEach(s => {
     const e = s.essence || {};
-    parts.push('认知[' + (s.scenario || '?') + '] 本质:' + (e.nature || '').slice(0, 50) + ' 洞察:' + (e.insight || '').slice(0, 60) + (s.mentalModel ? ' 框架:' + s.mentalModel.slice(0, 60) : '') + (s.tags && s.tags.length ? ' 标签:' + s.tags.join('/') : ''));
+    parts.push('Insight[' + (s.scenario || '?') + '] essence:' + (e.nature || '').slice(0, 50) + ' insight:' + (e.insight || '').slice(0, 60) + (s.mentalModel ? ' framework:' + s.mentalModel.slice(0, 60) : '') + (s.tags && s.tags.length ? ' tags:' + s.tags.join('/') : ''));
   });
   actions.slice(0, 30).forEach(a => {
-    parts.push('行为[' + (a.input || '?') + '] 状态:' + (a.status || '') + (a.result ? ' 结果:' + a.result.slice(0, 50) : '') + (a.habit ? ' 习惯:' + a.habit.slice(0, 50) : '') + (a.reflection && a.reflection.changed ? ' 改变:' + a.reflection.changed.slice(0, 50) : ''));
+    parts.push('Behavior[' + (a.input || '?') + '] status:' + (a.status || '') + (a.result ? ' result:' + a.result.slice(0, 50) : '') + (a.habit ? ' habit:' + a.habit.slice(0, 50) : '') + (a.reflection && a.reflection.changed ? ' change:' + a.reflection.changed.slice(0, 50) : ''));
   });
   return parts.join('\n').slice(0, 3200);
 }
 async function aiDiscoverPatterns(regen){
   const src = buildPatternSource();
-  const prompt = '你是用户的「成长记录员 Growth Memory Agent」。请跨时间阅读以下成长记录，识别 2-4 个最值得用户注意的重复模式：反复出现的问题、一直想成为的角色、重复踩过的阻力、或正在形成的优势。\n成长记录：\n' + src + '\n严格返回 JSON：{"patterns":[{"title":"一句话标题","evidence":"支撑证据（引用具体记录，40字内）","insight":"对用户的洞察与建议（40字内）"}]}';
-  toast(regen ? '正在重新分析…' : '正在跨时间扫描你的成长记录…');
+  const prompt = 'You are the user\u2019s Growth Memory Agent. Read the growth records below across time and identify 2-4 repeating patterns most worth the user\u2019s attention: problems that keep recurring, the role they keep wanting to become, obstacles they keep tripping on, or strengths still forming.\nGrowth records:\n' + src + '\nReturn strict JSON: {"patterns":[{"title":"one-line title","evidence":"supporting evidence (quote specific records, within 40 words)","insight":"insight and advice for the user (within 40 words)"}]}';
+  toast(regen ? 'Re-analyzing…' : 'Scanning your growth records across time…');
   const text = await aiCall(prompt);
   if (!text) return;
   try {
@@ -814,7 +814,7 @@ function saveSettings(){
   const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
   localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey, baseUrl: profile.baseUrl, model: profile.model }));
   closeSettings();
-  toast('AI 设置已保存');
+  toast('AI settings saved');
   renderPatterns();
 }
 

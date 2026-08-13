@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>快速想清楚 · Transform</title>
+<title>Quick Insight · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -69,7 +69,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版伴我洞察入口（底部小链接） */
+  
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -83,7 +83,7 @@
   .full-link-bar a:hover { background: var(--violet-soft, #EEECFA); }
 
   .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
-  /* ===== 全局导航（所有页面互跳） ===== */
+  
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
@@ -117,11 +117,11 @@
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
   .arch-btn { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
   .arch-btn:hover { color: #fff !important; border-color: transparent !important; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.32); }
-  /* 高特异性：覆盖 .topbar button */
+  
   .topbar button.arch-btn,
   .topbar button.arch-btn:hover { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
 
-  /* 阶段 1：输入主题 */
+  
   .think-hero {
     background: linear-gradient(135deg, #0A5A42, var(--green-3));
     border-radius: var(--radius-lg); padding: 30px 26px; color: #fff; margin-top: 8px;
@@ -143,7 +143,7 @@
   .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
   .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-  /* 阶段 2：AI 出题 + 回答 */
+  
   .q-card {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
     padding: 24px; margin-top: 16px;
@@ -177,7 +177,7 @@
   @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   .ai-tag { display: inline-block; font-size: 11px; font-weight: 800; color: var(--violet); margin-bottom: 4px; }
 
-  /* 修订区 */
+  
   .q-rev-toggle {
     display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
     background: none; border: none; color: var(--green); font-size: 13px; font-weight: 700;
@@ -215,7 +215,7 @@
   .cta-integrate:disabled { opacity: .5; cursor: not-allowed; transform: none; }
   .cta-integrate.loading { opacity: .6; pointer-events: none; }
 
-  /* 阶段 3：洞察卡 */
+  
   .insight-result { margin-top: 16px; }
   .insight-result.hidden { display: none; }
   .ir-card {
@@ -253,30 +253,30 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="back" href="index.html">
+    <a class="back" href="index-en.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      首页
+      Home
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item on" href="think.html">每日洞察</a>
-    <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
+  <nav class="gnav" aria-label="Global navigation">
+    <a class="gn-item on" href="think-en.html">Daily Insight</a>
+    <a class="gn-item" href="punch-en.html">Daily Change</a>
+    <a class="gn-item" href="app-en.html">Guided Insight</a>
+    <a class="gn-item" href="act-en.html">Guided Change</a>
   </nav>
-    <a href="think-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
-    <button class="arch-btn" onclick="location.href='growth.html#insights'" aria-label="认知档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 认知档案</button>
+    <a href="think.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
+    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
+    <button class="arch-btn" onclick="location.href='growth-en.html#insights'" aria-label="Insight archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 Insights</button>
   </div>
 
   <div id="thinkArea"></div>
   <div class="full-link-bar">
-    <a href="app.html">伴我洞察 →</a>
+    <a href="app-en.html">Full Guided Insight →</a>
   </div>
   <div id="toast"></div>
 </div>
 
 <script>
-/* ===================== 数据层（与 app.html 完全互通） ===================== */
+
 const LS_ARCHIVE = 'trf_archive';
 const LS_PROFILE = 'trf_profile';
 const LS_AI = 'trf_ai_config_v1';
@@ -286,11 +286,11 @@ const BRAND_PROFILES = {
   'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
 };
 
-let topic = '';        // 当前主题
-let question = '';     // AI 出的题
-let answer = '';       // 用户回答（canonical）
-let aiHelps = [];      // 三按钮协助历史 [{cap, text, at}]
-let revisions = [];    // 修订轨迹 [text...]
+let topic = '';
+let question = '';
+let answer = '';
+let aiHelps = [];
+let revisions = [];
 let integrating = false;
 
 function $(id){ return document.getElementById(id); }
@@ -340,15 +340,15 @@ function parseJSON(text){
   try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
 }
 
-/* ===================== 阶段 1：输入主题 ===================== */
+
 function renderInputStage(){
   $('thinkArea').innerHTML = `
     <div class="think-hero">
-      <div class="th-eyebrow">伴我洞察 · 快速想清楚</div>
-      <h1>一件让你卡住的事，30 秒开始</h1>
-      <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
-      <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60">
-      <button class="cta-start" id="startBtn" onclick="startThink()">开始想清楚 →</button>
+      <div class="th-eyebrow">Daily Insight · Quick Clarity</div>
+      <h1>Something keeping you stuck? Start in 30s</h1>
+      <p>Write down the one thing you can't stop turning over. Zhixing will ask one sharp question; you answer, get clarified, challenged, and verified — then shape it into an insight that is truly yours.</p>
+      <input class="think-input" id="topicInput" placeholder="e.g. Should I quit my job to start a company?" maxlength="60">
+      <button class="cta-start" id="startBtn" onclick="startThink()">Start Thinking →</button>
     </div>`;
   const input = $('topicInput');
   input.addEventListener('input', e => {
@@ -361,23 +361,23 @@ function renderInputStage(){
 
 async function startThink(){
   topic = ($('topicInput').value || '').trim();
-  if (topic.length < 4) { toast('再多写几个字，知行才能出好题'); return; }
+  if (topic.length < 4) { toast('Add a few more words so Zhixing can ask a good question'); return; }
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
   const btn = $('startBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在出题…';
-  // 出 1 题
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Zhixing is crafting a question…';
+
   let q = null;
   for (let attempt = 0; attempt < 3 && !q; attempt++){
     const r = await aiCall(
-      `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
+      `Topic: "${topic}"\n\nTask: Based on this topic, ask ONE thought-provoking question that helps the user think it through.\nStrict requirements:\n1. Short (10-25 words), single (only one thing per question), precise\n2. Cut straight to the heart, no detours\n3. Output strict JSON:\n{"q":"question"}`
     );
     const d = parseJSON(r);
     if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
   }
   if (!q){
-    btn.classList.remove('loading'); btn.textContent = '开始想清楚 →'; btn.disabled = false;
-    toast('知行暂时出不了题，请稍后再试');
+    btn.classList.remove('loading'); btn.textContent = 'Start Thinking →'; btn.disabled = false;
+    toast('Zhixing could not generate a question right now, please try again');
     return;
   }
   question = q;
@@ -385,39 +385,39 @@ async function startThink(){
   renderQuestionStage();
 }
 
-/* ===================== 阶段 2：回答 + 三按钮 ===================== */
+
 function renderQuestionStage(){
   $('thinkArea').innerHTML = `
     <div class="q-card">
       <div class="q-tag">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
-        知行基于你的主题出的第一题
+        Zhixing's first question on your topic
       </div>
       <div class="q-text">${escapeHtml(question)}</div>
-      <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
-      <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
+      <div class="q-ctx">Topic: "${escapeHtml(topic)}"</div>
+      <textarea class="q-answer" id="qAnswer" placeholder="Write your first reaction — it doesn't need to be perfect…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
-        <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
+        <span class="q-ai-label">Zhixing can help you:</span>
+        <button class="ai-btn-cap" onclick="aiInspireQ('clarify', this)">Clarify</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ('challenge', this)">Challenge</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ('verify', this)">Verify</button>
       </div>
       <div class="q-ai-result" id="qAiResult"></div>
-      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()">📝 修订我的回答</button>
+      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()">📝 Revise my answer</button>
       <div class="q-rev-box" id="revBox">
-        <label>把刚才的思考，修订成你真正认同的版本</label>
+        <label>Revise what you just thought into the version you truly agree with</label>
         <textarea class="q-rev-input" id="revInput">${escapeHtml(answer)}</textarea>
         <div class="q-rev-actions">
-          <button class="btn btn-primary" onclick="saveRevision()">保存修订</button>
-          <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
+          <button class="btn btn-primary" onclick="saveRevision()">Save Revision</button>
+          <button class="btn btn-ghost" onclick="toggleRevBox(false)">Cancel</button>
         </div>
       </div>
-      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让知行整合出洞察 →</button>
+      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">Let Zhixing shape the insight →</button>
     </div>`;
   const ta = $('qAnswer');
   ta.addEventListener('input', e => { answer = e.target.value; });
   ta.focus();
-  // 回车出结果
+
   $('qAiResult').innerHTML = '';
 }
 
@@ -429,54 +429,54 @@ function toggleRevBox(force){
 }
 function saveRevision(){
   const v = ($('revInput').value || '').trim();
-  if (!v) { toast('写点什么再保存'); return; }
+  if (!v) { toast('Write something before saving'); return; }
   if (v !== answer) revisions.push(v);
   answer = v;
   $('qAnswer').value = v;
   toggleRevBox(false);
-  toast('已保存为你的最终回答 ✓');
+  toast('Saved as your final answer ✓');
 }
 
 async function aiInspireQ(cap, btn){
   const a = answer.trim();
-  if (!a) { toast('先写下你的思考'); return; }
+  if (!a) { toast('Write your thoughts first'); return; }
   btn.classList.add('loading');
   const prompts = {
-    '理清': '帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。',
-    '质疑': '苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。',
-    '查证': '检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。'
+    'clarify': 'Help the user reorganize their scattered thoughts into a coherent structure. Point out 2-3 connections or possible blind spots. Only ask questions, do not conclude.',
+    "challenge": "Socratic challenge. Use 2-3 sharp questions to challenge the user\u2019s current thinking. Only ask questions, never give answers.",
+    'verify': 'Retrieve 1-2 relevant facts, principles, or cases. State them objectively without deciding for the user.'
   };
   const r = await aiCall(
-    `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
+    `Topic: "${topic}"\nQuestion: ${question}\nUser's answer: ${a}\n\n${prompts[cap]}\n\n[Hard requirement] Output in under 100 words, precise and concise, straight to the point. No pleasantries, no paragraphs.`
   );
   btn.classList.remove('loading');
-  if (!r){ toast('知行暂时没响应，请稍后再试'); return; }
+  if (!r){ toast('Zhixing did not respond, please try again'); return; }
   const text = r.trim().slice(0, 300);
   aiHelps.push({ cap, text, at: new Date().toISOString() });
   const box = $('qAiResult');
-  box.innerHTML = '<span class="ai-tag">知行 · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
+  box.innerHTML = '<span class="ai-tag">Zhixing · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
   box.classList.add('show');
-  // 出现后可立即修订
+
   $('revToggle').style.display = 'inline-flex';
 }
 
-/* ===================== 阶段 3：整合出洞察 ===================== */
+
 async function finishThink(){
   if (integrating) return;
   const a = answer.trim();
-  if (!a) { toast('先写下你的回答'); return; }
+  if (!a) { toast('Write your answer first'); return; }
   integrating = true;
   const btn = $('integrateBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在整合…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Zhixing is synthesizing…';
   const qaPairs =
-    `问题：${question}\n用户最终回答：${a}` +
-    (aiHelps.length ? `\n知行协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
-    (revisions.length ? `\n（该题经知行启发后由用户主动修订 ${revisions.length} 次）` : '');
+    `Question: ${question}\nUser's final answer: ${a}` +
+    (aiHelps.length ? `\nZhixing assistance: ${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('; ')}` : '') +
+    (revisions.length ? `\n(The user voluntarily revised this answer ${revisions.length} time(s) after Zhixing's prompts)` : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
     const r = await aiCall(
-      `主题：「${topic}」\n\n用户在问题下的思考：\n${qaPairs}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
+      `Topic: "${topic}"\n\nUser's thinking under the question:\n${qaPairs}\n\nTask: Synthesize all of the above into two outputs (strict JSON):\n- nature: the essence behind these phenomena is ... (one sentence, 15-40 words)\n- newInsight: our new insight and understanding of this problem is ... (one sentence, 15-40 words)\n\nFormat:\n{"nature":"...","newInsight":"..."}`
     );
     const d = parseJSON(r);
     if (d && (d.nature || d.newInsight)){
@@ -485,11 +485,11 @@ async function finishThink(){
   }
   if (!essence){
     integrating = false;
-    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让知行整合出洞察 →';
-    toast('知行整合失败，请稍后再试');
+    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = 'Let Zhixing shape the insight →';
+    toast('Zhixing could not synthesize this time, please try again');
     return;
   }
-  // 存入认知档案（与 app.html complete() 的条目格式一致）
+
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -531,35 +531,35 @@ function renderInsightResult(session){
     <div class="insight-result">
       <div class="ir-card">
         <div class="ir-crown">✨</div>
-        <div class="ir-title">想清楚了：一条新洞察已沉淀</div>
+        <div class="ir-title">Clarified: a new insight is banked</div>
         <div class="ir-block">
-          <div class="k">现象背后的本质</div>
-          <div class="v">${escapeHtml(session.essence.nature || '（未生成）')}</div>
+          <div class="k">Essence Behind the Phenomena</div>
+          <div class="v">${escapeHtml(session.essence.nature || '(not generated)')}</div>
         </div>
         <div class="ir-block">
-          <div class="k">新洞察</div>
-          <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
+          <div class="k">New Insight</div>
+          <div class="v">${escapeHtml(session.essence.insight || '(not generated)')}</div>
         </div>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
-            把这个洞察变成今天的改变 →
+          <a class="btn btn-primary" href="punch-en.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
+            Turn this insight into today's change →
           </a>
-          <a class="btn btn-ghost" href="growth.html#insights" style="text-decoration:none;">看认知档案</a>
+          <a class="btn btn-ghost" href="growth-en.html#insights" style="text-decoration:none;">View Insight Archive</a>
         </div>
-        <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
+        <div class="ir-note">Saved to your Growth Assets · Insight Archive · viewable anytime</div>
       </div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ===================== 初始化 ===================== */
-// 初始化：支持 ?topic= 预填主题（来自首页今日卡片）
+
+
 (function(){
   const params = new URLSearchParams(location.search);
   const prefill = (params.get('topic') || '').trim();
   if (prefill){
     topic = prefill;
-    // 预填后自动开始（跳过输入步骤，直接进入 AI 出题）
+
     const cfg = getAI();
     if (cfg.apiKey){
       startThinkWithTopic(prefill);
@@ -571,18 +571,18 @@ function renderInsightResult(session){
 
 async function startThinkWithTopic(t){
   topic = t;
-  // 出 1 题
+  // Ask one question
   let q = null;
   for (let attempt = 0; attempt < 3 && !q; attempt++){
     const r = await aiCall(
-      `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
+      `Topic: "${topic}"\n\nTask: Based on this topic, ask ONE thought-provoking question that helps the user think it through.\nStrict requirements:\n1. Short (10-25 words), single (only one thing per question), precise\n2. Cut straight to the heart, no detours\n3. Output strict JSON:\n{"q":"question"}`
     );
     const d = parseJSON(r);
     if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
   }
   if (!q){
     renderInputStage();
-    toast('知行暂时出不了题，请稍后再试');
+    toast('Zhixing could not generate a question right now, please try again');
     return;
   }
   question = q;

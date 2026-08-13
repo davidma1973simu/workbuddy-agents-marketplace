@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>伴我洞察 · Transform</title>
+<title>Guided Insight · Transform</title>
 <style>
   :root {
     /* ===== 设计令牌 Design Tokens · Transform 世界级标杆版 ===== */
@@ -1432,20 +1432,20 @@
   <div class="topbar">
     <a class="back" href="index.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      首页
+      Home
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item" href="think.html">每日洞察</a>
-    <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item on" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
+  <nav class="gnav" aria-label="Global navigation">
+    <a class="gn-item" href="think-en.html">Daily Insight</a>
+    <a class="gn-item" href="punch-en.html">Daily Change</a>
+    <a class="gn-item on" href="app-en.html">Guided Insight</a>
+    <a class="gn-item" href="act-en.html">Guided Change</a>
   </nav>
-    <a href="app-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+    <a href="app.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
+    <button onclick="openSettings()" aria-label="Settings" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </button>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
-      <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span>
     </button>
   </div>
 
@@ -1453,19 +1453,19 @@
   <div class="path" id="stepsBar" data-progress="1">
     <div class="p-node active" data-step="0">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">归类</span>
+      <span class="p-label">Organize</span>
     </div>
     <div class="p-node" data-step="1">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">洞察</span>
+      <span class="p-label">Insight</span>
     </div>
     <div class="p-node" data-step="2">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="p-label">应用</span>
+      <span class="p-label">Apply</span>
     </div>
     <div class="p-node" data-step="3">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg></div>
-      <span class="p-label">产出</span>
+      <span class="p-label">Deliver</span>
     </div>
   </div>
 
@@ -1473,178 +1473,178 @@
   <div class="app-panel">
     <!-- Step 0 归类 -->
     <div class="panel" id="panel-0">
-      <h1>把杂乱信息理出头绪</h1>
-      <div class="hint">面对一个复杂的挑战，你手里有一堆<u>现象、事实、猜测、假设</u>。先把它摊开，再归成几类，给每类一个名字。</div>
+      <h1>Make sense of messy information</h1>
+      <div class="hint">Facing a complex challenge, you hold a pile of <u>observations, facts, guesses, assumptions</u>. Lay them all out, then group them and name each group.</div>
 
-      <label>① 你在面对什么复杂挑战？（场景描述）</label>
-      <textarea id="scenario" placeholder="例如：AI 正在改变我的行业，我一边焦虑一边不知道该学什么、该往哪走，家人朋友说法不一，网上信息爆炸……"></textarea>
+      <label>\u2460 What complex challenge are you facing? (scenario)</label>
+      <textarea id="scenario" placeholder="e.g. AI is transforming my industry. I feel anxious, unsure what to learn or where to go. Family and friends disagree, and the internet is overwhelming me..."></textarea>
 
-      <label>② 摊开你的信息——现象、事实、猜测、假设，一条一条记下来</label>
+      <label>\u2461 Lay out your information \u2014 observations, facts, guesses, assumptions, one by one</label>
       <div class="note-type" id="noteTypeChips">
-        <span class="type-chip sel" data-v="现象">现象</span>
-        <span class="type-chip" data-v="事实">事实</span>
-        <span class="type-chip" data-v="猜测">猜测</span>
-        <span class="type-chip" data-v="假设">假设</span>
+        <span class="type-chip sel" data-v="现象">Observation</span>
+        <span class="type-chip" data-v="事实">Fact</span>
+        <span class="type-chip" data-v="猜测">Guess</span>
+        <span class="type-chip" data-v="假设">Assumption</span>
       </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
-        <input type="text" id="noteInput" placeholder="记一条：发生了什么 / 你听到了什么 / 你怀疑什么 / 你默认什么…">
-        <button class="btn btn-next" style="padding:10px 20px;flex-shrink:0;" onclick="addNote()">记录</button>
+        <input type="text" id="noteInput" placeholder="Add one: what happened / what you heard / what you suspect / what you take for granted...">
+        <button class="btn btn-next" style="padding:10px 20px;flex-shrink:0;" onclick="addNote()">Add</button>
       </div>
       <div class="notes" id="notesList"></div>
       <div class="ai-row">
         <button class="ai-btn" id="aiExtract" onclick="aiExtract()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 117 0c-1.5 1.2-2 2.4-2 3.5h-3c0-1.1-.5-2.3-2-3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          帮我从场景里提取信息点
+          Extract information points from my scenario
         </button>
       </div>
       <div class="ai-result" id="aiExtractResult"></div>
 
-<label>③ 把它们归成几类——每类给一个总结标签</label>
+<label>\u2462 Group them \u2014 give each group a summary label</label>
         <button class="ai-btn" id="aiGroup" onclick="aiGroup()" style="margin-bottom:10px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h6v6H4zM14 7h6v6h-6zM4 17h6v3H4zM14 17h6v3h-6z" stroke="currentColor" stroke-width="1.8"/></svg>
-          AI 帮我整理归类
+          AI, group these for me
         </button>
       <div class="groups" id="groupsArea"></div>
 
       <div class="signal" id="signal0" style="display:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        杂乱信息已归类，头绪有了
+        Information grouped \u2014 a thread to pull now
       </div>
-      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去洞察 →</button></div>
+      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>To Insight →</button></div>
     </div>
 
     <!-- Step 1 洞察（用户主导，知行辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
     <div class="panel" id="panel-1" style="display:none;">
-      <h1>透过现象看本质</h1>
-      <div class="hint">上面的归类会全部参与。知行会<b>一题一题</b>抛启发问题，回答过的题会留在页面上。你可以一直回答，直到说"可以了"，知行再整合成核心洞察。</div>
+      <h1>See the essence behind phenomena</h1>
+      <div class="hint">All your groups above take part. Zhixing asks <b>one question at a time</b>; answered questions stay on the page. Keep answering until you say \u201cI\u2019m done\u201d, then Zhixing synthesizes the core insight.</div>
 
-      <!-- ① 归类罗列（只读，全部参与） -->
-      <label>① 你的归类（全部参与思考）</label>
+      <!-- \u2460 Groups (read-only, all take part) -->
+      <label>\u2460 Your groups (all participate in thinking)</label>
       <div class="label-picker" id="labelPicker"></div>
 
       <!-- ② 渐进式提问区 -->
       <div id="thinkingArea" style="display:none;">
-        <div class="lb-section-title">知行抛的问题 · 你的思考</div>
+        <div class="lb-section-title">Questions from Zhixing \u00b7 your thinking</div>
         <div id="allQuestions"></div>
 
         <!-- 出题控制：第一题 / 下一题 / 够了 -->
         <div class="q-action-row" id="askRow" style="justify-content:flex-start;border:none;padding-top:0;">
-          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">让知行提第一题</button>
-          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">可以了，让知行总结 →</button>
+          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">Ask the first question</button>
+          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">I\u2019m done, let Zhixing summarize →</button>
         </div>
 
-        <div class="lb-section-title">我的整体看法（可空，会作为知行总结的输入）</div>
-        <textarea id="personalView" class="personal-view-main" placeholder="写下你对整个场景的整体看法、感受、判断……"></textarea>
+        <div class="lb-section-title">My overall view (optional \u2014 feeds Zhixing\u2019s summary)</div>
+        <textarea id="personalView" class="personal-view-main" placeholder="Write your overall view, feelings, and judgments about the whole scenario..."></textarea>
 
         <!-- ③ 知行总结按钮 + 凸显 essence 盒 -->
         <div id="integrateArea" style="display:none;">
-          <div class="lb-section-title">让知行整合（基于所有问答 + 整体看法）</div>
+          <div class="lb-section-title">Let Zhixing synthesize (from all Q&A + overall view)</div>
           <button class="ai-btn-primary" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行总结
+            Let Zhixing summarize
           </button>
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
           <div class="lb-essence-box" id="essenceBox">
-            <div class="lb-essence-label">现象背后的本质（AI 整合产出，可编辑）</div>
-            <textarea id="essenceNature" class="essence-nature" placeholder="这个类别的这些现象背后的本质是……"></textarea>
-            <div class="lb-essence-label">新洞察和新认知（AI 整合产出，可编辑）</div>
-            <textarea id="essenceInsight" class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……"></textarea>
+            <div class="lb-essence-label">Essence behind the phenomena (AI output, editable)</div>
+            <textarea id="essenceNature" class="essence-nature" placeholder="The essence behind these phenomena is..."></textarea>
+            <div class="lb-essence-label">New insight and understanding (AI output, editable)</div>
+            <textarea id="essenceInsight" class="essence-insight" placeholder="Our new insight and understanding of this problem is..."></textarea>
             <div class="essence-confirm-row">
-              <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">保存确认</button>
+              <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & Confirm</button>
             </div>
           </div>
 
           <div class="lb-score-row">
             <div>
-              <label>这个认知多重要？</label>
+              <label>How important is this insight?</label>
               <div class="lb-scale" id="impactScale"></div>
             </div>
             <div>
-              <label>接受它多费力？</label>
+              <label>How hard is it to accept?</label>
               <div class="lb-scale" id="effortScale"></div>
             </div>
           </div>
 
-          <div class="lb-status-row" id="statusRow">还需要：让知行总结</div>
+          <div class="lb-status-row" id="statusRow">Next: let Zhixing summarize</div>
 
         </div>
 
         <div class="signal" id="signal1" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          认知 +1，你看到了现象背后的东西
+          Cognition +1 \u2014 you saw what\u2019s behind the phenomena
         </div>
         <div class="btn-row" id="nextBtnArea" style="display:none;">
-          <button class="btn btn-prev" onclick="goStep(0)">上一步</button>
-          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>去应用 →</button>
+          <button class="btn btn-prev" onclick="goStep(0)">Back</button>
+          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>To Apply →</button>
         </div>
       </div>
     </div>
 
     <!-- Step 2 应用（用户写 + AI 评价反馈，按 PRD） -->
     <div class="panel" id="panel-2" style="display:none;">
-      <h1>把新认知用向陌生场景</h1>
-      <div class="hint">这一步不是让你去行动，而是<u>在认知层面推演</u>：带着这个新认知，去面对熟悉的 + 陌生的场景，写下你打算怎么做。最后知行会根据你的填写打分 + 给反馈 + 行动建议。</div>
+      <h1>Apply your new insight to unfamiliar scenarios</h1>
+      <div class="hint">This step isn\u2019t about taking action yet \u2014 it\u2019s a <u>cognitive rehearsal</u>: carry this new insight into familiar + unfamiliar scenarios and write down how you would act. Finally Zhixing scores, gives feedback, and suggests next actions.</div>
 
-      <label>① 你的新认知</label>
+      <label>\u2460 Your new insight</label>
       <div class="insight-highlight" id="insightRef"></div>
       <div class="score-display" id="scoreDisplay" style="display:none;">
-        <div class="sd-item"><span class="sd-label">重要性</span><span class="sd-val" id="sdImpact">—</span></div>
-        <div class="sd-item"><span class="sd-label">接受费力</span><span class="sd-val" id="sdEffort">—</span></div>
-        <div class="sd-desc">知行会结合这两个评分来评价你的应用计划</div>
+        <div class="sd-item"><span class="sd-label">Importance</span><span class="sd-val" id="sdImpact">—</span></div>
+        <div class="sd-item"><span class="sd-label">Acceptance effort</span><span class="sd-val" id="sdEffort">—</span></div>
+        <div class="sd-desc">Zhixing uses both scores to evaluate your application plan</div>
       </div>
 
       <!-- ② 近应用：先选场景标题 → 生成细节 → 填计划 → AI 评分 -->
-      <label>② 近应用：你<u>熟悉的场景</u>，这个新认知能用吗？</label>
+      <label>\u2461 Near application: a <u>familiar scenario</u> \u2014 does this insight work here?</label>
       <div class="app-block" id="nearAppBlock" data-type="near">
-        <div class="app-title">近应用（熟悉的场景）</div>
+        <div class="app-title">Near application (familiar scenario)</div>
 
         <div class="app-stage" data-stage="title">
-          <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2460</span><span class="app-step-label">Pick a scenario title to apply it to</span></div>
           <div class="title-list" id="nearTitleList"></div>
           <div class="title-actions">
             <button class="ai-btn" onclick="recommendApplyTitles('near', this)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              推荐场景
+              Recommend scenario
             </button>
-            <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
-            <button class="ai-btn-primary" onclick="confirmApplyTitle('near')">确认 →</button>
+            <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="Or write your own scenario title (max 30 chars)" maxlength="30">
+            <button class="ai-btn-primary" onclick="confirmApplyTitle('near')">Confirm →</button>
           </div>
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
           <div class="detail-card" id="nearDetailCard"></div>
           <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
+            <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
           </div>
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
           <div class="detail-card" id="nearDetailCardPlan"></div>
           <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
+            <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
           </div>
-          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">\u2462</span><span class="app-step-label">Write your application plan</span></div>
           <div class="app-row">
-            <span class="app-label">打算怎么做？</span>
-            <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段，让客户先感受到'激发行动与情感连接'"></textarea>
+            <span class="app-label">What will you do?</span>
+            <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="e.g. Stop proving value with \u201cI have N years of experience\u201d; instead design a 30-minute experience with the client so they first feel \u201cinspiring action and emotional connection\u201d"></textarea>
           </div>
           <div class="app-row app-row-grid">
             <div>
-              <span class="app-label">什么时候试？</span>
-              <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="例：本周五">
+              <span class="app-label">When will you try it?</span>
+              <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="e.g. this Friday">
             </div>
             <div>
-              <span class="app-label">期待产出结果？</span>
-              <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="例：客户主动续约第二阶段">
+              <span class="app-label">Expected outcome?</span>
+              <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="e.g. the client proactively renews phase 2">
             </div>
           </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              让知行打分 + 给反馈 + 行动建议
+              Have Zhixing score + give feedback + suggest actions
             </button>
           </div>
         </div>
@@ -1653,54 +1653,54 @@
       </div>
 
       <!-- ③ 远应用：在近应用完整前锁定；同样的流程 -->
-      <label class="locked-label" id="farAppLockLabel">③ 远应用：换个<u>完全不同的场景</u>，这个新认知还能用吗？</label>
+      <label class="locked-label" id="farAppLockLabel">\u2462 Far application: a <u>completely different scenario</u> \u2014 does this insight still hold?</label>
       <div class="app-block locked" id="farAppBlock" data-type="far">
-        <div class="app-title">远应用（陌生的场景）</div>
-        <div class="lock-overlay"><span>先完成近应用，让知行打过分，再解锁这里</span></div>
+        <div class="app-title">Far application (unfamiliar scenario)</div>
+        <div class="lock-overlay"><span>Finish the near application and get a score from Zhixing first, then unlock this</span></div>
 
         <div class="app-stage" data-stage="title">
-          <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2460</span><span class="app-step-label">Pick a scenario title to apply it to</span></div>
           <div class="title-list" id="farTitleList"></div>
           <div class="title-actions">
-            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">推荐场景</button>
-            <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="或者自己写一个场景标题（≤30字）" maxlength="30">
-            <button class="ai-btn-primary" onclick="confirmApplyTitle('far')">确认 →</button>
+            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">Recommend scenario</button>
+            <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="Or write your own scenario title (max 30 chars)" maxlength="30">
+            <button class="ai-btn-primary" onclick="confirmApplyTitle('far')">Confirm →</button>
           </div>
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
           <div class="detail-card" id="farDetailCard"></div>
           <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
+            <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
           </div>
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
           <div class="detail-card" id="farDetailCardPlan"></div>
           <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
+            <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
           </div>
-          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">③</span><span class="app-step-label">写下你的应用计划</span></div>
+          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">\u2462</span><span class="app-step-label">Write your application plan</span></div>
           <div class="app-row">
-            <span class="app-label">打算怎么做？</span>
-            <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="例：建议销售团队把'系统工具'升级为'激发客户 + 陪跑过程'，让 AI 做信息处理，销售做情感连接与决策推动"></textarea>
+            <span class="app-label">What will you do?</span>
+            <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="e.g. Suggest the sales team upgrade from \u201csystem tool\u201d to \u201cinspire the client + coach the process\u201d: AI handles information, sales does emotional connection and decision momentum"></textarea>
           </div>
           <div class="app-row app-row-grid">
             <div>
-              <span class="app-label">什么时候试？</span>
-              <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="例：下周一">
+              <span class="app-label">When will you try it?</span>
+              <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="e.g. next Monday">
             </div>
             <div>
-              <span class="app-label">期待产出结果？</span>
-              <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="例：销售反馈客户复购率提升">
+              <span class="app-label">Expected outcome?</span>
+              <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="e.g. sales report higher repeat purchase rate">
             </div>
           </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              让知行打分 + 给反馈 + 行动建议
+              Have Zhixing score + give feedback + suggest actions
             </button>
           </div>
         </div>
@@ -1709,124 +1709,124 @@
       </div>
 
       <!-- ④ 支持资源与条件（近应用专属） -->
-      <label>④ 近应用支持资源：为了落地「<span class="res-label-near"></span>」，你需要找什么人、资源和条件？</label>
+      <label>\u2463 Near-application support resources: to actually land \u201c<span class="res-label-near"></span>\u201d, who, what resources, and what conditions do you need?</label>
       <div class="resource-section">
         <button class="ai-btn-primary" id="aiResourcesNear" onclick="aiSuggestResources('near')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          让知行为近应用建议支持资源
+          Have Zhixing suggest support resources for the near application
         </button>
         <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
       </div>
 
       <!-- ⑤ 支持资源与条件（远应用专属，可选） -->
-      <label>⑤ 远应用支持资源：为了落地「<span class="res-label-far"></span>」，你需要找什么人、资源和条件？</label>
+      <label>\u2464 Far-application support resources: to actually land \u201c<span class="res-label-far"></span>\u201d, who, what resources, and what conditions do you need?</label>
       <div class="resource-section" id="resourceFarSection">
         <button class="ai-btn-primary" id="aiResourcesFar" onclick="aiSuggestResources('far')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          让知行为远应用建议支持资源
+          Have Zhixing suggest support resources for the far application
         </button>
         <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
       </div>
 
       <div class="signal" id="signal2" style="display:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        认知已推演到场景，闭环完成
+        Insight rehearsed into scenarios \u2014 the loop is closed
       </div>
       <div class="btn-row">
-        <button class="btn btn-prev" onclick="goStep(1)">上一步</button>
-        <button class="btn btn-next" id="next2" onclick="goStep(3)" disabled>完成 →</button>
+        <button class="btn btn-prev" onclick="goStep(1)">Back</button>
+        <button class="btn btn-next" id="next2" onclick="goStep(3)" disabled>Finish →</button>
       </div>
     </div>
 
     <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
     <div class="panel" id="panel-3" style="display:none;">
-      <h1>这次想清楚，我要带走的产出</h1>
-      <div class="hint">把洞察落地为几条可执行的行动，并为你期待的身份投上一票。</div>
+      <h1>What I\u2019m taking away from this</h1>
+      <div class="hint">Turn your insight into a few executable actions, and cast a vote for the identity you aspire to.</div>
 
-      <label>我对「<span id="outcomeScenarioName">—</span>」的全新认知</label>
+      <label>My new understanding of \u201c<span id="outcomeScenarioName">—</span>\u201d</label>
       <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
 
-      <label>① 知行建议的下一步行动</label>
+      <label>\u2460 Next actions suggested by Zhixing</label>
       <div class="outcome-section" id="actionsOutcome"></div>
 
-      <label>② 需要的支持资源</label>
+      <label>\u2461 Support resources you need</label>
       <div class="outcome-section" id="resourcesOutcome"></div>
 
-      <label>③ 为期待的身份投票</label>
+      <label>\u2462 Vote for the identity you aspire to</label>
       <div class="identity-vote" id="identityVoteArea">
         <div class="identity-input-wrap">
-          <input type="text" id="identityText" placeholder="例：会用第一性原理思考的人">
-          <div class="identity-hint">写下你期待自己成为什么样的人</div>
+          <input type="text" id="identityText" placeholder="e.g. someone who thinks from first principles">
+          <div class="identity-hint">Write who you want to become</div>
         </div>
         <div class="identity-badge" id="identityBadge" style="display:none;">
           <div class="badge-icon">🗳️</div>
           <div class="badge-body">
-            <div class="badge-k">我投给</div>
+            <div class="badge-k">I vote for</div>
             <div class="badge-v" id="identityBadgeText">—</div>
           </div>
           <button class="badge-vote-btn" id="voteBtn" onclick="castIdentityVote()">
-            <span class="vote-text">投一票</span>
-            <span class="vote-done">✓ 已投票</span>
+            <span class="vote-text">Vote</span>
+            <span class="vote-done">✓ Voted</span>
           </button>
         </div>
         <div class="vote-stats" id="voteStats" style="display:none;">
-          <div class="stat-pill"><span id="voteCount">0</span> 票</div>
-          <div class="stat-pill">最近 <span id="voteDays">—</span></div>
+          <div class="stat-pill"><span id="voteCount">0</span> votes</div>
+          <div class="stat-pill">Latest <span id="voteDays">—</span></div>
         </div>
       </div>
 
       <div class="insight-to-behavior">
         <button class="btn btn-primary" onclick="sendInsightToBehavior()" id="toBehaviorBtn">
-          把这条洞察变成一次行为实验
+          Turn this insight into a behavior experiment
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="itb-note">知行会带着这条洞察，帮你设计一段「从认知到行为」的实验</span>
+        <span class="itb-note">Zhixing will use this insight to design a \u201cfrom insight to action\u201d experiment for you</span>
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-prev" onclick="goStep(2)">上一步</button>
-        <button class="btn btn-next" onclick="complete()" id="finishBtn">完成并存入档案</button>
+        <button class="btn btn-prev" onclick="goStep(2)">Back</button>
+        <button class="btn btn-next" onclick="complete()" id="finishBtn">Finish & save to archive</button>
       </div>
     </div>
 
     <!-- Step 4 复盘：把这次想清楚，更新成认知模型（评估反馈段，闭合认知循环） -->
     <div class="panel" id="panel-4" style="display:none;">
-      <h1>复盘 · 把这次想清楚，沉淀成认知资产</h1>
-      <div class="hint">五个问题想清楚，这次梳理才真正闭环——发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。AI 会用你的挑战与洞察帮你生成复盘草稿。</div>
+      <h1>Review \u00b7 bank this thinking as a cognitive asset</h1>
+      <div class="hint">Five questions close the loop: what happened, why, what you learned, what you did differently, what changed. AI drafts the review from your challenge and insight.</div>
 
-      <label>我刚刚想清楚的挑战</label>
+      <label>The challenge I just worked through</label>
       <div class="outcome-section outcome-core">
         <div style="font-size:15px;font-weight:700;color:var(--ink);">「<span id="reflectScenario">—</span>」</div>
         <div class="os-core-meta" id="reflectCore" style="margin-top:10px;"></div>
       </div>
 
-      <label>发生了什么？</label>
-      <textarea id="reWhat" class="reflect-q" placeholder="例如：我把「…」这件事彻底想了一遍，分类时发现…"></textarea>
+      <label>What happened?</label>
+      <textarea id="reWhat" class="reflect-q" placeholder="e.g. I thought through \u201c...\u201d completely and noticed while organizing..."></textarea>
 
-      <label>为什么？</label>
-      <textarea id="reWhy" class="reflect-q" placeholder="为什么会这样？我过去一直没想通的原因是什么？"></textarea>
+      <label>Why?</label>
+      <textarea id="reWhy" class="reflect-q" placeholder="Why is it so? What kept me from seeing this before?"></textarea>
 
-      <label>学到了什么？</label>
-      <textarea id="reLearned" class="reflect-q" placeholder="这次梳理让我学到的最重要的一点是…"></textarea>
+      <label>What did you learn?</label>
+      <textarea id="reLearned" class="reflect-q" placeholder="The most important thing I learned this time is..."></textarea>
 
-      <label>做了什么不同的？</label>
-      <textarea id="reDifferent" class="reflect-q" placeholder="和过去的我相比，这次的思考方式哪里不一样？"></textarea>
+      <label>What did you do differently?</label>
+      <textarea id="reDifferent" class="reflect-q" placeholder="Compared with my past self, how was my thinking different this time?"></textarea>
 
-      <label>改变了什么？</label>
-      <textarea id="reChanged" class="reflect-q" placeholder="我的判断、情绪或对这件事的看法，发生了什么变化？"></textarea>
+      <label>What changed?</label>
+      <textarea id="reChanged" class="reflect-q" placeholder="How did my judgment, emotions, or view of this change?"></textarea>
 
       <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectA()">知行帮我复盘</button>
+        <button class="btn btn-ai" onclick="aiReflectA()">Zhixing, help me review</button>
       </div>
       <div id="reReflectResult" class="ai-out hidden"></div>
 
-      <label>我对这类问题的新认知框架（Mental Model）</label>
-      <textarea id="reModel" class="reflect-q" placeholder="例如：对于所有转变，都要经历 接纳 → 实践 → 融合 三个阶段。"></textarea>
+      <label>My new mental model for this kind of problem</label>
+      <textarea id="reModel" class="reflect-q" placeholder="e.g. Every transformation passes through three stages: Accept \u2192 Practice \u2192 Integrate."></textarea>
 
       <div class="btn-row">
-        <button class="btn btn-prev" onclick="goStep(3)">上一步</button>
-        <button class="btn btn-next" onclick="saveReflection()">完成复盘 · 沉淀成长资产</button>
-        <a class="btn btn-ghost" href="growth.html#insights">稍后再复盘</a>
+        <button class="btn btn-prev" onclick="goStep(3)">Back</button>
+        <button class="btn btn-next" onclick="saveReflection()">Finish review \u00b7 bank as growth asset</button>
+        <a class="btn btn-ghost" href="growth-en.html#insights">Review later</a>
       </div>
     </div>
   </div>
@@ -1835,40 +1835,40 @@
   <!-- 设置页 -->
   <div class="settings-panel">
     <div class="panel">
-      <h1>AI 设置</h1>
-      <div class="hint">选一个模型品牌，填入你的 API Key 即可使用。</div>
-      <label>模型品牌</label>
+      <h1>AI Settings</h1>
+      <div class="hint">Pick a model provider and enter your API Key to get started.</div>
+      <label>Model provider</label>
       <div class="brand-list" id="brandList">
         <div class="brand" data-v="DeepSeek">
           <div class="b-logo">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 8a7 7 0 0114 0v2M5 16a7 7 0 0014 0v-2M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
-          <div class="b-body"><div class="b-title">DeepSeek</div><div class="b-desc">国内访问快，性价比高</div></div>
+          <div class="b-body"><div class="b-title">DeepSeek</div><div class="b-desc">Fast in China, great value</div></div>
           <div class="b-check"></div>
         </div>
         <div class="brand" data-v="OpenAI">
           <div class="b-logo">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3M9 2v20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           </div>
-          <div class="b-body"><div class="b-title">OpenAI</div><div class="b-desc">GPT 系列，原厂接口</div></div>
+          <div class="b-body"><div class="b-title">OpenAI</div><div class="b-desc">GPT series, official API</div></div>
           <div class="b-check"></div>
         </div>
         <div class="brand" data-v="Gemini">
           <div class="b-logo">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.4 7.2H22l-6 4.4 2.3 7.4-6.3-4.6-6.3 4.6L8 13.6 2 9.2h7.6L12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
           </div>
-          <div class="b-body"><div class="b-title">Gemini</div><div class="b-desc">Google 原生，需走兼容端点</div></div>
+          <div class="b-body"><div class="b-title">Gemini</div><div class="b-desc">Native Google, via compatible endpoint</div></div>
           <div class="b-check"></div>
         </div>
       </div>
       <label>API Key</label>
       <input type="text" id="cfgApiKey" placeholder="sk-...">
-      <button class="test-btn" type="button" onclick="runConnectionTest()" style="margin-top:10px;">先测试连接</button>
+      <button class="test-btn" type="button" onclick="runConnectionTest()" style="margin-top:10px;">Test connection first</button>
       <div class="conn-status" id="connStatus"></div>
-      <div class="save-tip" id="saveTip">已保存</div>
+      <div class="save-tip" id="saveTip">Saved</div>
       <div class="btn-row">
-        <button class="btn btn-prev" onclick="closeSettings()">返回</button>
-        <button class="btn btn-next" id="saveBtn" onclick="saveSettings()">保存设置</button>
+        <button class="btn btn-prev" onclick="closeSettings()">Back</button>
+        <button class="btn btn-next" id="saveBtn" onclick="saveSettings()">Save Settings</button>
       </div>
     </div>
   </div>
@@ -1899,28 +1899,28 @@ const BRAND_PROFILES = {
 };
 
 const NOTE_TYPES = {
-  '现象': 'phenom', '事实': 'fact', '猜测': 'guess', '假设': 'assump'
+  'phenom': 'phenom', 'fact': 'fact', 'guess': 'guess', 'assump': 'assump'
 };
 
 const state = {
   step: 0,
-  curNoteType: '现象',
+  curNoteType: 'phenom',
   data: {
-    scenario: '', notes: [], groups: [],      // 归类
-    method: '', insight: '', impact: 0, effort: 0,  // 洞察
+    scenario: '', notes: [], groups: [],      // organize
+    method: '', insight: '', impact: 0, effort: 0,  // insight
     scene: '', scenes: [], expectedOutcome: '',
     nearScenario: { title: '', titleType: 'rec', details: {}, plan: '', when: '', expectedOutcome: '' },
     farScenario: { title: '', titleType: 'rec', details: {}, plan: '', when: '', expectedOutcome: '' },
     nearFeedback: null,
     farFeedback: null,
-    aiFeedback: null,    // 应用（旧字段，保留兼容）
-    resourcesPlan: null, // 旧字段：合并版支持资源（保留兼容迁移）
-    nearResourcesPlan: null, // { people, resources, conditions, note, confirmed } 近应用专属
-    farResourcesPlan: null,  // { people, resources, conditions, note, confirmed } 远应用专属
+    aiFeedback: null,    // apply (legacy field, kept for compat)
+    resourcesPlan: null, // legacy: merged support resources (kept for migration)
+    nearResourcesPlan: null, // { people, resources, conditions, note, confirmed } near-application only
+    farResourcesPlan: null,  // { people, resources, conditions, note, confirmed } far-application only
     identity: ''
   }
 };
-window.state = state; // 暴露用于测试与调试（不影响产品逻辑）
+window.state = state; // exposed for testing/debug (no impact on product logic)
 
 /* ============ 工具 ============ */
 const $ = id => document.getElementById(id);
@@ -1972,7 +1972,7 @@ function goStep(n) {
       renderAllQuestions();
       bindPersonalView();
       if ((state.data.insightQuestions || []).length) {
-        $('askNextBtn').textContent = '让知行提下一题 →';
+        $('askNextBtn').textContent = 'Ask the next question \u2192';
         $('finishBtn').style.display = 'inline-block';
       }
       // 已进入整合阶段
@@ -1989,10 +1989,10 @@ function goStep(n) {
     const e = state.data.essence || {};
     if (e.nature || e.insight) {
       $('insightRef').innerHTML =
-        '<div class="ih-nature"><span class="ih-label">现象背后的本质：</span>' + escapeHtml(e.nature || '') + '</div>' +
-        '<div class="ih-insight"><span class="ih-label">新洞察和新认知：</span>' + escapeHtml(e.insight || '') + '</div>';
+        '<div class="ih-nature"><span class="ih-label">Essence: </span>' + escapeHtml(e.nature || '') + '</div>' +
+        '<div class="ih-insight"><span class="ih-label">New insight: </span>' + escapeHtml(e.insight || '') + '</div>';
     } else {
-      $('insightRef').innerHTML = '<div style="color:var(--ink-3);font-size:13px;">（先去洞察步骤确认核心认知）</div>';
+      $('insightRef').innerHTML = '<div style="color:var(--ink-3);font-size:13px;">(Confirm your core insight in the Insight step first)</div>';
     }
     renderScoreDisplay();
     bindAppInputs();
@@ -2047,15 +2047,15 @@ function renderNotes() {
 // AI 提取信息点
 async function aiExtract() {
   const sc = state.data.scenario.trim();
-  if (!sc) { toast('先写下场景描述'); return; }
+  if (!sc) { toast('Write your scenario description first'); return; }
   setAILoading('aiExtract', true);
   try {
     const r = await aiCall(
-      `用户面对一个复杂挑战，场景描述：「${sc}」
-      任务：像梳理杂物一样，从这段描述中提取杂乱的信息点。把信息分成四类：
-      现象（发生了什么）、事实（确凿的信息）、猜测（用户的推测）、假设（用户默认的前提）。
-      输出格式：每行一条，格式为「类型：内容」。类型必须是 现象/事实/猜测/假设 之一。
-      提取 4-8 条，覆盖描述中的关键信息。`
+      `The user faces a complex challenge, scenario: "${sc}"\n
+      Task: Like sorting clutter, extract messy information points from this description and sort them into four types:
+      Observation (what happened), Fact (verified information), Guess (the user's speculation), Assumption (the user's taken-for-granted premise).
+      Output format: one item per line, as \u201cTYPE: content\u201d. Type must be one of: Observation / Fact / Guess / Assumption.
+      Extract 4-8 items covering the key information in the description.`
     );
     // 解析并填入便签
     const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes('：'));
@@ -2069,28 +2069,28 @@ async function aiExtract() {
       }
     });
     renderNotes(); checkNext0(); saveDraft();
-    showAIResult('aiExtractResult', '已提取 ' + lines.length + ' 条信息点，可删除或修改。');
-    toast('已提取信息点');
+    showAIResult('aiExtractResult', 'Extracted ' + lines.length + ' information points. You can delete or edit them.');
+    toast('Information points extracted');
   } catch(e) { toast(e.message); }
   setAILoading('aiExtract', false);
 }
 
 // AI 整理归类
 async function aiGroup() {
-  if (!state.data.notes.length) { toast('先记录一些信息点'); return; }
+  if (!state.data.notes.length) { toast('Record some information points first'); return; }
   setAILoading('aiGroup', true);
   try {
     const notesStr = state.data.notes.map((n, i) => `${i+1}. [${n.type}] ${n.text}`).join('\n');
     const r = await aiCall(
-      `把下面这些信息归成 3-5 类，确保每一条都进入某个类：
+      `Task: Group the information below into 3-5 groups, making sure every item lands in a group:
 ${notesStr}
 
-严格要求：
-1. 认真理解每条信息的语义，不能只看字面
-2. 每类给一个总结标签（一句话）
-3. 必须覆盖所有便签——每一条都要归属一个类，不允许遗漏
-4. 严格按 JSON 格式输出，不要任何解释、不要 markdown 代码块标记：
-{"groups":[{"label":"类名1","noteIds":[1,3,5]},{"label":"类名2","noteIds":[2,4]},...]}`
+Strict requirements:
+1. Understand the semantics of each item, don\u2019t just read the surface
+2. Give each group a summary label (one phrase)
+3. Cover ALL items \u2014 every one must belong to a group, none may be left out
+4. Output strict JSON only, no explanations, no markdown code fences:
+{"groups":[{"label":"group 1","noteIds":[1,3,5]},{"label":"group 2","noteIds":[2,4]},...]}`
     );
     // 优先 JSON 解析
     let groups = parseGroupsFromJSON(r);
@@ -2100,12 +2100,12 @@ ${notesStr}
     if (groups.length) {
       const assigned = new Set(groups.flatMap(g => g.notes.map(n => n.id)));
       const unassigned = state.data.notes.filter(n => !assigned.has(n.id));
-      if (unassigned.length) groups.push({ label: '未分类', notes: unassigned });
+      if (unassigned.length) groups.push({ label: 'Uncategorized', notes: unassigned });
       state.data.groups = groups;
       renderGroups(); checkNext0(); saveDraft();
       const covered = state.data.notes.length - unassigned.length;
-      showAIResult('aiExtractResult', '已分成 ' + groups.length + ' 类，覆盖 ' + covered + '/' + state.data.notes.length + ' 条便签，可改名/移动。');
-      toast('分组完成');
+      showAIResult('aiExtractResult', 'Grouped into ' + groups.length + ' groups, covering ' + covered + '/' + state.data.notes.length + ' items. You can rename or move them.');
+      toast('Grouping complete');
     } else {
       showAIResult('aiExtractResult', r);
     }
@@ -2140,10 +2140,10 @@ function parseGroupsFromText(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   let cur = null;
   lines.forEach(l => {
-    if (l.startsWith('标签')) {
+    if (l.startsWith('Label')) {
       if (cur) groups.push(cur);
       cur = { label: l.slice(l.indexOf('：') + 1).trim(), notes: [] };
-    } else if (l.startsWith('内容') && cur) {
+    } else if (l.startsWith('Items') && cur) {
       const ids = l.slice(l.indexOf('：') + 1).trim().split(/[,，\s]+/).map(s => parseInt(s) - 1).filter(i => i >= 0 && i < state.data.notes.length);
       ids.forEach(i => cur.notes.push({ id: state.data.notes[i].id, type: state.data.notes[i].type, text: state.data.notes[i].text }));
     }
@@ -2157,7 +2157,7 @@ function renderGroups() {
   if (!state.data.groups.length) { box.innerHTML = ''; return; }
   box.innerHTML = state.data.groups.map((g, gi) => `
     <div class="group">
-      <input class="g-label" value="${escapeHtml(g.label)}" placeholder="给这类的总结标签" oninput="updateGroupLabel(${gi}, this.value)">
+      <input class="g-label" value="${escapeHtml(g.label)}" placeholder="Summary label for this group" oninput="updateGroupLabel(${gi}, this.value)">
       <div class="g-notes">
         ${g.notes.map(n => `<span class="g-note"><span class="n-tag">${n.type}</span>${escapeHtml(n.text)}<button class="rm2" onclick="moveNoteOut(${gi},'${n.id}')">×</button></span>`).join('')}
       </div>
@@ -2167,7 +2167,7 @@ function renderGroups() {
   const assigned = new Set(state.data.groups.flatMap(g => g.notes.map(n => n.id)));
   const unassigned = state.data.notes.filter(n => !assigned.has(n.id));
   if (unassigned.length && state.data.groups.length) {
-    box.innerHTML += `<div style="font-size:12.5px;color:var(--ink-3);margin-top:4px;">还有 ${unassigned.length} 条未归入任何类</div>`;
+    box.innerHTML += `<div style="font-size:12.5px;color:var(--ink-3);margin-top:4px;">${unassigned.length} item(s) not in any group</div>`;
   }
 }
 function updateGroupLabel(gi, v) {
@@ -2196,21 +2196,21 @@ function autoGrow(el) {
 function renderLabelPicker() {
   const box = $('labelPicker');
   box.innerHTML = state.data.groups.map(g =>
-    `<span class="label-chip chip-static">${escapeHtml(g.label)}（${g.notes.length} 条）</span>`
+    `<span class="label-chip chip-static">${escapeHtml(g.label)} (${g.notes.length})</span>`
   ).join('');
 }
 
 // ② 渐进式出题（一题一题），带自动去重
 async function aiAskNext(btn) {
   const groups = state.data.groups || [];
-  if (!groups.length) { toast('先完成归类'); return; }
+  if (!groups.length) { toast('Finish organizing first'); return; }
   btn.classList.add('loading');
   const groupsStr = groups.map(g =>
     `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
   ).join('\n');
   const existing = (state.data.insightQuestions || []).map((q, i) => {
-    const a = state.data.insightAnswers[i] || '（未填）';
-    return `已问 ${i+1}：${q} | 用户答：${a}`;
+    const a = state.data.insightAnswers[i] || '(not filled)';
+    return `Q${i+1}: ${q} | Answer: ${a}`;
   }).join('\n');
 
   let q = null;
@@ -2220,7 +2220,7 @@ async function aiAskNext(btn) {
     attempts++;
     try {
       const r = await aiCall(
-        `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息（严格以此为据，不得自行引申）：\n${groupsStr}\n\n${existing ? '已经问过这些问题（绝对禁止重复或微调措辞后再次提问）：\n' + existing + '\n\n' : ''}任务：基于以上所有信息，抛 1 个新的启发式问题。\n\n严格要求：\n1. 必须和上面「已经问过的问题」在措辞、句式、角度上明显不同，禁止换几个字重复提问\n2. 必须**直接基于现象便签原文**用词，不得自行引申或替换关键词\n3. 简短（10-25 字）、单一（一次只问一件事）、精确\n4. 严格按 JSON 输出：\n{"q":"问题"}`
+        `Scenario: "${state.data.scenario || 'not provided'}"\n\nAll grouped information (strictly based on this, no extrapolation):\n${groupsStr}\n\n${existing ? 'These questions were already asked (never repeat or rephrase them):\n' + existing + '\n\n' : ''}Task: Based on all the above, ask ONE new thought-provoking question.\n\nStrict requirements:\n1. Must differ clearly in wording, phrasing, and angle from the \u201calready asked\u201d questions above; no rephrasing the same question\n2. Use words **directly from the observation notes**; do not extrapolate or substitute keywords\n3. Short (10-25 words), single (one thing per question), precise\n4. Output strict JSON:\n{"q":"question"}`
       );
       const candidate = parseSingleQuestion(r);
       if (!candidate) continue;
@@ -2231,14 +2231,14 @@ async function aiAskNext(btn) {
       q = candidate;
     } catch(e) {
       btn.classList.remove('loading');
-      toast(e.message || '出题失败');
+      toast(e.message || 'Failed to ask');
       return;
     }
   }
 
   btn.classList.remove('loading');
   if (!q) {
-    toast('AI 暂时提不出不一样的问题，请换个角度手动输入或稍后再试');
+    toast('AI can\u2019t come up with a different question right now. Try typing one manually or try again later');
     return;
   }
   state.data.insightQuestions = state.data.insightQuestions || [];
@@ -2249,7 +2249,7 @@ async function aiAskNext(btn) {
   state.data.insightAiInspirations.push(null);
   // 更新按钮文字为"下一题"
   const nextBtn = $('askNextBtn');
-  nextBtn.textContent = '让知行提下一题 →';
+  nextBtn.textContent = 'Ask the next question \u2192';
   nextBtn.style.display = 'inline-flex';
   $('finishBtn').style.display = 'inline-block';
   renderAllQuestions();
@@ -2300,7 +2300,7 @@ function renderAllQuestions() {
     // AI 协作历史（兼容旧字段 insightAiInspirations）
     let helps = state.data.insightAiHelps && state.data.insightAiHelps[i] ? state.data.insightAiHelps[i] : [];
     if (!helps.length && state.data.insightAiInspirations && state.data.insightAiInspirations[i]) {
-      helps = [{ cap: '知行', text: state.data.insightAiInspirations[i] }];
+      helps = [{ cap: 'Zhixing', text: state.data.insightAiInspirations[i] }];
     }
     const helpsHtml = helps.length
       ? `<div class="q-helps${helps.length ? ' show' : ''}">${helps.map(h =>
@@ -2312,30 +2312,30 @@ function renderAllQuestions() {
     return `
     <div class="q-block ${curAns.trim() ? 'q-done' : ''}" data-qi="${i}">
       <div class="q-head">
-        <span class="q-tag">问题 ${i+1}</span>
-        <span class="q-state">${curAns.trim() ? '✓ 已回答' : '未答'}${revCount ? ` · 已修订 ${revCount} 次` : ''}</span>
+        <span class="q-tag">Question ${i+1}</span>
+        <span class="q-state">${curAns.trim() ? '✓ answered' : 'unanswered'}${revCount ? ` \u00b7 revised ${revCount}x` : ''}</span>
       </div>
       <div class="q-text">${escapeHtml(q)}</div>
-      <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(curAns)}</textarea>
+      <textarea class="q-answer" data-qi="${i}" placeholder="Write your thinking...">${escapeHtml(curAns)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
+        <span class="q-ai-label">Zhixing can help you:</span>
+        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'clarify', this)">Clarify</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'challenge', this)">Challenge</button>
+        <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'verify', this)">Verify</button>
       </div>
       ${helpsHtml}
       <button class="q-rev-toggle" onclick="toggleRevBox(${i})">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-        修订我的回答<span class="cnt">${revCount || ''}</span>
+        Revise my answer<span class="cnt">${revCount || ''}</span>
       </button>
       <div class="q-rev-box" data-qi="${i}">
-        <div class="q-rev-note">把知行的启发里有用的部分，融进你的回答。保存后会成为这道题的最终版本，并进入后面的整合。</div>
-        <textarea class="q-rev-input" data-qi="${i}" placeholder="基于知行的启发，修订你的回答...">${escapeHtml(curAns)}</textarea>
+        <div class="q-rev-note">Fold the useful parts of Zhixing\u2019s prompts into your answer. Once saved, this becomes the final version and feeds the synthesis.</div>
+        <textarea class="q-rev-input" data-qi="${i}" placeholder="Revise your answer based on Zhixing\u2019s prompts...">${escapeHtml(curAns)}</textarea>
         <div class="q-rev-row">
-          <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">保存修订</button>
-          <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">取消</button>
+          <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">Save Revision</button>
+          <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">Cancel</button>
         </div>
-        ${revs.length ? `<div class="q-rev-history"><b>修订轨迹：</b>${revs.map((r, j) => `v${j+2}（${fmtTime(r.at)}）`).join(' → ')}</div>` : ''}
+        ${revs.length ? `<div class="q-rev-history"><b>Revision trail:</b> ${revs.map((r, j) => `v${j+2} (${fmtTime(r.at)})`).join(' \u2192 ')}</div>` : ''}
       </div>
     </div>
   `;
@@ -2348,7 +2348,7 @@ function renderAllQuestions() {
       const qb = e.target.closest('.q-block');
       if (qb) qb.classList.toggle('q-done', e.target.value.trim().length > 0);
       const st = qb && qb.querySelector('.q-state');
-      if (st) st.textContent = e.target.value.trim() ? '✓ 已回答' : '未答';
+      if (st) st.textContent = e.target.value.trim() ? '✓ answered' : 'unanswered';
       saveDraft();
     });
   });
@@ -2369,48 +2369,48 @@ function saveRevision(idx) {
   const ta = document.querySelector('.q-rev-input[data-qi="' + idx + '"]');
   if (!ta) return;
   const v = ta.value.trim();
-  if (!v) { toast('修订不能为空'); return; }
+  if (!v) { toast('Revision cannot be empty'); return; }
   state.data.insightRevisions = state.data.insightRevisions || [];
   state.data.insightRevisions[idx] = state.data.insightRevisions[idx] || [];
   state.data.insightRevisions[idx].push({ text: v, at: new Date().toISOString() });
-  state.data.insightAnswers[idx] = v; // canonical = 最新修订
+  state.data.insightAnswers[idx] = v; // canonical = latest revision
   saveDraft();
   renderAllQuestions();
-  toast('已保存修订，将作为这道题的最终回答进入整合');
+  toast('Revision saved \u2014 it will be the final answer and feed the synthesis');
 }
 
 // AI 三个能力（输出必须简洁：≤100 字）
 async function aiInspireQ(idx, cap, btn) {
   const qs = state.data.insightQuestions || [];
   const a = (state.data.insightAnswers || [])[idx] || '';
-  if (!a.trim()) { toast('先写下你的思考'); return; }
+  if (!a.trim()) { toast('Write your thinking first'); return; }
   btn.classList.add('loading');
   const prompts = {
-    '理清': `帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。`,
-    '质疑': `苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。`,
-    '查证': `检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。`
+    'clarify': `Help the user reorganize their scattered thoughts into a coherent structure. Point out 2-3 connections or possible blind spots. Only ask questions, do not conclude.`,
+    'challenge': `Socratic challenge. Use 2-3 sharp questions to question the user's current thinking. Only ask questions, never give answers.`,
+    'verify': `Retrieve 1-2 relevant facts, principles, or cases. State them objectively without deciding for the user.`
   };
   try {
-    const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】回答必须简洁准确，不超过 100 字，直接给内容，不要寒暄、不要重复问题、不要分段太长。`);
+    const r = await aiCall(`Scenario: "${state.data.scenario || 'not provided'}"\nQuestion: ${qs[idx]}\nUser's answer: ${a}\n\n${prompts[cap]}\n\n[Hard requirement] Be concise and accurate, under 100 words. Give substance directly \u2014 no pleasantries, don't repeat the question, keep paragraphs short.`);
     const text = (r || '').trim();
     // 追加进协作历史（保留每次帮助）
     state.data.insightAiHelps = state.data.insightAiHelps || [];
     state.data.insightAiHelps[idx] = state.data.insightAiHelps[idx] || [];
     state.data.insightAiHelps[idx].push({ cap: cap, text: text, at: new Date().toISOString() });
     state.data.insightAiInspirations = state.data.insightAiInspirations || [];
-    state.data.insightAiInspirations[idx] = text; // 兼容旧字段
+    state.data.insightAiInspirations[idx] = text; // legacy field compat
     saveDraft();
     renderAllQuestions();
     // 自动展开修订区，趁热打铁
     toggleRevBox(idx);
-    toast('知行的启发已记录，可在下面修订你的回答');
+    toast('Zhixing\u2019s prompt is recorded \u2014 revise your answer below');
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
 
 // 时间格式化（修订轨迹用）
 function fmtTime(iso) {
-  try { return new Date(iso).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return ''; }
+  try { return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return ''; }
 }
 
 // 个人看法
@@ -2428,7 +2428,7 @@ function bindPersonalView() {
 
 // ④ 可以了，让知行总结
 function finishQuestions() {
-  if (!(state.data.insightQuestions || []).length) { toast('先回答至少一个问题'); return; }
+  if (!(state.data.insightQuestions || []).length) { toast('Answer at least one question first'); return; }
   state.data.integrateDone = true;
   $('askRow').style.display = 'none';
   $('integrateArea').style.display = 'block';
@@ -2441,24 +2441,24 @@ function finishQuestions() {
 // ⑤ 知行整合 → 现象本质 + 新洞察
 async function aiIntegrate(btn) {
   if (!state.data.insightQuestions || !state.data.insightQuestions.length) {
-    toast('先回答至少一个问题'); return;
+    toast('Answer at least one question first'); return;
   }
   const groups = state.data.groups || [];
   const groupsStr = groups.map(g =>
     `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
   ).join('\n');
   const qaPairs = state.data.insightQuestions.map((q, i) => {
-    const a = state.data.insightAnswers[i] || '（未填）';
+    const a = state.data.insightAnswers[i] || '(not filled)';
     const helps = (state.data.insightAiHelps && state.data.insightAiHelps[i]) || [];
-    const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('；') : '';
+    const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('; ') : '';
     const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
-    return `问题 ${i+1}：${q}\n用户最终回答：${a}${helpsStr ? '\n知行协助过程：' + helpsStr : ''}${revs.length ? `\n（该题经知行启发后由用户主动修订 ${revs.length} 次）` : ''}`;
+    return `Q${i+1}: ${q}\nUser's final answer: ${a}${helpsStr ? '\nZhixing assistance: ' + helpsStr : ''}${revs.length ? `\n(revised by the user ${revs.length} time(s) after Zhixing's prompts)` : ''}`;
   }).join('\n\n');
-  const personal = state.data.insightPersonalView || '（未填）';
+  const personal = state.data.insightPersonalView || '(not filled)';
   btn.classList.add('loading');
   try {
     const r = await aiCall(
-      `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息：\n${groupsStr}\n\n用户在问题下的思考：\n${qaPairs}\n\n用户的整体看法：\n${personal}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
+      `Scenario: "${state.data.scenario || 'not provided'}"\n\nAll grouped information:\n${groupsStr}\n\nUser's thinking under the questions:\n${qaPairs}\n\nUser's overall view:\n${personal}\n\nTask: Synthesize all of the above into two outputs (strict JSON):\n- nature: the essence behind these phenomena is ... (one sentence, 15-40 words)\n- newInsight: our new insight and understanding of this problem is ... (one sentence, 15-40 words)\n\nFormat:\n{"nature":"...","newInsight":"..."}`
     );
     const data = parseSingleEssence(r);
     if (data) {
@@ -2466,15 +2466,15 @@ async function aiIntegrate(btn) {
       state.data.confirmed = false;
       restoreEssenceUI();
       checkNext1();
-      toast('知行整合完成，请修订并打分');
+      toast('Synthesis complete \u2014 revise and score it');
     } else {
-      toast('AI 没返回有效内容，重试');
+      toast('AI returned nothing valid \u2014 retry');
     }
   } catch(e) {
     const msg = e.message || '';
-    if (msg.includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
-    else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
-    else toast('知行总结失败：' + msg);
+    if (msg.includes('Failed to fetch')) toast('Cannot reach the AI network: this endpoint may not support direct browser calls (CORS). Switch to a CORS-friendly provider in Settings');
+    else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI service temporarily unavailable (' + msg + '). Already retried 3 times. Try again later or switch providers');
+    else toast('Zhixing synthesis failed: ' + msg);
   }
   btn.classList.remove('loading');
 }
@@ -2500,7 +2500,7 @@ function restoreEssenceUI() {
   const box = $('essenceBox');
   if (state.data.confirmed) {
     box.classList.add('locked');
-    $('statusRow').textContent = '✓ 已确认';
+    $('statusRow').textContent = '✓ Confirmed';
     $('statusRow').classList.add('ok');
   } else {
     box.classList.remove('locked');
@@ -2553,19 +2553,19 @@ function updateStatus() {
   const hasEssence = (e.nature || '').trim() && (e.insight || '').trim();
   const scored = state.data.impact > 0 && state.data.effort > 0;
   if (state.data.confirmed) {
-    status.textContent = '✓ 已确认';
+    status.textContent = '✓ Confirmed';
     status.classList.add('ok');
     return;
   }
   if (hasEssence && scored) {
-    status.textContent = '可以前往应用，建议先点“保存确认”';
+    status.textContent = 'You can proceed to Apply \u2014 consider clicking \u201cSave & Confirm\u201d first';
     status.classList.remove('ok');
     return;
   }
   const missing = [];
-  if (!hasEssence) missing.push('让知行总结');
-  if (!scored) missing.push('完成打分');
-  status.textContent = '还需要：' + missing.join(' + ');
+  if (!hasEssence) missing.push('Let Zhixing summarize');
+  if (!scored) missing.push('Complete the scoring');
+  status.textContent = 'Next: ' + missing.join(' + ');
   status.classList.remove('ok');
 }
 
@@ -2573,19 +2573,19 @@ function updateStatus() {
 function confirmEssence() {
   const e = state.data.essence || {};
   if (!(e.nature || '').trim() || !(e.insight || '').trim()) {
-    toast('先把"现象本质"和"新洞察"都填完整'); return;
+    toast('Please fill in both \u201cessence\u201d and \u201cnew insight\u201d first'); return;
   }
   if (!(state.data.impact > 0) || !(state.data.effort > 0)) {
-    toast('先打分（重要性 + 接受费力）'); return;
+    toast('Score first (importance + acceptance effort)'); return;
   }
   state.data.confirmed = true;
   $('essenceBox').classList.add('locked');
-  $('statusRow').textContent = '✓ 已确认';
+  $('statusRow').textContent = '\u2713 Confirmed';
   $('statusRow').classList.add('ok');
   $('signal1').style.display = 'inline-flex';
   saveDraft();
   checkNext1();
-  toast('已保存确认');
+  toast('Confirmed and saved');
 }
 
 function checkNext1() {
@@ -2602,7 +2602,7 @@ function ensureAppScenario(type) {
     state.data[type + 'Scenario'] = obj;
     return obj;
   }
-  // 兼容旧结构（有 scenario 字段而无 title）→ 把旧 scenario 迁到 title
+  // Backward compat: legacy structure (scenario field, no title) \u2192 migrate scenario to title
   if (obj.title === undefined) {
     obj.title = obj.scenario || '';
     obj.titleType = obj.scenario ? 'rec' : 'rec';
@@ -2654,17 +2654,17 @@ function generateLocalTitles(type) {
   const e = state.data.essence || {};
   const nature = (e.nature || '').trim();
   const insight = (e.insight || '').trim();
-  const core = nature || insight || '把洞察应用到具体情境中';
-  const scenario = (state.data.scenario || '').trim() || '你当前的复杂挑战';
+  const core = nature || insight || 'apply the insight to a concrete situation';
+  const scenario = (state.data.scenario || '').trim() || 'your current complex challenge';
   const near = type === 'near';
   return near ? [
-    '把「' + core + '」用在下周的一个相关项目里',
-    '在「' + scenario + '」相关的团队协作场景中试一次',
-    '把这次认知用到一个我常接触的同行场景'
+    'Apply \u201c' + core + '\u201d to a related project next week',
+    'Try it once in a team-collaboration setting related to \u201c' + scenario + '\u201d',
+    'Use this insight in a peer scenario I often deal with'
   ] : [
-    '把「' + core + '」迁移到完全不同的领域试一次',
-    '在陌生但结构相似的场景里验证这个判断',
-    '把这次认知用到一个一直回避的挑战上'
+    'Migrate \u201c' + core + '\u201d to a completely different domain once',
+    'Test this judgment in an unfamiliar but structurally similar scenario',
+    'Apply this insight to a challenge I keep avoiding'
   ];
 }
 
@@ -2675,22 +2675,22 @@ function generateLocalTitles(type) {
 // AI 评价和反馈（每个应用独立）
 async function aiAppFeedback(type) {
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings'); openSettings(); return; }
   const obj = ensureAppScenario(type);
-  if (!obj.title || !obj.title.trim()) { toast('先选一个场景标题'); return; }
-  if (!obj.details || !obj.details.time) { toast('先确认场景细节'); return; }
-  if (!obj.plan || !obj.plan.trim()) { toast('先填写打算怎么做'); return; }
-  if (!obj.when || !obj.when.trim()) { toast('先填写什么时候试'); return; }
-  if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) { toast('先填写期待产出结果'); return; }
+  if (!obj.title || !obj.title.trim()) { toast('Pick a scenario title first'); return; }
+  if (!obj.details || !obj.details.time) { toast('Confirm the scenario details first'); return; }
+  if (!obj.plan || !obj.plan.trim()) { toast('Fill in what you will do first'); return; }
+  if (!obj.when || !obj.when.trim()) { toast('Fill in when you will try it'); return; }
+  if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) { toast('Fill in the expected outcome first'); return; }
   const e = state.data.essence || {};
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
-  const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
+  const label = type === 'near' ? 'near application (familiar scenario)' : 'far application (unfamiliar scenario)';
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), true);
   try {
     const d = obj.details || {};
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景标题：${obj.title}\n场景细节：\n- 时间：${d.time || '未填'}\n- 地点：${d.place || '未填'}\n- 人物：${d.people || '未填'}\n- 目的：${d.purpose || '未填'}\n- 价值：${d.value || '未填'}\n挑战细节：\n- 现状：${d.currentState || '未填'}\n- 目标：${d.goal || '未填'}\n- 差距：${d.gap || '未填'}\n- 困难：${d.difficulty || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 什么时候试：${obj.when}\n- 期待产出结果：${obj.expectedOutcome}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高如何降低阻力；如果重要性低是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+      `User's original topic:\n${buildGroupsContext()}\n\nUser's core insight:\nEssence: ${e.nature || 'not filled'}\nNew insight: ${e.insight || 'not filled'}\n\nUser's self-assessment of this insight (directly shapes your feedback emphasis):\nImportance: ${impact}/5\nAcceptance effort: ${effort}/5\n\nNote: high importance means the insight deserves real momentum; high effort means the user faces resistance and needs a gentler path.\n\n[${label}]\nScenario title: ${obj.title}\nScenario details:\n- Time: ${d.time || 'not filled'}\n- Place: ${d.place || 'not filled'}\n- People: ${d.people || 'not filled'}\n- Purpose: ${d.purpose || 'not filled'}\n- Value: ${d.value || 'not filled'}\nChallenge details:\n- Current state: ${d.currentState || 'not filled'}\n- Goal: ${d.goal || 'not filled'}\n- Gap: ${d.gap || 'not filled'}\n- Difficulty: ${d.difficulty || 'not filled'}\nApplication plan:\n- What to do: ${obj.plan}\n- When to try: ${obj.when}\n- Expected outcome: ${obj.expectedOutcome}\n\nTask: Give an independent evaluation of this application plan, considering the importance/effort scores above.\n1. Score (1-5)\n2. What is done well\n3. What can improve (tie to importance/effort: if effort is high, how to lower resistance; if importance is low, is it worth investing)\n4. One-sentence suggestion\n5. Next concrete actions (1-3 items)\n\nStrict JSON format:\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["action 1","action 2"]}`
     );
     const data = parseAppFeedback(r);
     if (data) {
@@ -2699,39 +2699,39 @@ async function aiAppFeedback(type) {
         saveDraft();
         if (type === 'near' && isNearComplete()) unlockFarApp();
         checkNext2();
-        toast('知行评价完成');
+        toast('Evaluation complete');
     } else {
       showAIResult(type + 'FeedbackResult', r);
     }
   } catch(e) {
-    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
-    else toast('评价失败：' + (e.message || '未知错误'));
+    if ((e.message || '').includes('Failed to fetch')) toast('Cannot reach the AI network: this endpoint may not support direct browser calls (CORS). Switch to a CORS-friendly provider in Settings');
+    else toast('Evaluation failed: ' + (e.message || 'unknown error'));
   }
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), false);
 }
 // ① AI 推荐 3 个场景标题
 async function recommendApplyTitles(type, btn) {
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings'); openSettings(); return; }
   const e = state.data.essence || {};
-  if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
+  if (!e.nature && !e.insight) { toast('Confirm your core insight in the Insight step first'); return; }
   if (btn) btn.classList.add('loading');
-  const label = type === 'near' ? '你熟悉的场景' : '你陌生但主题相关的场景';
-  const baseContext = `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n重要性：${state.data.impact || '?'}/5\n接受费力：${state.data.effort || '?'}/5\n`;
+  const label = type === 'near' ? 'familiar scenarios' : 'unfamiliar but topically related scenarios';
+  const baseContext = `Core insight:\nEssence: ${e.nature || 'not filled'}\nInsight: ${e.insight || 'not filled'}\nImportance: ${state.data.impact || '?'}/5\nAcceptance effort: ${state.data.effort || '?'}/5\n`;
   try {
-    const r = await aiCall(`${baseContext}\n任务：基于这个新认知，推荐 3 个具体的${label}标题。\n【硬性要求】每个标题 ≤30 字，直接说事，不要寒暄、不要解释为什么。\n返回 JSON 数组（严格）：\n["标题1","标题2","标题3"]`);
+    const r = await aiCall(`${baseContext}\nTask: Based on this new insight, recommend 3 specific ${label} titles.\n[Hard requirement] Each title max 30 words, straight to the point, no pleasantries, no explanations.\nReturn a strict JSON array:\n["title 1","title 2","title 3"]`);
     const arr = parseTitleList(r);
     if (arr && arr.length === 3) {
       state.data[type + 'Recommends'] = arr;
     } else {
       state.data[type + 'Recommends'] = generateLocalTitles(type);
-      toast('知行推荐未能返回有效格式，已用本地生成');
+      toast('Zhixing\u2019s recommendation had an invalid format \u2014 generated locally');
     }
   } catch(err) {
     state.data[type + 'Recommends'] = generateLocalTitles(type);
     const msg = (err && err.message) || '';
-    if (msg.includes('Failed to fetch') || /50[234]|429/.test(msg)) toast('知行在线推荐暂不可用，已切换为本地生成');
-    else toast('知行推荐失败，已用本地生成');
+    if (msg.includes('Failed to fetch') || /50[234]|429/.test(msg)) toast('Online recommendation unavailable \u2014 switched to local generation');
+    else toast('Recommendation failed \u2014 generated locally');
   }
   if (btn) btn.classList.remove('loading');
   renderApplyTitles(type);
@@ -2754,7 +2754,7 @@ function renderApplyTitles(type) {
   const box = $(type + 'TitleList');
   if (!box) return;
   if (!list.length) {
-    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「推荐场景」让知行推荐场景标题</div>';
+    box.innerHTML = '<div class="hint" style="margin:8px 0;">Click \u201cRecommend scenario\u201d to have Zhixing suggest titles</div>';
     return;
   }
   box.innerHTML = list.map((t, i) =>
@@ -2781,7 +2781,7 @@ async function confirmApplyTitle(type) {
     const sel = document.querySelector('#' + type + 'TitleList .title-chip.selected');
     if (sel) title = (sel.querySelector('span:last-child') || {}).textContent || '';
   }
-  if (!title) { toast('请先选一个标题，或在下方输入自己的标题'); return; }
+  if (!title) { toast('Pick a title, or type your own below'); return; }
   obj.title = title;
   obj.titleType = customTitle ? 'custom' : 'rec';
   saveDraft();
@@ -2799,14 +2799,14 @@ async function confirmApplyTitle(type) {
 // ③ AI 生成场景细节（弹窗卡片）
 async function generateApplyDetails(type, btn) {
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings'); openSettings(); return; }
   const obj = ensureAppScenario(type);
-  if (!obj.title) { toast('先选择场景标题'); return; }
+  if (!obj.title) { toast('Choose a scenario title first'); return; }
   if (btn) btn.classList.add('loading');
   const e = state.data.essence || {};
-  const label = type === 'near' ? '熟悉场景' : '陌生场景';
+  const label = type === 'near' ? 'familiar scenario' : 'unfamiliar scenario';
   try {
-    const r = await aiCall(`核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n\n选定的场景标题：${obj.title}\n场景类型：${label}\n\n任务：基于以上信息，生成这个应用场景的细节结构。\n【硬性要求】每个字段用 10-25 字，简洁具体，不要寒暄。\n返回 JSON（严格）：\n{"time":"...","place":"...","people":"...","purpose":"...","value":"...","currentState":"...","goal":"...","gap":"...","difficulty":"..."}`);
+    const r = await aiCall(`Core insight:\nEssence: ${e.nature || 'not filled'}\nInsight: ${e.insight || 'not filled'}\n\nChosen scenario title: ${obj.title}\nScenario type: ${label}\n\nTask: Based on the above, generate the detailed structure of this application scenario.\n[Hard requirement] Each field in 10-25 words, concise and concrete, no pleasantries.\nReturn strict JSON:\n{"time":"...","place":"...","people":"...","purpose":"...","value":"...","currentState":"...","goal":"...","gap":"...","difficulty":"..."}`);
     const j = parseDetailJSON(r);
     if (j) {
       obj.details = j;
@@ -2816,13 +2816,13 @@ async function generateApplyDetails(type, btn) {
       obj.details = generateLocalDetail(obj.title);
       saveDraft();
       renderApplyDetail(type);
-      toast('知行细节未能返回有效格式，已用本地生成');
+      toast('Zhixing\u2019s details had an invalid format \u2014 generated locally');
     }
   } catch(err) {
     obj.details = generateLocalDetail(obj.title);
     saveDraft();
     renderApplyDetail(type);
-    toast('知行细节生成失败，已用本地生成');
+    toast('Details generation failed \u2014 generated locally');
   }
   if (btn) btn.classList.remove('loading');
 }
@@ -2846,20 +2846,20 @@ function renderApplyDetail(type) {
   const d = obj.details || {};
   const html = `
     <div class="detail-section">
-      <div class="detail-section-title">场景</div>
-      <div class="detail-row"><b>标题</b><span contenteditable="true" class="editable" data-field="title" onblur="saveApplyDetail('${type}','title',this.textContent)">${escapeHtml(obj.title || '')}</span></div>
-      <div class="detail-row"><b>时间</b><span contenteditable="true" class="editable" data-field="time" onblur="saveApplyDetail('${type}','time',this.textContent)">${escapeHtml(d.time || '')}</span></div>
-      <div class="detail-row"><b>地点</b><span contenteditable="true" class="editable" data-field="place" onblur="saveApplyDetail('${type}','place',this.textContent)">${escapeHtml(d.place || '')}</span></div>
-      <div class="detail-row"><b>人物</b><span contenteditable="true" class="editable" data-field="people" onblur="saveApplyDetail('${type}','people',this.textContent)">${escapeHtml(d.people || '')}</span></div>
-      <div class="detail-row"><b>目的</b><span contenteditable="true" class="editable" data-field="purpose" onblur="saveApplyDetail('${type}','purpose',this.textContent)">${escapeHtml(d.purpose || '')}</span></div>
-      <div class="detail-row"><b>价值</b><span contenteditable="true" class="editable" data-field="value" onblur="saveApplyDetail('${type}','value',this.textContent)">${escapeHtml(d.value || '')}</span></div>
+      <div class="detail-section-title">Scenario</div>
+      <div class="detail-row"><b>Title</b><span contenteditable="true" class="editable" data-field="title" onblur="saveApplyDetail('${type}','title',this.textContent)">${escapeHtml(obj.title || '')}</span></div>
+      <div class="detail-row"><b>Time</b><span contenteditable="true" class="editable" data-field="time" onblur="saveApplyDetail('${type}','time',this.textContent)">${escapeHtml(d.time || '')}</span></div>
+      <div class="detail-row"><b>Place</b><span contenteditable="true" class="editable" data-field="place" onblur="saveApplyDetail('${type}','place',this.textContent)">${escapeHtml(d.place || '')}</span></div>
+      <div class="detail-row"><b>People</b><span contenteditable="true" class="editable" data-field="people" onblur="saveApplyDetail('${type}','people',this.textContent)">${escapeHtml(d.people || '')}</span></div>
+      <div class="detail-row"><b>Purpose</b><span contenteditable="true" class="editable" data-field="purpose" onblur="saveApplyDetail('${type}','purpose',this.textContent)">${escapeHtml(d.purpose || '')}</span></div>
+      <div class="detail-row"><b>Value</b><span contenteditable="true" class="editable" data-field="value" onblur="saveApplyDetail('${type}','value',this.textContent)">${escapeHtml(d.value || '')}</span></div>
     </div>
     <div class="detail-section">
-      <div class="detail-section-title">挑战</div>
-      <div class="detail-row"><b>现状</b><span contenteditable="true" class="editable" data-field="currentState" onblur="saveApplyDetail('${type}','currentState',this.textContent)">${escapeHtml(d.currentState || '')}</span></div>
-      <div class="detail-row"><b>目标</b><span contenteditable="true" class="editable" data-field="goal" onblur="saveApplyDetail('${type}','goal',this.textContent)">${escapeHtml(d.goal || '')}</span></div>
-      <div class="detail-row"><b>差距</b><span contenteditable="true" class="editable" data-field="gap" onblur="saveApplyDetail('${type}','gap',this.textContent)">${escapeHtml(d.gap || '')}</span></div>
-      <div class="detail-row"><b>困难</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
+      <div class="detail-section-title">Challenge</div>
+      <div class="detail-row"><b>Current</b><span contenteditable="true" class="editable" data-field="currentState" onblur="saveApplyDetail('${type}','currentState',this.textContent)">${escapeHtml(d.currentState || '')}</span></div>
+      <div class="detail-row"><b>Goal</b><span contenteditable="true" class="editable" data-field="goal" onblur="saveApplyDetail('${type}','goal',this.textContent)">${escapeHtml(d.goal || '')}</span></div>
+      <div class="detail-row"><b>Gap</b><span contenteditable="true" class="editable" data-field="gap" onblur="saveApplyDetail('${type}','gap',this.textContent)">${escapeHtml(d.gap || '')}</span></div>
+      <div class="detail-row"><b>Difficulty</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
     </div>
   `;
   // 同时填充 detail 阶段卡 和 plan 阶段卡（避免重复 DOM 节点，避免信息分散在不同 stage）
@@ -2905,7 +2905,7 @@ function unlockFarApp() {
   block.querySelectorAll('.app-stage').forEach(el => el.classList.remove('hidden'));
   const label = $('farAppLockLabel');
   if (label) label.classList.remove('locked-label');
-  if (isNearComplete()) toast('近应用完成，远应用已解锁');
+  if (isNearComplete()) toast('Near application done \u2014 far application unlocked');
 }
 function renderApplyStages() {
   ['near', 'far'].forEach(type => {
@@ -2926,8 +2926,8 @@ function renderApplyStages() {
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
     let stage = 'title';
-    if (hasTitle && !hasDetails) stage = 'detail';  // 临时：等知行生成场景细节
-    else if (hasTitle) stage = 'plan';              // 标题确定 → 直接进计划阶段（详情感兴趣区可滚上看）
+    if (hasTitle && !hasDetails) stage = 'detail';  // wait for Zhixing to generate details
+    else if (hasTitle) stage = 'plan';              // title set -> go straight to plan (details above)
     block.dataset.stage = stage;
     block.querySelectorAll('.app-stage').forEach(el => {
       const eq = el.dataset.stage !== stage;
@@ -2955,8 +2955,8 @@ function updateResourceSections() {
   const farTitle = (state.data.farScenario && state.data.farScenario.title) || '';
   const rlNear = document.querySelector('.res-label-near');
   const rlFar = document.querySelector('.res-label-far');
-  if (rlNear) rlNear.textContent = nearTitle || '近应用场景';
-  if (rlFar) rlFar.textContent = farTitle || '远应用场景';
+  if (rlNear) rlNear.textContent = nearTitle || 'near-application scenario';
+  if (rlFar) rlFar.textContent = farTitle || 'far-application scenario';
   const farSec = $('resourceFarSection');
   if (farSec) {
     if (farTitle) {
@@ -2985,22 +2985,22 @@ function parseAppFeedback(text) {
 }
 function renderAppFeedback(type, data) {
   const box = $(type + 'FeedbackResult');
-  const title = type === 'near' ? '近应用反馈' : '远应用反馈';
+  const title = type === 'near' ? 'Near-application feedback' : 'Far-application feedback';
   const impact = state.data.impact || 0;
   const effort = state.data.effort || 0;
   const scenario = ensureAppScenario(type);
   let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
-  html += '<div class="ai-msg-name">知行 · ' + title + '</div>';
+  html += '<div class="ai-msg-name">Zhixing \u00b7 ' + title + '</div>';
   if (scenario.title) {
-    html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
+    html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">For scenario: 「' + escapeHtml(scenario.title) + '」</div>';
   }
   html += '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span></div>';
-  html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
-  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
-  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
-  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
+  html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">Based on your assessment of this insight: importance <b>' + impact + '/5</b> \u00b7 acceptance effort <b>' + effort + '/5</b></div>';
+  html += '<div class="fb-pros"><b>What works:</b> ' + escapeHtml(data.pros || '—') + '</div>';
+  html += '<div class="fb-improve"><b>Can improve:</b> ' + escapeHtml(data.improvements || '—') + '</div>';
+  html += '<div class="fb-sug"><b>Action suggestion:</b> ' + escapeHtml(data.suggestion || '—') + '</div>';
   if (data.actions && data.actions.length) {
-    html += '<div class="fb-actions"><div class="fb-title">下一步行动</div><ol>';
+    html += '<div class="fb-actions"><div class="fb-title">Next actions</div><ol>';
     data.actions.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
     html += '</ol></div>';
   }
@@ -3023,17 +3023,17 @@ function renderScoreDisplay() {
 // AI 建议支持资源（人 / 资源 / 条件）—— 按近/远应用区分，只针对用户输入的内容
 async function aiSuggestResources(type) {
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings'); openSettings(); return; }
   const obj = state.data[type + 'Scenario'] || {};
   const fb = state.data[type + 'Feedback'] || {};
-  const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
-  const targetLabel = type === 'near' ? '近应用' : '远应用';
+  const label = type === 'near' ? 'near application (familiar scenario)' : 'far application (unfamiliar scenario)';
+  const targetLabel = type === 'near' ? 'near application' : 'far application';
   const btnId = type === 'near' ? 'aiResourcesNear' : 'aiResourcesFar';
   const resultId = type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult';
   // 校验：该应用必须已完成计划（标题 + 细节 + 计划 + 时间 + 期待结果）
   const d = obj.details || {};
   if (!obj.title || !obj.title.trim() || !d.time || !obj.plan || !obj.plan.trim() || !obj.when || !obj.when.trim() || !obj.expectedOutcome || !obj.expectedOutcome.trim()) {
-    toast('先完成「' + targetLabel + '」的计划（标题/细节/打算怎么做/什么时候试/期待结果）'); return;
+    toast('Finish the \u201c' + targetLabel + '\u201d plan first (title/details/what/when/expected outcome)'); return;
   }
   const e = state.data.essence || {};
   const impact = state.data.impact || 0;
@@ -3041,7 +3041,7 @@ async function aiSuggestResources(type) {
   setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\n知行反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+      `User's original topic:\n${buildGroupsContext()}\n\nUser's core insight:\nEssence: ${e.nature || 'not filled'}\nNew insight: ${e.insight || 'not filled'}\n\nAssessment: importance ${impact}/5, acceptance effort ${effort}/5\n\n[${label}]\nScenario title: ${obj.title}\nDetails: time ${d.time || 'not filled'} | place ${d.place || 'not filled'} | people ${d.people || 'not filled'} | purpose ${d.purpose || 'not filled'}\nChallenge: current ${d.currentState || 'not filled'} | goal ${d.goal || 'not filled'} | gap ${d.gap || 'not filled'} | difficulty ${d.difficulty || 'not filled'}\nPlan: what ${obj.plan}\nWhen: ${obj.when}\nExpected outcome: ${obj.expectedOutcome}\nZhixing feedback: ${fb.suggestion || 'not filled'}\nNext actions: ${(fb.actions || []).join('; ') || 'not filled'}\n\nTask: Specifically for the \u201c${label}\u201d plan above, suggest who the user should approach, what resources to secure, and what conditions to satisfy in order to actually execute it. Do not cover other scenarios.\n\nStrict JSON format:\n{"people":["person 1","person 2","person 3"],"resources":["resource/tool/platform 1","resource/tool/platform 2"],"conditions":["condition 1","condition 2"],"note":"a short explanation of why these are needed and how to ask/obtain them"}\n\nRequirement: each suggestion concrete and actionable, no empty talk; people can be roles or specific contacts; resources can be tools, budget, information, etc.; conditions are prerequisites.`
     );
     const data = parseResources(r);
     if (data) {
@@ -3049,13 +3049,13 @@ async function aiSuggestResources(type) {
       renderResourcesResult(type, state.data[type + 'ResourcesPlan']);
       saveDraft();
       checkNext2();
-      toast('知行建议已生成，可编辑后确认');
+      toast('Suggestions ready \u2014 edit then confirm');
     } else {
       showAIResult(resultId, r);
     }
   } catch(e) {
-    if ((e.message || '').includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
-    else toast('资源建议失败：' + (e.message || '未知错误'));
+    if ((e.message || '').includes('Failed to fetch')) toast('Network error connecting to AI (CORS). Switch to a CORS-friendly provider in Settings');
+    else toast('Resource suggestions failed: ' + (e.message || 'unknown error'));
   }
   setAILoading(btnId, false);
 }
@@ -3081,15 +3081,15 @@ function textareaToArr(el) {
 function renderResourcesResult(type, rp) {
   const box = $(type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult');
   if (!box) return;
-  const targetLabel = type === 'near' ? '近应用' : '远应用';
+  const targetLabel = type === 'near' ? 'near application' : 'far application';
   let html = '';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要的资源 / 工具 / 平台</label><textarea id="rpResources' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要满足的条件 / 前提</label><textarea id="rpConditions' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>知行补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-block"><label>Key people for \u201c' + targetLabel + '\u201d</label><textarea id="rpPeople' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>Resources / tools / platforms for \u201c' + targetLabel + '\u201d</label><textarea id="rpResources' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>Conditions / prerequisites for \u201c' + targetLabel + '\u201d</label><textarea id="rpConditions' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>Zhixing note</label><textarea id="rpNote' + type + '" placeholder="optional note">' + escapeHtml(rp.note || '') + '</textarea></div>';
   html += '<div class="resource-actions">';
-  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认「' + targetLabel + '」支持资源</button>';
-  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让知行建议</button>';
+  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">Confirm \u201c' + targetLabel + '\u201d resources</button>';
+  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">Re-suggest</button>';
   html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
@@ -3105,7 +3105,7 @@ function confirmResources(type) {
   };
   saveDraft();
   checkNext2();
-  toast('「' + (type === 'near' ? '近应用' : '远应用') + '」支持资源已确认');
+  toast('\u201c' + (type === 'near' ? 'near' : 'far') + '\u201d support resources confirmed');
 }
 
 function checkNext2() {
@@ -3133,12 +3133,12 @@ $('identityText').addEventListener('input', e => {
 async function aiCall(prompt, attempt = 1) {
   const cfg = getAI();
   if (!cfg.apiKey) {
-    toast('请先在设置里配置 API Key');
+    toast('Please set your API Key in Settings first');
     openSettings();
     return null;
   }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
-  const maxAttempts = 5; // 最多重试 5 次（含首次共 5 次请求）
+  const maxAttempts = 5; // retry up to 5 times (5 requests total including the first)
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -3157,7 +3157,7 @@ async function aiCall(prompt, attempt = 1) {
         await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
-      throw new Error('AI 请求失败：' + res.status);
+      throw new Error('AI request failed: ' + res.status);
     }
     const data = await res.json();
     return data.choices[0].message.content;
@@ -3178,13 +3178,13 @@ const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11
 
 function showAIResult(elId, text) {
   const el = $(elId);
-  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">知行</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
+  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">Zhixing</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
   el.classList.add('show');
 }
 
 /* ============ 完成 ============ */
 function complete() {
-  if (!state.data.identity.trim()) { toast('写下你期待成为的身份，这一步很重要'); return; }
+  if (!state.data.identity.trim()) { toast('Write the identity you aspire to \u2014 this step matters'); return; }
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -3229,7 +3229,7 @@ function complete() {
   }
   localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
   localStorage.removeItem(LS_SESSION);
-  toast('已存入认知档案');
+  toast('Saved to your insight archive');
   openReflection(session);
 }
 
@@ -3239,20 +3239,20 @@ function openReflection(session){
   pendingSession = session;
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-4').style.display = 'block';
-  $('reflectScenario').textContent = session.scenario || '这次挑战';
+  $('reflectScenario').textContent = session.scenario || 'this challenge';
   const e = session.essence || {};
   $('reflectCore').innerHTML =
-    (e.nature ? '<span><b>本质</b>' + escapeHtml(e.nature) + '</span>' : '') +
-    (e.insight ? '<span><b>洞察</b>' + escapeHtml(e.insight) + '</span>' : '');
+    (e.nature ? '<span><b>Essence</b>' + escapeHtml(e.nature) + '</span>' : '') +
+    (e.insight ? '<span><b>Insight</b>' + escapeHtml(e.insight) + '</span>' : '');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 async function aiReflectA(){
   const s = pendingSession; if (!s) return;
   const e = s.essence || {};
-  const prompt = '帮用户复盘一次认知梳理（Think Better 循环的末尾）。挑战：' + (s.scenario || '未填') +
-    '\n现象本质：' + (e.nature || '未填') + '\n新洞察：' + (e.insight || '未填') +
-    '\n期待身份：' + (s.identity || '未填') +
-    '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「我对这类问题的新认知框架」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","model":"…"}';
+  const prompt = 'Help the user review a thinking session (the close of the Think Better loop). Challenge: ' + (s.scenario || 'not filled') +
+    '\nEssence: ' + (e.nature || 'not filled') + '\nNew insight: ' + (e.insight || 'not filled') +
+    '\nIntended identity: ' + (s.identity || 'not filled') +
+    '\nAnswer in first person, one sentence per question: What happened? Why? What did you learn? What did you do differently? What changed? End with \u201cMy new mental model for this kind of problem\u201d. Return strict JSON: {"what":"...","why":"…","learned":"…","different":"…","changed":"…","model":"…"}';
   const text = await aiCall(prompt);
   const box = $('reReflectResult');
   if (!text) return;
@@ -3266,9 +3266,9 @@ async function aiReflectA(){
     $('reChanged').value = j.changed || '';
     $('reModel').value = j.model || '';
     box.classList.add('hidden');
-    toast('已按你的复盘草稿填入，可再修改');
+    toast('Filled in from your review draft \u2014 feel free to edit');
   } catch (err) {
-    box.innerHTML = '<b>知行复盘草稿：</b>' + escapeHtml(text);
+    box.innerHTML = '<b>Zhixing\u2019s review draft:</b> ' + escapeHtml(text);
   }
 }
 function saveReflection(){
@@ -3279,7 +3279,7 @@ function saveReflection(){
   };
   const model = $('reModel').value.trim();
   if (!(r.what || r.why || r.learned || r.different || r.changed || model)){
-    toast('写一点复盘内容再保存吧'); return;
+    toast('Write some reflection before saving'); return;
   }
   try {
     const archive = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
@@ -3291,7 +3291,7 @@ function saveReflection(){
       localStorage.setItem(LS_ARCHIVE, JSON.stringify(archive));
     }
   } catch(e) {}
-  toast('复盘已沉淀进你的成长资产 ✓');
+  toast('Review banked into your growth assets \u2713');
   setTimeout(() => location.href = 'growth.html#insights', 1100);
 }
 
@@ -3323,7 +3323,7 @@ function closeSettings() {
 // 连接测试：用最小请求验证品牌端点 + Key 是否有效
 async function testAIConnection() {
   const cfg = getAI();
-  if (!cfg.apiKey) return { ok: false, msg: '请先填写 API Key' };
+  if (!cfg.apiKey) return { ok: false, msg: 'Please enter your API Key first' };
   const brand = cfg.brand;
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   try {
@@ -3335,19 +3335,19 @@ async function testAIConnection() {
     if (!res.ok) {
       let detail = '';
       try { const j = await res.json(); detail = (j.error && j.error.message) || ''; } catch(e) {}
-      if (res.status === 401) return { ok: false, msg: brand + ' 连接失败：Key 无效（401 未授权），请检查 Key 是否正确' };
-      return { ok: false, msg: brand + ' 连接失败：HTTP ' + res.status + (detail ? '（' + detail + '）' : '') };
+      if (res.status === 401) return { ok: false, msg: brand + ' connection failed: invalid key (401 unauthorized). Check your key' };
+      return { ok: false, msg: brand + ' connection failed: HTTP ' + res.status + (detail ? ' (' + detail + ')' : '') };
     }
     const data = await res.json();
-    if (!data.choices || !data.choices[0]) return { ok: false, msg: brand + ' 连接成功但返回格式异常' };
-    return { ok: true, msg: brand + ' 连接成功，Key 有效 ✓（模型：' + cfg.model + '）' };
+    if (!data.choices || !data.choices[0]) return { ok: false, msg: brand + ' connected but returned an unexpected format' };
+    return { ok: true, msg: brand + ' connected, key valid \u2713 (model: ' + cfg.model + ')' };
   } catch(e) {
     const cors = (e.message || '').includes('Failed to fetch');
     return {
       ok: false,
       msg: cors
-        ? brand + ' 连接失败：浏览器无法访问该接口（可能是网络限制或该 API 不支持浏览器直连，需开启 CORS 或换用支持跨域的端点）'
-        : brand + ' 连接失败：' + (e.message || '未知错误')
+        ? brand + ' connection failed: browser cannot reach this endpoint (network restriction or the API does not support direct browser calls \u2014 enable CORS or use a CORS-friendly endpoint)'
+        : brand + ' connection failed: ' + (e.message || 'unknown error')
     };
   }
 }
@@ -3363,7 +3363,7 @@ async function runConnectionTest() {
   const brand = sel ? sel.dataset.v : DEFAULT_AI.brand;
   // 临时写入，让 getAI() 能读到当前输入
   localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey: keyInput }));
-  showConnStatus(true, '正在测试 ' + brand + ' 连接…', 'testing');
+  showConnStatus(true, 'Testing ' + brand + ' connection…', 'testing');
   const r = await testAIConnection();
   showConnStatus(false, r.msg, r.ok ? 'ok' : 'err');
 }
@@ -3374,7 +3374,7 @@ async function saveSettings() {
   const apiKey = $('cfgApiKey').value.trim();
   localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey }));
   $('saveTip').style.display = 'none';
-  showConnStatus(true, '正在保存并测试 ' + brand + ' 连接…', 'testing');
+  showConnStatus(true, 'Saving and testing ' + brand + ' connection…', 'testing');
   $('saveBtn').disabled = true;
   const r = await testAIConnection();
   $('saveBtn').disabled = false;
@@ -3399,7 +3399,7 @@ function renderAppAside() {
   } catch (e) {}
   const tagsHtml = tags.length
     ? '<div class="aside-tags">' + tags.slice(0, 14).map(function (t) { return '<span class="aside-tag">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
-    : '<div style="font-size:13px;color:var(--ink-3);">完成一次后会自动沉淀主题标签</div>';
+    : '<div style="font-size:13px;color:var(--ink-3);">Topic tags will appear automatically after your first completion</div>';
   let recent = '—';
   try {
     const arc = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
@@ -3409,15 +3409,15 @@ function renderAppAside() {
     }
   } catch (e) {}
   aside.innerHTML =
-    '<div class="aside-card"><div class="aside-title">🏷️ 主题沉淀</div>' + tagsHtml + '</div>' +
-    '<div class="aside-card"><div class="aside-title">💡 最近一次洞察</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
+    '<div class="aside-card"><div class="aside-title">🏷️ Topics banked</div>' + tagsHtml + '</div>' +
+    '<div class="aside-card"><div class="aside-title">💡 Latest insight</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
 }
 
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
-  { h: '想清楚，做得到', p: '知行会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
-  { h: '四步，一次想通一件事', p: '① 归类：把现象/事实/猜测/假设摊开理顺；② 洞察：透过现象看本质；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源和你期待的身份。' },
-  { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
+  { h: 'Think clearly, act decisively', p: 'Zhixing walks you through four steps: organize the mess \u2192 see the essence \u2192 rehearse applications \u2192 take away outcomes. Each step takes minutes.' },
+  { h: 'Four steps, one thing figured out', p: '\u2460 Organize: lay out observations/facts/guesses/assumptions; \u2461 Insight: see the essence behind phenomena; \u2462 Apply: rehearse how you\u2019d act in familiar and unfamiliar scenarios; \u2463 Deliver: take away actions, resources, and your intended identity.' },
+  { h: 'Your insight archive keeps growing', p: 'Each completion banks your insight into \u201cMy Insight Archive\u201d \u2014 tagged, reviewable, reusable. Start with the complex challenge in front of you now.' }
 ];
 let obIdx = 0;
 function maybeShowOnboard() {
@@ -3431,7 +3431,7 @@ function renderOnboard() {
   const s = OB_SLIDES[obIdx];
   $('obH').textContent = s.h; $('obP').textContent = s.p;
   document.querySelectorAll('.onboard-dots i').forEach(function (d, i) { d.classList.toggle('on', i === obIdx); });
-  $('obNext').textContent = obIdx === OB_SLIDES.length - 1 ? '开始 →' : '下一步';
+  $('obNext').textContent = obIdx === OB_SLIDES.length - 1 ? 'Start \u2192' : 'Next';
 }
 function nextOnboard() {
   if (obIdx < OB_SLIDES.length - 1) { obIdx++; renderOnboard(); }
@@ -3463,7 +3463,7 @@ window.goStep = function(n) {
     const d = state.data;
 
     // 0. 顶部核心认知卡片
-    const scenarioName = (d.scenario || '这个挑战').trim();
+    const scenarioName = (d.scenario || 'this challenge').trim();
     $('outcomeScenarioName').textContent = scenarioName;
     const co = $('coreInsightOutcome');
     const e = d.essence || {};
@@ -3471,10 +3471,10 @@ window.goStep = function(n) {
     const insight = (e.insight || '').trim();
     if (nature || insight) {
       co.innerHTML = '<div class="os-core-meta">' +
-        (nature ? '<span><b>本质</b>' + escapeHtml(nature) + '</span>' : '') +
-        (insight ? '<span><b>洞察</b>' + escapeHtml(insight) + '</span>' : '') + '</div>';
+        (nature ? '<span><b>Essence</b>' + escapeHtml(nature) + '</span>' : '') +
+        (insight ? '<span><b>Insight</b>' + escapeHtml(insight) + '</span>' : '') + '</div>';
     } else {
-      co.innerHTML = '<div class="os-empty">（请先回到洞察步骤，确认现象本质和新洞察）</div>';
+      co.innerHTML = '<div class="os-empty">(Go back to the Insight step and confirm essence + new insight first)</div>';
     }
 
     // ① 行动建议：合并近/远应用反馈的 actions
@@ -3483,30 +3483,30 @@ window.goStep = function(n) {
     if (d.nearFeedback && d.nearFeedback.actions) actions.push(...d.nearFeedback.actions);
     if (d.farFeedback && d.farFeedback.actions) actions.push(...d.farFeedback.actions);
     if (actions.length) {
-      ao.innerHTML = '<ol class="os-list">' + actions.filter(Boolean).map((a, i) => '<li><b>行动 ' + (i + 1) + '</b>：' + escapeHtml(a) + '</li>').join('') + '</ol>';
+      ao.innerHTML = '<ol class="os-list">' + actions.filter(Boolean).map((a, i) => '<li><b>Action ' + (i + 1) + '</b>：' + escapeHtml(a) + '</li>').join('') + '</ol>';
     } else {
-      ao.innerHTML = '<div class="os-empty">（请先回到上一步，让知行为应用计划打分并给出行动建议）</div>';
+      ao.innerHTML = '<div class="os-empty">(Go back a step and have Zhixing score your application plan and suggest actions)</div>';
     }
 
     // ② 支持资源（近/远应用各自独立）
     const nearRp = d.nearResourcesPlan;
     const farRp = d.farResourcesPlan;
-    const nearTitle = (d.nearScenario && d.nearScenario.title) || '近应用';
-    const farTitle = (d.farScenario && d.farScenario.title) || '远应用';
+    const nearTitle = (d.nearScenario && d.nearScenario.title) || 'near application';
+    const farTitle = (d.farScenario && d.farScenario.title) || 'far application';
     const ro = $('resourcesOutcome');
     const renderRpBlock = (title, rp) =>
       '<div class="os-block" style="margin-bottom:14px;">' +
-      '<div class="os-title">' + escapeHtml(title) + ' · 需要找的关键人</div>' + listToHtml(rp.people) + '</div>' +
-      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要的资源 / 工具 / 平台</div>' + listToHtml(rp.resources) + '</div>' +
-      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要满足的条件 / 前提</div>' + listToHtml(rp.conditions) + '</div>' +
-      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' · 知行补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+      '<div class="os-title">' + escapeHtml(title) + ' \u00b7 key people to find</div>' + listToHtml(rp.people) + '</div>' +
+      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' \u00b7 resources / tools / platforms</div>' + listToHtml(rp.resources) + '</div>' +
+      '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' \u00b7 conditions / prerequisites</div>' + listToHtml(rp.conditions) + '</div>' +
+      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' \u00b7 Zhixing note</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
     if (nearRp && nearRp.confirmed) {
       ro.innerHTML = renderRpBlock(nearTitle, nearRp) +
         (farRp && farRp.confirmed ? '<div style="height:1px;background:var(--line);margin:14px 0;"></div>' + renderRpBlock(farTitle, farRp) : '');
     } else if (farRp && farRp.confirmed) {
       ro.innerHTML = renderRpBlock(farTitle, farRp);
     } else {
-      ro.innerHTML = '<div class="os-empty">（请先回到上一步，让知行建议支持资源并确认）</div>';
+      ro.innerHTML = '<div class="os-empty">(Go back a step and have Zhixing suggest support resources, then confirm)</div>';
     }
 
     // ③ 身份投票
@@ -3521,8 +3521,8 @@ function sendInsightToBehavior(){
   const nature = (e.nature || '').trim();
   const insight = (e.insight || '').trim();
   const scenario = (d.scenario || '').trim() || ($('outcomeScenarioName') ? $('outcomeScenarioName').textContent.trim() : '');
-  const text = (nature ? ('本质：' + nature + '\n') : '') + (insight ? ('洞察：' + insight) : '');
-  if (!text.trim()){ toast('请先回到洞察步骤，确认现象本质和新洞察'); return; }
+  const text = (nature ? ('Essence: ' + nature + '\n') : '') + (insight ? ('Insight: ' + insight) : '');
+  if (!text.trim()){ toast('Go back to the Insight step and confirm essence + new insight first'); return; }
   const params = new URLSearchParams({ insight: text, scenario: scenario });
   window.location.href = 'act.html?' + params.toString();
 }
@@ -3554,11 +3554,11 @@ function renderIdentityVote() {
 }
 function castIdentityVote() {
   const v = (state.data.identity || '').trim();
-  if (!v) { toast('先写下你期待的身份'); return; }
+  if (!v) { toast('Write the identity you aspire to first'); return; }
   const btn = $('voteBtn');
   if (btn) btn.classList.add('voted');
   updateVoteStats(v);
-  toast('已为你期待的身份投下一票');
+  toast('Vote cast for your intended identity');
 }
 function updateVoteStats(text, readOnly) {
   let profile = { identityStatements: [] };
@@ -3576,13 +3576,13 @@ function updateVoteStats(text, readOnly) {
   }
   const countEl = $('voteCount');
   const daysEl = $('voteDays');
-  if (countEl) countEl.textContent = (item.votes || 0) + ' 票';
+  if (countEl) countEl.textContent = (item.votes || 0) + ' votes';
   if (daysEl) {
     if (item.date) {
       const days = Math.max(0, Math.floor((Date.now() - new Date(item.date).getTime()) / (86400000)));
-      daysEl.textContent = days === 0 ? '最近 今天' : '最近 ' + days + ' 天前';
+      daysEl.textContent = days === 0 ? 'Latest today' : 'Latest ' + days + 'd ago';
     } else {
-      daysEl.textContent = '最近 今天';
+      daysEl.textContent = 'Latest today';
     }
   }
 }
@@ -3597,14 +3597,14 @@ function updateVoteStats(text, readOnly) {
     </div>
     <div class="onboard-dots"><i class="on"></i><i></i><i></i></div>
     <div class="onboard-foot">
-      <button class="btn btn-prev" onclick="closeOnboard()">跳过</button>
-      <button class="btn btn-next" id="obNext" onclick="nextOnboard()">下一步</button>
+      <button class="btn btn-prev" onclick="closeOnboard()">Skip</button>
+      <button class="btn btn-next" id="obNext" onclick="nextOnboard()">Next</button>
     </div>
   </div>
 </div>
-<a class="fab-archive" href="growth.html" title="随时查看我的成长资产">
+<a class="fab-archive" href="growth-en.html" title="View my growth assets anytime">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-  我的档案
+  My Archive
 </a>
 <style>
   .fab-archive {

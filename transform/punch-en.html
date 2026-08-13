@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>每日进步 · Transform</title>
+<title>Daily Progress · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -70,7 +70,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版伴我改变入口（底部小链接） */
+  
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -83,9 +83,9 @@
   }
   .full-link-bar a:hover { background: var(--amber-soft); }
 
-  /* ===== 顶栏 ===== */
+  
   .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
-  /* ===== 全局导航（所有页面互跳） ===== */
+  
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
@@ -119,11 +119,11 @@
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
   .arch-btn { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
   .arch-btn:hover { color: #fff !important; border-color: transparent !important; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.32); }
-  /* 高特异性：覆盖 .topbar button */
+  
   .topbar button.arch-btn,
   .topbar button.arch-btn:hover { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
 
-  /* ===== 极简打卡态（think 同款） ===== */
+  
   .cta-done {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; padding: 18px; border: none; border-radius: 14px;
@@ -144,7 +144,7 @@
   }
   .tf-hint b, .tf-hint strong { color: var(--green); font-weight: 800; }
 
-  /* ===== 今日反馈卡 ===== */
+  
   .today-feedback { margin-top: 14px; }
   .today-feedback.hidden { display: none; }
   .tf-card {
@@ -178,7 +178,7 @@
   .btn-amber { background: var(--amber); color: #fff; }
   .btn-amber:hover { filter: brightness(1.06); }
 
-  /* ===== 没做到面板 ===== */
+  
   .block-box { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; display: none; }
   .block-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
   .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -193,7 +193,7 @@
 
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ===== 创建态（think 同款风格） ===== */
+  
   .create-hero {
     background: linear-gradient(135deg, #0A5A42, var(--green-3));
     border-radius: var(--radius-lg); padding: 30px 26px; color: #fff; margin-top: 8px;
@@ -281,30 +281,30 @@
   <div class="topbar">
     <a class="back" href="index.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      首页
+      Home
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item" href="think.html">每日洞察</a>
-    <a class="gn-item on" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
+  <nav class="gnav" aria-label="Global navigation">
+    <a class="gn-item" href="think-en.html">Daily Insight</a>
+    <a class="gn-item on" href="punch-en.html">Daily Change</a>
+    <a class="gn-item" href="app-en.html">Guided Insight</a>
+    <a class="gn-item" href="act-en.html">Guided Change</a>
   </nav>
-    <a href="punch-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
-    <button class="arch-btn" onclick="location.href='growth.html#experiments'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
+    <a href="punch.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
+    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
+    <button class="arch-btn" onclick="location.href='growth-en.html#experiments'" aria-label="Behavior archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 Behavior</button>
   </div>
 
-  <!-- 每日进步主屏 -->
+  <!-- Daily progress main screen -->
   <div id="punchArea"></div>
   <div class="full-link-bar">
-    <a href="act.html">伴我改变 →</a>
+    <a href="act-en.html">Full Guided Change →</a>
   </div>
 
   <div id="toast"></div>
 </div>
 
 <script>
-/* ===================== 数据层（与 act.html 完全互通） ===================== */
+
 const LS_ACTIONS = 'trf_actions';
 const LS_PROFILE = 'trf_profile';
 const LS_AI = 'trf_ai_config_v1';
@@ -314,7 +314,7 @@ const BRAND_PROFILES = {
   'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
 };
 
-let current = null; // 当前 Action
+let current = null;
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -366,7 +366,7 @@ function parseJSON(text){
   try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
 }
 
-/* ===================== 每日进步核心 ===================== */
+
 function logCompletion(done, day, difficulty, note){
   const today = new Date(); today.setHours(0,0,0,0);
   const lastDone = (current.logs || []).filter(l => l.done).slice(-1)[0];
@@ -401,15 +401,15 @@ function logCompletion(done, day, difficulty, note){
   persistAction();
 }
 
-/* ===================== 极简打卡态（think 同款） ===================== */
+
 function renderPunch(){
   const area = $('punchArea');
   if (!current){
     area.innerHTML = `<div class="create-hero">
-      <div class="ch-eyebrow">伴我改变</div>
-      <h1>还没有开始一次改变</h1>
-      <p>先定一个想改变的事，知行会帮你定出今天就能完成的一小步。</p>
-      <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
+      <div class="ch-eyebrow">Guided Change</div>
+      <h1>No change started yet</h1>
+      <p>Pick something you want to change. Zhixing will break it into one small step you can do today.</p>
+      <a class="cta-start" href="act-en.html" style="text-decoration:none;">Create a full experiment →</a>
     </div>`;
     return;
   }
@@ -418,72 +418,72 @@ function renderPunch(){
   const today = (current.plan || []).find(p => p.day === current.currentDay) || (current.plan || [])[0];
   const micro = today ? (today.micro || current.input) : current.input;
   const anchor = current.anchor && current.anchor.after;
-  const phase = isGrad ? '已完成全部 ' + (current.targetDays||0) + ' 天' : '今天 · 第 ' + current.currentDay + ' 天 / 共 ' + (current.targetDays||0) + ' 天';
+  const phase = isGrad ? 'All ' + (current.targetDays||0) + ' days completed' : 'Day ' + current.currentDay + ' of ' + (current.targetDays||0);
   const votes = countVotes();
 
   let html = '';
 
-  // 毕业态（create-hero 风格的极简）
+
   if (isGrad){
     html += `<div class="create-hero" style="background:linear-gradient(135deg, var(--amber-soft), var(--green-soft));color:var(--ink);">
-      <div class="ch-eyebrow" style="color:var(--amber);">行为实验完成</div>
-      <h1 style="color:var(--ink);">你用 ${current.targetDays} 天，把「${escapeHtml(current.input)}」变成了真实轨迹</h1>
-      <p style="color:var(--ink-2);">${current.identity ? '你已经是「' + escapeHtml(current.identity) + '」的人' : '新的习惯与角色已生根'}</p>
-      <a class="cta-start" href="act.html?id=${current.id}" style="text-decoration:none;color:var(--green-deep);">去复盘沉淀 · 产出 →</a>
+      <div class="ch-eyebrow" style="color:var(--amber);">Experiment complete</div>
+      <h1 style="color:var(--ink);">In ${current.targetDays} days, you turned \u201c${escapeHtml(current.input)}\u201d into a real track record</h1>
+      <p style="color:var(--ink-2);">${current.identity ? 'You have become a \u201c' + escapeHtml(current.identity) + '\u201d person' : 'New habits and identity have taken root'}</p>
+      <a class="cta-start" href="act-en.html?id=${current.id}" style="text-decoration:none;color:var(--green-deep);">Review & refine →</a>
     </div>`;
     area.innerHTML = html;
     return;
   }
 
-  // 今日 hero（think 同款绿色 gradient）
+
   html += `<div class="create-hero">
     <div class="ch-eyebrow">${escapeHtml(phase)}</div>
     <h1>${escapeHtml(micro)}</h1>
-    <p>${anchor ? '在我 <b>' + escapeHtml(anchor) + '</b> 之后，我就做这一小步。' : '到了那个时刻，就做这一小步。'}</p>
+    <p>${anchor ? 'Right after <b>' + escapeHtml(anchor) + '</b>, I take this one small step.' : 'When that moment comes, take this one small step.'}</p>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;opacity:.92;">
-      <span>连续 <b style="font-size:16px;">${current.streak || 0}</b> 天</span>
-      <span>累计 <b style="font-size:16px;">${current.totalDone || 0}</b> 天</span>
-      <span>身份票 <b style="font-size:16px;">${votes}</b> 张</span>
+      <span><b style="font-size:16px;">${current.streak || 0}</b>-day streak</span>
+      <span><b style="font-size:16px;">${current.totalDone || 0}</b> days total</span>
+      <span><b style="font-size:16px;">${votes}</b> identity votes</span>
     </div>
   </div>`;
 
-  // 一行简短提示（think 同款 hint 风格）
-  html += `<div class="tf-hint">今天的目标就是 <strong>${escapeHtml(micro)}</strong>。${today && today.seconds ? '大约 '+today.seconds+' 秒就能完成。' : '小到不可能失败。'}</div>`;
 
-  // 大做完了按钮
+  html += `<div class="tf-hint">Today's goal is <strong>${escapeHtml(micro)}</strong>.${today && today.seconds ? ' About '+today.seconds+' seconds.' : ' Small enough that it can\u2019t fail.'}</div>`;
+
+
   html += `<button class="cta-done" id="doneBtn" onclick="markDone()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    做完了
+    Done
   </button>
-  <button class="cta-miss" onclick="showBlock()">今天没做到（拖一拖 / 太麻烦 / 没时间）</button>
+  <button class="cta-miss" onclick="showBlock()">Missed today (forgot / too much hassle / no time)</button>
 
   <div class="block-box" id="blockBox">
-    <h3>发生了什么？选一个最接近的</h3>
+    <h3>What happened? Pick the closest one</h3>
     <div class="reason-grid">
-      <button class="reason" onclick="pickReason('忘了')"><b>忘了</b>压根没想起来</button>
-      <button class="reason" onclick="pickReason('太麻烦')"><b>太麻烦</b>步骤太多不想动</button>
-      <button class="reason" onclick="pickReason('不想做')"><b>不想做</b>当下没动力</button>
-      <button class="reason" onclick="pickReason('没时间')"><b>没时间</b>挤不出这 30 秒</button>
+      <button class="reason" onclick="pickReason('forgot')"><b>Forgot</b>never crossed my mind</button>
+      <button class="reason" onclick="pickReason('hassle')"><b>Too much hassle</b>too many steps</button>
+      <button class="reason" onclick="pickReason('demotivated')"><b>Didn\u2019t feel like it</b>no motivation in the moment</button>
+      <button class="reason" onclick="pickReason('time')"><b>No time</b>couldn\u2019t spare 30 seconds</button>
     </div>
     <div id="aiBlockResult"></div>
-    <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← 返回</div>
+    <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← Back</div>
   </div>
 
-  <!-- 今日反馈卡（默认隐藏，完成后弹出） -->
+  <!-- Feedback card (hidden by default, shown after completion) -->
   <div class="today-feedback hidden" id="todayFeedbackWrap">
     <div class="tf-card">
       <div class="tf-crown" id="tfCrown">🎉</div>
-      <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
+      <div class="tf-title" id="tfTitle">Day X done!</div>
       <div class="tf-body" id="tfBody"></div>
       <div class="tf-stats">
-        <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
-        <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
-        <div class="tf-stat"><span>身份票</span><b id="tfVotes">+1</b><em>张</em></div>
+        <div class="tf-stat"><span>Streak</span><b id="tfStreak">0</b><em>days</em></div>
+        <div class="tf-stat"><span>Total</span><b id="tfTotal">0</b><em>days</em></div>
+        <div class="tf-stat"><span>Votes</span><b id="tfVotes">+1</b><em>votes</em></div>
       </div>
       <div class="tf-sub" id="tfSub"></div>
       <div class="tf-actions">
-        <button class="btn btn-primary" onclick="hideTodayFeedback()">继续 → 明天的小事已就位</button>
-        <a class="btn btn-ghost" href="growth.html#experiments">看行为档案</a>
+        <button class="btn btn-primary" onclick="hideTodayFeedback()">Continue → tomorrow\u2019s step is ready</button>
+        <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
       </div>
     </div>
   </div>`;
@@ -501,11 +501,11 @@ function countVotes(){
 
 function markDone(){
   const today = current.plan.find(p => p.day === current.currentDay);
-  if (today && today.sub && today.sub.length && !today.subDone.every(Boolean)){ toast('先把今天的几步都勾上'); return; }
+  if (today && today.sub && today.sub.length && !today.subDone.every(Boolean)){ toast('Check off today\u2019s steps first'); return; }
   logCompletion(true, current.currentDay, null, '');
   if (current.status === 'graduated'){
     renderPunch();
-    toast('全部完成！新的习惯和角色已生根 🎓');
+    toast('All done! New habits and identity have taken root 🎓');
     return;
   }
   renderPunch();
@@ -528,32 +528,32 @@ async function showTodayFeedback(){
   const isFirst = day <= 0;
   const LOCAL_MSGS = isFirst
     ? [
-      '今天的行为实验开始了：「' + micro + '」。',
-      '这是「' + (current.identity || '期待的身份') + '」的第一票。',
-      '锚点已就位，30 秒后开始今天的小事。',
-      '第 1 天，先把「' + micro + '」做完。'
+      'Today\u2019s behavior experiment has begun: \u201c' + micro + '\u201d.',
+      'That\u2019s the first vote for \u201c' + (current.identity || 'your intended identity') + '\u201d.',
+      'Your anchor is set. Start today\u2019s step within 30 seconds.',
+      'Day 1 \u2014 finish \u201c' + micro + '\u201d first.'
     ]
     : [
-      '「' + micro + '」已经从「想做」走到「做到了」。',
-      '连续 ' + streak + ' 天，是行为在替你提醒自己。',
-      '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
-      '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
+      '\u201c' + micro + '\u201d has moved from \u201cwanting to do\u201d to \u201cdone\u201d.',
+      streak + ' days in a row \u2014 your behavior is reminding you.',
+      'Casting vote #' + (votes + 1) + ' for \u201c' + (current.identity || 'your intended identity') + '\u201d.',
+      'Tomorrow\u2019s step will appear automatically. One more day closer to \u201c' + (current.identity || 'who you want to be') + '\u201d.'
     ];
   $('tfCrown').textContent = isFirst ? '🚀' : ((day > 0 && day % 7 === 0) ? '🏆' : '🎉');
-  $('tfTitle').textContent = isFirst ? '今天的行为实验开始了' : ('第 ' + day + ' 天做到了！');
+  $('tfTitle').textContent = isFirst ? 'Today\u2019s behavior experiment begins' : ('Day ' + day + ' done!');
   $('tfBody').textContent = LOCAL_MSGS[Math.abs((day - 1)) % LOCAL_MSGS.length];
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
-  $('tfSub').textContent = isFirst ? '你今天的目标已记录。做完它，再回来点「做完了」。' : '今天的事已记录在计划全景里，明天的小事已就位。';
+  $('tfSub').textContent = isFirst ? 'Your goal for today is recorded. Finish it, then come back and tap Done.' : 'Today is recorded. Tomorrow\u2019s step is ready.';
   w.classList.remove('hidden');
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
   try {
     if (getAI().apiKey && micro && !isFirst) {
       const aiText = await aiCall(
-        '用户刚完成了一个持续多天的「行为实验」中第 ' + day + ' 天：' + micro + '。\n' +
-        '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
-        '请用 1 句话（≤ 30 字）肯定这次完成，强调"具体行为"而非"坚持"。禁用"坚持"这种词。'
+        'A user just completed day ' + day + ' of a multi-day behavior experiment: ' + micro + '.\n' +
+        'Current status: ' + streak + '-day streak, ' + total + ' days total, target identity: \u201c' + (current.identity || 'to be determined') + '\u201d.\n' +
+        'Praise this completion in one sentence (max 30 words), emphasizing the concrete behavior, not \u201cpersistence\u201d. Avoid the word \u201cpersistence\u201d.'
       );
       if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 120);
     }
@@ -569,15 +569,15 @@ async function pickReason(reason){
   const block = $('blockBox'); if (block) block.style.display = 'none';
   renderPunch();
   const today = current.plan.find(p => p.day === day);
-  const text = await aiCall('用户因为「' + reason + '」没能做到今天的行动：「' + ((today && today.micro) || current.input) + '」。\n请给 1 个不靠意志力的调整建议，让下一次更容易发生。不要说加油、坚持之类的话。最多 2 句。');
+  const text = await aiCall('The user missed today\u2019s action \u201c' + ((today && today.micro) || current.input) + '\u201d because of: ' + reason + '.\nGive 1 adjustment that does not rely on willpower, making it easier next time. No \u201cyou can do it\u201d or \u201ckeep going\u201d. Max 2 sentences.');
   if (text){
     const box = $('aiBlockResult');
     if (box) box.innerHTML = `<div class="ai-result">${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
   }
-  toast('没关系，没做到不是失败。调整一次，再试一次。');
+  toast('It\u2019s okay \u2014 missing a day isn\u2019t failure. Adjust once, try again.');
 }
 
-/* ===================== 社会支持 ===================== */
+
 let handoffInsight = '';
 let handoffNature = '';
 let handoffScenario = '';
@@ -588,17 +588,17 @@ function renderCreate(){
   const showCtx = handoffNature || handoffInsight;
   area.innerHTML = `
     <div class="create-hero">
-      <div class="ch-eyebrow">伴我改变 · 把洞察变成今天的改变</div>
-      <h1>一条认知，变成今天的一小步</h1>
-      <p>知行会基于你<strong>想清楚的事</strong>，帮你定出今天就能完成的最小改变——不搞大计划，只关心今天做得到。</p>
+      <div class="ch-eyebrow">Daily Change · turn an insight into today\u2019s step</div>
+      <h1>One insight, one small step today</h1>
+      <p>Based on what you\u2019ve <strong>thought through</strong>, Zhixing helps you find the smallest change you can complete today \u2014 no grand plans, just what you can do now.</p>
       ${showCtx ? `
         <div class="ctx-card">
-          <div class="ctx-label">来自今日洞察 · 认知起点</div>
-          ${handoffNature ? `<div class="ctx-row"><b>本质：</b>${escapeHtml(handoffNature)}</div>` : ''}
-          ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
+          <div class="ctx-label">From today\u2019s insight \u00b7 starting point</div>
+          ${handoffNature ? `<div class="ctx-row"><b>Essence:</b> ${escapeHtml(handoffNature)}</div>` : ''}
+          ${handoffInsight ? `<div class="ctx-row"><b>Insight:</b> ${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
-      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '你想改变或实践什么？（例如：每天早震喝一杯温水）'}" maxlength="60">
-      <button class="cta-start" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('What do you want to change about \u201c' + handoffScenario + '\u201d?') : 'What do you want to change or practice? (e.g. drink a glass of water every morning)'}" maxlength="60">
+      <button class="cta-start" id="startChangeBtn" onclick="startChange()">Start Changing →</button>
     </div>`;
   const input = $('changeInput');
   if (handoffScenario) input.value = handoffScenario;
@@ -612,15 +612,15 @@ function renderCreate(){
 
 async function startChange(){
   const goal = ($('changeInput').value || '').trim();
-  if (goal.length < 4) { toast('再多写几个字'); return; }
+  if (goal.length < 4) { toast('Add a few more words'); return; }
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = '知行正在建议今天的改变…';
+  btn.disabled = true; btn.textContent = 'Zhixing is suggesting today\u2019s change\u2026';
   let sug = null;
   for (let attempt = 0; attempt < 3 && !sug; attempt++){
     const r = await aiCall(
-      `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：基于以上，建议 1 个「今天就能完成的最小改变」——一个微行动。\n严格要求：\n1. 微行动一句话（10-25 字），小到不可能失败，30 秒内可完成\n2. 拆成 2-3 个更小步骤（每个 ≤10 字）\n3. 给 3 个稳定锚点时刻（在___之后）\n4. 严格按 JSON 输出：\n{"micro":"...","steps":["...","..."],"anchors":["在早震拿起手机之后","在午饭后","在晚上睡前"]}`
+      `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Based on the above, suggest ONE minimal change that can be completed today \u2014 a micro-action.\nStrict requirements:\n1. The micro-action in one sentence (10-25 words), small enough that it cannot fail, doable within 30 seconds\n2. Break it into 2-3 even smaller steps (each max 10 words)\n3. Give 3 stable anchor moments (after ___)\n4. Output strict JSON:\n{"micro":"...","steps":["...","..."],"anchors":["after I pick up my phone in the morning","after lunch","before bed"]}`
     );
     const d = parseJSON(r);
     if (d && d.micro && d.micro.trim()){
@@ -632,35 +632,35 @@ async function startChange(){
     }
   }
   if (!sug){
-    btn.disabled = false; btn.textContent = '开始改变 →';
-    toast('知行暂时没建议出来，请稍后再试');
+    btn.disabled = false; btn.textContent = 'Start Changing →';
+    toast('Zhixing could not suggest right now, please try again');
     return;
   }
   draft.goal = goal;
   draft.micro = sug.micro;
-  draft.steps = sug.steps.length ? sug.steps : ['完成这一小步'];
+  draft.steps = sug.steps.length ? sug.steps : ['Complete this small step'];
   draft.seconds = 30;
-  renderSuggest(sug.anchors.length ? sug.anchors : ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+  renderSuggest(sug.anchors.length ? sug.anchors : ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
 }
 
 function renderSuggest(anchors){
   const area = $('punchArea');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">知行建议 · 今天的改变</div>
+      <div class="sc-tag">Zhixing suggests \u00b7 today\u2019s change</div>
       <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">小到不可能失败，30 秒内完成。先把它拆成更小的一步：</div>
-      <div class="sc-field">小步骤（可点击完成）</div>
+      <div class="sc-desc">Small enough that it can\u2019t fail, done in 30 seconds. First break it into smaller steps:</div>
+      <div class="sc-field">Micro-steps</div>
       <div class="sc-chips" id="stepChips">
         ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
       </div>
-      <div class="sc-field">什么时候做？选一个锚点（点击选择）</div>
+      <div class="sc-field">When? Pick an anchor moment (tap to choose)</div>
       <div class="sc-chips" id="anchorChips">
-        ${anchors.map((a, i) => `<button class="sc-chip ${i === 0 ? 'sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} 之后</button>`).join('')}
+        ${anchors.map((a, i) => `<button class="sc-chip ${i === 0 ? 'sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} → do it</button>`).join('')}
       </div>
-      <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
-      <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
-      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 今天就开始 →</button>
+      <div class="sc-field">Who do you want to become? (identity votes go here)</div>
+      <input class="sc-input" id="identityInput" placeholder="e.g. a person who takes care of their body" maxlength="30">
+      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">Confirm \u00b7 start today \u2192</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   draft.anchor = anchors[0] || '';
@@ -676,16 +676,16 @@ function pickAnchorChip(i){
 
 async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
-  if (!draft.micro) { toast('先让知行建议今天的改变'); return; }
-  if (!draft.anchor) { toast('选一个锚点时刻'); return; }
-  if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
+  if (!draft.micro) { toast('Let Zhixing suggest today\u2019s change first'); return; }
+  if (!draft.anchor) { toast('Pick an anchor moment'); return; }
+  if (!identity) { toast('Write who you want to become (identity votes go here)'); return; }
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
-  // 生成未来 7 天轻量计划（AI 一次生成，不做大拆解）
+
   let plan = null;
   for (let attempt = 0; attempt < 2 && !plan; attempt++){
     const r = await aiCall(
-      `用户的改变目标：「${($('changeInput') ? '' : '')}」今日微行动：「${draft.micro}」\n\n任务：围绕这个目标生成未来 7 天每天的微行动（每天 1 句，≤20 字，小到不可能失败，第 1 天就是「${draft.micro}」）。\n严格按 JSON：\n{"days":[{"day":1,"micro":"${draft.micro}"},{"day":2,"micro":"..."},...,{"day":7,"micro":"..."}]}`
+      `User\u2019s change goal: \u201c${draft.goal || 'behavior change'}\u201d. Today\u2019s micro-action: \u201c${draft.micro}\u201d\n\nTask: Generate the micro-action for each of the next 7 days (one sentence per day, max 20 words, small enough to never fail; Day 1 is \u201c${draft.micro}\u201d).\nStrict JSON:\n{"days":[{"day":1,"micro":"${draft.micro}"},{"day":2,"micro":"..."},...,{"day":7,"micro":"..."}]}`
     );
     const d = parseJSON(r);
     if (d && Array.isArray(d.days) && d.days.length >= 3){
@@ -699,11 +699,11 @@ async function confirmChange(){
   if (!plan){
     plan = [{day:1, micro:draft.micro, sub:[], subDone:[]}];
     for (let d = 2; d <= 7; d++){
-      plan.push({ day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[] });
+      plan.push({ day:d, micro: ('Keep going with \u201c' + draft.micro + '\u201d'), sub:[], subDone:[] });
     }
   }
-  // 创建 action（轻量 7 天）
-  const goal = draft.goal || handoffScenario || '行为改变';
+
+  const goal = draft.goal || handoffScenario || 'behavior change';
   current = {
     id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
     input: (goal || '').trim() || draft.micro,
@@ -726,19 +726,19 @@ async function confirmChange(){
   persistAction();
   draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
   renderPunch();
-  // 第一次：引导完成今天的改变
+
   showTodayFeedback();
 }
 
-/* ===================== 初始化 ===================== */
+
 (function init(){
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
-  // 从 think.html 跳转：携带洞察
+  // From think-en.html: carries the insight
   handoffInsight = (params.get('insight') || '').trim();
   handoffNature = (params.get('nature') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
-  // 带 think 来的洞察 → 强制进入创建态（用新洞察创建新的行为实验，不复用已有的 active）
+  // Insight came from think → force the create state (build a NEW experiment, do not reuse the active one)
   if (handoffInsight){
     renderCreate();
     return;
