@@ -83,7 +83,7 @@
   .full-link-bar a:hover { background: var(--amber-soft); }
 
   /* ===== 顶栏 ===== */
-  .topbar 
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   /* ===== 全局导航（所有页面互跳） ===== */
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
@@ -280,8 +280,8 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item" href="think.html">每日洞察</a>
     <a class="gn-item on" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">完整洞察</a>
-    <a class="gn-item" href="act.html">完整改变</a>
+    <a class="gn-item" href="app.html">伴我洞察</a>
+    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
     <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button onclick="location.href='growth.html#experiments'" aria-label="行为档案">📁 行为档案</button>
@@ -290,7 +290,7 @@
   <!-- 每日进步主屏 -->
   <div id="punchArea"></div>
   <div class="full-link-bar">
-    <a href="act.html">完整伴我改变 →</a>
+    <a href="act.html">伴我改变 →</a>
   </div>
 
   <div id="toast"></div>

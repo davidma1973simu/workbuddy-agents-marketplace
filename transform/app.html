@@ -118,7 +118,7 @@
   .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 20px 20px 90px; }
 
   /* 顶部栏 */
-  .topbar 
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
   /* ===== 全局导航（所有页面互跳） ===== */
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
@@ -1437,8 +1437,8 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item" href="think.html">每日洞察</a>
     <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item on" href="app.html">完整洞察</a>
-    <a class="gn-item" href="act.html">完整改变</a>
+    <a class="gn-item on" href="app.html">伴我洞察</a>
+    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
       <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>

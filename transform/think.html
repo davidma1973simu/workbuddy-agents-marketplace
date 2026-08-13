@@ -81,7 +81,7 @@
   }
   .full-link-bar a:hover { background: var(--violet-soft, #EEECFA); }
 
-  .topbar 
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   /* ===== 全局导航（所有页面互跳） ===== */
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
@@ -254,8 +254,8 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item on" href="think.html">每日洞察</a>
     <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">完整洞察</a>
-    <a class="gn-item" href="act.html">完整改变</a>
+    <a class="gn-item" href="app.html">伴我洞察</a>
+    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
     <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button onclick="location.href='growth.html#insights'" aria-label="认知档案">📖 认知档案</button>
@@ -263,7 +263,7 @@
 
   <div id="thinkArea"></div>
   <div class="full-link-bar">
-    <a href="app.html">完整伴我洞察 →</a>
+    <a href="app.html">伴我洞察 →</a>
   </div>
   <div id="toast"></div>
 </div>
