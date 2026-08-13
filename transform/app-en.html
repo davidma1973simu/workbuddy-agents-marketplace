@@ -123,9 +123,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -135,8 +134,13 @@
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
   .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
-  @media (max-width: 560px) {
-    .gnav .gn-item { padding: 6px 9px; font-size: 12px; }
+  @media (max-width: 720px) {
+    .topbar { gap: 6px; }
+    .topbar .back { order: 1; }
+    .topbar .spacer { display: none; }
+    .gnav { order: 3; width: 100%; flex: none; padding: 6px; gap: 4px; }
+    .gnav .gn-item { flex: 1 1 calc(50% - 4px); padding: 9px 10px; font-size: 12.5px; justify-content: center; white-space: nowrap; }
+    .topbar .theme-toggle, .topbar .arch-btn, .topbar button { order: 2; padding: 8px 12px; font-size: 12.5px; }
   }
 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
   .back {
@@ -1031,7 +1035,7 @@
 </script>
 <link rel="icon" href="data:,">
 <style id="phase2-css">
-/* ===== Phase 2-A 知行拟人化头像 + AI 消息体 ===== */
+/* ===== Phase 2-A Transform拟人化头像 + AI 消息体 ===== */
 .zhx-avatar {
   flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
   background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
@@ -1439,9 +1443,7 @@
     <a class="gn-item" href="punch-en.html">Daily Change</a>
     <a class="gn-item on" href="app-en.html">Guided Insight</a>
     <a class="gn-item" href="act-en.html">Guided Change</a>
-  </nav>
-    <a href="app.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
-    <button onclick="openSettings()" aria-label="Settings" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+  </nav>    <button onclick="openSettings()" aria-label="Settings" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </button>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
@@ -1513,10 +1515,10 @@
       <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>To Insight →</button></div>
     </div>
 
-    <!-- Step 1 洞察（用户主导，知行辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
+    <!-- Step 1 洞察（用户主导，Transform辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
     <div class="panel" id="panel-1" style="display:none;">
       <h1>See the essence behind phenomena</h1>
-      <div class="hint">All your groups above take part. Zhixing asks <b>one question at a time</b>; answered questions stay on the page. Keep answering until you say \u201cI\u2019m done\u201d, then Zhixing synthesizes the core insight.</div>
+      <div class="hint">All your groups above take part. Transform asks <b>one question at a time</b>; answered questions stay on the page. Keep answering until you say \u201cI\u2019m done\u201d, then Transform synthesizes the core insight.</div>
 
       <!-- \u2460 Groups (read-only, all take part) -->
       <label>\u2460 Your groups (all participate in thinking)</label>
@@ -1524,24 +1526,24 @@
 
       <!-- ② 渐进式提问区 -->
       <div id="thinkingArea" style="display:none;">
-        <div class="lb-section-title">Questions from Zhixing \u00b7 your thinking</div>
+        <div class="lb-section-title">Questions from Transform \u00b7 your thinking</div>
         <div id="allQuestions"></div>
 
         <!-- 出题控制：第一题 / 下一题 / 够了 -->
         <div class="q-action-row" id="askRow" style="justify-content:flex-start;border:none;padding-top:0;">
           <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">Ask the first question</button>
-          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">I\u2019m done, let Zhixing summarize →</button>
+          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">I\u2019m done, let Transform summarize →</button>
         </div>
 
-        <div class="lb-section-title">My overall view (optional \u2014 feeds Zhixing\u2019s summary)</div>
+        <div class="lb-section-title">My overall view (optional \u2014 feeds Transform\u2019s summary)</div>
         <textarea id="personalView" class="personal-view-main" placeholder="Write your overall view, feelings, and judgments about the whole scenario..."></textarea>
 
-        <!-- ③ 知行总结按钮 + 凸显 essence 盒 -->
+        <!-- ③ Transform总结按钮 + 凸显 essence 盒 -->
         <div id="integrateArea" style="display:none;">
-          <div class="lb-section-title">Let Zhixing synthesize (from all Q&A + overall view)</div>
+          <div class="lb-section-title">Let Transform synthesize (from all Q&A + overall view)</div>
           <button class="ai-btn-primary" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Let Zhixing summarize
+            Let Transform summarize
           </button>
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
@@ -1566,7 +1568,7 @@
             </div>
           </div>
 
-          <div class="lb-status-row" id="statusRow">Next: let Zhixing summarize</div>
+          <div class="lb-status-row" id="statusRow">Next: let Transform summarize</div>
 
         </div>
 
@@ -1584,14 +1586,14 @@
     <!-- Step 2 应用（用户写 + AI 评价反馈，按 PRD） -->
     <div class="panel" id="panel-2" style="display:none;">
       <h1>Apply your new insight to unfamiliar scenarios</h1>
-      <div class="hint">This step isn\u2019t about taking action yet \u2014 it\u2019s a <u>cognitive rehearsal</u>: carry this new insight into familiar + unfamiliar scenarios and write down how you would act. Finally Zhixing scores, gives feedback, and suggests next actions.</div>
+      <div class="hint">This step isn\u2019t about taking action yet \u2014 it\u2019s a <u>cognitive rehearsal</u>: carry this new insight into familiar + unfamiliar scenarios and write down how you would act. Finally Transform scores, gives feedback, and suggests next actions.</div>
 
       <label>\u2460 Your new insight</label>
       <div class="insight-highlight" id="insightRef"></div>
       <div class="score-display" id="scoreDisplay" style="display:none;">
         <div class="sd-item"><span class="sd-label">Importance</span><span class="sd-val" id="sdImpact">—</span></div>
         <div class="sd-item"><span class="sd-label">Acceptance effort</span><span class="sd-val" id="sdEffort">—</span></div>
-        <div class="sd-desc">Zhixing uses both scores to evaluate your application plan</div>
+        <div class="sd-desc">Transform uses both scores to evaluate your application plan</div>
       </div>
 
       <!-- ② 近应用：先选场景标题 → 生成细节 → 填计划 → AI 评分 -->
@@ -1613,7 +1615,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
           <div class="detail-card" id="nearDetailCard"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
@@ -1621,7 +1623,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
           <div class="detail-card" id="nearDetailCardPlan"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
@@ -1644,7 +1646,7 @@
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Have Zhixing score + give feedback + suggest actions
+              Have Transform score + give feedback + suggest actions
             </button>
           </div>
         </div>
@@ -1656,7 +1658,7 @@
       <label class="locked-label" id="farAppLockLabel">\u2462 Far application: a <u>completely different scenario</u> \u2014 does this insight still hold?</label>
       <div class="app-block locked" id="farAppBlock" data-type="far">
         <div class="app-title">Far application (unfamiliar scenario)</div>
-        <div class="lock-overlay"><span>Finish the near application and get a score from Zhixing first, then unlock this</span></div>
+        <div class="lock-overlay"><span>Finish the near application and get a score from Transform first, then unlock this</span></div>
 
         <div class="app-stage" data-stage="title">
           <div class="app-step-row"><span class="app-step-num">\u2460</span><span class="app-step-label">Pick a scenario title to apply it to</span></div>
@@ -1669,7 +1671,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
           <div class="detail-card" id="farDetailCard"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
@@ -1677,7 +1679,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Zhixing from your insight, editable)</span></div>
+          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
           <div class="detail-card" id="farDetailCardPlan"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
@@ -1700,7 +1702,7 @@
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Have Zhixing score + give feedback + suggest actions
+              Have Transform score + give feedback + suggest actions
             </button>
           </div>
         </div>
@@ -1713,7 +1715,7 @@
       <div class="resource-section">
         <button class="ai-btn-primary" id="aiResourcesNear" onclick="aiSuggestResources('near')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Have Zhixing suggest support resources for the near application
+          Have Transform suggest support resources for the near application
         </button>
         <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
       </div>
@@ -1723,7 +1725,7 @@
       <div class="resource-section" id="resourceFarSection">
         <button class="ai-btn-primary" id="aiResourcesFar" onclick="aiSuggestResources('far')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Have Zhixing suggest support resources for the far application
+          Have Transform suggest support resources for the far application
         </button>
         <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
       </div>
@@ -1746,7 +1748,7 @@
       <label>My new understanding of \u201c<span id="outcomeScenarioName">—</span>\u201d</label>
       <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
 
-      <label>\u2460 Next actions suggested by Zhixing</label>
+      <label>\u2460 Next actions suggested by Transform</label>
       <div class="outcome-section" id="actionsOutcome"></div>
 
       <label>\u2461 Support resources you need</label>
@@ -1780,7 +1782,7 @@
           Turn this insight into a behavior experiment
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="itb-note">Zhixing will use this insight to design a \u201cfrom insight to action\u201d experiment for you</span>
+        <span class="itb-note">Transform will use this insight to design a \u201cfrom insight to action\u201d experiment for you</span>
       </div>
 
       <div class="btn-row">
@@ -1816,7 +1818,7 @@
       <textarea id="reChanged" class="reflect-q" placeholder="How did my judgment, emotions, or view of this change?"></textarea>
 
       <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectA()">Zhixing, help me review</button>
+        <button class="btn btn-ai" onclick="aiReflectA()">Transform, help me review</button>
       </div>
       <div id="reReflectResult" class="ai-out hidden"></div>
 
@@ -2185,7 +2187,7 @@ function checkNext0() {
   if (hasValidGroup) $('signal0').style.display = 'inline-flex';
 }
 
-/* ============ Step 1 洞察（用户主导，知行辅助）v8：只读标签 + 渐进出题 ============ */
+/* ============ Step 1 洞察（用户主导，Transform辅助）v8：只读标签 + 渐进出题 ============ */
 
 function autoGrow(el) {
   el.style.height = 'auto';
@@ -2300,7 +2302,7 @@ function renderAllQuestions() {
     // AI 协作历史（兼容旧字段 insightAiInspirations）
     let helps = state.data.insightAiHelps && state.data.insightAiHelps[i] ? state.data.insightAiHelps[i] : [];
     if (!helps.length && state.data.insightAiInspirations && state.data.insightAiInspirations[i]) {
-      helps = [{ cap: 'Zhixing', text: state.data.insightAiInspirations[i] }];
+      helps = [{ cap: 'Transform', text: state.data.insightAiInspirations[i] }];
     }
     const helpsHtml = helps.length
       ? `<div class="q-helps${helps.length ? ' show' : ''}">${helps.map(h =>
@@ -2318,7 +2320,7 @@ function renderAllQuestions() {
       <div class="q-text">${escapeHtml(q)}</div>
       <textarea class="q-answer" data-qi="${i}" placeholder="Write your thinking...">${escapeHtml(curAns)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">Zhixing can help you:</span>
+        <span class="q-ai-label">Transform can help you:</span>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'clarify', this)">Clarify</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'challenge', this)">Challenge</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, 'verify', this)">Verify</button>
@@ -2329,8 +2331,8 @@ function renderAllQuestions() {
         Revise my answer<span class="cnt">${revCount || ''}</span>
       </button>
       <div class="q-rev-box" data-qi="${i}">
-        <div class="q-rev-note">Fold the useful parts of Zhixing\u2019s prompts into your answer. Once saved, this becomes the final version and feeds the synthesis.</div>
-        <textarea class="q-rev-input" data-qi="${i}" placeholder="Revise your answer based on Zhixing\u2019s prompts...">${escapeHtml(curAns)}</textarea>
+        <div class="q-rev-note">Fold the useful parts of Transform\u2019s prompts into your answer. Once saved, this becomes the final version and feeds the synthesis.</div>
+        <textarea class="q-rev-input" data-qi="${i}" placeholder="Revise your answer based on Transform\u2019s prompts...">${escapeHtml(curAns)}</textarea>
         <div class="q-rev-row">
           <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">Save Revision</button>
           <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">Cancel</button>
@@ -2403,7 +2405,7 @@ async function aiInspireQ(idx, cap, btn) {
     renderAllQuestions();
     // 自动展开修订区，趁热打铁
     toggleRevBox(idx);
-    toast('Zhixing\u2019s prompt is recorded \u2014 revise your answer below');
+    toast('Transform\u2019s prompt is recorded \u2014 revise your answer below');
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
@@ -2426,7 +2428,7 @@ function bindPersonalView() {
   });
 }
 
-// ④ 可以了，让知行总结
+// ④ 可以了，让Transform总结
 function finishQuestions() {
   if (!(state.data.insightQuestions || []).length) { toast('Answer at least one question first'); return; }
   state.data.integrateDone = true;
@@ -2438,7 +2440,7 @@ function finishQuestions() {
   window.scrollTo({ top: $('integrateArea').offsetTop - 20, behavior: 'smooth' });
 }
 
-// ⑤ 知行整合 → 现象本质 + 新洞察
+// ⑤ Transform整合 → 现象本质 + 新洞察
 async function aiIntegrate(btn) {
   if (!state.data.insightQuestions || !state.data.insightQuestions.length) {
     toast('Answer at least one question first'); return;
@@ -2452,7 +2454,7 @@ async function aiIntegrate(btn) {
     const helps = (state.data.insightAiHelps && state.data.insightAiHelps[i]) || [];
     const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('; ') : '';
     const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
-    return `Q${i+1}: ${q}\nUser's final answer: ${a}${helpsStr ? '\nZhixing assistance: ' + helpsStr : ''}${revs.length ? `\n(revised by the user ${revs.length} time(s) after Zhixing's prompts)` : ''}`;
+    return `Q${i+1}: ${q}\nUser's final answer: ${a}${helpsStr ? '\nTransform assistance: ' + helpsStr : ''}${revs.length ? `\n(revised by the user ${revs.length} time(s) after Transform's prompts)` : ''}`;
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '(not filled)';
   btn.classList.add('loading');
@@ -2474,7 +2476,7 @@ async function aiIntegrate(btn) {
     const msg = e.message || '';
     if (msg.includes('Failed to fetch')) toast('Cannot reach the AI network: this endpoint may not support direct browser calls (CORS). Switch to a CORS-friendly provider in Settings');
     else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI service temporarily unavailable (' + msg + '). Already retried 3 times. Try again later or switch providers');
-    else toast('Zhixing synthesis failed: ' + msg);
+    else toast('Transform synthesis failed: ' + msg);
   }
   btn.classList.remove('loading');
 }
@@ -2563,7 +2565,7 @@ function updateStatus() {
     return;
   }
   const missing = [];
-  if (!hasEssence) missing.push('Let Zhixing summarize');
+  if (!hasEssence) missing.push('Let Transform summarize');
   if (!scored) missing.push('Complete the scoring');
   status.textContent = 'Next: ' + missing.join(' + ');
   status.classList.remove('ok');
@@ -2725,7 +2727,7 @@ async function recommendApplyTitles(type, btn) {
       state.data[type + 'Recommends'] = arr;
     } else {
       state.data[type + 'Recommends'] = generateLocalTitles(type);
-      toast('Zhixing\u2019s recommendation had an invalid format \u2014 generated locally');
+      toast('Transform\u2019s recommendation had an invalid format \u2014 generated locally');
     }
   } catch(err) {
     state.data[type + 'Recommends'] = generateLocalTitles(type);
@@ -2754,7 +2756,7 @@ function renderApplyTitles(type) {
   const box = $(type + 'TitleList');
   if (!box) return;
   if (!list.length) {
-    box.innerHTML = '<div class="hint" style="margin:8px 0;">Click \u201cRecommend scenario\u201d to have Zhixing suggest titles</div>';
+    box.innerHTML = '<div class="hint" style="margin:8px 0;">Click \u201cRecommend scenario\u201d to have Transform suggest titles</div>';
     return;
   }
   box.innerHTML = list.map((t, i) =>
@@ -2816,7 +2818,7 @@ async function generateApplyDetails(type, btn) {
       obj.details = generateLocalDetail(obj.title);
       saveDraft();
       renderApplyDetail(type);
-      toast('Zhixing\u2019s details had an invalid format \u2014 generated locally');
+      toast('Transform\u2019s details had an invalid format \u2014 generated locally');
     }
   } catch(err) {
     obj.details = generateLocalDetail(obj.title);
@@ -2926,7 +2928,7 @@ function renderApplyStages() {
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
     let stage = 'title';
-    if (hasTitle && !hasDetails) stage = 'detail';  // wait for Zhixing to generate details
+    if (hasTitle && !hasDetails) stage = 'detail';  // wait for Transform to generate details
     else if (hasTitle) stage = 'plan';              // title set -> go straight to plan (details above)
     block.dataset.stage = stage;
     block.querySelectorAll('.app-stage').forEach(el => {
@@ -2990,7 +2992,7 @@ function renderAppFeedback(type, data) {
   const effort = state.data.effort || 0;
   const scenario = ensureAppScenario(type);
   let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
-  html += '<div class="ai-msg-name">Zhixing \u00b7 ' + title + '</div>';
+  html += '<div class="ai-msg-name">Transform \u00b7 ' + title + '</div>';
   if (scenario.title) {
     html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">For scenario: 「' + escapeHtml(scenario.title) + '」</div>';
   }
@@ -3041,7 +3043,7 @@ async function aiSuggestResources(type) {
   setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `User's original topic:\n${buildGroupsContext()}\n\nUser's core insight:\nEssence: ${e.nature || 'not filled'}\nNew insight: ${e.insight || 'not filled'}\n\nAssessment: importance ${impact}/5, acceptance effort ${effort}/5\n\n[${label}]\nScenario title: ${obj.title}\nDetails: time ${d.time || 'not filled'} | place ${d.place || 'not filled'} | people ${d.people || 'not filled'} | purpose ${d.purpose || 'not filled'}\nChallenge: current ${d.currentState || 'not filled'} | goal ${d.goal || 'not filled'} | gap ${d.gap || 'not filled'} | difficulty ${d.difficulty || 'not filled'}\nPlan: what ${obj.plan}\nWhen: ${obj.when}\nExpected outcome: ${obj.expectedOutcome}\nZhixing feedback: ${fb.suggestion || 'not filled'}\nNext actions: ${(fb.actions || []).join('; ') || 'not filled'}\n\nTask: Specifically for the \u201c${label}\u201d plan above, suggest who the user should approach, what resources to secure, and what conditions to satisfy in order to actually execute it. Do not cover other scenarios.\n\nStrict JSON format:\n{"people":["person 1","person 2","person 3"],"resources":["resource/tool/platform 1","resource/tool/platform 2"],"conditions":["condition 1","condition 2"],"note":"a short explanation of why these are needed and how to ask/obtain them"}\n\nRequirement: each suggestion concrete and actionable, no empty talk; people can be roles or specific contacts; resources can be tools, budget, information, etc.; conditions are prerequisites.`
+      `User's original topic:\n${buildGroupsContext()}\n\nUser's core insight:\nEssence: ${e.nature || 'not filled'}\nNew insight: ${e.insight || 'not filled'}\n\nAssessment: importance ${impact}/5, acceptance effort ${effort}/5\n\n[${label}]\nScenario title: ${obj.title}\nDetails: time ${d.time || 'not filled'} | place ${d.place || 'not filled'} | people ${d.people || 'not filled'} | purpose ${d.purpose || 'not filled'}\nChallenge: current ${d.currentState || 'not filled'} | goal ${d.goal || 'not filled'} | gap ${d.gap || 'not filled'} | difficulty ${d.difficulty || 'not filled'}\nPlan: what ${obj.plan}\nWhen: ${obj.when}\nExpected outcome: ${obj.expectedOutcome}\nTransform feedback: ${fb.suggestion || 'not filled'}\nNext actions: ${(fb.actions || []).join('; ') || 'not filled'}\n\nTask: Specifically for the \u201c${label}\u201d plan above, suggest who the user should approach, what resources to secure, and what conditions to satisfy in order to actually execute it. Do not cover other scenarios.\n\nStrict JSON format:\n{"people":["person 1","person 2","person 3"],"resources":["resource/tool/platform 1","resource/tool/platform 2"],"conditions":["condition 1","condition 2"],"note":"a short explanation of why these are needed and how to ask/obtain them"}\n\nRequirement: each suggestion concrete and actionable, no empty talk; people can be roles or specific contacts; resources can be tools, budget, information, etc.; conditions are prerequisites.`
     );
     const data = parseResources(r);
     if (data) {
@@ -3086,7 +3088,7 @@ function renderResourcesResult(type, rp) {
   html += '<div class="resource-block"><label>Key people for \u201c' + targetLabel + '\u201d</label><textarea id="rpPeople' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
   html += '<div class="resource-block"><label>Resources / tools / platforms for \u201c' + targetLabel + '\u201d</label><textarea id="rpResources' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
   html += '<div class="resource-block"><label>Conditions / prerequisites for \u201c' + targetLabel + '\u201d</label><textarea id="rpConditions' + type + '" placeholder="one per line">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>Zhixing note</label><textarea id="rpNote' + type + '" placeholder="optional note">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-block"><label>Transform note</label><textarea id="rpNote' + type + '" placeholder="optional note">' + escapeHtml(rp.note || '') + '</textarea></div>';
   html += '<div class="resource-actions">';
   html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">Confirm \u201c' + targetLabel + '\u201d resources</button>';
   html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">Re-suggest</button>';
@@ -3178,7 +3180,7 @@ const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11
 
 function showAIResult(elId, text) {
   const el = $(elId);
-  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">Zhixing</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
+  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">Transform</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
   el.classList.add('show');
 }
 
@@ -3268,7 +3270,7 @@ async function aiReflectA(){
     box.classList.add('hidden');
     toast('Filled in from your review draft \u2014 feel free to edit');
   } catch (err) {
-    box.innerHTML = '<b>Zhixing\u2019s review draft:</b> ' + escapeHtml(text);
+    box.innerHTML = '<b>Transform\u2019s review draft:</b> ' + escapeHtml(text);
   }
 }
 function saveReflection(){
@@ -3415,7 +3417,7 @@ function renderAppAside() {
 
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
-  { h: 'Think clearly, act decisively', p: 'Zhixing walks you through four steps: organize the mess \u2192 see the essence \u2192 rehearse applications \u2192 take away outcomes. Each step takes minutes.' },
+  { h: 'Think clearly, act decisively', p: 'Transform walks you through four steps: organize the mess \u2192 see the essence \u2192 rehearse applications \u2192 take away outcomes. Each step takes minutes.' },
   { h: 'Four steps, one thing figured out', p: '\u2460 Organize: lay out observations/facts/guesses/assumptions; \u2461 Insight: see the essence behind phenomena; \u2462 Apply: rehearse how you\u2019d act in familiar and unfamiliar scenarios; \u2463 Deliver: take away actions, resources, and your intended identity.' },
   { h: 'Your insight archive keeps growing', p: 'Each completion banks your insight into \u201cMy Insight Archive\u201d \u2014 tagged, reviewable, reusable. Start with the complex challenge in front of you now.' }
 ];
@@ -3485,7 +3487,7 @@ window.goStep = function(n) {
     if (actions.length) {
       ao.innerHTML = '<ol class="os-list">' + actions.filter(Boolean).map((a, i) => '<li><b>Action ' + (i + 1) + '</b>：' + escapeHtml(a) + '</li>').join('') + '</ol>';
     } else {
-      ao.innerHTML = '<div class="os-empty">(Go back a step and have Zhixing score your application plan and suggest actions)</div>';
+      ao.innerHTML = '<div class="os-empty">(Go back a step and have Transform score your application plan and suggest actions)</div>';
     }
 
     // ② 支持资源（近/远应用各自独立）
@@ -3499,14 +3501,14 @@ window.goStep = function(n) {
       '<div class="os-title">' + escapeHtml(title) + ' \u00b7 key people to find</div>' + listToHtml(rp.people) + '</div>' +
       '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' \u00b7 resources / tools / platforms</div>' + listToHtml(rp.resources) + '</div>' +
       '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' \u00b7 conditions / prerequisites</div>' + listToHtml(rp.conditions) + '</div>' +
-      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' \u00b7 Zhixing note</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' \u00b7 Transform note</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
     if (nearRp && nearRp.confirmed) {
       ro.innerHTML = renderRpBlock(nearTitle, nearRp) +
         (farRp && farRp.confirmed ? '<div style="height:1px;background:var(--line);margin:14px 0;"></div>' + renderRpBlock(farTitle, farRp) : '');
     } else if (farRp && farRp.confirmed) {
       ro.innerHTML = renderRpBlock(farTitle, farRp);
     } else {
-      ro.innerHTML = '<div class="os-empty">(Go back a step and have Zhixing suggest support resources, then confirm)</div>';
+      ro.innerHTML = '<div class="os-empty">(Go back a step and have Transform suggest support resources, then confirm)</div>';
     }
 
     // ③ 身份投票

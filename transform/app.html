@@ -134,8 +134,13 @@
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
   .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
-  @media (max-width: 560px) {
-    .gnav .gn-item { padding: 6px 9px; font-size: 12px; }
+  @media (max-width: 720px) {
+    .topbar { gap: 6px; }
+    .topbar .back { order: 1; }
+    .topbar .spacer { display: none; }
+    .gnav { order: 3; width: 100%; flex: none; padding: 6px; gap: 4px; }
+    .gnav .gn-item { flex: 1 1 calc(50% - 4px); padding: 9px 10px; font-size: 12.5px; justify-content: center; white-space: nowrap; }
+    .topbar .theme-toggle, .topbar .arch-btn, .topbar button { order: 2; padding: 8px 12px; font-size: 12.5px; }
   }
 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
   .back {

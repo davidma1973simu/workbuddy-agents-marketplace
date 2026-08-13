@@ -84,7 +84,7 @@
   .full-link-bar a:hover { background: var(--amber-soft); }
 
   /* ===== 顶栏 ===== */
-  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; flex-wrap: wrap; }
   /* ===== 全局导航（所有页面互跳） ===== */
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
@@ -100,8 +100,13 @@
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
   .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
-  @media (max-width: 560px) {
-    .gnav .gn-item { padding: 6px 9px; font-size: 12px; }
+  @media (max-width: 720px) {
+    .topbar { gap: 6px; }
+    .topbar .back { order: 1; }
+    .topbar .spacer { display: none; }
+    .gnav { order: 3; width: 100%; flex: none; padding: 6px; gap: 4px; }
+    .gnav .gn-item { flex: 1 1 calc(50% - 4px); padding: 9px 10px; font-size: 12.5px; justify-content: center; white-space: nowrap; }
+    .topbar .theme-toggle, .topbar .arch-btn, .topbar button { order: 2; padding: 8px 12px; font-size: 12.5px; }
   }
 { display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
@@ -213,14 +218,6 @@
   }
   .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
   .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-  .resume-link {
-    display: inline-block; padding: 8px 16px; border-radius: 999px;
-    background: var(--surface); color: var(--ink-2);
-    border: 1.5px solid var(--line-2); font-size: 13.5px; font-weight: 600;
-    text-decoration: none; transition: all .2s; margin: 4px 0 16px;
-  }
-  .resume-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
 
   .ctx-card {
     background: var(--amber-soft); border: 1.5px solid rgba(200,122,42,.3); border-radius: var(--radius-md);
@@ -591,20 +588,12 @@ let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
-  // 显示"继续之前的实验"链接（如有历史实验）
-  const past = loadActions();
-  const pastActive = past.find(a => a.status === 'active');
-  const pastRecent = past.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0];
-  const resume = pastActive || pastRecent;
-  const resumeLink = resume
-    ? `<a class="resume-link" href="punch.html?id=${encodeURIComponent(resume.id)}">↻ 继续之前的实验 →</a>`
-    : '';
+
   area.innerHTML = `
     <div class="create-hero">
       <div class="ch-eyebrow">伴我改变 · 开始新的行为实验</div>
       <h1>开启一次新的行为改变</h1>
       <p>定一件想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
-      ${resumeLink}
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">来自今日洞察 · 认知起点</div>
