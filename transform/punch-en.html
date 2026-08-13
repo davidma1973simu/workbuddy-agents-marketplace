@@ -131,6 +131,17 @@
   }
   .cta-done:hover { transform: translateY(-2px); background: var(--green-2); box-shadow: 0 12px 32px rgba(29,158,117,.36); }
   .cta-done:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .restart-row { text-align: center; }
+  .restart-link {
+    display: inline-block; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+    text-decoration: none;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
   .cta-miss {
     display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px;
     background: transparent; border: 1.5px dashed var(--line-2); color: var(--ink-3); font-size: 14px;
@@ -454,6 +465,7 @@ function renderPunch(){
 
 
   html += `<div class="tf-hint">Today's goal is <strong>${escapeHtml(micro)}</strong>.${today && today.seconds ? ' About '+today.seconds+' seconds.' : ' Small enough that it can\u2019t fail.'}</div>`;
+  html += `<div class="restart-row" style="margin-top:18px;"><a class="restart-link" href="punch-en.html">↻ Start a new experiment</a></div>`;
 
 
   html += `<button class="cta-done" id="doneBtn" onclick="markDone()">
@@ -490,6 +502,9 @@ function renderPunch(){
         <button class="btn btn-primary" onclick="hideTodayFeedback()">Continue → tomorrow\u2019s step is ready</button>
         <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
       </div>
+      <div class="restart-row">
+        <button class="restart-link" onclick="restartExperiment()">↻ Start a new experiment</button>
+      </div>
     </div>
   </div>`;
 
@@ -519,6 +534,14 @@ function markDone(){
 
 function hideTodayFeedback(){
   const w = $('todayFeedbackWrap'); if (w) w.classList.add('hidden');
+}
+
+// Restart: go back to create state (do not delete the saved action)
+function restartExperiment(){
+  current = null; handoffInsight = ''; handoffNature = ''; handoffScenario = '';
+  renderCreate();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('Ready for a new experiment');
 }
 
 async function showTodayFeedback(){

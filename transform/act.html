@@ -176,6 +176,16 @@
   .btn-amber:hover { transform: translateY(-2px); background: var(--amber-2); }
   .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
 
+  .restart-row { text-align: center; margin-top: 18px; }
+  .restart-link {
+    display: inline-block; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+
   .ai-msg { margin-top: 16px; background: var(--green-50); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; font-size: 14.5px; color: var(--ink-2); line-height: 1.75; }
   .ai-msg .ai-head { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--green); margin-bottom: 8px; font-size: 13px; }
   .ai-suggestions { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
@@ -336,9 +346,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -447,7 +456,7 @@
   .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); }
   @media (max-width: 720px) { .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; } }
 
-  /* 知行拟人化头像 + 首次引导弹窗（与 app.html 同款） */
+  /* Transform拟人化头像 + 首次引导弹窗（与 app.html 同款） */
   .zhx-avatar {
     flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
     background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
@@ -497,9 +506,7 @@
     <a class="gn-item" href="punch.html">每日改变</a>
     <a class="gn-item" href="app.html">伴我洞察</a>
     <a class="gn-item on" href="act.html">伴我改变</a>
-  </nav>
-    <a href="act-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+  </nav>    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </button>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
@@ -589,7 +596,7 @@
       <label class="fld">把这件事拆成 <b id="planDaysEcho">21</b> 天的行动计划</label>
       <div class="hint" style="margin-top:0;margin-bottom:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        让「知行」先帮你排好每天的微行动；哪一天的动作偏大，就点「再拆细」把它分成几步。
+        让「Transform」先帮你排好每天的微行动；哪一天的动作偏大，就点「再拆细」把它分成几步。
       </div>
       <button class="btn btn-ai" id="aiPlanBtn" onclick="aiGeneratePlan()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -671,6 +678,10 @@
         <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">复盘五个问题，把这次改变沉淀成你的成长资产（行为结果 · 新习惯）。</div>
         <button class="btn btn-primary" onclick="showStage('reflection')">去复盘沉淀 · 产出 →</button>
       </div>
+      <div class="restart-row">
+        <button class="restart-link" onclick="restartAction()">↻ 重新开始：换一个改变</button>
+      </div>
+      </div>
     </div>
 
     <div class="action-hero">
@@ -689,7 +700,7 @@
       <div class="tf-card">
         <div class="tf-crown" id="tfCrown">🎉</div>
         <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
-        <div class="tf-body" id="tfBody">知行反馈一句话</div>
+        <div class="tf-body" id="tfBody">Transform反馈一句话</div>
         <div class="tf-stats">
           <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
           <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
@@ -791,7 +802,7 @@
       <label class="fld">改变了什么？</label>
       <textarea id="reBChanged" class="reflect-q" placeholder="我的行为、习惯或对自己的看法，发生了什么变化？"></textarea>
       <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectB()">知行帮我复盘</button>
+        <button class="btn btn-ai" onclick="aiReflectB()">Transform帮我复盘</button>
       </div>
       <div id="reBResultBox" class="ai-out hidden"></div>
       <label class="fld">这次行为实验的结果是</label>
@@ -801,6 +812,9 @@
       <div class="btn-row">
         <button class="btn btn-primary" onclick="saveReflectionB()">完成复盘 · 沉淀成长资产</button>
         <button class="btn btn-ghost" onclick="showStage('dashboard')">返回反馈强化</button>
+      </div>
+      <div class="restart-row">
+        <button class="restart-link" onclick="restartAction()">↻ 重新开始：换一个改变</button>
       </div>
     </div>
   </div>
@@ -907,7 +921,7 @@ function persistAction(){
 /* ===================== AI 调用 ===================== */
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey){ toast('配置 API Key 后知行 AI 才会帮你（现在可手动填写）'); return null; }
+  if (!cfg.apiKey){ toast('配置 API Key 后Transform AI 才会帮你（现在可手动填写）'); return null; }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 5;
   try {
@@ -1086,7 +1100,7 @@ function onSubEdit(day, val){
 
 async function aiGeneratePlan(){
   const btn = $('aiPlanBtn'); btn.disabled = true; const orig = btn.innerHTML;
-  btn.textContent = '知行规划中…';
+  btn.textContent = 'Transform规划中…';
   const N = current.targetDays;
   const map = {};
   let prevCount = -1, safety = 0;
@@ -1118,10 +1132,10 @@ async function aiGeneratePlan(){
   btn.disabled = false; btn.innerHTML = orig;
   renderPlan();
   if (filled > 0){
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 计划草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 计划草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
     toast('已生成计划，确认后进入下一步');
   } else {
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 提示</div>没能自动生成，可手动在每天的输入框填写，或重试。</div>`;
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 提示</div>没能自动生成，可手动在每天的输入框填写，或重试。</div>`;
   }
 }
 
@@ -1153,6 +1167,15 @@ function goAnchor(){
   persistAction();
   renderAnchor();
   showStage('anchor');
+}
+
+// 重新开始：清空当前 action，重新进入创建态（act.html 用 active 模式）
+function restartAction(){
+  current = null;
+  handoffInsight = ''; handoffNature = ''; handoffScenario = '';
+  showStage('input');
+  toast('已重置，可以开始一个新的行为实验');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ===================== 模块二：行动锚定 ===================== */
@@ -1354,7 +1377,7 @@ async function aiReflectB(){
     box.classList.add('hidden');
     toast('已按你的复盘草稿填入，可再修改');
   } catch (err) {
-    box.innerHTML = '<b>知行复盘草稿：</b>' + escapeHtml(text);
+    box.innerHTML = '<b>Transform复盘草稿：</b>' + escapeHtml(text);
   }
 }
 function saveReflectionB(){
@@ -1477,7 +1500,7 @@ async function pickReason(reason){
   const today = current.plan.find(p => p.day === day);
   const text = await aiCall(`用户因为「${reason}」没能做到今天的行动：「${(today&&today.micro)||current.input}」。\n请给 1 个不靠意志力的调整建议，让下一次更容易发生。不要说加油、坚持之类的话。最多 2 句。`);
   if (text){
-    $('aiBlockResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+    $('aiBlockResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
     setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 6000);
   }
   toast('没关系，没做到不是失败。看看上面的调整建议。');
@@ -1549,7 +1572,7 @@ function toggleTheme(){
 /* ============ 首次引导（与 app.html 同款） ============ */
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const OB_SLIDES = [
-  { h: '从想明白，到真正改变', p: '知行会陪你走完四步：拆解细分 → 行动锚定 → 反馈强化 → 产出复盘。每一步只花几分钟。' },
+  { h: '从想明白，到真正改变', p: 'Transform会陪你走完四步：拆解细分 → 行动锚定 → 反馈强化 → 产出复盘。每一步只花几分钟。' },
   { h: '一个大问题，拆成一段 N 天计划', p: '① 拆解细分：把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 反馈强化：每天做到、拿反馈、投身份票；④ 产出：毕业复盘，沉淀成新的习惯与角色。' },
   { h: '行为改变档案会越积越厚', p: '每次完成，行为实验、连续天数、身份票都会存进「成长资产」。现在，从想改变的那件大事开始吧。' }
 ];

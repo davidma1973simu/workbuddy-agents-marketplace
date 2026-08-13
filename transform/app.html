@@ -123,9 +123,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -955,6 +954,16 @@
   .btn-next:hover { background: var(--green-deep); transform: translateY(-1px); }
   .btn-next:disabled { background: var(--line); color: var(--ink-3); box-shadow: none; cursor: not-allowed; transform: none; }
 
+  .restart-row { text-align: center; margin-top: 18px; }
+  .restart-link {
+    display: inline-block; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+
   /* 洞察 → 行为实验 衔接 CTA */
   .insight-to-behavior {
     display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
@@ -1031,7 +1040,7 @@
 </script>
 <link rel="icon" href="data:,">
 <style id="phase2-css">
-/* ===== Phase 2-A 知行拟人化头像 + AI 消息体 ===== */
+/* ===== Phase 2-A Transform拟人化头像 + AI 消息体 ===== */
 .zhx-avatar {
   flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
   background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
@@ -1439,9 +1448,7 @@
     <a class="gn-item" href="punch.html">每日改变</a>
     <a class="gn-item on" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
-  </nav>
-    <a href="app-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+  </nav>    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </button>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
@@ -1513,10 +1520,10 @@
       <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去洞察 →</button></div>
     </div>
 
-    <!-- Step 1 洞察（用户主导，知行辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
+    <!-- Step 1 洞察（用户主导，Transform辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
     <div class="panel" id="panel-1" style="display:none;">
       <h1>透过现象看本质</h1>
-      <div class="hint">上面的归类会全部参与。知行会<b>一题一题</b>抛启发问题，回答过的题会留在页面上。你可以一直回答，直到说"可以了"，知行再整合成核心洞察。</div>
+      <div class="hint">上面的归类会全部参与。Transform会<b>一题一题</b>抛启发问题，回答过的题会留在页面上。你可以一直回答，直到说"可以了"，Transform再整合成核心洞察。</div>
 
       <!-- ① 归类罗列（只读，全部参与） -->
       <label>① 你的归类（全部参与思考）</label>
@@ -1524,24 +1531,24 @@
 
       <!-- ② 渐进式提问区 -->
       <div id="thinkingArea" style="display:none;">
-        <div class="lb-section-title">知行抛的问题 · 你的思考</div>
+        <div class="lb-section-title">Transform 抛的问题 · 你的思考</div>
         <div id="allQuestions"></div>
 
         <!-- 出题控制：第一题 / 下一题 / 够了 -->
         <div class="q-action-row" id="askRow" style="justify-content:flex-start;border:none;padding-top:0;">
-          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">让知行提第一题</button>
-          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">可以了，让知行总结 →</button>
+          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">让Transform提第一题</button>
+          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">可以了，让Transform总结 →</button>
         </div>
 
-        <div class="lb-section-title">我的整体看法（可空，会作为知行总结的输入）</div>
+        <div class="lb-section-title">我的整体看法（可空，会作为Transform总结的输入）</div>
         <textarea id="personalView" class="personal-view-main" placeholder="写下你对整个场景的整体看法、感受、判断……"></textarea>
 
-        <!-- ③ 知行总结按钮 + 凸显 essence 盒 -->
+        <!-- ③ Transform总结按钮 + 凸显 essence 盒 -->
         <div id="integrateArea" style="display:none;">
-          <div class="lb-section-title">让知行整合（基于所有问答 + 整体看法）</div>
+          <div class="lb-section-title">让Transform整合（基于所有问答 + 整体看法）</div>
           <button class="ai-btn-primary" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            让知行总结
+            让Transform总结
           </button>
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
@@ -1566,7 +1573,7 @@
             </div>
           </div>
 
-          <div class="lb-status-row" id="statusRow">还需要：让知行总结</div>
+          <div class="lb-status-row" id="statusRow">还需要：让Transform总结</div>
 
         </div>
 
@@ -1578,20 +1585,23 @@
           <button class="btn btn-prev" onclick="goStep(0)">上一步</button>
           <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>去应用 →</button>
         </div>
+        <div class="restart-row">
+          <button class="restart-link" onclick="redoInsight()">↻ 重新出题 + 整合</button>
+        </div>
       </div>
     </div>
 
     <!-- Step 2 应用（用户写 + AI 评价反馈，按 PRD） -->
     <div class="panel" id="panel-2" style="display:none;">
       <h1>把新认知用向陌生场景</h1>
-      <div class="hint">这一步不是让你去行动，而是<u>在认知层面推演</u>：带着这个新认知，去面对熟悉的 + 陌生的场景，写下你打算怎么做。最后知行会根据你的填写打分 + 给反馈 + 行动建议。</div>
+      <div class="hint">这一步不是让你去行动，而是<u>在认知层面推演</u>：带着这个新认知，去面对熟悉的 + 陌生的场景，写下你打算怎么做。最后Transform会根据你的填写打分 + 给反馈 + 行动建议。</div>
 
       <label>① 你的新认知</label>
       <div class="insight-highlight" id="insightRef"></div>
       <div class="score-display" id="scoreDisplay" style="display:none;">
         <div class="sd-item"><span class="sd-label">重要性</span><span class="sd-val" id="sdImpact">—</span></div>
         <div class="sd-item"><span class="sd-label">接受费力</span><span class="sd-val" id="sdEffort">—</span></div>
-        <div class="sd-desc">知行会结合这两个评分来评价你的应用计划</div>
+        <div class="sd-desc">Transform会结合这两个评分来评价你的应用计划</div>
       </div>
 
       <!-- ② 近应用：先选场景标题 → 生成细节 → 填计划 → AI 评分 -->
@@ -1613,7 +1623,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（Transform根据洞察生成，可编辑）</span></div>
           <div class="detail-card" id="nearDetailCard"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
@@ -1621,7 +1631,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（Transform根据洞察生成，可编辑）</span></div>
           <div class="detail-card" id="nearDetailCardPlan"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('near', this)">重新生成</button>
@@ -1644,7 +1654,7 @@
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              让知行打分 + 给反馈 + 行动建议
+              让Transform打分 + 给反馈 + 行动建议
             </button>
           </div>
         </div>
@@ -1656,7 +1666,7 @@
       <label class="locked-label" id="farAppLockLabel">③ 远应用：换个<u>完全不同的场景</u>，这个新认知还能用吗？</label>
       <div class="app-block locked" id="farAppBlock" data-type="far">
         <div class="app-title">远应用（陌生的场景）</div>
-        <div class="lock-overlay"><span>先完成近应用，让知行打过分，再解锁这里</span></div>
+        <div class="lock-overlay"><span>先完成近应用，让Transform打过分，再解锁这里</span></div>
 
         <div class="app-stage" data-stage="title">
           <div class="app-step-row"><span class="app-step-num">①</span><span class="app-step-label">选一个你想应用的场景标题</span></div>
@@ -1669,7 +1679,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（Transform根据洞察生成，可编辑）</span></div>
           <div class="detail-card" id="farDetailCard"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
@@ -1677,7 +1687,7 @@
         </div>
 
         <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（知行根据洞察生成，可编辑）</span></div>
+          <div class="app-step-row"><span class="app-step-num">②</span><span class="app-step-label">场景细节（Transform根据洞察生成，可编辑）</span></div>
           <div class="detail-card" id="farDetailCardPlan"></div>
           <div class="detail-actions">
             <button class="ai-btn" onclick="generateApplyDetails('far', this)">重新生成</button>
@@ -1700,7 +1710,7 @@
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              让知行打分 + 给反馈 + 行动建议
+              让Transform打分 + 给反馈 + 行动建议
             </button>
           </div>
         </div>
@@ -1713,7 +1723,7 @@
       <div class="resource-section">
         <button class="ai-btn-primary" id="aiResourcesNear" onclick="aiSuggestResources('near')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          让知行为近应用建议支持资源
+          让Transform为近应用建议支持资源
         </button>
         <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
       </div>
@@ -1723,7 +1733,7 @@
       <div class="resource-section" id="resourceFarSection">
         <button class="ai-btn-primary" id="aiResourcesFar" onclick="aiSuggestResources('far')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          让知行为远应用建议支持资源
+          让Transform为远应用建议支持资源
         </button>
         <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
       </div>
@@ -1746,7 +1756,7 @@
       <label>我对「<span id="outcomeScenarioName">—</span>」的全新认知</label>
       <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
 
-      <label>① 知行建议的下一步行动</label>
+      <label>① Transform 建议的下一步行动</label>
       <div class="outcome-section" id="actionsOutcome"></div>
 
       <label>② 需要的支持资源</label>
@@ -1780,12 +1790,15 @@
           把这条洞察变成一次行为实验
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="itb-note">知行会带着这条洞察，帮你设计一段「从认知到行为」的实验</span>
+        <span class="itb-note">Transform会带着这条洞察，帮你设计一段「从认知到行为」的实验</span>
       </div>
 
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(2)">上一步</button>
         <button class="btn btn-next" onclick="complete()" id="finishBtn">完成并存入档案</button>
+      </div>
+      <div class="restart-row">
+        <button class="restart-link" onclick="restartApp()">↻ 重新开始：清空所有步骤</button>
       </div>
     </div>
 
@@ -1816,7 +1829,7 @@
       <textarea id="reChanged" class="reflect-q" placeholder="我的判断、情绪或对这件事的看法，发生了什么变化？"></textarea>
 
       <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectA()">知行帮我复盘</button>
+        <button class="btn btn-ai" onclick="aiReflectA()">Transform帮我复盘</button>
       </div>
       <div id="reReflectResult" class="ai-out hidden"></div>
 
@@ -1959,6 +1972,47 @@ function goStep(n) {
   renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
+
+// 重新出题 + 整合：清空 insight 阶段所有 state，保留归类与本质草稿
+function redoInsight(){
+  state.data.insightQuestions = [];
+  state.data.insightAnswers = [];
+  state.data.insightAiHelps = [];
+  state.data.insightAiInspirations = [];
+  state.data.insightRevisions = [];
+  state.data.integrateDone = false;
+  state.data.essence = { nature: '', insight: '' };
+  state.data.confirmed = false;
+  if ($('allQuestions')) $('allQuestions').innerHTML = '';
+  if ($('personalView')) $('personalView').value = '';
+  if ($('integrateArea')) $('integrateArea').style.display = 'none';
+  if ($('finishBtn')) $('finishBtn').style.display = 'none';
+  // 回到 Step 1 让用户重新出题
+  toast('已清空洞察阶段，可以重新出题');
+}
+
+// 重新开始：清空所有 4 步骤的 state，保留上次档案
+function restartApp(){
+  state.step = 0;
+  state.data = {
+    scenario: '', notes: [], groups: [],
+    method: '', insight: '', impact: 0, effort: 0,
+    insightQuestions: [], insightAnswers: [], insightAiHelps: [], insightRevisions: [],
+    insightPersonalView: '',
+    essence: { nature: '', insight: '' },
+    confirmed: false,
+    nearScenario: null, farScenario: null,
+    nearFeedback: null, farFeedback: null,
+    resourcesPlan: null, nearResourcesPlan: null, farResourcesPlan: null,
+    identity: '',
+    insightAiInspirations: [],
+    tags: [],
+    completedAt: ''
+  };
+  localStorage.removeItem(LS_SESSION);
+  goStep(0);
+  toast('已清空，可以开始新的一次认知梳理');
+}
   document.querySelectorAll('.p-node').forEach((s, i) => {
     s.classList.toggle('active', i === n);
     s.classList.toggle('done', i < n);
@@ -1972,7 +2026,7 @@ function goStep(n) {
       renderAllQuestions();
       bindPersonalView();
       if ((state.data.insightQuestions || []).length) {
-        $('askNextBtn').textContent = '让知行提下一题 →';
+        $('askNextBtn').textContent = '让Transform提下一题 →';
         $('finishBtn').style.display = 'inline-block';
       }
       // 已进入整合阶段
@@ -2185,7 +2239,7 @@ function checkNext0() {
   if (hasValidGroup) $('signal0').style.display = 'inline-flex';
 }
 
-/* ============ Step 1 洞察（用户主导，知行辅助）v8：只读标签 + 渐进出题 ============ */
+/* ============ Step 1 洞察（用户主导，Transform辅助）v8：只读标签 + 渐进出题 ============ */
 
 function autoGrow(el) {
   el.style.height = 'auto';
@@ -2249,7 +2303,7 @@ async function aiAskNext(btn) {
   state.data.insightAiInspirations.push(null);
   // 更新按钮文字为"下一题"
   const nextBtn = $('askNextBtn');
-  nextBtn.textContent = '让知行提下一题 →';
+  nextBtn.textContent = '让Transform提下一题 →';
   nextBtn.style.display = 'inline-flex';
   $('finishBtn').style.display = 'inline-block';
   renderAllQuestions();
@@ -2300,7 +2354,7 @@ function renderAllQuestions() {
     // AI 协作历史（兼容旧字段 insightAiInspirations）
     let helps = state.data.insightAiHelps && state.data.insightAiHelps[i] ? state.data.insightAiHelps[i] : [];
     if (!helps.length && state.data.insightAiInspirations && state.data.insightAiInspirations[i]) {
-      helps = [{ cap: '知行', text: state.data.insightAiInspirations[i] }];
+      helps = [{ cap: 'Transform', text: state.data.insightAiInspirations[i] }];
     }
     const helpsHtml = helps.length
       ? `<div class="q-helps${helps.length ? ' show' : ''}">${helps.map(h =>
@@ -2318,7 +2372,7 @@ function renderAllQuestions() {
       <div class="q-text">${escapeHtml(q)}</div>
       <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(curAns)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
+        <span class="q-ai-label">Transform可以帮助你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
@@ -2329,8 +2383,8 @@ function renderAllQuestions() {
         修订我的回答<span class="cnt">${revCount || ''}</span>
       </button>
       <div class="q-rev-box" data-qi="${i}">
-        <div class="q-rev-note">把知行的启发里有用的部分，融进你的回答。保存后会成为这道题的最终版本，并进入后面的整合。</div>
-        <textarea class="q-rev-input" data-qi="${i}" placeholder="基于知行的启发，修订你的回答...">${escapeHtml(curAns)}</textarea>
+        <div class="q-rev-note">把Transform的启发里有用的部分，融进你的回答。保存后会成为这道题的最终版本，并进入后面的整合。</div>
+        <textarea class="q-rev-input" data-qi="${i}" placeholder="基于Transform的启发，修订你的回答...">${escapeHtml(curAns)}</textarea>
         <div class="q-rev-row">
           <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">保存修订</button>
           <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">取消</button>
@@ -2403,7 +2457,7 @@ async function aiInspireQ(idx, cap, btn) {
     renderAllQuestions();
     // 自动展开修订区，趁热打铁
     toggleRevBox(idx);
-    toast('知行的启发已记录，可在下面修订你的回答');
+    toast('Transform的启发已记录，可在下面修订你的回答');
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
@@ -2426,7 +2480,7 @@ function bindPersonalView() {
   });
 }
 
-// ④ 可以了，让知行总结
+// ④ 可以了，让Transform总结
 function finishQuestions() {
   if (!(state.data.insightQuestions || []).length) { toast('先回答至少一个问题'); return; }
   state.data.integrateDone = true;
@@ -2438,7 +2492,7 @@ function finishQuestions() {
   window.scrollTo({ top: $('integrateArea').offsetTop - 20, behavior: 'smooth' });
 }
 
-// ⑤ 知行整合 → 现象本质 + 新洞察
+// ⑤ Transform整合 → 现象本质 + 新洞察
 async function aiIntegrate(btn) {
   if (!state.data.insightQuestions || !state.data.insightQuestions.length) {
     toast('先回答至少一个问题'); return;
@@ -2452,7 +2506,7 @@ async function aiIntegrate(btn) {
     const helps = (state.data.insightAiHelps && state.data.insightAiHelps[i]) || [];
     const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('；') : '';
     const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
-    return `问题 ${i+1}：${q}\n用户最终回答：${a}${helpsStr ? '\n知行协助过程：' + helpsStr : ''}${revs.length ? `\n（该题经知行启发后由用户主动修订 ${revs.length} 次）` : ''}`;
+    return `问题 ${i+1}：${q}\n用户最终回答：${a}${helpsStr ? '\nTransform协助过程：' + helpsStr : ''}${revs.length ? `\n（该题经Transform启发后由用户主动修订 ${revs.length} 次）` : ''}`;
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '（未填）';
   btn.classList.add('loading');
@@ -2466,7 +2520,7 @@ async function aiIntegrate(btn) {
       state.data.confirmed = false;
       restoreEssenceUI();
       checkNext1();
-      toast('知行整合完成，请修订并打分');
+      toast('Transform整合完成，请修订并打分');
     } else {
       toast('AI 没返回有效内容，重试');
     }
@@ -2474,7 +2528,7 @@ async function aiIntegrate(btn) {
     const msg = e.message || '';
     if (msg.includes('Failed to fetch')) toast('网络无法连接 AI：该接口可能不支持浏览器直连（CORS 限制），请到设置里换支持跨域的品牌或端点');
     else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
-    else toast('知行总结失败：' + msg);
+    else toast('Transform总结失败：' + msg);
   }
   btn.classList.remove('loading');
 }
@@ -2563,7 +2617,7 @@ function updateStatus() {
     return;
   }
   const missing = [];
-  if (!hasEssence) missing.push('让知行总结');
+  if (!hasEssence) missing.push('让Transform总结');
   if (!scored) missing.push('完成打分');
   status.textContent = '还需要：' + missing.join(' + ');
   status.classList.remove('ok');
@@ -2699,7 +2753,7 @@ async function aiAppFeedback(type) {
         saveDraft();
         if (type === 'near' && isNearComplete()) unlockFarApp();
         checkNext2();
-        toast('知行评价完成');
+        toast('Transform评价完成');
     } else {
       showAIResult(type + 'FeedbackResult', r);
     }
@@ -2725,13 +2779,13 @@ async function recommendApplyTitles(type, btn) {
       state.data[type + 'Recommends'] = arr;
     } else {
       state.data[type + 'Recommends'] = generateLocalTitles(type);
-      toast('知行推荐未能返回有效格式，已用本地生成');
+      toast('Transform推荐未能返回有效格式，已用本地生成');
     }
   } catch(err) {
     state.data[type + 'Recommends'] = generateLocalTitles(type);
     const msg = (err && err.message) || '';
-    if (msg.includes('Failed to fetch') || /50[234]|429/.test(msg)) toast('知行在线推荐暂不可用，已切换为本地生成');
-    else toast('知行推荐失败，已用本地生成');
+    if (msg.includes('Failed to fetch') || /50[234]|429/.test(msg)) toast('Transform在线推荐暂不可用，已切换为本地生成');
+    else toast('Transform推荐失败，已用本地生成');
   }
   if (btn) btn.classList.remove('loading');
   renderApplyTitles(type);
@@ -2754,7 +2808,7 @@ function renderApplyTitles(type) {
   const box = $(type + 'TitleList');
   if (!box) return;
   if (!list.length) {
-    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「推荐场景」让知行推荐场景标题</div>';
+    box.innerHTML = '<div class="hint" style="margin:8px 0;">点击「推荐场景」让Transform推荐场景标题</div>';
     return;
   }
   box.innerHTML = list.map((t, i) =>
@@ -2816,13 +2870,13 @@ async function generateApplyDetails(type, btn) {
       obj.details = generateLocalDetail(obj.title);
       saveDraft();
       renderApplyDetail(type);
-      toast('知行细节未能返回有效格式，已用本地生成');
+      toast('Transform细节未能返回有效格式，已用本地生成');
     }
   } catch(err) {
     obj.details = generateLocalDetail(obj.title);
     saveDraft();
     renderApplyDetail(type);
-    toast('知行细节生成失败，已用本地生成');
+    toast('Transform细节生成失败，已用本地生成');
   }
   if (btn) btn.classList.remove('loading');
 }
@@ -2926,7 +2980,7 @@ function renderApplyStages() {
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
     let stage = 'title';
-    if (hasTitle && !hasDetails) stage = 'detail';  // 临时：等知行生成场景细节
+    if (hasTitle && !hasDetails) stage = 'detail';  // 临时：等Transform生成场景细节
     else if (hasTitle) stage = 'plan';              // 标题确定 → 直接进计划阶段（详情感兴趣区可滚上看）
     block.dataset.stage = stage;
     block.querySelectorAll('.app-stage').forEach(el => {
@@ -2990,7 +3044,7 @@ function renderAppFeedback(type, data) {
   const effort = state.data.effort || 0;
   const scenario = ensureAppScenario(type);
   let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
-  html += '<div class="ai-msg-name">知行 · ' + title + '</div>';
+  html += '<div class="ai-msg-name">Transform · ' + title + '</div>';
   if (scenario.title) {
     html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
   }
@@ -3041,7 +3095,7 @@ async function aiSuggestResources(type) {
   setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\n知行反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\nTransform反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
     );
     const data = parseResources(r);
     if (data) {
@@ -3049,7 +3103,7 @@ async function aiSuggestResources(type) {
       renderResourcesResult(type, state.data[type + 'ResourcesPlan']);
       saveDraft();
       checkNext2();
-      toast('知行建议已生成，可编辑后确认');
+      toast('Transform 建议已生成，可编辑后确认');
     } else {
       showAIResult(resultId, r);
     }
@@ -3086,10 +3140,10 @@ function renderResourcesResult(type, rp) {
   html += '<div class="resource-block"><label>「' + targetLabel + '」需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
   html += '<div class="resource-block"><label>「' + targetLabel + '」需要的资源 / 工具 / 平台</label><textarea id="rpResources' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
   html += '<div class="resource-block"><label>「' + targetLabel + '」需要满足的条件 / 前提</label><textarea id="rpConditions' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>知行补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-block"><label>Transform补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
   html += '<div class="resource-actions">';
   html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认「' + targetLabel + '」支持资源</button>';
-  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让知行建议</button>';
+  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让Transform 建议</button>';
   html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
@@ -3178,7 +3232,7 @@ const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11
 
 function showAIResult(elId, text) {
   const el = $(elId);
-  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">知行</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
+  el.innerHTML = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body"><div class="ai-msg-name">Transform</div>' + escapeHtml(text).replace(/\n/g, '<br>') + '</div></div>';
   el.classList.add('show');
 }
 
@@ -3268,7 +3322,7 @@ async function aiReflectA(){
     box.classList.add('hidden');
     toast('已按你的复盘草稿填入，可再修改');
   } catch (err) {
-    box.innerHTML = '<b>知行复盘草稿：</b>' + escapeHtml(text);
+    box.innerHTML = '<b>Transform复盘草稿：</b>' + escapeHtml(text);
   }
 }
 function saveReflection(){
@@ -3415,7 +3469,7 @@ function renderAppAside() {
 
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
-  { h: '想清楚，做得到', p: '知行会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
+  { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
   { h: '四步，一次想通一件事', p: '① 归类：把现象/事实/猜测/假设摊开理顺；② 洞察：透过现象看本质；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源和你期待的身份。' },
   { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
 ];
@@ -3485,7 +3539,7 @@ window.goStep = function(n) {
     if (actions.length) {
       ao.innerHTML = '<ol class="os-list">' + actions.filter(Boolean).map((a, i) => '<li><b>行动 ' + (i + 1) + '</b>：' + escapeHtml(a) + '</li>').join('') + '</ol>';
     } else {
-      ao.innerHTML = '<div class="os-empty">（请先回到上一步，让知行为应用计划打分并给出行动建议）</div>';
+      ao.innerHTML = '<div class="os-empty">（请先回到上一步，让Transform为应用计划打分并给出行动建议）</div>';
     }
 
     // ② 支持资源（近/远应用各自独立）
@@ -3499,14 +3553,14 @@ window.goStep = function(n) {
       '<div class="os-title">' + escapeHtml(title) + ' · 需要找的关键人</div>' + listToHtml(rp.people) + '</div>' +
       '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要的资源 / 工具 / 平台</div>' + listToHtml(rp.resources) + '</div>' +
       '<div class="os-block" style="margin-bottom:14px;"><div class="os-title">' + escapeHtml(title) + ' · 需要满足的条件 / 前提</div>' + listToHtml(rp.conditions) + '</div>' +
-      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' · 知行补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
+      (rp.note ? '<div class="os-block"><div class="os-title">' + escapeHtml(title) + ' · Transform补充说明</div><p style="margin:0;font-size:13px;line-height:1.7;color:var(--ink);">' + escapeHtml(rp.note) + '</p></div>' : '');
     if (nearRp && nearRp.confirmed) {
       ro.innerHTML = renderRpBlock(nearTitle, nearRp) +
         (farRp && farRp.confirmed ? '<div style="height:1px;background:var(--line);margin:14px 0;"></div>' + renderRpBlock(farTitle, farRp) : '');
     } else if (farRp && farRp.confirmed) {
       ro.innerHTML = renderRpBlock(farTitle, farRp);
     } else {
-      ro.innerHTML = '<div class="os-empty">（请先回到上一步，让知行建议支持资源并确认）</div>';
+      ro.innerHTML = '<div class="os-empty">（请先回到上一步，让Transform 建议支持资源并确认）</div>';
     }
 
     // ③ 身份投票
