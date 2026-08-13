@@ -18,6 +18,7 @@
     --line: #E6E9E7;
     --line-2: #DDE2DF;
     --green: #0E6B50;
+    --green-deep: #0A5A42;
     --green-2: #158A68;
     --green-3: #1D9E75;
     --green-soft: #E8F4EE;
@@ -116,6 +117,11 @@
     font-family: inherit; cursor: pointer; transition: all .2s;
   }
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
+  .arch-btn { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
+  .arch-btn:hover { color: #fff !important; border-color: transparent !important; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.32); }
+  /* 高特异性：覆盖 .topbar button */
+  .topbar button.arch-btn,
+  .topbar button.arch-btn:hover { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
 
   /* ===== 极简打卡态（think 同款） ===== */
   .cta-done {
@@ -284,7 +290,7 @@
     <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
     <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
-    <button onclick="location.href='growth.html#experiments'" aria-label="行为档案">📁 行为档案</button>
+    <button class="arch-btn" onclick="location.href='growth.html#experiments'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
   </div>
 
   <!-- 每日进步主屏 -->

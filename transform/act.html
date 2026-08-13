@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>帮我改变 · Transform</title>
+<title>伴我改变 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -18,6 +18,7 @@
     --line: #E6E9E7;
     --line-2: #DDE2DF;
     --green: #0E6B50;
+    --green-deep: #0A5A42;
     --green-2: #158A68;
     --green-3: #1D9E75;
     --green-soft: #E8F4EE;
@@ -124,7 +125,7 @@
 
   label.fld { display: block; font-size: 14px; font-weight: 700; color: var(--ink-2); margin: 18px 0 10px; }
 
-  /* 认知→行为 衔接：来自「帮我清楚」的洞察上下文 */
+  /* 认知→行为 衔接：来自「伴我洞察」的洞察上下文 */
   .insight-context {
     background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
     border: 1.5px solid var(--green); border-radius: var(--radius-md);
@@ -537,16 +538,12 @@
   <!-- 初始输入页 -->
   <div id="stage-input">
     <div class="page-head">
-      <div class="badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        入口 B · 帮我改变
-      </div>
       <h1>从想明白到真正发生行为改变</h1>
       <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做到的计划，再一天天锚定、强化，沉淀成新的习惯和角色。</p>
     </div>
     <div class="card">
       <div id="insightContext" class="insight-context hidden">
-        <div class="ic-label">💡 你的认知起点（来自「帮我清楚」）</div>
+        <div class="ic-label">💡 你的认知起点（来自「伴我洞察」）</div>
         <div class="ic-text" id="insightContextText"></div>
         <div class="ic-tip">接下来，把这条洞察翻译成一个你决定去做的<strong>行为实验</strong>——这正是「决策生成」的一步：这条洞察，到底意味着你要做什么？</div>
       </div>
@@ -876,7 +873,7 @@ const BRAND_PROFILES = {
 };
 
 let current = null; // 当前 Action
-let handoffInsight = '';   // 来自「帮我清楚」的洞察（认知→行为 衔接）
+let handoffInsight = '';   // 来自「伴我洞察」的洞察（认知→行为 衔接）
 let handoffScenario = '';  // 原挑战场景名
 
 function $(id){ return document.getElementById(id); }
@@ -1593,7 +1590,7 @@ function closeOnboard() {
       return;
     }
   }
-  // 认知→行为 衔接：从「帮我清楚」带入的洞察
+  // 认知→行为 衔接：从「伴我洞察」带入的洞察
   handoffInsight = (params.get('insight') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
   if (handoffInsight){

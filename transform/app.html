@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>帮我清楚 · Transform</title>
+<title>伴我洞察 · Transform</title>
 <style>
   :root {
     /* ===== 设计令牌 Design Tokens · Transform 世界级标杆版 ===== */
@@ -1440,6 +1440,9 @@
     <a class="gn-item on" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
+    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    </button>
     <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
       <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
     </button>
@@ -3510,7 +3513,7 @@ window.goStep = function(n) {
   }
   origGo(n);
 };
-// 把当前核心洞察作为"认知起点"带入「帮我改变」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
+// 把当前核心洞察作为"认知起点"带入「伴我改变」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
 function sendInsightToBehavior(){
   const d = state.data;
   const e = d.essence || {};
