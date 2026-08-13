@@ -380,7 +380,7 @@ async function startThink(){
       `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
     );
     const d = parseJSON(r);
-    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 200);
   }
   if (!q){
     btn.classList.remove('loading'); btn.textContent = '开始想清楚 →'; btn.disabled = false;
@@ -603,7 +603,7 @@ async function startThinkWithTopic(t){
       `主题：「${topic}」\n\n任务：基于这个主题，抛 1 个启发式问题，帮助用户想清楚这件事。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 严格按 JSON 输出：\n{"q":"问题"}`
     );
     const d = parseJSON(r);
-    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 200);
   }
   if (!q){
     renderInputStage();

@@ -380,7 +380,7 @@ async function startThink(){
       `Topic: "${topic}"\n\nTask: Based on this topic, ask ONE thought-provoking question that helps the user think it through.\nStrict requirements:\n1. Short (10-25 words), single (only one thing per question), precise\n2. Cut straight to the heart, no detours\n3. Output strict JSON:\n{"q":"question"}`
     );
     const d = parseJSON(r);
-    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 200);
   }
   if (!q){
     btn.classList.remove('loading'); btn.textContent = 'Start Thinking →'; btn.disabled = false;
@@ -603,7 +603,7 @@ async function startThinkWithTopic(t){
       `Topic: "${topic}"\n\nTask: Based on this topic, ask ONE thought-provoking question that helps the user think it through.\nStrict requirements:\n1. Short (10-25 words), single (only one thing per question), precise\n2. Cut straight to the heart, no detours\n3. Output strict JSON:\n{"q":"question"}`
     );
     const d = parseJSON(r);
-    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 200);
   }
   if (!q){
     renderInputStage();
