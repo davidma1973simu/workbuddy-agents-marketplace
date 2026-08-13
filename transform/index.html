@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Transform · 想清楚，做得到</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap">
 <style>
   :root {
     --bg: #F8F7F3;
@@ -202,13 +205,16 @@
   .zhx-bubble.b2 { bottom: 64px; left: 0; animation-delay: .45s; }
   .zhx-bubble-row { display: flex; align-items: center; gap: 10px; }
   .zhx-char {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
+    min-width: 38px; height: 34px; padding: 0 12px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
     background: var(--green-soft); color: var(--green);
-    font-size: 22px; font-weight: 800; line-height: 1;
+    font-size: 13px; font-weight: 800; line-height: 1;
+    letter-spacing: 0.2px; white-space: nowrap;
   }
   .zhx-bubble-flow { font-size: 13px; color: var(--ink-2); margin-bottom: 2px; white-space: nowrap; }
   .zhx-bubble-flow strong { color: var(--green); font-weight: 700; }
+  .brand-tag { display: inline-block; padding: 2px 9px; border-radius: 6px; background: var(--green-soft); color: var(--green); font-weight: 800; font-size: 12.5px; margin-right: 2px; letter-spacing: 0.2px; }
+  .brand-name { font-family: 'Playfair Display', 'Georgia', serif; font-weight: 700; font-style: italic; letter-spacing: 0.5px; }
   .zhx-bubble .zhx-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
   .zhx-bubble .zhx-sub strong { color: var(--green); font-weight: 700; }
   @keyframes bubble-in { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform: none; } }
@@ -492,7 +498,7 @@
           <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
         </svg>
       </div>
-      <span class="nav-name">Transform</span>
+      <span class="nav-name brand-name">Transform</span>
     </a>
     <div class="nav-links">
       <a href="growth.html#insights">
@@ -518,7 +524,7 @@
         AI 认知-行为进化引擎
       </div>
       <h1>想清楚，<span class="grad">做得到</span></h1>
-      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让知行陪你完成从洞察到改变的闭环。</p>
+      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让 <span class="brand-name">Transform</span> 陪你完成从洞察到改变的闭环。</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="think.html">
           开始一次认知提升
@@ -546,18 +552,18 @@
       </div>
       <div class="zhx-bubble b1">
         <div class="zhx-bubble-row">
-          <span class="zhx-char">知</span>
+          <span class="zhx-char">T</span>
           <div>
-            <div class="zhx-bubble-flow"><strong>归类</strong> → 洞察 → 应用</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Think</span> → Insight → Apply</div>
             <div class="zhx-sub">已沉淀 <strong id="insightCount">0</strong> 条认知</div>
           </div>
         </div>
       </div>
       <div class="zhx-bubble b2">
         <div class="zhx-bubble-row">
-          <span class="zhx-char">行</span>
+          <span class="zhx-char">A</span>
           <div>
-            <div class="zhx-bubble-flow"><strong>拆解</strong> → 行动 → 转变</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Act</span> → Anchor → Reinforce</div>
             <div class="zhx-sub">已做到 <strong id="behaviorCount">0</strong> 次</div>
           </div>
         </div>
@@ -568,7 +574,7 @@
   <section class="manifesto">
     <div class="manifesto-block">
       <h3>AI 是脚手架，不是答案</h3>
-      <p>知行不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
+      <p> <span class="brand-name">Transform</span> 不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
     </div>
     <div class="manifesto-divider"></div>
     <div class="manifesto-block">
@@ -578,7 +584,7 @@
   </section>
 
   <footer class="foot">
-    <span class="foot-copy">© Transform · 想清楚，做得到</span>
+    <span class="foot-copy">© <span class="brand-name">Transform</span> · 想清楚，做得到</span>
     <div class="foot-links">
       <a href="https://github.com/davidma1973simu/workbuddy-agents-marketplace" target="_blank" rel="noopener">GitHub</a>
     </div>

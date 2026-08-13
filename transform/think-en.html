@@ -87,9 +87,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -215,6 +214,16 @@
   .cta-integrate:disabled { opacity: .5; cursor: not-allowed; transform: none; }
   .cta-integrate.loading { opacity: .6; pointer-events: none; }
 
+  .restart-link {
+    display: inline-block; margin-top: 14px; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .ir-restart { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
   
   .insight-result { margin-top: 16px; }
   .insight-result.hidden { display: none; }
@@ -262,9 +271,7 @@
     <a class="gn-item" href="punch-en.html">Daily Change</a>
     <a class="gn-item" href="app-en.html">Guided Insight</a>
     <a class="gn-item" href="act-en.html">Guided Change</a>
-  </nav>
-    <a href="think.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
-    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
+  </nav>    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
     <button class="arch-btn" onclick="location.href='growth-en.html#insights'" aria-label="Insight archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 Insights</button>
   </div>
 
@@ -346,7 +353,7 @@ function renderInputStage(){
     <div class="think-hero">
       <div class="th-eyebrow">Daily Insight · Quick Clarity</div>
       <h1>Something keeping you stuck? Start in 30s</h1>
-      <p>Write down the one thing you can't stop turning over. Zhixing will ask one sharp question; you answer, get clarified, challenged, and verified — then shape it into an insight that is truly yours.</p>
+      <p>Write down the one thing you can't stop turning over. Transform will ask one sharp question; you answer, get clarified, challenged, and verified — then shape it into an insight that is truly yours.</p>
       <input class="think-input" id="topicInput" placeholder="e.g. Should I quit my job to start a company?" maxlength="60">
       <button class="cta-start" id="startBtn" onclick="startThink()">Start Thinking →</button>
     </div>`;
@@ -361,11 +368,11 @@ function renderInputStage(){
 
 async function startThink(){
   topic = ($('topicInput').value || '').trim();
-  if (topic.length < 4) { toast('Add a few more words so Zhixing can ask a good question'); return; }
+  if (topic.length < 4) { toast('Add a few more words so Transform can ask a good question'); return; }
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
   const btn = $('startBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Zhixing is crafting a question…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform is crafting a question…';
 
   let q = null;
   for (let attempt = 0; attempt < 3 && !q; attempt++){
@@ -377,7 +384,7 @@ async function startThink(){
   }
   if (!q){
     btn.classList.remove('loading'); btn.textContent = 'Start Thinking →'; btn.disabled = false;
-    toast('Zhixing could not generate a question right now, please try again');
+    toast('Transform could not generate a question right now, please try again');
     return;
   }
   question = q;
@@ -391,13 +398,13 @@ function renderQuestionStage(){
     <div class="q-card">
       <div class="q-tag">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
-        Zhixing's first question on your topic
+        Transform's first question on your topic
       </div>
       <div class="q-text">${escapeHtml(question)}</div>
       <div class="q-ctx">Topic: "${escapeHtml(topic)}"</div>
       <textarea class="q-answer" id="qAnswer" placeholder="Write your first reaction — it doesn't need to be perfect…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">Zhixing can help you:</span>
+        <span class="q-ai-label">Transform can help you:</span>
         <button class="ai-btn-cap" onclick="aiInspireQ('clarify', this)">Clarify</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('challenge', this)">Challenge</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('verify', this)">Verify</button>
@@ -412,13 +419,21 @@ function renderQuestionStage(){
           <button class="btn btn-ghost" onclick="toggleRevBox(false)">Cancel</button>
         </div>
       </div>
-      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">Let Zhixing shape the insight →</button>
+      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">Let Transform shape the insight →</button>
+      <button class="restart-link" onclick="restartThink()">↻ Start over with a new topic</button>
     </div>`;
   const ta = $('qAnswer');
   ta.addEventListener('input', e => { answer = e.target.value; });
   ta.focus();
 
   $('qAiResult').innerHTML = '';
+}
+
+// Reset all state and go back to the input stage
+function restartThink(){
+  topic = ''; question = ''; answer = ''; aiHelps = []; revisions = [];
+  renderInputStage();
+  setTimeout(()=>{ const inp = $('topicInput'); if (inp){ inp.focus(); window.scrollTo({top:0, behavior:'smooth'}); } }, 100);
 }
 
 function toggleRevBox(force){
@@ -450,11 +465,11 @@ async function aiInspireQ(cap, btn){
     `Topic: "${topic}"\nQuestion: ${question}\nUser's answer: ${a}\n\n${prompts[cap]}\n\n[Hard requirement] Output in under 100 words, precise and concise, straight to the point. No pleasantries, no paragraphs.`
   );
   btn.classList.remove('loading');
-  if (!r){ toast('Zhixing did not respond, please try again'); return; }
+  if (!r){ toast('Transform did not respond, please try again'); return; }
   const text = r.trim().slice(0, 300);
   aiHelps.push({ cap, text, at: new Date().toISOString() });
   const box = $('qAiResult');
-  box.innerHTML = '<span class="ai-tag">Zhixing · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
+  box.innerHTML = '<span class="ai-tag">Transform · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
   box.classList.add('show');
 
   $('revToggle').style.display = 'inline-flex';
@@ -467,11 +482,11 @@ async function finishThink(){
   if (!a) { toast('Write your answer first'); return; }
   integrating = true;
   const btn = $('integrateBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Zhixing is synthesizing…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform is synthesizing…';
   const qaPairs =
     `Question: ${question}\nUser's final answer: ${a}` +
-    (aiHelps.length ? `\nZhixing assistance: ${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('; ')}` : '') +
-    (revisions.length ? `\n(The user voluntarily revised this answer ${revisions.length} time(s) after Zhixing's prompts)` : '');
+    (aiHelps.length ? `\nTransform assistance: ${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('; ')}` : '') +
+    (revisions.length ? `\n(The user voluntarily revised this answer ${revisions.length} time(s) after Transform's prompts)` : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
@@ -485,8 +500,8 @@ async function finishThink(){
   }
   if (!essence){
     integrating = false;
-    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = 'Let Zhixing shape the insight →';
-    toast('Zhixing could not synthesize this time, please try again');
+    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = 'Let Transform shape the insight →';
+    toast('Transform could not synthesize this time, please try again');
     return;
   }
 
@@ -547,9 +562,19 @@ function renderInsightResult(session){
           <a class="btn btn-ghost" href="growth-en.html#insights" style="text-decoration:none;">View Insight Archive</a>
         </div>
         <div class="ir-note">Saved to your Growth Assets · Insight Archive · viewable anytime</div>
+        <div class="ir-restart">
+          <button class="restart-link" onclick="restartThink()">↻ Start over with a new topic</button>
+          <button class="restart-link" onclick="redoThink()">↻ Redo the questions & answer</button>
+        </div>
       </div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Re-ask the question / answer, keep topic
+function redoThink(){
+  question = ''; answer = ''; aiHelps = []; revisions = [];
+  startThinkWithTopic(topic);
 }
 
 
@@ -582,7 +607,7 @@ async function startThinkWithTopic(t){
   }
   if (!q){
     renderInputStage();
-    toast('Zhixing could not generate a question right now, please try again');
+    toast('Transform could not generate a question right now, please try again');
     return;
   }
   question = q;

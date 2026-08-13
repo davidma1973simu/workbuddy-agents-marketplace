@@ -89,9 +89,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -215,6 +214,14 @@
   .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
   .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
+  .resume-link {
+    display: inline-block; padding: 8px 16px; border-radius: 999px;
+    background: var(--surface); color: var(--ink-2);
+    border: 1.5px solid var(--line-2); font-size: 13.5px; font-weight: 600;
+    text-decoration: none; transition: all .2s; margin: 4px 0 16px;
+  }
+  .resume-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+
   .ctx-card {
     background: var(--amber-soft); border: 1.5px solid rgba(200,122,42,.3); border-radius: var(--radius-md);
     padding: 14px 16px; margin-bottom: 14px;
@@ -288,9 +295,7 @@
     <a class="gn-item on" href="punch.html">每日改变</a>
     <a class="gn-item" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
-  </nav>
-    <a href="punch-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
+  </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button class="arch-btn" onclick="location.href='growth.html#experiments'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
   </div>
 
@@ -408,7 +413,7 @@ function renderPunch(){
     area.innerHTML = `<div class="create-hero">
       <div class="ch-eyebrow">伴我改变</div>
       <h1>还没有开始一次改变</h1>
-      <p>先定一个想改变的事，知行会帮你定出今天就能完成的一小步。</p>
+      <p>先定一个想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
       <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
     </div>`;
     return;
@@ -586,11 +591,20 @@ let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
+  // 显示"继续之前的实验"链接（如有历史实验）
+  const past = loadActions();
+  const pastActive = past.find(a => a.status === 'active');
+  const pastRecent = past.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0];
+  const resume = pastActive || pastRecent;
+  const resumeLink = resume
+    ? `<a class="resume-link" href="punch.html?id=${encodeURIComponent(resume.id)}">↻ 继续之前的实验 →</a>`
+    : '';
   area.innerHTML = `
     <div class="create-hero">
-      <div class="ch-eyebrow">伴我改变 · 把洞察变成今天的改变</div>
-      <h1>一条认知，变成今天的一小步</h1>
-      <p>知行会基于你<strong>想清楚的事</strong>，帮你定出今天就能完成的最小改变——不搞大计划，只关心今天做得到。</p>
+      <div class="ch-eyebrow">伴我改变 · 开始新的行为实验</div>
+      <h1>开启一次新的行为改变</h1>
+      <p>定一件想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
+      ${resumeLink}
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">来自今日洞察 · 认知起点</div>
@@ -616,7 +630,7 @@ async function startChange(){
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = '知行正在建议今天的改变…';
+  btn.disabled = true; btn.textContent = 'Transform正在建议今天的改变…';
   let sug = null;
   for (let attempt = 0; attempt < 3 && !sug; attempt++){
     const r = await aiCall(
@@ -633,7 +647,7 @@ async function startChange(){
   }
   if (!sug){
     btn.disabled = false; btn.textContent = '开始改变 →';
-    toast('知行暂时没建议出来，请稍后再试');
+    toast('Transform暂时没建议出来，请稍后再试');
     return;
   }
   draft.goal = goal;
@@ -647,7 +661,7 @@ function renderSuggest(anchors){
   const area = $('punchArea');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">知行建议 · 今天的改变</div>
+      <div class="sc-tag">Transform 建议 · 今天的改变</div>
       <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">小到不可能失败，30 秒内完成。先把它拆成更小的一步：</div>
       <div class="sc-field">小步骤（可点击完成）</div>
@@ -676,7 +690,7 @@ function pickAnchorChip(i){
 
 async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
-  if (!draft.micro) { toast('先让知行建议今天的改变'); return; }
+  if (!draft.micro) { toast('先让Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
   if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
   const btn = $('confirmBtn');
@@ -738,21 +752,22 @@ async function confirmChange(){
   handoffInsight = (params.get('insight') || '').trim();
   handoffNature = (params.get('nature') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
-  // 带 think 来的洞察 → 强制进入创建态（用新洞察创建新的行为实验，不复用已有的 active）
+  // 1. URL ?insight= → 进入创建态并带入 handoff（从 think 来）
+  // 2. URL ?id=xxx → 加载指定历史实验（修订或查看）
+  // 3. 默认 → 进入创建态（开始一个新的行为实验）
+  //    历史实验列在 hero 下方作为链接，不默认加载
   if (handoffInsight){
     renderCreate();
     return;
   }
   if (id){
     current = loadActions().find(a => a.id === id) || null;
-  } else {
-    const list = loadActions();
-    current = list.find(a => a.status === 'active') ||
-              list.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0] ||
-              list[0] || null;
+    if (current && current.status === 'active'){ renderPunch(); return; }
+    renderCreate();
+    return;
   }
-  if (current && current.status === 'active') renderPunch();
-  else renderCreate();
+  // 默认创建态（不自动加载旧任务）
+  renderCreate();
 })();
 </script>
 </body>

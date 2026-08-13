@@ -89,9 +89,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -215,6 +214,14 @@
   .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
   .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
+  .resume-link {
+    display: inline-block; padding: 8px 16px; border-radius: 999px;
+    background: var(--surface); color: var(--ink-2);
+    border: 1.5px solid var(--line-2); font-size: 13.5px; font-weight: 600;
+    text-decoration: none; transition: all .2s; margin: 4px 0 16px;
+  }
+  .resume-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+
   .ctx-card {
     background: var(--amber-soft); border: 1.5px solid rgba(200,122,42,.3); border-radius: var(--radius-md);
     padding: 14px 16px; margin-bottom: 14px;
@@ -288,9 +295,7 @@
     <a class="gn-item on" href="punch-en.html">Daily Change</a>
     <a class="gn-item" href="app-en.html">Guided Insight</a>
     <a class="gn-item" href="act-en.html">Guided Change</a>
-  </nav>
-    <a href="punch.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
-    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
+  </nav>    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
     <button class="arch-btn" onclick="location.href='growth-en.html#experiments'" aria-label="Behavior archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 Behavior</button>
   </div>
 
@@ -408,7 +413,7 @@ function renderPunch(){
     area.innerHTML = `<div class="create-hero">
       <div class="ch-eyebrow">Guided Change</div>
       <h1>No change started yet</h1>
-      <p>Pick something you want to change. Zhixing will break it into one small step you can do today.</p>
+      <p>Pick something you want to change. Transform will break it into one small step you can do today.</p>
       <a class="cta-start" href="act-en.html" style="text-decoration:none;">Create a full experiment →</a>
     </div>`;
     return;
@@ -586,14 +591,23 @@ let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'' };
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
+  // Show "Continue previous" link if there are any past experiments
+  const past = loadActions();
+  const pastActive = past.find(a => a.status === 'active');
+  const pastRecent = past.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0];
+  const resume = pastActive || pastRecent;
+  const resumeLink = resume
+    ? `<a class="resume-link" href="punch-en.html?id=${encodeURIComponent(resume.id)}">↻ Continue previous experiment →</a>`
+    : '';
   area.innerHTML = `
     <div class="create-hero">
-      <div class="ch-eyebrow">Daily Change · turn an insight into today\u2019s step</div>
-      <h1>One insight, one small step today</h1>
-      <p>Based on what you\u2019ve <strong>thought through</strong>, Zhixing helps you find the smallest change you can complete today \u2014 no grand plans, just what you can do now.</p>
+      <div class="ch-eyebrow">Daily Change · start a new step</div>
+      <h1>Start a new behavior change</h1>
+      <p>Pick one thing you want to change. Transform will break it into one small step you can do today.</p>
+      ${resumeLink}
       ${showCtx ? `
         <div class="ctx-card">
-          <div class="ctx-label">From today\u2019s insight \u00b7 starting point</div>
+          <div class="ctx-label">From today's insight · starting point</div>
           ${handoffNature ? `<div class="ctx-row"><b>Essence:</b> ${escapeHtml(handoffNature)}</div>` : ''}
           ${handoffInsight ? `<div class="ctx-row"><b>Insight:</b> ${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
@@ -616,7 +630,7 @@ async function startChange(){
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = 'Zhixing is suggesting today\u2019s change\u2026';
+  btn.disabled = true; btn.textContent = 'Transform is suggesting today\u2019s change\u2026';
   let sug = null;
   for (let attempt = 0; attempt < 3 && !sug; attempt++){
     const r = await aiCall(
@@ -633,7 +647,7 @@ async function startChange(){
   }
   if (!sug){
     btn.disabled = false; btn.textContent = 'Start Changing →';
-    toast('Zhixing could not suggest right now, please try again');
+    toast('Transform could not suggest right now, please try again');
     return;
   }
   draft.goal = goal;
@@ -647,7 +661,7 @@ function renderSuggest(anchors){
   const area = $('punchArea');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">Zhixing suggests \u00b7 today\u2019s change</div>
+      <div class="sc-tag">Transform suggests \u00b7 today\u2019s change</div>
       <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">Small enough that it can\u2019t fail, done in 30 seconds. First break it into smaller steps:</div>
       <div class="sc-field">Micro-steps</div>
@@ -676,7 +690,7 @@ function pickAnchorChip(i){
 
 async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
-  if (!draft.micro) { toast('Let Zhixing suggest today\u2019s change first'); return; }
+  if (!draft.micro) { toast('Let Transform suggest today\u2019s change first'); return; }
   if (!draft.anchor) { toast('Pick an anchor moment'); return; }
   if (!identity) { toast('Write who you want to become (identity votes go here)'); return; }
   const btn = $('confirmBtn');
@@ -738,21 +752,22 @@ async function confirmChange(){
   handoffInsight = (params.get('insight') || '').trim();
   handoffNature = (params.get('nature') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
-  // Insight came from think → force the create state (build a NEW experiment, do not reuse the active one)
+  // 1. URL ?insight= → render create state with handoff (from think)
+  // 2. URL ?id=xxx → load that specific experiment
+  // 3. Default → render create state (start a NEW experiment)
+  //    Recent experiments are listed below the hero as links (do NOT auto-load)
   if (handoffInsight){
     renderCreate();
     return;
   }
   if (id){
     current = loadActions().find(a => a.id === id) || null;
-  } else {
-    const list = loadActions();
-    current = list.find(a => a.status === 'active') ||
-              list.filter(a => a.status === 'graduated').sort((a,b) => new Date(b.graduatedAt||0) - new Date(a.graduatedAt||0))[0] ||
-              list[0] || null;
+    if (current && current.status === 'active'){ renderPunch(); return; }
+    renderCreate();
+    return;
   }
-  if (current && current.status === 'active') renderPunch();
-  else renderCreate();
+  // Default: create state (do not auto-load old action)
+  renderCreate();
 })();
 </script>
 </body>

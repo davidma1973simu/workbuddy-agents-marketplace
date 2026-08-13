@@ -87,9 +87,8 @@
   .gnav {
     display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
-    overflow-x: auto; justify-content: center; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
   }
-  .gnav::-webkit-scrollbar { display: none; }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 6px 12px; border-radius: 999px;
@@ -213,6 +212,16 @@
   }
   .cta-integrate:hover { transform: translateY(-2px); filter: brightness(1.08); }
   .cta-integrate:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .restart-link {
+    display: inline-block; margin-top: 14px; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .ir-restart { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
   .cta-integrate.loading { opacity: .6; pointer-events: none; }
 
   /* 阶段 3：洞察卡 */
@@ -262,9 +271,7 @@
     <a class="gn-item" href="punch.html">每日改变</a>
     <a class="gn-item" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
-  </nav>
-    <a href="think-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
+  </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button class="arch-btn" onclick="location.href='growth.html#insights'" aria-label="认知档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 认知档案</button>
   </div>
 
@@ -346,7 +353,7 @@ function renderInputStage(){
     <div class="think-hero">
       <div class="th-eyebrow">伴我洞察 · 快速想清楚</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
-      <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
+      <p>把最想不通、最想搞清楚的一件事写下来。Transform会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
       <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60">
       <button class="cta-start" id="startBtn" onclick="startThink()">开始想清楚 →</button>
     </div>`;
@@ -361,11 +368,11 @@ function renderInputStage(){
 
 async function startThink(){
   topic = ($('topicInput').value || '').trim();
-  if (topic.length < 4) { toast('再多写几个字，知行才能出好题'); return; }
+  if (topic.length < 4) { toast('再多写几个字，Transform才能出好题'); return; }
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
   const btn = $('startBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在出题…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform正在出题…';
   // 出 1 题
   let q = null;
   for (let attempt = 0; attempt < 3 && !q; attempt++){
@@ -377,7 +384,7 @@ async function startThink(){
   }
   if (!q){
     btn.classList.remove('loading'); btn.textContent = '开始想清楚 →'; btn.disabled = false;
-    toast('知行暂时出不了题，请稍后再试');
+    toast('Transform暂时出不了题，请稍后再试');
     return;
   }
   question = q;
@@ -391,13 +398,13 @@ function renderQuestionStage(){
     <div class="q-card">
       <div class="q-tag">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
-        知行基于你的主题出的第一题
+        Transform基于你的主题出的第一题
       </div>
       <div class="q-text">${escapeHtml(question)}</div>
       <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
       <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
+        <span class="q-ai-label">Transform可以帮助你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
@@ -412,13 +419,21 @@ function renderQuestionStage(){
           <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
         </div>
       </div>
-      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让知行整合出洞察 →</button>
+      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让Transform整合出洞察 →</button>
+      <button class="restart-link" onclick="restartThink()">↻ 换个主题重新开始</button>
     </div>`;
   const ta = $('qAnswer');
   ta.addEventListener('input', e => { answer = e.target.value; });
   ta.focus();
   // 回车出结果
   $('qAiResult').innerHTML = '';
+}
+
+// 重新开始：清空状态，回到输入主题阶段
+function restartThink(){
+  topic = ''; question = ''; answer = ''; aiHelps = []; revisions = [];
+  renderInputStage();
+  setTimeout(()=>{ const inp = $('topicInput'); if (inp){ inp.focus(); window.scrollTo({top:0, behavior:'smooth'}); } }, 100);
 }
 
 function toggleRevBox(force){
@@ -450,11 +465,11 @@ async function aiInspireQ(cap, btn){
     `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
   );
   btn.classList.remove('loading');
-  if (!r){ toast('知行暂时没响应，请稍后再试'); return; }
+  if (!r){ toast('Transform暂时没响应，请稍后再试'); return; }
   const text = r.trim().slice(0, 300);
   aiHelps.push({ cap, text, at: new Date().toISOString() });
   const box = $('qAiResult');
-  box.innerHTML = '<span class="ai-tag">知行 · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
+  box.innerHTML = '<span class="ai-tag">Transform · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
   box.classList.add('show');
   // 出现后可立即修订
   $('revToggle').style.display = 'inline-flex';
@@ -467,11 +482,11 @@ async function finishThink(){
   if (!a) { toast('先写下你的回答'); return; }
   integrating = true;
   const btn = $('integrateBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在整合…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform正在整合…';
   const qaPairs =
     `问题：${question}\n用户最终回答：${a}` +
-    (aiHelps.length ? `\n知行协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
-    (revisions.length ? `\n（该题经知行启发后由用户主动修订 ${revisions.length} 次）` : '');
+    (aiHelps.length ? `\nTransform协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
+    (revisions.length ? `\n（该题经Transform启发后由用户主动修订 ${revisions.length} 次）` : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
@@ -485,8 +500,8 @@ async function finishThink(){
   }
   if (!essence){
     integrating = false;
-    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让知行整合出洞察 →';
-    toast('知行整合失败，请稍后再试');
+    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让Transform整合出洞察 →';
+    toast('Transform整合失败，请稍后再试');
     return;
   }
   // 存入认知档案（与 app.html complete() 的条目格式一致）
@@ -547,9 +562,19 @@ function renderInsightResult(session){
           <a class="btn btn-ghost" href="growth.html#insights" style="text-decoration:none;">看认知档案</a>
         </div>
         <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
+        <div class="ir-restart">
+          <button class="restart-link" onclick="restartThink()">↻ 换一个主题重新开始</button>
+          <button class="restart-link" onclick="redoThink()">↻ 重新出题/回答</button>
+        </div>
       </div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 重新出题/回答：保留主题，重新进入出题阶段（state 重置但 topic 保留）
+function redoThink(){
+  question = ''; answer = ''; aiHelps = []; revisions = [];
+  startThinkWithTopic(topic);
 }
 
 /* ===================== 初始化 ===================== */
@@ -582,7 +607,7 @@ async function startThinkWithTopic(t){
   }
   if (!q){
     renderInputStage();
-    toast('知行暂时出不了题，请稍后再试');
+    toast('Transform暂时出不了题，请稍后再试');
     return;
   }
   question = q;
