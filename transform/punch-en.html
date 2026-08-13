@@ -265,8 +265,8 @@
   .plan-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; }
   .plan-day { display: flex; align-items: baseline; gap: 12px; padding: 8px 12px; border-radius: 8px; background: var(--surface); font-size: 13.5px; line-height: 1.5; }
   .plan-day.today { background: var(--green-50); border-left: 3px solid var(--green); }
-  .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 92px; font-size: 12px; letter-spacing: 0.3px; }
-  .plan-day-text { color: var(--ink); }
+  .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 88px; font-size: 12px; letter-spacing: 0.3px; }
+  .plan-day-text { color: var(--ink); flex: 1; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
   .cta-confirm {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
@@ -621,7 +621,7 @@ function renderCreate(){
     <div class="create-hero">
       <div class="ch-eyebrow">Daily Change · start a new step</div>
       <h1>Start a new behavior change</h1>
-      <p>Small habit or big ambition \u2014 type it in. Transform breaks any goal into a 7-day experiment: today\u2019s smallest step, then one micro-action per day.</p>
+      <p>Small habit or big ambition \u2014 type it in. Transform breaks any goal into an N-day experiment: today\u2019s smallest step, then one micro-action per day (1 day for one-shots, 7 days for habits, 14-30 days for deep change).</p>
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">From today's insight · starting point</div>
@@ -651,7 +651,7 @@ async function startChange(){
   let sug = null;
   for (let attempt = 0; attempt < 3 && !sug; attempt++){
     const r = await aiCall(
-      `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Build a 7-day micro-action experiment.\nRequirements:\n1. micro: ONE sentence (10-25 words) for today\u2019s smallest step. Small enough to never fail, doable within 30 seconds.\n2. steps: break today\u2019s micro into 2-3 even smaller steps (each max 10 words).\n3. anchors: 3 stable trigger moments (after ___).\n4. days: 7 entries, one per day, progressive Day 1 -> Day 7, each max 20 words, each small enough to never fail. Day 1 MUST equal the string in micro.\n\nStrict JSON:\n{"micro":"...","steps":["...","..."],"anchors":["after I ...","after ...","before ..."],"days":[{"day":1,"micro":"..."},{"day":2,"micro":"..."},...,{"day":7,"micro":"..."}]}`
+      `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Build a behavior experiment.\n- Adapt the experiment length to the goal:\n  * 1 day if the goal is a single one-shot action (e.g. \u201ccheck gas before locking the door\u201d).\n  * 3 days if the goal is a tiny habit to confirm (\u201cfocus for 10 minutes on one task\u201d).\n  * 7 days if the goal is a real habit to form (\u201cdrink water every morning\u201d).\n  * 14-30 days if the goal is a deep change (\u201cbecome a master of WorkBuddy\u201d).\n\nRequirements:\n1. micro: ONE sentence (10-25 words) for today\u2019s smallest step. Small enough to never fail, doable within 30 seconds.\n2. steps: break today\u2019s micro into 2-3 even smaller steps (each max 10 words).\n3. anchors: 3 stable trigger moments (after ___).\n4. planLength: integer 1, 3, 7, 14, or 30, matching the chosen length.\n5. days: planLength entries, one per day, progressive Day 1 -> Day N, each max 20 words, each small enough to never fail. Day 1 MUST equal the string in micro. If planLength = 1, days array has just one entry.\n\nStrict JSON:\n{"micro":"...","steps":["...","..."],"anchors":["after I ...","after ...","before ..."],"planLength":7,"days":[{"day":1,"micro":"..."},...,"day":N,"micro":"..."]}`
     );
     const d = parseJSON(r);
     if (d && d.micro && d.micro.trim()){
@@ -659,13 +659,15 @@ async function startChange(){
         micro: d.micro.trim().slice(0, 60),
         steps: Array.isArray(d.steps) ? d.steps.map(s => String(s).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
         anchors: Array.isArray(d.anchors) ? d.anchors.map(s => String(s).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
-        days: Array.isArray(d.days) ? d.days.slice(0, 7).map(x => String(x.micro || '').trim().slice(0, 30)).filter(Boolean) : []
+        days: Array.isArray(d.days) ? d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean) : [],
+        planLength: [1, 3, 7, 14, 30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : (Array.isArray(d.days) && d.days.length ? d.days.length : 7)
       };
-      if (sug.days.length < 7){
-        // pad to 7 days if AI returned fewer
-        for (let d2 = sug.days.length + 1; d2 <= 7; d2++){
-          sug.days.push(d2 === 1 ? sug.micro : `Keep going with \u201c${sug.micro}\u201d`);
-        }
+      // 裁剪到 planLength（如 AI 返回多了）
+      if (sug.days.length > sug.planLength) sug.days = sug.days.slice(0, sug.planLength);
+      // 补足到 planLength
+      while (sug.days.length < sug.planLength){
+        const nextDay = sug.days.length + 1;
+        sug.days.push(nextDay === 1 ? sug.micro : `Keep going with \u201c${sug.micro}\u201d`);
       }
     }
   }
@@ -679,12 +681,16 @@ async function startChange(){
   draft.steps = sug.steps.length ? sug.steps : ['Complete this small step'];
   draft.seconds = 30;
   draft.days = sug.days;
+  draft.planLength = sug.planLength;
+  draft.targetDays = sug.planLength;
   renderSuggest(sug.anchors.length ? sug.anchors : ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
 }
 
 function renderSuggest(anchors){
   const area = $('punchArea');
-  const dayLabels = ['Day 1 (today)', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+  const N = draft.planLength || 7;
+  const dayLabels = ['Day 1 (today)'];
+  for (let i = 2; i <= N; i++) dayLabels.push('Day ' + i);
   const daysHtml = draft.days.map((d, i) => `
     <div class="plan-day${i === 0 ? ' today' : ''}">
       <span class="plan-day-label">${dayLabels[i]}</span>
@@ -693,7 +699,7 @@ function renderSuggest(anchors){
   `).join('');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">Transform suggests · a 7-day experiment</div>
+      <div class="sc-tag">Transform suggests · a ${draft.planLength || 7}-day experiment</div>
       <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">Small enough that it can’t fail, done in 30 seconds. Here is your full 7-day plan — review then commit.</div>
 
@@ -733,17 +739,18 @@ async function confirmChange(){
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
 
-  // Use the 7-day plan already generated in startChange (no second AI call)
-  const plan = (draft.days && draft.days.length >= 7)
-    ? draft.days.slice(0, 7).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 30), sub: [], subDone: [] }))
-    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= 7; d++) p.push({day:d, micro: ('Keep going with \u201c' + draft.micro + '\u201d'), sub:[], subDone:[]}); return p; })();
+  // Use the plan already generated in startChange (no second AI call)
+  const N = draft.planLength || draft.days.length || 7;
+  const plan = (draft.days && draft.days.length)
+    ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
+    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: ('Keep going with \u201c' + draft.micro + '\u201d'), sub:[], subDone:[]}); return p; })();
 
   const goal = draft.goal || handoffScenario || 'behavior change';
   current = {
     id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
     input: (goal || '').trim() || draft.micro,
     createdAt: new Date().toISOString(),
-    targetDays: 7,
+    targetDays: N,
     currentDay: 1,
     plan,
     logs: [],
