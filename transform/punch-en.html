@@ -249,6 +249,8 @@
   .suggest-card .sc-title { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; color: var(--ink); }
   .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
   .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
+  .sc-rationale { background: var(--amber-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 6px 0 2px; }
+  .sc-row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .sc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .sc-chip {
     display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px;
@@ -647,46 +649,54 @@ async function startChange(){
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = 'Transform is drafting today + a 7-day plan\u2026';
-  let sug = null;
-  for (let attempt = 0; attempt < 3 && !sug; attempt++){
-    const r = await aiCall(
-      `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Build a behavior experiment.\n- Adapt the experiment length to the goal:\n  * 1 day if the goal is a single one-shot action (e.g. \u201ccheck gas before locking the door\u201d).\n  * 3 days if the goal is a tiny habit to confirm (\u201cfocus for 10 minutes on one task\u201d).\n  * 7 days if the goal is a real habit to form (\u201cdrink water every morning\u201d).\n  * 14-30 days if the goal is a deep change (\u201cbecome a master of WorkBuddy\u201d).\n\nRequirements:\n1. micro: ONE sentence (10-25 words) for today\u2019s smallest step. Small enough to never fail, doable within 30 seconds.\n2. steps: break today\u2019s micro into 2-3 even smaller steps (each max 10 words).\n3. anchors: 3 stable trigger moments (after ___).\n4. planLength: integer 1, 3, 7, 14, or 30, matching the chosen length.\n5. days: planLength entries, one per day, progressive Day 1 -> Day N, each max 20 words, each small enough to never fail. Day 1 MUST equal the string in micro. If planLength = 1, days array has just one entry.\n\nStrict JSON:\n{"micro":"...","steps":["...","..."],"anchors":["after I ...","after ...","before ..."],"planLength":7,"days":[{"day":1,"micro":"..."},...,"day":N,"micro":"..."]}`
-    );
-    const d = parseJSON(r);
-    if (d && d.micro && d.micro.trim()){
-      sug = {
-        micro: d.micro.trim().slice(0, 60),
-        steps: Array.isArray(d.steps) ? d.steps.map(s => String(s).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
-        anchors: Array.isArray(d.anchors) ? d.anchors.map(s => String(s).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
-        days: Array.isArray(d.days) ? d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean) : [],
-        planLength: [1, 3, 7, 14, 30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : (Array.isArray(d.days) && d.days.length ? d.days.length : 7)
-      };
-      // 裁剪到 planLength（如 AI 返回多了）
-      if (sug.days.length > sug.planLength) sug.days = sug.days.slice(0, sug.planLength);
-      // 补足到 planLength
-      while (sug.days.length < sug.planLength){
-        const nextDay = sug.days.length + 1;
-        sug.days.push(nextDay === 1 ? sug.micro : `Keep going with \u201c${sug.micro}\u201d`);
-      }
-    }
-  }
-  if (!sug){
-    btn.disabled = false; btn.textContent = 'Start Changing →';
-    toast('Transform could not generate a plan right now \\u2014 check Settings (API Key) and try again');
+  btn.disabled = true; btn.textContent = 'Transform is thinking about your goal\u2026';
+  draft.goal = goal;
+  // Stage 1: ask AI for the experiment draft (length + rationale + daily plan)
+  let d = await aiExperimentDraft(goal, 0);
+  btn.disabled = false; btn.textContent = 'Start Changing \u2192';
+  if (!d){
+    toast('Transform could not generate a plan right now \u2014 check Settings (API Key) and try again');
     return;
   }
-  draft.goal = goal;
-  draft.micro = sug.micro;
-  draft.steps = sug.steps.length ? sug.steps : ['Complete this small step'];
-  draft.seconds = 30;
-  draft.days = sug.days;
-  draft.planLength = sug.planLength;
-  draft.targetDays = sug.planLength;
-  renderSuggest(sug.anchors.length ? sug.anchors : ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+  applyDraft(d);
+  renderPlanDraft();
 }
 
-function renderSuggest(anchors){
+/* ---------- Stage 1: AI experiment draft (length + rationale + days) ---------- */
+async function aiExperimentDraft(goal, lenHint){
+  const lenRule = lenHint > 0
+    ? `\nThe user asked for exactly ${lenHint} days. Use planLength = ${lenHint}.`
+    : `\n- Adapt the experiment length to the goal:\n  * 1 day if the goal is a single one-shot action (e.g. "check gas before locking the door").\n  * 3 days if the goal is a tiny habit to confirm ("focus for 10 minutes on one task").\n  * 7 days if the goal is a real habit to form ("drink water every morning").\n  * 14-30 days if the goal is a deep change ("become a master of WorkBuddy").`;
+  const prompt = `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Build a behavior experiment draft.${lenRule}\n\nRequirements:\n1. planLength: integer 1, 3, 7, 14, or 30.\n2. rationale: one short sentence (max 30 words) explaining why this length fits the goal.\n3. micro: ONE sentence (10-25 words) for today\u2019s smallest step. Small enough to never fail, doable within 30 seconds.\n4. steps: break today\u2019s micro into 2-3 even smaller steps (each max 10 words).\n5. anchors: 3 stable trigger moments (after ___).\n6. days: planLength entries, one per day, progressive Day 1 -> Day N, each max 20 words, each small enough to never fail. Day 1 MUST equal the string in micro. If planLength = 1, days array has just one entry.\n\nStrict JSON:\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["after I ...","after ...","before ..."],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  for (let attempt = 0; attempt < 3; attempt++){
+    const r = await aiCall(prompt);
+    const d = parseJSON(r);
+    if (d && d.micro && d.micro.trim() && Array.isArray(d.days)){
+      const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
+      return {
+        planLength: N,
+        rationale: String(d.rationale || '').trim().slice(0, 120),
+        micro: d.micro.trim().slice(0, 60),
+        steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+        anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
+        days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N)
+      };
+    }
+  }
+  return null;
+}
+
+function applyDraft(d){
+  draft.micro = d.micro;
+  draft.steps = d.steps.length ? d.steps : ['Complete this small step'];
+  draft.days = d.days;
+  draft.planLength = d.planLength;
+  draft.targetDays = d.planLength;
+  draft.rationale = d.rationale;
+  draft.anchors = d.anchors;
+}
+
+function renderPlanDraft(){
   const area = $('punchArea');
   const N = draft.planLength || 7;
   const dayLabels = ['Day 1 (today)'];
@@ -697,30 +707,73 @@ function renderSuggest(anchors){
       <span class="plan-day-text">${escapeHtml(d)}</span>
     </div>
   `).join('');
+  const lengths = [1, 3, 7, 14, 30];
+  const lenChips = lengths.map(L =>
+    `<button class="sc-chip${L === N ? ' sel' : ''}" onclick="resizePlan(${L})">${L} days</button>`
+  ).join('');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">Transform suggests · a ${draft.planLength || 7}-day experiment</div>
-      <div class="sc-title" id="sugTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">Small enough that it can’t fail, done in 30 seconds. Here is your full 7-day plan — review then commit.</div>
+      <div class="sc-tag">Step 1 \u00b7 Experiment draft</div>
+      <div class="sc-title">Transform suggests a <b>${N}-day</b> experiment</div>
+      ${draft.rationale ? `<div class="sc-rationale">\ud83d\udca1 ${escapeHtml(draft.rationale)}</div>` : ''}
+
+      <div class="sc-field">Adjust the length (Transform re-plans it)</div>
+      <div class="sc-chips" id="lenChips">${lenChips}</div>
+
+      <div class="sc-field">The daily plan</div>
+      <div class="plan-list">${daysHtml}</div>
+
+      <button class="cta-confirm" onclick="goTodayDraft()">Confirm draft \u2192</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function resizePlan(L){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, L);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not re-plan right now \u2014 try again'); return; }
+  applyDraft(d);
+  renderPlanDraft();
+}
+
+/* ---------- Stage 2: today action + anchor (user interacts) ---------- */
+function goTodayDraft(){
+  if (!draft.micro){ toast('Draft not ready'); return; }
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+function renderTodayDraft(anchors){
+  const area = $('punchArea');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">Step 2 \u00b7 Today\u2019s action + anchor</div>
+      <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">Your smallest step for today. You can swap it or revise it before committing.</div>
 
       <div class="sc-field">Micro-steps (today)</div>
       <div class="sc-chips" id="stepChips">
         ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
       </div>
-
-      <div class="sc-field">The full 7-day plan</div>
-      <div class="plan-list">${daysHtml}</div>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateToday()">\u21bb Swap today\u2019s action</button>
+        <button class="ai-btn-cap" onclick="reviseToday()">\ud83d\udcdd Revise</button>
+      </div>
 
       <div class="sc-field">When? Pick an anchor moment (tap to choose)</div>
       <div class="sc-chips" id="anchorChips">
-        ${anchors.map((a, i) => `<button class="sc-chip ${i === 0 ? 'sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} → do it</button>`).join('')}
+        ${anchors.map((a, i) => `<button class="sc-chip ${draft.anchor === a ? 'sel' : (i === 0 && !draft.anchor ? 'sel' : '')}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} \u2192 do it</button>`).join('')}
       </div>
-      <div class="sc-field">Who do you want to become? (identity votes go here)</div>
-      <input class="sc-input" id="identityInput" placeholder="e.g. a person who takes care of their body" maxlength="30">
-      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">Confirm · start the 7-day experiment →</button>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateAnchors()">\u21bb Swap anchors</button>
+      </div>
+
+      <button class="cta-confirm" onclick="goIdentityStage()">Confirm today\u2019s plan \u2192</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
-  draft.anchor = anchors[0] || '';
+  if (!draft.anchor) draft.anchor = anchors[0] || '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -731,6 +784,59 @@ function pickAnchorChip(i){
   if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
 }
 
+async function regenerateToday(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not re-plan right now \u2014 try again'); return; }
+  applyDraft(d);
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+function reviseToday(){
+  const title = $('todayTitle');
+  if (!title) return;
+  const current = draft.micro;
+  const next = prompt('Revise today\u2019s action:', current);
+  if (next && next.trim()){
+    draft.micro = next.trim().slice(0, 60);
+    // keep days aligned: update day 1
+    if (draft.days.length) draft.days[0] = draft.micro;
+    renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+  }
+}
+
+async function regenerateAnchors(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not refresh anchors right now \u2014 try again'); return; }
+  draft.anchors = d.anchors;
+  draft.micro = d.micro; draft.steps = d.steps; draft.days = d.days;
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+/* ---------- Stage 3: identity + confirm ---------- */
+function goIdentityStage(){
+  if (!draft.micro){ toast('Draft not ready'); return; }
+  if (!draft.anchor){ toast('Pick an anchor moment'); return; }
+  const area = $('punchArea');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">Step 3 \u00b7 Identity \u2014 the final vote</div>
+      <div class="sc-title">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">Every day you complete this, you become a little more of the person below.</div>
+      <div class="sc-field">Who do you want to become? (identity votes go here)</div>
+      <input class="sc-input" id="identityInput" placeholder="e.g. a person who takes care of their body" maxlength="30">
+      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">Confirm \u00b7 start the ${draft.planLength || 7}-day experiment \u2192</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  $('identityInput').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
   if (!draft.micro) { toast('Let Transform suggest today\u2019s change first'); return; }
@@ -739,7 +845,7 @@ async function confirmChange(){
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
 
-  // Use the plan already generated in startChange (no second AI call)
+  // Use the plan already generated in the draft (no second AI call)
   const N = draft.planLength || draft.days.length || 7;
   const plan = (draft.days && draft.days.length)
     ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
@@ -766,11 +872,12 @@ async function confirmChange(){
     scenario: handoffScenario || ''
   };
   persistAction();
-  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[] };
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
   renderPunch();
 
   showTodayFeedback();
 }
+
 
 
 (function init(){
