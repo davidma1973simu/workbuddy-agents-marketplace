@@ -826,13 +826,53 @@ async function startChange(){
   const { data: d, error: aiErr0 } = await aiExperimentDraft(goal, 0);
   btn.disabled = false; btn.textContent = '开始改变 →';
   if (!d){
+    // 失败：在页面上渲染调试卡（即使无痕模式也能看到，不依赖 console）
+    renderAIDebugCard(goal, aiErr0);
     let msg = aiErr0 ? aiErr0.msg : 'Transform 暂时生成不了计划——请检查设置（API Key）后重试';
     if (aiErr0 && aiErr0.kind === 'PARSE' && aiErr0.detail) msg = 'AI 返回的不是有效 JSON（80 字预览）：' + aiErr0.detail.slice(0, 80);
-    toast(msg, 8000);
+    toast(msg, 10000);
     return;
   }
   applyDraft(d);
   renderPlanDraft();
+}
+
+// 在页面上直接显示 AI 调试信息（不依赖 console）
+function renderAIDebugCard(goal, err){
+  const area = $('punchArea');
+  const detail = (err && err.detail) || '(无)';
+  const kind = (err && err.kind) || 'UNKNOWN';
+  const msg = (err && err.msg) || '';
+  area.innerHTML = `
+    <div class="suggest-card" style="border-color:var(--amber);border-width:2px;">
+      <div class="sc-tag" style="color:var(--amber);">AI 调用失败 · 调试信息</div>
+      <div class="sc-title" style="font-size:18px;">请截图这张卡发给 David 排查</div>
+
+      <div class="sc-field">请求目标</div>
+      <div class="sc-micro-card" style="font-size:14px;">${escapeHtml(goal)}</div>
+
+      <div class="sc-field">错误类型</div>
+      <div class="sc-micro-card" style="background:var(--amber-soft);font-size:14px;"><b>${escapeHtml(kind)}</b></div>
+
+      <div class="sc-field">错误消息</div>
+      <div class="sc-micro-card" style="background:var(--amber-soft);font-size:14px;">${escapeHtml(msg)}</div>
+
+      <div class="sc-field">AI 原始响应（前 800 字）</div>
+      <pre style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;font-family:var(--font-mono);white-space:pre-wrap;word-break:break-word;line-height:1.5;max-height:300px;overflow:auto;color:var(--ink-2);">${escapeHtml(detail.slice(0, 800))}${detail.length > 800 ? '\n...(截断，原始 ' + detail.length + ' 字)' : ''}</pre>
+
+      <div class="sc-field">常见原因</div>
+      <ul style="font-size:13px;line-height:1.7;color:var(--ink-2);padding-left:20px;margin:6px 0 14px;">
+        <li><b>PARSE</b>：AI 返回的不是有效 JSON（可能包了 markdown / prose / 截断）。检查上面"原始响应"。</li>
+        <li><b>NETWORK</b>：网络/CORS 失败——GitHub Pages 跨域调用被浏览器拦截。</li>
+        <li><b>HTTP_401/403</b>：API Key 无效或权限不足。检查设置里的 brand + apiKey。</li>
+        <li><b>HTTP_404</b>：API 地址或模型名错。检查 brand（DeepSeek/OpenAI/Gemini）。</li>
+        <li><b>HTTP_429</b>：请求过快或余额不足。稍后重试。</li>
+        <li><b>NO_KEY</b>：API Key 未配置。</li>
+      </ul>
+
+      <button class="cta-confirm" onclick="location.reload()">刷新页面（清除缓存）</button>
+      <button class="ai-btn-cap" style="margin-left:8px;" onclick="document.querySelector('#debugCard')?.remove()">关闭</button>
+    </div>`;
 }
 
 /* ---------- Stage 1：AI 拆解建议（长度 + 理由 + 每日行动） ---------- */
