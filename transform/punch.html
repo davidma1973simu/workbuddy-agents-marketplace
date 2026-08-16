@@ -437,9 +437,9 @@ let current = null; // 当前 Action
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function toast(msg){
+function toast(msg, ms){
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2400);
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), ms || 2400);
 }
 function toggleTheme(){
   const cur = document.documentElement.getAttribute('data-theme');
@@ -461,7 +461,7 @@ function persistAction(){ const list = loadActions(); const i = list.findIndex(a
 
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey) return null;
+  if (!cfg.apiKey) return { ok: false, kind: 'NO_KEY', msg: 'API Key 未配置（请到设置页填写）' };
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 4;
   try {
@@ -471,19 +471,36 @@ async function aiCall(prompt, attempt = 1){
       body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 400 })
     });
     if (!res.ok){
+      let errText = ''; try { errText = (await res.text()).slice(0, 200); } catch(e){}
       if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
         await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
-      return null;
+      console.error('[aiCall]', res.status, res.statusText, errText);
+      // 友好提示
+      let kind = 'HTTP_' + res.status, msg = res.status + ' ' + res.statusText;
+      if (res.status === 401 || res.status === 403) msg = 'API Key 无效或权限不足（401/403）。检查设置里的 brand + apiKey';
+      else if (res.status === 404) msg = 'API 地址或模型不存在（404）。检查 brand（DeepSeek/OpenAI/Gemini）';
+      else if (res.status === 429) msg = '请求过快或余额不足（429）。稍后再试';
+      return { ok: false, kind, msg, detail: errText };
     }
-    return (await res.json()).choices[0].message.content;
-  } catch(e){ return null; }
+    return { ok: true, text: (await res.json()).choices[0].message.content };
+  } catch(e){
+    console.error('[aiCall] network/fetch error:', e);
+    const hint = /fetch|network|CORS|SSL/i.test(String(e.message || e))
+      ? '网络/CORS 失败：GitHub Pages 跨域调用被拦截。详见控制台'
+      : ('调用失败：' + (e.message || e));
+    return { ok: false, kind: 'NETWORK', msg: hint, detail: String(e) };
+  }
 }
 function parseJSON(text){
   if (!text) return null;
   try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
 }
+
+// 适配器：老调用 r = await aiCall(prompt) 现在拿到 {ok, text/msg}，需要兼容老的字符串形式
+function aiText(r){ return r && r.ok ? r.text : null; }
+function aiErr(r){ return r && !r.ok ? r : null; }
 
 /* ===================== 每日进步核心 ===================== */
 function logCompletion(done, day, difficulty, note){
@@ -712,7 +729,7 @@ async function showTodayFeedback(){
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
   try {
     if (getAI().apiKey && micro) {
-      const aiText = await aiCall(
+      const aiResp = await aiCall(
         '用户刚完成了一个「每日改变」中第 ' + day + ' 天的微行动：「' + micro + '」。\n' +
         '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
         '请用 2 句话（≤ 60 字）给出具体反馈：\n' +
@@ -720,7 +737,9 @@ async function showTodayFeedback(){
         '2. 如果连续天数 > 3，点出"从刻意到自然"的能力跃迁；\n' +
         '禁用"坚持"这个词。不要说教。'
       );
+      const aiText = aiText(aiResp);
       if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 200);
+      else if (aiErr(aiResp)) console.warn('AI feedback failed:', aiErr(aiResp).msg);
     }
   } catch(e){}
 }
@@ -735,16 +754,20 @@ async function pickReason(reason){
   renderPunch();
   const today = current.plan.find(p => p.day === day);
   const anchor = current.anchor && current.anchor.after;
-  const text = await aiCall(
+  const aiResp = await aiCall(
     '用户因为「' + reason + '」没能做到今天的微行动：「' + ((today && today.micro) || current.input) + '」' +
     (anchor ? '（锚点：' + anchor + ' 之后）' : '') + '。\n' +
     '请给 1 个具体、不靠意志力的调整建议（≤ 60 字），让下一次更容易发生。\n' +
     '建议方向（任选其一，要具体）：换个更早/更自然的锚点；把行为再缩小；加一个环境提示（如把东西放眼前）；\n' +
     '不要说"加油""坚持"。不要只安慰，要给可执行的下一步。'
   );
+  const text = aiText(aiResp);
   if (text){
     const box = $('aiBlockResult');
     if (box) box.innerHTML = `<div class="ai-result"><b>AI 建议：</b>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+  } else if (aiErr(aiResp)){
+    const box = $('aiBlockResult');
+    if (box) box.innerHTML = `<div class="ai-result" style="background:var(--amber-soft);border-left:3px solid var(--amber);"><b>AI 没响应：</b>${escapeHtml(aiResp.msg)}</div>`;
   }
   toast('没关系，没做到不是失败。调整一次，再试一次。');
 }
@@ -792,10 +815,10 @@ async function startChange(){
   btn.disabled = true; btn.textContent = 'Transform 正在思考你的目标…';
   draft.goal = goal;
   // Stage 1: 请求 AI 拆解建议（长度 + 理由 + 行动列表）
-  let d = await aiExperimentDraft(goal, 0);
+  const { data: d, error: aiErr0 } = await aiExperimentDraft(goal, 0);
   btn.disabled = false; btn.textContent = '开始改变 →';
   if (!d){
-    toast('Transform 暂时生成不了计划——请检查设置（API Key）后重试');
+    toast(aiErr0 ? ('AI 没响应：' + aiErr0.msg) : 'Transform 暂时生成不了计划——请检查设置（API Key）后重试', 6000);
     return;
   }
   applyDraft(d);
@@ -809,21 +832,26 @@ async function aiExperimentDraft(goal, lenHint){
     : `\n- 根据目标自动选择实验长度：\n  * 1 天：一次性动作（如「锁门前检查煤气」）。\n  * 3 天：短期习惯确认（如「专注 10 分钟做一件事」）。\n  * 7 天：真正要养成的习惯（如「每天早上一杯温水」）。\n  * 14-30 天：深度改变（如「成为 WorkBuddy 高手」）。`;
   const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}\n\n⚠️ 关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["在早震打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
   for (let attempt = 0; attempt < 3; attempt++){
-    const r = await aiCall(prompt);
+    const aiResp = await aiCall(prompt);
+    if (aiErr(aiResp)) return { data: null, error: aiResp };
+    const r = aiText(aiResp);
     const d = parseJSON(r);
     if (d && d.micro && d.micro.trim() && Array.isArray(d.days)){
       const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
       return {
-        planLength: N,
-        rationale: String(d.rationale || '').trim().slice(0, 120),
-        micro: d.micro.trim().slice(0, 60),
-        steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
-        anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
-        days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N)
+        data: {
+          planLength: N,
+          rationale: String(d.rationale || '').trim().slice(0, 120),
+          micro: d.micro.trim().slice(0, 60),
+          steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+          anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
+          days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N)
+        },
+        error: null
       };
     }
   }
-  return null;
+  return { data: null, error: { kind: 'PARSE', msg: 'AI 返回的内容 3 次都解析失败（请检查模型或 prompt）' } };
 }
 
 function applyDraft(d){
