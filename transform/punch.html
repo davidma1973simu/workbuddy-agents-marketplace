@@ -258,6 +258,12 @@
   .plan-day.today { background: var(--green-50); border-left: 3px solid var(--green); }
   .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 88px; font-size: 12px; letter-spacing: 0.3px; }
   .plan-day-text { color: var(--ink); flex: 1; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
+  .sc-hint { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .sc-textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-2); background: var(--surface); font-size: 13.5px; font-family: inherit; color: var(--ink); outline: none; resize: vertical; min-height: 56px; line-height: 1.5; box-sizing: border-box; }
+  .sc-textarea:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .sc-obstacle-result { background: var(--green-50); border-left: 3px solid var(--green); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+  .sc-summary { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+  .sc-summary b { color: var(--green-deep); }
   .cta-confirm {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
@@ -590,7 +596,7 @@ async function pickReason(reason){
 let handoffInsight = '';
 let handoffNature = '';
 let handoffScenario = '';
-let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
+let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
 
 function renderCreate(){
   const area = $('punchArea');
@@ -724,11 +730,19 @@ function goTodayDraft(){
 
 function renderTodayDraft(anchors){
   const area = $('punchArea');
+  const commitOptions = [
+    {id:'photo', label:'拍张照片作为证据'},
+    {id:'note', label:'写一句话描述'},
+    {id:'check', label:'直接打勾（自报）'}
+  ];
+  const commitChipsHtml = commitOptions.map(o =>
+    `<button class="sc-chip${draft.commitMethod === o.id ? ' sel' : ''}" data-cid="${o.id}" onclick="pickCommitMethod('${o.id}')">${o.label}</button>`
+  ).join('');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">第 2 步 · 今日行动 + 锚点</div>
+      <div class="sc-tag">第 2 步 · 今日行动 + 执行机制承诺</div>
       <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">这是今天要做的最小一步。你可以换一个，也可以修订，确认后再进入下一步。</div>
+      <div class="sc-desc">在真正行动之前，先想清楚两件事：你会怎么证明做到了？最可能遇到什么困难？</div>
 
       <div class="sc-field">今日小步骤</div>
       <div class="sc-chips" id="stepChips">
@@ -747,11 +761,53 @@ function renderTodayDraft(anchors){
         <button class="ai-btn-cap" onclick="regenerateAnchors()">↻ 换锚点建议</button>
       </div>
 
+      <div class="sc-field">你会怎么证明做到了？（打卡方式 · 执行时弹窗提示）</div>
+      <div class="sc-chips" id="commitChips">${commitChipsHtml}</div>
+      <div class="sc-hint" id="commitHint">${draft.commitMethod ? ('已选：' + (commitOptions.find(o=>o.id===draft.commitMethod)||{}).label) : '选一种方式，到时候提醒你记录'}</div>
+
+      <div class="sc-field">预想今天最可能遇到的困难</div>
+      <textarea class="sc-textarea" id="obstacleText" placeholder="例：可能会忘 / 太麻烦 / 没时间 / 找不到水杯..." maxlength="80">${escapeHtml(draft.obstacle)}</textarea>
+      <button class="ai-btn-cap" id="obstacleBtn" onclick="anticipateObstacle()">💡 让 Transform 给一句话应对</button>
+      ${draft.obstaclePlan ? `<div class="sc-obstacle-result"><b>应对策略：</b>${escapeHtml(draft.obstaclePlan)}</div>` : ''}
+
       <button class="cta-confirm" onclick="goIdentityStage()">确认今日计划 →</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   if (!draft.anchor) draft.anchor = anchors[0] || '';
+  const ta = $('obstacleText');
+  if (ta){
+    ta.addEventListener('input', e => { draft.obstacle = e.target.value.trim(); });
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pickCommitMethod(id){
+  draft.commitMethod = id;
+  const labels = {photo:'拍张照片作为证据', note:'写一句话描述', check:'直接打勾（自报）'};
+  const hint = $('commitHint');
+  if (hint) hint.textContent = '已选：' + (labels[id] || id);
+  const chips = document.querySelectorAll('#commitChips .sc-chip');
+  chips.forEach((c, j) => {
+    const oid = c.getAttribute('data-cid') || ['photo','note','check'][j];
+    c.classList.toggle('sel', oid === id);
+  });
+}
+
+async function anticipateObstacle(){
+  const btn = $('obstacleBtn');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const userOb = (draft.obstacle || '').trim() || '忘了';
+  const prompt = `今天的微行动：「${draft.micro}」。用户预想今天最可能的困难是：「${userOb}」。\n\n请给一句话应对策略（不超过 50 字，直接说怎么做，不寒暄）。\n严格按 JSON 输出：{"plan":"..."}`;
+  let plan = '';
+  for (let attempt = 0; attempt < 2 && !plan; attempt++){
+    const r = await aiCall(prompt);
+    const d = parseJSON(r);
+    if (d && d.plan && d.plan.trim()) plan = d.plan.trim().slice(0, 120);
+  }
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!plan){ toast('暂时没想出应对，请手动写下策略'); return; }
+  draft.obstaclePlan = plan;
+  renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
 }
 
 function pickAnchorChip(i){
@@ -799,12 +855,18 @@ async function regenerateAnchors(){
 function goIdentityStage(){
   if (!draft.micro){ toast('今日行动还没准备好'); return; }
   if (!draft.anchor){ toast('先选一个锚点时刻'); return; }
+  if (!draft.commitMethod){ toast('先选一种打卡方式（如何证明做到）'); return; }
   const area = $('punchArea');
+  const commitLabel = {photo:'拍张照片', note:'写一句话', check:'直接打勾'}[draft.commitMethod] || draft.commitMethod;
   area.innerHTML = `
     <div class="suggest-card">
       <div class="sc-tag">第 3 步 · 身份——最终投票</div>
       <div class="sc-title">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">每完成一天，你就更接近下面这个你想成为的人。</div>
+      <div class="sc-summary">
+        <div><b>锚点：</b>${escapeHtml(draft.anchor)} 之后</div>
+        <div><b>打卡方式：</b>${escapeHtml(commitLabel)}${draft.obstacle ? (' · 已预想困难：' + escapeHtml(draft.obstacle)) : ''}</div>
+      </div>
       <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
       <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
       <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 开始 ${draft.planLength || 7} 天实验 →</button>
@@ -818,6 +880,7 @@ async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
   if (!draft.micro) { toast('先让 Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
+  if (!draft.commitMethod) { toast('选一种打卡方式（如何证明做到）'); return; }
   if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
@@ -846,10 +909,13 @@ async function confirmChange(){
     support: { people:[], tools:[], info:[] },
     source: 'punch',
     insight: handoffInsight || '',
-    scenario: handoffScenario || ''
+    scenario: handoffScenario || '',
+    commitMethod: draft.commitMethod,        // 'photo' | 'note' | 'check'
+    obstacle: draft.obstacle || '',
+    obstaclePlan: draft.obstaclePlan || ''
   };
   persistAction();
-  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
   renderPunch();
   // 第一次：引导完成今天的改变
   showTodayFeedback();

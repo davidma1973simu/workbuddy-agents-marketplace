@@ -269,6 +269,12 @@
   .plan-day.today { background: var(--green-50); border-left: 3px solid var(--green); }
   .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 88px; font-size: 12px; letter-spacing: 0.3px; }
   .plan-day-text { color: var(--ink); flex: 1; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
+  .sc-hint { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .sc-textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-2); background: var(--surface); font-size: 13.5px; font-family: inherit; color: var(--ink); outline: none; resize: vertical; min-height: 56px; line-height: 1.5; box-sizing: border-box; }
+  .sc-textarea:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .sc-obstacle-result { background: var(--green-50); border-left: 3px solid var(--green); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+  .sc-summary { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+  .sc-summary b { color: var(--green-deep); }
   .cta-confirm {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
@@ -613,7 +619,7 @@ async function pickReason(reason){
 let handoffInsight = '';
 let handoffNature = '';
 let handoffScenario = '';
-let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[] };
+let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
 
 function renderCreate(){
   const area = $('punchArea');
@@ -747,11 +753,19 @@ function goTodayDraft(){
 
 function renderTodayDraft(anchors){
   const area = $('punchArea');
+  const commitOptions = [
+    {id:'photo', label:'Take a photo as evidence'},
+    {id:'note', label:'Write a one-line note'},
+    {id:'check', label:'Just tick the box (self-report)'}
+  ];
+  const commitChipsHtml = commitOptions.map(o =>
+    `<button class="sc-chip${draft.commitMethod === o.id ? ' sel' : ''}" data-cid="${o.id}" onclick="pickCommitMethod('${o.id}')">${o.label}</button>`
+  ).join('');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">Step 2 \u00b7 Today\u2019s action + anchor</div>
+      <div class="sc-tag">Step 2 \u00b7 Today\u2019s action + execution commitment</div>
       <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">Your smallest step for today. You can swap it or revise it before committing.</div>
+      <div class="sc-desc">Before you start: how will you prove you did it? What\u2019s the most likely obstacle?</div>
 
       <div class="sc-field">Micro-steps (today)</div>
       <div class="sc-chips" id="stepChips">
@@ -770,11 +784,50 @@ function renderTodayDraft(anchors){
         <button class="ai-btn-cap" onclick="regenerateAnchors()">\u21bb Swap anchors</button>
       </div>
 
+      <div class="sc-field">How will you prove you did it? (commit method, shown at check-in)</div>
+      <div class="sc-chips" id="commitChips">${commitChipsHtml}</div>
+      <div class="sc-hint" id="commitHint">${draft.commitMethod ? ('Selected: ' + (commitOptions.find(o=>o.id===draft.commitMethod)||{}).label) : 'Pick one, you will be reminded at check-in'}</div>
+
+      <div class="sc-field">Anticipate the most likely obstacle today</div>
+      <textarea class="sc-textarea" id="obstacleText" placeholder="e.g. I will forget / too troublesome / no time / cannot find my water bottle..." maxlength="80">${escapeHtml(draft.obstacle)}</textarea>
+      <button class="ai-btn-cap" id="obstacleBtn" onclick="anticipateObstacle()">\ud83d\udca1 Get one-line plan from Transform</button>
+      ${draft.obstaclePlan ? `<div class="sc-obstacle-result"><b>Plan:</b> ${escapeHtml(draft.obstaclePlan)}</div>` : ''}
+
       <button class="cta-confirm" onclick="goIdentityStage()">Confirm today\u2019s plan \u2192</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   if (!draft.anchor) draft.anchor = anchors[0] || '';
+  const ta = $('obstacleText');
+  if (ta){
+    ta.addEventListener('input', e => { draft.obstacle = e.target.value.trim(); });
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pickCommitMethod(id){
+  draft.commitMethod = id;
+  const labels = {photo:'Take a photo as evidence', note:'Write a one-line note', check:'Just tick the box (self-report)'};
+  const hint = $('commitHint');
+  if (hint) hint.textContent = 'Selected: ' + (labels[id] || id);
+  const chips = document.querySelectorAll('#commitChips .sc-chip');
+  chips.forEach(c => c.classList.toggle('sel', (c.getAttribute('data-cid')||'') === id));
+}
+
+async function anticipateObstacle(){
+  const btn = $('obstacleBtn');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const userOb = (draft.obstacle || '').trim() || 'forgetting';
+  const prompt = `Today\u2019s micro-action: \u201c${draft.micro}\u201d. The user anticipates the most likely obstacle: \u201c${userOb}\u201d.\\n\\nGive a one-line plan (max 50 words) describing exactly how to handle it. Direct, no preamble.\\nStrict JSON:\\n{"plan":"..."}`;
+  let plan = '';
+  for (let attempt = 0; attempt < 2 && !plan; attempt++){
+    const r = await aiCall(prompt);
+    const d = parseJSON(r);
+    if (d && d.plan && d.plan.trim()) plan = d.plan.trim().slice(0, 120);
+  }
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!plan){ toast('Transform could not generate a plan right now \u2014 write your own'); return; }
+  draft.obstaclePlan = plan;
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
 }
 
 function pickAnchorChip(i){
@@ -822,12 +875,18 @@ async function regenerateAnchors(){
 function goIdentityStage(){
   if (!draft.micro){ toast('Draft not ready'); return; }
   if (!draft.anchor){ toast('Pick an anchor moment'); return; }
+  if (!draft.commitMethod){ toast('Pick a commit method (how you will prove you did it)'); return; }
   const area = $('punchArea');
+  const commitLabel = {photo:'Take a photo', note:'Write a note', check:'Self-report'}[draft.commitMethod] || draft.commitMethod;
   area.innerHTML = `
     <div class="suggest-card">
       <div class="sc-tag">Step 3 \u00b7 Identity \u2014 the final vote</div>
       <div class="sc-title">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">Every day you complete this, you become a little more of the person below.</div>
+      <div class="sc-summary">
+        <div><b>Anchor:</b> after ${escapeHtml(draft.anchor)}</div>
+        <div><b>Commit:</b> ${escapeHtml(commitLabel)}${draft.obstacle ? (' \u00b7 anticipated obstacle: ' + escapeHtml(draft.obstacle)) : ''}</div>
+      </div>
       <div class="sc-field">Who do you want to become? (identity votes go here)</div>
       <input class="sc-input" id="identityInput" placeholder="e.g. a person who takes care of their body" maxlength="30">
       <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">Confirm \u00b7 start the ${draft.planLength || 7}-day experiment \u2192</button>
@@ -841,6 +900,7 @@ async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
   if (!draft.micro) { toast('Let Transform suggest today\u2019s change first'); return; }
   if (!draft.anchor) { toast('Pick an anchor moment'); return; }
+  if (!draft.commitMethod) { toast('Pick a commit method (how you will prove you did it)'); return; }
   if (!identity) { toast('Write who you want to become (identity votes go here)'); return; }
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
@@ -869,10 +929,13 @@ async function confirmChange(){
     support: { people:[], tools:[], info:[] },
     source: 'punch',
     insight: handoffInsight || '',
-    scenario: handoffScenario || ''
+    scenario: handoffScenario || '',
+    commitMethod: draft.commitMethod,
+    obstacle: draft.obstacle || '',
+    obstaclePlan: draft.obstaclePlan || ''
   };
   persistAction();
-  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
   renderPunch();
 
   showTodayFeedback();
