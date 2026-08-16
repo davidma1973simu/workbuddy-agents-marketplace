@@ -277,7 +277,13 @@
     display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
     letter-spacing: 1px; color: var(--green); margin-bottom: 12px; text-transform: uppercase;
   }
-  .suggest-card .sc-title { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; color: var(--ink); }
+  .suggest-card .sc-title { font-size: 22px; font-weight: 800; line-height: 1.4; margin-bottom: 10px; color: var(--ink); letter-spacing: -.2px; }
+  .sc-micro-card {
+    background: linear-gradient(135deg, var(--green-50), var(--surface));
+    border-left: 4px solid var(--green); border-radius: 12px;
+    padding: 16px 18px; font-size: 17px; font-weight: 700; color: var(--ink);
+    line-height: 1.5;
+  }
   .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
   .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
   .sc-rationale { background: var(--amber-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 6px 0 2px; }
@@ -314,6 +320,62 @@
   }
   .cta-confirm:hover { transform: translateY(-2px); background: var(--green-2); }
   .cta-confirm:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* ===== Stage 2：checklist + 大按键 + 自定义锚点 ===== */
+  .step-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .step-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-radius: 12px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    cursor: pointer; transition: all .2s;
+    font-size: 14px; line-height: 1.5;
+  }
+  .step-item:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(14,107,80,.08); }
+  .step-item.checked { animation: step-pop .3s ease; }
+  .step-check {
+    width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
+    border: 2px solid var(--line-2); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    color: transparent; font-size: 14px; font-weight: 800;
+    transition: all .2s;
+  }
+  .step-item.checked .step-check { background: var(--green); border-color: var(--green); color: #fff; }
+  @keyframes step-pop { 0% { transform: scale(.96); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+  .anchor-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
+  }
+  .anchor-key {
+    padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--line);
+    background: var(--surface); color: var(--ink);
+    font-size: 14.5px; font-weight: 600; line-height: 1.4;
+    cursor: pointer; transition: all .2s; text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    font-family: inherit;
+  }
+  .anchor-key:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.12); }
+  .anchor-key.sel {
+    background: linear-gradient(135deg, var(--green), var(--green-3));
+    color: #fff; border-color: var(--green);
+    box-shadow: 0 8px 22px rgba(14,107,80,.3);
+  }
+  .anchor-custom {
+    grid-column: 1 / -1; display: flex; gap: 8px;
+    background: var(--surface-2); border-radius: 14px; padding: 6px;
+    border: 1.5px dashed var(--line-2);
+  }
+  .anchor-input {
+    flex: 1; border: none; background: transparent; padding: 10px 12px;
+    font-size: 14px; font-family: inherit; color: var(--ink); outline: none;
+  }
+  .anchor-input::placeholder { color: var(--ink-3); }
+  .anchor-input-active { color: var(--green-deep); font-weight: 600; }
+  .anchor-submit {
+    padding: 8px 16px; border-radius: 10px; border: none;
+    background: var(--ink); color: #fff; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all .2s;
+  }
+  .anchor-submit:hover { background: var(--green); }
   .cta-confirm.loading { opacity: .6; pointer-events: none; }
   .ai-out-box {
     margin-top: 12px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px;
@@ -635,22 +697,13 @@ async function showTodayFeedback(){
   const micro = (todayPlan && todayPlan.micro) || current.input;
   const votes = countVotes();
   const isFirst = day <= 0;
-  const LOCAL_MSGS = isFirst
-    ? [
-      '今天的行为实验开始了：「' + micro + '」。',
-      '这是「' + (current.identity || '期待的身份') + '」的第一票。',
-      '锚点已就位，30 秒后开始今天的小事。',
-      '第 1 天，先把「' + micro + '」做完。'
-    ]
-    : [
-      '「' + micro + '」已经从「想做」走到「做到了」。',
-      '连续 ' + streak + ' 天，是行为在替你提醒自己。',
-      '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
-      '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
-    ];
+  // fallback 文案：当 AI 没响应时使用，朴素具体不鸡汤
+  const fallback = isFirst
+    ? '今天的目标已记录。完成后来点「做到了」。'
+    : ('第 ' + day + ' 天做到了。今天的事已记录，明天的小事已就位。');
   $('tfCrown').textContent = isFirst ? '🚀' : ((day > 0 && day % 7 === 0) ? '🏆' : '🎉');
   $('tfTitle').textContent = isFirst ? '今天的行为实验开始了' : ('第 ' + day + ' 天做到了！');
-  $('tfBody').textContent = LOCAL_MSGS[Math.abs((day - 1)) % LOCAL_MSGS.length];
+  $('tfBody').textContent = fallback;
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
@@ -754,7 +807,7 @@ async function aiExperimentDraft(goal, lenHint){
   const lenRule = lenHint > 0
     ? `\n用户指定实验长度为 ${lenHint} 天，请用 planLength = ${lenHint}。`
     : `\n- 根据目标自动选择实验长度：\n  * 1 天：一次性动作（如「锁门前检查煤气」）。\n  * 3 天：短期习惯确认（如「专注 10 分钟做一件事」）。\n  * 7 天：真正要养成的习惯（如「每天早上一杯温水」）。\n  * 14-30 天：深度改变（如「成为 WorkBuddy 高手」）。`;
-  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}\n\n要求：\n1. planLength：整数，取 1、3、7、14 或 30。\n2. rationale：一句简短理由（不超过 40 字），说明为什么这个长度适合该目标。\n3. micro：今天的最小行动，一句话（10-25 字），小到不可能失败，30 秒内可完成。\n4. steps：把今天的 micro 拆成 2-3 个更小步骤（每个 ≤10 字）。\n5. anchors：3 个稳定触发时刻（在___之后）。\n6. days：planLength 个条目，每天一条，Day 1 → Day N 循序渐进，每条 ≤20 字、小到不可能失败。Day 1 必须等于 micro 的值。如果 planLength = 1，days 数组只有一条。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["在早震拿起手机之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}\n\n⚠️ 关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["在早震打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
   for (let attempt = 0; attempt < 3; attempt++){
     const r = await aiCall(prompt);
     const d = parseJSON(r);
@@ -786,44 +839,19 @@ function applyDraft(d){
 function renderPlanDraft(){
   const area = $('punchArea');
   const N = draft.planLength || 7;
-  const dayLabels = ['Day 1（今天）'];
-  for (let i = 2; i <= N; i++) dayLabels.push('Day ' + i);
-  const daysHtml = draft.days.map((d, i) => `
-    <div class="plan-day${i === 0 ? ' today' : ''}">
-      <span class="plan-day-label">${dayLabels[i]}</span>
-      <span class="plan-day-text">${escapeHtml(d)}</span>
-    </div>
-  `).join('');
-  const lengths = [1, 3, 7, 14, 30];
-  const lenChips = lengths.map(L =>
-    `<button class="sc-chip${L === N ? ' sel' : ''}" onclick="resizePlan(${L})">${L} 天</button>`
-  ).join('');
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">第 1 步 · 实验拆解建议</div>
+      <div class="sc-tag">第 1 步 · 实验拆解</div>
       <div class="sc-title">Transform 建议 <b>${N}</b> 天实验</div>
       ${draft.rationale ? `<div class="sc-rationale">💡 ${escapeHtml(draft.rationale)}</div>` : ''}
 
-      <div class="sc-field">调整实验长度（Transform 会重新生成计划）</div>
-      <div class="sc-chips" id="lenChips">${lenChips}</div>
+      <div class="sc-field">今天要做的微行动</div>
+      <div class="sc-micro-card">${escapeHtml(draft.micro)}</div>
 
-      <div class="sc-field">每日行动计划</div>
-      <div class="plan-list">${daysHtml}</div>
-
-      <button class="cta-confirm" onclick="goTodayDraft()">确认拆解 →</button>
+      <button class="cta-confirm" onclick="goTodayDraft()">确认，开始今天 →</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function resizePlan(L){
-  const btn = $('punchArea').querySelector('.cta-confirm');
-  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
-  const d = await aiExperimentDraft(draft.goal, L);
-  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
-  if (!d){ toast('暂时重新生成不了计划，请稍后再试'); return; }
-  applyDraft(d);
-  renderPlanDraft();
 }
 
 /* ---------- Stage 2：今日行动 + 锚点（用户互动） ---------- */
@@ -834,34 +862,89 @@ function goTodayDraft(){
 
 function renderTodayDraft(anchors){
   const area = $('punchArea');
+  const done = (draft.doneSteps || []);
+  const stepsHtml = draft.steps.map((s, i) => `
+    <div class="step-item${done.indexOf(i) >= 0 ? ' checked' : ''}" onclick="toggleStep(${i})" data-i="${i}">
+      <span class="step-check">${done.indexOf(i) >= 0 ? '✓' : ''}</span>
+      <span class="step-text">${escapeHtml(s)}</span>
+    </div>
+  `).join('');
+  const anchorBtns = anchors.map((a, i) => `
+    <button type="button" class="anchor-key${draft.anchor === a ? ' sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)}</button>
+  `).join('');
+  const allChecked = done.length === draft.steps.length && draft.steps.length > 0;
+  const canConfirm = allChecked && !!draft.anchor;
   area.innerHTML = `
     <div class="suggest-card">
       <div class="sc-tag">第 2 步 · 今日行动 + 锚点</div>
-      <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
-      <div class="sc-desc">确认你今天要做的微行动和触发时刻。做的时候不需要记录、不需要证明——做完就是赢。</div>
+      <h2 class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</h2>
+      <div class="sc-desc">勾完步骤，再点确认。</div>
 
-      <div class="sc-field">今日小步骤</div>
-      <div class="sc-chips" id="stepChips">
-        ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
-      </div>
-      <div class="sc-row-actions">
-        <button class="ai-btn-cap" onclick="regenerateToday()">↻ 换个今日行动</button>
-        <button class="ai-btn-cap" onclick="reviseToday()">📝 修订</button>
-      </div>
+      <div class="sc-field">今日小步骤（点击勾选，完成一项删除一项）</div>
+      <div class="step-list" id="stepList">${stepsHtml}</div>
 
-      <div class="sc-field">什么时候做？选一个锚点（点击选择）</div>
-      <div class="sc-chips" id="anchorChips">
-        ${anchors.map((a, i) => `<button class="sc-chip ${draft.anchor === a ? 'sel' : (i === 0 && !draft.anchor ? 'sel' : '')}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} 之后</button>`).join('')}
-      </div>
-      <div class="sc-row-actions">
-        <button class="ai-btn-cap" onclick="regenerateAnchors()">↻ 换锚点建议</button>
+      <div class="sc-field">什么时候做？选一个触发时刻</div>
+      <div class="anchor-grid" id="anchorGrid">
+        ${anchorBtns}
+        <div class="anchor-custom">
+          <input class="anchor-input" id="anchorCustomInput" placeholder="自定义锚点：在____之后" maxlength="40">
+          <button type="button" class="anchor-submit" onclick="useCustomAnchor()">使用这个</button>
+        </div>
       </div>
 
-      <button class="cta-confirm" onclick="goIdentityStage()">确认今日计划 →</button>
+      <button class="cta-confirm" id="stageConfirmBtn" onclick="goIdentityStage()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续'}</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
-  if (!draft.anchor) draft.anchor = anchors[0] || '';
+  if (!draft.anchor && !draft.userTypedAnchor) draft.anchor = anchors[0] || '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleStep(i){
+  draft.doneSteps = draft.doneSteps || [];
+  const idx = draft.doneSteps.indexOf(i);
+  if (idx >= 0) draft.doneSteps.splice(idx, 1);
+  else draft.doneSteps.push(i);
+  // 只重渲染 checklist（不破坏用户当前锚点选择/输入焦点）
+  const list = $('stepList'); if (!list) return;
+  const done = draft.doneSteps;
+  // 简化：直接重新生成整个步骤列表（已勾选的从 DOM 移除，达到"删除"效果）
+  list.innerHTML = draft.steps.map((s, i) => {
+    if (done.indexOf(i) >= 0) return '';
+    return `<div class="step-item" onclick="toggleStep(${i})" data-i="${i}">
+      <span class="step-check"></span>
+      <span class="step-text">${escapeHtml(s)}</span>
+    </div>`;
+  }).join('');
+  updateStageConfirmBtn();
+}
+
+function updateStageConfirmBtn(){
+  const allChecked = draft.doneSteps && draft.doneSteps.length === draft.steps.length && draft.steps.length > 0;
+  const canConfirm = allChecked && !!draft.anchor;
+  const btn = $('stageConfirmBtn'); if (!btn) return;
+  btn.disabled = !canConfirm;
+  btn.textContent = canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续';
+}
+
+function pickAnchorChip(i){
+  const chips = document.querySelectorAll('.anchor-key');
+  chips.forEach((c, j) => c.classList.toggle('sel', j === i));
+  const sel = chips[i];
+  if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
+  updateStageConfirmBtn();
+}
+
+function useCustomAnchor(){
+  const inp = $('anchorCustomInput'); if (!inp) return;
+  const v = (inp.value || '').trim();
+  if (!v){ toast('先写一个锚点'); return; }
+  draft.anchor = v;
+  draft.userTypedAnchor = true;
+  // 高亮已选中的自定义（移除其他 keys 的 sel）
+  document.querySelectorAll('.anchor-key').forEach(c => c.classList.remove('sel'));
+  inp.classList.add('anchor-input-active');
+  toast('已设置锚点：在「' + v + '」之后');
+  updateStageConfirmBtn();
 }
 
 /* ---------- Stage 3：身份 + 最终确认 ---------- */
