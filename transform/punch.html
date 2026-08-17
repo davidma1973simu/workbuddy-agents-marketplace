@@ -376,6 +376,14 @@
     cursor: pointer; font-family: inherit; transition: all .2s;
   }
   .anchor-submit:hover { background: var(--green); }
+  .anchor-feedback {
+    margin-top: 10px; padding: 12px 14px; border-radius: 12px;
+    background: var(--green-50); border: 1px solid var(--green-light);
+    color: var(--ink); font-size: 13.5px; line-height: 1.7;
+    transition: all .3s ease;
+  }
+  .anchor-feedback b { color: var(--green-deep); }
+  .anchor-feedback:empty { display: none; }
   .cta-confirm.loading { opacity: .6; pointer-events: none; }
   .ai-out-box {
     margin-top: 12px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px;
@@ -958,10 +966,7 @@ function renderTodayDraft(anchors){
     <div class="suggest-card">
       <div class="sc-tag">第 2 步 · 今日行动 + 锚点</div>
       <h2 class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</h2>
-      <div class="sc-desc">勾完步骤，再点确认。</div>
-
-      <div class="sc-field">今日小步骤（点击勾选，完成一项删除一项）</div>
-      <div class="step-list" id="stepList">${stepsHtml}</div>
+      <div class="sc-desc">先定触发时刻，再勾完步骤，点确认开始。</div>
 
       <div class="sc-field">什么时候做？选一个触发时刻</div>
       <div class="anchor-grid" id="anchorGrid">
@@ -971,6 +976,10 @@ function renderTodayDraft(anchors){
           <button type="button" class="anchor-submit" onclick="useCustomAnchor()">使用这个</button>
         </div>
       </div>
+      <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。' : '选一个时刻，让今天的行动自动发生。'}</div>
+
+      <div class="sc-field">今日小步骤（点击勾选，完成一项删除一项）</div>
+      <div class="step-list" id="stepList">${stepsHtml}</div>
 
       <button class="cta-confirm" id="stageConfirmBtn" onclick="goIdentityStage()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续'}</button>
       <div class="ai-out-box" id="aiOut"></div>
@@ -1011,7 +1020,16 @@ function pickAnchorChip(i){
   chips.forEach((c, j) => c.classList.toggle('sel', j === i));
   const sel = chips[i];
   if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
+  draft.userTypedAnchor = false;
+  const inp = $('anchorCustomInput');
+  if (inp) inp.classList.remove('anchor-input-active');
+  anchorFeedbackSay('👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。');
   updateStageConfirmBtn();
+}
+
+function anchorFeedbackSay(html){
+  const fb = $('anchorFeedback');
+  if (fb) fb.innerHTML = html;
 }
 
 function useCustomAnchor(){
@@ -1023,17 +1041,12 @@ function useCustomAnchor(){
   // 高亮已选中的自定义（移除其他 keys 的 sel）
   document.querySelectorAll('.anchor-key').forEach(c => c.classList.remove('sel'));
   inp.classList.add('anchor-input-active');
+  anchorFeedbackSay('👋 你会在「<b>' + escapeHtml(v) + '</b>」之后做今天的行动。这个时刻很自然，做起来会更顺。');
   toast('已设置锚点：在「' + v + '」之后');
   updateStageConfirmBtn();
 }
 
 /* ---------- Stage 3：身份 + 最终确认 ---------- */
-function pickAnchorChip(i){
-  const chips = document.querySelectorAll('#anchorChips .sc-chip');
-  chips.forEach((c, j) => c.classList.toggle('sel', j === i));
-  const sel = chips[i];
-  if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
-}
 
 function goIdentityStage(){
   if (!draft.micro){ toast('今日行动还没准备好'); return; }
