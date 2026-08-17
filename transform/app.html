@@ -98,6 +98,12 @@
   [data-theme="dark"] textarea { background: var(--surface); }
   [data-theme="dark"] input:focus,
   [data-theme="dark"] textarea:focus { background: #0F1311; }
+  [data-theme="dark"] input::placeholder,
+  [data-theme="dark"] textarea::placeholder,
+  [data-theme="dark"] .app-title-custom::placeholder,
+  [data-theme="dark"] .essence-nature::placeholder,
+  [data-theme="dark"] .essence-insight::placeholder,
+  [data-theme="dark"] .g-label::placeholder { color: #8FA8A2; opacity: 1; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-font-smoothing: antialiased; }
   body {
@@ -530,6 +536,16 @@
     border-radius: var(--radius-lg);
     padding: 16px 20px;
     margin-bottom: 16px;
+  }
+  .app-block.far-block { margin-top: 28px; border-color: var(--amber); background: var(--amber-soft); }
+  [data-theme="dark"] .app-block.far-block { background: rgba(186,117,23,.08); }
+  .app-divider {
+    display: flex; align-items: center; gap: 10px; margin: 24px 0 12px;
+    font-size: 12px; font-weight: 700; color: var(--ink-3);
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .app-divider::before, .app-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--line-2);
   }
   .app-title {
     font-size: 13px; font-weight: 700; color: var(--green-deep);
@@ -1668,8 +1684,9 @@
       </div>
 
       <!-- ③ 远应用：在近应用完整前锁定；同样的流程 -->
-      <label class="locked-label" id="farAppLockLabel">③ 远应用：换个<u>完全不同的场景</u>，这个新认知还能用吗？</label>
-      <div class="app-block locked" id="farAppBlock" data-type="far">
+      <div class="app-divider">远应用 · 迁移到完全不同的场景</div>
+      <label class="locked-label" id="farAppLockLabel">③ 远应用：换个<u>完全不同的行业 / 角色 / 场景</u>，这个新认知还能用吗？</label>
+      <div class="app-block far-block locked" id="farAppBlock" data-type="far">
         <div class="app-title">远应用（陌生的场景）</div>
         <div class="lock-overlay"><span>先完成近应用，让Transform打过分，再解锁这里</span></div>
 
@@ -2721,9 +2738,9 @@ function generateLocalTitles(type) {
     '在「' + scenario + '」相关的团队协作场景中试一次',
     '把这次认知用到一个我常接触的同行场景'
   ] : [
-    '把「' + core + '」迁移到完全不同的领域试一次',
-    '在陌生但结构相似的场景里验证这个判断',
-    '把这次认知用到一个一直回避的挑战上'
+    '把「' + core + '」迁移到完全不同的行业（如把培训师的方法用到医疗 / 教育 / 餐饮）',
+    '让一个完全不同的角色（如产品经理 / 家长 / 医生 / 厨师）用这个认知解决他的问题',
+    '把这个判断用在我一直回避的陌生挑战上，看它能不能跨过去'
   ];
 }
 
@@ -2757,6 +2774,8 @@ async function aiAppFeedback(type) {
         renderAppFeedback(type, data);
         saveDraft();
         if (type === 'near' && isNearComplete()) unlockFarApp();
+        // 同时支持资源确认时也解锁
+        if (type === 'near' && state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed) unlockFarApp();
         checkNext2();
         toast('Transform评价完成');
     } else {
@@ -2775,10 +2794,17 @@ async function recommendApplyTitles(type, btn) {
   const e = state.data.essence || {};
   if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
   if (btn) btn.classList.add('loading');
-  const label = type === 'near' ? '你熟悉的场景' : '你陌生但主题相关的场景';
   const baseContext = `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n重要性：${state.data.impact || '?'}/5\n接受费力：${state.data.effort || '?'}/5\n`;
+  let label, typeRule;
+  if (type === 'near') {
+    label = '你熟悉的场景';
+    typeRule = '【近应用 · 熟悉的场景】同一行业 / 同一角色 / 直接相关的工作场景，用户上手就能试。';
+  } else {
+    label = '完全陌生的场景';
+    typeRule = '【远应用 · 陌生的场景】必须满足下列全部条件才合格：\n- 跨行业（如用户的本职不是 X 行业，标题要来自 X 行业之外的领域）\n- 跨角色（如用户是培训师，则不要给培训师的场景；给产品经理/医生/家长/厨师等）\n- 让人一眼觉得"这个和我熟悉的差很远"\n- 让人可以靠迁移"这个新认知"去应对那个陌生场景，而不是简单的套用。';
+  }
   try {
-    const r = await aiCall(`${baseContext}\n任务：基于这个新认知，推荐 3 个具体的${label}标题。\n【硬性要求】每个标题 ≤30 字，直接说事，不要寒暄、不要解释为什么。\n返回 JSON 数组（严格）：\n["标题1","标题2","标题3"]`);
+    const r = await aiCall(`${baseContext}\n任务：基于这个新认知，推荐 3 个具体的"${label}"标题。\n${typeRule}\n【硬性要求】每个标题 ≤30 字，直接说事，不要寒暄、不要解释为什么。\n返回 JSON 数组（严格）：\n["标题1","标题2","标题3"]`);
     const arr = parseTitleList(r);
     if (arr && arr.length === 3) {
       state.data[type + 'Recommends'] = arr;
@@ -3163,6 +3189,7 @@ function confirmResources(type) {
     confirmed: true
   };
   saveDraft();
+  if (type === 'near' && isNearComplete()) unlockFarApp();
   checkNext2();
   toast('「' + (type === 'near' ? '近应用' : '远应用') + '」支持资源已确认');
 }
@@ -3171,11 +3198,11 @@ function checkNext2() {
   const nearOk = isNearComplete();
   const far = state.data.farScenario || {};
   const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && state.data.farFeedback;
-  // 远应用可选：近应用完整即可完成；远应用若填写则也须完整
-  const appOk = nearOk || farOk;
+  // 两个都完成（近应用 + 远应用 + 各自的支持资源都确认）
+  const appOk = nearOk && farOk;
   const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
   const farResOk = state.data.farResourcesPlan && state.data.farResourcesPlan.confirmed;
-  const resourcesOk = nearResOk || farResOk;
+  const resourcesOk = nearResOk && farResOk;
   const ok = appOk && resourcesOk;
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
