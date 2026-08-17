@@ -331,7 +331,8 @@
     font-size: 14px; line-height: 1.5;
   }
   .step-item:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(14,107,80,.08); }
-  .step-item.checked { animation: step-pop .3s ease; }
+  .step-item.checked { animation: step-pop .3s ease; opacity: .6; }
+  .step-item.checked .step-text { text-decoration: line-through; text-decoration-color: var(--ink-3); }
   .step-check {
     width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
     border: 2px solid var(--line-2); background: transparent;
@@ -978,7 +979,7 @@ function renderTodayDraft(anchors){
       </div>
       <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。' : '选一个时刻，让今天的行动自动发生。'}</div>
 
-      <div class="sc-field">今日小步骤（点击勾选，完成一项删除一项）</div>
+      <div class="sc-field">今日小步骤（点击打勾，标成已完成）</div>
       <div class="step-list" id="stepList">${stepsHtml}</div>
 
       <button class="cta-confirm" id="stageConfirmBtn" onclick="goIdentityStage()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续'}</button>
@@ -993,14 +994,13 @@ function toggleStep(i){
   const idx = draft.doneSteps.indexOf(i);
   if (idx >= 0) draft.doneSteps.splice(idx, 1);
   else draft.doneSteps.push(i);
-  // 只重渲染 checklist（不破坏用户当前锚点选择/输入焦点）
+  // 保留条目，勾选后加删除线（不消失）
   const list = $('stepList'); if (!list) return;
   const done = draft.doneSteps;
-  // 简化：直接重新生成整个步骤列表（已勾选的从 DOM 移除，达到"删除"效果）
   list.innerHTML = draft.steps.map((s, i) => {
-    if (done.indexOf(i) >= 0) return '';
-    return `<div class="step-item" onclick="toggleStep(${i})" data-i="${i}">
-      <span class="step-check"></span>
+    const isDone = done.indexOf(i) >= 0;
+    return `<div class="step-item${isDone ? ' checked' : ''}" onclick="toggleStep(${i})" data-i="${i}">
+      <span class="step-check">${isDone ? '✓' : ''}</span>
       <span class="step-text">${escapeHtml(s)}</span>
     </div>`;
   }).join('');
