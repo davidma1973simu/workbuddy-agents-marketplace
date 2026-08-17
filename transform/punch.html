@@ -100,6 +100,10 @@
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
   .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
+  /* 主题切换按钮双 span（t-light 默认显示，t-dark 仅深色时显示） */
+  .t-dark { display: none; }
+  [data-theme="dark"] .t-light { display: none; }
+  [data-theme="dark"] .t-dark { display: inline; }
   @media (max-width: 720px) {
     .topbar { gap: 6px; }
     .topbar .back { order: 1; }
@@ -318,6 +322,22 @@
   .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
   .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
   .sc-rationale { background: var(--amber-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 6px 0 2px; }
+  .sc-details {
+    margin: 12px 0;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+  }
+  .sc-details summary {
+    font-size: 13.5px; font-weight: 700; color: var(--green-deep);
+    cursor: pointer; user-select: none;
+    list-style: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sc-details summary::-webkit-details-marker { display: none; }
+  .sc-details[open] summary { margin-bottom: 6px; }
+  .sc-details summary:hover { color: var(--green); }
   .sc-row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .sc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .sc-chip {
@@ -449,7 +469,7 @@
     <a class="gn-item on" href="punch.html">每日改变</a>
     <a class="gn-item" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
-  </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
+  </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
     <button class="arch-btn" onclick="location.href='growth.html#experiments'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
   </div>
 
@@ -1003,6 +1023,13 @@ function applyDraft(d){
 function renderPlanDraft(){
   const area = $('punchArea');
   const N = draft.planLength || 7;
+  // 7 天整体任务（保留 + 折叠/展开）
+  const daysHtml = draft.days.map((d, i) => `
+    <div class="plan-day${i === 0 ? ' today' : ''}">
+      <span class="plan-day-label">Day ${i + 1}${i === 0 ? '（今天）' : ''}</span>
+      <span class="plan-day-text">${escapeHtml(d)}</span>
+    </div>
+  `).join('');
   area.innerHTML = `
     <div class="suggest-card">
       <div class="sc-tag">第 1 步 · 实验拆解</div>
@@ -1011,6 +1038,11 @@ function renderPlanDraft(){
 
       <div class="sc-field">今天要做的微行动</div>
       <div class="sc-micro-card">${escapeHtml(draft.micro)}</div>
+
+      <details class="sc-details">
+        <summary>📅 查看本周 ${N} 天整体任务（Day 1–${N}）</summary>
+        <div class="plan-list" style="margin-top:10px;">${daysHtml}</div>
+      </details>
 
       <button class="cta-confirm" onclick="goTodayDraft()">确认，开始今天 →</button>
       <div class="ai-out-box" id="aiOut"></div>

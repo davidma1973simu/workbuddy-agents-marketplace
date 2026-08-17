@@ -363,9 +363,7 @@
     <a class="nav-link primary" href="act.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       伴我改变
-    </a>
-    <a href="growth-en.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">EN</a>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
+    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
   </div>
 
   <div class="page-head">
@@ -452,7 +450,7 @@
         <span class="expand-icon">🔍</span>
         <span class="expand-title">
           <span class="expand-name">模式识别 Pattern Recognition</span>
-          <span class="expand-sub">知行跨时间发现的重复模式</span>
+          <span class="expand-sub">Transform跨时间发现的重复模式</span>
         </span>
         <span class="expand-count" id="patternsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -511,7 +509,7 @@ function getAI(){
 }
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey){ toast('配置 API Key 后，知行 AI 才能帮你跨时间发现模式'); return null; }
+  if (!cfg.apiKey){ toast('配置 API Key 后，Transform AI 才能帮你跨时间发现模式'); return null; }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 5;
   try {
@@ -719,7 +717,7 @@ function renderPatterns(){
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
     area.innerHTML = `<div class="pattern-cta">
-      <h3>知行发现的跨时间模式</h3>
+      <h3>Transform 发现的跨时间模式</h3>
       <p>基于你 ${archive.length} 次认知梳理 + ${actions.length} 个行为实验，识别到 ${saved.patterns.length} 个重复模式。分析于 ${fmtDate(saved.generatedAt)}。</p>
       <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">重新分析</button><button class="btn-ghost" onclick="clearPatterns()">清除</button></div>
     </div>` +
@@ -727,17 +725,17 @@ function renderPatterns(){
       <div class="p-title">${escapeHtml(p.title)}<span class="tag">模式 ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
-    </div>`).join('') + `<div class="pattern-meta">知行 · Growth Memory Agent</div>`;
+    </div>`).join('') + `<div class="pattern-meta">Transform · Growth Memory Agent</div>`;
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「伴我洞察」或「伴我改变」，知行才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
+    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「伴我洞察」或「伴我改变」，Transform才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">
-    <h3>知行帮你跨时间发现模式</h3>
+    <h3>Transform 帮你跨时间发现模式</h3>
     <p>AI 会阅读你全部 ${archive.length} 次认知梳理与 ${actions.length} 个行为实验，找出「你反复出现的问题」「一直想成为的角色」「重复踩过的阻力」——这才是成长资产的长期价值。</p>
-    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">知行帮我发现模式</button></div>
+    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform帮我发现模式</button></div>
   </div>
   <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
   // 无 API Key 时给出基础素材提示
@@ -765,7 +763,15 @@ async function aiDiscoverPatterns(regen){
   try {
     const j = JSON.parse(text.replace(/```json|```/g, '').trim());
     if (!j.patterns || !j.patterns.length) throw new Error('no patterns');
-    localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: j.patterns, generatedAt: new Date().toISOString() }));
+    // 去重（按 title）+ 限制最多 4 个
+    const seen = new Set();
+    const uniquePatterns = j.patterns.filter(p => {
+      const t = (p && p.title || '').trim();
+      if (!t || seen.has(t)) return false;
+      seen.add(t);
+      return true;
+    }).slice(0, 4);
+    localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: uniquePatterns, generatedAt: new Date().toISOString() }));
     renderPatterns();
     $('patterns').scrollIntoView({ behavior: 'smooth' });
   } catch(err){
