@@ -169,6 +169,37 @@
   .tf-stat b { font-size: 24px; font-weight: 800; color: var(--green); line-height: 1; }
   .tf-stat em { font-size: 10px; color: var(--ink-3); font-style: normal; }
   .tf-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 10px; }
+  .tf-section {
+    text-align: left;
+    background: var(--green-50); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .tf-section-label {
+    font-size: 12px; font-weight: 700; color: var(--green-deep);
+    letter-spacing: .4px; margin-bottom: 4px;
+  }
+  .tf-section-body {
+    font-size: 14px; color: var(--ink); line-height: 1.7;
+  }
+  .tf-progress {
+    text-align: left; margin: 14px 0 12px;
+  }
+  .tf-progress-label {
+    font-size: 12px; font-weight: 700; color: var(--ink-2);
+    margin-bottom: 6px;
+  }
+  .tf-progress-bar {
+    height: 10px; border-radius: 999px; background: var(--green-50);
+    overflow: hidden; position: relative;
+  }
+  .tf-progress-fill {
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--green), var(--green-3));
+    transition: width .6s ease;
+  }
+  .tf-progress-text {
+    font-size: 12px; color: var(--ink-3); margin-top: 4px;
+  }
   .tf-actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -626,18 +657,34 @@ function renderPunch(){
     <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← 返回</div>
   </div>
 
-  <!-- 今日反馈（AI 对话式，确认后闭环） -->
+  <!-- 今日反馈（具体 + 意义 + 进度 + 确认闭环） -->
   <div class="today-feedback hidden" id="todayFeedbackWrap">
     <div class="tf-card">
       <div class="tf-crown" id="tfCrown">🎉</div>
       <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
-      <div class="tf-body" id="tfBody"></div>
+
+      <div class="tf-section">
+        <div class="tf-section-label">✅ 今天完成</div>
+        <div class="tf-section-body" id="tfDone"></div>
+      </div>
+
+      <div class="tf-section">
+        <div class="tf-section-label">💡 对改变的意义</div>
+        <div class="tf-section-body" id="tfBody"></div>
+      </div>
+
+      <div class="tf-progress" id="tfProgress">
+        <div class="tf-progress-label">本实验进度</div>
+        <div class="tf-progress-bar"><div class="tf-progress-fill" id="tfProgressFill"></div></div>
+        <div class="tf-progress-text" id="tfProgressText">0 / 7 天</div>
+      </div>
+
       <div class="tf-stats">
         <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
         <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
         <div class="tf-stat"><span>身份票</span><b id="tfVotes">+1</b><em>张</em></div>
       </div>
-      <div class="tf-sub" id="tfSub"></div>
+
       <div class="tf-actions">
         <button class="cta-ok" onclick="confirmDone()">✓ 确认 · 闭环</button>
         <a class="btn btn-ghost" href="growth.html#experiments">看行为档案</a>
@@ -729,34 +776,62 @@ async function showTodayFeedback(){
   const total = current.totalDone || 0;
   const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
   const micro = (todayPlan && todayPlan.micro) || current.input;
+  const anchor = current.anchor && current.anchor.after;
+  const steps = (todayPlan && todayPlan.steps) || [];
   const votes = countVotes();
   const isFirst = day <= 0;
-  // fallback 文案：当 AI 没响应时使用，朴素具体不鸡汤
-  const fallback = isFirst
-    ? '今天的目标已记录。完成后来点「做到了」。'
-    : ('第 ' + day + ' 天做到了。今天的事已记录，明天的小事已就位。');
+  const targetDays = current.targetDays || 7;
+
+  // 1. 标题
   $('tfCrown').textContent = isFirst ? '🚀' : ((day > 0 && day % 7 === 0) ? '🏆' : '🎉');
   $('tfTitle').textContent = isFirst ? '今天的行为实验开始了' : ('第 ' + day + ' 天做到了！');
-  $('tfBody').textContent = fallback;
+
+  // 2. 今日完成（具体）
+  const doneHtml = steps.length
+    ? '在「' + (anchor || '那个时刻') + '」之后，<b>' + escapeHtml(micro) + '</b>。<br>完成的小步骤：' + steps.map(s => escapeHtml(s)).join(' · ')
+    : '在「' + (anchor || '那个时刻') + '」之后，<b>' + escapeHtml(micro) + '</b>。';
+  $('tfDone').innerHTML = doneHtml;
+
+  // 3. 对改变的意义（AI 优先，否则本地拼接）
+  const fallbackMeaning = (() => {
+    const goal = current.input || '改变';
+    const identity = current.identity || ('正在成为会完成的人');
+    if (isFirst) return '这是「' + goal + '」的起点。从今天起，每一个完成都在为「' + identity + '」投票。';
+    if (streak >= 3) return '已连续 ' + streak + ' 天。这个动作正从「刻意」变成「顺手」——这正是改变在发生的样子。';
+    return '这是「' + goal + '」的第 ' + day + ' 天。每完成一次，都是在为「' + identity + '」投票。';
+  })();
+  $('tfBody').textContent = fallbackMeaning;
+
+  // 4. 进度条
+  const pct = Math.min(100, Math.round((total / targetDays) * 100));
+  $('tfProgressFill').style.width = pct + '%';
+  $('tfProgressText').textContent = '已完成 ' + total + ' / ' + targetDays + ' 天 · ' + pct + '%';
+
+  // 5. 数据
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
-  $('tfSub').textContent = isFirst ? '你今天的目标已记录。做完它，再回来点「做到了」。' : '今天的事已记录，明天的小事已就位。';
+
   w.classList.remove('hidden');
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // 6. AI 反馈覆盖"对改变的意义"
   try {
     if (getAI().apiKey && micro) {
       const aiResp = await aiCall(
-        '用户刚完成了一个「每日改变」中第 ' + day + ' 天的微行动：「' + micro + '」。\n' +
-        '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
-        '请用 2 句话（≤ 60 字）给出具体反馈：\n' +
-        '1. 具体肯定这次完成的行为本身（不是泛泛的"你真棒"），点出这个行为的价值和此刻的意义；\n' +
-        '2. 如果连续天数 > 3，点出"从刻意到自然"的能力跃迁；\n' +
-        '禁用"坚持"这个词。不要说教。'
+        '用户刚完成了一个「每日改变」实验的第 ' + day + ' 天。\n' +
+        '今天具体做了：在「' + (anchor || '未指定') + '」之后，' + micro + '。\n' +
+        '完成的小步骤：' + (steps.join('、') || '（无细分步骤）') + '。\n' +
+        '用户的大目标：「' + (current.input || '') + '」，目标身份：「' + (current.identity || '待定') + '」。\n' +
+        '当前状态：连续 ' + streak + ' 天，累计 ' + total + ' 天 / ' + targetDays + ' 天。\n' +
+        '请写 2 句（≤ 80 字），讲清楚这件事对"成为' + (current.identity || '更好的自己') + '"的贡献：\n' +
+        '1. 第一句：把今天做的事与用户的最终目标/身份连接起来（不是泛泛的"你真棒"）。\n' +
+        '2. 第二句：如果连续 ≥ 3 天，说"从刻意到自然"的能力跃迁；如果第 1 天，说"第一票"；否则说"积累中的坚持"。\n' +
+        '禁用"坚持"这个词，不要说教。'
       );
-      const aiText = aiText(aiResp);
-      if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 200);
-      else if (aiErr(aiResp)) console.warn('AI feedback failed:', aiErr(aiResp).msg);
+      const aiTextVal = aiText(aiResp);
+      if (aiTextVal) $('tfBody').textContent = aiTextVal.trim().slice(0, 200);
+      else if (aiErr(aiResp)) console.warn('AI meaning failed:', aiErr(aiResp).msg);
     }
   } catch(e){}
 }
