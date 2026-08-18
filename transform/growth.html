@@ -317,6 +317,45 @@
     background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md);
   }
   .modal .row { display: flex; gap: 10px; margin-top: 20px; }
+  /* ===== 资产编辑（通用：编辑/归类/删除） ===== */
+  .asset-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .asset-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink-2); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .asset-btn:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .asset-btn.del:hover { background: var(--red-soft, #fdecea); color: #c0392b; border-color: #c0392b; }
+  .asset-btn.tag:hover { background: var(--amber-soft); color: #8B5A1B; border-color: var(--amber); }
+  .modal textarea {
+    width: 100%; min-height: 76px; padding: 12px 14px; font-family: inherit; font-size: 14.5px;
+    color: var(--ink); background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.6;
+  }
+  .modal .tag-input-row { display: flex; gap: 8px; align-items: center; }
+  .modal .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .modal .tag-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--amber-soft); color: #8B5A1B;
+    border: 1px solid rgba(217,123,41,.3); border-radius: 999px;
+    padding: 4px 11px; font-size: 12.5px; font-weight: 600;
+  }
+  .modal .tag-item .x { cursor: pointer; opacity: .7; font-weight: 800; }
+  .modal .tag-item .x:hover { opacity: 1; color: #c0392b; }
+  .modal .btn-ghost, .modal .btn-ok {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .modal .btn-ghost { background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--line-2); }
+  .modal .btn-ghost:hover { border-color: var(--green); color: var(--green-deep); }
+  .modal .btn-ok { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(14,107,80,.3); }
+  .modal .btn-ok:hover { background: var(--green-deep); }
+  .modal .btn-danger {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    background: #c0392b; color: #fff; border: none; cursor: pointer; font-family: inherit;
+  }
   .toast {
     position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 20px);
     background: var(--ink); color: #fff; font-size: 14px; font-weight: 600;
@@ -479,6 +518,11 @@
   </div>
 </div>
 
+<!-- 通用资产编辑弹窗（编辑 / 归类 / 删除） -->
+<div class="modal-mask" id="assetModalMask" onclick="if(event.target===this)closeAssetModal()">
+  <div class="modal" id="assetModalBox"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -611,7 +655,7 @@ function renderModels(){
     box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「伴我洞察」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
     return;
   }
-  box.innerHTML = models.map(s => {
+  box.innerHTML = models.map((s, i) => {
     const fw = (s.mentalModel || '').trim();
     const changed = (s.reflection && s.reflection.changed || '').trim();
     return `<div class="model">
@@ -619,6 +663,7 @@ function renderModels(){
       ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
       ${changed ? `<div class="m-changed"><b>改变了什么：</b>${escapeHtml(changed)}</div>` : ''}
       <div class="m-date">复盘于 ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+      ${assetActions('model', s.id || i)}
     </div>`;
   }).join('');
 }
@@ -656,6 +701,7 @@ function renderInsights(){
       ${learned ? `<div class="i-row"><b>学到</b>${escapeHtml(learned)}</div>` : ''}
       ${(s.tags || []).length ? `<div class="i-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' · 已复盘' : ''}</div>
+      ${assetActions('insight', s.id)}
     </div>`;
   }).join('');
 }
@@ -704,6 +750,7 @@ function renderActions(){
         <a class="mini solid" href="act.html?id=${a.id}">去做 / 续接</a>
         <button class="mini" onclick="exportOne('${a.id}')">导出</button>
       </div>
+      ${assetActions('action', a.id)}
     </div>`;
   }).join('');
 }
@@ -725,6 +772,7 @@ function renderPatterns(){
       <div class="p-title">${escapeHtml(p.title)}<span class="tag">模式 ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
+      ${assetActions('pattern', i)}
     </div>`).join('') + `<div class="pattern-meta">Transform · Growth Memory Agent</div>`;
     return;
   }
@@ -780,6 +828,195 @@ async function aiDiscoverPatterns(regen){
   }
 }
 function clearPatterns(){ localStorage.removeItem(LS_PATTERNS); renderPatterns(); }
+
+/* ===================== 资产编辑（通用：编辑 / 归类 / 删除） ===================== */
+let assetModalCtx = null; // { type, id, tagOnly }
+
+function assetActions(type, id){
+  return `<div class="asset-actions">
+    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ 编辑</button>
+    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 归类</button>
+    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 删除</button>
+  </div>`;
+}
+
+// 定位资产对象 + 保存
+function assetFind(type, id){
+  if (type === 'insight' || type === 'model'){
+    return loadArchive().find(s => String(s.id) === String(id));
+  }
+  if (type === 'action') return loadActions().find(a => String(a.id) === String(id));
+  if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns) return saved.patterns[parseInt(id)];
+  }
+  return null;
+}
+function assetSave(type, id, mutate){
+  if (type === 'insight' || type === 'model'){
+    const list = loadArchive();
+    const i = list.findIndex(s => String(s.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+  } else if (type === 'action'){
+    const list = loadActions();
+    const i = list.findIndex(a => String(a.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+  } else if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns && saved.patterns[parseInt(id)]){ mutate(saved.patterns[parseInt(id)]); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
+  }
+  renderAll();
+}
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); }
+
+function openAssetModal(html){
+  const mask = $('assetModalMask'); const box = $('assetModalBox');
+  if (!mask || !box) return;
+  box.innerHTML = html;
+  mask.classList.add('show');
+}
+function closeAssetModal(){
+  const mask = $('assetModalMask');
+  if (mask) mask.classList.remove('show');
+  assetModalCtx = null;
+}
+
+// 编辑
+function openAssetEdit(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('找不到这条资产'); return; }
+  assetModalCtx = { type, id };
+  const e = obj.essence || {};
+  const r = obj.reflection || {};
+  let fields = '';
+  if (type === 'model'){
+    fields = `
+      <label>场景</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>认知框架</label><textarea id="ae2">${escapeHtml(obj.mentalModel || '')}</textarea>
+      <label>改变了什么</label><textarea id="ae3">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'insight'){
+    fields = `
+      <label>场景</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>本质</label><textarea id="ae2">${escapeHtml(e.nature || '')}</textarea>
+      <label>洞察</label><textarea id="ae3">${escapeHtml(e.insight || '')}</textarea>
+      <label>学到</label><textarea id="ae4">${escapeHtml(r.learned || '')}</textarea>`;
+  } else if (type === 'action'){
+    fields = `
+      <label>目标 / 输入</label><textarea id="ae1">${escapeHtml(obj.input || obj.goal || '')}</textarea>
+      <label>结果</label><textarea id="ae2">${escapeHtml(obj.result || '')}</textarea>
+      <label>新习惯</label><textarea id="ae3">${escapeHtml(obj.habit || '')}</textarea>
+      <label>改变</label><textarea id="ae4">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'pattern'){
+    fields = `
+      <label>模式标题</label><input id="ae1" value="${escapeHtml(obj.title || '')}">
+      <label>支撑证据</label><textarea id="ae2">${escapeHtml(obj.evidence || '')}</textarea>
+      <label>洞察与建议</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
+  }
+  openAssetModal(`
+    <h3>✏️ 编辑${assetTypeName(type)}</h3>
+    ${fields}
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">保存</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+    </div>`);
+}
+function saveAssetEdit(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const v = i => { const el = document.getElementById(i); return el ? el.value.trim() : ''; };
+  assetSave(ctx.type, ctx.id, obj => {
+    const e = obj.essence || (obj.essence = {});
+    const r = obj.reflection || (obj.reflection = {});
+    if (ctx.type === 'model'){
+      obj.scenario = v('ae1'); obj.mentalModel = v('ae2'); r.changed = v('ae3');
+    } else if (ctx.type === 'insight'){
+      obj.scenario = v('ae1'); e.nature = v('ae2'); e.insight = v('ae3'); r.learned = v('ae4');
+    } else if (ctx.type === 'action'){
+      obj.input = v('ae1'); obj.result = v('ae2'); obj.habit = v('ae3'); r.changed = v('ae4');
+    } else if (ctx.type === 'pattern'){
+      obj.title = v('ae1'); obj.evidence = v('ae2'); obj.insight = v('ae3');
+    }
+  });
+  closeAssetModal();
+  toast('已保存');
+}
+
+// 归类（标签）
+function openAssetTag(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('找不到这条资产'); return; }
+  assetModalCtx = { type, id };
+  const tags = obj.tags || [];
+  renderTagModal(tags);
+}
+function renderTagModal(tags){
+  const ctx = assetModalCtx; if (!ctx) return;
+  openAssetModal(`
+    <h3>🏷 归类${assetTypeName(ctx.type)}</h3>
+    <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">给这条资产打标签，便于日后按主题查找。</p>
+    <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
+    <div class="tag-input-row" style="margin-top:10px;">
+      <input id="newTagInput" placeholder="新标签" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
+      <button class="btn-ok" onclick="addAssetTag()">添加</button>
+    </div>
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">完成</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+    </div>`);
+}
+function addAssetTag(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const inp = $('newTagInput'); if (!inp) return;
+  const t = (inp.value || '').trim(); if (!t) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = obj.tags || [];
+    if (!obj.tags.includes(t)) obj.tags.push(t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+  inp.value = '';
+}
+function removeAssetTag(t){
+  const ctx = assetModalCtx; if (!ctx) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = (obj.tags || []).filter(x => x !== t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+}
+
+// 删除
+function openAssetDelete(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('找不到这条资产'); return; }
+  assetModalCtx = { type, id };
+  const preview = (type === 'pattern') ? obj.title : (obj.scenario || obj.input || obj.goal || obj.title || '这条资产');
+  openAssetModal(`
+    <h3>🗑 删除${assetTypeName(type)}</h3>
+    <p style="font-size:14px;color:var(--ink);line-height:1.7;">确定删除「<b>${escapeHtml(String(preview).slice(0, 30))}</b>」吗？此操作不可撤销。</p>
+    <div class="row">
+      <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">确认删除</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+    </div>`);
+}
+function confirmDeleteAsset(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  if (ctx.type === 'insight' || ctx.type === 'model'){
+    const list = loadArchive().filter(s => String(s.id) !== String(ctx.id));
+    localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
+  } else if (ctx.type === 'action'){
+    const list = loadActions().filter(a => String(a.id) !== String(ctx.id));
+    localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
+  } else if (ctx.type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns){ saved.patterns.splice(parseInt(ctx.id), 1); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
+  }
+  closeAssetModal();
+  renderAll();
+  toast('已删除');
+}
+function assetTypeName(type){
+  return { model: '认知模型', insight: '洞察', action: '行为实验', pattern: '模式' }[type] || '';
+}
 
 /* ===================== 导出 ===================== */
 function exportOne(id){

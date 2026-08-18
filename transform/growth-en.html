@@ -217,7 +217,7 @@
   .section-title svg { color: var(--green); flex-shrink: 0; }
   .section-title .sec-sub { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: auto; }
 
-  /* 认知模型卡 */
+  /* mental model卡 */
   .model { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 20px 16px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
   .model .m-scenario { font-size: 13px; font-weight: 700; color: var(--green-deep); }
   .model .m-framework {
@@ -228,7 +228,7 @@
   .model .m-changed { font-size: 13.5px; color: var(--ink-2); margin-top: 10px; line-height: 1.6; }
   .model .m-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
 
-  /* 洞察卡 */
+  /* Insight卡 */
   .insight { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
   .insight .i-scenario { font-size: 14px; font-weight: 700; color: var(--ink); }
   .insight .i-row { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
@@ -240,7 +240,7 @@
   .filter-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .18s; }
   .filter-chip.on { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
 
-  /* 行为实验卡 */
+  /* behavior experiment卡 */
   .action {
     position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
     padding: 20px 20px 14px; margin-bottom: 14px; box-shadow: var(--shadow);
@@ -282,7 +282,7 @@
   .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
   .mini.solid:hover { background: var(--green); }
 
-  /* 模式识别 */
+  /* pattern识别 */
   .pattern-cta {
     background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
     border: 1.5px solid var(--green); border-radius: var(--radius-lg); padding: 22px;
@@ -317,6 +317,45 @@
     background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md);
   }
   .modal .row { display: flex; gap: 10px; margin-top: 20px; }
+  /* ===== 资产编辑（通用：编辑/归类/删除） ===== */
+  .asset-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .asset-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink-2); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .asset-btn:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .asset-btn.del:hover { background: var(--red-soft, #fdecea); color: #c0392b; border-color: #c0392b; }
+  .asset-btn.tag:hover { background: var(--amber-soft); color: #8B5A1B; border-color: var(--amber); }
+  .modal textarea {
+    width: 100%; min-height: 76px; padding: 12px 14px; font-family: inherit; font-size: 14.5px;
+    color: var(--ink); background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.6;
+  }
+  .modal .tag-input-row { display: flex; gap: 8px; align-items: center; }
+  .modal .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .modal .tag-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--amber-soft); color: #8B5A1B;
+    border: 1px solid rgba(217,123,41,.3); border-radius: 999px;
+    padding: 4px 11px; font-size: 12.5px; font-weight: 600;
+  }
+  .modal .tag-item .x { cursor: pointer; opacity: .7; font-weight: 800; }
+  .modal .tag-item .x:hover { opacity: 1; color: #c0392b; }
+  .modal .btn-ghost, .modal .btn-ok {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .modal .btn-ghost { background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--line-2); }
+  .modal .btn-ghost:hover { border-color: var(--green); color: var(--green-deep); }
+  .modal .btn-ok { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(14,107,80,.3); }
+  .modal .btn-ok:hover { background: var(--green-deep); }
+  .modal .btn-danger {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    background: #c0392b; color: #fff; border: none; cursor: pointer; font-family: inherit;
+  }
   .toast {
     position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 20px);
     background: var(--ink); color: #fff; font-size: 14px; font-weight: 600;
@@ -363,9 +402,7 @@
     <a class="nav-link primary" href="act-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       Guided Change
-    </a>
-    <a href="growth.html" class="lang-switch" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:13px;padding:8px 12px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line-2);font-family:inherit;cursor:pointer;text-decoration:none;transition:all .2s;flex-shrink:0;">中文</a>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
+    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
   </div>
 
   <div class="page-head">
@@ -452,7 +489,7 @@
         <span class="expand-icon">🔍</span>
         <span class="expand-title">
           <span class="expand-name">Pattern Recognition</span>
-          <span class="expand-sub">Repeated patterns Zhixing finds across time</span>
+          <span class="expand-sub">Repeated patterns Transform finds across time</span>
         </span>
         <span class="expand-count" id="patternsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -479,6 +516,11 @@
       <button class="btn-ghost" onclick="closeSettings()">Cancel</button>
     </div>
   </div>
+</div>
+
+<!-- Common asset editor modal (Edit / Tag / Delete) -->
+<div class="modal-mask" id="assetModalMask" onclick="if(event.target===this)closeAssetModal()">
+  <div class="modal" id="assetModalBox"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -511,7 +553,7 @@ function getAI(){
 }
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey){ toast('Set your API Key so Zhixing AI can find patterns across time'); return null; }
+  if (!cfg.apiKey){ toast('Set your API Key so Transform AI can find patterns across time'); return null; }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 5;
   try {
@@ -604,7 +646,7 @@ function toggleExpand(head){
   card.classList.toggle('open');
 }
 
-/* ===================== 认知模型（复盘产出） ===================== */
+/* ===================== mental model（复盘产出） ===================== */
 function renderModels(){
   const archive = loadArchive();
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
@@ -621,11 +663,12 @@ function renderModels(){
       ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
       ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
       <div class="m-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+      ${assetActions('model', s.id || i)}
     </div>`;
   }).join('');
 }
 
-/* ===================== 洞察库（含标签过滤） ===================== */
+/* ===================== Insight库（含标签过滤） ===================== */
 let insightFilter = '';
 function renderTagFilters(){
   const archive = loadArchive();
@@ -662,7 +705,7 @@ function renderInsights(){
   }).join('');
 }
 
-/* ===================== 行为实验 ===================== */
+/* ===================== behavior experiment ===================== */
 function renderActions(){
   const actions = loadActions();
   const box = $('actionList');
@@ -706,11 +749,12 @@ function renderActions(){
         <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
         <button class="mini" onclick="exportOne('${a.id}')">Export</button>
       </div>
+      ${assetActions('action', a.id)}
     </div>`;
   }).join('');
 }
 
-/* ===================== 模式识别 ===================== */
+/* ===================== pattern识别 ===================== */
 function renderPatterns(){
   const area = $('patternArea');
   let saved = null;
@@ -719,7 +763,7 @@ function renderPatterns(){
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
     area.innerHTML = `<div class="pattern-cta">
-      <h3>Patterns Zhixing found across time</h3>
+      <h3>Patterns Transform found across time</h3>
       <p>Based on your ${archive.length} insight sessions + ${actions.length} behavior experiments, ${saved.patterns.length} repeating patterns identified. Analyzed on ${fmtDate(saved.generatedAt)}。</p>
       <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">Re-analyze</button><button class="btn-ghost" onclick="clearPatterns()">Clear</button></div>
     </div>` +
@@ -727,17 +771,18 @@ function renderPatterns(){
       <div class="p-title">${escapeHtml(p.title)}<span class="tag">Pattern ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
-    </div>`).join('') + `<div class="pattern-meta">Zhixing · Growth Memory Agent</div>`;
+      ${assetActions('pattern', i)}
+    </div>`).join('') + `<div class="pattern-meta">Transform · Growth Memory Agent</div>`;
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="expand-empty">Not enough data to find patterns yet.<br>Complete a few Guided Insight or Guided Change sessions first, so Zhixing can see the problems, roles, and obstacles that keep recurring across time.</div>`;
+    area.innerHTML = `<div class="expand-empty">Not enough data to find patterns yet.<br>Complete a few Guided Insight or Guided Change sessions first, so Transform can see the problems, roles, and obstacles that keep recurring across time.</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">
-    <h3>Zhixing finds patterns across time</h3>
+    <h3>Transform finds patterns across time</h3>
     <p>AI reads all your ${archive.length} insight sessions and ${actions.length} behavior experiments to find \u201cproblems that keep recurring\u201d, \u201cthe role you keep wanting to become\u201d, and \u201cobstacles you keep tripping on\u201d \u2014 the real long-term value of growth assets.</p>
-    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Zhixing, find my patterns</button></div>
+    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform, find my patterns</button></div>
   </div>
   <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
   // 无 API Key 时给出基础素材提示
@@ -773,6 +818,195 @@ async function aiDiscoverPatterns(regen){
     area.innerHTML += `<div class="pattern" style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;
   }
 }
+/* ===================== 资产编辑（通用：编辑 / 归类 / 删除） ===================== */
+let assetModalCtx = null; // { type, id, tagOnly }
+
+function assetActions(type, id){
+  return `<div class="asset-actions">
+    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ Edit</button>
+    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 Tag</button>
+    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 Delete</button>
+  </div>`;
+}
+
+// 定位资产对象 + 保存
+function assetFind(type, id){
+  if (type === 'insight' || type === 'model'){
+    return loadArchive().find(s => String(s.id) === String(id));
+  }
+  if (type === 'action') return loadActions().find(a => String(a.id) === String(id));
+  if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns) return saved.patterns[parseInt(id)];
+  }
+  return null;
+}
+function assetSave(type, id, mutate){
+  if (type === 'insight' || type === 'model'){
+    const list = loadArchive();
+    const i = list.findIndex(s => String(s.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+  } else if (type === 'action'){
+    const list = loadActions();
+    const i = list.findIndex(a => String(a.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+  } else if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns && saved.patterns[parseInt(id)]){ mutate(saved.patterns[parseInt(id)]); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
+  }
+  renderAll();
+}
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); }
+
+function openAssetModal(html){
+  const mask = $('assetModalMask'); const box = $('assetModalBox');
+  if (!mask || !box) return;
+  box.innerHTML = html;
+  mask.classList.add('show');
+}
+function closeAssetModal(){
+  const mask = $('assetModalMask');
+  if (mask) mask.classList.remove('show');
+  assetModalCtx = null;
+}
+
+// 编辑
+function openAssetEdit(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const e = obj.essence || {};
+  const r = obj.reflection || {};
+  let fields = '';
+  if (type === 'model'){
+    fields = `
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Framework</label><textarea id="ae2">${escapeHtml(obj.mentalModel || '')}</textarea>
+      <label>What changed</label><textarea id="ae3">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'insight'){
+    fields = `
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Essence</label><textarea id="ae2">${escapeHtml(e.nature || '')}</textarea>
+      <label>Insight</label><textarea id="ae3">${escapeHtml(e.insight || '')}</textarea>
+      <label>Learned</label><textarea id="ae4">${escapeHtml(r.learned || '')}</textarea>`;
+  } else if (type === 'action'){
+    fields = `
+      <label>Goal / Input</label><textarea id="ae1">${escapeHtml(obj.input || obj.goal || '')}</textarea>
+      <label>Result</label><textarea id="ae2">${escapeHtml(obj.result || '')}</textarea>
+      <label>New habit</label><textarea id="ae3">${escapeHtml(obj.habit || '')}</textarea>
+      <label>Change</label><textarea id="ae4">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'pattern'){
+    fields = `
+      <label>Pattern title</label><input id="ae1" value="${escapeHtml(obj.title || '')}">
+      <label>Evidence</label><textarea id="ae2">${escapeHtml(obj.evidence || '')}</textarea>
+      <label>Insight & advice</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
+  }
+  openAssetModal(`
+    <h3>✏️ Edit ${assetTypeName(type)}</h3>
+    ${fields}
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">Save</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function saveAssetEdit(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const v = i => { const el = document.getElementById(i); return el ? el.value.trim() : ''; };
+  assetSave(ctx.type, ctx.id, obj => {
+    const e = obj.essence || (obj.essence = {});
+    const r = obj.reflection || (obj.reflection = {});
+    if (ctx.type === 'model'){
+      obj.scenario = v('ae1'); obj.mentalModel = v('ae2'); r.changed = v('ae3');
+    } else if (ctx.type === 'insight'){
+      obj.scenario = v('ae1'); e.nature = v('ae2'); e.insight = v('ae3'); r.learned = v('ae4');
+    } else if (ctx.type === 'action'){
+      obj.input = v('ae1'); obj.result = v('ae2'); obj.habit = v('ae3'); r.changed = v('ae4');
+    } else if (ctx.type === 'pattern'){
+      obj.title = v('ae1'); obj.evidence = v('ae2'); obj.insight = v('ae3');
+    }
+  });
+  closeAssetModal();
+  toast('Saved');
+}
+
+// 归类（标签）
+function openAssetTag(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const tags = obj.tags || [];
+  renderTagModal(tags);
+}
+function renderTagModal(tags){
+  const ctx = assetModalCtx; if (!ctx) return;
+  openAssetModal(`
+    <h3>🏷 Tag ${assetTypeName(ctx.type)}</h3>
+    <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">Tag this asset so you can find it by topic later.</p>
+    <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
+    <div class="tag-input-row" style="margin-top:10px;">
+      <input id="newTagInput" placeholder="New tag" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
+      <button class="btn-ok" onclick="addAssetTag()">Add</button>
+    </div>
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">Done</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function addAssetTag(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const inp = $('newTagInput'); if (!inp) return;
+  const t = (inp.value || '').trim(); if (!t) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = obj.tags || [];
+    if (!obj.tags.includes(t)) obj.tags.push(t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+  inp.value = '';
+}
+function removeAssetTag(t){
+  const ctx = assetModalCtx; if (!ctx) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = (obj.tags || []).filter(x => x !== t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+}
+
+// 删除
+function openAssetDelete(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const preview = (type === 'pattern') ? obj.title : (obj.scenario || obj.input || obj.goal || obj.title || '这条资产');
+  openAssetModal(`
+    <h3>🗑 Delete ${assetTypeName(type)}</h3>
+    <p style="font-size:14px;color:var(--ink);line-height:1.7;">Delete "<b>${escapeHtml(String(preview).slice(0, 30))}</b>"? This cannot be undone.</p>
+    <div class="row">
+      <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">Delete</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function confirmDeleteAsset(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  if (ctx.type === 'insight' || ctx.type === 'model'){
+    const list = loadArchive().filter(s => String(s.id) !== String(ctx.id));
+    localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
+  } else if (ctx.type === 'action'){
+    const list = loadActions().filter(a => String(a.id) !== String(ctx.id));
+    localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
+  } else if (ctx.type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns){ saved.patterns.splice(parseInt(ctx.id), 1); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
+  }
+  closeAssetModal();
+  renderAll();
+  toast('Deleted');
+}
+function assetTypeName(type){
+  return { model: 'mental model', insight: 'insight', action: 'behavior experiment', pattern: 'pattern' }[type] || '';
+}
+
 function clearPatterns(){ localStorage.removeItem(LS_PATTERNS); renderPatterns(); }
 
 /* ===================== 导出 ===================== */
