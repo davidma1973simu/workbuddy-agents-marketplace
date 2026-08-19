@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eureka 技能选择指南 · Automation vs Coach</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #f8f6f2;
+  --surface: #ffffff;
+  --border: #e8e6dc;
+  --text: #2c2c2a;
+  --text-secondary: #5f5e5a;
+  --text-tertiary: #888780;
+  --purple-50: #EEEDFE;
+  --purple-100: #CECBF6;
+  --purple-600: #534AB7;
+  --teal-50: #E1F5EE;
+  --teal-100: #9FE1CB;
+  --teal-600: #0F6E56;
+  --amber-50: #FAEEDA;
+  --amber-100: #FAC775;
+  --amber-600: #854F0B;
+  --blue-50: #E6F1FB;
+  --blue-600: #185FA5;
+  --coral-50: #FAECE7;
+  --coral-600: #993C1D;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.header {
+  background: linear-gradient(135deg, #534AB7 0%, #0F6E56 100%);
+  color: white;
+  padding: 56px 24px 48px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.header .subtitle {
+  font-size: 15px;
+  opacity: 0.85;
+  font-weight: 300;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.container { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 48px 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border);
+}
+
+/* ===== Compare Cards ===== */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.compare-card {
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+
+.compare-card.automation { background: var(--purple-50); border-color: var(--purple-100); }
+.compare-card.coach { background: var(--teal-50); border-color: var(--teal-100); }
+
+.compare-card .name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.compare-card.automation .name { color: var(--purple-600); }
+.compare-card.coach .name { color: var(--teal-600); }
+
+.compare-card .tagline { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+.compare-card .row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; align-items: flex-start; }
+.compare-card .row .label {
+  flex-shrink: 0;
+  display: inline-block;
+  min-width: 56px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+}
+.automation .row .label { background: var(--purple-600); color: white; }
+.coach .row .label { background: var(--teal-600); color: white; }
+.compare-card .row .val { color: var(--text); }
+
+/* ===== Decision flow ===== */
+.decision { margin-top: 8px; }
+.q-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+
+.q-box .q {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.q-box .q .marker {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--purple-600);
+  color: white;
+  text-align: center;
+  line-height: 24px;
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+.q-box .answers { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.answer-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.answer-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.answer-btn.to-auto:hover { background: var(--purple-50); border-color: var(--purple-600); color: var(--purple-600); }
+.answer-btn.to-coach:hover { background: var(--teal-50); border-color: var(--teal-600); color: var(--teal-600); }
+
+.result-box {
+  margin-top: 16px;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: none;
+}
+
+.result-box.show { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-box.to-auto { background: var(--purple-50); border: 1px solid var(--purple-100); }
+.result-box.to-coach { background: var(--teal-50); border: 1px solid var(--teal-100); }
+
+.result-box .skill-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.result-box.to-auto .skill-name { color: var(--purple-600); }
+.result-box.to-coach .skill-name { color: var(--teal-600); }
+.result-box .why { font-size: 13px; }
+
+/* ===== Examples ===== */
+.example {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.example-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.example-header .tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+
+.example-header .tag.auto { background: var(--purple-600); }
+.example-header .tag.coach { background: var(--teal-600); }
+
+.example-header .title { font-size: 15px; font-weight: 500; flex: 1; }
+
+.example-body { padding: 20px; }
+
+.example-body .block { margin-bottom: 14px; }
+.example-body .block:last-child { margin-bottom: 0; }
+
+.example-body .block-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+
+.example-body .block-content {
+  background: #faf9f5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+/* Chat bubbles for coach example */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.bubble.user {
+  align-self: flex-end;
+  background: var(--purple-100);
+  border-bottom-right-radius: 4px;
+}
+
+.bubble.coach {
+  align-self: flex-start;
+  background: var(--teal-100);
+  border-bottom-left-radius: 4px;
+}
+
+.bubble .who {
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  opacity: 0.7;
+}
+
+/* ===== Combo ===== */
+.combo {
+  background: linear-gradient(135deg, var(--purple-50), var(--teal-50));
+  border: 1px solid var(--purple-100);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.combo h3 { font-size: 16px; margin-bottom: 12px; }
+
+.combo-steps { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.combo-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.combo-step .num {
+  display: inline-block;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--purple-600);
+  color: white;
+  text-align: center;
+  line-height: 22px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.combo-step .step-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.combo-step .step-desc { font-size: 12px; color: var(--text-secondary); }
+.combo-arrow { font-size: 20px; color: var(--purple-600); font-weight: 700; }
+
+/* ===== One-liner ===== */
+.motto {
+  margin-top: 48px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+}
+
+.motto .label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.motto .text {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.motto .text em {
+  font-style: normal;
+  color: var(--purple-600);
+  font-weight: 700;
+}
+
+.motto .text em.teal { color: var(--teal-600); }
+
+@media (max-width: 768px) {
+  .compare-grid { grid-template-columns: 1fr; }
+  .combo-steps { flex-direction: column; }
+  .combo-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Eureka 技能选择指南</h1>
+  <div class="subtitle">两个技能，两种用法。快速判断：什么场景、什么问题，该找哪个技能。</div>
+</div>
+
+<div class="container">
+
+  <!-- 1. Compare overview -->
+  <div class="section-title">一、两个技能，一图看懂</div>
+  <div class="compare-grid">
+    <div class="compare-card automation">
+      <div class="name">eureka-pro-automation</div>
+      <div class="tagline">全自动 RISE 创新工作流 · 一步到位</div>
+      <div class="row"><span class="label">适合</span><span class="val">需求已经清楚，想快速拿到完整方案</span></div>
+      <div class="row"><span class="label">做什么</span><span class="val">自动跑完 Build → Reveal → Inspire → Shape → Exam 共 14 步</span></div>
+      <div class="row"><span class="label">产出</span><span class="val">完整方案 + 14 张阶段卡片 + 一页纸项目看板</span></div>
+      <div class="row"><span class="label">耗时</span><span class="val">一次性完成，几分钟出结果</span></div>
+      <div class="row"><span class="label">触发语</span><span class="val">"帮我跑一个完整的 Eureka 创新项目"</span></div>
+    </div>
+    <div class="compare-card coach">
+      <div class="name">eureka-coach</div>
+      <div class="tagline">创新卡壳教练 · 苏格拉底式引导</div>
+      <div class="row"><span class="label">适合</span><span class="val">卡住了、不确定、问题还没想清楚</span></div>
+      <div class="row"><span class="label">做什么</span><span class="val">通过提问引导你厘清"真正的问题是什么"</span></div>
+      <div class="row"><span class="label">产出</span><span class="val">共识结论（一句话问题陈述）+ 下一步建议</span></div>
+      <div class="row"><span class="label">耗时</span><span class="val">交互式对话，3-5 轮提问</span></div>
+      <div class="row"><span class="label">触发语</span><span class="val">"我在 RISE 某一步卡住了，帮我理一理"</span></div>
+    </div>
+  </div>
+
+  <!-- 2. Decision flow -->
+  <div class="section-title">二、三步判断，找到对的技能</div>
+  <div class="decision">
+    <div class="q-box">
+      <div class="q"><span class="marker">1</span>你现在最需要什么？</div>
+      <div class="answers">
+        <button class="answer-btn to-auto" onclick="showResult('auto')">要一个完整方案，快速推进</button>
+        <button class="answer-btn to-coach" onclick="showResult('coach')">把问题想清楚，别急着做</button>
+      </div>
+    </div>
+    <div class="q-box">
+      <div class="q"><span class="marker">2</span>你的问题描述足够清楚吗？</div>
+      <div class="answers">
+        <button class="answer-btn to-auto" onclick="showResult('auto')">清楚，我知道要解决什么</button>
+        <button class="answer-btn to-coach" onclick="showResult('coach')">模糊，说不清到底要什么</button>
+      </div>
+    </div>
+    <div class="q-box">
+      <div class="q"><span class="marker">3</span>你正处在什么状态？</div>
+      <div class="answers">
+        <button class="answer-btn to-auto" onclick="showResult('auto')">刚起步，要系统跑一遍</button>
+        <button class="answer-btn to-coach" onclick="showResult('coach')">卡在中间某一步，走不下去</button>
+      </div>
+    </div>
+
+    <div id="result-auto" class="result-box to-auto">
+      <div class="skill-name">→ 使用 eureka-pro-automation</div>
+      <div class="why">你的需求明确、目标清晰，适合让技能自动跑完 RISE 全部 14 步，直接产出完整方案与项目看板。告诉它你的问题即可。</div>
+    </div>
+    <div id="result-coach" class="result-box to-coach">
+      <div class="skill-name">→ 使用 eureka-coach</div>
+      <div class="why">你正处于卡壳或不确定状态，适合先让教练通过提问帮你厘清"真正的问题是什么"，收敛出清晰的问题陈述后，再决定下一步。</div>
+    </div>
+  </div>
+
+  <!-- 3. Examples -->
+  <div class="section-title">三、真实范例对照</div>
+
+  <!-- Example A: automation -->
+  <div class="example">
+    <div class="example-header">
+      <span class="tag auto">范例 A</span>
+      <span class="title">需求明确 → eureka-pro-automation</span>
+    </div>
+    <div class="example-body">
+      <div class="block">
+        <div class="block-label">用户输入</div>
+        <div class="block-content">「我们如何才能帮助城市高退休金（月收入大于8K）、单身男性老年人（大于75岁）提供健康安全、生活辅助以及情感照顾，让他们的生活更有质量呢？」</div>
+      </div>
+      <div class="block">
+        <div class="block-label">技能做了什么</div>
+        <div class="block-content">自动执行 Build → Reveal → Inspire → Shape → Exam 五阶段 14 步：构建项目简报、挖掘用户 POV 与 FIND 洞察、生成 12 个创意并筛选、四维拷问方案、构建 MVP、评估 AHA MAP（7.7/10 → GO）。</div>
+      </div>
+      <div class="block">
+        <div class="block-label">最终产出</div>
+        <div class="block-content">「小陈伴老」——AI语音管家 + 银龄守护手环双端方案：AI 主动关怀 + 硬件安全兜底 + 生活服务入口 + 情感连接桥梁，¥199/月订阅，毛利率 60-67%。同时输出 14 张阶段卡片与一页纸项目看板。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example B: coach -->
+  <div class="example">
+    <div class="example-header">
+      <span class="tag coach">范例 B</span>
+      <span class="title">卡壳困惑 → eureka-coach</span>
+    </div>
+    <div class="example-body">
+      <div class="block">
+        <div class="block-label">用户输入</div>
+        <div class="block-content">「我在 Shape 阶段卡住了，想不出来方案」</div>
+      </div>
+      <div class="block">
+        <div class="block-label">对话过程（苏格拉底式引导）</div>
+        <div class="block-content">
+          <div class="chat">
+            <div class="bubble coach"><div class="who">教练</div>我是帮你把卡壳想清楚的教练：先接住你的困境、再深挖根因、然后收敛成一句清晰的问题结论，最后给你下一步建议。现在，你卡在哪了？</div>
+            <div class="bubble user"><div class="who">用户</div>我在 Shape 阶段，脑子里有很多零散的想法，但凑不成一个完整的方案。</div>
+            <div class="bubble coach"><div class="who">教练</div>你的意思是：想法不少，但缺一条主线把它们串起来，对吗？那这些想法里，哪个是你觉得最不能丢的？</div>
+            <div class="bubble user"><div class="who">用户</div>最不能丢的是"老人不用学任何操作"——这是我和用户访谈里最强烈的反馈。</div>
+            <div class="bubble coach"><div class="who">教练</div>那再深挖一层：为什么"不用学操作"对你这个项目如此关键？它背后要解决的是哪类用户的什么痛点？</div>
+            <div class="bubble user"><div class="who">用户</div>因为目标用户是 75 岁以上的老人，学不会复杂操作，一旦要学就会放弃。所以方案必须零门槛。</div>
+            <div class="bubble coach"><div class="who">教练</div>清楚了。看来你的困境不是"没有想法"，而是"想法没有被一个核心约束串起来"。我现在帮你收尾。</div>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-label">共识结论 + 下一步</div>
+        <div class="block-content">
+          <strong>最初的问题</strong>：在 Shape 阶段凑不成完整方案<br>
+          <strong>辅导过程</strong>：从"想法零散"深挖到"零门槛"这一核心约束，明确方案的唯一主线<br>
+          <strong>共识结论</strong>：零散想法的解决方案缺乏一个核心约束（零操作门槛）作为主线来整合<br>
+          <strong>下一步建议</strong>：以"零操作门槛"为唯一设计约束，筛掉所有需要学习成本的想法；把剩余想法按 RISE 的 Shape 四维（价值/增长/技术/商业）重新归位
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Combo -->
+  <div class="section-title">四、进阶用法：组合出击</div>
+  <div class="combo">
+    <h3>先用 coach 厘清，再用 automation 跑全流程</h3>
+    <div class="combo-steps">
+      <div class="combo-step">
+        <div class="num">1</div>
+        <div class="step-title">eureka-coach</div>
+        <div class="step-desc">问题模糊？先让教练通过提问帮你收敛出清晰的问题陈述。</div>
+      </div>
+      <div class="combo-arrow">→</div>
+      <div class="combo-step">
+        <div class="num">2</div>
+        <div class="step-title">eureka-pro-automation</div>
+        <div class="step-desc">把收敛后的问题交给 automation，自动跑完 RISE 14 步，产出完整方案。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Motto -->
+  <div class="motto">
+    <div class="label">一句话记住</div>
+    <div class="text">问题<em>清楚</em> → 找 <em>automation</em>（要方案） &nbsp;|&nbsp; 问题<em>模糊</em> → 找 <em class="teal">coach</em>（先厘清）</div>
+  </div>
+
+</div>
+
+<script>
+function showResult(target) {
+  document.querySelectorAll('.result-box').forEach(b => b.classList.remove('show'));
+  document.getElementById('result-' + target).classList.add('show');
+  document.getElementById('result-' + target).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+
+</body>
+</html>
