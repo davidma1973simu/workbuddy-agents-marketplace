@@ -303,6 +303,7 @@
   .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
   /* Cost → commitment */
   .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
+  .cost-subcommit { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
   .cost-commit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
   .cost-commit .cc-head span { font-size: 13.5px; font-weight: 700; color: #8B5A1B; }
   .cost-commit .cc-ai-result { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink); }
@@ -316,6 +317,14 @@
   }
   .cost-commit .cc-sign-btn:hover { background: var(--green); }
   .cost-commit.signed { background: var(--green-soft); border-color: var(--green); }
+  .sq-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 10px; }
+  .sq-score { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .sq-score .sq-num { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; background: var(--green); }
+  .sq-score .sq-label { font-size: 14px; font-weight: 700; color: var(--green-deep); }
+  .sq-row { font-size: 13px; line-height: 1.7; color: var(--ink-2); margin-bottom: 6px; }
+  .sq-row b { color: var(--ink); }
+  .sq-warn { color: var(--amber); }
+  .sq-suggest { color: var(--green-deep); }
   .cost-commit.signed .cc-sign-text { color: var(--green-deep); }
   .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
   .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
@@ -338,10 +347,10 @@
     font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
     flex-shrink: 0; margin-top: 3px;
   }
-  .tag-phenom { background: var(--blue-soft); color: var(--blue); }
+  .tag-observe { background: var(--blue-soft); color: var(--blue); }
   .tag-fact { background: var(--green-soft); color: var(--green-deep); }
+  .tag-hearsay { background: var(--purple-soft); color: var(--purple); }
   .tag-guess { background: var(--amber-soft); color: var(--amber); }
-  .tag-assump { background: var(--purple-soft); color: var(--purple); }
   .note .txt { flex: 1; font-size: 14px; }
   .note .rm { border: none; background: none; color: var(--ink-3); cursor: pointer; font-size: 16px; padding: 2px; }
   .note .rm:hover { color: var(--coral); }
@@ -1590,16 +1599,12 @@
       <label>\u2460 What complex challenge are you facing? (scenario)</label>
       <textarea id="scenario" placeholder="e.g. AI is transforming my industry. I feel anxious, unsure what to learn or where to go. Family and friends disagree, and the internet is overwhelming me..."></textarea>
 
-      <label>\u2461 Lay out your information \u2014 observations, facts, guesses, assumptions, one by one</label>
-      <div class="note-type" id="noteTypeChips">
-        <span class="type-chip sel" data-v="现象">Observation (what happened)</span>
-        <span class="type-chip" data-v="事实">Fact (verifiable)</span>
-      </div>
-      <div class="note-type" id="noteSourceChips" style="margin-top:6px;">
-        <span class="src-chip sel" data-v="观察">Source: my own observation</span>
-        <span class="src-chip" data-v="事实">Source: reliable fact</span>
-        <span class="src-chip" data-v="听闻">Source: heard from others</span>
-        <span class="src-chip" data-v="猜测">Source: my guess / assumption</span>
+      <label>\u2461 Lay out your information \u2014 note what happened and label its source</label>
+      <div class="note-type" id="noteSourceChips">
+        <span class="src-chip sel" data-v="观察">My own observation</span>
+        <span class="src-chip" data-v="事实">Reliable fact</span>
+        <span class="src-chip" data-v="听闻">Heard from others</span>
+        <span class="src-chip" data-v="猜测">My guess / assumption</span>
       </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
         <input type="text" id="noteInput" placeholder="Add one: what happened / what you heard / what you suspect / what you take for granted...">
@@ -1613,6 +1618,16 @@
         </button>
       </div>
       <div class="ai-result" id="aiExtractResult"></div>
+
+      <!-- Source quality check (Layer 1: information source体检) -->
+      <div class="input-stats" id="inputStats" style="display:none;"></div>
+      <div class="ai-row" id="sourceQualityRow" style="display:none; margin-top:6px;">
+        <button class="ai-btn" id="aiSourceQuality" onclick="aiEvaluateSources()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Let Transform assess the quality of these sources
+        </button>
+      </div>
+      <div class="ai-result" id="sourceQualityResult" style="display:none;"></div>
 
 <label>\u2462 Group them \u2014 give each group a summary label</label>
         <button class="ai-btn" id="aiGroup" onclick="aiGroup()" style="margin-bottom:10px;">
@@ -1741,6 +1756,17 @@
 
       <label>\u2460 Your new insight</label>
       <div class="insight-highlight" id="insightRef"></div>
+
+      <!-- migrate the user's core understanding (restate) into the apply screen, HIGHLIGHT -->
+      <div class="restate-core" id="applyRestateCore" style="display:none;">
+        <div class="restate-core-title">
+          <span class="rc-badge">🎯</span>
+          <span class="rc-title">My core understanding</span>
+          <span class="rc-sub">This is the <u>core input</u> you'll carry into the two scenarios below</span>
+        </div>
+        <div class="restate-core-text" id="applyRestateText"></div>
+      </div>
+
       <div class="score-display" id="scoreDisplay" style="display:none;">
         <div class="sd-item"><span class="sd-label">Importance</span><span class="sd-val" id="sdImpact">—</span></div>
         <div class="sd-item"><span class="sd-label">Acceptance effort</span><span class="sd-val" id="sdEffort">—</span></div>
@@ -1948,24 +1974,51 @@
           <textarea class="app-input app-plan-input" id="costRisk" placeholder="See it upfront and it won't stop you as easily"></textarea>
         </div>
         <div class="cost-commit" id="costCommit">
-          <div class="cc-head">
-            <span>✊ Turn it into a commitment</span>
-            <button class="ai-btn" id="aiCourageBtn" onclick="aiCourage(this)" style="padding:7px 14px;font-size:12.5px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Let Transform assess my courage
-            </button>
+
+          <!-- Sub-commitment A: what I need to give up -->
+          <div class="cost-subcommit" id="giveUpCommit">
+            <div class="cc-head">
+              <span>Commitment A · what I'm willing to give up to change</span>
+              <button class="ai-btn" onclick="aiCourage('giveUp', this)" style="padding:7px 14px;font-size:12.5px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Let Transform help me see this giving-up clearly
+              </button>
+            </div>
+            <div class="cc-ai-result" id="courageGiveUpResult" style="display:none;"></div>
+            <div class="app-row" style="margin-top:12px;">
+              <span class="app-label">I commit: by <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will start taking on this giving-up.</span>
+            </div>
+            <div class="app-row" style="margin-top:10px;">
+              <span class="app-label">If I want to avoid this giving-up, I will <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. break it into the smallest bearable step, try 7 days first"> .</span>
+            </div>
+            <div class="cc-sign" id="costGiveUpSign">
+              <span class="cc-sign-text">I take this giving-up on.</span>
+              <button class="btn-ok cc-sign-btn" onclick="signCostCommit('giveUp')" id="costGiveUpSignBtn">Sign commitment</button>
+            </div>
           </div>
-          <div class="cc-ai-result" id="courageResult" style="display:none;"></div>
-          <div class="app-row" style="margin-top:12px;">
-            <span class="app-label">I commit: by <input type="text" id="costCommitDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will have done this.</span>
+
+          <!-- Sub-commitment B: the cost that makes me pull back -->
+          <div class="cost-subcommit" id="riskCommit" style="margin-top:18px;">
+            <div class="cc-head">
+              <span>Commitment B · if I pull back, how I pull myself back</span>
+              <button class="ai-btn" onclick="aiCourage('risk', this)" style="padding:7px 14px;font-size:12.5px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Let Transform help me design a pull-back plan
+              </button>
+            </div>
+            <div class="cc-ai-result" id="courageRiskResult" style="display:none;"></div>
+            <div class="app-row" style="margin-top:12px;">
+              <span class="app-label">I commit: when <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="e.g. 3 days with no feedback"> shows up, I treat it as a signal, not a failure.</span>
+            </div>
+            <div class="app-row" style="margin-top:10px;">
+              <span class="app-label">If I actually pull back because of it, I will <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. name a witness, admit it publicly and restart"> .</span>
+            </div>
+            <div class="cc-sign" id="costRiskSign">
+              <span class="cc-sign-text">I take this pull-back plan on.</span>
+              <button class="btn-ok cc-sign-btn" onclick="signCostCommit('risk')" id="costRiskSignBtn">Sign commitment</button>
+            </div>
           </div>
-          <div class="app-row" style="margin-top:10px;">
-            <span class="app-label">If I pull back, I will <input type="text" id="costCommitFallback" class="app-input-sm" style="width:70%;display:inline-block;" placeholder="e.g. name a witness and start again"> .</span>
-          </div>
-          <div class="cc-sign" id="costCommitSign">
-            <span class="cc-sign-text">I take this cost on.</span>
-            <button class="btn-ok cc-sign-btn" onclick="signCostCommit()" id="costSignBtn">Sign commitment</button>
-          </div>
+
         </div>
       </div>
 
@@ -2092,13 +2145,13 @@ const BRAND_PROFILES = {
   'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
 };
 
-const NOTE_TYPES = {
-  'phenom': 'phenom', 'fact': 'fact'
+const SOURCE_TYPES = {
+  '观察': 'observe', '事实': 'fact', '听闻': 'hearsay', '猜测': 'guess'
 };
 
 const state = {
   step: 0,
-  curNoteType: 'phenom',
+  curSource: '观察',
   data: {
     scenario: '', notes: [], groups: [],      // organize
     method: '', insight: '', impact: 0, effort: 0,  // insight
@@ -2124,12 +2177,20 @@ function toast(msg) {
 }
 function loadDraft() {
   try { const d = JSON.parse(localStorage.getItem(LS_SESSION)); if (d) Object.assign(state.data, d); } catch(e) {}
-  // Old data migration: 'guess'/'assump' types are really a source, not a content type
+  // Old data migration: collapse old type/source into a single source dimension
   (state.data.notes || []).forEach(n => {
-    if (n.type === '猜测' || n.type === '假设') {
+    const oldType = n.type;
+    const oldSource = n.source;
+    if (oldType === '猜测' || oldType === '假设' || oldSource === '猜测' || oldSource === '假设') {
       n.source = '猜测';
-      n.type = '现象';
+    } else if (oldSource === '观察' || oldSource === '事实' || oldSource === '听闻') {
+      n.source = oldSource;
+    } else if (oldType === '事实') {
+      n.source = '事实';
+    } else {
+      n.source = '观察';
     }
+    delete n.type;
   });
 }
 function saveDraft() {
@@ -2160,7 +2221,7 @@ function goStep(n) {
   renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
-  if (n === 1 && typeof renderInputStats === 'function') renderInputStats();
+  if (n === 0 && typeof renderInputStats === 'function') renderInputStats();
   document.querySelectorAll('.p-node').forEach((s, i) => {
     s.classList.toggle('active', i === n);
     s.classList.toggle('done', i < n);
@@ -2196,6 +2257,16 @@ function goStep(n) {
     } else {
       $('insightRef').innerHTML = '<div style="color:var(--ink-3);font-size:13px;">(Confirm your core insight in the Insight step first)</div>';
     }
+    // Also HIGHLIGHT the user's core understanding (restate) in the apply screen
+    const restate = state.data.restate || '';
+    const rc = $('applyRestateCore');
+    const rt = $('applyRestateText');
+    if (restate && rc && rt) {
+      rc.style.display = 'block';
+      rt.textContent = restate;
+    } else if (rc) {
+      rc.style.display = 'none';
+    }
     renderScoreDisplay();
     bindAppInputs();
     renderApplyStages();
@@ -2217,30 +2288,67 @@ function goStep(n) {
 function renderInputStats() {
   const box = $('inputStats'); if (!box) return;
   const notes = state.data.notes || [];
-  if (!notes.length) { box.style.display = 'none'; return; }
+  const row = $('sourceQualityRow');
+  if (!notes.length) { box.style.display = 'none'; if (row) row.style.display = 'none'; return; }
   const cnt = {};
   notes.forEach(n => { const s = n.source || '观察'; cnt[s] = (cnt[s] || 0) + 1; });
   const labels = { '观察': 'my observation', '事实': 'reliable fact', '听闻': 'heard from others', '猜测': 'my own guess' };
   const total = notes.length;
   const guess = cnt['猜测'] || 0;
+  const solid = (cnt['观察'] || 0) + (cnt['事实'] || 0);
   const parts = Object.keys(cnt).map(k => '<b>' + (labels[k] || k) + ' ' + cnt[k] + '</b>');
   const warn = (guess / total) >= 0.5
     ? ' <span class="is-warn">(guesses are half the input — treat them as hypotheses, not conclusions)</span>'
     : '';
   box.style.display = 'block';
-  box.innerHTML = 'Input mix: ' + parts.join(' · ') + ', total ' + total + ' notes.' + warn;
+  box.innerHTML = 'Input mix: ' + parts.join(' · ') + ', total ' + total + ' notes.' + warn +
+    (solid >= guess ? ' <span style="color:var(--green-deep);">facts/observations ' + Math.round(solid/total*100) + '%</span>' : '');
+  if (row) row.style.display = 'flex';
 }
 
-/* ============ Step 0 归类 ============ */
-// 信息类型选择
-document.querySelectorAll('#noteTypeChips .type-chip').forEach(c => {
-  c.onclick = () => {
-    document.querySelectorAll('#noteTypeChips .type-chip').forEach(x => x.classList.remove('sel'));
-    c.classList.add('sel');
-    state.curNoteType = c.dataset.v;
-  };
-});
-// 信息源选择（第 1 层：来源标注）
+// AI source quality evaluation
+async function aiEvaluateSources() {
+  const notes = state.data.notes || [];
+  if (!notes.length) { toast('Add some information points first'); return; }
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('Please configure an API Key in settings first'); openSettings(); return; }
+  setAILoading('aiSourceQuality', true);
+  try {
+    const notesStr = notes.map((n, i) => `${i+1}. [${n.source || '观察'}] ${n.text}`).join('\n');
+    const r = await aiCall(
+      `The user is mapping a complex challenge and has recorded these information points. Please assess their information quality directly and professionally (no fluff).\n\nPoints:\n${notesStr}\n\nAssess two dimensions:\n1. Reliability structure: ratio of facts/observations vs hearsay vs guesses/assumptions. Are there too many guesses?\n2. Perspective richness: does the information come from a single perspective (mostly the user) or multiple perspectives (others, external facts, different standpoints)?\n\nReturn strict JSON (no markdown): {"score":1-5,"scoreLabel":"one-line rating","reliability":"...","perspective":"...","warning":"...","suggestion":"..."}\nScore guide: 5=highly reliable and multi-perspective; 4=mostly reliable but slightly one-sided; 3=half facts, half guesses; 2=too much hearsay/guess; 1=built mostly on assumptions.`
+    );
+    const data = parseSourceQuality(r);
+    const box = $('sourceQualityResult');
+    if (data && box) {
+      box.style.display = 'block';
+      box.innerHTML = `<div class="sq-card">
+        <div class="sq-score"><span class="sq-num">${data.score}</span><span class="sq-label">${escapeHtml(data.scoreLabel || '')}</span></div>
+        <div class="sq-row"><b>Reliability:</b> ${escapeHtml(data.reliability || '')}</div>
+        <div class="sq-row"><b>Perspective richness:</b> ${escapeHtml(data.perspective || '')}</div>
+        ${data.warning ? `<div class="sq-row sq-warn"><b>\u26A0 Note:</b> ${escapeHtml(data.warning)}</div>` : ''}
+        <div class="sq-row sq-suggest"><b>Suggestion:</b> ${escapeHtml(data.suggestion || '')}</div>
+      </div>`;
+    } else if (box) {
+      box.style.display = 'block';
+      box.innerHTML = '<div class="hint">Transform could not generate a structured assessment right now. Please try again.</div>';
+    }
+  } catch(e) { toast(e.message || 'Assessment failed'); }
+  setAILoading('aiSourceQuality', false);
+}
+function parseSourceQuality(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (j.score && j.scoreLabel) return j;
+  } catch(e){}
+  return null;
+}
+
+/* ============ Step 0 organize ============ */
+// Source selection (Layer 1: source labeling, four-in-one type+source)
 document.querySelectorAll('#noteSourceChips .src-chip').forEach(c => {
   c.onclick = () => {
     document.querySelectorAll('#noteSourceChips .src-chip').forEach(x => x.classList.remove('sel'));
@@ -2248,14 +2356,15 @@ document.querySelectorAll('#noteSourceChips .src-chip').forEach(c => {
     state.curSource = c.dataset.v;
   };
 });
-// 添加信息便签
+// Add information note
 $('noteInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addNote(); } });
 function addNote() {
   const v = $('noteInput').value.trim();
   if (!v) return;
-  state.data.notes.push({ id: uid(), type: state.curNoteType, source: state.curSource || '观察', text: v });
+  state.data.notes.push({ id: uid(), source: state.curSource || '观察', text: v });
   $('noteInput').value = '';
   renderNotes();
+  renderInputStats();
   checkNext0();
   saveDraft();
 }
@@ -2268,11 +2377,11 @@ function renderNotes() {
   const box = $('notesList');
   if (!state.data.notes.length) { box.innerHTML = ''; return; }
   box.innerHTML = state.data.notes.map(n =>
-    `<div class="note"><span class="tag tag-${NOTE_TYPES[n.type]}">${n.type}</span>${n.source ? `<span class="src-tag">${escapeHtml(n.source)}</span>` : ''}<span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
+    `<div class="note"><span class="tag tag-${SOURCE_TYPES[n.source] || 'observe'}">${n.source || '观察'}</span><span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
   ).join('');
 }
 
-// AI 提取信息点
+// AI extract information points
 async function aiExtract() {
   const sc = state.data.scenario.trim();
   if (!sc) { toast('Write your scenario description first'); return; }
@@ -2280,23 +2389,27 @@ async function aiExtract() {
   try {
     const r = await aiCall(
       `The user faces a complex challenge, scenario: "${sc}"\n
-      Task: Like sorting clutter, extract messy information points from this description and sort them into four types:
-      Observation (what happened), Fact (verified information), Guess (the user's speculation), Assumption (the user's taken-for-granted premise).
-      Output format: one item per line, as \u201cTYPE: content\u201d. Type must be one of: Observation / Fact / Guess / Assumption.
-      Extract 4-8 items covering the key information in the description.`
+Task: Like sorting clutter, extract messy information points from this description. Label each point with one source only:
+- Observation: the user saw or experienced it personally
+- Fact: verifiable, reliable information
+- Heard: second-hand information from others
+- Guess: the user's speculation or assumption
+Output format: one item per line, as "Source: content". Source must be one of: Observation / Fact / Heard / Guess.
+Extract 4-8 items covering the key information in the description.`
     );
-    // 解析并填入便签
-    const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes('：'));
+    // Parse and add notes
+    const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes(':'));
+    const sourceMap = { 'observation': '观察', 'fact': '事实', 'heard': '听闻', 'guess': '猜测' };
     lines.forEach(l => {
-      const idx = l.indexOf('：');
-      const type = l.slice(0, idx).replace(/^[0-9.、\s]*/, '').trim();
-      const text = l.slice(idx + 1).trim();
-      const validType = Object.keys(NOTE_TYPES).find(t => type.includes(t));
-      if (validType && text) {
-        state.data.notes.push({ id: uid(), type: validType, text });
+      const sm = l.match(/^(Observation|Fact|Heard|Guess)\s*[:：]\s*/i);
+      const enSource = sm ? sm[1].toLowerCase() : '';
+      const source = sourceMap[enSource] || '观察';
+      const text = l.replace(/^(Observation|Fact|Heard|Guess)\s*[:：]\s*/i, '').trim();
+      if (text) {
+        state.data.notes.push({ id: uid(), source, text });
       }
     });
-    renderNotes(); checkNext0(); saveDraft();
+    renderNotes(); renderInputStats(); checkNext0(); saveDraft();
     showAIResult('aiExtractResult', 'Extracted ' + lines.length + ' information points. You can delete or edit them.');
     toast('Information points extracted');
   } catch(e) { toast(e.message); }
@@ -2308,7 +2421,7 @@ async function aiGroup() {
   if (!state.data.notes.length) { toast('Record some information points first'); return; }
   setAILoading('aiGroup', true);
   try {
-    const notesStr = state.data.notes.map((n, i) => `${i+1}. [${n.type}] ${n.text}`).join('\n');
+    const notesStr = state.data.notes.map((n, i) => `${i+1}. [${n.source || '观察'}] ${n.text}`).join('\n');
     const r = await aiCall(
       `Task: Group the information below into 3-5 groups, making sure every item lands in a group:
 ${notesStr}
@@ -2356,7 +2469,7 @@ function parseGroupsFromJSON(text) {
         notes: g.noteIds
           .map(i => i - 1)
           .filter(i => i >= 0 && i < state.data.notes.length)
-          .map(i => ({ id: state.data.notes[i].id, type: state.data.notes[i].type, text: state.data.notes[i].text }))
+          .map(i => ({ id: state.data.notes[i].id, source: state.data.notes[i].source, text: state.data.notes[i].text }))
       }))
       .filter(g => g.notes.length > 0);
   } catch(e) { return null; }
@@ -2373,7 +2486,7 @@ function parseGroupsFromText(text) {
       cur = { label: l.slice(l.indexOf('：') + 1).trim(), notes: [] };
     } else if (l.startsWith('Items') && cur) {
       const ids = l.slice(l.indexOf('：') + 1).trim().split(/[,，\s]+/).map(s => parseInt(s) - 1).filter(i => i >= 0 && i < state.data.notes.length);
-      ids.forEach(i => cur.notes.push({ id: state.data.notes[i].id, type: state.data.notes[i].type, text: state.data.notes[i].text }));
+      ids.forEach(i => cur.notes.push({ id: state.data.notes[i].id, source: state.data.notes[i].source, text: state.data.notes[i].text }));
     }
   });
   if (cur) groups.push(cur);
@@ -2387,7 +2500,7 @@ function renderGroups() {
     <div class="group">
       <input class="g-label" value="${escapeHtml(g.label)}" placeholder="Summary label for this group" oninput="updateGroupLabel(${gi}, this.value)">
       <div class="g-notes">
-        ${g.notes.map(n => `<span class="g-note"><span class="n-tag">${n.type}</span>${escapeHtml(n.text)}<button class="rm2" onclick="moveNoteOut(${gi},'${n.id}')">×</button></span>`).join('')}
+        ${g.notes.map(n => `<span class="g-note"><span class="n-tag">${n.source || '观察'}</span>${escapeHtml(n.text)}<button class="rm2" onclick="moveNoteOut(${gi},'${n.id}')">×</button></span>`).join('')}
       </div>
     </div>
   `).join('');
@@ -2434,7 +2547,7 @@ async function aiAskNext(btn) {
   if (!groups.length) { toast('Finish organizing first'); return; }
   btn.classList.add('loading');
   const groupsStr = groups.map(g =>
-    `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
+    `[${g.label}]: ${g.notes.map(n => `[${n.source || '观察'}] ${n.text}`).join('; ')}`
   ).join('\n');
   const existing = (state.data.insightQuestions || []).map((q, i) => {
     const a = state.data.insightAnswers[i] || '(not filled)';
@@ -2673,7 +2786,7 @@ async function aiIntegrate(btn) {
   }
   const groups = state.data.groups || [];
   const groupsStr = groups.map(g =>
-    `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
+    `[${g.label}]: ${g.notes.map(n => `[${n.source || '观察'}] ${n.text}`).join('; ')}`
   ).join('\n');
   const qaPairs = state.data.insightQuestions.map((q, i) => {
     const a = state.data.insightAnswers[i] || '(not filled)';
@@ -2933,62 +3046,78 @@ function confirmViewpoint() {
   toast('Picked \u2018' + vp.name + '\u2019. Your core insight is updated; you can keep scoring and save.');
 }
 
-// Cost → commitment (Feedback 4)
-async function aiCourage(btn) {
+// Cost → commitment: separate professional commitments for "what I give up" and "the pull-back cost"
+async function aiCourage(type, btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Set API Key in Settings first'); openSettings(); return; }
   const giveUp = ($('costGiveUp') ? $('costGiveUp').value : '').trim();
   const risk = ($('costRisk') ? $('costRisk').value : '').trim();
-  if (!giveUp && !risk) { toast('Write down what you give up and the cost that might pull you back first'); return; }
+  const topic = type === 'giveUp' ? giveUp : risk;
+  if (!topic) {
+    toast(type === 'giveUp' ? 'Write down what you give up first' : 'Write down the cost that might pull you back first');
+    return;
+  }
   if (btn) btn.classList.add('loading');
-  const r = await aiCall(
-    'User cost assessment:\nGive up: "' + giveUp + '"\nLikely pull-back cost: "' + risk + '"\n\n' +
-    'Give the user a courage assessment that turns cost into a step to cross, not a fear. Include:\n' +
-    '1. The fear underneath (<=20 words)\n' +
-    '2. Why this cost is worth it (<=20 words)\n' +
-    '3. One micro step they can do today (<=25 words)\n\n' +
-    'Strict JSON: {"truth":"...","courage":"...","step":"..."}'
-  );
+  const prompt = type === 'giveUp'
+    ? 'The user must give something up to change: "' + giveUp + '"\n\nGive a professional, restrained "giving-up courage assessment" — not a slogan, not a vow. Include:\n1. What makes this giving-up truly hard (<=25 words)\n2. Why this giving-up is an "investment", not a "loss" (<=25 words)\n3. The smallest bearable way to take it on: a first step doable today (<=30 words)\n\nStrict JSON: {"truth":"...","reframe":"...","step":"..."}'
+    : 'The user fears this cost will make them pull back in a month: "' + risk + '"\n\nGive a professional, restrained "pull-back design" — not a scare, not a guilt trip. Include:\n1. The real trigger that makes this cost cause a pull-back (<=25 words)\n2. Reframe it as a "signal" not a "failure" (<=25 words)\n3. A concrete, doable pull-back action: the first thing to do if they actually pull back (<=30 words)\n\nStrict JSON: {"trigger":"...","reframe":"...","pullback":"..."}';
+  const r = await aiCall(prompt);
   if (btn) btn.classList.remove('loading');
-  const data = parseCourage(r);
-  const box = $('courageResult');
+  const data = parseCourage(r, type);
+  const box = type === 'giveUp' ? $('courageGiveUpResult') : $('courageRiskResult');
   if (!data) {
     if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not give an assessment right now — please try again.</div>'; }
     return;
   }
   if (box) {
     box.style.display = 'block';
-    box.innerHTML = '<div class="cc-courage">' +
-      '<div><b>What you really fear:</b> ' + escapeHtml(data.truth) + '</div>' +
-      '<div style="margin-top:4px;"><b>Why it is worth it:</b> ' + escapeHtml(data.courage) + '</div>' +
-      '<div style="margin-top:4px;"><b>One step today:</b> ' + escapeHtml(data.step) + '</div>' +
-      '</div>';
+    if (type === 'giveUp') {
+      box.innerHTML = '<div class="cc-courage">' +
+        '<div><b>What is truly hard:</b> ' + escapeHtml(data.truth) + '</div>' +
+        '<div style="margin-top:4px;"><b>See it as an investment:</b> ' + escapeHtml(data.reframe) + '</div>' +
+        '<div style="margin-top:4px;"><b>Do this first today:</b> ' + escapeHtml(data.step) + '</div>' +
+        '</div>';
+    } else {
+      box.innerHTML = '<div class="cc-courage">' +
+        '<div><b>Pull-back trigger:</b> ' + escapeHtml(data.trigger) + '</div>' +
+        '<div style="margin-top:4px;"><b>It is a signal, not a failure:</b> ' + escapeHtml(data.reframe) + '</div>' +
+        '<div style="margin-top:4px;"><b>Action to pull yourself back:</b> ' + escapeHtml(data.pullback) + '</div>' +
+        '</div>';
+    }
   }
 }
-function parseCourage(text) {
+function parseCourage(text, type) {
   if (!text) return null;
   try {
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return null;
     const j = JSON.parse(m[0]);
-    if (j.truth && j.courage && j.step) return j;
+    if (type === 'giveUp' && j.truth && j.reframe && j.step) return j;
+    if (type === 'risk' && j.trigger && j.reframe && j.pullback) return j;
   } catch(e){}
   return null;
 }
-function signCostCommit() {
-  const date = ($('costCommitDate') ? $('costCommitDate').value : '').trim();
-  if (!date) { toast('Set the date first'); $('costCommitDate').focus(); return; }
-  state.data.costCommitDate = date;
-  state.data.costCommitFallback = ($('costCommitFallback') ? $('costCommitFallback').value : '').trim();
-  state.data.costSigned = true;
-  saveDraft();
-  const cc = $('costCommit');
-  if (cc) {
-    cc.classList.add('signed');
-    $('costSignBtn').textContent = '\u2713 Signed';
-    $('costSignBtn').disabled = true;
+function signCostCommit(type) {
+  const isGiveUp = type === 'giveUp';
+  const dateId = isGiveUp ? 'costGiveUpDate' : 'costRiskTrigger';
+  const fallbackId = isGiveUp ? 'costGiveUpFallback' : 'costRiskFallback';
+  const signBtnId = isGiveUp ? 'costGiveUpSignBtn' : 'costRiskSignBtn';
+  const signEl = $(signBtnId);
+  const date = ($(dateId) ? $(dateId).value : '').trim();
+  if (!date) {
+    toast(isGiveUp ? 'Set the date you start giving this up first' : 'Set the pull-back signal first');
+    $(dateId).focus();
+    return;
   }
-  toast('Signed — you take this cost on');
+  state.data[isGiveUp ? 'costGiveUpDate' : 'costRiskTrigger'] = date;
+  state.data[isGiveUp ? 'costGiveUpFallback' : 'costRiskFallback'] = ($(fallbackId) ? $(fallbackId).value : '').trim();
+  state.data[isGiveUp ? 'costGiveUpSigned' : 'costRiskSigned'] = true;
+  saveDraft();
+  if (signEl) {
+    signEl.textContent = '✓ Signed';
+    signEl.disabled = true;
+  }
+  toast(isGiveUp ? 'Signed — you take this giving-up on' : 'Signed — you take this pull-back plan on');
 }
 
 function checkNext1() {
@@ -3049,7 +3178,7 @@ function bindAppInputs() {
 // 构建归类上下文
 function buildGroupsContext() {
   return (state.data.groups || []).map(g =>
-    `[${g.label}]: ${g.notes.map(n => `[${n.type}] ${n.text}`).join('; ')}`
+    `[${g.label}]: ${g.notes.map(n => `[${n.source || '观察'}] ${n.text}`).join('; ')}`
   ).join('\n');
 }
 
@@ -3626,9 +3755,12 @@ function complete() {
     viewpoint: state.data.viewpoint || null,
     costGiveUp: state.data.costGiveUp || '',
     costRisk: state.data.costRisk || '',
-    costCommitDate: state.data.costCommitDate || '',
-    costCommitFallback: state.data.costCommitFallback || '',
-    costSigned: !!state.data.costSigned,
+    costGiveUpDate: state.data.costGiveUpDate || '',
+    costGiveUpFallback: state.data.costGiveUpFallback || '',
+    costGiveUpSigned: !!state.data.costGiveUpSigned,
+    costRiskTrigger: state.data.costRiskTrigger || '',
+    costRiskFallback: state.data.costRiskFallback || '',
+    costRiskSigned: !!state.data.costRiskSigned,
     inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
@@ -3940,13 +4072,21 @@ window.goStep = function(n) {
       $('costRisk').value = d.costRisk || '';
       $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
       $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
-      $('costCommitDate').value = d.costCommitDate || '';
-      $('costCommitFallback').value = d.costCommitFallback || '';
-      $('costCommitDate').oninput = e => { d.costCommitDate = e.target.value; saveDraft(); };
-      $('costCommitFallback').oninput = e => { d.costCommitFallback = e.target.value; saveDraft(); };
-      if (d.costSigned) {
-        const cc = $('costCommit');
-        if (cc) { cc.classList.add('signed'); $('costSignBtn').textContent = '✓ Signed'; $('costSignBtn').disabled = true; $('costCommitSign').style.opacity = '.7'; }
+      $('costGiveUpDate').value = d.costGiveUpDate || '';
+      $('costGiveUpFallback').value = d.costGiveUpFallback || '';
+      $('costGiveUpDate').oninput = e => { d.costGiveUpDate = e.target.value; saveDraft(); };
+      $('costGiveUpFallback').oninput = e => { d.costGiveUpFallback = e.target.value; saveDraft(); };
+      if (d.costGiveUpSigned) {
+        const btn = $('costGiveUpSignBtn');
+        if (btn) { btn.textContent = '✓ Signed'; btn.disabled = true; }
+      }
+      $('costRiskTrigger').value = d.costRiskTrigger || '';
+      $('costRiskFallback').value = d.costRiskFallback || '';
+      $('costRiskTrigger').oninput = e => { d.costRiskTrigger = e.target.value; saveDraft(); };
+      $('costRiskFallback').oninput = e => { d.costRiskFallback = e.target.value; saveDraft(); };
+      if (d.costRiskSigned) {
+        const btn = $('costRiskSignBtn');
+        if (btn) { btn.textContent = '✓ Signed'; btn.disabled = true; }
       }
     }
   }
