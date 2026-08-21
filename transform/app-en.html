@@ -257,6 +257,66 @@
   .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
   .lb-explain-upgrade-body { margin-top: 10px; }
+  /* 🎯 Core output: restate HIGHLIGHT */
+  .restate-core {
+    margin-top: 18px; padding: 20px 22px;
+    background: linear-gradient(135deg, var(--green-soft), var(--green-50));
+    border: 2px solid var(--green); border-radius: var(--radius-lg);
+    box-shadow: 0 8px 24px rgba(14,107,80,.12);
+  }
+  .restate-core-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .restate-core-title .rc-badge { font-size: 20px; }
+  .restate-core-title .rc-title { font-size: 16px; font-weight: 800; color: var(--green-deep); letter-spacing: .5px; }
+  .restate-core-title .rc-sub { font-size: 12.5px; color: var(--ink-2); }
+  .restate-core-title .rc-sub u { color: var(--green-deep); font-weight: 700; }
+  textarea.essence-restate-main {
+    width: 100%; min-height: 110px; padding: 16px 18px; font-family: inherit; font-size: 16px;
+    color: var(--ink); background: #fff; border: 1.5px solid var(--green-light);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.8; box-sizing: border-box;
+    box-shadow: inset 0 2px 6px rgba(14,107,80,.06);
+  }
+  textarea.essence-restate-main:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
+  /* Viewpoint required */
+  .viewpoint-area { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  .viewpoint-area .vp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .viewpoint-area .vp-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
+  .viewpoint-area .vp-sub { font-size: 12px; color: var(--ink-3); flex: 1; min-width: 180px; }
+  .viewpoint-area .vp-body { margin-top: 12px; }
+  .viewpoint-area .vp-body .vp-option {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
+    border: 1.5px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px;
+    cursor: pointer; background: var(--bg); transition: all .15s;
+  }
+  .viewpoint-area .vp-body .vp-option:hover { border-color: var(--green); }
+  .viewpoint-area .vp-body .vp-option.selected { border-color: var(--green); background: var(--green-soft); }
+  .viewpoint-area .vp-body .vp-option .vp-rad { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-2); flex-shrink: 0; margin-top: 2px; }
+  .viewpoint-area .vp-body .vp-option.selected .vp-rad { border-color: var(--green); background: var(--green); box-shadow: inset 0 0 0 3px #fff; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-t { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .viewpoint-area .vp-body .vp-option .vp-opt-d { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; line-height: 1.6; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-q { font-size: 12.5px; color: var(--green-deep); margin-top: 4px; font-style: italic; }
+  .viewpoint-area .vp-revise { margin-top: 12px; }
+  .viewpoint-area .vp-done { text-align: right; margin-top: 10px; }
+  .viewpoint-area .vp-done button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
+  /* Cost → commitment */
+  .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
+  .cost-commit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .cost-commit .cc-head span { font-size: 13.5px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-ai-result { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink); }
+  .cost-commit .cc-ai-result .cc-courage { border-left: 3px solid var(--amber); padding: 4px 0 4px 12px; }
+  .cost-commit .cc-sign { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .cost-commit .cc-sign-text { font-size: 13px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-sign-btn {
+    background: var(--green-deep); color: #fff; border: none; padding: 9px 20px;
+    border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 12px rgba(14,107,80,.3);
+  }
+  .cost-commit .cc-sign-btn:hover { background: var(--green); }
+  .cost-commit.signed { background: var(--green-soft); border-color: var(--green); }
+  .cost-commit.signed .cc-sign-text { color: var(--green-deep); }
   .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
   .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
   .lb-explain-upgrade-body .eu-label { font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
@@ -1532,16 +1592,14 @@
 
       <label>\u2461 Lay out your information \u2014 observations, facts, guesses, assumptions, one by one</label>
       <div class="note-type" id="noteTypeChips">
-        <span class="type-chip sel" data-v="现象">Observation</span>
-        <span class="type-chip" data-v="事实">Fact</span>
-        <span class="type-chip" data-v="猜测">Guess</span>
-        <span class="type-chip" data-v="假设">Assumption</span>
+        <span class="type-chip sel" data-v="现象">Observation (what happened)</span>
+        <span class="type-chip" data-v="事实">Fact (verifiable)</span>
       </div>
       <div class="note-type" id="noteSourceChips" style="margin-top:6px;">
         <span class="src-chip sel" data-v="观察">Source: my own observation</span>
         <span class="src-chip" data-v="事实">Source: reliable fact</span>
         <span class="src-chip" data-v="听闻">Source: heard from others</span>
-        <span class="src-chip" data-v="猜测">Source: my own guess</span>
+        <span class="src-chip" data-v="猜测">Source: my guess / assumption</span>
       </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
         <input type="text" id="noteInput" placeholder="Add one: what happened / what you heard / what you suspect / what you take for granted...">
@@ -1608,13 +1666,46 @@
             <div class="lb-essence-label">New insight and understanding (AI output, editable)</div>
             <textarea id="essenceInsight" class="essence-insight" placeholder="Our new insight and understanding of this problem is..."></textarea>
 
-            <div class="lb-essence-label" style="margin-top:12px;">Restate this insight in your own words <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(explaining it shows you understand it)</em></div>
-            <textarea id="essenceRestate" class="essence-nature" placeholder="Without looking at the text above, write this insight in your own words (do not copy)..."></textarea>
-            <div class="essence-restate-feedback" id="restateFeedback"></div>
-
-            <div class="essence-confirm-row">
-              <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & Confirm</button>
+            <div class="restate-core" id="restateCore">
+            <div class="restate-core-title">
+              <span class="rc-badge">🎯</span>
+              <span class="rc-title">My core insight in my own words</span>
+              <span class="rc-sub">Say it yourself — this is the <u>core output</u> of this step</span>
             </div>
+            <textarea id="essenceRestate" class="essence-restate-main" placeholder="Without looking at the text above, write this insight in your own words (do not copy). Explaining it shows you understand it..."></textarea>
+            <div class="essence-restate-feedback" id="restateFeedback"></div>
+          </div>
+
+          <!-- Viewpoint required (not an answer, a perspective) -->
+          <div class="viewpoint-area" id="viewpointArea" style="display:none;">
+            <div class="vp-head">
+              <span class="vp-title">Look at it from another angle</span>
+              <span class="vp-sub">Force yourself out of the original mode — pick the one that feels most uncomfortable</span>
+              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">Show me different angles</button>
+            </div>
+            <div class="vp-body" id="viewpointResult" style="display:none;"></div>
+            <div class="vp-revise" id="viewpointRevise" style="display:none;">
+              <div class="lb-essence-label">Revise your core insight through the chosen angle (you can keep the original)</div>
+              <textarea id="restateRevised" class="essence-nature" placeholder="Through this angle, I re-understand this as..."></textarea>
+            </div>
+          </div>
+
+          <div class="lb-score-row">
+            <div>
+              <label>How important?</label>
+              <div class="lb-scale" id="impactScale"></div>
+            </div>
+            <div>
+              <label>How hard to accept?</label>
+              <div class="lb-scale" id="effortScale"></div>
+            </div>
+          </div>
+
+          <div class="essence-confirm-row" id="essenceConfirmRow">
+            <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & Confirm</button>
+          </div>
+
+          <div class="lb-status-row" id="statusRow">Next: let Transform summarise</div>
           </div>
 
           <div class="lb-score-row">
@@ -1856,6 +1947,26 @@
           <span class="app-label">If you don't follow through in a month, which cost is most likely to make you pull back?</span>
           <textarea class="app-input app-plan-input" id="costRisk" placeholder="See it upfront and it won't stop you as easily"></textarea>
         </div>
+        <div class="cost-commit" id="costCommit">
+          <div class="cc-head">
+            <span>✊ Turn it into a commitment</span>
+            <button class="ai-btn" id="aiCourageBtn" onclick="aiCourage(this)" style="padding:7px 14px;font-size:12.5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Let Transform assess my courage
+            </button>
+          </div>
+          <div class="cc-ai-result" id="courageResult" style="display:none;"></div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">I commit: by <input type="text" id="costCommitDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will have done this.</span>
+          </div>
+          <div class="app-row" style="margin-top:10px;">
+            <span class="app-label">If I pull back, I will <input type="text" id="costCommitFallback" class="app-input-sm" style="width:70%;display:inline-block;" placeholder="e.g. name a witness and start again"> .</span>
+          </div>
+          <div class="cc-sign" id="costCommitSign">
+            <span class="cc-sign-text">I take this cost on.</span>
+            <button class="btn-ok cc-sign-btn" onclick="signCostCommit()" id="costSignBtn">Sign commitment</button>
+          </div>
+        </div>
       </div>
 
       <div class="insight-to-behavior">
@@ -1982,7 +2093,7 @@ const BRAND_PROFILES = {
 };
 
 const NOTE_TYPES = {
-  'phenom': 'phenom', 'fact': 'fact', 'guess': 'guess', 'assump': 'assump'
+  'phenom': 'phenom', 'fact': 'fact'
 };
 
 const state = {
@@ -2013,6 +2124,13 @@ function toast(msg) {
 }
 function loadDraft() {
   try { const d = JSON.parse(localStorage.getItem(LS_SESSION)); if (d) Object.assign(state.data, d); } catch(e) {}
+  // Old data migration: 'guess'/'assump' types are really a source, not a content type
+  (state.data.notes || []).forEach(n => {
+    if (n.type === '猜测' || n.type === '假设') {
+      n.source = '猜测';
+      n.type = '现象';
+    }
+  });
 }
 function saveDraft() {
   localStorage.setItem(LS_SESSION, JSON.stringify(state.data));
@@ -2729,50 +2847,148 @@ function similarity(a, b) {
   const union = new Set([...sa, ...sb]).size;
   return union ? hit / union : 0;
 }
-async function aiExplainUpgrade(btn) {
+// Viewpoint (Feedback 3: not an answer, a perspective; required)
+let viewpointSelected = null;
+async function aiViewpoint(btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Set API Key in Settings first'); openSettings(); return; }
   const e = state.data.essence || {};
+  const restate = ($('essenceRestate') ? $('essenceRestate').value : '') || '';
   const scenario = state.data.scenario || '';
   if (!e.nature && !e.insight) { toast('Get the essence and insight first'); return; }
   if (btn) btn.classList.add('loading');
   const r = await aiCall(
-    'User is doing a thinking-through session.\nScenario: ' + scenario + '\nUser essence: ' + e.nature + '\nUser insight: ' + e.insight + '\n\n' +
-    'Give 3 explanations from shallow to deep:\n' +
-    '1. Surface: the easiest, most common attribution (usually blaming external/luck)\n' +
-    '2. Structural: seeing role/structure/incentive/pattern-level reasons\n' +
-    '3. Systemic: ability structure, cycle, compound, boundary-level root causes\n\n' +
-    'Strict JSON: {"low":"...","mid":"...","high":"..."}, each <= 40 words.'
+    'User is doing a thinking-through session.\nScenario: ' + scenario + '\nUser essence: ' + e.nature + '\nUser insight: ' + e.insight + '\nUser understanding: ' + restate + '\n\n' +
+    'Do NOT give an answer. Give 4 different perspective sparks that force the user out of their original mode:\n' +
+    '1. Positive: what is the best possibility here?\n' +
+    '2. Long-term: 10 years from now, how would today look?\n' +
+    '3. Altruistic: if someone you care about were in the same spot, what would you tell them?\n' +
+    '4. Reflective: what pattern or role have you been avoiding?\n\n' +
+    'Each: name + one-line insight + one provocative question. Each <= 30 words.\n' +
+    'Strict JSON array: [{"name":"Positive","insight":"...","question":"..."}, ...]'
   );
   if (btn) btn.classList.remove('loading');
-  const data = parseExplain(r);
-  const box = $('explainUpgradeResult');
+  const arr = parseViewpoints(r);
+  const box = $('viewpointResult');
+  if (!arr || !arr.length) {
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not generate viewpoints right now — please try again.</div>'; }
+    return;
+  }
+  state.data.viewpointsGenerated = true;
+  state.data.viewpoints = arr;
+  renderViewpoints();
+}
+function parseViewpoints(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\[[\s\S]*\]/);
+    if (!m) return null;
+    const arr = JSON.parse(m[0]);
+    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && v.insight).slice(0, 4);
+  } catch(e){}
+  return null;
+}
+function renderViewpoints() {
+  const box = $('viewpointResult');
+  const area = $('viewpointArea');
+  const revise = $('viewpointRevise');
+  if (!box) return;
+  const arr = state.data.viewpoints || [];
+  if (!arr.length) return;
+  if (area) area.style.display = 'block';
+  box.style.display = 'block';
+  box.innerHTML = arr.map((v, i) =>
+    '<div class="vp-option' + (viewpointSelected === i ? ' selected' : '') + '" onclick="selectViewpoint(' + i + ')">' +
+      '<span class="vp-rad"></span>' +
+      '<span style="flex:1;">' +
+        '<span class="vp-opt-t">' + escapeHtml(v.name) + '</span>' +
+        '<span class="vp-opt-d">' + escapeHtml(v.insight) + '</span>' +
+        '<span class="vp-opt-q">"' + escapeHtml(v.question) + '"</span>' +
+      '</span>' +
+    '</div>'
+  ).join('') +
+  '<div class="vp-done"><button onclick="confirmViewpoint()">Use this angle to revise my insight</button></div>';
+}
+function selectViewpoint(i) {
+  viewpointSelected = i;
+  state.data.viewpoint = (state.data.viewpoints || [])[i];
+  renderViewpoints();
+  const revise = $('viewpointRevise');
+  if (revise) {
+    revise.style.display = 'block';
+    const vp = state.data.viewpoint;
+    if (vp) {
+      const cur = ($('essenceRestate') ? $('essenceRestate').value : '') || '';
+      $('restateRevised').value = cur;
+      $('restateRevised').setAttribute('data-hint', vp.name + ': ' + vp.question);
+    }
+  }
+}
+function confirmViewpoint() {
+  const vp = state.data.viewpoint;
+  if (!vp) { toast('Pick a perspective first'); return; }
+  const revised = $('restateRevised');
+  const cur = revised ? revised.value.trim() : '';
+  if (cur && $('essenceRestate')) $('essenceRestate').value = cur;
+  toast('Picked \u2018' + vp.name + '\u2019. Your core insight is updated; you can keep scoring and save.');
+}
+
+// Cost → commitment (Feedback 4)
+async function aiCourage(btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('Set API Key in Settings first'); openSettings(); return; }
+  const giveUp = ($('costGiveUp') ? $('costGiveUp').value : '').trim();
+  const risk = ($('costRisk') ? $('costRisk').value : '').trim();
+  if (!giveUp && !risk) { toast('Write down what you give up and the cost that might pull you back first'); return; }
+  if (btn) btn.classList.add('loading');
+  const r = await aiCall(
+    'User cost assessment:\nGive up: "' + giveUp + '"\nLikely pull-back cost: "' + risk + '"\n\n' +
+    'Give the user a courage assessment that turns cost into a step to cross, not a fear. Include:\n' +
+    '1. The fear underneath (<=20 words)\n' +
+    '2. Why this cost is worth it (<=20 words)\n' +
+    '3. One micro step they can do today (<=25 words)\n\n' +
+    'Strict JSON: {"truth":"...","courage":"...","step":"..."}'
+  );
+  if (btn) btn.classList.remove('loading');
+  const data = parseCourage(r);
+  const box = $('courageResult');
   if (!data) {
-    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not generate explanations right now — please try again.</div>'; }
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not give an assessment right now — please try again.</div>'; }
     return;
   }
   if (box) {
     box.style.display = 'block';
-    box.innerHTML = `
-      <div class="eu-level"><div class="eu-label">Surface <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— easiest, usually blame luck</em></div><div class="eu-text">${escapeHtml(data.low)}</div></div>
-      <div class="eu-level"><div class="eu-label">Structural <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— role / structure / incentive / pattern</em></div><div class="eu-text">${escapeHtml(data.mid)}</div></div>
-      <div class="eu-level strong"><div class="eu-label"><b>Systemic</b> <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— ability / cycle / compound / boundary</em></div><div class="eu-text">${escapeHtml(data.high)}</div></div>
-      <div class="eu-apply"><button onclick="applyHighExplanation()">Use the systemic explanation as my insight</button></div>`;
+    box.innerHTML = '<div class="cc-courage">' +
+      '<div><b>What you really fear:</b> ' + escapeHtml(data.truth) + '</div>' +
+      '<div style="margin-top:4px;"><b>Why it is worth it:</b> ' + escapeHtml(data.courage) + '</div>' +
+      '<div style="margin-top:4px;"><b>One step today:</b> ' + escapeHtml(data.step) + '</div>' +
+      '</div>';
   }
 }
-function parseExplain(text) {
+function parseCourage(text) {
   if (!text) return null;
   try {
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return null;
     const j = JSON.parse(m[0]);
-    if (j.low && j.mid && j.high) return { low: j.low, mid: j.mid, high: j.high };
+    if (j.truth && j.courage && j.step) return j;
   } catch(e){}
   return null;
 }
-function applyHighExplanation() {
-  const box = $('explainUpgradeResult');
-  if (box) box.style.display = 'none';
+function signCostCommit() {
+  const date = ($('costCommitDate') ? $('costCommitDate').value : '').trim();
+  if (!date) { toast('Set the date first'); $('costCommitDate').focus(); return; }
+  state.data.costCommitDate = date;
+  state.data.costCommitFallback = ($('costCommitFallback') ? $('costCommitFallback').value : '').trim();
+  state.data.costSigned = true;
+  saveDraft();
+  const cc = $('costCommit');
+  if (cc) {
+    cc.classList.add('signed');
+    $('costSignBtn').textContent = '\u2713 Signed';
+    $('costSignBtn').disabled = true;
+  }
+  toast('Signed — you take this cost on');
 }
 
 function checkNext1() {
@@ -3407,8 +3623,12 @@ function complete() {
     farResourcesPlan: state.data.farResourcesPlan,
     identity: state.data.identity,
     restate: state.data.restate || '',
+    viewpoint: state.data.viewpoint || null,
     costGiveUp: state.data.costGiveUp || '',
     costRisk: state.data.costRisk || '',
+    costCommitDate: state.data.costCommitDate || '',
+    costCommitFallback: state.data.costCommitFallback || '',
+    costSigned: !!state.data.costSigned,
     inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
@@ -3720,6 +3940,14 @@ window.goStep = function(n) {
       $('costRisk').value = d.costRisk || '';
       $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
       $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
+      $('costCommitDate').value = d.costCommitDate || '';
+      $('costCommitFallback').value = d.costCommitFallback || '';
+      $('costCommitDate').oninput = e => { d.costCommitDate = e.target.value; saveDraft(); };
+      $('costCommitFallback').oninput = e => { d.costCommitFallback = e.target.value; saveDraft(); };
+      if (d.costSigned) {
+        const cc = $('costCommit');
+        if (cc) { cc.classList.add('signed'); $('costSignBtn').textContent = '✓ Signed'; $('costSignBtn').disabled = true; $('costCommitSign').style.opacity = '.7'; }
+      }
     }
   }
   origGo(n);

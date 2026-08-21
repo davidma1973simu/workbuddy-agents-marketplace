@@ -844,6 +844,66 @@
   .essence-restate-feedback.ok { color: var(--green-deep); }
   .essence-restate-feedback.warn { color: #c0392b; }
   .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  /* 🎯 核心产出：我理解到的核心认知（HIGHLIGHT） */
+  .restate-core {
+    margin-top: 18px; padding: 20px 22px;
+    background: linear-gradient(135deg, var(--green-soft), var(--green-50));
+    border: 2px solid var(--green); border-radius: var(--radius-lg);
+    box-shadow: 0 8px 24px rgba(14,107,80,.12);
+  }
+  .restate-core-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .restate-core-title .rc-badge { font-size: 20px; }
+  .restate-core-title .rc-title { font-size: 16px; font-weight: 800; color: var(--green-deep); letter-spacing: .5px; }
+  .restate-core-title .rc-sub { font-size: 12.5px; color: var(--ink-2); }
+  .restate-core-title .rc-sub u { color: var(--green-deep); font-weight: 700; }
+  textarea.essence-restate-main {
+    width: 100%; min-height: 110px; padding: 16px 18px; font-family: inherit; font-size: 16px;
+    color: var(--ink); background: #fff; border: 1.5px solid var(--green-light);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.8; box-sizing: border-box;
+    box-shadow: inset 0 2px 6px rgba(14,107,80,.06);
+  }
+  textarea.essence-restate-main:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
+  /* 视角必选 */
+  .viewpoint-area { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  .viewpoint-area .vp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .viewpoint-area .vp-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
+  .viewpoint-area .vp-sub { font-size: 12px; color: var(--ink-3); flex: 1; min-width: 180px; }
+  .viewpoint-area .vp-body { margin-top: 12px; }
+  .viewpoint-area .vp-body .vp-option {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
+    border: 1.5px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px;
+    cursor: pointer; background: var(--bg); transition: all .15s;
+  }
+  .viewpoint-area .vp-body .vp-option:hover { border-color: var(--green); }
+  .viewpoint-area .vp-body .vp-option.selected { border-color: var(--green); background: var(--green-soft); }
+  .viewpoint-area .vp-body .vp-option .vp-rad { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-2); flex-shrink: 0; margin-top: 2px; }
+  .viewpoint-area .vp-body .vp-option.selected .vp-rad { border-color: var(--green); background: var(--green); box-shadow: inset 0 0 0 3px #fff; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-t { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .viewpoint-area .vp-body .vp-option .vp-opt-d { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; line-height: 1.6; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-q { font-size: 12.5px; color: var(--green-deep); margin-top: 4px; font-style: italic; }
+  .viewpoint-area .vp-revise { margin-top: 12px; }
+  .viewpoint-area .vp-done { text-align: right; margin-top: 10px; }
+  .viewpoint-area .vp-done button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
+  /* 代价 → 承诺 */
+  .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
+  .cost-commit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .cost-commit .cc-head span { font-size: 13.5px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-ai-result { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink); }
+  .cost-commit .cc-ai-result .cc-courage { border-left: 3px solid var(--amber); padding: 4px 0 4px 12px; }
+  .cost-commit .cc-sign { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .cost-commit .cc-sign-text { font-size: 13px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-sign-btn {
+    background: var(--green-deep); color: #fff; border: none; padding: 9px 20px;
+    border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 12px rgba(14,107,80,.3);
+  }
+  .cost-commit .cc-sign-btn:hover { background: var(--green); }
+  .cost-commit.signed { background: var(--green-soft); border-color: var(--green); }
+  .cost-commit.signed .cc-sign-text { color: var(--green-deep); }
   .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
   .lb-explain-upgrade-body { margin-top: 10px; }
@@ -1540,23 +1600,21 @@
     <!-- Step 0 归类 -->
     <div class="panel" id="panel-0">
       <h1>把杂乱信息理出头绪</h1>
-      <div class="hint">面对一个复杂的挑战，你手里有一堆<u>现象、事实、猜测、假设</u>。先把它摊开，再归成几类，给每类一个名字。</div>
+      <div class="hint">面对一个复杂的挑战，你手里有一堆信息。先把它摊开（它是<u>现象还是事实</u>、<u>来自观察、听说还是自己的猜测</u>），再归成几类，给每类一个名字。</div>
 
       <label>① 你在面对什么复杂挑战？（场景描述）</label>
       <textarea id="scenario" placeholder="例如：AI 正在改变我的行业，我一边焦虑一边不知道该学什么、该往哪走，家人朋友说法不一，网上信息爆炸……"></textarea>
 
-      <label>② 摊开你的信息——现象、事实、猜测、假设，一条一条记下来</label>
+      <label>② 摊开你的信息——记下发生了什么，并标注它是「现象」还是「事实」</label>
       <div class="note-type" id="noteTypeChips">
-        <span class="type-chip sel" data-v="现象">现象</span>
-        <span class="type-chip" data-v="事实">事实</span>
-        <span class="type-chip" data-v="猜测">猜测</span>
-        <span class="type-chip" data-v="假设">假设</span>
+        <span class="type-chip sel" data-v="现象">现象（发生了什么）</span>
+        <span class="type-chip" data-v="事实">事实（可验证）</span>
       </div>
       <div class="note-type" id="noteSourceChips" style="margin-top:6px;">
         <span class="src-chip sel" data-v="观察">来源：我自己观察的</span>
         <span class="src-chip" data-v="事实">来源：可靠事实</span>
         <span class="src-chip" data-v="听闻">来源：听别人说的</span>
-        <span class="src-chip" data-v="猜测">来源：我自己猜的</span>
+        <span class="src-chip" data-v="猜测">来源：我自己猜的 / 假设</span>
       </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
         <input type="text" id="noteInput" placeholder="记一条：发生了什么 / 你听到了什么 / 你怀疑什么 / 你默认什么…">
@@ -1621,17 +1679,34 @@
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
           <div class="lb-essence-box" id="essenceBox">
-            <div class="lb-essence-label">现象背后的本质（AI 整合产出，可编辑）</div>
+            <div class="lb-essence-label">现象背后的本质（Transform 整合产出，可编辑）</div>
             <textarea id="essenceNature" class="essence-nature" placeholder="这个类别的这些现象背后的本质是……"></textarea>
-            <div class="lb-essence-label">新洞察和新认知（AI 整合产出，可编辑）</div>
+            <div class="lb-essence-label">新洞察和新认知（Transform 整合产出，可编辑）</div>
             <textarea id="essenceInsight" class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……"></textarea>
+          </div>
 
-            <div class="lb-essence-label" style="margin-top:12px;">用自己的话复述这条洞察 <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">（讲得明白，才算真的理解）</em></div>
-            <textarea id="essenceRestate" class="essence-nature" placeholder="不看上面的文字，把这条洞察用你自己的话写一遍（别复制）……"></textarea>
+          <!-- 🎯 核心产出：我理解到的核心认知（HIGHLIGHT） -->
+          <div class="restate-core" id="restateCore">
+            <div class="restate-core-title">
+              <span class="rc-badge">🎯</span>
+              <span class="rc-title">我理解到的核心认知</span>
+              <span class="rc-sub">用自己的话说出来 —— 这是这个阶段的<u>核心产出</u></span>
+            </div>
+            <textarea id="essenceRestate" class="essence-restate-main" placeholder="不看上面的文字，把这条认知用你自己的话写出来（别复制）。讲得明白，才算真的理解……"></textarea>
             <div class="essence-restate-feedback" id="restateFeedback"></div>
+          </div>
 
-            <div class="essence-confirm-row">
-              <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">保存确认</button>
+          <!-- 视角必选（启发，不是答案） -->
+          <div class="viewpoint-area" id="viewpointArea" style="display:none;">
+            <div class="vp-head">
+              <span class="vp-title">换一个视角看它</span>
+              <span class="vp-sub">强迫自己跳出原来的模式 —— 选一个让你不舒服的视角，用它修订你的核心认知</span>
+              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">让Transform给出不同视角</button>
+            </div>
+            <div class="vp-body" id="viewpointResult" style="display:none;"></div>
+            <div class="vp-revise" id="viewpointRevise" style="display:none;">
+              <div class="lb-essence-label">用选定的视角修订你的核心认知（可保留原文）</div>
+              <textarea id="restateRevised" class="essence-nature" placeholder="基于这个视角，我重新理解这件事……"></textarea>
             </div>
           </div>
 
@@ -1646,12 +1721,8 @@
             </div>
           </div>
 
-          <div class="lb-explain-upgrade" id="explainUpgradeArea">
-            <div class="lb-explain-upgrade-head">
-              <span>🔭 换个解释框架，行动方向就变了</span>
-              <button class="btn btn-next" id="explainUpgradeBtn" onclick="aiExplainUpgrade(this)" style="padding:8px 16px;font-size:13px;">看看我能怎么解释这件事</button>
-            </div>
-            <div class="lb-explain-upgrade-body" id="explainUpgradeResult" style="display:none;"></div>
+          <div class="essence-confirm-row" id="essenceConfirmRow">
+            <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">保存确认</button>
           </div>
 
           <div class="lb-status-row" id="statusRow">还需要：让Transform总结</div>
@@ -1885,6 +1956,28 @@
           <span class="app-label">如果一个月后你没做到，最可能是哪个代价让你退缩？</span>
           <textarea class="app-input app-plan-input" id="costRisk" placeholder="提前看见它，它就没那么容易拦住你"></textarea>
         </div>
+
+        <!-- 代价 → 承诺（反馈 4：不做 tradeoff 就只是呈现） -->
+        <div class="cost-commit" id="costCommit">
+          <div class="cc-head">
+            <span>✊ 把它变成承诺</span>
+            <button class="ai-btn" id="aiCourageBtn" onclick="aiCourage(this)" style="padding:7px 14px;font-size:12.5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              让Transform看看我的勇气在哪
+            </button>
+          </div>
+          <div class="cc-ai-result" id="courageResult" style="display:none;"></div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">我承诺：在 <input type="text" id="costCommitDate" class="app-input-sm" style="width:120px;display:inline-block;" placeholder="例：9 月 15 日"> 前，完成这件事。</span>
+          </div>
+          <div class="app-row" style="margin-top:10px;">
+            <span class="app-label">如果我退缩，我会 <input type="text" id="costCommitFallback" class="app-input-sm" style="width:70%;display:inline-block;" placeholder="例：约一个见证人，重新开始"> 。</span>
+          </div>
+          <div class="cc-sign" id="costCommitSign">
+            <span class="cc-sign-text">这笔代价，我认。</span>
+            <button class="btn-ok cc-sign-btn" onclick="signCostCommit()" id="costSignBtn">签名承诺</button>
+          </div>
+        </div>
       </div>
 
       <div class="insight-to-behavior">
@@ -2014,7 +2107,7 @@ const BRAND_PROFILES = {
 };
 
 const NOTE_TYPES = {
-  '现象': 'phenom', '事实': 'fact', '猜测': 'guess', '假设': 'assump'
+  '现象': 'phenom', '事实': 'fact'
 };
 
 const state = {
@@ -2046,6 +2139,13 @@ function toast(msg) {
 }
 function loadDraft() {
   try { const d = JSON.parse(localStorage.getItem(LS_SESSION)); if (d) Object.assign(state.data, d); } catch(e) {}
+  // 旧数据迁移：type 为「猜测/假设」的便签 → 归入来源「自己猜」，类型归为「现象」
+  (state.data.notes || []).forEach(n => {
+    if (n.type === '猜测' || n.type === '假设') {
+      n.source = '猜测';
+      n.type = '现象';
+    }
+  });
 }
 function saveDraft() {
   localStorage.setItem(LS_SESSION, JSON.stringify(state.data));
@@ -2236,21 +2336,23 @@ async function aiExtract() {
   try {
     const r = await aiCall(
       `用户面对一个复杂挑战，场景描述：「${sc}」
-      任务：像梳理杂物一样，从这段描述中提取杂乱的信息点。把信息分成四类：
-      现象（发生了什么）、事实（确凿的信息）、猜测（用户的推测）、假设（用户默认的前提）。
-      输出格式：每行一条，格式为「类型：内容」。类型必须是 现象/事实/猜测/假设 之一。
+      任务：像梳理杂物一样，从这段描述中提取杂乱的信息点。每条信息分两部分：
+      1. 内容类型：现象（发生了什么）或 事实（确凿可验证的信息）
+      2. 来源：观察（用户亲眼所见）/ 听闻（听别人说的）/ 猜测（用户推测或默认的前提）
+      输出格式：每行一条，格式为「类型 | 来源：内容」。
+      类型必须是 现象/事实 之一；来源必须是 观察/听闻/猜测 之一。
       提取 4-8 条，覆盖描述中的关键信息。`
     );
-    // 解析并填入便签
+    // 解析并填入便签（格式：类型 | 来源：来源值：内容）
     const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes('：'));
     lines.forEach(l => {
-      const idx = l.indexOf('：');
-      const type = l.slice(0, idx).replace(/^[0-9.、\s]*/, '').trim();
-      const text = l.slice(idx + 1).trim();
-      const validType = Object.keys(NOTE_TYPES).find(t => type.includes(t));
-      if (validType && text) {
-        const srcMap = { '现象': '观察', '事实': '事实', '猜测': '猜测', '假设': '猜测' };
-        state.data.notes.push({ id: uid(), type: validType, source: srcMap[validType] || '观察', text });
+      const tm = l.match(/(现象|事实)/);
+      const sm = l.match(/来源[:：]?\s*(观察|事实|听闻|猜测)/);
+      const type = tm ? tm[1] : '现象';
+      const source = sm ? sm[1] : '观察';
+      const text = l.replace(/^[0-9.、\s]*(现象|事实)\s*[|｜]?\s*来源[:：]?\s*(观察|事实|听闻|猜测)\s*[:：]?\s*/, '').trim();
+      if (text) {
+        state.data.notes.push({ id: uid(), type, source, text });
       }
     });
     renderNotes(); checkNext0(); saveDraft();
@@ -2765,28 +2867,44 @@ function confirmEssence() {
   if (!(state.data.impact > 0) || !(state.data.effort > 0)) {
     toast('先打分（重要性 + 接受费力）'); return;
   }
-  // 复述关卡（门一：用自己的话讲明白）——非强制但提示
+  // 复述关卡（门一：用自己的话讲明白）——强制
   const restateEl = $('essenceRestate');
   const restate = restateEl ? (restateEl.value || '').trim() : '';
   const fb = $('restateFeedback');
   if (!restate) {
-    toast('先用自己的话复述一遍这条洞察');
-    if (fb) { fb.textContent = '还差一步：用你自己的话把这条洞察写一遍，讲得明白才算真的理解。'; fb.className = 'essence-restate-feedback warn'; }
+    toast('先把你的核心认知用自己的话说出来');
+    if (fb) { fb.textContent = '还差一步：这是这个阶段的核心产出 —— 用你自己的话把它写出来。'; fb.className = 'essence-restate-feedback warn'; }
     if (restateEl) restateEl.focus();
     return;
   }
   if (restateEl) {
     const sim = similarity(restate, e.insight || '');
     if (sim > 0.78) {
-      toast('这像是复制原文——用你自己的话再写一遍');
+      toast('这像是复制原文——放下原文，凭自己的理解写');
       if (fb) { fb.textContent = '这句和原文太像了（相似度 ' + Math.round(sim*100) + '%）。放下原文，凭自己的理解写。'; fb.className = 'essence-restate-feedback warn'; }
       return;
     }
     if (fb) { fb.textContent = '✓ 讲得明白，这条认知真正属于你了。'; fb.className = 'essence-restate-feedback ok'; }
   }
+  // 视角必选（反馈 3）：必须选一个视角（可跳过修订，但必须选）
+  if (!state.data.viewpoint) {
+    const vp = $('viewpointResult');
+    toast('先从不同视角里选一个——换一个模式看这件事');
+    if (vp) {
+      vp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!state.data.viewpointsGenerated) aiViewpoint(null);
+    }
+    return;
+  }
   state.data.confirmed = true;
   state.data.restate = restate;
+  // 修订后的核心认知（如用户修订过则用修订版）
+  const revisedEl = $('restateRevised');
+  const revised = revisedEl ? (revisedEl.value || '').trim() : '';
+  if (revised) state.data.restate = revised;
   $('essenceBox').classList.add('locked');
+  $('restateCore').classList.add('locked');
+  $('viewpointArea').classList.add('locked');
   $('statusRow').textContent = '✓ 已确认';
   $('statusRow').classList.add('ok');
   $('signal1').style.display = 'inline-flex';
@@ -2795,10 +2913,9 @@ function confirmEssence() {
   toast('已保存确认');
 }
 
-// 简单相似度（字符交集比例）
+// 简单相似度（Token-level Jaccard，中英都适用）
 function similarity(a, b) {
   if (!a || !b) return 0;
-  // Token-level Jaccard: 按词拆分（中英都适用）
   const tok = s => (s || '').replace(/[^\u4e00-\u9fff\w\s]/g, ' ').split(/\s+/).filter(Boolean);
   const sa = new Set(tok(a).map(s => s.toLowerCase())), sb = new Set(tok(b).map(s => s.toLowerCase()));
   let hit = 0;
@@ -2807,56 +2924,91 @@ function similarity(a, b) {
   return union ? hit / union : 0;
 }
 
-// 解释升级（层二：换解释框架）
-async function aiExplainUpgrade(btn) {
+// 视角启发（反馈 3：不是答案，是启发视角；必选）
+let viewpointSelected = null;
+async function aiViewpoint(btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const e = state.data.essence || {};
+  const restate = (state.data.restate || $('essenceRestate') ? $('essenceRestate').value : '') || '';
   const scenario = state.data.scenario || '';
   if (!e.nature && !e.insight) { toast('先让Transform总结出本质和洞察'); return; }
   if (btn) btn.classList.add('loading');
   const r = await aiCall(
-    '用户正在做一次认知梳理。\n场景：「' + scenario + '」\n用户提炼的本质：「' + e.nature + '」\n用户提炼的洞察：「' + e.insight + '」\n\n' +
-    '请用 3 个由浅到深的解释框架来解读这件事：\n' +
-    '1. 表层解释：最常见、最省力的归因（通常甩给外部/情绪）\n' +
-    '2. 结构解释：看到岗位/结构/激励/模式层面的原因\n' +
-    '3. 系统性解释：看到能力结构、周期、复利、边界层面的根本原因\n\n' +
-    '要求：每层 ≤ 40 字，直接给内容不要寒暄。\n严格返回 JSON：{"low":"...","mid":"...","high":"..."}'
+    '用户正在做一次认知梳理。\n场景：「' + scenario + '」\n用户提炼的本质：「' + e.nature + '」\n用户提炼的洞察：「' + e.insight + '」\n用户的理解：「' + restate + '」\n\n' +
+    '请不要给答案。请给出 4 个完全不同视角的启发式问题，强迫用户跳出他原来的思维模式：\n' +
+    '1. 正向视角：这件事里，最好的可能性是什么？用户没看见的积极面是什么？\n' +
+    '2. 长远视角：10 年后回看今天，这件事会怎么被定义？现在的焦虑值多少？\n' +
+    '3. 利他视角：如果你最关心的人处在同样的处境，你会劝他怎么想？你愿意把什么经验留给他们？\n' +
+    '4. 反身视角：这个处境，和你一直逃避的某个模式/角色有关吗？你在其中扮演了什么？\n\n' +
+    '每个视角给出：视角名 + 一句话启发 + 一个启发式提问。\n' +
+    '要求：每项 ≤ 30 字，直接、有力量、不鸡汤。\n严格返回 JSON 数组：[{"name":"正向视角","insight":"...","question":"..."},{"name":"长远视角","insight":"...","question":"..."},{"name":"利他视角","insight":"...","question":"..."},{"name":"反身视角","insight":"...","question":"..."}]'
   );
   if (btn) btn.classList.remove('loading');
-  const data = parseExplain(r);
-  const box = $('explainUpgradeResult');
-  if (!data) {
-    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform 暂时没能生成解释对照，请稍后再试。</div>'; }
+  const arr = parseViewpoints(r);
+  const box = $('viewpointResult');
+  if (!arr || !arr.length) {
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform 暂时没能生成视角，请稍后再试。</div>'; }
     return;
   }
-  if (box) {
-    box.style.display = 'block';
-    box.innerHTML = `
-      <div class="eu-level"><div class="eu-label">表层解释 <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——最省力，通常甩锅或怪运气</em></div><div class="eu-text">${escapeHtml(data.low)}</div></div>
-      <div class="eu-level"><div class="eu-label">结构解释 <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——看到岗位 / 结构 / 激励 / 模式</em></div><div class="eu-text">${escapeHtml(data.mid)}</div></div>
-      <div class="eu-level strong"><div class="eu-label"><b>系统性解释</b> <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——看到能力结构 / 周期 / 复利 / 边界</em></div><div class="eu-text">${escapeHtml(data.high)}</div></div>
-      <div class="eu-apply"><button onclick="applyHighExplanation()">把系统性解释设为我的洞察</button></div>`;
-  }
+  state.data.viewpointsGenerated = true;
+  state.data.viewpoints = arr;
+  renderViewpoints();
 }
-function parseExplain(text) {
+function parseViewpoints(text) {
   if (!text) return null;
   try {
-    const m = text.match(/\{[\s\S]*\}/);
+    const m = text.match(/\[[\s\S]*\]/);
     if (!m) return null;
-    const j = JSON.parse(m[0]);
-    if (j.low && j.mid && j.high) return { low: j.low, mid: j.mid, high: j.high };
+    const arr = JSON.parse(m[0]);
+    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && v.insight).slice(0, 4);
   } catch(e){}
   return null;
 }
-function applyHighExplanation() {
-  const box = $('explainUpgradeResult');
-  if (box) box.style.display = 'none';
-  const insight = $('essenceInsight');
-  if (insight) {
-    const v = (insight.value || '').trim();
-    if (v) toast('洞察已保留，建议把"系统性解释"并入你的洞察后重新保存确认');
+function renderViewpoints() {
+  const box = $('viewpointResult');
+  const area = $('viewpointArea');
+  const revise = $('viewpointRevise');
+  if (!box) return;
+  const arr = state.data.viewpoints || [];
+  if (!arr.length) return;
+  if (area) area.style.display = 'block';
+  box.style.display = 'block';
+  box.innerHTML = arr.map((v, i) =>
+    `<div class="vp-option${viewpointSelected === i ? ' selected' : ''}" onclick="selectViewpoint(${i})">
+      <span class="vp-rad"></span>
+      <span style="flex:1;">
+        <span class="vp-opt-t">${escapeHtml(v.name)}</span>
+        <span class="vp-opt-d">${escapeHtml(v.insight)}</span>
+        <span class="vp-opt-q">"${escapeHtml(v.question)}"</span>
+      </span>
+    </div>`
+  ).join('') +
+  `<div class="vp-done"><button onclick="confirmViewpoint()">就用这个视角，去修订我的认知</button></div>`;
+}
+function selectViewpoint(i) {
+  viewpointSelected = i;
+  state.data.viewpoint = (state.data.viewpoints || [])[i];
+  renderViewpoints();
+  const revise = $('viewpointRevise');
+  if (revise) {
+    revise.style.display = 'block';
+    const vp = state.data.viewpoint;
+    if (vp) {
+      const cur = ($('essenceRestate') ? $('essenceRestate').value : '') || '';
+      $('restateRevised').value = cur;
+      $('restateRevised').setAttribute('data-hint', vp.name + '：' + vp.question);
+    }
   }
+}
+function confirmViewpoint() {
+  const vp = state.data.viewpoint;
+  if (!vp) { toast('先选一个视角'); return; }
+  // 修订后的核心认知填进复述框（用户可再改）
+  const revised = $('restateRevised');
+  const cur = revised ? revised.value.trim() : '';
+  if (cur && $('essenceRestate')) $('essenceRestate').value = cur;
+  toast('已选「' + vp.name + '」，你的核心认知已更新，可继续打分并保存');
 }
 
 function checkNext1() {
@@ -3492,8 +3644,12 @@ function complete() {
     farResourcesPlan: state.data.farResourcesPlan,
     identity: state.data.identity,
     restate: state.data.restate || '',
+    viewpoint: state.data.viewpoint || null,
     costGiveUp: state.data.costGiveUp || '',
     costRisk: state.data.costRisk || '',
+    costCommitDate: state.data.costCommitDate || '',
+    costCommitFallback: state.data.costCommitFallback || '',
+    costSigned: !!state.data.costSigned,
     inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
@@ -3703,7 +3859,7 @@ function renderAppAside() {
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
   { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
-  { h: '四步，一次想通一件事', p: '① 归类：把现象/事实/猜测/假设摊开理顺；② 洞察：透过现象看本质；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源和你期待的身份。' },
+  { h: '四步，一次想通一件事', p: '① 归类：把信息摊开（现象/事实 + 观察/听说/猜测）；② 洞察：透过现象看本质，用自己的话说出核心认知；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源、代价与承诺。' },
   { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
 ];
 let obIdx = 0;
@@ -3805,10 +3961,81 @@ window.goStep = function(n) {
       $('costRisk').value = d.costRisk || '';
       $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
       $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
+      $('costCommitDate').value = d.costCommitDate || '';
+      $('costCommitFallback').value = d.costCommitFallback || '';
+      $('costCommitDate').oninput = e => { d.costCommitDate = e.target.value; saveDraft(); };
+      $('costCommitFallback').oninput = e => { d.costCommitFallback = e.target.value; saveDraft(); };
+      if (d.costSigned) {
+        const cc = $('costCommit');
+        if (cc) {
+          cc.classList.add('signed');
+          $('costSignBtn').textContent = '✓ 已签名承诺';
+          $('costSignBtn').disabled = true;
+          $('costCommitSign').style.opacity = '.7';
+        }
+      }
     }
   }
   origGo(n);
 };
+
+/* 代价 → 承诺（反馈 4） */
+async function aiCourage(btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const giveUp = ($('costGiveUp') ? $('costGiveUp').value : '').trim();
+  const risk = ($('costRisk') ? $('costRisk').value : '').trim();
+  if (!giveUp && !risk) { toast('先写下你要放弃什么、最可能让你退缩的代价'); return; }
+  if (btn) btn.classList.add('loading');
+  const r = await aiCall(
+    '用户为改变付出了代价评估：\n要放弃的：「' + giveUp + '」\n最可能退缩的代价：「' + risk + '」\n\n' +
+    '请给用户一句「勇气判断」，帮他把代价变成可以跨过去的动作，而不是吓退他。包含：\n' +
+    '1. 一句话点破：这个代价真正怕的是什么（≤20字）\n' +
+    '2. 一句勇气提醒：为什么这一步值得付这个价（≤20字）\n' +
+    '3. 一个跨过去的动作：最微小、今天就能做的一步（≤25字）\n\n' +
+    '严格返回 JSON：{"truth":"...","courage":"...","step":"..."}'
+  );
+  if (btn) btn.classList.remove('loading');
+  const data = parseCourage(r);
+  const box = $('courageResult');
+  if (!data) {
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform 暂时没能给出勇气判断，请稍后再试。</div>'; }
+    return;
+  }
+  if (box) {
+    box.style.display = 'block';
+    box.innerHTML = '<div class="cc-courage">' +
+      '<div><b>你怕的其实是：</b>' + escapeHtml(data.truth) + '</div>' +
+      '<div style="margin-top:4px;"><b>为什么值得：</b>' + escapeHtml(data.courage) + '</div>' +
+      '<div style="margin-top:4px;"><b>今天就做的一步：</b>' + escapeHtml(data.step) + '</div>' +
+      '</div>';
+  }
+}
+function parseCourage(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (j.truth && j.courage && j.step) return j;
+  } catch(e){}
+  return null;
+}
+function signCostCommit() {
+  const date = ($('costCommitDate') ? $('costCommitDate').value : '').trim();
+  if (!date) { toast('先写下承诺的时点'); $('costCommitDate').focus(); return; }
+  state.data.costCommitDate = date;
+  state.data.costCommitFallback = ($('costCommitFallback') ? $('costCommitFallback').value : '').trim();
+  state.data.costSigned = true;
+  saveDraft();
+  const cc = $('costCommit');
+  if (cc) {
+    cc.classList.add('signed');
+    $('costSignBtn').textContent = '✓ 已签名承诺';
+    $('costSignBtn').disabled = true;
+  }
+  toast('已签名 —— 这笔代价，你认了');
+}
 // 把当前核心洞察作为"认知起点"带入「伴我改变」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
 function sendInsightToBehavior(){
   const d = state.data;
