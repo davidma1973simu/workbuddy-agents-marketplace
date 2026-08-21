@@ -235,6 +235,39 @@
   }
   .type-chip:hover { border-color: var(--green); }
   .type-chip.sel { background: var(--green); color: #fff; border-color: var(--green); }
+  .src-chip {
+    font-size: 12.5px; padding: 5px 13px; border-radius: 999px; cursor: pointer;
+    background: var(--bg); border: 1.5px solid var(--line-2); color: var(--ink-2);
+    font-weight: 500; font-family: inherit; transition: all .15s;
+  }
+  .src-chip:hover { border-color: var(--green); color: var(--green-deep); }
+  .src-chip.sel { background: var(--amber-soft); color: #8B5A1B; border-color: var(--amber); font-weight: 600; }
+  .input-stats {
+    margin: 4px 0 14px; padding: 10px 14px; border-radius: var(--radius-md);
+    background: var(--blue-soft); border: 1px solid var(--blue-light);
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.7;
+  }
+  .input-stats b { color: var(--blue); }
+  .input-stats .is-warn { color: #8B5A1B; }
+  .essence-restate-feedback { font-size: 12.5px; line-height: 1.6; margin: 4px 0 2px; min-height: 18px; }
+  .essence-restate-feedback.ok { color: var(--green-deep); }
+  .essence-restate-feedback.warn { color: #c0392b; }
+  .lb-essence-box.locked .essence-restate { opacity: .65; }
+  .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
+  .lb-explain-upgrade-body { margin-top: 10px; }
+  .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
+  .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
+  .lb-explain-upgrade-body .eu-label { font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
+  .lb-explain-upgrade-body .eu-label b { color: var(--green-deep); }
+  .lb-explain-upgrade-body .eu-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
+  .lb-explain-upgrade-body .eu-apply { margin-top: 8px; }
+  .lb-explain-upgrade-body .eu-apply button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .lb-explain-upgrade-body .eu-apply button:hover { background: var(--green); color: #fff; }
   .notes { display: grid; gap: 10px; margin-top: 14px; }
   .note {
     display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
@@ -1504,6 +1537,12 @@
         <span class="type-chip" data-v="猜测">Guess</span>
         <span class="type-chip" data-v="假设">Assumption</span>
       </div>
+      <div class="note-type" id="noteSourceChips" style="margin-top:6px;">
+        <span class="src-chip sel" data-v="观察">Source: my own observation</span>
+        <span class="src-chip" data-v="事实">Source: reliable fact</span>
+        <span class="src-chip" data-v="听闻">Source: heard from others</span>
+        <span class="src-chip" data-v="猜测">Source: my own guess</span>
+      </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
         <input type="text" id="noteInput" placeholder="Add one: what happened / what you heard / what you suspect / what you take for granted...">
         <button class="btn btn-next" style="padding:10px 20px;flex-shrink:0;" onclick="addNote()">Add</button>
@@ -1568,6 +1607,11 @@
             <textarea id="essenceNature" class="essence-nature" placeholder="The essence behind these phenomena is..."></textarea>
             <div class="lb-essence-label">New insight and understanding (AI output, editable)</div>
             <textarea id="essenceInsight" class="essence-insight" placeholder="Our new insight and understanding of this problem is..."></textarea>
+
+            <div class="lb-essence-label" style="margin-top:12px;">Restate this insight in your own words <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(explaining it shows you understand it)</em></div>
+            <textarea id="essenceRestate" class="essence-nature" placeholder="Without looking at the text above, write this insight in your own words (do not copy)..."></textarea>
+            <div class="essence-restate-feedback" id="restateFeedback"></div>
+
             <div class="essence-confirm-row">
               <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & Confirm</button>
             </div>
@@ -1659,6 +1703,10 @@
               <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="e.g. the client proactively renews phase 2">
             </div>
           </div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">External verification signal (required): what outside reaction would prove it really happened? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(someone else, not "I feel I improved")</em></span>
+            <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="e.g. client proactively renews / a colleague asks how I did it / numbers rise 20%"></textarea>
+          </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -1715,6 +1763,10 @@
               <span class="app-label">Expected outcome?</span>
               <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="e.g. sales report higher repeat purchase rate">
             </div>
+          </div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">External verification signal (required): what outside reaction would prove it really happened? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(someone else, not "I feel I improved")</em></span>
+            <textarea class="app-input app-plan-input" data-app="far" data-key="verifySignal" placeholder="e.g. sales rep comes asking for tips / a referral / measurable change"></textarea>
           </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
@@ -1791,6 +1843,18 @@
         <div class="vote-stats" id="voteStats" style="display:none;">
           <div class="stat-pill"><span id="voteCount">0</span> votes</div>
           <div class="stat-pill">Latest <span id="voteDays">—</span></div>
+        </div>
+      </div>
+
+      <label>④ Action cost: what are you willing to give up? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(the end of cognition is cost, not cleverness)</em></label>
+      <div class="outcome-section" id="costOutcome">
+        <div class="app-row">
+          <span class="app-label">What do you need to give up to make this change?</span>
+          <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="e.g. give up late-night emotional compensation time, leave the comfort zone, admit past choices had a cost"></textarea>
+        </div>
+        <div class="app-row" style="margin-top:12px;">
+          <span class="app-label">If you don't follow through in a month, which cost is most likely to make you pull back?</span>
+          <textarea class="app-input app-plan-input" id="costRisk" placeholder="See it upfront and it won't stop you as easily"></textarea>
         </div>
       </div>
 
@@ -1978,6 +2042,7 @@ function goStep(n) {
   renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
+  if (n === 1 && typeof renderInputStats === 'function') renderInputStats();
   document.querySelectorAll('.p-node').forEach((s, i) => {
     s.classList.toggle('active', i === n);
     s.classList.toggle('done', i < n);
@@ -2030,6 +2095,24 @@ function goStep(n) {
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+// Layer 1: Input source statistics
+function renderInputStats() {
+  const box = $('inputStats'); if (!box) return;
+  const notes = state.data.notes || [];
+  if (!notes.length) { box.style.display = 'none'; return; }
+  const cnt = {};
+  notes.forEach(n => { const s = n.source || '观察'; cnt[s] = (cnt[s] || 0) + 1; });
+  const labels = { '观察': 'my observation', '事实': 'reliable fact', '听闻': 'heard from others', '猜测': 'my own guess' };
+  const total = notes.length;
+  const guess = cnt['猜测'] || 0;
+  const parts = Object.keys(cnt).map(k => '<b>' + (labels[k] || k) + ' ' + cnt[k] + '</b>');
+  const warn = (guess / total) >= 0.5
+    ? ' <span class="is-warn">(guesses are half the input — treat them as hypotheses, not conclusions)</span>'
+    : '';
+  box.style.display = 'block';
+  box.innerHTML = 'Input mix: ' + parts.join(' · ') + ', total ' + total + ' notes.' + warn;
+}
+
 /* ============ Step 0 归类 ============ */
 // 信息类型选择
 document.querySelectorAll('#noteTypeChips .type-chip').forEach(c => {
@@ -2039,12 +2122,20 @@ document.querySelectorAll('#noteTypeChips .type-chip').forEach(c => {
     state.curNoteType = c.dataset.v;
   };
 });
+// 信息源选择（第 1 层：来源标注）
+document.querySelectorAll('#noteSourceChips .src-chip').forEach(c => {
+  c.onclick = () => {
+    document.querySelectorAll('#noteSourceChips .src-chip').forEach(x => x.classList.remove('sel'));
+    c.classList.add('sel');
+    state.curSource = c.dataset.v;
+  };
+});
 // 添加信息便签
 $('noteInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addNote(); } });
 function addNote() {
   const v = $('noteInput').value.trim();
   if (!v) return;
-  state.data.notes.push({ id: uid(), type: state.curNoteType, text: v });
+  state.data.notes.push({ id: uid(), type: state.curNoteType, source: state.curSource || '观察', text: v });
   $('noteInput').value = '';
   renderNotes();
   checkNext0();
@@ -2059,7 +2150,7 @@ function renderNotes() {
   const box = $('notesList');
   if (!state.data.notes.length) { box.innerHTML = ''; return; }
   box.innerHTML = state.data.notes.map(n =>
-    `<div class="note"><span class="tag tag-${NOTE_TYPES[n.type]}">${n.type}</span><span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
+    `<div class="note"><span class="tag tag-${NOTE_TYPES[n.type]}">${n.type}</span>${n.source ? `<span class="src-tag">${escapeHtml(n.source)}</span>` : ''}<span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
   ).join('');
 }
 
@@ -2510,8 +2601,10 @@ function parseSingleEssence(text) {
 function restoreEssenceUI() {
   $('essenceNature').value = (state.data.essence && state.data.essence.nature) || '';
   $('essenceInsight').value = (state.data.essence && state.data.essence.insight) || '';
+  if ($('essenceRestate')) $('essenceRestate').value = state.data.restate || '';
   autoGrow($('essenceNature'));
   autoGrow($('essenceInsight'));
+  if ($('essenceRestate')) autoGrow($('essenceRestate'));
   ['impact', 'effort'].forEach(key => {
     const scale = $(key + 'Scale');
     scale.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.textContent === (state.data[key] || 0)));
@@ -2597,7 +2690,27 @@ function confirmEssence() {
   if (!(state.data.impact > 0) || !(state.data.effort > 0)) {
     toast('Score first (importance + acceptance effort)'); return;
   }
+  // Restate gate (Layer 2, mandatory)
+  const restateEl = $('essenceRestate');
+  const restate = restateEl ? (restateEl.value || '').trim() : '';
+  const fb = $('restateFeedback');
+  if (!restate) {
+    toast('First, restate this insight in your own words');
+    if (fb) { fb.textContent = 'One more step: write this insight in your own words — explaining it shows you understand it.'; fb.className = 'essence-restate-feedback warn'; }
+    if (restateEl) restateEl.focus();
+    return;
+  }
+  if (restateEl) {
+    const sim = similarity(restate, e.insight || '');
+    if (sim > 0.78) {
+      toast('That looks copied — rewrite in your own words');
+      if (fb) { fb.textContent = 'Too close to the original (' + Math.round(sim*100) + '% similar). Put the text aside and write from your understanding.'; fb.className = 'essence-restate-feedback warn'; }
+      return;
+    }
+    if (fb) { fb.textContent = '✓ Clearly explained — this insight is truly yours now.'; fb.className = 'essence-restate-feedback ok'; }
+  }
   state.data.confirmed = true;
+  state.data.restate = restate;
   $('essenceBox').classList.add('locked');
   $('statusRow').textContent = '\u2713 Confirmed';
   $('statusRow').classList.add('ok');
@@ -2605,6 +2718,61 @@ function confirmEssence() {
   saveDraft();
   checkNext1();
   toast('Confirmed and saved');
+}
+function similarity(a, b) {
+  if (!a || !b) return 0;
+  // Token-level Jaccard: 按词拆分（中英都适用）
+  const tok = s => (s || '').replace(/[^\u4e00-\u9fff\w\s]/g, ' ').split(/\s+/).filter(Boolean);
+  const sa = new Set(tok(a).map(s => s.toLowerCase())), sb = new Set(tok(b).map(s => s.toLowerCase()));
+  let hit = 0;
+  sa.forEach(t => { if (sb.has(t)) hit++; });
+  const union = new Set([...sa, ...sb]).size;
+  return union ? hit / union : 0;
+}
+async function aiExplainUpgrade(btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('Set API Key in Settings first'); openSettings(); return; }
+  const e = state.data.essence || {};
+  const scenario = state.data.scenario || '';
+  if (!e.nature && !e.insight) { toast('Get the essence and insight first'); return; }
+  if (btn) btn.classList.add('loading');
+  const r = await aiCall(
+    'User is doing a thinking-through session.\nScenario: ' + scenario + '\nUser essence: ' + e.nature + '\nUser insight: ' + e.insight + '\n\n' +
+    'Give 3 explanations from shallow to deep:\n' +
+    '1. Surface: the easiest, most common attribution (usually blaming external/luck)\n' +
+    '2. Structural: seeing role/structure/incentive/pattern-level reasons\n' +
+    '3. Systemic: ability structure, cycle, compound, boundary-level root causes\n\n' +
+    'Strict JSON: {"low":"...","mid":"...","high":"..."}, each <= 40 words.'
+  );
+  if (btn) btn.classList.remove('loading');
+  const data = parseExplain(r);
+  const box = $('explainUpgradeResult');
+  if (!data) {
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not generate explanations right now — please try again.</div>'; }
+    return;
+  }
+  if (box) {
+    box.style.display = 'block';
+    box.innerHTML = `
+      <div class="eu-level"><div class="eu-label">Surface <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— easiest, usually blame luck</em></div><div class="eu-text">${escapeHtml(data.low)}</div></div>
+      <div class="eu-level"><div class="eu-label">Structural <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— role / structure / incentive / pattern</em></div><div class="eu-text">${escapeHtml(data.mid)}</div></div>
+      <div class="eu-level strong"><div class="eu-label"><b>Systemic</b> <em style="font-style:normal;color:var(--ink-3);font-size:11px;">— ability / cycle / compound / boundary</em></div><div class="eu-text">${escapeHtml(data.high)}</div></div>
+      <div class="eu-apply"><button onclick="applyHighExplanation()">Use the systemic explanation as my insight</button></div>`;
+  }
+}
+function parseExplain(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (j.low && j.mid && j.high) return { low: j.low, mid: j.mid, high: j.high };
+  } catch(e){}
+  return null;
+}
+function applyHighExplanation() {
+  const box = $('explainUpgradeResult');
+  if (box) box.style.display = 'none';
 }
 
 function checkNext1() {
@@ -2635,6 +2803,7 @@ function ensureAppScenario(type) {
   if (obj.expectedOutcome === undefined) obj.expectedOutcome = '';
   if (obj.plan === undefined) obj.plan = '';
   if (obj.when === undefined) obj.when = '';
+  if (obj.verifySignal === undefined) obj.verifySignal = '';
   return obj;
 }
 
@@ -2922,6 +3091,7 @@ function isNearComplete() {
   if (!obj.plan || !obj.plan.trim()) return false;
   if (!obj.when || !obj.when.trim()) return false;
   if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) return false;
+  if (!obj.verifySignal || !obj.verifySignal.trim()) return false;
   if (!state.data.nearFeedback) return false;
   return true;
 }
@@ -3139,7 +3309,7 @@ function confirmResources(type) {
 function checkNext2() {
   const nearOk = isNearComplete();
   const far = state.data.farScenario || {};
-  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && state.data.farFeedback;
+  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && far.verifySignal && far.verifySignal.trim() && state.data.farFeedback;
   // Both must be complete (near + far + their support resources all confirmed)
   const appOk = nearOk && farOk;
   const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
@@ -3236,6 +3406,10 @@ function complete() {
     nearResourcesPlan: state.data.nearResourcesPlan,
     farResourcesPlan: state.data.farResourcesPlan,
     identity: state.data.identity,
+    restate: state.data.restate || '',
+    costGiveUp: state.data.costGiveUp || '',
+    costRisk: state.data.costRisk || '',
+    inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
     tags: state.data.tags || [],
@@ -3539,6 +3713,14 @@ window.goStep = function(n) {
 
     // ③ 身份投票
     renderIdentityVote();
+
+    // ④ 行动代价恢复（编辑后可随时保存）
+    if ($('costGiveUp')) {
+      $('costGiveUp').value = d.costGiveUp || '';
+      $('costRisk').value = d.costRisk || '';
+      $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
+      $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
+    }
   }
   origGo(n);
 };

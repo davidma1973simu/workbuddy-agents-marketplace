@@ -235,6 +235,20 @@
   }
   .type-chip:hover { border-color: var(--green); }
   .type-chip.sel { background: var(--green); color: #fff; border-color: var(--green); }
+  .src-chip {
+    font-size: 12.5px; padding: 5px 13px; border-radius: 999px; cursor: pointer;
+    background: var(--bg); border: 1.5px solid var(--line-2); color: var(--ink-2);
+    font-weight: 500; font-family: inherit; transition: all .15s;
+  }
+  .src-chip:hover { border-color: var(--green); color: var(--green-deep); }
+  .src-chip.sel { background: var(--amber-soft); color: #8B5A1B; border-color: var(--amber); font-weight: 600; }
+  .input-stats {
+    margin: 4px 0 14px; padding: 10px 14px; border-radius: var(--radius-md);
+    background: var(--blue-soft); border: 1px solid var(--blue-light);
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.7;
+  }
+  .input-stats b { color: var(--blue); }
+  .input-stats .is-warn { color: #8B5A1B; }
   .notes { display: grid; gap: 10px; margin-top: 14px; }
   .note {
     display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
@@ -249,6 +263,11 @@
   .tag-fact { background: var(--green-soft); color: var(--green-deep); }
   .tag-guess { background: var(--amber-soft); color: var(--amber); }
   .tag-assump { background: var(--purple-soft); color: var(--purple); }
+  .src-tag {
+    font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px;
+    background: transparent; color: var(--ink-3); border: 1px dashed var(--line-2);
+    flex-shrink: 0; margin-top: 3px;
+  }
   .note .txt { flex: 1; font-size: 14px; }
   .note .rm { border: none; background: none; color: var(--ink-3); cursor: pointer; font-size: 16px; padding: 2px; }
   .note .rm:hover { color: var(--coral); }
@@ -820,6 +839,25 @@
   }
   .btn-essence-confirm:hover { background: var(--green); color: #fff; }
   .lb-essence-box.locked .essence-confirm-row { display: none; }
+  .lb-essence-box.locked .essence-restate { opacity: .65; }
+  .essence-restate-feedback { font-size: 12.5px; line-height: 1.6; margin: 4px 0 2px; min-height: 18px; }
+  .essence-restate-feedback.ok { color: var(--green-deep); }
+  .essence-restate-feedback.warn { color: #c0392b; }
+  .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
+  .lb-explain-upgrade-body { margin-top: 10px; }
+  .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
+  .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
+  .lb-explain-upgrade-body .eu-label { font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
+  .lb-explain-upgrade-body .eu-label b { color: var(--green-deep); }
+  .lb-explain-upgrade-body .eu-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
+  .lb-explain-upgrade-body .eu-apply { margin-top: 8px; }
+  .lb-explain-upgrade-body .eu-apply button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .lb-explain-upgrade-body .eu-apply button:hover { background: var(--green); color: #fff; }
 
   /* v8 盒内确认按钮（白底深绿字） */
   .essence-confirm-row { display: flex; justify-content: flex-start; margin-top: 6px; }
@@ -1514,6 +1552,12 @@
         <span class="type-chip" data-v="猜测">猜测</span>
         <span class="type-chip" data-v="假设">假设</span>
       </div>
+      <div class="note-type" id="noteSourceChips" style="margin-top:6px;">
+        <span class="src-chip sel" data-v="观察">来源：我自己观察的</span>
+        <span class="src-chip" data-v="事实">来源：可靠事实</span>
+        <span class="src-chip" data-v="听闻">来源：听别人说的</span>
+        <span class="src-chip" data-v="猜测">来源：我自己猜的</span>
+      </div>
       <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
         <input type="text" id="noteInput" placeholder="记一条：发生了什么 / 你听到了什么 / 你怀疑什么 / 你默认什么…">
         <button class="btn btn-next" style="padding:10px 20px;flex-shrink:0;" onclick="addNote()">记录</button>
@@ -1545,6 +1589,9 @@
     <div class="panel" id="panel-1" style="display:none;">
       <h1>透过现象看本质</h1>
       <div class="hint">上面的归类会全部参与。Transform会<b>一题一题</b>抛启发问题，回答过的题会留在页面上。你可以一直回答，直到说"可以了"，Transform再整合成核心洞察。</div>
+
+      <!-- ① 输入结构（第 1 层：信息源） -->
+      <div class="input-stats" id="inputStats" style="display:none;"></div>
 
       <!-- ① 归类罗列（只读，全部参与） -->
       <label>① 你的归类（全部参与思考）</label>
@@ -1578,6 +1625,11 @@
             <textarea id="essenceNature" class="essence-nature" placeholder="这个类别的这些现象背后的本质是……"></textarea>
             <div class="lb-essence-label">新洞察和新认知（AI 整合产出，可编辑）</div>
             <textarea id="essenceInsight" class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……"></textarea>
+
+            <div class="lb-essence-label" style="margin-top:12px;">用自己的话复述这条洞察 <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">（讲得明白，才算真的理解）</em></div>
+            <textarea id="essenceRestate" class="essence-nature" placeholder="不看上面的文字，把这条洞察用你自己的话写一遍（别复制）……"></textarea>
+            <div class="essence-restate-feedback" id="restateFeedback"></div>
+
             <div class="essence-confirm-row">
               <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">保存确认</button>
             </div>
@@ -1592,6 +1644,14 @@
               <label>接受它多费力？</label>
               <div class="lb-scale" id="effortScale"></div>
             </div>
+          </div>
+
+          <div class="lb-explain-upgrade" id="explainUpgradeArea">
+            <div class="lb-explain-upgrade-head">
+              <span>🔭 换个解释框架，行动方向就变了</span>
+              <button class="btn btn-next" id="explainUpgradeBtn" onclick="aiExplainUpgrade(this)" style="padding:8px 16px;font-size:13px;">看看我能怎么解释这件事</button>
+            </div>
+            <div class="lb-explain-upgrade-body" id="explainUpgradeResult" style="display:none;"></div>
           </div>
 
           <div class="lb-status-row" id="statusRow">还需要：让Transform总结</div>
@@ -1672,6 +1732,10 @@
               <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="例：客户主动续约第二阶段">
             </div>
           </div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">外部检验信号（必填）：做完后，什么外部反应能证明它真的发生了？<em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">（别人的反应，不是"我觉得进步了"）</em></span>
+            <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="例：客户主动提出续约 / 有人问我怎么做的 / 数据涨了 20%"></textarea>
+          </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -1728,6 +1792,10 @@
               <span class="app-label">期待产出结果？</span>
               <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="例：销售反馈客户复购率提升">
             </div>
+          </div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">外部检验信号（必填）：做完后，什么外部反应能证明它真的发生了？<em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">（别人的反应，不是"我觉得进步了"）</em></span>
+            <textarea class="app-input app-plan-input" data-app="far" data-key="verifySignal" placeholder="例：销售主动来请教 / 客户转介绍 / 数据可见变化"></textarea>
           </div>
           <div class="app-row" style="margin-top:14px;">
             <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
@@ -1804,6 +1872,18 @@
         <div class="vote-stats" id="voteStats" style="display:none;">
           <div class="stat-pill"><span id="voteCount">0</span> 票</div>
           <div class="stat-pill">最近 <span id="voteDays">—</span></div>
+        </div>
+      </div>
+
+      <label>④ 行动代价：你愿意放弃什么？<em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">（认知的尽头不是聪明，是代价）</em></label>
+      <div class="outcome-section" id="costOutcome">
+        <div class="app-row">
+          <span class="app-label">为了这个改变，你需要放弃什么？</span>
+          <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="例：放弃每晚的情绪补偿时间、放弃旧的舒适圈子、承认过去的选择有代价"></textarea>
+        </div>
+        <div class="app-row" style="margin-top:12px;">
+          <span class="app-label">如果一个月后你没做到，最可能是哪个代价让你退缩？</span>
+          <textarea class="app-input app-plan-input" id="costRisk" placeholder="提前看见它，它就没那么容易拦住你"></textarea>
         </div>
       </div>
 
@@ -1940,6 +2020,7 @@ const NOTE_TYPES = {
 const state = {
   step: 0,
   curNoteType: '现象',
+  curSource: '观察',
   data: {
     scenario: '', notes: [], groups: [],      // 归类
     method: '', insight: '', impact: 0, effort: 0,  // 洞察
@@ -1994,6 +2075,25 @@ function goStep(n) {
   renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
+  if (n === 1 && typeof renderInputStats === 'function') renderInputStats();
+
+// 第 1 层：输入结构统计（信息源体检）
+function renderInputStats() {
+  const box = $('inputStats'); if (!box) return;
+  const notes = state.data.notes || [];
+  if (!notes.length) { box.style.display = 'none'; return; }
+  const cnt = {};
+  notes.forEach(n => { const s = n.source || '观察'; cnt[s] = (cnt[s] || 0) + 1; });
+  const labels = { '观察': '自己观察', '事实': '可靠事实', '听闻': '听别人说', '猜测': '自己猜' };
+  const total = notes.length;
+  const guess = cnt['猜测'] || 0;
+  const parts = Object.keys(cnt).map(k => `<b>${labels[k] || k} ${cnt[k]}</b>`);
+  const warn = (guess / total) >= 0.5
+    ? ' <span class="is-warn">（猜测占了一半——先把"猜的"当假设，别当结论）</span>'
+    : '';
+  box.style.display = 'block';
+  box.innerHTML = '本次输入结构：' + parts.join(' · ') + '，共 ' + total + ' 条。' + warn;
+}
 
 // 重新出题 + 整合：清空 insight 阶段所有 state，保留归类与本质草稿
 function redoInsight(){
@@ -2096,12 +2196,20 @@ document.querySelectorAll('#noteTypeChips .type-chip').forEach(c => {
     state.curNoteType = c.dataset.v;
   };
 });
+// 信息源选择（第 1 层：来源标注）
+document.querySelectorAll('#noteSourceChips .src-chip').forEach(c => {
+  c.onclick = () => {
+    document.querySelectorAll('#noteSourceChips .src-chip').forEach(x => x.classList.remove('sel'));
+    c.classList.add('sel');
+    state.curSource = c.dataset.v;
+  };
+});
 // 添加信息便签
 $('noteInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addNote(); } });
 function addNote() {
   const v = $('noteInput').value.trim();
   if (!v) return;
-  state.data.notes.push({ id: uid(), type: state.curNoteType, text: v });
+  state.data.notes.push({ id: uid(), type: state.curNoteType, source: state.curSource || '观察', text: v });
   $('noteInput').value = '';
   renderNotes();
   checkNext0();
@@ -2116,7 +2224,7 @@ function renderNotes() {
   const box = $('notesList');
   if (!state.data.notes.length) { box.innerHTML = ''; return; }
   box.innerHTML = state.data.notes.map(n =>
-    `<div class="note"><span class="tag tag-${NOTE_TYPES[n.type]}">${n.type}</span><span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
+    `<div class="note"><span class="tag tag-${NOTE_TYPES[n.type]}">${n.type}</span>${n.source ? `<span class="src-tag">${escapeHtml(n.source)}</span>` : ''}<span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
   ).join('');
 }
 
@@ -2141,7 +2249,8 @@ async function aiExtract() {
       const text = l.slice(idx + 1).trim();
       const validType = Object.keys(NOTE_TYPES).find(t => type.includes(t));
       if (validType && text) {
-        state.data.notes.push({ id: uid(), type: validType, text });
+        const srcMap = { '现象': '观察', '事实': '事实', '猜测': '猜测', '假设': '猜测' };
+        state.data.notes.push({ id: uid(), type: validType, source: srcMap[validType] || '观察', text });
       }
     });
     renderNotes(); checkNext0(); saveDraft();
@@ -2567,8 +2676,10 @@ function parseSingleEssence(text) {
 function restoreEssenceUI() {
   $('essenceNature').value = (state.data.essence && state.data.essence.nature) || '';
   $('essenceInsight').value = (state.data.essence && state.data.essence.insight) || '';
+  if ($('essenceRestate')) $('essenceRestate').value = state.data.restate || '';
   autoGrow($('essenceNature'));
   autoGrow($('essenceInsight'));
+  if ($('essenceRestate')) autoGrow($('essenceRestate'));
   ['impact', 'effort'].forEach(key => {
     const scale = $(key + 'Scale');
     scale.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.textContent === (state.data[key] || 0)));
@@ -2654,7 +2765,27 @@ function confirmEssence() {
   if (!(state.data.impact > 0) || !(state.data.effort > 0)) {
     toast('先打分（重要性 + 接受费力）'); return;
   }
+  // 复述关卡（门一：用自己的话讲明白）——非强制但提示
+  const restateEl = $('essenceRestate');
+  const restate = restateEl ? (restateEl.value || '').trim() : '';
+  const fb = $('restateFeedback');
+  if (!restate) {
+    toast('先用自己的话复述一遍这条洞察');
+    if (fb) { fb.textContent = '还差一步：用你自己的话把这条洞察写一遍，讲得明白才算真的理解。'; fb.className = 'essence-restate-feedback warn'; }
+    if (restateEl) restateEl.focus();
+    return;
+  }
+  if (restateEl) {
+    const sim = similarity(restate, e.insight || '');
+    if (sim > 0.78) {
+      toast('这像是复制原文——用你自己的话再写一遍');
+      if (fb) { fb.textContent = '这句和原文太像了（相似度 ' + Math.round(sim*100) + '%）。放下原文，凭自己的理解写。'; fb.className = 'essence-restate-feedback warn'; }
+      return;
+    }
+    if (fb) { fb.textContent = '✓ 讲得明白，这条认知真正属于你了。'; fb.className = 'essence-restate-feedback ok'; }
+  }
   state.data.confirmed = true;
+  state.data.restate = restate;
   $('essenceBox').classList.add('locked');
   $('statusRow').textContent = '✓ 已确认';
   $('statusRow').classList.add('ok');
@@ -2662,6 +2793,70 @@ function confirmEssence() {
   saveDraft();
   checkNext1();
   toast('已保存确认');
+}
+
+// 简单相似度（字符交集比例）
+function similarity(a, b) {
+  if (!a || !b) return 0;
+  // Token-level Jaccard: 按词拆分（中英都适用）
+  const tok = s => (s || '').replace(/[^\u4e00-\u9fff\w\s]/g, ' ').split(/\s+/).filter(Boolean);
+  const sa = new Set(tok(a).map(s => s.toLowerCase())), sb = new Set(tok(b).map(s => s.toLowerCase()));
+  let hit = 0;
+  sa.forEach(t => { if (sb.has(t)) hit++; });
+  const union = new Set([...sa, ...sb]).size;
+  return union ? hit / union : 0;
+}
+
+// 解释升级（层二：换解释框架）
+async function aiExplainUpgrade(btn) {
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
+  const e = state.data.essence || {};
+  const scenario = state.data.scenario || '';
+  if (!e.nature && !e.insight) { toast('先让Transform总结出本质和洞察'); return; }
+  if (btn) btn.classList.add('loading');
+  const r = await aiCall(
+    '用户正在做一次认知梳理。\n场景：「' + scenario + '」\n用户提炼的本质：「' + e.nature + '」\n用户提炼的洞察：「' + e.insight + '」\n\n' +
+    '请用 3 个由浅到深的解释框架来解读这件事：\n' +
+    '1. 表层解释：最常见、最省力的归因（通常甩给外部/情绪）\n' +
+    '2. 结构解释：看到岗位/结构/激励/模式层面的原因\n' +
+    '3. 系统性解释：看到能力结构、周期、复利、边界层面的根本原因\n\n' +
+    '要求：每层 ≤ 40 字，直接给内容不要寒暄。\n严格返回 JSON：{"low":"...","mid":"...","high":"..."}'
+  );
+  if (btn) btn.classList.remove('loading');
+  const data = parseExplain(r);
+  const box = $('explainUpgradeResult');
+  if (!data) {
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform 暂时没能生成解释对照，请稍后再试。</div>'; }
+    return;
+  }
+  if (box) {
+    box.style.display = 'block';
+    box.innerHTML = `
+      <div class="eu-level"><div class="eu-label">表层解释 <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——最省力，通常甩锅或怪运气</em></div><div class="eu-text">${escapeHtml(data.low)}</div></div>
+      <div class="eu-level"><div class="eu-label">结构解释 <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——看到岗位 / 结构 / 激励 / 模式</em></div><div class="eu-text">${escapeHtml(data.mid)}</div></div>
+      <div class="eu-level strong"><div class="eu-label"><b>系统性解释</b> <em style="font-style:normal;color:var(--ink-3);font-size:11px;">——看到能力结构 / 周期 / 复利 / 边界</em></div><div class="eu-text">${escapeHtml(data.high)}</div></div>
+      <div class="eu-apply"><button onclick="applyHighExplanation()">把系统性解释设为我的洞察</button></div>`;
+  }
+}
+function parseExplain(text) {
+  if (!text) return null;
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (j.low && j.mid && j.high) return { low: j.low, mid: j.mid, high: j.high };
+  } catch(e){}
+  return null;
+}
+function applyHighExplanation() {
+  const box = $('explainUpgradeResult');
+  if (box) box.style.display = 'none';
+  const insight = $('essenceInsight');
+  if (insight) {
+    const v = (insight.value || '').trim();
+    if (v) toast('洞察已保留，建议把"系统性解释"并入你的洞察后重新保存确认');
+  }
 }
 
 function checkNext1() {
@@ -2692,6 +2887,7 @@ function ensureAppScenario(type) {
   if (obj.expectedOutcome === undefined) obj.expectedOutcome = '';
   if (obj.plan === undefined) obj.plan = '';
   if (obj.when === undefined) obj.when = '';
+  if (obj.verifySignal === undefined) obj.verifySignal = '';
   return obj;
 }
 
@@ -2980,6 +3176,7 @@ function isNearComplete() {
   if (!obj.plan || !obj.plan.trim()) return false;
   if (!obj.when || !obj.when.trim()) return false;
   if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) return false;
+  if (!obj.verifySignal || !obj.verifySignal.trim()) return false;
   if (!state.data.nearFeedback) return false;
   return true;
 }
@@ -3197,7 +3394,7 @@ function confirmResources(type) {
 function checkNext2() {
   const nearOk = isNearComplete();
   const far = state.data.farScenario || {};
-  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && state.data.farFeedback;
+  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.when && far.when.trim() && far.expectedOutcome && far.expectedOutcome.trim() && far.verifySignal && far.verifySignal.trim() && state.data.farFeedback;
   // 两个都完成（近应用 + 远应用 + 各自的支持资源都确认）
   const appOk = nearOk && farOk;
   const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
@@ -3294,6 +3491,10 @@ function complete() {
     nearResourcesPlan: state.data.nearResourcesPlan,
     farResourcesPlan: state.data.farResourcesPlan,
     identity: state.data.identity,
+    restate: state.data.restate || '',
+    costGiveUp: state.data.costGiveUp || '',
+    costRisk: state.data.costRisk || '',
+    inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
     tags: state.data.tags || [],
@@ -3597,6 +3798,14 @@ window.goStep = function(n) {
 
     // ③ 身份投票
     renderIdentityVote();
+
+    // ④ 行动代价恢复（编辑后可随时保存）
+    if ($('costGiveUp')) {
+      $('costGiveUp').value = d.costGiveUp || '';
+      $('costRisk').value = d.costRisk || '';
+      $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
+      $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
+    }
   }
   origGo(n);
 };
