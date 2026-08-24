@@ -233,8 +233,16 @@
   .insight .i-scenario { font-size: 14px; font-weight: 700; color: var(--ink); }
   .insight .i-row { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
   .insight .i-row b { color: var(--green-deep); font-size: 12px; display: inline-block; min-width: 44px; }
-  .insight .i-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .asset-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   .tag-chip { font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; }
+  .filter-sep { display: inline-block; width: 1px; height: 22px; background: var(--line); margin: 4px 4px; }
+  .filter-search {
+    flex: 1; min-width: 120px; max-width: 220px;
+    padding: 7px 12px; font-family: inherit; font-size: 13px;
+    color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+  .filter-search:focus { outline: none; border-color: var(--green); }
   .insight .i-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
   .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .filter-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .18s; }
@@ -336,6 +344,13 @@
   }
   .modal .tag-input-row { display: flex; gap: 8px; align-items: center; }
   .modal .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .modal-existing-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .existing-tag {
+    font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px;
+    cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .existing-tag:hover { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
   .modal .tag-item {
     display: inline-flex; align-items: center; gap: 5px;
     background: var(--amber-soft); color: #8B5A1B;
@@ -471,7 +486,7 @@
       </div>
     </div>
 
-    <div class="expand-card beh open" data-section="experiments">
+    <div class="expand-card beh" data-section="experiments">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">⚡</span>
         <span class="expand-title">
@@ -481,7 +496,10 @@
         <span class="expand-count" id="experimentsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <div class="expand-body"><div class="inner"><div id="actionList"></div></div></div>
+      <div class="expand-body"><div class="inner">
+        <div class="filter-row" id="actionFilters"></div>
+        <div id="actionList"></div>
+      </div></div>
     </div>
 
     <div class="expand-card beh" data-section="patterns">
@@ -662,6 +680,7 @@ function renderModels(){
       <div class="m-scenario">${escapeHtml(s.scenario || '一次认知梳理')}</div>
       ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
       ${changed ? `<div class="m-changed"><b>改变了什么：</b>${escapeHtml(changed)}</div>` : ''}
+      ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="m-date">复盘于 ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
       ${assetActions('model', s.id || i)}
     </div>`;
@@ -699,7 +718,7 @@ function renderInsights(){
       ${nature ? `<div class="i-row"><b>本质</b>${escapeHtml(nature)}</div>` : ''}
       ${insight ? `<div class="i-row"><b>洞察</b>${escapeHtml(insight)}</div>` : ''}
       ${learned ? `<div class="i-row"><b>学到</b>${escapeHtml(learned)}</div>` : ''}
-      ${(s.tags || []).length ? `<div class="i-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' · 已复盘' : ''}</div>
       ${assetActions('insight', s.id)}
     </div>`;
@@ -707,14 +726,22 @@ function renderInsights(){
 }
 
 /* ===================== 行为实验 ===================== */
+let actionFilter = { status: '', tag: '', q: '' };
+
 function renderActions(){
   const actions = loadActions();
+  renderActionFilters(actions);
   const box = $('actionList');
   if (!actions.length){
     box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「伴我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
     return;
   }
-  box.innerHTML = actions.map(a => {
+  const filtered = filterActions(actions);
+  if (!filtered.length){
+    box.innerHTML = `<div class="expand-empty">没有符合当前筛选条件的行为实验。</div>`;
+    return;
+  }
+  box.innerHTML = filtered.map(a => {
     const status = a.status || 'active';
     const statusText = { active: '进行中', graduated: '已毕业', paused: '已暂停' }[status] || status;
     const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
@@ -741,6 +768,7 @@ function renderActions(){
         ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
         ${a.reflection && a.reflection.changed ? `<div><b>改变</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
       </div>` : ''}
+      ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="meta">
         <span>连续 ${a.streak || 0} 天</span>
         <span>累计 ${totalDone} 天</span>
@@ -753,6 +781,44 @@ function renderActions(){
       ${assetActions('action', a.id)}
     </div>`;
   }).join('');
+}
+function renderActionFilters(actions){
+  const box = $('actionFilters');
+  if (!box) return;
+  if (!actions.length){ box.innerHTML = ''; return; }
+  const tags = [];
+  actions.forEach(a => (a.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
+  const statusOpts = [
+    { k: '', v: '全部' },
+    { k: 'active', v: '进行中' },
+    { k: 'graduated', v: '已毕业' },
+    { k: 'paused', v: '已暂停' }
+  ];
+  let html = statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
+  if (tags.length){
+    html += '<span class="filter-sep"></span>' +
+      '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">全部标签</button>' +
+      tags.map(t => `<button class="filter-chip${actionFilter.tag === t ? ' on' : ''}" onclick="setActionFilter('tag','${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
+  }
+  html += '<span class="filter-sep"></span>' +
+    `<input type="text" class="filter-search" placeholder="搜索行为实验…" value="${escapeHtml(actionFilter.q)}" oninput="setActionFilter('q', this.value)">`;
+  box.innerHTML = html;
+}
+function setActionFilter(key, value){
+  actionFilter[key] = value;
+  renderActions();
+}
+function filterActions(actions){
+  return actions.filter(a => {
+    if (actionFilter.status && (a.status || 'active') !== actionFilter.status) return false;
+    if (actionFilter.tag && !(a.tags || []).includes(actionFilter.tag)) return false;
+    if (actionFilter.q){
+      const q = actionFilter.q.toLowerCase();
+      const hay = [(a.input || a.goal || ''), (a.result || ''), (a.habit || ''), (a.goal || '')].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
 }
 
 /* ===================== 模式识别 ===================== */
@@ -772,6 +838,7 @@ function renderPatterns(){
       <div class="p-title">${escapeHtml(p.title)}<span class="tag">模式 ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
+      ${(p.tags || []).length ? `<div class="asset-tags">${p.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       ${assetActions('pattern', i)}
     </div>`).join('') + `<div class="pattern-meta">Transform · Growth Memory Agent</div>`;
     return;
@@ -948,20 +1015,41 @@ function openAssetTag(type, id){
   const tags = obj.tags || [];
   renderTagModal(tags);
 }
+function collectAllTags(){
+  const tags = [];
+  const add = t => { if (t && !tags.includes(t)) tags.push(t); };
+  loadArchive().forEach(s => (s.tags || []).forEach(add));
+  loadActions().forEach(a => (a.tags || []).forEach(add));
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  (saved && saved.patterns || []).forEach(p => (p.tags || []).forEach(add));
+  return tags.sort((a,b) => a.localeCompare(b, 'zh-CN'));
+}
 function renderTagModal(tags){
   const ctx = assetModalCtx; if (!ctx) return;
+  const allTags = collectAllTags();
+  const available = allTags.filter(t => !tags.includes(t));
   openAssetModal(`
     <h3>🏷 归类${assetTypeName(ctx.type)}</h3>
     <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">给这条资产打标签，便于日后按主题查找。</p>
     <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
-    <div class="tag-input-row" style="margin-top:10px;">
-      <input id="newTagInput" placeholder="新标签" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
+    ${available.length ? `<div style="margin-top:14px;"><p style="font-size:12px;color:var(--ink-3);margin-bottom:6px;">从已有标签中选择</p><div class="modal-existing-tags">${available.map(t => `<button class="existing-tag" onclick="addAssetTagByText('${String(t).replace(/'/g, "\\'")}')">+ ${escapeHtml(t)}</button>`).join('')}</div></div>` : ''}
+    <div class="tag-input-row" style="margin-top:14px;">
+      <input id="newTagInput" placeholder="没有合适标签？输入新标签" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
       <button class="btn-ok" onclick="addAssetTag()">添加</button>
     </div>
     <div class="row">
       <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">完成</button>
       <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
     </div>`);
+}
+function addAssetTagByText(t){
+  const ctx = assetModalCtx; if (!ctx || !t) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = obj.tags || [];
+    if (!obj.tags.includes(t)) obj.tags.push(t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
 }
 function addAssetTag(){
   const ctx = assetModalCtx; if (!ctx) return;
