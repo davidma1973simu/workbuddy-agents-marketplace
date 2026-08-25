@@ -301,7 +301,7 @@
     padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
   }
   .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
-  /* Cost → commitment */
+  /* Investment → commitment: space creation and resistance return */
   .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
   .cost-subcommit { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
   .cost-commit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -1963,58 +1963,58 @@
         </div>
       </div>
 
-      <label>④ Action cost: what are you willing to give up? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(the end of cognition is cost, not cleverness)</em></label>
+      <label>④ Creating space for change: what are you willing to put in? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(change is not loss; it is redirecting energy toward what matters)</em></label>
       <div class="outcome-section" id="costOutcome">
         <div class="app-row">
-          <span class="app-label">What do you need to give up to make this change?</span>
-          <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="e.g. give up late-night emotional compensation time, leave the comfort zone, admit past choices had a cost"></textarea>
+          <span class="app-label">To make this change real, what space do I need to create first?</span>
+          <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="e.g. 20 minutes of late-night scrolling, an old self-definition, an automatic response pattern"></textarea>
         </div>
         <div class="app-row" style="margin-top:12px;">
-          <span class="app-label">If you don't follow through in a month, which cost is most likely to make you pull back?</span>
-          <textarea class="app-input app-plan-input" id="costRisk" placeholder="See it upfront and it won't stop you as easily"></textarea>
+          <span class="app-label">When I feel it's hard to keep going, what signal is most likely to make me pause?</span>
+          <textarea class="app-input app-plan-input" id="costRisk" placeholder="e.g. several days with no visible feedback, feeling tired, starting to doubt myself"></textarea>
         </div>
         <div class="cost-commit" id="costCommit">
 
-          <!-- Sub-commitment A: what I need to give up -->
+          <!-- Sub-commitment A: space I am willing to create -->
           <div class="cost-subcommit" id="giveUpCommit">
             <div class="cc-head">
-              <span>Commitment A · what I'm willing to give up to change</span>
+              <span>Commitment A · What space am I willing to create for this change</span>
               <button class="ai-btn" onclick="aiCourage('giveUp', this)" style="padding:7px 14px;font-size:12.5px;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Let Transform help me see this giving-up clearly
+                Let Transform help me see the value of this investment
               </button>
             </div>
             <div class="cc-ai-result" id="courageGiveUpResult" style="display:none;"></div>
             <div class="app-row" style="margin-top:12px;">
-              <span class="app-label">I commit: by <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will start taking on this giving-up.</span>
+              <span class="app-label">I commit: by <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will start creating this space for change.</span>
             </div>
             <div class="app-row" style="margin-top:10px;">
-              <span class="app-label">If I want to avoid this giving-up, I will <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. break it into the smallest bearable step, try 7 days first"> .</span>
+              <span class="app-label">If I notice my old habits pulling me back, I will <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. break the action into the smallest possible step and do just 2 minutes"> .</span>
             </div>
             <div class="cc-sign" id="costGiveUpSign">
-              <span class="cc-sign-text">I take this giving-up on.</span>
+              <span class="cc-sign-text">I am willing to create this space.</span>
               <button class="btn-ok cc-sign-btn" onclick="signCostCommit('giveUp')" id="costGiveUpSignBtn">Sign commitment</button>
             </div>
           </div>
 
-          <!-- Sub-commitment B: the cost that makes me pull back -->
+          <!-- Sub-commitment B: when resistance shows up, gently return -->
           <div class="cost-subcommit" id="riskCommit" style="margin-top:18px;">
             <div class="cc-head">
-              <span>Commitment B · if I pull back, how I pull myself back</span>
+              <span>Commitment B · When I meet resistance, how do I gently bring myself back</span>
               <button class="ai-btn" onclick="aiCourage('risk', this)" style="padding:7px 14px;font-size:12.5px;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Let Transform help me design a pull-back plan
+                Let Transform help me design a return strategy
               </button>
             </div>
             <div class="cc-ai-result" id="courageRiskResult" style="display:none;"></div>
             <div class="app-row" style="margin-top:12px;">
-              <span class="app-label">I commit: when <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="e.g. 3 days with no feedback"> shows up, I treat it as a signal, not a failure.</span>
+              <span class="app-label">I commit: when <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="e.g. 3 days with no feedback"> shows up, I treat it as a cue to adjust.</span>
             </div>
             <div class="app-row" style="margin-top:10px;">
-              <span class="app-label">If I actually pull back because of it, I will <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. name a witness, admit it publicly and restart"> .</span>
+              <span class="app-label">If it genuinely feels hard, I will <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. reach out to a supporter, or return to the smallest step"> .</span>
             </div>
             <div class="cc-sign" id="costRiskSign">
-              <span class="cc-sign-text">I take this pull-back plan on.</span>
+              <span class="cc-sign-text">I am willing to use this return strategy.</span>
               <button class="btn-ok cc-sign-btn" onclick="signCostCommit('risk')" id="costRiskSignBtn">Sign commitment</button>
             </div>
           </div>
@@ -3046,7 +3046,7 @@ function confirmViewpoint() {
   toast('Picked \u2018' + vp.name + '\u2019. Your core insight is updated; you can keep scoring and save.');
 }
 
-// Cost → commitment: separate professional commitments for "what I give up" and "the pull-back cost"
+// Investment → commitment: warm support for creating space and returning from resistance
 async function aiCourage(type, btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('Set API Key in Settings first'); openSettings(); return; }
@@ -3054,34 +3054,34 @@ async function aiCourage(type, btn) {
   const risk = ($('costRisk') ? $('costRisk').value : '').trim();
   const topic = type === 'giveUp' ? giveUp : risk;
   if (!topic) {
-    toast(type === 'giveUp' ? 'Write down what you give up first' : 'Write down the cost that might pull you back first');
+    toast(type === 'giveUp' ? 'Write down the space you want to create for this change first' : 'Write down the signal that makes it hard to keep going');
     return;
   }
   if (btn) btn.classList.add('loading');
   const prompt = type === 'giveUp'
-    ? 'The user must give something up to change: "' + giveUp + '"\n\nGive a professional, restrained "giving-up courage assessment" — not a slogan, not a vow. Include:\n1. What makes this giving-up truly hard (<=25 words)\n2. Why this giving-up is an "investment", not a "loss" (<=25 words)\n3. The smallest bearable way to take it on: a first step doable today (<=30 words)\n\nStrict JSON: {"truth":"...","reframe":"...","step":"..."}'
-    : 'The user fears this cost will make them pull back in a month: "' + risk + '"\n\nGive a professional, restrained "pull-back design" — not a scare, not a guilt trip. Include:\n1. The real trigger that makes this cost cause a pull-back (<=25 words)\n2. Reframe it as a "signal" not a "failure" (<=25 words)\n3. A concrete, doable pull-back action: the first thing to do if they actually pull back (<=30 words)\n\nStrict JSON: {"trigger":"...","reframe":"...","pullback":"..."}';
+    ? 'The user is creating space for change: "' + giveUp + '"\n\nGive a warm, restrained "space-creation assessment" — not a scare, not a slogan. Include:\n1. What this exchange truly challenges (<=25 words)\n2. Why this letting-go actually makes room for something more important (<=25 words)\n3. The smallest, pressure-free first step doable today (<=30 words)\n\nStrict JSON: {"truth":"...","reframe":"...","step":"..."}'
+    : 'The user worries they will pause when they hit resistance. The signal they identified is: "' + risk + '"\n\nGive a warm, restrained "resistance response design" — not self-criticism, not a guilt trip. Include:\n1. The signal this resistance usually shows up as (<=25 words)\n2. How to reframe it as "I need to take care of myself" rather than failure (<=25 words)\n3. One concrete, gentle return action: the first thing to do when it genuinely feels hard (<=30 words)\n\nStrict JSON: {"trigger":"...","reframe":"...","pullback":"..."}';
   const r = await aiCall(prompt);
   if (btn) btn.classList.remove('loading');
   const data = parseCourage(r, type);
   const box = type === 'giveUp' ? $('courageGiveUpResult') : $('courageRiskResult');
   if (!data) {
-    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not give an assessment right now — please try again.</div>'; }
+    if (box) { box.style.display = 'block'; box.innerHTML = '<div class="hint" style="margin:8px 0;">Transform could not give support right now — please try again.</div>'; }
     return;
   }
   if (box) {
     box.style.display = 'block';
     if (type === 'giveUp') {
       box.innerHTML = '<div class="cc-courage">' +
-        '<div><b>What is truly hard:</b> ' + escapeHtml(data.truth) + '</div>' +
-        '<div style="margin-top:4px;"><b>See it as an investment:</b> ' + escapeHtml(data.reframe) + '</div>' +
-        '<div style="margin-top:4px;"><b>Do this first today:</b> ' + escapeHtml(data.step) + '</div>' +
+        '<div><b>What it truly challenges:</b> ' + escapeHtml(data.truth) + '</div>' +
+        '<div style="margin-top:4px;"><b>It actually creates space:</b> ' + escapeHtml(data.reframe) + '</div>' +
+        '<div style="margin-top:4px;"><b>Start with this today:</b> ' + escapeHtml(data.step) + '</div>' +
         '</div>';
     } else {
       box.innerHTML = '<div class="cc-courage">' +
-        '<div><b>Pull-back trigger:</b> ' + escapeHtml(data.trigger) + '</div>' +
-        '<div style="margin-top:4px;"><b>It is a signal, not a failure:</b> ' + escapeHtml(data.reframe) + '</div>' +
-        '<div style="margin-top:4px;"><b>Action to pull yourself back:</b> ' + escapeHtml(data.pullback) + '</div>' +
+        '<div><b>Resistance signal:</b> ' + escapeHtml(data.trigger) + '</div>' +
+        '<div style="margin-top:4px;"><b>It is asking you to care for yourself:</b> ' + escapeHtml(data.reframe) + '</div>' +
+        '<div style="margin-top:4px;"><b>Gentle action to return:</b> ' + escapeHtml(data.pullback) + '</div>' +
         '</div>';
     }
   }
@@ -3105,7 +3105,7 @@ function signCostCommit(type) {
   const signEl = $(signBtnId);
   const date = ($(dateId) ? $(dateId).value : '').trim();
   if (!date) {
-    toast(isGiveUp ? 'Set the date you start giving this up first' : 'Set the pull-back signal first');
+    toast(isGiveUp ? 'Set the date you start creating this space first' : 'Set the resistance signal first');
     $(dateId).focus();
     return;
   }
@@ -3117,7 +3117,7 @@ function signCostCommit(type) {
     signEl.textContent = '✓ Signed';
     signEl.disabled = true;
   }
-  toast(isGiveUp ? 'Signed — you take this giving-up on' : 'Signed — you take this pull-back plan on');
+  toast(isGiveUp ? 'Signed — you are willing to create this space' : 'Signed — you are willing to use this return strategy');
 }
 
 function checkNext1() {
@@ -3970,7 +3970,7 @@ function renderAppAside() {
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
   { h: 'Think clearly, act decisively', p: 'Transform walks you through four steps: organize the mess \u2192 see the essence \u2192 rehearse applications \u2192 take away outcomes. Each step takes minutes.' },
-  { h: 'Four steps, one thing figured out', p: '\u2460 Organize: lay out observations/facts/guesses/assumptions; \u2461 Insight: see the essence behind phenomena; \u2462 Apply: rehearse how you\u2019d act in familiar and unfamiliar scenarios; \u2463 Deliver: take away actions, resources, and your intended identity.' },
+  { h: 'Four steps, one thing figured out', p: '\u2460 Organize: lay out observations/facts/hearsay/guesses; \u2461 Insight: see the essence behind phenomena; \u2462 Apply: rehearse how you\u2019d act in familiar and unfamiliar scenarios; \u2463 Deliver: take away actions, resources, investment commitments, and return strategies.' },
   { h: 'Your insight archive keeps growing', p: 'Each completion banks your insight into \u201cMy Insight Archive\u201d \u2014 tagged, reviewable, reusable. Start with the complex challenge in front of you now.' }
 ];
 let obIdx = 0;
@@ -4066,7 +4066,7 @@ window.goStep = function(n) {
     // ③ 身份投票
     renderIdentityVote();
 
-    // ④ 行动代价恢复（编辑后可随时保存）
+    // ④ Investment and commitment restore (editable, auto-saved)
     if ($('costGiveUp')) {
       $('costGiveUp').value = d.costGiveUp || '';
       $('costRisk').value = d.costRisk || '';

@@ -470,6 +470,9 @@
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="expand-body"><div class="inner">
+        <div class="filter-row">
+          <input type="text" class="filter-search" id="insightSearch" placeholder="Search insights…" oninput="setInsightSearch(this.value)">
+        </div>
         <div class="filter-row" id="tagFilters"></div>
         <div id="insightList"></div>
       </div></div>
@@ -687,8 +690,13 @@ function renderModels(){
   }).join('');
 }
 
-/* ===================== Insight库（含标签过滤） ===================== */
+/* ===================== Insight library (tag + search filters) ===================== */
 let insightFilter = '';
+let insightSearch = '';
+function setInsightSearch(v){
+  insightSearch = (v || '').trim();
+  renderInsights();
+}
 function renderTagFilters(){
   const archive = loadArchive();
   const tags = [];
@@ -707,7 +715,15 @@ function renderInsights(){
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
-  if (!archive.length){ box.innerHTML = '<div class="expand-empty">No insights under this tag yet.</div>'; return; }
+  if (insightSearch){
+    const q = insightSearch.toLowerCase();
+    archive = archive.filter(s => {
+      const e = s.essence || {};
+      const hay = [(s.scenario || ''), (e.nature || ''), (e.insight || ''), ((s.reflection && s.reflection.learned) || '')].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  if (!archive.length){ box.innerHTML = '<div class="expand-empty">No insights match the current filter.</div>'; return; }
   box.innerHTML = archive.map(s => {
     const e = s.essence || {};
     const nature = (e.nature || '').trim();
