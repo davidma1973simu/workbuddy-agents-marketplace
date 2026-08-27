@@ -249,74 +249,6 @@
   }
   .input-stats b { color: var(--blue); }
   .input-stats .is-warn { color: #8B5A1B; }
-  .essence-restate-feedback { font-size: 12.5px; line-height: 1.6; margin: 4px 0 2px; min-height: 18px; }
-  .essence-restate-feedback.ok { color: var(--green-deep); }
-  .essence-restate-feedback.warn { color: #c0392b; }
-  .lb-essence-box.locked .essence-restate { opacity: .65; }
-  .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
-  .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
-  .lb-explain-upgrade-body { margin-top: 10px; }
-  /* 🎯 Core output: restate HIGHLIGHT */
-  .restate-core {
-    margin-top: 18px; padding: 20px 22px;
-    background: linear-gradient(135deg, var(--green-soft), var(--green-50));
-    border: 2px solid var(--green); border-radius: var(--radius-lg);
-    box-shadow: 0 8px 24px rgba(14,107,80,.12);
-  }
-  .restate-core-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  .restate-core-title .rc-badge { font-size: 20px; }
-  .restate-core-title .rc-title { font-size: 16px; font-weight: 800; color: var(--green-deep); letter-spacing: .5px; }
-  .restate-core-title .rc-sub { font-size: 12.5px; color: var(--ink-2); }
-  .restate-core-title .rc-sub u { color: var(--green-deep); font-weight: 700; }
-  textarea.essence-restate-main {
-    width: 100%; min-height: 110px; padding: 16px 18px; font-family: inherit; font-size: 16px;
-    color: var(--ink); background: #fff; border: 1.5px solid var(--green-light);
-    border-radius: var(--radius-md); resize: vertical; line-height: 1.8; box-sizing: border-box;
-    box-shadow: inset 0 2px 6px rgba(14,107,80,.06);
-  }
-  textarea.essence-restate-main:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
-  /* Viewpoint required */
-  .viewpoint-area { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
-  .viewpoint-area .vp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .viewpoint-area .vp-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
-  .viewpoint-area .vp-sub { font-size: 12px; color: var(--ink-3); flex: 1; min-width: 180px; }
-  .viewpoint-area .vp-body { margin-top: 12px; }
-  .viewpoint-area .vp-body .vp-option {
-    display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
-    border: 1.5px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px;
-    cursor: pointer; background: var(--bg); transition: all .15s;
-  }
-  .viewpoint-area .vp-body .vp-option:hover { border-color: var(--green); }
-  .viewpoint-area .vp-body .vp-option.selected { border-color: var(--green); background: var(--green-soft); }
-  .viewpoint-area .vp-body .vp-option .vp-rad { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-2); flex-shrink: 0; margin-top: 2px; }
-  .viewpoint-area .vp-body .vp-option.selected .vp-rad { border-color: var(--green); background: var(--green); box-shadow: inset 0 0 0 3px #fff; }
-  .viewpoint-area .vp-body .vp-option .vp-opt-t { font-size: 13.5px; font-weight: 700; color: var(--ink); }
-  .viewpoint-area .vp-body .vp-option .vp-opt-d { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; line-height: 1.6; }
-  .viewpoint-area .vp-body .vp-option .vp-opt-q { font-size: 12.5px; color: var(--green-deep); margin-top: 4px; font-style: italic; }
-  .viewpoint-area .vp-revise { margin-top: 12px; }
-  .viewpoint-area .vp-done { text-align: right; margin-top: 10px; }
-  .viewpoint-area .vp-done button {
-    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
-    padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
-  }
-  .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
-  /* Investment → commitment: space creation and resistance return */
-  .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
-  .cost-subcommit { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
-  .cost-commit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-  .cost-commit .cc-head span { font-size: 13.5px; font-weight: 700; color: #8B5A1B; }
-  .cost-commit .cc-ai-result { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink); }
-  .cost-commit .cc-ai-result .cc-courage { border-left: 3px solid var(--amber); padding: 4px 0 4px 12px; }
-  .cost-commit .cc-sign { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
-  .cost-commit .cc-sign-text { font-size: 13px; font-weight: 700; color: #8B5A1B; }
-  .cost-commit .cc-sign-btn {
-    background: var(--green-deep); color: #fff; border: none; padding: 9px 20px;
-    border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
-    box-shadow: 0 4px 12px rgba(14,107,80,.3);
-  }
-  .cost-commit .cc-sign-btn:hover { background: var(--green); }
-  .cost-commit.signed { background: var(--green-soft); border-color: var(--green); }
   .sq-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 10px; }
   .sq-score { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .sq-score .sq-num { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; background: var(--green); }
@@ -325,18 +257,6 @@
   .sq-row b { color: var(--ink); }
   .sq-warn { color: var(--amber); }
   .sq-suggest { color: var(--green-deep); }
-  .cost-commit.signed .cc-sign-text { color: var(--green-deep); }
-  .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
-  .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
-  .lb-explain-upgrade-body .eu-label { font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
-  .lb-explain-upgrade-body .eu-label b { color: var(--green-deep); }
-  .lb-explain-upgrade-body .eu-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
-  .lb-explain-upgrade-body .eu-apply { margin-top: 8px; }
-  .lb-explain-upgrade-body .eu-apply button {
-    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
-    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
-  }
-  .lb-explain-upgrade-body .eu-apply button:hover { background: var(--green); color: #fff; }
   .notes { display: grid; gap: 10px; margin-top: 14px; }
   .note {
     display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
@@ -351,6 +271,11 @@
   .tag-fact { background: var(--green-soft); color: var(--green-deep); }
   .tag-hearsay { background: var(--purple-soft); color: var(--purple); }
   .tag-guess { background: var(--amber-soft); color: var(--amber); }
+  .src-tag {
+    font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px;
+    background: transparent; color: var(--ink-3); border: 1px dashed var(--line-2);
+    flex-shrink: 0; margin-top: 3px;
+  }
   .note .txt { flex: 1; font-size: 14px; }
   .note .rm { border: none; background: none; color: var(--ink-3); cursor: pointer; font-size: 16px; padding: 2px; }
   .note .rm:hover { color: var(--coral); }
@@ -922,6 +847,87 @@
   }
   .btn-essence-confirm:hover { background: var(--green); color: #fff; }
   .lb-essence-box.locked .essence-confirm-row { display: none; }
+  .lb-essence-box.locked .essence-restate { opacity: .65; }
+  .essence-restate-feedback { font-size: 12.5px; line-height: 1.6; margin: 4px 0 2px; min-height: 18px; }
+  .essence-restate-feedback.ok { color: var(--green-deep); }
+  .essence-restate-feedback.warn { color: #c0392b; }
+  .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  /* 🎯 核心产出：我理解到的核心认知（HIGHLIGHT） */
+  .restate-core {
+    margin-top: 18px; padding: 20px 22px;
+    background: linear-gradient(135deg, var(--green-soft), var(--green-50));
+    border: 2px solid var(--green); border-radius: var(--radius-lg);
+    box-shadow: 0 8px 24px rgba(14,107,80,.12);
+  }
+  .restate-core-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .restate-core-title .rc-badge { font-size: 20px; }
+  .restate-core-title .rc-title { font-size: 16px; font-weight: 800; color: var(--green-deep); letter-spacing: .5px; }
+  .restate-core-title .rc-sub { font-size: 12.5px; color: var(--ink-2); }
+  .restate-core-title .rc-sub u { color: var(--green-deep); font-weight: 700; }
+  textarea.essence-restate-main {
+    width: 100%; min-height: 110px; padding: 16px 18px; font-family: inherit; font-size: 16px;
+    color: var(--ink); background: #fff; border: 1.5px solid var(--green-light);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.8; box-sizing: border-box;
+    box-shadow: inset 0 2px 6px rgba(14,107,80,.06);
+  }
+  textarea.essence-restate-main:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(29,158,117,.12); }
+  .restate-core-text { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.8; }
+  /* 视角必选 */
+  .viewpoint-area { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
+  .viewpoint-area .vp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .viewpoint-area .vp-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
+  .viewpoint-area .vp-sub { font-size: 12px; color: var(--ink-3); flex: 1; min-width: 180px; }
+  .viewpoint-area .vp-body { margin-top: 12px; }
+  .viewpoint-area .vp-body .vp-option {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
+    border: 1.5px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px;
+    cursor: pointer; background: var(--bg); transition: all .15s;
+  }
+  .viewpoint-area .vp-body .vp-option:hover { border-color: var(--green); }
+  .viewpoint-area .vp-body .vp-option.selected { border-color: var(--green); background: var(--green-soft); }
+  .viewpoint-area .vp-body .vp-option .vp-rad { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-2); flex-shrink: 0; margin-top: 2px; }
+  .viewpoint-area .vp-body .vp-option.selected .vp-rad { border-color: var(--green); background: var(--green); box-shadow: inset 0 0 0 3px #fff; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-t { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .viewpoint-area .vp-body .vp-option .vp-opt-d { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; line-height: 1.6; }
+  .viewpoint-area .vp-body .vp-option .vp-opt-q { font-size: 12.5px; color: var(--green-deep); margin-top: 4px; font-style: italic; }
+  .viewpoint-area .vp-revise { margin-top: 12px; }
+  .viewpoint-area .vp-done { text-align: right; margin-top: 10px; }
+  .viewpoint-area .vp-done button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
+  /* 投入 → 承诺：为改变创造空间与回拉策略 */
+  .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
+  .cost-subcommit { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
+  .cost-subcommit .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .cost-commit .cc-head span { font-size: 13.5px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-ai-result { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink); }
+  .cost-commit .cc-ai-result .cc-courage { border-left: 3px solid var(--amber); padding: 4px 0 4px 12px; }
+  .cost-commit .cc-sign { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .cost-commit .cc-sign-text { font-size: 13px; font-weight: 700; color: #8B5A1B; }
+  .cost-commit .cc-sign-btn {
+    background: var(--green-deep); color: #fff; border: none; padding: 9px 20px;
+    border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 12px rgba(14,107,80,.3);
+  }
+  .cost-commit .cc-sign-btn:hover { background: var(--green); }
+  .cost-commit.signed { background: var(--green-soft); border-color: var(--green); }
+  .cost-commit.signed .cc-sign-text { color: var(--green-deep); }
+  .lb-explain-upgrade-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .lb-explain-upgrade-head span { font-size: 13.5px; font-weight: 700; color: var(--green-deep); }
+  .lb-explain-upgrade-body { margin-top: 10px; }
+  .lb-explain-upgrade-body .eu-level { border-left: 3px solid var(--line-2); padding: 4px 0 4px 12px; margin-bottom: 10px; }
+  .lb-explain-upgrade-body .eu-level.strong { border-left-color: var(--green); }
+  .lb-explain-upgrade-body .eu-label { font-size: 12px; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
+  .lb-explain-upgrade-body .eu-label b { color: var(--green-deep); }
+  .lb-explain-upgrade-body .eu-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
+  .lb-explain-upgrade-body .eu-apply { margin-top: 8px; }
+  .lb-explain-upgrade-body .eu-apply button {
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .lb-explain-upgrade-body .eu-apply button:hover { background: var(--green); color: #fff; }
 
   /* v8 盒内确认按钮（白底深绿字） */
   .essence-confirm-row { display: flex; justify-content: flex-start; margin-top: 6px; }
@@ -1076,6 +1082,16 @@
   .btn-next { background: var(--green); color: #fff; box-shadow: 0 4px 14px rgba(29,158,117,.3); }
   .btn-next:hover { background: var(--green-deep); transform: translateY(-1px); }
   .btn-next:disabled { background: var(--line); color: var(--ink-3); box-shadow: none; cursor: not-allowed; transform: none; }
+
+  .restart-row { text-align: center; margin-top: 18px; }
+  .restart-link {
+    display: inline-block; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
 
   /* 洞察 → 行为实验 衔接 CTA */
   .insight-to-behavior {
@@ -1544,6 +1560,737 @@
     .btn-next, .btn-prev { padding: 12px 20px; font-size: 14px; }
   }
 </style>
+
+<style id="phase2-css">
+/* ===== Phase 2-A Transform拟人化头像 + AI 消息体 ===== */
+.zhx-avatar {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #34D29E, #0E6B50);
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(14,107,80,.35); color: #fff;
+}
+.zhx-avatar svg { width: 17px; height: 17px; }
+.ai-msg { display: flex; gap: 10px; align-items: flex-start; }
+.ai-msg-body { flex: 1; min-width: 0; }
+.ai-msg-name { font-size: 12px; font-weight: 800; color: var(--green-deep); margin-bottom: 5px; letter-spacing: .3px; }
+.ai-result .ai-msg { animation: rise .35s var(--ease); }
+
+/* ===== Phase 2-A 统一微交互（节奏一致） ===== */
+.btn, .ai-btn, .ai-btn-primary, .type-chip, .label-chip, .ai-btn-cap, .mini, .session-menu, .theme-toggle, .back {
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.btn:active, .ai-btn:active, .ai-btn-primary:active, .type-chip:active, .label-chip:active, .ai-btn-cap:active, .mini:active { transform: scale(.97); }
+.panel { animation: rise .45s var(--ease); }
+.rec-card, .session, .app-feedback-result, .resource-result { transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+
+/* ===== Phase 2-E 桌面响应式副栏（移动端默认隐藏，≥900px 出现） ===== */
+.app-aside { display: none; }
+@media (min-width: 900px) {
+  .wrap {
+    max-width: 1280px;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 260px;
+    gap: 18px;
+    align-items: start;
+    padding-top: 20px;
+  }
+  .topbar { grid-column: 1 / -1; margin-bottom: 14px; }
+  .path {
+    grid-column: 1; grid-row: 2;
+    flex-direction: column; align-items: stretch; gap: 4px;
+    margin-bottom: 0; padding-top: 6px;
+    position: sticky; top: 20px; align-self: start;
+  }
+  .path::before {
+    top: 18px; bottom: 18px; left: 15px; right: auto;
+    width: 2px; height: auto;
+  }
+  .path::after {
+    top: 18px; bottom: auto; left: 15px; right: auto;
+    width: 2px; height: 0;
+    transition: height .5s cubic-bezier(.16,1,.3,1);
+  }
+  .path[data-progress="1"]::after { height: 0; }
+  .path[data-progress="2"]::after { height: 26%; }
+  .path[data-progress="3"]::after { height: 60%; }
+  .path[data-progress="4"]::after { height: 88%; }
+  .p-node {
+    flex-direction: row; align-items: center; gap: 10px;
+    width: auto; padding: 7px 8px; border-radius: 10px;
+    transition: background .2s;
+  }
+  .p-node.active { background: var(--green-soft); }
+  .p-node .p-label { font-size: 13px; }
+  .p-dot { width: 32px; height: 32px; }
+  .app-panel { grid-column: 2; grid-row: 2; min-width: 0; }
+  .app-aside {
+    display: block; grid-column: 3; grid-row: 2;
+    position: sticky; top: 20px; align-self: start;
+  }
+}
+@media (min-width: 1100px) {
+  .wrap { grid-template-columns: 140px minmax(0, 1fr) 300px; gap: 24px; }
+  .p-node .p-label { font-size: 14px; }
+  .p-dot { width: 36px; height: 36px; }
+}
+@media (min-width: 1280px) {
+  .wrap { grid-template-columns: 160px minmax(0, 1fr) 340px; gap: 32px; }
+}
+@media (min-width: 1400px) {
+  .wrap { gap: 40px; }
+}
+.aside-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.aside-title { font-size: 12px; font-weight: 800; color: var(--green-deep); letter-spacing: .6px; margin-bottom: 12px; }
+.aside-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.aside-tag { font-size: 12px; padding: 5px 11px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-2); }
+.aside-insight { font-size: 13.5px; color: var(--ink); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+/* ===== Phase 2-C 首次引导 ===== */
+.onboard-mask {
+  position: fixed; inset: 0; z-index: 80; background: rgba(20,30,27,.55);
+  backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.onboard-mask.show { display: flex; animation: fade .25s ease; }
+.onboard-card {
+  background: var(--bg); width: 100%; max-width: 420px; border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; animation: pop .32s var(--ease);
+}
+.onboard-visual { height: 122px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--green-deep), var(--green)); }
+.onboard-visual .zhx-avatar { width: 66px; height: 66px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.onboard-visual .zhx-avatar svg { width: 38px; height: 38px; }
+.onboard-body { padding: 22px 24px 6px; }
+.onboard-h { font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+.onboard-p { font-size: 14px; color: var(--ink-2); line-height: 1.75; }
+.onboard-dots { display: flex; gap: 7px; justify-content: center; padding: 16px 0 4px; }
+.onboard-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all var(--dur-fast) var(--ease); }
+.onboard-dots i.on { background: var(--green); width: 20px; border-radius: 4px; }
+.onboard-foot { display: flex; padding: 8px 24px 22px; gap: 10px; }
+.onboard-foot .btn { flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style><style id="worldclass-css">
+  /* 全局 Typography 升级 */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    font-feature-settings: "tnum" 1, "kern" 1;
+  }
+
+  /* 桌面端宽屏布局：消除中间空白，信息密度更合理 */
+  @media (min-width: 900px) {
+    .wrap {
+      max-width: 1400px;
+      grid-template-columns: 170px minmax(0, 1fr) 320px;
+      gap: 32px;
+      padding: 28px 32px 100px;
+    }
+  }
+  /* 设置页打开时，退出三栏网格，让设置面板居中显示 */
+  body.settings .wrap { display: block; max-width: 720px; }
+  body.settings .app-aside { display: none !important; }
+  @media (min-width: 1100px) {
+    .wrap { grid-template-columns: 190px minmax(0, 1fr) 360px; gap: 40px; }
+  }
+  @media (min-width: 1280px) {
+    .wrap { grid-template-columns: 200px minmax(0, 1fr) 400px; gap: 48px; }
+  }
+  @media (min-width: 1440px) {
+    .wrap { grid-template-columns: 210px minmax(0, 1fr) 420px; gap: 56px; }
+  }
+
+  /* 顶部栏更精致 */
+  .topbar { margin-bottom: 26px; }
+  .back, .theme-toggle {
+    padding: 10px 18px; font-size: 14px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line);
+    box-shadow: var(--shadow-1);
+  }
+  .back:hover, .theme-toggle:hover { border-color: var(--green); color: var(--green-deep); background: var(--green-soft); }
+
+  /* 步骤条：去掉进度填充线，仅用节点状态表达进度 */
+  .path::after { display: none; }
+
+  /* 步骤条：更像世界级 App 的侧边导航 */
+  @media (min-width: 900px) {
+    .path {
+      gap: 6px; padding-top: 10px;
+      position: sticky; top: 28px; align-self: start;
+    }
+    .path::before {
+      top: 22px; bottom: 22px; left: 19px;
+      width: 2px; background: var(--line);
+    }
+    /* 完成态不再显示进度填充线，只保留灰轨作为连接 */
+    .path::after { display: none; }
+    .p-node {
+      flex-direction: row; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 14px;
+      transition: background .2s var(--ease);
+      background: transparent;
+    }
+    .p-node:hover { background: transparent; }
+    .p-node.active { background: var(--green-soft); }
+    .p-node.active .p-dot {
+      border-color: var(--green); background: var(--green); color: #fff;
+      box-shadow: 0 0 0 5px rgba(29,158,117,.14);
+    }
+    /* 完成态：无背景，仅绿色对勾，降低视觉噪音 */
+    .p-node.done { background: transparent; }
+    .p-node.done .p-dot {
+      background: var(--surface); border-color: var(--green); color: var(--green);
+      position: relative;
+    }
+    .p-node.done .p-dot svg { display: none; }
+    .p-node.done .p-dot::after {
+      content: '✓'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
+    .p-node .p-label { font-size: 14px; font-weight: 600; }
+    .p-node.active .p-label { font-weight: 700; }
+    .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
+    .p-dot { width: 40px; height: 40px; border-width: 2px; }
+    .p-dot svg { width: 16px; height: 16px; }
+  }
+
+  /* 主面板：更大、更有呼吸感 */
+  .panel {
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    box-shadow: 0 2px 8px rgba(21,27,25,.04), 0 20px 60px rgba(21,27,25,.08);
+  }
+  @media (min-width: 1100px) {
+    .panel { padding: 44px 42px; }
+  }
+  .panel h1 {
+    font-size: 26px; font-weight: 800; letter-spacing: -.6px; line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .panel .hint {
+    font-size: 15px; line-height: 1.75; color: var(--ink-2); margin-bottom: 28px;
+  }
+
+  /* 标签与输入框升级 */
+  label { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 24px 0 10px; letter-spacing: .2px; }
+  input[type="text"], textarea, .app-input, .app-input-sm, .q-answer, .personal-view, .personal-view-main, .essence-nature, .essence-insight {
+    border: 1.5px solid var(--line); border-radius: 14px;
+    background: var(--surface); font-size: 15px;
+    padding: 14px 16px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  input[type="text"]:focus, textarea:focus, .app-input:focus, .app-input-sm:focus, .q-answer:focus, .personal-view:focus, .personal-view-main:focus, .essence-nature:focus, .essence-insight:focus {
+    border-color: var(--green); background: #fff;
+    box-shadow: 0 0 0 4px rgba(29,158,117,.10);
+  }
+  [data-theme="dark"] input[type="text"]:focus, [data-theme="dark"] textarea:focus { background: #0F1412; }
+
+  /* 按钮升级 */
+  .btn {
+    border-radius: 12px; font-weight: 700;
+    transition: transform .2s var(--ease), box-shadow .2s, background .2s;
+  }
+  .btn-next {
+    background: var(--green-deep); box-shadow: 0 6px 18px rgba(14,107,80,.28);
+    border-radius: 999px; padding: 14px 30px;
+  }
+  .btn-next:hover { background: var(--green); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,107,80,.38); }
+  .btn-prev { border-radius: 999px; padding: 13px 26px; }
+  .ai-btn {
+    border-radius: 999px; padding: 10px 18px; font-weight: 600;
+    background: var(--green-50); border: 1.5px solid var(--green-light);
+  }
+  .ai-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+  .ai-btn-primary {
+    border-radius: 999px; padding: 15px 24px; font-weight: 700;
+    background: var(--green-deep); box-shadow: 0 6px 18px rgba(14,107,80,.26);
+  }
+  .ai-btn-primary:hover { background: var(--green); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,107,80,.36); }
+
+  /* 信息便签升级 */
+  .note {
+    border-radius: 14px; padding: 14px 16px;
+    background: var(--surface); border: 1px solid var(--line);
+    box-shadow: var(--shadow-1); transition: transform .2s, border-color .2s;
+  }
+  .note:hover { transform: translateY(-1px); border-color: var(--green-light); }
+  .note .tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+  .type-chip { border-radius: 999px; padding: 9px 16px; font-weight: 600; }
+
+  /* 分组卡片升级 */
+  .group {
+    border-radius: var(--radius-md); border: 1.5px solid var(--line);
+    background: var(--surface); padding: 18px;
+    box-shadow: var(--shadow-1); transition: border-color .2s;
+  }
+  .group:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.08); }
+  .group .g-label { font-size: 16px; font-weight: 700; }
+  .group .g-note { border-radius: 12px; padding: 8px 14px; }
+
+  /* 问题卡片升级 */
+  .q-block {
+    border-radius: var(--radius-md); padding: 18px 20px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-1); margin-bottom: 14px;
+    transition: border-color .2s, box-shadow .2s, padding .2s;
+  }
+  .q-block:hover { border-color: var(--green-light); }
+  .q-block.q-done { border-color: var(--green-light); background: rgba(29,158,117,.04); }
+  .q-block .q-text { font-size: 15px; line-height: 1.65; }
+  /* 单焦点：已回答的问题折叠成一行摘要 */
+  .q-block.q-collapsed { padding: 10px 14px; margin-bottom: 8px; background: var(--surface-2); box-shadow: none; }
+  .q-block.q-collapsed .q-head { margin-bottom: 0; }
+  .q-block.q-collapsed .q-text { display: none; }
+  .q-block.q-collapsed .q-answer, .q-block.q-collapsed .q-ai-row, .q-block.q-collapsed .q-helps, .q-block.q-collapsed .q-rev-toggle, .q-block.q-collapsed .q-rev-box { display: none !important; }
+  .q-summary {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; margin-bottom: 10px; border-radius: var(--radius-sm);
+    background: var(--surface-2); border: 1px solid var(--line); font-size: 13px; color: var(--ink-2);
+    cursor: pointer; user-select: none; transition: all .18s;
+  }
+  .q-summary:hover { background: var(--green-soft); border-color: var(--green-light); color: var(--green-deep); }
+  .q-summary-toggle { font-weight: 600; color: var(--green-deep); }
+
+  /* 洞察 essence 盒升级 */
+  .lb-essence-box {
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, var(--green-soft), var(--green-50));
+    border: 1px solid var(--green-light);
+    padding: 22px 24px;
+  }
+  .lb-essence-label { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; }
+  .essence-nature, .essence-insight {
+    border-radius: 14px; font-size: 15.5px; line-height: 1.65;
+  }
+  .btn-essence-confirm {
+    border-radius: 999px; padding: 10px 26px; font-weight: 700;
+    background: #fff; color: var(--green-deep);
+    box-shadow: 0 2px 8px rgba(14,107,80,.12);
+  }
+  .btn-essence-confirm:hover { background: var(--green-soft); transform: translateY(-1px); }
+
+  /* 应用块升级 */
+  .app-block {
+    border-radius: var(--radius-lg); padding: 22px 24px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-1); margin-bottom: 20px;
+  }
+  .app-title { font-size: 12px; font-weight: 800; letter-spacing: 1.2px; }
+  .app-label { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+
+  /* 场景卡片升级 */
+  .scene-card {
+    border-radius: var(--radius-md); padding: 18px 20px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-1); transition: all .25s var(--ease);
+  }
+  .scene-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); border-color: var(--green-light); }
+
+  /* 反馈块升级 */
+  .fb-overall { border-radius: var(--radius-md); padding: 18px 20px; }
+  .fb-block { border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+
+  /* 身份投票升级 */
+  .identity-vote {
+    border-radius: var(--radius-lg); padding: 24px;
+    background: linear-gradient(145deg, var(--green-soft), var(--green-50));
+  }
+  .identity-badge {
+    border-radius: var(--radius-md); padding: 18px 20px;
+    background: var(--surface); border: 1.5px dashed var(--green);
+  }
+  .badge-vote-btn { border-radius: 999px; padding: 12px 22px; }
+
+  /* 弹窗升级 */
+  .modal {
+    border-radius: var(--radius-lg); padding: 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.28);
+    border: 1px solid var(--line);
+  }
+  .rec-card {
+    border-radius: var(--radius-md); padding: 18px 20px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-1); transition: all .2s;
+  }
+  .rec-card:hover { transform: translateY(-2px); border-color: var(--green); box-shadow: var(--shadow-2); }
+  .rec-sec { border-radius: 12px; }
+
+  /* 副栏升级 */
+  .aside-card {
+    border-radius: var(--radius-md); padding: 22px;
+    background: var(--surface); border: 1px solid var(--line);
+    box-shadow: var(--shadow-1);
+  }
+  .aside-title { font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+  .aside-tag { border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+
+  /* 设置页品牌卡片升级 */
+  .brand {
+    border-radius: var(--radius-md); padding: 16px 18px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-1); transition: all .2s;
+  }
+  .brand:hover { transform: translateY(-2px); border-color: var(--green-light); }
+  .brand.sel { border-color: var(--green); background: var(--green-soft); }
+
+  /* 空状态统一美化 */
+  .notes:empty::before,
+  #groupsArea:empty::before,
+  #labelPicker:empty::before,
+  #allQuestions:empty::before,
+  #actionsOutcome:empty::before,
+  #resourcesOutcome:empty::before {
+    content: attr(data-empty) "还没有内容，从上方开始添加。";
+    display: block;
+    padding: 28px 24px; text-align: center;
+    color: var(--ink-3); font-size: 14px;
+    background: var(--surface); border: 1.5px dashed var(--line-2);
+    border-radius: var(--radius-md);
+    line-height: 1.7;
+  }
+
+  /* 移动端微调 */
+  @media (max-width: 899px) {
+    .wrap { padding: 16px 16px 90px; }
+    .panel { padding: 26px 20px; border-radius: 20px; }
+    .panel h1 { font-size: 22px; }
+    .path { margin-bottom: 22px; }
+    .p-node { width: 52px; }
+    .p-dot { width: 30px; height: 30px; }
+    .btn-next, .btn-prev { padding: 12px 20px; font-size: 14px; }
+  }
+
+  /* ===== 重新设计 v2 · Apple 极简方向（样本：第 1 步 归类） =====
+     原则：清晰(Clarity) / 遵从(Deference) / 层次(Depth)
+     - 一次只聚焦一件事；AI 辅助收进「让 Transform 帮忙」折叠
+     - 分组卡片 + iOS 分段控件 + 发丝分隔列表，克制品牌绿
+  */
+  .panel-redesign .step-head { margin-bottom: 22px; }
+  .panel-redesign .step-eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--green-deep); margin: 0 0 10px;
+  }
+  .panel-redesign h1 {
+    font-size: 28px; font-weight: 600; letter-spacing: -.7px; line-height: 1.2; margin: 0 0 10px; color: var(--ink);
+  }
+  .panel-redesign .step-lead { font-size: 15px; color: var(--ink-2); line-height: 1.6; max-width: 52ch; margin: 0; }
+
+  /* 分组卡片：每个环节一块安静的容器 */
+  .panel-redesign .field {
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    padding: 22px 22px 24px;
+    margin-top: 14px;
+  }
+  .panel-redesign .field > label {
+    display: block; margin: 0 0 4px; font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: 0;
+  }
+  .panel-redesign .field-hint { font-size: 13px; color: var(--ink-3); line-height: 1.55; margin: 0 0 14px; }
+
+  /* 纯标签分区：内部组件自身是卡片，外层只负责标签与呼吸感（用于产出 / 复盘） */
+  .panel-redesign .field.plain { background: transparent; border-radius: 0; padding: 0; margin-top: 26px; }
+  .panel-redesign .field.plain > label { font-size: 16px; margin-bottom: 12px; }
+  .panel-redesign .field-soft { font-weight: 400; font-style: normal; color: var(--ink-3); font-size: 12.5px; }
+
+  /* 复盘五问：同一张卡片内分题，紧凑而清晰的层级 */
+  .panel-redesign .reflect-q-row { margin-top: 18px; }
+  .panel-redesign .reflect-q-row:first-of-type { margin-top: 2px; }
+  .panel-redesign .reflect-q-row > .rq-label { display: block; font-size: 14px; font-weight: 600; color: var(--ink-2); margin-bottom: 8px; }
+
+  .panel-redesign textarea#scenario {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); min-height: 92px;
+  }
+
+  /* iOS 风格分段控件 */
+  .panel-redesign .src-seg {
+    display: flex; gap: 4px; padding: 4px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 12px;
+  }
+  .panel-redesign .src-chip {
+    flex: 1 1 0; text-align: center; font-size: 13px; padding: 9px 4px; border-radius: 9px;
+    cursor: pointer; background: transparent; color: var(--ink-2);
+    font-weight: 500; font-family: inherit; transition: all .18s; user-select: none; border: 1px solid transparent;
+  }
+  .panel-redesign .src-chip:hover { color: var(--ink); background: var(--surface-2); }
+  .panel-redesign .src-chip.sel {
+    background: var(--green); color: #fff; border-color: var(--green); font-weight: 600;
+    box-shadow: 0 1px 3px rgba(14,107,80,.28);
+  }
+
+  .panel-redesign .note-add { display: flex; gap: 8px; margin-top: 14px; }
+  .panel-redesign .note-add input { flex: 1; }
+  .panel-redesign .btn-soft {
+    flex-shrink: 0; padding: 0 22px; border-radius: var(--radius-sm);
+    background: var(--green); border: 1px solid var(--green); color: #fff;
+    font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .panel-redesign .btn-soft:hover { background: var(--green-deep); border-color: var(--green-deep); }
+
+  /* 笔记：分组列表，发丝分隔 */
+  .panel-redesign .notes {
+    display: grid; gap: 0; margin-top: 14px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden;
+  }
+  .panel-redesign .note {
+    display: flex; align-items: flex-start; gap: 12px; padding: 13px 15px;
+    background: transparent; border: none; border-bottom: 1px solid var(--line);
+    border-radius: 0; animation: rise .3s ease;
+  }
+  .panel-redesign .note:last-child { border-bottom: none; }
+  .panel-redesign .note .txt { flex: 1; font-size: 14px; line-height: 1.55; }
+  .panel-redesign .note .tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 7px; flex-shrink: 0; margin-top: 2px; }
+
+  /* AI 辅助：安静的折叠，chevron 旋转 */
+  .panel-redesign .ai-assist { margin-top: 18px; }
+  .panel-redesign .ai-assist > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 600; color: var(--green-deep); padding: 6px 0; user-select: none;
+  }
+  .panel-redesign .ai-assist > summary::-webkit-details-marker { display: none; }
+  .panel-redesign .ai-assist > summary .aa-chevron {
+    width: 7px; height: 7px; border-right: 1.6px solid var(--green-deep); border-bottom: 1.6px solid var(--green-deep);
+    transform: rotate(45deg); transition: transform .25s; margin-left: 2px;
+  }
+  .panel-redesign .ai-assist[open] > summary .aa-chevron { transform: rotate(-135deg); }
+  .panel-redesign .ai-assist[open] > summary { margin-bottom: 14px; }
+  .panel-redesign .ai-assist-body { display: flex; flex-direction: column; gap: 12px; }
+
+  .panel-redesign .ai-link {
+    display: inline-flex; align-items: center; gap: 7px; align-self: flex-start;
+    padding: 10px 17px; border: 1px solid var(--line-2); background: var(--surface);
+    color: var(--green-deep); border-radius: 999px; font-size: 13.5px; cursor: pointer;
+    transition: all .18s; font-family: inherit; font-weight: 500;
+  }
+  .panel-redesign .ai-link:hover { border-color: var(--green); background: var(--green-50); }
+
+  .panel-redesign .ai-cta {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px;
+    padding: 12px 22px; border: 1px solid var(--green); background: var(--green-50);
+    color: var(--green-deep); border-radius: 999px; font-size: 14px; cursor: pointer;
+    transition: all .18s; font-family: inherit; font-weight: 600;
+  }
+  .panel-redesign .ai-cta:hover { background: var(--green-soft); }
+
+  .panel-redesign .groups { display: grid; gap: 10px; margin-top: 4px; }
+  .panel-redesign .group {
+    border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 18px 16px;
+    background: var(--surface); box-shadow: var(--shadow-1); transition: border .2s;
+  }
+  .panel-redesign .group:focus-within { border-color: var(--green-light); }
+  .panel-redesign .group .g-label {
+    width: 100%; border: none; background: transparent; font-size: 16px; font-weight: 700; color: var(--green-deep);
+    outline: none; padding: 2px 0 10px; border-bottom: 1.5px solid var(--green-soft);
+  }
+
+  .panel-redesign .signal {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+    padding: 9px 16px; border-radius: 999px; background: var(--green-soft); color: var(--green-deep);
+    font-size: 13.5px; font-weight: 600;
+  }
+  .panel-redesign .signal svg { color: var(--green-deep); }
+
+  /* Step 1 洞察：单焦点问题流 */
+  .panel-redesign .label-picker { margin-top: 2px; }
+  .panel-redesign .app-more {
+    margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px;
+  }
+  .panel-redesign .app-more > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2); user-select: none;
+  }
+  .panel-redesign .app-more > summary::-webkit-details-marker { display: none; }
+  .panel-redesign .app-more > summary::after {
+    content: ""; width: 6px; height: 6px; border-right: 1.6px solid var(--ink-3); border-bottom: 1.6px solid var(--ink-3);
+    transform: rotate(45deg); transition: transform .25s;
+  }
+  .panel-redesign .app-more[open] > summary::after { transform: rotate(-135deg); }
+  .panel-redesign .app-more .personal-view-main { margin-top: 12px; min-height: 80px; }
+  .panel-redesign .q-action-row { margin-top: 16px; }
+  .panel-redesign .btn-link {
+    color: var(--green-deep); font-weight: 600; background: none; border: none;
+    font-family: inherit; font-size: 14px; cursor: pointer; padding: 8px 0;
+  }
+
+  /* ===== Step 2 应用 · 单一场景 / 单一焦点（分组卡片 + 阶段条 + 可选补充） ===== */
+  .panel-app .step-head { margin-bottom: 20px; }
+  .panel-app .step-eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--green-deep); margin: 0 0 10px;
+  }
+  .panel-app h1 { font-size: 28px; font-weight: 600; letter-spacing: -.7px; line-height: 1.2; margin: 0 0 10px; color: var(--ink); }
+  .panel-app .step-lead { font-size: 15px; color: var(--ink-2); line-height: 1.6; max-width: 52ch; margin: 0; }
+
+  /* 核心认知卡 */
+  .panel-app .app-core {
+    background: var(--surface-2); border-radius: var(--radius-lg);
+    padding: 20px 22px; margin-top: 14px;
+  }
+  .panel-app .app-core-label { font-size: 12px; font-weight: 600; letter-spacing: .4px; color: var(--ink-3); text-transform: uppercase; margin-bottom: 8px; }
+  .panel-app .app-core-text { font-size: 16px; font-weight: 600; line-height: 1.55; color: var(--green-deep); }
+  .panel-app .app-core-scores { display: flex; gap: 18px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+  .panel-app .app-core-scores b { color: var(--ink); font-weight: 700; }
+  .panel-app .app-core-more { margin-top: 12px; }
+  .panel-app .app-core-more > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--green-deep); user-select: none;
+  }
+  .panel-app .app-core-more > summary::-webkit-details-marker { display: none; }
+  .panel-app .app-core-more > summary::after {
+    content: ""; width: 6px; height: 6px; border-right: 1.6px solid var(--green-deep); border-bottom: 1.6px solid var(--green-deep);
+    transform: rotate(45deg); transition: transform .25s;
+  }
+  .panel-app .app-core-more[open] > summary::after { transform: rotate(-135deg); }
+  .panel-app .app-core-more .insight-highlight { margin-top: 10px; }
+
+  /* 阶段条 */
+  .panel-app .phase-bar { display: flex; gap: 10px; margin: 18px 0 6px; }
+  .panel-app .phase {
+    flex: 1; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 13px;
+    background: var(--surface-2); font-size: 13.5px; font-weight: 600; color: var(--ink-3); border: 1px solid transparent;
+  }
+  .panel-app .phase .phase-n {
+    width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface); color: var(--ink-3); font-size: 12px; font-weight: 700; border: 1px solid var(--line);
+  }
+  .panel-app .phase.phase-on { color: var(--green-deep); background: var(--green-50); border-color: var(--green-light); }
+  .panel-app .phase.phase-on .phase-n { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* 阶段容器 */
+  .panel-app .app-phase { margin-top: 14px; }
+  .panel-app .far-phase { padding-top: 4px; }
+
+  /* 应用块卡片 */
+  .panel-app .app-block {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 22px; box-shadow: var(--shadow-1);
+  }
+  .panel-app .app-block-head { margin-bottom: 16px; }
+  .panel-app .app-title { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.3px; }
+  .panel-app .app-title-sub { font-size: 13px; color: var(--ink-3); margin-top: 3px; }
+
+  .panel-app .app-stage { margin-top: 6px; }
+  .panel-app .app-stage.hidden { display: none; }
+  .panel-app .app-step-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 12px; }
+  .panel-app .app-step-row.app-step-plan { margin-top: 22px; }
+  .panel-app .app-step-num {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--green-soft); color: var(--green-deep); font-size: 13px; font-weight: 700;
+  }
+  .panel-app .app-step-label { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+
+  /* 标题列表 + 操作 */
+  .panel-app .title-list { display: grid; gap: 8px; }
+  .panel-app .title-actions { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .panel-app .app-title-custom { flex: 1 1 200px; }
+  .panel-app .ai-link {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px;
+    border: 1px solid var(--line-2); background: var(--surface); color: var(--green-deep);
+    font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .panel-app .ai-link:hover { border-color: var(--green); background: var(--green-50); }
+  .panel-app .ai-cta {
+    display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 999px;
+    border: 1px solid var(--green); background: var(--green-50); color: var(--green-deep);
+    font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .panel-app .ai-cta:hover { background: var(--green-soft); }
+
+  /* 细节卡：默认折叠成一行摘要，点击展开编辑 */
+  .panel-app .detail-card { }
+  .panel-app .detail-card .dc-card {
+    background: var(--surface-2); border-radius: var(--radius-md); border: 1px solid var(--line);
+  }
+  .panel-app .detail-card .dc-card > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; font-size: 14px; user-select: none;
+  }
+  .panel-app .detail-card .dc-card > summary::-webkit-details-marker { display: none; }
+  .panel-app .detail-card .dc-card > summary::before {
+    content: ""; width: 6px; height: 6px; border-right: 1.6px solid var(--ink-3); border-bottom: 1.6px solid var(--ink-3);
+    transform: rotate(45deg); transition: transform .25s; flex-shrink: 0;
+  }
+  .panel-app .detail-card .dc-card[open] > summary::before { transform: rotate(-135deg); }
+  .panel-app .detail-card .dc-title { font-weight: 700; color: var(--ink); flex-shrink: 0; }
+  .panel-app .detail-card .dc-meta { color: var(--ink-2); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .panel-app .detail-card .dc-form { padding: 2px 14px 14px; border-top: 1px solid var(--line); }
+  .panel-app .detail-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .panel-app .detail-section { margin-bottom: 10px; }
+  .panel-app .detail-section:last-child { margin-bottom: 0; }
+  .panel-app .detail-section-title { font-size: 12px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  .panel-app .detail-row { display: flex; gap: 10px; padding: 4px 0; font-size: 13.5px; line-height: 1.5; }
+  .panel-app .detail-row b { color: var(--ink-3); flex-shrink: 0; width: 48px; font-weight: 600; }
+  .panel-app .detail-row .editable { flex: 1; color: var(--ink); border-radius: 6px; padding: 1px 4px; outline: none; }
+  .panel-app .detail-row .editable:focus { background: var(--surface); box-shadow: 0 0 0 2px var(--green-light); }
+
+  /* 计划字段 */
+  .panel-app .app-field { margin-top: 14px; }
+  .panel-app .app-field:first-of-type { margin-top: 4px; }
+  .panel-app .app-label { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 7px; line-height: 1.5; }
+  .panel-app .app-label em { font-style: normal; font-weight: 400; color: var(--ink-3); font-size: 12px; }
+  .panel-app .app-label b { color: var(--green-deep); }
+  .panel-app .app-input, .panel-app .app-plan-input, .panel-app .app-title-custom {
+    width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 11px 13px; font-size: 14px; font-family: inherit; color: var(--ink); transition: border .18s;
+  }
+  .panel-app .app-plan-input { min-height: 80px; line-height: 1.5; resize: vertical; }
+  .panel-app textarea.app-input:focus, .panel-app .app-plan-input:focus, .panel-app .app-title-custom:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px var(--green-light); }
+  .panel-app .app-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .panel-app .app-input-sm {
+    width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 12px; font-size: 13.5px; font-family: inherit; color: var(--ink);
+  }
+  .panel-app .app-input-sm:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px var(--green-light); }
+  .panel-app .app-more { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .panel-app .app-more > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2); user-select: none;
+  }
+  .panel-app .app-more > summary::-webkit-details-marker { display: none; }
+  .panel-app .app-more > summary::after {
+    content: ""; width: 6px; height: 6px; border-right: 1.6px solid var(--ink-3); border-bottom: 1.6px solid var(--ink-3);
+    transform: rotate(45deg); transition: transform .25s;
+  }
+  .panel-app .app-more[open] > summary::after { transform: rotate(-135deg); }
+  .panel-app .app-feedback-btn { margin-top: 18px; }
+
+  /* 反馈结果：干净的成功卡片 */
+  .panel-app .app-feedback-result {
+    margin-top: 18px; padding: 16px 18px; border-radius: var(--radius-md);
+    background: var(--green-soft); border: 1px solid var(--green-light); color: var(--green-deep);
+  }
+  .panel-app .app-feedback-result:empty, .panel-app .app-feedback-result[style*="display: none"] { display: none !important; }
+  .panel-app .app-feedback-result .ai-msg { display: flex; gap: 12px; }
+  .panel-app .app-feedback-result .zhx-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; }
+  .panel-app .app-feedback-result .ai-msg-body { flex: 1; }
+  .panel-app .app-feedback-result .ai-msg-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .panel-app .app-feedback-result .fb-overall { display: flex; align-items: baseline; gap: 4px; margin: 4px 0 10px; }
+  .panel-app .app-feedback-result .fb-score { font-size: 32px; font-weight: 800; line-height: 1; }
+  .panel-app .app-feedback-result .fb-score-label { font-size: 13px; opacity: .75; }
+  .panel-app .app-feedback-result .fb-pros, .panel-app .app-feedback-result .fb-improve, .panel-app .app-feedback-result .fb-sug { margin-top: 10px; font-size: 14px; line-height: 1.55; }
+  .panel-app .app-feedback-result .fb-actions { margin-top: 10px; }
+  .panel-app .app-feedback-result .fb-actions .fb-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; opacity: .75; margin-bottom: 4px; }
+  .panel-app .app-feedback-result .fb-actions ol { padding-left: 18px; margin: 0; }
+  .panel-app .app-feedback-result .fb-actions li { margin: 4px 0; font-size: 13.5px; }
+
+  /* 资源：默认隐藏，有反馈后才出现 */
+  .panel-app .app-resource { display: none; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .panel-app .app-resource.visible { display: block; }
+  .panel-app .app-res-label { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 12px; line-height: 1.5; }
+  .panel-app .app-res-label .res-label-near, .panel-app .app-res-label .res-label-far { color: var(--green-deep); }
+  .panel-app .resource-result { margin-top: 14px; }
+</style><style>
+  .fab-archive {
+    position: fixed; right: 18px; bottom: 18px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
+    padding: 13px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 10px 26px rgba(14,107,80,.4); transition: transform .2s, box-shadow .2s; font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14,107,80,.5); }
+</style>
 </head>
 <body>
 <div class="app-bg-deco" aria-hidden="true">
@@ -1592,135 +2339,142 @@
   <!-- 主流程 -->
   <div class="app-panel">
     <!-- Step 0 归类 -->
-    <div class="panel" id="panel-0">
-      <h1>Make sense of messy information</h1>
-      <div class="hint">Facing a complex challenge, you hold a pile of <u>observations, facts, guesses, assumptions</u>. Lay them all out, then group them and name each group.</div>
+    <div class="panel panel-redesign" id="panel-0">
+      <header class="step-head">
+        <div class="step-eyebrow">Step 1 · Organize</div>
+        <h1>Make sense of the mess</h1>
+        <p class="step-lead">Lay out what you have, see what it is and where it came from, then group it.</p>
+      </header>
 
-      <label>\u2460 What complex challenge are you facing? (scenario)</label>
-      <textarea id="scenario" placeholder="e.g. AI is transforming my industry. I feel anxious, unsure what to learn or where to go. Family and friends disagree, and the internet is overwhelming me..."></textarea>
+      <section class="field">
+        <label for="scenario">What challenge are you facing?</label>
+        <textarea id="scenario" placeholder="E.g., AI is changing my industry. I feel anxious but don't know what to learn or where to go; family and friends disagree; online information is overwhelming…"></textarea>
+      </section>
 
-      <label>\u2461 Lay out your information \u2014 note what happened and label its source</label>
-      <div class="note-type" id="noteSourceChips">
-        <span class="src-chip sel" data-v="观察">My own observation</span>
-        <span class="src-chip" data-v="事实">Reliable fact</span>
-        <span class="src-chip" data-v="听闻">Heard from others</span>
-        <span class="src-chip" data-v="猜测">My guess / assumption</span>
-      </div>
-      <div class="add-sub" style="display:flex;gap:8px;margin-top:10px;">
-        <input type="text" id="noteInput" placeholder="Add one: what happened / what you heard / what you suspect / what you take for granted...">
-        <button class="btn btn-next" style="padding:10px 20px;flex-shrink:0;" onclick="addNote()">Add</button>
-      </div>
-      <div class="notes" id="notesList"></div>
-      <div class="ai-row">
-        <button class="ai-btn" id="aiExtract" onclick="aiExtract()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 117 0c-1.5 1.2-2 2.4-2 3.5h-3c0-1.1-.5-2.3-2-3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          Extract information points from my scenario
-        </button>
-      </div>
-      <div class="ai-result" id="aiExtractResult"></div>
+      <section class="field">
+        <label>Lay out your information</label>
+        <p class="field-hint">For each item, mark where it came from — what you observed, a reliable fact, something you heard, or your guess.</p>
+        <div class="src-seg" id="noteSourceChips">
+          <span class="src-chip sel" data-v="观察">Observed</span>
+          <span class="src-chip" data-v="事实">Fact</span>
+          <span class="src-chip" data-v="听闻">Heard</span>
+          <span class="src-chip" data-v="猜测">Guess</span>
+        </div>
+        <div class="note-add">
+          <input type="text" id="noteInput" placeholder="Note what happened / what you heard / what you suspect…">
+          <button class="btn-soft" onclick="addNote()">Add</button>
+        </div>
+        <div class="notes" id="notesList"></div>
 
-      <!-- Source quality check (Layer 1: information source体检) -->
-      <div class="input-stats" id="inputStats" style="display:none;"></div>
-      <div class="ai-row" id="sourceQualityRow" style="display:none; margin-top:6px;">
-        <button class="ai-btn" id="aiSourceQuality" onclick="aiEvaluateSources()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Let Transform assess the quality of these sources
-        </button>
-      </div>
-      <div class="ai-result" id="sourceQualityResult" style="display:none;"></div>
+        <details class="ai-assist">
+          <summary>Let Transform help<span class="aa-chevron"></span></summary>
+          <div class="ai-assist-body">
+            <button class="ai-link" id="aiExtract" onclick="aiExtract()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M8.5 14.5a5 5 0 117 0c-1.5 1.2-2 2.4-2 3.5h-3c0-1.1-.5-2.3-2-3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              Extract points from the scenario
+            </button>
+            <div class="ai-result" id="aiExtractResult"></div>
+            <div class="input-stats" id="inputStats" style="display:none;"></div>
+            <div class="ai-row" id="sourceQualityRow" style="display:none; margin-top:6px;">
+              <button class="ai-link" id="aiSourceQuality" onclick="aiEvaluateSources()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Evaluate source quality
+              </button>
+            </div>
+            <div class="ai-result" id="sourceQualityResult" style="display:none;"></div>
+          </div>
+        </details>
+      </section>
 
-<label>\u2462 Group them \u2014 give each group a summary label</label>
-        <button class="ai-btn" id="aiGroup" onclick="aiGroup()" style="margin-bottom:10px;">
+      <section class="field">
+        <label>Group into categories</label>
+        <p class="field-hint">Give each group a name to clear your head.</p>
+        <button class="ai-cta" id="aiGroup" onclick="aiGroup()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h6v6H4zM14 7h6v6h-6zM4 17h6v3H4zM14 17h6v3h-6z" stroke="currentColor" stroke-width="1.8"/></svg>
-          AI, group these for me
+          AI, help me group these
         </button>
-      <div class="groups" id="groupsArea"></div>
+        <div class="groups" id="groupsArea"></div>
+        <div class="signal" id="signal0" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Information organized. Clarity emerging.
+        </div>
+      </section>
 
-      <div class="signal" id="signal0" style="display:none;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Information grouped \u2014 a thread to pull now
-      </div>
-      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>To Insight →</button></div>
+      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>Go to Insight →</button></div>
     </div>
 
     <!-- Step 1 洞察（用户主导，Transform辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
-    <div class="panel" id="panel-1" style="display:none;">
-      <h1>See the essence behind phenomena</h1>
-      <div class="hint">All your groups above take part. Transform asks <b>one question at a time</b>; answered questions stay on the page. Keep answering until you say \u201cI\u2019m done\u201d, then Transform synthesizes the core insight.</div>
+    <!-- Step 1 洞察（用户主导，Transform辅助启发）v9：单焦点问题流 -->
+    <div class="panel panel-redesign" id="panel-1" style="display:none;">
+      <header class="step-head">
+        <div class="step-eyebrow">Step 2 · Insight</div>
+        <h1>See through the surface</h1>
+        <p class="step-lead">Transform will prompt you one question at a time. Keep asking for the next until you feel ready, then let it synthesize.</p>
+      </header>
 
-      <!-- \u2460 Groups (read-only, all take part) -->
-      <label>\u2460 Your groups (all participate in thinking)</label>
-      <div class="label-picker" id="labelPicker"></div>
+      <!-- ① 归类罗列（只读，全部参与） -->
+      <section class="field">
+        <label>Your groups</label>
+        <p class="field-hint">These groups will feed into this insight.</p>
+        <div class="label-picker" id="labelPicker"></div>
+      </section>
 
       <!-- ② 渐进式提问区 -->
-      <div id="thinkingArea" style="display:none;">
-        <div class="lb-section-title">Questions from Transform \u00b7 your thinking</div>
+      <section class="field" id="thinkingArea" style="display:none;">
+        <label>Current question</label>
         <div id="allQuestions"></div>
 
         <!-- 出题控制：第一题 / 下一题 / 够了 -->
         <div class="q-action-row" id="askRow" style="justify-content:flex-start;border:none;padding-top:0;">
-          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">Ask the first question</button>
-          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">I\u2019m done, let Transform summarize →</button>
+          <button class="btn btn-next" onclick="aiAskNext(this)" id="askNextBtn" style="padding:10px 22px;">Ask Transform for the first question</button>
+          <button class="btn-link" onclick="finishQuestions()" id="finishBtn" style="display:none;">That's enough, let Transform synthesize →</button>
         </div>
 
-        <div class="lb-section-title">My overall view (optional \u2014 feeds Transform\u2019s summary)</div>
-        <textarea id="personalView" class="personal-view-main" placeholder="Write your overall view, feelings, and judgments about the whole scenario..."></textarea>
+        <details class="app-more" style="margin-top:18px;">
+          <summary>My overall view (optional)</summary>
+          <textarea id="personalView" class="personal-view-main" placeholder="Write your overall view, feelings, and judgment about the whole situation…"></textarea>
+        </details>
+      </section>
 
-        <!-- ③ Transform总结按钮 + 凸显 essence 盒 -->
-        <div id="integrateArea" style="display:none;">
-          <div class="lb-section-title">Let Transform synthesize (from all Q&A + overall view)</div>
+      <!-- ③ Transform总结按钮 + 凸显 essence 盒 -->
+      <section class="field" id="integrateArea" style="display:none;">
+          <div class="lb-section-title">Let Transform synthesize (based on all Q&A + your overall view)</div>
           <button class="ai-btn-primary" onclick="aiIntegrate(this)" style="margin-bottom:14px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Let Transform summarize
+            Let Transform synthesize
           </button>
           <div class="ai-result" id="aiIntegrateResult" style="display:none;"></div>
 
           <div class="lb-essence-box" id="essenceBox">
-            <div class="lb-essence-label">Essence behind the phenomena (AI output, editable)</div>
-            <textarea id="essenceNature" class="essence-nature" placeholder="The essence behind these phenomena is..."></textarea>
-            <div class="lb-essence-label">New insight and understanding (AI output, editable)</div>
-            <textarea id="essenceInsight" class="essence-insight" placeholder="Our new insight and understanding of this problem is..."></textarea>
+            <div class="lb-essence-label">The essence behind the phenomena (Transform synthesis, editable)</div>
+            <textarea id="essenceNature" class="essence-nature" placeholder="The essence behind these phenomena is…"></textarea>
+            <div class="lb-essence-label">New insight and understanding (Transform synthesis, editable)</div>
+            <textarea id="essenceInsight" class="essence-insight" placeholder="Our new insight and understanding of this issue is…"></textarea>
+          </div>
 
-            <div class="restate-core" id="restateCore">
+          <!-- 🎯 core output：The core insight I understand（HIGHLIGHT） -->
+          <div class="restate-core" id="restateCore">
             <div class="restate-core-title">
               <span class="rc-badge">🎯</span>
-              <span class="rc-title">My core insight in my own words</span>
-              <span class="rc-sub">Say it yourself — this is the <u>core output</u> of this step</span>
+              <span class="rc-title">The core insight I understand</span>
+              <span class="rc-sub">Say it in your own words — this is the <u>core output</u></span>
             </div>
-            <textarea id="essenceRestate" class="essence-restate-main" placeholder="Without looking at the text above, write this insight in your own words (do not copy). Explaining it shows you understand it..."></textarea>
+            <textarea id="essenceRestate" class="essence-restate-main" placeholder="Without looking above, write this insight in your own words (don't copy). If you can explain it clearly, you truly understand it…"></textarea>
             <div class="essence-restate-feedback" id="restateFeedback"></div>
           </div>
 
-          <!-- Viewpoint required (not an answer, a perspective) -->
+          <!-- 视角必选（启发，不是答案） -->
           <div class="viewpoint-area" id="viewpointArea" style="display:none;">
             <div class="vp-head">
-              <span class="vp-title">Look at it from another angle</span>
-              <span class="vp-sub">Force yourself out of the original mode — pick the one that feels most uncomfortable</span>
-              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">Show me different angles</button>
+              <span class="vp-title">See it from another angle</span>
+              <span class="vp-sub">Push yourself out of the original pattern — pick an uncomfortable angle and use it to revise your core insight.</span>
+              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">Ask Transform for different angles</button>
             </div>
             <div class="vp-body" id="viewpointResult" style="display:none;"></div>
             <div class="vp-revise" id="viewpointRevise" style="display:none;">
-              <div class="lb-essence-label">Revise your core insight through the chosen angle (you can keep the original)</div>
-              <textarea id="restateRevised" class="essence-nature" placeholder="Through this angle, I re-understand this as..."></textarea>
+              <div class="lb-essence-label">Revise your core insight from the chosen angle (you can keep the original)</div>
+              <textarea id="restateRevised" class="essence-nature" placeholder="From this angle, I now understand this as…"></textarea>
             </div>
-          </div>
-
-          <div class="lb-score-row">
-            <div>
-              <label>How important?</label>
-              <div class="lb-scale" id="impactScale"></div>
-            </div>
-            <div>
-              <label>How hard to accept?</label>
-              <div class="lb-scale" id="effortScale"></div>
-            </div>
-          </div>
-
-          <div class="essence-confirm-row" id="essenceConfirmRow">
-            <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & Confirm</button>
-          </div>
-
-          <div class="lb-status-row" id="statusRow">Next: let Transform summarise</div>
           </div>
 
           <div class="lb-score-row">
@@ -1734,352 +2488,373 @@
             </div>
           </div>
 
-          <div class="lb-status-row" id="statusRow">Next: let Transform summarize</div>
+          <div class="essence-confirm-row" id="essenceConfirmRow">
+            <button class="btn btn-essence-confirm" onclick="confirmEssence()" id="confirmBtn">Save & confirm</button>
+          </div>
 
-        </div>
+          <div class="lb-status-row" id="statusRow">还需要：Let Transform synthesize</div>
+
+        </section>
 
         <div class="signal" id="signal1" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Cognition +1 \u2014 you saw what\u2019s behind the phenomena
+          Insight +1 — you saw beneath the surface
         </div>
         <div class="btn-row" id="nextBtnArea" style="display:none;">
           <button class="btn btn-prev" onclick="goStep(0)">Back</button>
-          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>To Apply →</button>
+          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>Go to Apply →</button>
+        </div>
+        <div class="restart-row">
+          <button class="restart-link" onclick="redoInsight()">↻ New questions + synthesize</button>
         </div>
       </div>
-    </div>
-
     <!-- Step 2 应用（用户写 + AI 评价反馈，按 PRD） -->
-    <div class="panel" id="panel-2" style="display:none;">
-      <h1>Apply your new insight to unfamiliar scenarios</h1>
-      <div class="hint">This step isn\u2019t about taking action yet \u2014 it\u2019s a <u>cognitive rehearsal</u>: carry this new insight into familiar + unfamiliar scenarios and write down how you would act. Finally Transform scores, gives feedback, and suggests next actions.</div>
+    <div class="panel panel-app" id="panel-2" style="display:none;">
+      <header class="step-head">
+        <div class="step-eyebrow">Step 3 · Apply</div>
+        <h1>Take the insight into a real scenario</h1>
+        <p class="step-lead">Try it once in a familiar scenario, then migrate to an unfamiliar one. Focus on one thing at a time.</p>
+      </header>
 
-      <label>\u2460 Your new insight</label>
-      <div class="insight-highlight" id="insightRef"></div>
-
-      <!-- migrate the user's core understanding (restate) into the apply screen, HIGHLIGHT -->
-      <div class="restate-core" id="applyRestateCore" style="display:none;">
-        <div class="restate-core-title">
-          <span class="rc-badge">🎯</span>
-          <span class="rc-title">My core understanding</span>
-          <span class="rc-sub">This is the <u>core input</u> you'll carry into the two scenarios below</span>
+      <!-- 核心认知：应用的总输入 -->
+      <section class="app-core">
+        <div class="app-core-label">The insight you'll apply</div>
+        <div class="app-core-text" id="applyRestateText"></div>
+        <div class="app-core-scores" id="scoreDisplay" style="display:none;">
+          <span>Importance <b id="sdImpact">—</b>/5</span>
+          <span>Effort to accept <b id="sdEffort">—</b>/5</span>
         </div>
-        <div class="restate-core-text" id="applyRestateText"></div>
+        <details class="app-core-more">
+          <summary>View Transform's synthesis (optional)</summary>
+          <div class="insight-highlight" id="insightRef"></div>
+        </details>
+      </section>
+
+      <!-- 阶段指示 -->
+      <div class="phase-bar" id="phaseBar">
+        <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> Near apply · familiar scenario</div>
+        <div class="phase" data-phase="far"><span class="phase-n">2</span> Far apply · unfamiliar scenario</div>
       </div>
 
-      <div class="score-display" id="scoreDisplay" style="display:none;">
-        <div class="sd-item"><span class="sd-label">Importance</span><span class="sd-val" id="sdImpact">—</span></div>
-        <div class="sd-item"><span class="sd-label">Acceptance effort</span><span class="sd-val" id="sdEffort">—</span></div>
-        <div class="sd-desc">Transform uses both scores to evaluate your application plan</div>
-      </div>
-
-      <!-- ② 近应用：先选场景标题 → 生成细节 → 填计划 → AI 评分 -->
-      <label>\u2461 Near application: a <u>familiar scenario</u> \u2014 does this insight work here?</label>
-      <div class="app-block" id="nearAppBlock" data-type="near">
-        <div class="app-title">Near application (familiar scenario)</div>
-
-        <div class="app-stage" data-stage="title">
-          <div class="app-step-row"><span class="app-step-num">\u2460</span><span class="app-step-label">Pick a scenario title to apply it to</span></div>
-          <div class="title-list" id="nearTitleList"></div>
-          <div class="title-actions">
-            <button class="ai-btn" onclick="recommendApplyTitles('near', this)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Recommend scenario
-            </button>
-            <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="Or write your own scenario title (max 30 chars)" maxlength="30">
-            <button class="ai-btn-primary" onclick="confirmApplyTitle('near')">Confirm →</button>
+      <!-- Near apply阶段 -->
+      <section class="app-phase" id="nearPhase">
+        <div class="app-block" id="nearAppBlock" data-type="near">
+          <div class="app-block-head">
+            <div class="app-title">Near apply</div>
+            <div class="app-title-sub">A familiar scenario you can try right away</div>
           </div>
-        </div>
 
-        <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
-          <div class="detail-card" id="nearDetailCard"></div>
-          <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
-          </div>
-        </div>
-
-        <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
-          <div class="detail-card" id="nearDetailCardPlan"></div>
-          <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('near', this)">Regenerate</button>
-          </div>
-          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">\u2462</span><span class="app-step-label">Write your application plan</span></div>
-          <div class="app-row">
-            <span class="app-label">What will you do?</span>
-            <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="e.g. Stop proving value with \u201cI have N years of experience\u201d; instead design a 30-minute experience with the client so they first feel \u201cinspiring action and emotional connection\u201d"></textarea>
-          </div>
-          <div class="app-row app-row-grid">
-            <div>
-              <span class="app-label">When will you try it?</span>
-              <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="e.g. this Friday">
-            </div>
-            <div>
-              <span class="app-label">Expected outcome?</span>
-              <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="e.g. the client proactively renews phase 2">
+          <div class="app-stage" data-stage="title">
+            <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to apply</span></div>
+            <div class="title-list" id="nearTitleList"></div>
+            <div class="title-actions">
+              <button class="ai-link" onclick="recommendApplyTitles('near', this)">Suggest scenarios</button>
+              <input type="text" class="app-title-custom" id="nearTitleCustom" placeholder="Or write your own (≤30 chars)" maxlength="30">
+              <button class="btn-soft" onclick="confirmApplyTitle('near')">Confirm →</button>
             </div>
           </div>
-          <div class="app-row" style="margin-top:12px;">
-            <span class="app-label">External verification signal (required): what outside reaction would prove it really happened? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(someone else, not "I feel I improved")</em></span>
-            <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="e.g. client proactively renews / a colleague asks how I did it / numbers rise 20%"></textarea>
-          </div>
-          <div class="app-row" style="margin-top:14px;">
-            <button class="ai-btn-primary" onclick="aiAppFeedback('near')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Have Transform score + give feedback + suggest actions
-            </button>
-          </div>
-        </div>
 
-        <div class="ai-result app-feedback-result" id="nearFeedbackResult" style="display:none;"></div>
-      </div>
-
-      <!-- ③ 远应用：在近应用完整前锁定；同样的流程 -->
-      <div class="app-divider">Far application · transfer to a completely different domain</div>
-      <label class="locked-label" id="farAppLockLabel">\u2462 Far application: a <u>completely different industry / role / scenario</u> \u2014 does this insight still hold?</label>
-      <div class="app-block far-block locked" id="farAppBlock" data-type="far">
-        <div class="app-title">Far application (unfamiliar scenario)</div>
-        <div class="lock-overlay"><span>Finish the near application and get a score from Transform first, then unlock this</span></div>
-
-        <div class="app-stage" data-stage="title">
-          <div class="app-step-row"><span class="app-step-num">\u2460</span><span class="app-step-label">Pick a scenario title to apply it to</span></div>
-          <div class="title-list" id="farTitleList"></div>
-          <div class="title-actions">
-            <button class="ai-btn" onclick="recommendApplyTitles('far', this)">Recommend scenario</button>
-            <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="Or write your own scenario title (max 30 chars)" maxlength="30">
-            <button class="ai-btn-primary" onclick="confirmApplyTitle('far')">Confirm →</button>
+          <div class="app-stage hidden" data-stage="detail">
+            <div class="app-step-row"><span class="app-step-num">2</span><span class="app-step-label">Confirm scenario details</span></div>
+            <div class="detail-card" id="nearDetailCard"></div>
+            <div class="detail-actions"><button class="ai-link" onclick="generateApplyDetails('near', this)">Regenerate</button></div>
           </div>
-        </div>
 
-        <div class="app-stage hidden" data-stage="detail">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
-          <div class="detail-card" id="farDetailCard"></div>
-          <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
-          </div>
-        </div>
+          <div class="app-stage hidden" data-stage="plan">
+            <div class="detail-card" id="nearDetailCardPlan"></div>
 
-        <div class="app-stage hidden" data-stage="plan">
-          <div class="app-step-row"><span class="app-step-num">\u2461</span><span class="app-step-label">Scenario details (generated by Transform from your insight, editable)</span></div>
-          <div class="detail-card" id="farDetailCardPlan"></div>
-          <div class="detail-actions">
-            <button class="ai-btn" onclick="generateApplyDetails('far', this)">Regenerate</button>
-          </div>
-          <div class="app-step-row" style="margin-top:18px;"><span class="app-step-num">\u2462</span><span class="app-step-label">Write your application plan</span></div>
-          <div class="app-row">
-            <span class="app-label">What will you do?</span>
-            <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="e.g. Suggest the sales team upgrade from \u201csystem tool\u201d to \u201cinspire the client + coach the process\u201d: AI handles information, sales does emotional connection and decision momentum"></textarea>
-          </div>
-          <div class="app-row app-row-grid">
-            <div>
-              <span class="app-label">When will you try it?</span>
-              <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="e.g. next Monday">
+            <div class="app-step-row app-step-plan"><span class="app-step-num">2</span><span class="app-step-label">Write your application plan</span></div>
+            <div class="app-field">
+              <span class="app-label">What will you do?</span>
+              <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="E.g., stop proving value with "I have N years of experience" and instead co-design a 30-minute experience with the client"></textarea>
             </div>
-            <div>
-              <span class="app-label">Expected outcome?</span>
-              <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="e.g. sales report higher repeat purchase rate">
+            <div class="app-field">
+              <span class="app-label">How will you know it happened?<em>An external, observable signal</em></span>
+              <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="E.g., client asks to renew / someone asks how you did it / metric rises 20%"></textarea>
+            </div>
+            <details class="app-more">
+              <summary>More details (optional)</summary>
+              <div class="app-row-grid">
+                <div class="app-field">
+                  <span class="app-label">When?</span>
+                  <input type="text" class="app-input-sm" data-app="near" data-key="when" placeholder="E.g., this Friday">
+                </div>
+                <div class="app-field">
+                  <span class="app-label">What result do you expect?</span>
+                  <input type="text" class="app-input-sm" data-app="near" data-key="expectedOutcome" placeholder="E.g., client proactively renews phase two">
+                </div>
+              </div>
+            </details>
+            <div class="app-feedback-btn">
+              <button class="ai-cta" onclick="aiAppFeedback('near')">Let Transform score + give feedback + action tips</button>
             </div>
           </div>
-          <div class="app-row" style="margin-top:12px;">
-            <span class="app-label">External verification signal (required): what outside reaction would prove it really happened? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(someone else, not "I feel I improved")</em></span>
-            <textarea class="app-input app-plan-input" data-app="far" data-key="verifySignal" placeholder="e.g. sales rep comes asking for tips / a referral / measurable change"></textarea>
-          </div>
-          <div class="app-row" style="margin-top:14px;">
-            <button class="ai-btn-primary" onclick="aiAppFeedback('far')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3a6 6 0 016 6c0 2.5-1.2 3.9-2.6 5.3-.8.8-1.4 1.6-1.4 2.7M12 21h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Have Transform score + give feedback + suggest actions
-            </button>
+
+          <div class="ai-result app-feedback-result" id="nearFeedbackResult" style="display:none;"></div>
+
+          <!-- ④ Near apply支持资源 -->
+          <div class="app-resource">
+            <label class="app-res-label">Near apply支持资源：为了落地「<span class="res-label-near"></span>」, what people, resources, and conditions do you need?</label>
+            <button class="ai-link" id="aiResourcesNear" onclick="aiSuggestResources('near')">Find support resources (people / resources / conditions)</button>
+            <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
           </div>
         </div>
+      </section>
 
-        <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
-      </div>
+      <!-- Far apply阶段（Near apply完成后解锁） -->
+      <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
+        <div class="app-block far-block" id="farAppBlock" data-type="far">
+          <div class="app-block-head">
+            <div class="app-title">Far apply</div>
+            <div class="app-title-sub">A completely different industry / role / scenario</div>
+          </div>
 
-      <!-- ④ 支持资源与条件（近应用专属） -->
-      <label>\u2463 Near-application support resources: to actually land \u201c<span class="res-label-near"></span>\u201d, who, what resources, and what conditions do you need?</label>
-      <div class="resource-section">
-        <button class="ai-btn-primary" id="aiResourcesNear" onclick="aiSuggestResources('near')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Have Transform suggest support resources for the near application
-        </button>
-        <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
-      </div>
+          <div class="app-stage" data-stage="title">
+            <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to migrate to</span></div>
+            <div class="title-list" id="farTitleList"></div>
+            <div class="title-actions">
+              <button class="ai-link" onclick="recommendApplyTitles('far', this)">Suggest scenarios</button>
+              <input type="text" class="app-title-custom" id="farTitleCustom" placeholder="Or write your own (≤30 chars)" maxlength="30">
+              <button class="btn-soft" onclick="confirmApplyTitle('far')">Confirm →</button>
+            </div>
+          </div>
 
-      <!-- ⑤ 支持资源与条件（远应用专属，可选） -->
-      <label>\u2464 Far-application support resources: to actually land \u201c<span class="res-label-far"></span>\u201d, who, what resources, and what conditions do you need?</label>
-      <div class="resource-section" id="resourceFarSection">
-        <button class="ai-btn-primary" id="aiResourcesFar" onclick="aiSuggestResources('far')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Have Transform suggest support resources for the far application
-        </button>
-        <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
-      </div>
+          <div class="app-stage hidden" data-stage="detail">
+            <div class="app-step-row"><span class="app-step-num">2</span><span class="app-step-label">Confirm scenario details</span></div>
+            <div class="detail-card" id="farDetailCard"></div>
+            <div class="detail-actions"><button class="ai-link" onclick="generateApplyDetails('far', this)">Regenerate</button></div>
+          </div>
+
+          <div class="app-stage hidden" data-stage="plan">
+            <div class="detail-card" id="farDetailCardPlan"></div>
+
+            <div class="app-step-row app-step-plan"><span class="app-step-num">2</span><span class="app-step-label">Write your application plan</span></div>
+            <div class="app-field">
+              <span class="app-label">What will you do?</span>
+              <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="E.g., have sales upgrade "system tools" to "inspire clients + walk alongside them", let AI handle info, sales handle connection"></textarea>
+            </div>
+            <div class="app-field">
+              <span class="app-label">How will you know it happened?<em>An external, observable signal</em></span>
+              <textarea class="app-input app-plan-input" data-app="far" data-key="verifySignal" placeholder="E.g., sales asks for advice / client refers someone / visible metric change"></textarea>
+            </div>
+            <details class="app-more">
+              <summary>More details (optional)</summary>
+              <div class="app-row-grid">
+                <div class="app-field">
+                  <span class="app-label">When?</span>
+                  <input type="text" class="app-input-sm" data-app="far" data-key="when" placeholder="E.g., next Monday">
+                </div>
+                <div class="app-field">
+                  <span class="app-label">What result do you expect?</span>
+                  <input type="text" class="app-input-sm" data-app="far" data-key="expectedOutcome" placeholder="E.g., sales reports improved repurchase rate">
+                </div>
+              </div>
+            </details>
+            <div class="app-feedback-btn">
+              <button class="ai-cta" onclick="aiAppFeedback('far')">Let Transform score + give feedback + action tips</button>
+            </div>
+          </div>
+
+          <div class="ai-result app-feedback-result" id="farFeedbackResult" style="display:none;"></div>
+
+          <!-- ⑤ Far apply支持资源 -->
+          <div class="app-resource" id="resourceFarSection">
+            <label class="app-res-label">Far apply支持资源：为了落地「<span class="res-label-far"></span>」, what people, resources, and conditions do you need?</label>
+            <button class="ai-link" id="aiResourcesFar" onclick="aiSuggestResources('far')">Find support resources (people / resources / conditions)</button>
+            <div class="ai-result resource-result" id="resourcesFarResult" style="display:none;"></div>
+          </div>
+        </div>
+      </section>
 
       <div class="signal" id="signal2" style="display:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Insight rehearsed into scenarios \u2014 the loop is closed
+        Insight mapped to scenario. Loop closed.
       </div>
       <div class="btn-row">
-        <button class="btn btn-prev" onclick="goStep(1)">Back</button>
-        <button class="btn btn-next" id="next2" onclick="goStep(3)" disabled>Finish →</button>
+        <button class="btn btn-prev" onclick="goStep(1)">上一步</button>
+        <button class="btn btn-next" id="next2" onclick="goStep(3)" disabled>Done →</button>
       </div>
     </div>
 
     <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
-    <div class="panel" id="panel-3" style="display:none;">
-      <h1>What I\u2019m taking away from this</h1>
-      <div class="hint">Turn your insight into a few executable actions, and cast a vote for the identity you aspire to.</div>
+    <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
+        <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
+    <div class="panel panel-redesign" id="panel-3" style="display:none;">
+      <header class="step-head">
+        <div class="step-eyebrow">Step 4 · Output</div>
+        <h1>What you're taking away from this</h1>
+        <p class="step-lead">The thinking has paid off. Here is what you get to keep: one core insight, a few next steps, and the person you want to become.</p>
+      </header>
 
-      <label>My new understanding of \u201c<span id="outcomeScenarioName">—</span>\u201d</label>
-      <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
+      <section class="field plain">
+        <label>My new understanding of "<span id="outcomeScenarioName">—</span>"</label>
+        <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
+      </section>
 
-      <label>\u2460 Next actions suggested by Transform</label>
-      <div class="outcome-section" id="actionsOutcome"></div>
+      <section class="field plain">
+        <label>① Next actions suggested by Transform</label>
+        <div class="outcome-section" id="actionsOutcome"></div>
+      </section>
 
-      <label>\u2461 Support resources you need</label>
-      <div class="outcome-section" id="resourcesOutcome"></div>
+      <section class="field plain">
+        <label>② Support resources you need</label>
+        <div class="outcome-section" id="resourcesOutcome"></div>
+      </section>
 
-      <label>\u2462 Vote for the identity you aspire to</label>
-      <div class="identity-vote" id="identityVoteArea">
-        <div class="identity-input-wrap">
-          <input type="text" id="identityText" placeholder="e.g. someone who thinks from first principles">
-          <div class="identity-hint">Write who you want to become</div>
-        </div>
-        <div class="identity-badge" id="identityBadge" style="display:none;">
-          <div class="badge-icon">🗳️</div>
-          <div class="badge-body">
-            <div class="badge-k">I vote for</div>
-            <div class="badge-v" id="identityBadgeText">—</div>
+      <section class="field plain">
+        <label>③ Vote for the identity you aspire to</label>
+        <div class="identity-vote" id="identityVoteArea">
+          <div class="identity-input-wrap">
+            <input type="text" id="identityText" placeholder="e.g. someone who thinks from first principles">
+            <div class="identity-hint">Write who you want to become</div>
           </div>
-          <button class="badge-vote-btn" id="voteBtn" onclick="castIdentityVote()">
-            <span class="vote-text">Vote</span>
-            <span class="vote-done">✓ Voted</span>
-          </button>
+          <div class="identity-badge" id="identityBadge" style="display:none;">
+            <div class="badge-icon">🗳️</div>
+            <div class="badge-body">
+              <div class="badge-k">I vote for</div>
+              <div class="badge-v" id="identityBadgeText">—</div>
+            </div>
+            <button class="badge-vote-btn" id="voteBtn" onclick="castIdentityVote()">
+              <span class="vote-text">Vote</span>
+              <span class="vote-done">✓ Voted</span>
+            </button>
+          </div>
+          <div class="vote-stats" id="voteStats" style="display:none;">
+            <div class="stat-pill"><span id="voteCount">0</span> votes</div>
+            <div class="stat-pill">Latest <span id="voteDays">—</span></div>
+          </div>
         </div>
-        <div class="vote-stats" id="voteStats" style="display:none;">
-          <div class="stat-pill"><span id="voteCount">0</span> votes</div>
-          <div class="stat-pill">Latest <span id="voteDays">—</span></div>
-        </div>
-      </div>
+      </section>
 
-      <label>④ Creating space for change: what are you willing to put in? <em style="font-weight:400;font-style:normal;color:var(--ink-3);font-size:12px;">(change is not loss; it is redirecting energy toward what matters)</em></label>
-      <div class="outcome-section" id="costOutcome">
-        <div class="app-row">
-          <span class="app-label">To make this change real, what space do I need to create first?</span>
-          <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="e.g. 20 minutes of late-night scrolling, an old self-definition, an automatic response pattern"></textarea>
-        </div>
-        <div class="app-row" style="margin-top:12px;">
-          <span class="app-label">When I feel it's hard to keep going, what signal is most likely to make me pause?</span>
-          <textarea class="app-input app-plan-input" id="costRisk" placeholder="e.g. several days with no visible feedback, feeling tired, starting to doubt myself"></textarea>
-        </div>
-        <div class="cost-commit" id="costCommit">
-
-          <!-- Sub-commitment A: space I am willing to create -->
-          <div class="cost-subcommit" id="giveUpCommit">
-            <div class="cc-head">
-              <span>Commitment A · What space am I willing to create for this change</span>
-              <button class="ai-btn" onclick="aiCourage('giveUp', this)" style="padding:7px 14px;font-size:12.5px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Let Transform help me see the value of this investment
-              </button>
+      <section class="field plain">
+        <label>④ Creating space for change: what are you willing to put in? <em class="field-soft">(change is not loss; it is redirecting energy toward what matters)</em></label>
+        <div class="outcome-section" id="costOutcome">
+          <div class="app-row">
+            <span class="app-label">To make this change real, what space do I need to create first?</span>
+            <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="e.g. 20 minutes of late-night scrolling, an old self-definition, an automatic response pattern"></textarea>
+          </div>
+          <div class="app-row" style="margin-top:12px;">
+            <span class="app-label">When I feel it's hard to keep going, what signal is most likely to make me pause?</span>
+            <textarea class="app-input app-plan-input" id="costRisk" placeholder="e.g. several days with no visible feedback, feeling tired, starting to doubt myself"></textarea>
+          </div>
+          <div class="cost-commit" id="costCommit">
+            <div class="cost-subcommit" id="giveUpCommit">
+              <div class="cc-head">
+                <span>Commitment A · What space am I willing to create for this change</span>
+                <button class="ai-btn" onclick="aiCourage('giveUp', this)" style="padding:7px 14px;font-size:12.5px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Let Transform help me see the value of this investment
+                </button>
+              </div>
+              <div class="cc-ai-result" id="courageGiveUpResult" style="display:none;"></div>
+              <div class="app-row" style="margin-top:12px;">
+                <span class="app-label">I commit: by <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will start creating this space for change.</span>
+              </div>
+              <div class="app-row" style="margin-top:10px;">
+                <span class="app-label">If I notice my old habits pulling me back, I will <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. break the action into the smallest possible step and do just 2 minutes"> .</span>
+              </div>
+              <div class="cc-sign" id="costGiveUpSign">
+                <span class="cc-sign-text">I am willing to create this space.</span>
+                <button class="btn-ok cc-sign-btn" onclick="signCostCommit('giveUp')" id="costGiveUpSignBtn">Sign commitment</button>
+              </div>
             </div>
-            <div class="cc-ai-result" id="courageGiveUpResult" style="display:none;"></div>
-            <div class="app-row" style="margin-top:12px;">
-              <span class="app-label">I commit: by <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:140px;display:inline-block;" placeholder="e.g. Sept 15"> , I will start creating this space for change.</span>
-            </div>
-            <div class="app-row" style="margin-top:10px;">
-              <span class="app-label">If I notice my old habits pulling me back, I will <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. break the action into the smallest possible step and do just 2 minutes"> .</span>
-            </div>
-            <div class="cc-sign" id="costGiveUpSign">
-              <span class="cc-sign-text">I am willing to create this space.</span>
-              <button class="btn-ok cc-sign-btn" onclick="signCostCommit('giveUp')" id="costGiveUpSignBtn">Sign commitment</button>
+            <div class="cost-subcommit" id="riskCommit" style="margin-top:18px;">
+              <div class="cc-head">
+                <span>Commitment B · When I meet resistance, how do I gently bring myself back</span>
+                <button class="ai-btn" onclick="aiCourage('risk', this)" style="padding:7px 14px;font-size:12.5px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Let Transform help me design a return strategy
+                </button>
+              </div>
+              <div class="cc-ai-result" id="courageRiskResult" style="display:none;"></div>
+              <div class="app-row" style="margin-top:12px;">
+                <span class="app-label">I commit: when <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="e.g. 3 days with no feedback"> shows up, I treat it as a cue to adjust.</span>
+              </div>
+              <div class="app-row" style="margin-top:10px;">
+                <span class="app-label">If it genuinely feels hard, I will <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. reach out to a supporter, or return to the smallest step"> .</span>
+              </div>
+              <div class="cc-sign" id="costRiskSign">
+                <span class="cc-sign-text">I am willing to use this return strategy.</span>
+                <button class="btn-ok cc-sign-btn" onclick="signCostCommit('risk')" id="costRiskSignBtn">Sign commitment</button>
+              </div>
             </div>
           </div>
-
-          <!-- Sub-commitment B: when resistance shows up, gently return -->
-          <div class="cost-subcommit" id="riskCommit" style="margin-top:18px;">
-            <div class="cc-head">
-              <span>Commitment B · When I meet resistance, how do I gently bring myself back</span>
-              <button class="ai-btn" onclick="aiCourage('risk', this)" style="padding:7px 14px;font-size:12.5px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Let Transform help me design a return strategy
-              </button>
-            </div>
-            <div class="cc-ai-result" id="courageRiskResult" style="display:none;"></div>
-            <div class="app-row" style="margin-top:12px;">
-              <span class="app-label">I commit: when <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="e.g. 3 days with no feedback"> shows up, I treat it as a cue to adjust.</span>
-            </div>
-            <div class="app-row" style="margin-top:10px;">
-              <span class="app-label">If it genuinely feels hard, I will <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="e.g. reach out to a supporter, or return to the smallest step"> .</span>
-            </div>
-            <div class="cc-sign" id="costRiskSign">
-              <span class="cc-sign-text">I am willing to use this return strategy.</span>
-              <button class="btn-ok cc-sign-btn" onclick="signCostCommit('risk')" id="costRiskSignBtn">Sign commitment</button>
-            </div>
-          </div>
-
         </div>
-      </div>
+      </section>
 
       <div class="insight-to-behavior">
         <button class="btn btn-primary" onclick="sendInsightToBehavior()" id="toBehaviorBtn">
           Turn this insight into a behavior experiment
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="itb-note">Transform will use this insight to design a \u201cfrom insight to action\u201d experiment for you</span>
+        <span class="itb-note">Transform will use this insight to design a "from insight to action" experiment for you</span>
       </div>
 
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(2)">Back</button>
-        <button class="btn btn-next" onclick="complete()" id="finishBtn">Finish & save to archive</button>
+        <button class="btn btn-next" onclick="complete()" id="finishBtn">Finish &amp; save to archive</button>
       </div>
     </div>
+<!-- Step 4 复盘：把这次想清楚，更新成认知模型（评估反馈段，闭合认知循环） -->
+        <!-- Step 4 复盘：把这次想清楚，更新成认知模型（评估反馈段，闭合认知循环） -->
+    <div class="panel panel-redesign" id="panel-4" style="display:none;">
+      <header class="step-head">
+        <div class="step-eyebrow">Step 5 · Review</div>
+        <h1>Review · bank this thinking as a cognitive asset</h1>
+        <p class="step-lead">Five questions close the loop: what happened, why, what you learned, what you did differently, what changed. AI drafts the review from your challenge and insight.</p>
+      </header>
 
-    <!-- Step 4 复盘：把这次想清楚，更新成认知模型（评估反馈段，闭合认知循环） -->
-    <div class="panel" id="panel-4" style="display:none;">
-      <h1>Review \u00b7 bank this thinking as a cognitive asset</h1>
-      <div class="hint">Five questions close the loop: what happened, why, what you learned, what you did differently, what changed. AI drafts the review from your challenge and insight.</div>
+      <section class="field plain">
+        <label>The challenge I just worked through</label>
+        <div class="outcome-section outcome-core">
+          <div style="font-size:15px;font-weight:700;color:var(--ink);">"<span id="reflectScenario">—</span>"</div>
+          <div class="os-core-meta" id="reflectCore" style="margin-top:10px;"></div>
+        </div>
+      </section>
 
-      <label>The challenge I just worked through</label>
-      <div class="outcome-section outcome-core">
-        <div style="font-size:15px;font-weight:700;color:var(--ink);">「<span id="reflectScenario">—</span>」</div>
-        <div class="os-core-meta" id="reflectCore" style="margin-top:10px;"></div>
-      </div>
+      <section class="field plain">
+        <label>The five review questions</label>
+        <p class="field-hint">No rush — take one at a time.</p>
 
-      <label>What happened?</label>
-      <textarea id="reWhat" class="reflect-q" placeholder="e.g. I thought through \u201c...\u201d completely and noticed while organizing..."></textarea>
+        <div class="reflect-q-row">
+          <span class="rq-label">What happened?</span>
+          <textarea id="reWhat" class="reflect-q" placeholder="e.g. I thought through &quot;...&quot; completely and noticed while organizing..."></textarea>
+        </div>
+        <div class="reflect-q-row">
+          <span class="rq-label">Why?</span>
+          <textarea id="reWhy" class="reflect-q" placeholder="Why is it so? What kept me from seeing this before?"></textarea>
+        </div>
+        <div class="reflect-q-row">
+          <span class="rq-label">What did you learn?</span>
+          <textarea id="reLearned" class="reflect-q" placeholder="The most important thing I learned this time is..."></textarea>
+        </div>
+        <div class="reflect-q-row">
+          <span class="rq-label">What did you do differently?</span>
+          <textarea id="reDifferent" class="reflect-q" placeholder="Compared with my past self, how was my thinking different this time?"></textarea>
+        </div>
+        <div class="reflect-q-row">
+          <span class="rq-label">What changed?</span>
+          <textarea id="reChanged" class="reflect-q" placeholder="How did my judgment, emotions, or view of this change?"></textarea>
+        </div>
 
-      <label>Why?</label>
-      <textarea id="reWhy" class="reflect-q" placeholder="Why is it so? What kept me from seeing this before?"></textarea>
+        <div class="btn-row" style="justify-content:flex-start;margin-top:18px;">
+          <button class="btn btn-ai" onclick="aiReflectA()">Transform, help me review</button>
+        </div>
+        <div id="reReflectResult" class="ai-out hidden"></div>
+      </section>
 
-      <label>What did you learn?</label>
-      <textarea id="reLearned" class="reflect-q" placeholder="The most important thing I learned this time is..."></textarea>
-
-      <label>What did you do differently?</label>
-      <textarea id="reDifferent" class="reflect-q" placeholder="Compared with my past self, how was my thinking different this time?"></textarea>
-
-      <label>What changed?</label>
-      <textarea id="reChanged" class="reflect-q" placeholder="How did my judgment, emotions, or view of this change?"></textarea>
-
-      <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectA()">Transform, help me review</button>
-      </div>
-      <div id="reReflectResult" class="ai-out hidden"></div>
-
-      <label>My new mental model for this kind of problem</label>
-      <textarea id="reModel" class="reflect-q" placeholder="e.g. Every transformation passes through three stages: Accept \u2192 Practice \u2192 Integrate."></textarea>
+      <section class="field plain">
+        <label>My new mental model for this kind of problem</label>
+        <textarea id="reModel" class="reflect-q" placeholder="e.g. Every transformation passes through three stages: Accept → Practice → Integrate."></textarea>
+      </section>
 
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(3)">Back</button>
-        <button class="btn btn-next" onclick="saveReflection()">Finish review \u00b7 bank as growth asset</button>
+        <button class="btn btn-next" onclick="saveReflection()">Finish review · bank as growth asset</button>
         <a class="btn btn-ghost" href="growth-en.html#insights">Review later</a>
       </div>
     </div>
-  </div>
-
-
-  <!-- 设置页 -->
+<!-- 设置页 -->
   <div class="settings-panel">
     <div class="panel">
       <h1>AI Settings</h1>
