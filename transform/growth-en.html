@@ -290,6 +290,25 @@
   .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
   .mini.solid:hover { background: var(--green); }
 
+  /* Foldable asset cards: show title only by default, expand on click */
+  .fold-card { cursor: pointer; }
+  .fold-head { position: relative; }
+  .fold-head::after {
+    content: "";
+    position: absolute; right: 18px; top: 50%;
+    width: 7px; height: 7px;
+    border-right: 2px solid var(--ink-3); border-bottom: 2px solid var(--ink-3);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform .25s var(--ease);
+  }
+  .fold-card.open .fold-head::after { transform: translateY(-30%) rotate(-135deg); }
+  .model.fold-card, .insight.fold-card, .action.fold-card { transition: border-color .2s, box-shadow .2s; }
+  .model.fold-card:hover, .insight.fold-card:hover, .action.fold-card:hover { border-color: var(--green-light); }
+  .action.fold-card:hover { transform: none; box-shadow: var(--shadow); border-color: #CDE6DA; }
+  .fold-body { display: none; }
+  .fold-card.open .fold-body { display: block; animation: rise .25s var(--ease); }
+  .model .m-scenario, .insight .i-scenario, .action .input { padding-right: 28px; }
+
   /* pattern识别 */
   .pattern-cta {
     background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
@@ -666,6 +685,9 @@ function toggleExpand(head){
   const card = head.closest('.expand-card');
   card.classList.toggle('open');
 }
+function toggleFold(card){
+  card.classList.toggle('open');
+}
 
 /* ===================== mental model（复盘产出） ===================== */
 function renderModels(){
@@ -676,16 +698,20 @@ function renderModels(){
     box.innerHTML = `<div class="expand-empty">No mental models banked yet.<br>Complete a Guided Insight session and review it \u2014 your new framework will appear here.<br><a href="app-en.html">Think something through →</a></div>`;
     return;
   }
-  box.innerHTML = models.map(s => {
+  box.innerHTML = models.map((s, i) => {
     const fw = (s.mentalModel || '').trim();
     const changed = (s.reflection && s.reflection.changed || '').trim();
-    return `<div class="model">
-      <div class="m-scenario">${escapeHtml(s.scenario || 'a thinking session')}</div>
-      ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
-      ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
-      ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      <div class="m-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
-      ${assetActions('model', s.id || i)}
+    return `<div class="model fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="m-scenario">${escapeHtml(s.scenario || 'a thinking session')}</div>
+        <div class="m-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+      </div>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
+        ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
+        ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        ${assetActions('model', s.id || i)}
+      </div>
     </div>`;
   }).join('');
 }
@@ -729,13 +755,18 @@ function renderInsights(){
     const nature = (e.nature || '').trim();
     const insight = (e.insight || '').trim();
     const learned = (s.reflection && s.reflection.learned || '').trim();
-    return `<div class="insight">
-      <div class="i-scenario">${escapeHtml(s.scenario || 'a session')}</div>
-      ${nature ? `<div class="i-row"><b>Essence</b>${escapeHtml(nature)}</div>` : ''}
-      ${insight ? `<div class="i-row"><b>Insight</b>${escapeHtml(insight)}</div>` : ''}
-      ${learned ? `<div class="i-row"><b>Learned</b>${escapeHtml(learned)}</div>` : ''}
-      ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' \u00b7 reviewed' : ''}</div>
+    return `<div class="insight fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="i-scenario">${escapeHtml(s.scenario || 'a session')}</div>
+        <div class="i-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' \u00b7 reviewed' : ''}</div>
+      </div>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        ${nature ? `<div class="i-row"><b>Essence</b>${escapeHtml(nature)}</div>` : ''}
+        ${insight ? `<div class="i-row"><b>Insight</b>${escapeHtml(insight)}</div>` : ''}
+        ${learned ? `<div class="i-row"><b>Learned</b>${escapeHtml(learned)}</div>` : ''}
+        ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        ${assetActions('insight', s.id)}
+      </div>
     </div>`;
   }).join('');
 }
@@ -768,32 +799,36 @@ function renderActions(){
     const curDay = a.currentDay || 1;
     const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro : ((a.tiny && a.tiny.text) || '');
     const microText = status === 'graduated' ? 'completed all ' + N + ' days' : (curMicro || '');
-    return `<div class="action">
-      <div class="row1">
-        <span class="date">${lastDate}</span>
-        <span class="status-chip ${statusClass}">${statusText}</span>
+    return `<div class="action fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="row1">
+          <span class="date">${lastDate}</span>
+          <span class="status-chip ${statusClass}">${statusText}</span>
+        </div>
+        <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
+        ${N ? `<span class="plan-pill">📅 ${N}-day experiment \u00b7 ${totalDone}/${N} done</span>` : ''}
       </div>
-      <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
-      ${N ? `<span class="plan-pill">📅 ${N}-day experiment \u00b7 ${totalDone}/${N} done</span>` : ''}
-      ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
-      ${a.insight ? `<div class="a-source"><b>From insight:</b> ${escapeHtml(a.insight.replace(/\n+/g, ' \u00b7 '))}</div>` : ''}
-      ${a.anchor && a.anchor.after ? `<div class="anchor">Anchor: after I ${escapeHtml(a.anchor.after)}</div>` : ''}
-      ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
-        ${a.result ? `<div><b>Result</b> ${escapeHtml(a.result)}</div>` : ''}
-        ${a.habit ? `<div><b>New habit</b> ${escapeHtml(a.habit)}</div>` : ''}
-        ${a.reflection && a.reflection.changed ? `<div><b>Change</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
-      </div>` : ''}
-      ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      <div class="meta">
-        <span>${a.streak || 0}-day streak</span>
-        <span>${totalDone} days total</span>
-        <span>${a.totalDone || 0} identity votes</span>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
+        ${a.insight ? `<div class="a-source"><b>From insight:</b> ${escapeHtml(a.insight.replace(/\n+/g, ' \u00b7 '))}</div>` : ''}
+        ${a.anchor && a.anchor.after ? `<div class="anchor">Anchor: after I ${escapeHtml(a.anchor.after)}</div>` : ''}
+        ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
+          ${a.result ? `<div><b>Result</b> ${escapeHtml(a.result)}</div>` : ''}
+          ${a.habit ? `<div><b>New habit</b> ${escapeHtml(a.habit)}</div>` : ''}
+          ${a.reflection && a.reflection.changed ? `<div><b>Change</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
+        </div>` : ''}
+        ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="meta">
+          <span>${a.streak || 0}-day streak</span>
+          <span>${totalDone} days total</span>
+          <span>${a.totalDone || 0} identity votes</span>
+        </div>
+        <div class="foot">
+          <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
+          <button class="mini" onclick="exportOne('${a.id}')">Export</button>
+        </div>
+        ${assetActions('action', a.id)}
       </div>
-      <div class="foot">
-        <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
-        <button class="mini" onclick="exportOne('${a.id}')">Export</button>
-      </div>
-      ${assetActions('action', a.id)}
     </div>`;
   }).join('');
 }
