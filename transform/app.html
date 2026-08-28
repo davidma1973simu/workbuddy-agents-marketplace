@@ -667,6 +667,46 @@
   .locked-label { opacity: .55; }
   .app-block:not(.locked) .lock-overlay { display: none; }
 
+  /* 近/远场景标识徽章 */
+  .app-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .app-badge.near { background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light); }
+  .app-badge.far { background: var(--coral-soft); color: var(--coral); border: 1px solid var(--coral); }
+  [data-theme="dark"] .app-badge.far { color: #F0A98C; border-color: rgba(217,113,79,.5); }
+
+  /* 远应用「为什么」说明卡（近应用完成后才出现，不提前暴露） */
+  .far-why {
+    background: var(--coral-soft); border: 1px solid var(--coral);
+    border-radius: var(--radius-lg); padding: 18px 20px; margin: 0 0 18px;
+  }
+  [data-theme="dark"] .far-why { background: rgba(201,91,60,.12); border-color: rgba(217,113,79,.4); }
+  .far-why .fw-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .far-why .fw-title { font-size: 14px; font-weight: 800; color: var(--coral); }
+  [data-theme="dark"] .far-why .fw-title { color: #F0A98C; }
+  .far-why .fw-text { font-size: 13.5px; line-height: 1.75; color: var(--ink-2); margin: 0; }
+
+  /* 近应用完成后的折叠态 */
+  .app-block.is-collapsed { background: var(--green-50); border-color: var(--green-light); }
+  .app-collapsed { display: flex; align-items: center; gap: 14px; }
+  .app-collapsed .ac-check {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: var(--green-deep); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;
+  }
+  .app-collapsed .ac-main { flex: 1; min-width: 0; }
+  .app-collapsed .ac-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+  .app-collapsed .ac-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .app-collapsed .ac-toggle {
+    font-size: 12.5px; font-weight: 700; color: var(--green-deep);
+    background: var(--surface); border: 1.5px solid var(--green-light);
+    border-radius: 999px; padding: 7px 16px; cursor: pointer; font-family: inherit; flex-shrink: 0;
+    transition: background .2s;
+  }
+  .app-collapsed .ac-toggle:hover { background: var(--green-soft); }
+
   .app-plan-input { min-height: 72px; }
 
   /* AI 评价反馈 */
@@ -2152,7 +2192,19 @@
       <!-- 近应用阶段 -->
       <section class="app-phase" id="nearPhase">
         <div class="app-block" id="nearAppBlock" data-type="near">
-          <div class="app-stage" data-stage="title">
+          <!-- 完成后的折叠态 -->
+          <div class="app-collapsed" id="nearCollapsed" style="display:none;">
+            <div class="ac-check">✓</div>
+            <div class="ac-main">
+              <div class="ac-title" id="nearCollapsedTitle"></div>
+              <div class="ac-sub">近应用已完成 · Transform 已评分</div>
+            </div>
+            <button class="ac-toggle" id="nearToggleBtn" onclick="toggleNearExpand()">展开修改</button>
+          </div>
+          <!-- 编辑态主体 -->
+          <div class="app-body" id="nearBody">
+            <span class="app-badge near">近场景</span>
+            <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想应用的场景</span></div>
             <div class="title-list" id="nearTitleList"></div>
             <div class="title-actions">
@@ -2206,12 +2258,21 @@
             <button class="ai-link" id="aiResourcesNear" onclick="aiSuggestResources('near')">找支持资源（人 / 资源 / 条件）</button>
             <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
           </div>
+          </div><!-- /app-body -->
         </div>
       </section>
 
       <!-- 远应用阶段（近应用完成后解锁） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
+        <!-- 远应用「为什么」说明：近应用完成后才出现 -->
+        <div class="far-why" id="farWhyCard">
+          <div class="fw-head">
+            <span class="fw-title">为什么要用远场景？</span>
+          </div>
+          <p class="fw-text">真正掌握一个认知，不在于"熟悉的场景会用"，而在于"能把它带到一个完全陌生的领域去用"。近应用验证你"理解了"，远应用验证你"真的会迁移"——把同一个认知用在不同的行业、角色、场景里，它才真正变成你自己的能力。</p>
+        </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
+          <span class="app-badge far">远场景 · 迁移到陌生领域</span>
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想迁移到的场景</span></div>
             <div class="title-list" id="farTitleList"></div>
@@ -3862,11 +3923,36 @@ function unlockFarApp() {
   if (fp) fp.classList.add('phase-on');
   if (isNearComplete()) toast('近应用完成，远应用已解锁');
 }
+function toggleNearExpand() {
+  const block = $('nearAppBlock');
+  if (!block) return;
+  block.dataset.expanded = block.dataset.expanded === '1' ? '0' : '1';
+  renderApplyStages();
+}
 function renderApplyStages() {
   ['near', 'far'].forEach(type => {
     const obj = ensureAppScenario(type);
     const block = $(type + 'AppBlock');
     if (!block) return;
+
+    // 近应用完成 → 完全折叠，让用户聚焦远场景
+    if (type === 'near') {
+      const collapsed = isNearComplete() && block.dataset.expanded !== '1';
+      block.classList.toggle('is-collapsed', collapsed);
+      const colEl = $('nearCollapsed');
+      const bodyEl = $('nearBody');
+      if (colEl) colEl.style.display = collapsed ? 'flex' : 'none';
+      if (bodyEl) bodyEl.style.display = collapsed ? 'none' : '';
+      const tog = $('nearToggleBtn');
+      if (tog) tog.textContent = block.dataset.expanded === '1' ? '收起' : '展开修改';
+      if (collapsed) {
+        const t = (state.data.nearScenario && state.data.nearScenario.title) || '近应用场景';
+        const ct = $('nearCollapsedTitle');
+        if (ct) ct.textContent = t;
+        return; // 折叠态：不再渲染内部 stage
+      }
+    }
+
     if (type === 'far' && !isNearComplete()) {
       block.classList.add('locked');
       block.querySelectorAll('.app-stage').forEach(el => el.classList.add('hidden'));
@@ -3904,6 +3990,8 @@ function renderApplyStages() {
   updateResourceSections();
   const fp = $('farPhase');
   if (fp) fp.style.display = isNearComplete() ? 'block' : 'none';
+  const whyCard = $('farWhyCard');
+  if (whyCard) whyCard.style.display = isNearComplete() ? 'block' : 'none';
   const nearChip = document.querySelector('.phase[data-phase="near"]');
   const farChip = document.querySelector('.phase[data-phase="far"]');
   if (nearChip) nearChip.classList.add('phase-on');

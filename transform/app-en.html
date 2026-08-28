@@ -667,6 +667,46 @@
   .locked-label { opacity: .55; }
   .app-block:not(.locked) .lock-overlay { display: none; }
 
+  /* 近/远场景标识徽章 */
+  .app-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .app-badge.near { background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light); }
+  .app-badge.far { background: var(--coral-soft); color: var(--coral); border: 1px solid var(--coral); }
+  [data-theme="dark"] .app-badge.far { color: #F0A98C; border-color: rgba(217,113,79,.5); }
+
+  /* 远应用「为什么」说明卡（近应用完成后才出现，不提前暴露） */
+  .far-why {
+    background: var(--coral-soft); border: 1px solid var(--coral);
+    border-radius: var(--radius-lg); padding: 18px 20px; margin: 0 0 18px;
+  }
+  [data-theme="dark"] .far-why { background: rgba(201,91,60,.12); border-color: rgba(217,113,79,.4); }
+  .far-why .fw-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .far-why .fw-title { font-size: 14px; font-weight: 800; color: var(--coral); }
+  [data-theme="dark"] .far-why .fw-title { color: #F0A98C; }
+  .far-why .fw-text { font-size: 13.5px; line-height: 1.75; color: var(--ink-2); margin: 0; }
+
+  /* 近应用完成后的折叠态 */
+  .app-block.is-collapsed { background: var(--green-50); border-color: var(--green-light); }
+  .app-collapsed { display: flex; align-items: center; gap: 14px; }
+  .app-collapsed .ac-check {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: var(--green-deep); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;
+  }
+  .app-collapsed .ac-main { flex: 1; min-width: 0; }
+  .app-collapsed .ac-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+  .app-collapsed .ac-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .app-collapsed .ac-toggle {
+    font-size: 12.5px; font-weight: 700; color: var(--green-deep);
+    background: var(--surface); border: 1.5px solid var(--green-light);
+    border-radius: 999px; padding: 7px 16px; cursor: pointer; font-family: inherit; flex-shrink: 0;
+    transition: background .2s;
+  }
+  .app-collapsed .ac-toggle:hover { background: var(--green-soft); }
+
   .app-plan-input { min-height: 72px; }
 
   /* AI 评价反馈 */
@@ -2561,7 +2601,19 @@
       <!-- Near apply阶段 -->
       <section class="app-phase" id="nearPhase">
         <div class="app-block" id="nearAppBlock" data-type="near">
-          <div class="app-stage" data-stage="title">
+          <!-- 完成后的折叠态 -->
+          <div class="app-collapsed" id="nearCollapsed" style="display:none;">
+            <div class="ac-check">✓</div>
+            <div class="ac-main">
+              <div class="ac-title" id="nearCollapsedTitle"></div>
+              <div class="ac-sub">Near application done · scored by Transform</div>
+            </div>
+            <button class="ac-toggle" id="nearToggleBtn" onclick="toggleNearExpand()">Edit</button>
+          </div>
+          <!-- 编辑态主体 -->
+          <div class="app-body" id="nearBody">
+            <span class="app-badge near">Near scene</span>
+            <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to apply</span></div>
             <div class="title-list" id="nearTitleList"></div>
             <div class="title-actions">
@@ -2615,12 +2667,21 @@
             <button class="ai-link" id="aiResourcesNear" onclick="aiSuggestResources('near')">Find support resources (people / resources / conditions)</button>
             <div class="ai-result resource-result" id="resourcesNearResult" style="display:none;"></div>
           </div>
+          </div><!-- /app-body -->
         </div>
       </section>
 
       <!-- Far apply阶段（Near apply完成后解锁） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
+        <!-- 远应用「为什么」说明：近应用完成后才出现 -->
+        <div class="far-why" id="farWhyCard">
+          <div class="fw-head">
+            <span class="fw-title">Why use the far scene?</span>
+          </div>
+          <p class="fw-text">Truly mastering an insight is not about using it in a familiar setting — it is about carrying it into a completely unfamiliar one. The near application proves you understood it; the far application proves you can actually transfer it. Only when the same insight works across different industries, roles, and scenarios does it become genuinely your own capability.</p>
+        </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
+          <span class="app-badge far">Far scene · transfer to an unfamiliar domain</span>
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to migrate to</span></div>
             <div class="title-list" id="farTitleList"></div>
@@ -4237,11 +4298,36 @@ function unlockFarApp() {
   renderApplyStages();
   if (isNearComplete()) toast('Near application done \u2014 far application unlocked');
 }
+function toggleNearExpand() {
+  const block = $('nearAppBlock');
+  if (!block) return;
+  block.dataset.expanded = block.dataset.expanded === '1' ? '0' : '1';
+  renderApplyStages();
+}
 function renderApplyStages() {
   ['near', 'far'].forEach(type => {
     const obj = ensureAppScenario(type);
     const block = $(type + 'AppBlock');
     if (!block) return;
+
+    // near application done -> fully collapse, focus user on far scene
+    if (type === 'near') {
+      const collapsed = isNearComplete() && block.dataset.expanded !== '1';
+      block.classList.toggle('is-collapsed', collapsed);
+      const colEl = $('nearCollapsed');
+      const bodyEl = $('nearBody');
+      if (colEl) colEl.style.display = collapsed ? 'flex' : 'none';
+      if (bodyEl) bodyEl.style.display = collapsed ? 'none' : '';
+      const tog = $('nearToggleBtn');
+      if (tog) tog.textContent = block.dataset.expanded === '1' ? 'Collapse' : 'Edit';
+      if (collapsed) {
+        const t = (state.data.nearScenario && state.data.nearScenario.title) || 'near-application scenario';
+        const ct = $('nearCollapsedTitle');
+        if (ct) ct.textContent = t;
+        return; // collapsed: do not render inner stages
+      }
+    }
+
     if (type === 'far' && !isNearComplete()) {
       block.classList.add('locked');
       block.querySelectorAll('.app-stage').forEach(el => el.classList.add('hidden'));
@@ -4279,6 +4365,8 @@ function renderApplyStages() {
   updateResourceSections();
   const fp = $('farPhase');
   if (fp) fp.style.display = isNearComplete() ? 'block' : 'none';
+  const whyCard = $('farWhyCard');
+  if (whyCard) whyCard.style.display = isNearComplete() ? 'block' : 'none';
   const nearChip = document.querySelector('.phase[data-phase="near"]');
   const farChip = document.querySelector('.phase[data-phase="far"]');
   if (nearChip) nearChip.classList.add('phase-on');
