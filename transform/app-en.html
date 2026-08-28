@@ -1312,6 +1312,17 @@
     .wrap { grid-template-columns: 210px minmax(0, 1fr) 420px; gap: 56px; }
   }
 
+  /* 主流程面板居中：不要让大屏内容偏到右侧 */
+  .app-panel > .panel {
+    width: 100%;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* 当右侧副栏没有内容时，主面板扩展到右侧列并居中 */
+  body.aside-empty .app-panel { grid-column: 2 / -1; }
+  body.aside-empty .app-aside { display: none !important; }
+
   /* 顶部栏更精致 */
   .topbar { margin-bottom: 26px; }
   .back, .theme-toggle {
@@ -1701,6 +1712,17 @@
   @media (min-width: 1440px) {
     .wrap { grid-template-columns: 210px minmax(0, 1fr) 420px; gap: 56px; }
   }
+
+  /* 主流程面板居中：不要让大屏内容偏到右侧 */
+  .app-panel > .panel {
+    width: 100%;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* 当右侧副栏没有内容时，主面板扩展到右侧列并居中 */
+  body.aside-empty .app-panel { grid-column: 2 / -1; }
+  body.aside-empty .app-aside { display: none !important; }
 
   /* 顶部栏更精致 */
   .topbar { margin-bottom: 26px; }
@@ -2844,7 +2866,9 @@
         <a class="btn btn-ghost" href="growth-en.html#insights">Review later</a>
       </div>
     </div>
-<!-- 设置页 -->
+  </div>
+
+  <!-- 设置页 -->
   <div class="settings-panel">
     <div class="panel">
       <h1>AI Settings</h1>
@@ -4738,6 +4762,8 @@ function renderAppAside() {
   aside.innerHTML =
     '<div class="aside-card"><div class="aside-title">🏷️ Topics banked</div>' + tagsHtml + '</div>' +
     '<div class="aside-card"><div class="aside-title">💡 Latest insight</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
+  const isEmpty = tags.length === 0 && recent === '—';
+  document.body.classList.toggle('aside-empty', isEmpty);
 }
 
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
