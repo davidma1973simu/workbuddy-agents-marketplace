@@ -2533,17 +2533,12 @@
       <!-- 阶段指示 -->
       <div class="phase-bar" id="phaseBar">
         <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> Near apply · familiar scenario</div>
-        <div class="phase" data-phase="far"><span class="phase-n">2</span> Far apply · unfamiliar scenario</div>
+        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> Far apply · unfamiliar scenario</div>
       </div>
 
       <!-- Near apply阶段 -->
       <section class="app-phase" id="nearPhase">
         <div class="app-block" id="nearAppBlock" data-type="near">
-          <div class="app-block-head">
-            <div class="app-title">Near apply</div>
-            <div class="app-title-sub">A familiar scenario you can try right away</div>
-          </div>
-
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to apply</span></div>
             <div class="title-list" id="nearTitleList"></div>
@@ -2604,11 +2599,6 @@
       <!-- Far apply阶段（Near apply完成后解锁） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
         <div class="app-block far-block" id="farAppBlock" data-type="far">
-          <div class="app-block-head">
-            <div class="app-title">Far apply</div>
-            <div class="app-title-sub">A completely different industry / role / scenario</div>
-          </div>
-
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to migrate to</span></div>
             <div class="title-list" id="farTitleList"></div>
@@ -4209,8 +4199,6 @@ function isNearComplete() {
   if (!obj.title || !obj.title.trim()) return false;
   if (!obj.details || !obj.details.time) return false;
   if (!obj.plan || !obj.plan.trim()) return false;
-  if (!obj.when || !obj.when.trim()) return false;
-  if (!obj.expectedOutcome || !obj.expectedOutcome.trim()) return false;
   if (!obj.verifySignal || !obj.verifySignal.trim()) return false;
   if (!state.data.nearFeedback) return false;
   return true;
@@ -4222,6 +4210,7 @@ function unlockFarApp() {
   block.querySelectorAll('.app-stage').forEach(el => el.classList.remove('hidden'));
   const label = $('farAppLockLabel');
   if (label) label.classList.remove('locked-label');
+  renderApplyStages();
   if (isNearComplete()) toast('Near application done \u2014 far application unlocked');
 }
 function renderApplyStages() {
@@ -4264,6 +4253,15 @@ function renderApplyStages() {
     });
   });
   updateResourceSections();
+  const fp = $('farPhase');
+  if (fp) fp.style.display = isNearComplete() ? 'block' : 'none';
+  const nearChip = document.querySelector('.phase[data-phase="near"]');
+  const farChip = document.querySelector('.phase[data-phase="far"]');
+  if (nearChip) nearChip.classList.add('phase-on');
+  if (farChip) {
+    farChip.classList.toggle('phase-on', !!isNearComplete());
+    farChip.style.display = isNearComplete() ? '' : 'none';
+  }
 }
 
 // 支持资源区：近应用始终可用；远应用在填写了远应用标题后可操作（不强制）

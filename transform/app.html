@@ -2136,17 +2136,12 @@
       <!-- 阶段指示 -->
       <div class="phase-bar" id="phaseBar">
         <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> 近应用 · 熟悉的场景</div>
-        <div class="phase" data-phase="far"><span class="phase-n">2</span> 远应用 · 陌生场景</div>
+        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> 远应用 · 陌生场景</div>
       </div>
 
       <!-- 近应用阶段 -->
       <section class="app-phase" id="nearPhase">
         <div class="app-block" id="nearAppBlock" data-type="near">
-          <div class="app-block-head">
-            <div class="app-title">近应用</div>
-            <div class="app-title-sub">你熟悉的场景，上手就能试</div>
-          </div>
-
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想应用的场景</span></div>
             <div class="title-list" id="nearTitleList"></div>
@@ -2207,11 +2202,6 @@
       <!-- 远应用阶段（近应用完成后解锁） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
         <div class="app-block far-block" id="farAppBlock" data-type="far">
-          <div class="app-block-head">
-            <div class="app-title">远应用</div>
-            <div class="app-title-sub">换个完全不同的行业 / 角色 / 场景</div>
-          </div>
-
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想迁移到的场景</span></div>
             <div class="title-list" id="farTitleList"></div>
@@ -3907,7 +3897,10 @@ function renderApplyStages() {
   const nearChip = document.querySelector('.phase[data-phase="near"]');
   const farChip = document.querySelector('.phase[data-phase="far"]');
   if (nearChip) nearChip.classList.add('phase-on');
-  if (farChip) farChip.classList.toggle('phase-on', !!isNearComplete());
+  if (farChip) {
+    farChip.classList.toggle('phase-on', !!isNearComplete());
+    farChip.style.display = isNearComplete() ? '' : 'none';
+  }
 }
 
 // 支持资源区：仅在该应用已有反馈后才显示
