@@ -112,7 +112,6 @@
     .gnav .gn-item { flex: 1 1 calc(50% - 4px); padding: 9px 10px; font-size: 12.5px; justify-content: center; white-space: nowrap; }
     .topbar .theme-toggle, .topbar .arch-btn, .topbar button { order: 2; padding: 8px 12px; font-size: 12.5px; }
   }
-{ display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
     display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
     font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s;
@@ -378,21 +377,15 @@
     display: flex; align-items: center; gap: 12px;
     padding: 13px 16px; border-radius: 12px;
     background: var(--surface); border: 1.5px solid var(--line);
-    cursor: pointer; transition: all .2s;
     font-size: 14px; line-height: 1.5;
   }
-  .step-item:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(14,107,80,.08); }
-  .step-item.checked { animation: step-pop .3s ease; opacity: .6; }
-  .step-item.checked .step-text { text-decoration: line-through; text-decoration-color: var(--ink-3); }
-  .step-check {
-    width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
-    border: 2px solid var(--line-2); background: transparent;
+  .step-item.plain { cursor: default; }
+  .step-no {
+    width: 24px; height: 24px; border-radius: 8px; flex-shrink: 0;
+    background: var(--green-soft); color: var(--green-deep);
     display: flex; align-items: center; justify-content: center;
-    color: transparent; font-size: 14px; font-weight: 800;
-    transition: all .2s;
+    font-size: 13px; font-weight: 800;
   }
-  .step-item.checked .step-check { background: var(--green); border-color: var(--green); color: #fff; }
-  @keyframes step-pop { 0% { transform: scale(.96); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
 
   .anchor-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
@@ -470,7 +463,7 @@
     <a class="gn-item" href="app.html">伴我洞察</a>
     <a class="gn-item" href="act.html">伴我改变</a>
   </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
-    <button class="arch-btn" onclick="location.href='growth.html#experiments'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
+    <button class="arch-btn" onclick="location.href='behavior.html'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
   </div>
 
   <!-- 每日进步主屏 -->
@@ -707,7 +700,7 @@ function renderPunch(){
 
       <div class="tf-actions">
         <button class="cta-ok" onclick="confirmDone()">✓ 确认 · 闭环</button>
-        <a class="btn btn-ghost" href="growth.html#experiments">看行为档案</a>
+        <a class="btn btn-ghost" href="behavior.html">看行为档案</a>
       </div>
     </div>
   </div>`;
@@ -1058,23 +1051,21 @@ function goTodayDraft(){
 
 function renderTodayDraft(anchors){
   const area = $('punchArea');
-  const done = (draft.doneSteps || []);
   const stepsHtml = draft.steps.map((s, i) => `
-    <div class="step-item${done.indexOf(i) >= 0 ? ' checked' : ''}" onclick="toggleStep(${i})" data-i="${i}">
-      <span class="step-check">${done.indexOf(i) >= 0 ? '✓' : ''}</span>
+    <div class="step-item plain">
+      <span class="step-no">${i + 1}</span>
       <span class="step-text">${escapeHtml(s)}</span>
     </div>
   `).join('');
   const anchorBtns = anchors.map((a, i) => `
     <button type="button" class="anchor-key${draft.anchor === a ? ' sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)}</button>
   `).join('');
-  const allChecked = done.length === draft.steps.length && draft.steps.length > 0;
-  const canConfirm = allChecked && !!draft.anchor;
+  const canConfirm = !!draft.anchor;
   area.innerHTML = `
     <div class="suggest-card">
       <div class="sc-tag">第 2 步 · 今日行动 + 锚点</div>
       <h2 class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</h2>
-      <div class="sc-desc">先定触发时刻，再勾完步骤，点确认开始。</div>
+      <div class="sc-desc">先定触发时刻，再看清今天要做的几件小事，然后开始今天的实验。</div>
 
       <div class="sc-field">什么时候做？选一个触发时刻</div>
       <div class="anchor-grid" id="anchorGrid">
@@ -1086,40 +1077,21 @@ function renderTodayDraft(anchors){
       </div>
       <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。' : '选一个时刻，让今天的行动自动发生。'}</div>
 
-      <div class="sc-field">今日小步骤（点击打勾，标成已完成）</div>
+      <div class="sc-field">今日小步骤</div>
       <div class="step-list" id="stepList">${stepsHtml}</div>
 
-      <button class="cta-confirm" id="stageConfirmBtn" onclick="goIdentityStage()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续'}</button>
+      <button class="cta-confirm" id="stageConfirmBtn" onclick="goIdentityStage()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '开始今日的行为实验 →' : '先选一个触发时刻'}</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   if (!draft.anchor && !draft.userTypedAnchor) draft.anchor = anchors[0] || '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function toggleStep(i){
-  draft.doneSteps = draft.doneSteps || [];
-  const idx = draft.doneSteps.indexOf(i);
-  if (idx >= 0) draft.doneSteps.splice(idx, 1);
-  else draft.doneSteps.push(i);
-  // 保留条目，勾选后加删除线（不消失）
-  const list = $('stepList'); if (!list) return;
-  const done = draft.doneSteps;
-  list.innerHTML = draft.steps.map((s, i) => {
-    const isDone = done.indexOf(i) >= 0;
-    return `<div class="step-item${isDone ? ' checked' : ''}" onclick="toggleStep(${i})" data-i="${i}">
-      <span class="step-check">${isDone ? '✓' : ''}</span>
-      <span class="step-text">${escapeHtml(s)}</span>
-    </div>`;
-  }).join('');
-  updateStageConfirmBtn();
-}
-
 function updateStageConfirmBtn(){
-  const allChecked = draft.doneSteps && draft.doneSteps.length === draft.steps.length && draft.steps.length > 0;
-  const canConfirm = allChecked && !!draft.anchor;
+  const canConfirm = !!draft.anchor;
   const btn = $('stageConfirmBtn'); if (!btn) return;
   btn.disabled = !canConfirm;
-  btn.textContent = canConfirm ? '确认今日计划 →' : '勾完步骤 + 选锚点后继续';
+  btn.textContent = canConfirm ? '开始今日的行为实验 →' : '先选一个触发时刻';
 }
 
 function pickAnchorChip(i){

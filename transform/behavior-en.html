@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>行为档案 · Transform</title>
+<title>Behavior Archive · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -185,7 +185,7 @@
   }
   .expand-empty a { color: var(--green); text-decoration: none; font-weight: 700; }
 
-  /* 回收箱 */
+  /* Trash */
   .archive-section.trash .archive-icon { background: linear-gradient(135deg, #ECEFF1, #D7DBDF); color: #5b6b73; box-shadow: 0 4px 14px rgba(90,107,115,.16); }
   .expand-card.trash-card.open { border-color: rgba(90,107,115,.25); }
   .expand-card.trash-card .expand-icon { background: #ECEFF1; color: #5b6b73; }
@@ -193,18 +193,18 @@
   .expand-card.trash-card.open .expand-count { background: #ECEFF1; color: #5b6b73; border-color: rgba(90,107,115,.2); }
   .expand-card.trash-card.open .expand-chevron { color: #5b6b73; }
 
-  /* 归并：次数徽章 + 折叠元信息 */
+  /* merge: count badge + fold meta */
   .fold-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .fold-count { font-size: 11.5px; font-weight: 700; color: var(--green-deep); background: var(--green-soft); border: 1px solid rgba(29,158,117,.2); border-radius: 999px; padding: 1px 8px; }
 
-  /* 归并后的单次出现 */
+  /* each occurrence after merge */
   .occ { padding: 12px 0; border-top: 1px solid var(--line); }
   .occ:first-child { border-top: none; padding-top: 4px; }
   .occ-date { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
   .occ .i-row, .occ .m-framework, .occ .m-changed { font-size: 13.5px; color: var(--ink); line-height: 1.6; margin: 3px 0; }
   .occ .i-row b, .occ .m-changed b { color: var(--ink-2); font-weight: 700; margin-right: 4px; }
 
-  /* 回收箱条目 */
+  /* trash items */
   .trash-toolbar { margin-bottom: 12px; }
   .trash-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
   .trash-item:first-child { border-top: none; }
@@ -247,7 +247,7 @@
   .section-title svg { color: var(--green); flex-shrink: 0; }
   .section-title .sec-sub { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: auto; }
 
-  /* 认知模型卡 */
+  /* mental model卡 */
   .model { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 20px 16px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
   .model .m-scenario { font-size: 13px; font-weight: 700; color: var(--green-deep); }
   .model .m-framework {
@@ -258,13 +258,17 @@
   .model .m-changed { font-size: 13.5px; color: var(--ink-2); margin-top: 10px; line-height: 1.6; }
   .model .m-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
 
-  /* 洞察卡 */
+  /* Insight卡 */
   .insight { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
   .insight .i-scenario { font-size: 14px; font-weight: 700; color: var(--ink); }
   .insight .i-row { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
   .insight .i-row b { color: var(--green-deep); font-size: 12px; display: inline-block; min-width: 44px; }
   .asset-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   .tag-chip { font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; }
+  .insight .i-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filter-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .18s; }
+  .filter-chip.on { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
   .filter-sep { display: inline-block; width: 1px; height: 22px; background: var(--line); margin: 4px 4px; }
   .filter-search {
     flex: 1; min-width: 120px; max-width: 220px;
@@ -273,12 +277,8 @@
     border-radius: 999px;
   }
   .filter-search:focus { outline: none; border-color: var(--green); }
-  .insight .i-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
-  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-  .filter-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .18s; }
-  .filter-chip.on { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
 
-  /* 行为实验卡 */
+  /* behavior experiment卡 */
   .action {
     position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
     padding: 20px 20px 14px; margin-bottom: 14px; box-shadow: var(--shadow);
@@ -320,7 +320,7 @@
   .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
   .mini.solid:hover { background: var(--green); }
 
-  /* 折叠卡片：默认只露标题，点击展开详情 */
+  /* Foldable asset cards: show title only by default, expand on click */
   .fold-card { cursor: pointer; }
   .fold-head { position: relative; }
   .fold-head::after {
@@ -337,12 +337,9 @@
   .action.fold-card:hover { transform: none; box-shadow: var(--shadow); border-color: #CDE6DA; }
   .fold-body { display: none; }
   .fold-card.open .fold-body { display: block; animation: rise .25s var(--ease); }
-  /* 标题行在折叠态增加一点内边距，让点击区域更大 */
-  .model .m-scenario, .insight .i-scenario, .action .input {
-    padding-right: 28px;
-  }
+  .model .m-scenario, .insight .i-scenario, .action .input { padding-right: 28px; }
 
-  /* 模式识别 */
+  /* pattern识别 */
   .pattern-cta {
     background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
     border: 1.5px solid var(--green); border-radius: var(--radius-lg); padding: 22px;
@@ -458,30 +455,30 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <a class="nav-link" href="index.html">
+    <a class="nav-link" href="index-en.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      首页
+      Home
     </a>
-    <a class="nav-link primary" href="app.html">
+    <a class="nav-link primary" href="app-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 8a7 7 0 0114 0v2M5 16a7 7 0 0014 0v-2M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      伴我洞察
+      Guided Insight
     </a>
-    <a class="nav-link primary" href="act.html">
+    <a class="nav-link primary" href="act-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-      伴我改变
-    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
+      Guided Change
+    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
   </div>
 
   <div class="page-head">
-    <h1>行为档案</h1>
-    <div class="page-sub">每一次做到，沉淀出的长期行为资产</div>
+    <h1>Behavior Archive</h1>
+    <div class="page-sub">Every action completed becomes a long-term behavioral asset</div>
   </div>
 
   <div class="toolbar">
-    <a class="act solid" href="act.html">开始一次行为改变</a>
-    <a class="act" href="cognitive.html">查看认知档案</a>
-    <button class="act" onclick="downloadAll()">存数据</button>
-    <button class="act" onclick="openSettings()">AI 设置</button>
+    <a class="act solid" href="act-en.html">Start a Behavior Change</a>
+    <a class="act" href="cognitive-en.html">View Insight Archive</a>
+    <button class="act" onclick="downloadAll()">Export Data</button>
+    <button class="act" onclick="openSettings()">AI Settings</button>
   </div>
 
   <!-- 顶部：身份 + 紧凑统计条 -->
@@ -493,8 +490,8 @@
     <div class="archive-head">
       <div class="archive-icon">🧪</div>
       <div>
-        <h2>行为档案</h2>
-        <p>每一次做到，沉淀出的长期行为资产</p>
+        <h2>Behavior Archive</h2>
+        <p>Every action completed becomes a long-term behavioral asset</p>
       </div>
     </div>
 
@@ -502,8 +499,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">⚡</span>
         <span class="expand-title">
-          <span class="expand-name">行为实验 Behavior Experiment</span>
-          <span class="expand-sub">从认知到行动的转化记录</span>
+          <span class="expand-name">Behavior Experiment</span>
+          <span class="expand-sub">Records of turning insight into action</span>
         </span>
         <span class="expand-count" id="experimentsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -518,8 +515,8 @@
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">🔍</span>
         <span class="expand-title">
-          <span class="expand-name">模式识别 Pattern Recognition</span>
-          <span class="expand-sub">Transform跨时间发现的重复模式</span>
+          <span class="expand-name">Pattern Recognition</span>
+          <span class="expand-sub">Repeated patterns Transform finds across time</span>
         </span>
         <span class="expand-count" id="patternsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -528,27 +525,27 @@
     </div>
   </section>
 
-  <!-- 回收箱 -->
+  <!-- Trash -->
   <section class="archive-section trash">
     <div class="archive-head">
       <div class="archive-icon">🗑️</div>
       <div>
-        <h2>回收箱</h2>
-        <p>删除的资产会先到这里，30 天内可随时恢复</p>
+        <h2>Trash</h2>
+        <p>Deleted assets land here and can be restored within 30 days</p>
       </div>
     </div>
     <div class="expand-card trash-card" data-section="trash">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">🗑️</span>
         <span class="expand-title">
-          <span class="expand-name">已删除资产 Trash</span>
-          <span class="expand-sub">30 天后自动彻底删除</span>
+          <span class="expand-name">Deleted Assets</span>
+          <span class="expand-sub">auto-purged after 30 days</span>
         </span>
         <span class="expand-count" id="trashCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="expand-body"><div class="inner">
-        <div class="trash-toolbar"><button class="mini del" id="trashEmptyBtn" onclick="emptyTrash()">清空回收箱</button></div>
+        <div class="trash-toolbar"><button class="mini del" id="trashEmptyBtn" onclick="emptyTrash()">Empty Trash</button></div>
         <div id="trashList"></div>
       </div></div>
     </div>
@@ -558,23 +555,23 @@
 <!-- 设置弹窗 -->
 <div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
-    <h3>AI 助手设置</h3>
-    <label>服务商</label>
+    <h3>AI Assistant Settings</h3>
+    <label>Provider</label>
     <select id="cfgBrand">
       <option value="DeepSeek">DeepSeek</option>
       <option value="OpenAI">OpenAI</option>
       <option value="Gemini">Gemini</option>
     </select>
     <label>API Key</label>
-    <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
+    <input type="text" id="cfgApiKey" placeholder="Paste your API Key">
     <div class="row">
-      <button class="btn-ai" style="flex:1;" onclick="saveSettings()">保存</button>
-      <button class="btn-ghost" onclick="closeSettings()">取消</button>
+      <button class="btn-ai" style="flex:1;" onclick="saveSettings()">Save</button>
+      <button class="btn-ghost" onclick="closeSettings()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- 通用资产编辑弹窗（编辑 / 归类 / 删除） -->
+<!-- Common asset editor modal (Edit / Tag / Delete) -->
 <div class="modal-mask" id="assetModalMask" onclick="if(event.target===this)closeAssetModal()">
   <div class="modal" id="assetModalBox"></div>
 </div>
@@ -609,7 +606,7 @@ function getAI(){
 }
 async function aiCall(prompt, attempt = 1){
   const cfg = getAI();
-  if (!cfg.apiKey){ toast('配置 API Key 后，Transform AI 才能帮你跨时间发现模式'); return null; }
+  if (!cfg.apiKey){ toast('Set your API Key so Transform AI can find patterns across time'); return null; }
   const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
   const maxAttempts = 5;
   try {
@@ -623,7 +620,7 @@ async function aiCall(prompt, attempt = 1){
         await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
         return aiCall(prompt, attempt + 1);
       }
-      throw new Error('AI 请求失败：' + res.status);
+      throw new Error('AI request failed: ' + res.status);
     }
     return (await res.json()).choices[0].message.content;
   } catch(e){
@@ -631,7 +628,7 @@ async function aiCall(prompt, attempt = 1){
       await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
       return aiCall(prompt, attempt + 1);
     }
-    toast('AI 暂时不可用，请稍后重试');
+    toast('AI unavailable right now \u2014 try again later');
     return null;
   }
 }
@@ -644,7 +641,7 @@ function renderIdentity(){
   if (!votes.length){
     area.innerHTML = `<div class="identity-empty">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-      还没有身份票。每完成一次「伴我洞察」或「伴我改变」，都会给「我想成为的人」投一票，票数在这里累积。
+      No identity votes yet. Each completed Guided Insight or Guided Change session casts a vote for \u201cthe person I want to become\u201d \u2014 votes accumulate here.
     </div>`;
     return;
   }
@@ -660,9 +657,9 @@ function renderIdentity(){
   const rest = list.slice(1);
   area.innerHTML = `
     <div class="identity-card">
-      <div class="k">我正在成为</div>
-      <div class="v">「<em>${escapeHtml(top.text)}</em>」的人</div>
-      <div class="count">已投 ${top.votes} 票${rest.length ? ' · 还有 ' + rest.length + ' 个身份在累积中' : ' · 你正在成为这个人'}</div>
+      <div class="k">I am becoming</div>
+      <div class="v">a \u201c<em>${escapeHtml(top.text)}</em>\u201d person</div>
+      <div class="count">${top.votes} votes${rest.length ? ' \u00b7 ' + rest.length + ' more identities building' : ' \u00b7 you are becoming this person'}</div>
     </div>`;
 }
 
@@ -674,15 +671,15 @@ function renderStats(){
   const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
   const active = actions.filter(a => a.status === 'active').length;
   $('statsArea').innerHTML = `
-    <span class="item"><span class="num">${actions.length}</span>行为实验</span>
+    <span class="item"><span class="num">${actions.length}</span>experiments</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${graduated}</span>已毕业</span>
+    <span class="item"><span class="num">${graduated}</span>graduated</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${active}</span>进行中</span>
+    <span class="item"><span class="num">${active}</span>active</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${bestStreak}</span>最长连续</span>
+    <span class="item"><span class="num">${bestStreak}</span>best streak</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${totalDone}</span>累计做到</span>
+    <span class="item"><span class="num">${totalDone}</span>total done</span>
   `;
   $('experimentsCount').textContent = actions.length;
   let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
@@ -698,39 +695,40 @@ function toggleFold(card){
   card.classList.toggle('open');
 }
 
-// 按场景标题归并：相同标题合并为一张卡，count 代表出现次数；空标题/默认标题各自独立
+// merge by scenario title: same title -> one card, count = number of occurrences; empty/default titles stay separate
 function groupByScenario(list){
-  const def = ['一次梳理', '一次认知梳理', '一次想清楚'];
+  const def = ['一次梳理', '一次认知梳理', '一次想清楚', 'a session', 'a thinking session'];
   const map = new Map();
   list.forEach(s => {
     const sc = (s.scenario || '').trim();
     const key = (sc && !def.includes(sc)) ? sc : ('__' + (s.id != null ? s.id : (JSON.stringify(s).length + '_' + Math.random())));
-    if (!map.has(key)) map.set(key, { scenario: sc || '一次梳理', items: [] });
+    if (!map.has(key)) map.set(key, { scenario: sc || 'a session', items: [] });
     map.get(key).items.push(s);
   });
   return [...map.values()];
 }
 
-/* ===================== 认知模型（复盘产出） ===================== */
+/* ===================== mental model（复盘产出） ===================== */
 function renderModels(){
   const box = $('modelList'); if (!box) return;
   const archive = loadArchive();
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
+  const box = $('modelList');
   if (!models.length){
-    box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「伴我洞察」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No mental models banked yet.<br>Complete a Guided Insight session and review it \u2014 your new framework will appear here.<br><a href="app-en.html">Think something through →</a></div>`;
     return;
   }
   box.innerHTML = groupByScenario(models).map(g => {
     const n = g.items.length;
     const latest = g.items.slice().sort((a,b)=> new Date(b.reflectedAt||b.completedAt||b.createdAt||0) - new Date(a.reflectedAt||a.completedAt||a.createdAt||0))[0];
-    const countBadge = n > 1 ? `<span class="fold-count">产出 ${n} 次</span>` : '';
+    const countBadge = n > 1 ? `<span class="fold-count">produced ${n} times</span>` : '';
     const occHtml = g.items.map(s => {
       const fw = (s.mentalModel || '').trim();
       const changed = (s.reflection && s.reflection.changed || '').trim();
       return `<div class="occ">
-        <div class="occ-date">复盘于 ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+        <div class="occ-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
         ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
-        ${changed ? `<div class="m-changed"><b>改变了什么：</b>${escapeHtml(changed)}</div>` : ''}
+        ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
         ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         ${assetActions('model', s.id)}
       </div>`;
@@ -738,14 +736,14 @@ function renderModels(){
     return `<div class="model fold-card" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="m-scenario">${escapeHtml(g.scenario)}</div>
-        <div class="fold-meta">${countBadge}<span class="m-date">复盘于 ${fmtDate(latest.reflectedAt || latest.completedAt || latest.createdAt)}</span></div>
+        <div class="fold-meta">${countBadge}<span class="m-date">Reviewed on ${fmtDate(latest.reflectedAt || latest.completedAt || latest.createdAt)}</span></div>
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
     </div>`;
   }).join('');
 }
 
-/* ===================== 洞察库（含标签过滤与搜索） ===================== */
+/* ===================== Insight library (tag + search filters) ===================== */
 let insightFilter = '';
 let insightSearch = '';
 function setInsightSearch(v){
@@ -758,7 +756,7 @@ function renderTagFilters(){
   const tags = [];
   archive.forEach(s => (s.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
   if (!tags.length){ box.innerHTML = ''; return; }
-  box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">全部</button>' +
+  box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">All</button>' +
     tags.map(t => `<button class="filter-chip${insightFilter === t ? ' on' : ''}" onclick="setTagFilter('${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
 }
 function setTagFilter(t){ insightFilter = t; renderTagFilters(); renderInsights(); }
@@ -766,7 +764,7 @@ function renderInsights(){
   const box = $('insightList'); if (!box) return;
   let archive = loadArchive();
   if (!archive.length){
-    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「伴我洞察」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No insights yet.<br>Every Guided Insight session\u2019s core insight is banked here.<br><a href="app-en.html">Create your first insight →</a></div>`;
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
@@ -778,21 +776,21 @@ function renderInsights(){
       return hay.includes(q);
     });
   }
-  if (!archive.length){ box.innerHTML = '<div class="expand-empty">没有找到符合当前条件的洞察。</div>'; return; }
+  if (!archive.length){ box.innerHTML = '<div class="expand-empty">No insights match the current filter.</div>'; return; }
   box.innerHTML = groupByScenario(archive).map(g => {
     const n = g.items.length;
     const latest = g.items.slice().sort((a,b)=> new Date(b.completedAt||b.createdAt||0) - new Date(a.completedAt||a.createdAt||0))[0];
-    const countBadge = n > 1 ? `<span class="fold-count">出现 ${n} 次</span>` : '';
+    const countBadge = n > 1 ? `<span class="fold-count">appeared ${n} times</span>` : '';
     const occHtml = g.items.map(s => {
       const e = s.essence || {};
       const nature = (e.nature || '').trim();
       const insight = (e.insight || '').trim();
       const learned = (s.reflection && s.reflection.learned || '').trim();
       return `<div class="occ">
-        <div class="occ-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' · 已复盘' : ''}</div>
-        ${nature ? `<div class="i-row"><b>本质</b>${escapeHtml(nature)}</div>` : ''}
-        ${insight ? `<div class="i-row"><b>洞察</b>${escapeHtml(insight)}</div>` : ''}
-        ${learned ? `<div class="i-row"><b>学到</b>${escapeHtml(learned)}</div>` : ''}
+        <div class="occ-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' \u00b7 reviewed' : ''}</div>
+        ${nature ? `<div class="i-row"><b>Essence</b>${escapeHtml(nature)}</div>` : ''}
+        ${insight ? `<div class="i-row"><b>Insight</b>${escapeHtml(insight)}</div>` : ''}
+        ${learned ? `<div class="i-row"><b>Learned</b>${escapeHtml(learned)}</div>` : ''}
         ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         ${assetActions('insight', s.id)}
       </div>`;
@@ -800,14 +798,14 @@ function renderInsights(){
     return `<div class="insight fold-card" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="i-scenario">${escapeHtml(g.scenario)}</div>
-        <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' · 已复盘' : ''}</span></div>
+        <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' \u00b7 reviewed' : ''}</span></div>
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
     </div>`;
   }).join('');
 }
 
-/* ===================== 行为实验 ===================== */
+/* ===================== behavior experiment ===================== */
 let actionFilter = { status: '', tag: '', q: '' };
 
 function renderActions(){
@@ -815,17 +813,17 @@ function renderActions(){
   renderActionFilters(actions);
   const box = $('actionList');
   if (!actions.length){
-    box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「伴我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">No behavior experiments yet.<br>Every Guided Change session is a life experiment \u2014 from insight to action, fully recorded here.<br><a href="act-en.html">Start your first experiment →</a></div>`;
     return;
   }
   const filtered = filterActions(actions);
   if (!filtered.length){
-    box.innerHTML = `<div class="expand-empty">没有符合当前筛选条件的行为实验。</div>`;
+    box.innerHTML = `<div class="expand-empty">No behavior experiments match the current filters.</div>`;
     return;
   }
   box.innerHTML = filtered.map(a => {
     const status = a.status || 'active';
-    const statusText = { active: '进行中', graduated: '已毕业', paused: '已暂停' }[status] || status;
+    const statusText = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || status;
     const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
     const lastLog = (a.logs || []).slice(-1)[0];
     const lastDate = lastLog ? fmtDate(lastLog.date) : fmtDate(a.createdAt);
@@ -834,7 +832,7 @@ function renderActions(){
     const plan = a.plan || [];
     const curDay = a.currentDay || 1;
     const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro : ((a.tiny && a.tiny.text) || '');
-    const microText = status === 'graduated' ? '已完成全部 ' + N + ' 天计划' : (curMicro || '');
+    const microText = status === 'graduated' ? 'completed all ' + N + ' days' : (curMicro || '');
     return `<div class="action fold-card" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="row1">
@@ -842,26 +840,26 @@ function renderActions(){
           <span class="status-chip ${statusClass}">${statusText}</span>
         </div>
         <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
-        ${N ? `<span class="plan-pill">📅 ${N} 天实验 · 已完成 ${totalDone}/${N}</span>` : ''}
+        ${N ? `<span class="plan-pill">📅 ${N}-day experiment \u00b7 ${totalDone}/${N} done</span>` : ''}
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">
         ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
-        ${a.insight ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(a.insight.replace(/\n+/g, ' · '))}</div>` : ''}
-        ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
+        ${a.insight ? `<div class="a-source"><b>From insight:</b> ${escapeHtml(a.insight.replace(/\n+/g, ' \u00b7 '))}</div>` : ''}
+        ${a.anchor && a.anchor.after ? `<div class="anchor">Anchor: after I ${escapeHtml(a.anchor.after)}</div>` : ''}
         ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
-          ${a.result ? `<div><b>结果</b> ${escapeHtml(a.result)}</div>` : ''}
-          ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
-          ${a.reflection && a.reflection.changed ? `<div><b>改变</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
+          ${a.result ? `<div><b>Result</b> ${escapeHtml(a.result)}</div>` : ''}
+          ${a.habit ? `<div><b>New habit</b> ${escapeHtml(a.habit)}</div>` : ''}
+          ${a.reflection && a.reflection.changed ? `<div><b>Change</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
         </div>` : ''}
         ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         <div class="meta">
-          <span>连续 ${a.streak || 0} 天</span>
-          <span>累计 ${totalDone} 天</span>
-          <span>身份票 ${a.totalDone || 0} 张</span>
+          <span>${a.streak || 0}-day streak</span>
+          <span>${totalDone} days total</span>
+          <span>${a.totalDone || 0} identity votes</span>
         </div>
         <div class="foot">
-          <a class="mini solid" href="act.html?id=${a.id}">去做 / 续接</a>
-          <button class="mini" onclick="exportOne('${a.id}')">导出</button>
+          <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
+          <button class="mini" onclick="exportOne('${a.id}')">Export</button>
         </div>
         ${assetActions('action', a.id)}
       </div>
@@ -875,19 +873,19 @@ function renderActionFilters(actions){
   const tags = [];
   actions.forEach(a => (a.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
   const statusOpts = [
-    { k: '', v: '全部' },
-    { k: 'active', v: '进行中' },
-    { k: 'graduated', v: '已毕业' },
-    { k: 'paused', v: '已暂停' }
+    { k: '', v: 'All' },
+    { k: 'active', v: 'Active' },
+    { k: 'graduated', v: 'Graduated' },
+    { k: 'paused', v: 'Paused' }
   ];
   let html = statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
   if (tags.length){
     html += '<span class="filter-sep"></span>' +
-      '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">全部标签</button>' +
+      '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">All tags</button>' +
       tags.map(t => `<button class="filter-chip${actionFilter.tag === t ? ' on' : ''}" onclick="setActionFilter('tag','${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
   }
   html += '<span class="filter-sep"></span>' +
-    `<input type="text" class="filter-search" placeholder="搜索行为实验…" value="${escapeHtml(actionFilter.q)}" oninput="setActionFilter('q', this.value)">`;
+    `<input type="text" class="filter-search" placeholder="Search experiments…" value="${escapeHtml(actionFilter.q)}" oninput="setActionFilter('q', this.value)">`;
   box.innerHTML = html;
 }
 function setActionFilter(key, value){
@@ -907,7 +905,7 @@ function filterActions(actions){
   });
 }
 
-/* ===================== 模式识别 ===================== */
+/* ===================== pattern识别 ===================== */
 function renderPatterns(){
   const area = $('patternArea');
   let saved = null;
@@ -916,12 +914,12 @@ function renderPatterns(){
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
     area.innerHTML = `<div class="pattern-cta">
-      <h3>Transform 发现的跨时间模式</h3>
-      <p>基于你 ${archive.length} 次认知梳理 + ${actions.length} 个行为实验，识别到 ${saved.patterns.length} 个重复模式。分析于 ${fmtDate(saved.generatedAt)}。</p>
-      <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">重新分析</button><button class="btn-ghost" onclick="clearPatterns()">清除</button></div>
+      <h3>Patterns Transform found across time</h3>
+      <p>Based on your ${archive.length} insight sessions + ${actions.length} behavior experiments, ${saved.patterns.length} repeating patterns identified. Analyzed on ${fmtDate(saved.generatedAt)}。</p>
+      <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">Re-analyze</button><button class="btn-ghost" onclick="clearPatterns()">Clear</button></div>
     </div>` +
     saved.patterns.map((p, i) => `<div class="pattern">
-      <div class="p-title">${escapeHtml(p.title)}<span class="tag">模式 ${i+1}</span></div>
+      <div class="p-title">${escapeHtml(p.title)}<span class="tag">Pattern ${i+1}</span></div>
       <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
       <div class="p-insight">${escapeHtml(p.insight || '')}</div>
       ${(p.tags || []).length ? `<div class="asset-tags">${p.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
@@ -930,49 +928,41 @@ function renderPatterns(){
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「伴我洞察」或「伴我改变」，Transform才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
+    area.innerHTML = `<div class="expand-empty">Not enough data to find patterns yet.<br>Complete a few Guided Insight or Guided Change sessions first, so Transform can see the problems, roles, and obstacles that keep recurring across time.</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">
-    <h3>Transform 帮你跨时间发现模式</h3>
-    <p>AI 会阅读你全部 ${archive.length} 次认知梳理与 ${actions.length} 个行为实验，找出「你反复出现的问题」「一直想成为的角色」「重复踩过的阻力」——这才是成长资产的长期价值。</p>
-    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform帮我发现模式</button></div>
+    <h3>Transform finds patterns across time</h3>
+    <p>AI reads all your ${archive.length} insight sessions and ${actions.length} behavior experiments to find \u201cproblems that keep recurring\u201d, \u201cthe role you keep wanting to become\u201d, and \u201cobstacles you keep tripping on\u201d \u2014 the real long-term value of growth assets.</p>
+    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform, find my patterns</button></div>
   </div>
   <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
   // 无 API Key 时给出基础素材提示
   const cfg = getAI();
-  if (!cfg.apiKey) $('patternHint').innerHTML = '（未配置 API Key：可先看「身份」与「洞察库」里的标签，作为基础素材）';
+  if (!cfg.apiKey) $('patternHint').innerHTML = '(API Key not set: check the tags in \u201cIdentity\u201d and \u201cInsight Library\u201d as starter material)';
 }
 function buildPatternSource(){
   const archive = loadArchive(); const actions = loadActions();
   const parts = [];
   archive.slice(0, 30).forEach(s => {
     const e = s.essence || {};
-    parts.push('认知[' + (s.scenario || '?') + '] 本质:' + (e.nature || '').slice(0, 50) + ' 洞察:' + (e.insight || '').slice(0, 60) + (s.mentalModel ? ' 框架:' + s.mentalModel.slice(0, 60) : '') + (s.tags && s.tags.length ? ' 标签:' + s.tags.join('/') : ''));
+    parts.push('Insight[' + (s.scenario || '?') + '] essence:' + (e.nature || '').slice(0, 50) + ' insight:' + (e.insight || '').slice(0, 60) + (s.mentalModel ? ' framework:' + s.mentalModel.slice(0, 60) : '') + (s.tags && s.tags.length ? ' tags:' + s.tags.join('/') : ''));
   });
   actions.slice(0, 30).forEach(a => {
-    parts.push('行为[' + (a.input || '?') + '] 状态:' + (a.status || '') + (a.result ? ' 结果:' + a.result.slice(0, 50) : '') + (a.habit ? ' 习惯:' + a.habit.slice(0, 50) : '') + (a.reflection && a.reflection.changed ? ' 改变:' + a.reflection.changed.slice(0, 50) : ''));
+    parts.push('Behavior[' + (a.input || '?') + '] status:' + (a.status || '') + (a.result ? ' result:' + a.result.slice(0, 50) : '') + (a.habit ? ' habit:' + a.habit.slice(0, 50) : '') + (a.reflection && a.reflection.changed ? ' change:' + a.reflection.changed.slice(0, 50) : ''));
   });
   return parts.join('\n').slice(0, 3200);
 }
 async function aiDiscoverPatterns(regen){
   const src = buildPatternSource();
-  const prompt = '你是用户的「成长记录员 Growth Memory Agent」。请跨时间阅读以下成长记录，识别 2-4 个最值得用户注意的重复模式：反复出现的问题、一直想成为的角色、重复踩过的阻力、或正在形成的优势。\n成长记录：\n' + src + '\n严格返回 JSON：{"patterns":[{"title":"一句话标题","evidence":"支撑证据（引用具体记录，40字内）","insight":"对用户的洞察与建议（40字内）"}]}';
-  toast(regen ? '正在重新分析…' : '正在跨时间扫描你的成长记录…');
+  const prompt = 'You are the user\u2019s Growth Memory Agent. Read the growth records below across time and identify 2-4 repeating patterns most worth the user\u2019s attention: problems that keep recurring, the role they keep wanting to become, obstacles they keep tripping on, or strengths still forming.\nGrowth records:\n' + src + '\nReturn strict JSON: {"patterns":[{"title":"one-line title","evidence":"supporting evidence (quote specific records, within 40 words)","insight":"insight and advice for the user (within 40 words)"}]}';
+  toast(regen ? 'Re-analyzing…' : 'Scanning your growth records across time…');
   const text = await aiCall(prompt);
   if (!text) return;
   try {
     const j = JSON.parse(text.replace(/```json|```/g, '').trim());
     if (!j.patterns || !j.patterns.length) throw new Error('no patterns');
-    // 去重（按 title）+ 限制最多 4 个
-    const seen = new Set();
-    const uniquePatterns = j.patterns.filter(p => {
-      const t = (p && p.title || '').trim();
-      if (!t || seen.has(t)) return false;
-      seen.add(t);
-      return true;
-    }).slice(0, 4);
-    localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: uniquePatterns, generatedAt: new Date().toISOString() }));
+    localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: j.patterns, generatedAt: new Date().toISOString() }));
     renderPatterns();
     $('patterns').scrollIntoView({ behavior: 'smooth' });
   } catch(err){
@@ -980,121 +970,14 @@ async function aiDiscoverPatterns(regen){
     area.innerHTML += `<div class="pattern" style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;
   }
 }
-function clearPatterns(){
-  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
-  if (saved && saved.patterns && saved.patterns.length){
-    const trash = loadTrash();
-    saved.patterns.forEach(p => trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type: 'pattern', data: p, deletedAt: new Date().toISOString() }));
-    saveTrash(trash);
-  }
-  localStorage.removeItem(LS_PATTERNS);
-  renderPatterns();
-  renderTrash();
-}
-
-/* ===================== 回收箱（删除=进入回收箱，30 天自动彻底删除） ===================== */
-const LS_TRASH = 'trf_trash';
-const TRASH_TTL = 30 * 86400000;
-function loadTrash(){ try { return JSON.parse(localStorage.getItem(LS_TRASH)) || []; } catch(e){ return []; } }
-function saveTrash(list){ localStorage.setItem(LS_TRASH, JSON.stringify(list)); }
-function trashPreview(obj, type){
-  if (type === 'pattern') return obj.title || '模式';
-  if (type === 'action') return obj.input || obj.goal || '行为实验';
-  return obj.scenario || '一次梳理';
-}
-function moveToTrash(type, id){
-  let item = null;
-  if (type === 'insight' || type === 'model'){
-    const list = loadArchive();
-    const i = list.findIndex(s => String(s.id) === String(id));
-    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
-  } else if (type === 'action'){
-    const list = loadActions();
-    const i = list.findIndex(a => String(a.id) === String(id));
-    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
-  } else if (type === 'pattern'){
-    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
-    if (saved && saved.patterns){ const i = parseInt(id); if (i >= 0 && i < saved.patterns.length){ item = saved.patterns[i]; saved.patterns.splice(i, 1); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); } }
-  }
-  if (!item) return false;
-  const trash = loadTrash();
-  trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type, data: item, deletedAt: new Date().toISOString() });
-  saveTrash(trash);
-  return true;
-}
-function restoreFromTrash(tid){
-  const trash = loadTrash();
-  const i = trash.findIndex(t => t.tid === tid);
-  if (i < 0) return;
-  const t = trash[i];
-  const obj = t.data;
-  if (t.type === 'pattern'){
-    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ saved = null; }
-    if (!saved) saved = { patterns: [], generatedAt: null };
-    if (!saved.patterns) saved.patterns = [];
-    saved.patterns.push(obj);
-    localStorage.setItem(LS_PATTERNS, JSON.stringify(saved));
-  } else if (t.type === 'action'){
-    const list = loadActions();
-    if (!list.find(a => String(a.id) === String(obj.id))) list.push(obj);
-    localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
-  } else {
-    const list = loadArchive();
-    if (!list.find(s => String(s.id) === String(obj.id))) list.push(obj);
-    localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
-  }
-  trash.splice(i, 1);
-  saveTrash(trash);
-  renderAll();
-  renderTrash();
-  toast('已恢复到成长资产');
-}
-function purgeTrashItem(tid){
-  let trash = loadTrash();
-  trash = trash.filter(t => t.tid !== tid);
-  saveTrash(trash);
-  renderTrash();
-}
-function purgeOldTrash(){
-  const now = Date.now();
-  let trash = loadTrash();
-  const before = trash.length;
-  trash = trash.filter(t => (now - new Date(t.deletedAt).getTime()) < TRASH_TTL);
-  if (trash.length !== before) saveTrash(trash);
-}
-function emptyTrash(){ saveTrash([]); renderTrash(); toast('回收箱已清空'); }
-function renderTrash(){
-  const box = $('trashList'); if (!box) return;
-  const trash = loadTrash();
-  const cnt = $('trashCount'); if (cnt) cnt.textContent = trash.length;
-  const emptyBtn = $('trashEmptyBtn'); if (emptyBtn) emptyBtn.style.display = trash.length ? '' : 'none';
-  if (!trash.length){ box.innerHTML = `<div class="expand-empty">回收箱是空的。<br>删除的资产会先到这里，30 天内可随时恢复。</div>`; return; }
-  const now = Date.now();
-  box.innerHTML = trash.map(t => {
-    const daysLeft = Math.max(0, Math.ceil((TRASH_TTL - (now - new Date(t.deletedAt).getTime())) / 86400000));
-    const leftText = daysLeft <= 0 ? '即将彻底删除' : ('将于 ' + daysLeft + ' 天后彻底删除');
-    return `<div class="trash-item">
-      <div class="ti-main">
-        <span class="ti-type">${assetTypeName(t.type)}</span>
-        <div class="ti-title">${escapeHtml(String(trashPreview(t.data, t.type)).slice(0, 40))}</div>
-        <div class="ti-sub">删除于 ${fmtDate(t.deletedAt)} · ${leftText}</div>
-      </div>
-      <div class="ti-actions">
-        <button class="mini" onclick="restoreFromTrash('${t.tid}')">恢复</button>
-        <button class="mini del" onclick="purgeTrashItem('${t.tid}')">彻底删除</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
 /* ===================== 资产编辑（通用：编辑 / 归类 / 删除） ===================== */
 let assetModalCtx = null; // { type, id, tagOnly }
 
 function assetActions(type, id){
   return `<div class="asset-actions">
-    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ 编辑</button>
-    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 归类</button>
-    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 删除</button>
+    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ Edit</button>
+    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 Tag</button>
+    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 Delete</button>
   </div>`;
 }
 
@@ -1142,40 +1025,40 @@ function closeAssetModal(){
 // 编辑
 function openAssetEdit(type, id){
   const obj = assetFind(type, id);
-  if (!obj){ toast('找不到这条资产'); return; }
+  if (!obj){ toast('Asset not found'); return; }
   assetModalCtx = { type, id };
   const e = obj.essence || {};
   const r = obj.reflection || {};
   let fields = '';
   if (type === 'model'){
     fields = `
-      <label>场景</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
-      <label>认知框架</label><textarea id="ae2">${escapeHtml(obj.mentalModel || '')}</textarea>
-      <label>改变了什么</label><textarea id="ae3">${escapeHtml(r.changed || '')}</textarea>`;
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Framework</label><textarea id="ae2">${escapeHtml(obj.mentalModel || '')}</textarea>
+      <label>What changed</label><textarea id="ae3">${escapeHtml(r.changed || '')}</textarea>`;
   } else if (type === 'insight'){
     fields = `
-      <label>场景</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
-      <label>本质</label><textarea id="ae2">${escapeHtml(e.nature || '')}</textarea>
-      <label>洞察</label><textarea id="ae3">${escapeHtml(e.insight || '')}</textarea>
-      <label>学到</label><textarea id="ae4">${escapeHtml(r.learned || '')}</textarea>`;
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Essence</label><textarea id="ae2">${escapeHtml(e.nature || '')}</textarea>
+      <label>Insight</label><textarea id="ae3">${escapeHtml(e.insight || '')}</textarea>
+      <label>Learned</label><textarea id="ae4">${escapeHtml(r.learned || '')}</textarea>`;
   } else if (type === 'action'){
     fields = `
-      <label>目标 / 输入</label><textarea id="ae1">${escapeHtml(obj.input || obj.goal || '')}</textarea>
-      <label>结果</label><textarea id="ae2">${escapeHtml(obj.result || '')}</textarea>
-      <label>新习惯</label><textarea id="ae3">${escapeHtml(obj.habit || '')}</textarea>
-      <label>改变</label><textarea id="ae4">${escapeHtml(r.changed || '')}</textarea>`;
+      <label>Goal / Input</label><textarea id="ae1">${escapeHtml(obj.input || obj.goal || '')}</textarea>
+      <label>Result</label><textarea id="ae2">${escapeHtml(obj.result || '')}</textarea>
+      <label>New habit</label><textarea id="ae3">${escapeHtml(obj.habit || '')}</textarea>
+      <label>Change</label><textarea id="ae4">${escapeHtml(r.changed || '')}</textarea>`;
   } else if (type === 'pattern'){
     fields = `
-      <label>模式标题</label><input id="ae1" value="${escapeHtml(obj.title || '')}">
-      <label>支撑证据</label><textarea id="ae2">${escapeHtml(obj.evidence || '')}</textarea>
-      <label>洞察与建议</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
+      <label>Pattern title</label><input id="ae1" value="${escapeHtml(obj.title || '')}">
+      <label>Evidence</label><textarea id="ae2">${escapeHtml(obj.evidence || '')}</textarea>
+      <label>Insight & advice</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
   }
   openAssetModal(`
-    <h3>✏️ 编辑${assetTypeName(type)}</h3>
+    <h3>✏️ Edit ${assetTypeName(type)}</h3>
     ${fields}
     <div class="row">
-      <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">保存</button>
-      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+      <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">Save</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
     </div>`);
 }
 function saveAssetEdit(){
@@ -1195,13 +1078,13 @@ function saveAssetEdit(){
     }
   });
   closeAssetModal();
-  toast('已保存');
+  toast('Saved');
 }
 
 // 归类（标签）
 function openAssetTag(type, id){
   const obj = assetFind(type, id);
-  if (!obj){ toast('找不到这条资产'); return; }
+  if (!obj){ toast('Asset not found'); return; }
   assetModalCtx = { type, id };
   const tags = obj.tags || [];
   renderTagModal(tags);
@@ -1213,24 +1096,24 @@ function collectAllTags(){
   loadActions().forEach(a => (a.tags || []).forEach(add));
   let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
   (saved && saved.patterns || []).forEach(p => (p.tags || []).forEach(add));
-  return tags.sort((a,b) => a.localeCompare(b, 'zh-CN'));
+  return tags.sort((a,b) => a.localeCompare(b, 'en'));
 }
 function renderTagModal(tags){
   const ctx = assetModalCtx; if (!ctx) return;
   const allTags = collectAllTags();
   const available = allTags.filter(t => !tags.includes(t));
   openAssetModal(`
-    <h3>🏷 归类${assetTypeName(ctx.type)}</h3>
-    <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">给这条资产打标签，便于日后按主题查找。</p>
+    <h3>🏷 Tag ${assetTypeName(ctx.type)}</h3>
+    <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">Tag this asset so you can find it by topic later.</p>
     <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
-    ${available.length ? `<div style="margin-top:14px;"><p style="font-size:12px;color:var(--ink-3);margin-bottom:6px;">从已有标签中选择</p><div class="modal-existing-tags">${available.map(t => `<button class="existing-tag" onclick="addAssetTagByText('${String(t).replace(/'/g, "\\'")}')">+ ${escapeHtml(t)}</button>`).join('')}</div></div>` : ''}
+    ${available.length ? `<div style="margin-top:14px;"><p style="font-size:12px;color:var(--ink-3);margin-bottom:6px;">Choose from existing tags</p><div class="modal-existing-tags">${available.map(t => `<button class="existing-tag" onclick="addAssetTagByText('${String(t).replace(/'/g, "\\'")}')">+ ${escapeHtml(t)}</button>`).join('')}</div></div>` : ''}
     <div class="tag-input-row" style="margin-top:14px;">
-      <input id="newTagInput" placeholder="没有合适标签？输入新标签" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
-      <button class="btn-ok" onclick="addAssetTag()">添加</button>
+      <input id="newTagInput" placeholder="Or type a new tag" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
+      <button class="btn-ok" onclick="addAssetTag()">Add</button>
     </div>
     <div class="row">
-      <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">完成</button>
-      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+      <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">Done</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
     </div>`);
 }
 function addAssetTagByText(t){
@@ -1266,15 +1149,15 @@ function removeAssetTag(t){
 // 删除
 function openAssetDelete(type, id){
   const obj = assetFind(type, id);
-  if (!obj){ toast('找不到这条资产'); return; }
+  if (!obj){ toast('Asset not found'); return; }
   assetModalCtx = { type, id };
   const preview = (type === 'pattern') ? obj.title : (obj.scenario || obj.input || obj.goal || obj.title || '这条资产');
   openAssetModal(`
-    <h3>🗑 删除${assetTypeName(type)}</h3>
-    <p style="font-size:14px;color:var(--ink);line-height:1.7;">确定删除「<b>${escapeHtml(String(preview).slice(0, 30))}</b>」吗？将移入回收箱，30 天内可随时恢复。</p>
+    <h3>🗑 Delete ${assetTypeName(type)}</h3>
+    <p style="font-size:14px;color:var(--ink);line-height:1.7;">Delete "<b>${escapeHtml(String(preview).slice(0, 30))}</b>"? It will move to Trash and can be restored within 30 days.</p>
     <div class="row">
-      <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">移入回收箱</button>
-      <button class="btn-ghost" onclick="closeAssetModal()">取消</button>
+      <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">Move to Trash</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
     </div>`);
 }
 function confirmDeleteAsset(){
@@ -1282,10 +1165,117 @@ function confirmDeleteAsset(){
   moveToTrash(ctx.type, ctx.id);
   closeAssetModal();
   renderAll();
-  toast('已移入回收箱（30 天内可恢复）');
+  toast('Moved to Trash (restorable within 30 days)');
 }
 function assetTypeName(type){
-  return { model: '认知模型', insight: '洞察', action: '行为实验', pattern: '模式' }[type] || '';
+  return { model: 'mental model', insight: 'insight', action: 'behavior experiment', pattern: 'pattern' }[type] || '';
+}
+
+function clearPatterns(){
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  if (saved && saved.patterns && saved.patterns.length){
+    const trash = loadTrash();
+    saved.patterns.forEach(p => trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type: 'pattern', data: p, deletedAt: new Date().toISOString() }));
+    saveTrash(trash);
+  }
+  localStorage.removeItem(LS_PATTERNS);
+  renderPatterns();
+  renderTrash();
+}
+
+/* ===================== Trash (delete = move to trash, auto-purge after 30 days) ===================== */
+const LS_TRASH = 'trf_trash';
+const TRASH_TTL = 30 * 86400000;
+function loadTrash(){ try { return JSON.parse(localStorage.getItem(LS_TRASH)) || []; } catch(e){ return []; } }
+function saveTrash(list){ localStorage.setItem(LS_TRASH, JSON.stringify(list)); }
+function trashPreview(obj, type){
+  if (type === 'pattern') return obj.title || 'pattern';
+  if (type === 'action') return obj.input || obj.goal || 'behavior experiment';
+  return obj.scenario || 'a session';
+}
+function moveToTrash(type, id){
+  let item = null;
+  if (type === 'insight' || type === 'model'){
+    const list = loadArchive();
+    const i = list.findIndex(s => String(s.id) === String(id));
+    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+  } else if (type === 'action'){
+    const list = loadActions();
+    const i = list.findIndex(a => String(a.id) === String(id));
+    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+  } else if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns){ const i = parseInt(id); if (i >= 0 && i < saved.patterns.length){ item = saved.patterns[i]; saved.patterns.splice(i, 1); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); } }
+  }
+  if (!item) return false;
+  const trash = loadTrash();
+  trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type, data: item, deletedAt: new Date().toISOString() });
+  saveTrash(trash);
+  return true;
+}
+function restoreFromTrash(tid){
+  const trash = loadTrash();
+  const i = trash.findIndex(t => t.tid === tid);
+  if (i < 0) return;
+  const t = trash[i];
+  const obj = t.data;
+  if (t.type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ saved = null; }
+    if (!saved) saved = { patterns: [], generatedAt: null };
+    if (!saved.patterns) saved.patterns = [];
+    saved.patterns.push(obj);
+    localStorage.setItem(LS_PATTERNS, JSON.stringify(saved));
+  } else if (t.type === 'action'){
+    const list = loadActions();
+    if (!list.find(a => String(a.id) === String(obj.id))) list.push(obj);
+    localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
+  } else {
+    const list = loadArchive();
+    if (!list.find(s => String(s.id) === String(obj.id))) list.push(obj);
+    localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
+  }
+  trash.splice(i, 1);
+  saveTrash(trash);
+  renderAll();
+  renderTrash();
+  toast('Restored to growth assets');
+}
+function purgeTrashItem(tid){
+  let trash = loadTrash();
+  trash = trash.filter(t => t.tid !== tid);
+  saveTrash(trash);
+  renderTrash();
+}
+function purgeOldTrash(){
+  const now = Date.now();
+  let trash = loadTrash();
+  const before = trash.length;
+  trash = trash.filter(t => (now - new Date(t.deletedAt).getTime()) < TRASH_TTL);
+  if (trash.length !== before) saveTrash(trash);
+}
+function emptyTrash(){ saveTrash([]); renderTrash(); toast('Trash emptied'); }
+function renderTrash(){
+  const box = $('trashList'); if (!box) return;
+  const trash = loadTrash();
+  const cnt = $('trashCount'); if (cnt) cnt.textContent = trash.length;
+  const emptyBtn = $('trashEmptyBtn'); if (emptyBtn) emptyBtn.style.display = trash.length ? '' : 'none';
+  if (!trash.length){ box.innerHTML = `<div class="expand-empty">Trash is empty.<br>Deleted assets land here first and can be restored within 30 days.</div>`; return; }
+  const now = Date.now();
+  box.innerHTML = trash.map(t => {
+    const daysLeft = Math.max(0, Math.ceil((TRASH_TTL - (now - new Date(t.deletedAt).getTime())) / 86400000));
+    const leftText = daysLeft <= 0 ? 'will be purged soon' : ('permanently deleted in ' + daysLeft + ' days');
+    return `<div class="trash-item">
+      <div class="ti-main">
+        <span class="ti-type">${assetTypeName(t.type)}</span>
+        <div class="ti-title">${escapeHtml(String(trashPreview(t.data, t.type)).slice(0, 40))}</div>
+        <div class="ti-sub">Deleted ${fmtDate(t.deletedAt)} \u00b7 ${leftText}</div>
+      </div>
+      <div class="ti-actions">
+        <button class="mini" onclick="restoreFromTrash('${t.tid}')">Restore</button>
+        <button class="mini del" onclick="purgeTrashItem('${t.tid}')">Purge</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ===================== 导出 ===================== */
@@ -1327,7 +1317,7 @@ function saveSettings(){
   const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
   localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey, baseUrl: profile.baseUrl, model: profile.model }));
   closeSettings();
-  toast('AI 设置已保存');
+  toast('AI settings saved');
   renderPatterns();
 }
 

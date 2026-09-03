@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>行为档案 · Transform</title>
+<title>认知档案 · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -473,13 +473,13 @@
   </div>
 
   <div class="page-head">
-    <h1>行为档案</h1>
-    <div class="page-sub">每一次做到，沉淀出的长期行为资产</div>
+    <h1>认知档案</h1>
+    <div class="page-sub">每一次想清楚，沉淀出的长期认知资产</div>
   </div>
 
   <div class="toolbar">
-    <a class="act solid" href="act.html">开始一次行为改变</a>
-    <a class="act" href="cognitive.html">查看认知档案</a>
+    <a class="act solid" href="app.html">开始一次认知提升</a>
+    <a class="act" href="behavior.html">查看行为档案</a>
     <button class="act" onclick="downloadAll()">存数据</button>
     <button class="act" onclick="openSettings()">AI 设置</button>
   </div>
@@ -488,47 +488,50 @@
   <div id="identityArea" style="scroll-margin-top:14px;"></div>
   <div class="stat-strip" id="statsArea"></div>
 
-  
-  <section class="archive-section beh">
+  <!-- 认知档案 -->
+  <section class="archive-section cog">
     <div class="archive-head">
-      <div class="archive-icon">🧪</div>
+      <div class="archive-icon">🧠</div>
       <div>
-        <h2>行为档案</h2>
-        <p>每一次做到，沉淀出的长期行为资产</p>
+        <h2>认知档案</h2>
+        <p>每一次想清楚，沉淀出的长期认知资产</p>
       </div>
     </div>
 
-    <div class="expand-card beh" data-section="experiments">
+    <div class="expand-card cog open" data-section="models">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">⚡</span>
+        <span class="expand-icon">📐</span>
         <span class="expand-title">
-          <span class="expand-name">行为实验 Behavior Experiment</span>
-          <span class="expand-sub">从认知到行动的转化记录</span>
+          <span class="expand-name">认知模型 Mental Model</span>
+          <span class="expand-sub">复盘后沉淀的新认知框架</span>
         </span>
-        <span class="expand-count" id="experimentsCount">0</span>
+        <span class="expand-count" id="modelsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="modelList"></div></div></div>
+    </div>
+
+    <div class="expand-card cog" data-section="insights">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">💡</span>
+        <span class="expand-title">
+          <span class="expand-name">洞察库 Insight Library</span>
+          <span class="expand-sub">每一次想清楚的核心认知</span>
+        </span>
+        <span class="expand-count" id="insightsCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="expand-body"><div class="inner">
-        <div class="filter-row" id="actionFilters"></div>
-        <div id="actionList"></div>
+        <div class="filter-row">
+          <input type="text" class="filter-search" id="insightSearch" placeholder="搜索洞察…" oninput="setInsightSearch(this.value)">
+        </div>
+        <div class="filter-row" id="tagFilters"></div>
+        <div id="insightList"></div>
       </div></div>
-    </div>
-
-    <div class="expand-card beh" data-section="patterns">
-      <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">🔍</span>
-        <span class="expand-title">
-          <span class="expand-name">模式识别 Pattern Recognition</span>
-          <span class="expand-sub">Transform跨时间发现的重复模式</span>
-        </span>
-        <span class="expand-count" id="patternsCount">0</span>
-        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
     </div>
   </section>
 
-  <!-- 回收箱 -->
+  
   <section class="archive-section trash">
     <div class="archive-head">
       <div class="archive-icon">🗑️</div>
@@ -668,25 +671,20 @@ function renderIdentity(){
 
 /* ===================== 统计 ===================== */
 function renderStats(){
-  const actions = loadActions();
-  const graduated = actions.filter(a => a.status === 'graduated').length;
-  const totalDone = actions.reduce((a,b) => a + (b.totalDone || 0), 0);
-  const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
-  const active = actions.filter(a => a.status === 'active').length;
+  const archive = loadArchive();
+  const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
+  const tags = new Set();
+  archive.forEach(s => (s.tags || []).forEach(t => { if(t) tags.add(t); }));
   $('statsArea').innerHTML = `
-    <span class="item"><span class="num">${actions.length}</span>行为实验</span>
+    <span class="item"><span class="num">${archive.length}</span>认知洞察</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${graduated}</span>已毕业</span>
+    <span class="item"><span class="num">${models.length}</span>认知模型</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${active}</span>进行中</span>
-    <span class="sep">·</span>
-    <span class="item"><span class="num">${bestStreak}</span>最长连续</span>
-    <span class="sep">·</span>
-    <span class="item"><span class="num">${totalDone}</span>累计做到</span>
+    <span class="item"><span class="num">${tags.size}</span>标签</span>
   `;
-  $('experimentsCount').textContent = actions.length;
-  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
-  $('patternsCount').textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
+  const m = models.length;
+  $('modelsCount').textContent = m;
+  $('insightsCount').textContent = archive.length;
 }
 
 /* ===================== 展开 / 收起 ===================== */
@@ -713,9 +711,9 @@ function groupByScenario(list){
 
 /* ===================== 认知模型（复盘产出） ===================== */
 function renderModels(){
-  const box = $('modelList'); if (!box) return;
   const archive = loadArchive();
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
+  const box = $('modelList');
   if (!models.length){
     box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「伴我洞察」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
     return;
@@ -754,17 +752,17 @@ function setInsightSearch(v){
 }
 function renderTagFilters(){
   const archive = loadArchive();
-  const box = $('tagFilters'); if (!box) return;
   const tags = [];
   archive.forEach(s => (s.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
+  const box = $('tagFilters');
   if (!tags.length){ box.innerHTML = ''; return; }
   box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">全部</button>' +
     tags.map(t => `<button class="filter-chip${insightFilter === t ? ' on' : ''}" onclick="setTagFilter('${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
 }
 function setTagFilter(t){ insightFilter = t; renderTagFilters(); renderInsights(); }
 function renderInsights(){
-  const box = $('insightList'); if (!box) return;
   let archive = loadArchive();
+  const box = $('insightList');
   if (!archive.length){
     box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「伴我洞察」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
     return;
@@ -814,6 +812,7 @@ function renderActions(){
   const actions = loadActions();
   renderActionFilters(actions);
   const box = $('actionList');
+  if (!box) return;
   if (!actions.length){
     box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「伴我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
     return;
@@ -910,6 +909,7 @@ function filterActions(actions){
 /* ===================== 模式识别 ===================== */
 function renderPatterns(){
   const area = $('patternArea');
+  if (!area) return;
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
   const archive = loadArchive(); const actions = loadActions();
