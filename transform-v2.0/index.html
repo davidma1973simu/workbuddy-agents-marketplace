@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transform · 想清楚，做得到</title>
+<style>
+  :root {
+    --bg: #F8F7F3;
+    --surface: #FFFFFF;
+    --surface-2: #F2F1EC;
+    --ink: #151B19;
+    --ink-2: #3D4A45;
+    --ink-3: #7A8A83;
+    --line: #E6E9E7;
+    --line-2: #DDE2DF;
+    --green: #0E6B50;
+    --green-2: #158A68;
+    --green-3: #1D9E75;
+    --green-soft: #E8F4EE;
+    --green-light: #C8EBD9;
+    --green-50: #F0F9F4;
+    --amber: #C87A2A;
+    --amber-soft: #FDF3E6;
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow-1: 0 1px 2px rgba(21,27,25,.04);
+    --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
+    --shadow-3: 0 8px 24px rgba(21,27,25,.08), 0 32px 64px rgba(21,27,25,.12);
+    --ease: cubic-bezier(.16,1,.3,1);
+    --ease-out: cubic-bezier(.33,1,.68,1);
+  }
+  [data-theme="dark"] {
+    --bg: #0C100F;
+    --surface: #161C1A;
+    --surface-2: #1E2523;
+    --ink: #EEF4F1;
+    --ink-2: #A7B6B0;
+    --ink-3: #6A7A74;
+    --line: #252E2C;
+    --line-2: #2F3A37;
+    --green: #34D29E;
+    --green-2: #2BBB8A;
+    --green-3: #1D9E75;
+    --green-soft: #132A24;
+    --green-light: #1E4A3E;
+    --green-50: #0F1F1B;
+    --amber: #EAA052;
+    --amber-soft: #2E2417;
+    --shadow-1: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-2: 0 4px 12px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
+    --shadow-3: 0 8px 24px rgba(0,0,0,.5), 0 32px 64px rgba(0,0,0,.6);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+    min-height: 100vh; overflow-x: hidden;
+    font-feature-settings: "tnum" 1, "kern" 1;
+  }
+
+  /* Background atmosphere */
+  .bg-atmo {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .atmo-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(100px); opacity: .45;
+    animation: drift 22s var(--ease) infinite alternate;
+  }
+  .atmo-blob.a { width: 640px; height: 640px; background: radial-gradient(circle, var(--green-soft), transparent 68%); top: -180px; right: -160px; }
+  .atmo-blob.b { width: 460px; height: 460px; background: radial-gradient(circle, var(--green-light), transparent 68%); bottom: 8%; left: -140px; animation-delay: -8s; opacity: .32; }
+  .atmo-blob.c { width: 280px; height: 280px; background: radial-gradient(circle, var(--amber-soft), transparent 68%); top: 46%; right: 12%; animation-delay: -14s; opacity: .28; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(22px,-28px) scale(1.04); } }
+  .grid-overlay {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .018;
+    background-image:
+      linear-gradient(var(--ink-3) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ink-3) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  [data-theme="dark"] .grid-overlay { opacity: .025; }
+
+  .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+
+  /* Navigation */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 0;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink);
+  }
+  .nav-mark {
+    width: 40px; height: 40px; border-radius: 13px;
+    background: linear-gradient(145deg, var(--green-2), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(14,107,80,.28);
+    transition: transform .3s var(--ease), box-shadow .3s;
+  }
+  .nav-brand:hover .nav-mark { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(14,107,80,.36); }
+  .nav-name { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+  .nav-links { display: flex; align-items: center; gap: 8px; }
+  .nav-links a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; font-weight: 600; color: var(--ink-2); text-decoration: none;
+    padding: 10px 18px; border-radius: 999px;
+    transition: all .2s var(--ease);
+  }
+  .nav-links a:hover { color: var(--green); background: var(--green-soft); }
+
+  /* Hero — asymmetric split */
+  .hero {
+    display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px;
+    align-items: center; padding: 64px 0 72px;
+  }
+  .hero-main { max-width: 620px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green-soft); color: var(--green);
+    border: 1px solid var(--green-light);
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+  }
+  .hero h1 {
+    font-size: clamp(44px, 5.6vw, 74px);
+    font-weight: 800; letter-spacing: -2.4px; line-height: 1.05;
+    margin-bottom: 18px;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(110deg, var(--green), var(--green-3));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 1.5vw, 19px);
+    color: var(--ink-2); max-width: 500px; line-height: 1.75; margin-bottom: 32px;
+  }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-sub-links {
+    display: flex; align-items: center; gap: 14px; margin-top: 18px;
+    font-size: 14px; color: var(--ink-3); font-weight: 600;
+  }
+  .hero-sub-links a { color: var(--ink-2); text-decoration: none; transition: color .2s; }
+  .hero-sub-links a:hover { color: var(--green); }
+  .hero-sub-links .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
+    transition: all .25s var(--ease); font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--green); color: #fff;
+    padding: 16px 30px; border-radius: 999px;
+    box-shadow: 0 12px 32px rgba(14,107,80,.32);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); background: var(--green-2); }
+  .btn-primary:active { transform: translateY(0) scale(.98); }
+  .btn-ghost {
+    background: var(--surface); color: var(--ink-2);
+    padding: 15px 26px; border-radius: 999px;
+    border: 1.5px solid var(--line-2);
+  }
+  .btn-ghost:hover {
+    background: var(--green); color: #fff; border-color: var(--green);
+    transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42);
+  }
+  .hero-cta:hover .btn { opacity: .15; box-shadow: none; transform: none; }
+  .hero-cta:hover .btn:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 18px 44px rgba(14,107,80,.42); }
+
+  /* Hero visual */
+  .hero-visual {
+    position: relative; height: 420px; display: flex; align-items: center; justify-content: center;
+  }
+  .zhx-ring {
+    position: absolute; width: 340px; height: 340px; border-radius: 50%;
+    border: 1.5px solid var(--line-2); opacity: .7;
+    animation: pulse-ring 4s var(--ease) infinite;
+  }
+  @keyframes pulse-ring { 0%,100%{ transform: scale(1); opacity:.7; } 50%{ transform: scale(1.04); opacity:.4; } }
+  .zhx-avatar {
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 22%, var(--green-3), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 24px 70px rgba(14,107,80,.35), inset 0 -8px 24px rgba(0,0,0,.12);
+    position: relative; z-index: 2;
+    animation: float-zhx 6s var(--ease) infinite alternate;
+  }
+  @keyframes float-zhx { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+  .zhx-avatar svg { width: 84px; height: 84px; }
+  .zhx-bubble {
+    position: absolute; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 18px; padding: 12px 16px; box-shadow: var(--shadow-2);
+    font-size: 13px; color: var(--ink-2);
+    animation: bubble-in .8s var(--ease) both;
+    display: flex; align-items: center;
+  }
+  .zhx-bubble.b1 { top: 48px; right: 0; animation-delay: .2s; }
+  .zhx-bubble.b2 { bottom: 64px; left: 0; animation-delay: .45s; }
+  .zhx-bubble-row { display: flex; align-items: center; gap: 10px; }
+  .zhx-char {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--green-soft); color: var(--green);
+    font-size: 22px; font-weight: 800; line-height: 1;
+  }
+  .zhx-bubble-flow { font-size: 13px; color: var(--ink-2); margin-bottom: 2px; white-space: nowrap; }
+  .zhx-bubble-flow strong { color: var(--green); font-weight: 700; }
+  .zhx-bubble .zhx-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+  .zhx-bubble .zhx-sub strong { color: var(--green); font-weight: 700; }
+  @keyframes bubble-in { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform: none; } }
+
+  /* Section label */
+  .section-label {
+    font-size: 12px; font-weight: 800; color: var(--ink-3);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Entrance cards — 国际水准重设计 */
+  .entrance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 80px; align-items: stretch; }
+  .entry-card {
+    position: relative; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 24px; padding: 36px 32px 32px; cursor: pointer; overflow: hidden;
+    box-shadow: 0 1px 2px rgba(30,42,38,.04), 0 8px 24px rgba(30,42,38,.04);
+    transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s, border-color .45s;
+  }
+  .entry-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green-deep) 0%, var(--green) 50%, #5DD0A0 100%);
+    opacity: .95;
+  }
+  .entry-card::after {
+    content: ''; position: absolute; top: -40%; right: -20%; width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(29,158,117,.10) 0%, transparent 70%);
+    pointer-events: none; opacity: .8; transition: opacity .5s;
+  }
+  .entry-card.b::before { background: linear-gradient(90deg, var(--amber) 0%, #EAB968 50%, #F0CC85 100%); }
+  .entry-card.b::after { background: radial-gradient(circle, rgba(217,123,41,.10) 0%, transparent 70%); }
+  .entry-card:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+  .entry-card.b:focus-visible { outline-color: var(--amber); }
+  .entry-card:hover { transform: translateY(-6px); box-shadow: 0 4px 12px rgba(30,42,38,.06), 0 24px 60px rgba(14,107,80,.12); border-color: var(--green-light); }
+  .entry-card.b:hover { box-shadow: 0 4px 12px rgba(30,42,38,.06), 0 24px 60px rgba(217,123,41,.14); border-color: #F0D9B8; }
+  .entry-card:hover::after { opacity: 1; }
+  .entry-card:active { transform: translateY(-3px) scale(.998); }
+
+  .ec-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; position: relative; z-index: 1; }
+  .ec-icon {
+    width: 60px; height: 60px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--green-soft) 0%, #D6EFE2 100%);
+    color: var(--green-deep);
+    box-shadow: 0 4px 14px rgba(29,158,117,.18), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .entry-card.b .ec-icon {
+    background: linear-gradient(135deg, var(--amber-soft) 0%, #F8E4C5 100%);
+    color: var(--amber);
+    box-shadow: 0 4px 14px rgba(217,123,41,.18), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .ec-badge {
+    font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+    letter-spacing: .5px; backdrop-filter: blur(4px);
+  }
+  .ec-badge.live { background: rgba(227,243,236,.85); color: var(--green-deep); border: 1px solid rgba(29,158,117,.18); }
+  .ec-badge.soon { background: rgba(251,240,226,.85); color: #8B5A1B; border: 1px solid rgba(217,123,41,.22); }
+
+  .entry-card h2 {
+    font-size: 32px; font-weight: 800; letter-spacing: -.8px; line-height: 1.2;
+    margin-bottom: 10px; color: var(--ink); position: relative; z-index: 1;
+  }
+  .entry-card .desc {
+    font-size: 15.5px; color: var(--ink-2); line-height: 1.72;
+    margin-bottom: 24px; position: relative; z-index: 1;
+  }
+
+  /* Meta 优雅的 pill chips */
+  .ec-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; position: relative; z-index: 1; }
+  .ec-meta span {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: var(--ink-2); font-weight: 600;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--line);
+    transition: border-color .2s;
+  }
+  .ec-meta span svg { color: var(--green-deep); }
+  .entry-card.b .ec-meta span svg { color: var(--amber); }
+
+  /* Bento feature list — 横向步骤卡 */
+  .ec-bento {
+    counter-reset: bento;
+    display: flex; flex-direction: column; gap: 4px;
+    padding-top: 24px; border-top: 1px solid var(--line);
+    position: relative; z-index: 1;
+  }
+  .bento-cell {
+    counter-increment: bento;
+    display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center;
+    background: transparent; border: none; border-radius: 12px;
+    padding: 10px 12px; margin: 0;
+    transition: background .25s, transform .25s;
+  }
+  .bento-cell:hover { background: var(--green-50); transform: translateX(4px); }
+  .entry-card.b .bento-cell:hover { background: var(--amber-soft); }
+  .bento-cell .bc-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--green-soft); color: var(--green-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    position: relative; margin: 0;
+    transition: background .25s, color .25s;
+  }
+  .entry-card.b .bento-cell .bc-icon { background: var(--amber-soft); color: var(--amber); }
+  .bento-cell:hover .bc-icon { background: var(--green); color: #fff; }
+  .entry-card.b .bento-cell:hover .bc-icon { background: var(--amber); color: #fff; }
+  /* 编号小角标 */
+  .bento-cell .bc-icon::after {
+    content: counter(bento, decimal-leading-zero);
+    position: absolute; top: -8px; right: -10px;
+    min-width: 26px; height: 24px; padding: 0 6px;
+    background: #0A5A42; color: #fff;
+    border-radius: 999px; font-size: 12.5px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 2px solid var(--surface);
+    box-shadow: 0 2px 6px rgba(10,90,66,.35);
+  }
+  .entry-card.b .bento-cell .bc-icon::after { background: var(--amber); box-shadow: 0 2px 6px rgba(217,123,41,.35); }
+  .bento-cell h4 { font-size: 14.5px; font-weight: 700; margin: 0 0 3px; color: var(--ink); line-height: 1.4; }
+  .bento-cell p { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin: 0; }
+
+  .ec-archive {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 26px; font-size: 14px; font-weight: 600; color: var(--green-deep);
+    text-decoration: none; transition: gap .2s, color .2s;
+    position: relative; z-index: 2; padding: 8px 0;
+  }
+  .entry-card.b .ec-archive { color: var(--amber); }
+  .ec-archive::after {
+    content: ''; position: absolute; left: 0; right: 24px; bottom: 6px; height: 1px;
+    background: currentColor; transform: scaleX(.25); transform-origin: left;
+    opacity: .35; transition: transform .3s, opacity .3s;
+  }
+  .ec-archive:hover { gap: 12px; }
+  .ec-archive:hover::after { transform: scaleX(1); opacity: .85; }
+
+  .ec-arrow {
+    position: absolute; right: 28px; bottom: 28px; width: 44px; height: 44px;
+    border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line); color: var(--ink-3);
+    transition: transform .35s cubic-bezier(.16,1,.3,1), background .35s, border-color .35s, color .35s;
+    z-index: 1;
+  }
+  .entry-card:hover .ec-arrow { transform: translate(4px, -2px); background: var(--green); border-color: var(--green); color: #fff; }
+  .entry-card.b:hover .ec-arrow { background: var(--amber); border-color: var(--amber); }
+
+  /* Manifesto strip */
+  .manifesto {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-xl);
+    padding: 40px; margin-bottom: 80px; box-shadow: var(--shadow-1);
+    display: grid; grid-template-columns: 1fr 1px 1fr; gap: 40px; align-items: center;
+  }
+  .manifesto-divider { background: var(--line-2); height: 100%; min-height: 80px; }
+  .manifesto-block h3 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 10px; }
+  .manifesto-block p { font-size: 15px; color: var(--ink-2); line-height: 1.7; }
+
+  /* Footer */
+  .foot {
+    border-top: 1px solid var(--line); padding: 32px 0 48px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .foot-copy { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+  .foot-links { display: flex; gap: 22px; }
+  .foot-links a { font-size: 13px; color: var(--ink-2); text-decoration: none; font-weight: 600; transition: color .2s; }
+  .foot-links a:hover { color: var(--green); }
+
+  /* 今日卡片内嵌输入框 / 动态 CTA 区 */
+  .t-input {
+    display: flex; gap: 8px; align-items: stretch; margin: 4px 0 18px;
+  }
+  .t-input input {
+    flex: 1; min-width: 0; padding: 13px 16px; border-radius: 12px;
+    border: 1.5px solid var(--line-2); background: var(--surface); font-size: 14.5px;
+    font-family: inherit; color: var(--ink); outline: none; transition: border-color .2s;
+  }
+  .t-input input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.10); }
+  .t-input input::placeholder { color: var(--ink-3); }
+  .t-input a {
+    flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 20px; border-radius: 12px; background: var(--green-3); color: #fff;
+    font-size: 14px; font-weight: 700; text-decoration: none; transition: all .25s var(--ease);
+  }
+  .t-input a:hover { transform: translateY(-2px); background: var(--green-2); }
+  .t-input a.disabled { opacity: .5; cursor: not-allowed; transform: none; pointer-events: none; }
+  .entry-card.b .t-input a { background: var(--amber); }
+  .entry-card.b .t-input a:hover { background: #B0691F; }
+  .t-input button {
+    flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 20px; border-radius: 12px; background: var(--green-3); color: #fff;
+    font-size: 14px; font-weight: 700; border: none; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .t-input button:hover { transform: translateY(-2px); background: var(--green-2); }
+  .t-input button.disabled { opacity: .5; cursor: not-allowed; transform: none; pointer-events: none; }
+
+  .t-action { margin: 4px 0 18px; }
+  .t-action .ta-primary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px; border-radius: 12px;
+    background: var(--green-3); color: #fff; font-size: 15px; font-weight: 700;
+    text-decoration: none; transition: all .25s var(--ease); box-shadow: 0 6px 18px rgba(29,158,117,.22);
+  }
+  .t-action .ta-primary:hover { transform: translateY(-2px); background: var(--green-2); }
+  .t-action .ta-amber { background: var(--amber); box-shadow: 0 6px 18px rgba(217,123,41,.22); }
+  .t-action .ta-amber:hover { background: #B0691F; }
+  .t-action .ta-meta { font-size: 12.5px; color: var(--ink-3); margin-top: 8px; text-align: center; line-height: 1.6; }
+  .t-action .ta-meta b { color: var(--green); font-weight: 800; }
+  .t-action .ta-empty .ta-primary { background: var(--amber); }
+  .t-action .ta-empty .ta-primary:hover { background: #B0691F; }
+  .t-action .ta-empty .ta-meta { color: var(--ink-2); }
+  .t-action .ta-done { background: var(--green-soft); border: 1.5px solid var(--green-light); border-radius: 12px; padding: 14px; text-align: center; }
+  .t-action .ta-done-crown { font-size: 30px; line-height: 1; margin-bottom: 4px; }
+  .t-action .ta-done-title { font-size: 15px; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+  .t-action .ta-done-meta { font-size: 12.5px; color: var(--ink-2); margin-bottom: 10px; }
+  .t-action .ta-done a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--green); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+
+  /* FAB */
+  .fab-archive {
+    position: fixed; right: 22px; bottom: 22px; z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: #fff;
+    padding: 14px 22px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 12px 32px rgba(14,107,80,.38); transition: all .25s var(--ease); font-family: inherit;
+  }
+  .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(14,107,80,.48); background: var(--green-2); }
+
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 0 48px; }
+    .hero-sub { margin-left: auto; margin-right: auto; }
+    .hero-cta { justify-content: center; }
+    .hero-visual { order: -1; height: 280px; }
+    .zhx-avatar { width: 120px; height: 120px; }
+    .zhx-avatar svg { width: 62px; height: 62px; }
+    .zhx-ring { width: 240px; height: 240px; }
+    .zhx-bubble { display: none; }
+    .bento-cell { padding: 10px 8px; }
+    .bento-cell .bc-icon { flex-shrink: 0; }
+    .manifesto { grid-template-columns: 1fr; gap: 24px; }
+    .manifesto-divider { display: none; }
+  }
+  @media (max-width: 720px) {
+    .entrance { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 18px; }
+    .nav { padding: 18px 0; }
+    .nav-links a { padding: 8px 12px; }
+    .nav-links a span { display: none; }
+    .hero h1 { font-size: 38px; letter-spacing: -1.4px; }
+    .entry-card { padding: 24px 22px; }
+    .entry-card h2 { font-size: 22px; }
+    .ec-arrow { display: none; }
+    .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; }
+    .manifesto { padding: 28px 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+<script>
+  (function(){
+    try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); }
+    catch(e){}
+  })();
+</script>
+  <meta name="app-version" content="v2.0-draft">
+</head>
+<body>
+<div class="bg-atmo" aria-hidden="true">
+  <div class="atmo-blob a"></div>
+  <div class="atmo-blob b"></div>
+  <div class="atmo-blob c"></div>
+</div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<div class="wrap">
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">
+      <div class="nav-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
+        </svg>
+      </div>
+      <span class="nav-name">Transform</span>
+    </a>
+    <div class="nav-links">
+      <a href="cognitive.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>认知档案</span>
+      </a>
+      <a href="behavior.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
+        <span>行为档案</span>
+      </a>
+      <a href="app.html?settings=1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>设置</span>
+      </a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        AI 认知-行为进化引擎
+      </div>
+      <h1>想清楚，<span class="grad">做得到</span></h1>
+      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让知行陪你完成从洞察到改变的闭环。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="think.html">
+          开始一次认知提升
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="punch.html">
+          开始一次行为改变
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="hero-sub-links">
+        <span>从认知到行为，一次闭环</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="zhx-ring"></div>
+      <div class="zhx-avatar">
+        <svg width="84" height="84" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="10" r="4.5" stroke="#fff" stroke-width="1.6"/>
+          <path d="M7 17c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="10.3" cy="9.5" r=".9" fill="#fff"/>
+          <circle cx="13.7" cy="9.5" r=".9" fill="#fff"/>
+          <path d="M11.2 11.4c.5.3 1.1.3 1.6 0" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="zhx-bubble b1">
+        <div class="zhx-bubble-row">
+          <span class="zhx-char">知</span>
+          <div>
+            <div class="zhx-bubble-flow"><strong>归类</strong> → 洞察 → 应用</div>
+            <div class="zhx-sub">已沉淀 <strong id="insightCount">0</strong> 条认知</div>
+          </div>
+        </div>
+      </div>
+      <div class="zhx-bubble b2">
+        <div class="zhx-bubble-row">
+          <span class="zhx-char">行</span>
+          <div>
+            <div class="zhx-bubble-flow"><strong>拆解</strong> → 行动 → 转变</div>
+            <div class="zhx-sub">已做到 <strong id="behaviorCount">0</strong> 次</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <div class="manifesto-block">
+      <h3>AI 是脚手架，不是答案</h3>
+      <p>知行不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
+    </div>
+    <div class="manifesto-divider"></div>
+    <div class="manifesto-block">
+      <h3>从认知到行为，一次闭环</h3>
+      <p>想清楚还不够。把洞察放进真实场景推演，获得反馈，再调整认知——这才是真正的改变。</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span class="foot-copy">© Transform · 想清楚，做得到</span>
+    <div class="foot-links">
+      <a href="https://github.com/davidma1973simu/workbuddy-agents-marketplace" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<a class="fab-archive" href="cognitive.html" title="随时查看我的成长资产">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
+  成长资产
+</a>
+<script>
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function isTodayDone(action){
+  const today = new Date(); today.setHours(0,0,0,0);
+  return (action.logs || []).some(l => {
+    if (!l.done) return false;
+    const ld = new Date(l.date); ld.setHours(0,0,0,0);
+    return ld.getTime() === today.getTime();
+  });
+}
+function startTodayThink(e){
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const input = document.getElementById('todayTopic');
+  const topic = (input && input.value || '').trim();
+  if (topic.length < 4) return;
+  location.href = 'think.html?topic=' + encodeURIComponent(topic);
+}
+function setupTodayTopicInput(){
+  const input = document.getElementById('todayTopic');
+  const btn = document.getElementById('todayStart');
+  if (!input || !btn) return;
+  function sync(){
+    if (input.value.trim().length >= 4) btn.classList.remove('disabled');
+    else btn.classList.add('disabled');
+  }
+  input.addEventListener('input', sync);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter'){ e.preventDefault(); startTodayThink(); }
+  });
+  sync();
+  input.focus();
+}
+function renderTodayChange(){
+  const box = document.getElementById('todayChangeAction');
+  if (!box) return;
+  let actions = [];
+  try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]'); } catch(e){}
+  const active = actions.find(a => a && a.status === 'active');
+  const meta1 = document.getElementById('todayChangeMeta1');
+  const meta2 = document.getElementById('todayChangeMeta2');
+  const meta3 = document.getElementById('todayChangeMeta3');
+  const desc = document.getElementById('todayChangeDesc');
+  if (!active){
+    if (meta1) meta1.textContent = '1 分钟';
+    if (meta2) meta2.textContent = '1 个微行动';
+    if (meta3) meta3.textContent = '连续天数';
+    if (desc) desc.textContent = '每天做一步小事，把想清楚的事变成真正会发生的行为。';
+    box.innerHTML = `
+      <a class="ta-primary ta-amber" href="act.html" onclick="event.stopPropagation()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        先建一个 N 天行为实验
+      </a>
+      <div class="ta-meta">还没有开始实验 · 去「伴我改变」拆解出每天的小事</div>`;
+    return;
+  }
+  const today = (active.plan || []).find(p => p.day === active.currentDay);
+  const micro = (today && today.micro) || active.input;
+  const todayDone = isTodayDone(active);
+  if (meta1) meta1.textContent = '第 ' + active.currentDay + ' / ' + active.targetDays + ' 天';
+  if (meta2) meta2.textContent = (today && today.seconds ? (today.seconds + ' 秒微行动') : '一个微行动');
+  if (meta3) meta3.textContent = '连续 ' + (active.streak || 0) + ' 天';
+  if (desc) desc.textContent = active.anchor && active.anchor.after
+    ? ('在我「' + active.anchor.after + '」之后，做这一步。')
+    : '把想清楚的事变成真正会发生的行为。';
+  if (todayDone){
+    box.innerHTML = `
+      <div class="ta-done">
+        <div class="ta-done-crown">🎉</div>
+        <div class="ta-done-title">今天做到了！</div>
+        <div class="ta-done-meta">累计 <b style="color:var(--green);">${active.totalDone || 0}</b> 天 · 连续 <b style="color:var(--green);">${active.streak || 0}</b> 天</div>
+        <a href="behavior.html" onclick="event.stopPropagation()">查看行为档案 →</a>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <a class="ta-primary" href="punch.html" onclick="event.stopPropagation()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        做完了：${escapeHtml(micro)}
+      </a>
+      <div class="ta-meta">第 <b>${active.currentDay}</b> 天 · 累计 <b>${active.totalDone || 0}</b> 天 · 连续 <b>${active.streak || 0}</b> 天</div>`;
+  }
+}
+
+(function(){
+  try {
+    const archive = JSON.parse(localStorage.getItem('trf_archive') || '[]');
+    const actions = JSON.parse(localStorage.getItem('trf_actions') || '[]');
+    const insightEl = document.getElementById('insightCount');
+    const behaviorEl = document.getElementById('behaviorCount');
+    if (insightEl) insightEl.textContent = archive.length || 0;
+    if (behaviorEl) behaviorEl.textContent = actions.filter(a => a && (a.status === 'graduated' || a.totalDone > 0)).length || 0;
+  } catch(e) {}
+
+  setupTodayTopicInput();
+  renderTodayChange();
+
+  document.querySelectorAll('.entry-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const href = card.dataset.href;
+      if (href) location.href = href;
+    });
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const href = card.dataset.href;
+        if (href) location.href = href;
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

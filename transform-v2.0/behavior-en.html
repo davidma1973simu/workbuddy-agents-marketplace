@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Behavior Archive · Transform</title>
+<style>
+  :root {
+    --bg: #F6F5F1;
+    --surface: #FFFFFF;
+    --ink: #1E2A26;
+    --ink-2: #5A6B64;
+    --ink-3: #93A09A;
+    --line: #E4E8E3;
+    --green: #1D9E75;
+    --green-deep: #0E6B50;
+    --green-soft: #E3F3EC;
+    --green-50: #ECF8F3;
+    --green-light: #BFE9D8;
+    --amber: #D97B29;
+    --amber-soft: #FBF0E2;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow: 0 2px 8px rgba(30,42,38,.05), 0 12px 32px rgba(30,42,38,.07);
+    --shadow-hover: 0 6px 16px rgba(30,42,38,.09), 0 26px 60px rgba(30,42,38,.14);
+    --touch: 44px;
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  [data-theme="dark"] {
+    --bg: #13171A;
+    --surface: #1E2422;
+    --ink: #E8EFEB;
+    --ink-2: #A9B8B2;
+    --ink-3: #6E7E78;
+    --line: #2C3633;
+    --green: #2BBB8A;
+    --green-deep: #34D29E;
+    --green-soft: #16302A;
+    --green-50: #10221D;
+    --green-light: #1E4A3E;
+    --amber: #E8943F;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --shadow: 0 2px 8px rgba(0,0,0,.35), 0 12px 32px rgba(0,0,0,.55);
+    --shadow-hover: 0 6px 16px rgba(0,0,0,.4), 0 26px 60px rgba(0,0,0,.6);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    background:
+      radial-gradient(900px 420px at 100% -8%, rgba(29,158,117,.10), transparent 60%),
+      radial-gradient(720px 380px at -10% 4%, rgba(217,123,41,.08), transparent 55%),
+      var(--bg);
+    color: var(--ink); line-height: 1.62; min-height: 100vh;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 22px 20px 110px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none; color: var(--ink-2); font-size: 14px;
+    padding: 9px 15px; border-radius: 999px; background: var(--surface);
+    border: 1px solid var(--line); transition: all .2s;
+  }
+  .nav-link:hover { color: var(--green-deep); border-color: var(--green); }
+  .nav-link.primary { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); font-family: inherit;
+    transition: all .2s; margin-left: auto;
+  }
+  .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
+
+  .page-head { margin: 14px 0 18px; }
+  h1 { font-size: 27px; font-weight: 800; letter-spacing: -.5px; }
+  .page-sub { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+
+  .toolbar { display: flex; gap: 10px; margin: 16px 0 18px; flex-wrap: wrap; }
+  .toolbar .act {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600;
+    padding: 10px 16px; border-radius: 999px; cursor: pointer; transition: all .2s; font-family: inherit;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); text-decoration: none;
+  }
+  .toolbar .act:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .toolbar .act.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .toolbar .act.solid:hover { background: var(--green); }
+
+  /* 档案区域 */
+  .archive-section { margin-top: 32px; }
+  .archive-head {
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 4px 18px;
+  }
+  .archive-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .archive-section.cog .archive-icon {
+    background: linear-gradient(135deg, var(--green-soft), #D6EFE2); color: var(--green-deep);
+    box-shadow: 0 4px 14px rgba(29,158,117,.18);
+  }
+  .archive-section.beh .archive-icon {
+    background: linear-gradient(135deg, var(--amber-soft), #F8E4C5); color: var(--amber);
+    box-shadow: 0 4px 14px rgba(217,123,41,.18);
+  }
+  .archive-head h2 { font-size: 22px; font-weight: 800; letter-spacing: -.5px; line-height: 1.3; }
+  .archive-head p { font-size: 13px; color: var(--ink-3); margin-top: 3px; line-height: 1.5; }
+
+  /* 紧凑统计条 */
+  .stat-strip {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; margin: 18px 0 6px;
+    box-shadow: 0 1px 2px rgba(30,42,38,.03);
+  }
+  .stat-strip .item {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-2); font-weight: 600;
+  }
+  .stat-strip .num { font-size: 16px; font-weight: 800; color: var(--green-deep); }
+  .stat-strip .sep { color: var(--line); margin: 0 2px; }
+
+  /* 可展开卡（accordion） */
+  .expand-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    margin-bottom: 12px; overflow: hidden;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .expand-card.open { box-shadow: 0 4px 16px rgba(30,42,38,.06); }
+  .expand-card.open.cog { border-color: rgba(29,158,117,.25); }
+  .expand-card.open.beh { border-color: rgba(217,123,41,.25); }
+  .expand-head {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; padding: 16px 20px;
+    background: transparent; border: none; cursor: pointer;
+    text-align: left; font-family: inherit; color: inherit;
+    transition: background .2s;
+  }
+  .expand-head:hover { background: var(--bg); }
+  .expand-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 19px; flex-shrink: 0;
+    background: var(--green-soft); color: var(--green-deep);
+  }
+  .expand-card.beh .expand-icon { background: var(--amber-soft); color: var(--amber); }
+  .expand-card.open.cog .expand-icon { background: var(--green); color: #fff; }
+  .expand-card.open.beh .expand-icon { background: var(--amber); color: #fff; }
+  .expand-title { flex: 1; min-width: 0; }
+  .expand-name { font-size: 15.5px; font-weight: 700; color: var(--ink); }
+  .expand-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; }
+  .expand-count {
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    background: var(--bg); color: var(--ink-2); border: 1px solid var(--line); flex-shrink: 0;
+  }
+  .expand-card.open.cog .expand-count { background: var(--green-soft); color: var(--green-deep); border-color: rgba(29,158,117,.2); }
+  .expand-card.open.beh .expand-count { background: var(--amber-soft); color: #8B5A1B; border-color: rgba(217,123,41,.2); }
+  .expand-chevron { color: var(--ink-3); flex-shrink: 0; transition: transform .3s var(--ease); }
+  .expand-card.open .expand-chevron { transform: rotate(180deg); color: var(--green-deep); }
+  .expand-card.beh.open .expand-chevron { color: var(--amber); }
+  /* body 网格 0fr→1fr 平滑展开 */
+  .expand-body {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows .35s cubic-bezier(.16,1,.3,1);
+  }
+  .expand-card.open .expand-body { grid-template-rows: 1fr; }
+  .expand-body > .inner { overflow: hidden; }
+  .expand-card.open .expand-body > .inner { padding: 4px 20px 20px; }
+  .expand-empty {
+    padding: 28px 20px; text-align: center; color: var(--ink-3); font-size: 13.5px;
+  }
+  .expand-empty a { color: var(--green); text-decoration: none; font-weight: 700; }
+
+  /* Trash */
+  .archive-section.trash .archive-icon { background: linear-gradient(135deg, #ECEFF1, #D7DBDF); color: #5b6b73; box-shadow: 0 4px 14px rgba(90,107,115,.16); }
+  .expand-card.trash-card.open { border-color: rgba(90,107,115,.25); }
+  .expand-card.trash-card .expand-icon { background: #ECEFF1; color: #5b6b73; }
+  .expand-card.trash-card.open .expand-icon { background: #5b6b73; color: #fff; }
+  .expand-card.trash-card.open .expand-count { background: #ECEFF1; color: #5b6b73; border-color: rgba(90,107,115,.2); }
+  .expand-card.trash-card.open .expand-chevron { color: #5b6b73; }
+
+  /* merge: count badge + fold meta */
+  .fold-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fold-count { font-size: 11.5px; font-weight: 700; color: var(--green-deep); background: var(--green-soft); border: 1px solid rgba(29,158,117,.2); border-radius: 999px; padding: 1px 8px; }
+
+  /* each occurrence after merge */
+  .occ { padding: 12px 0; border-top: 1px solid var(--line); }
+  .occ:first-child { border-top: none; padding-top: 4px; }
+  .occ-date { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+  .occ .i-row, .occ .m-framework, .occ .m-changed { font-size: 13.5px; color: var(--ink); line-height: 1.6; margin: 3px 0; }
+  .occ .i-row b, .occ .m-changed b { color: var(--ink-2); font-weight: 700; margin-right: 4px; }
+
+  /* trash items */
+  .trash-toolbar { margin-bottom: 12px; }
+  .trash-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .trash-item:first-child { border-top: none; }
+  .ti-type { display: inline-block; font-size: 11px; font-weight: 700; color: var(--ink-3); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; margin-bottom: 4px; }
+  .ti-title { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+  .ti-sub { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+  .ti-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .mini.del { color: #c0392b; border-color: rgba(192,57,43,.3); }
+  .mini.del:hover { background: rgba(192,57,43,.08); }
+
+  /* 身份英雄卡 */
+  .identity-card {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #0E6B50 0%, #1D9E75 55%, #2BBB8A 100%);
+    border-radius: var(--radius-lg); padding: 24px 22px; color: #fff;
+    box-shadow: 0 12px 34px rgba(14,107,80,.32); margin-bottom: 14px;
+    animation: rise .5s cubic-bezier(.16,1,.3,1);
+  }
+  .identity-card::after { content:""; position:absolute; right:-50px; top:-50px; width:180px; height:180px; border-radius:50%; background: rgba(255,255,255,.10); }
+  .identity-card .k { font-size: 12px; opacity: .8; font-weight: 700; letter-spacing: 1.2px; }
+  .identity-card .v { font-size: 18px; font-weight: 800; margin-top: 8px; line-height: 1.5; position: relative; }
+  .identity-card .v em { font-style: normal; border-bottom: 2px solid rgba(255,255,255,.55); padding-bottom: 2px; }
+  .identity-card .count {
+    font-size: 12px; opacity: .85; margin-top: 12px; display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.14); padding: 6px 12px; border-radius: 999px;
+  }
+  .identity-empty {
+    background: var(--green-soft); color: var(--green-deep); padding: 20px 22px;
+    border-radius: var(--radius-md); font-size: 14px; margin-bottom: 14px;
+    display: flex; gap: 12px; align-items: flex-start; line-height: 1.7; border: 1px solid #CFE9DC;
+  }
+
+  /* 统计 */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0 6px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; box-shadow: var(--shadow); }
+  .stat .num { font-size: 22px; font-weight: 800; color: var(--green-deep); letter-spacing: -.5px; }
+  .stat .lbl { font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+
+  .section-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; margin: 30px 0 14px; scroll-margin-top: 16px; }
+  .section-title svg { color: var(--green); flex-shrink: 0; }
+  .section-title .sec-sub { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-left: auto; }
+
+  /* mental model卡 */
+  .model { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 20px 16px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
+  .model .m-scenario { font-size: 13px; font-weight: 700; color: var(--green-deep); }
+  .model .m-framework {
+    position: relative; font-size: 16px; font-weight: 800; color: var(--ink); line-height: 1.7;
+    background: var(--green-50); border-left: 4px solid var(--green);
+    padding: 14px 16px 14px 18px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-top: 10px;
+  }
+  .model .m-changed { font-size: 13.5px; color: var(--ink-2); margin-top: 10px; line-height: 1.6; }
+  .model .m-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
+
+  /* Insight卡 */
+  .insight { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
+  .insight .i-scenario { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .insight .i-row { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+  .insight .i-row b { color: var(--green-deep); font-size: 12px; display: inline-block; min-width: 44px; }
+  .asset-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag-chip { font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; }
+  .insight .i-date { font-size: 12px; color: var(--ink-3); margin-top: 12px; }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filter-chip { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: inherit; transition: all .18s; }
+  .filter-chip.on { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
+  .filter-sep { display: inline-block; width: 1px; height: 22px; background: var(--line); margin: 4px 4px; }
+  .filter-search {
+    flex: 1; min-width: 120px; max-width: 220px;
+    padding: 7px 12px; font-family: inherit; font-size: 13px;
+    color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+  .filter-search:focus { outline: none; border-color: var(--green); }
+
+  /* behavior experiment卡 */
+  .action {
+    position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 20px 20px 14px; margin-bottom: 14px; box-shadow: var(--shadow);
+    transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s;
+    animation: rise .5s cubic-bezier(.16,1,.3,1);
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .action:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: #CDE6DA; }
+  .action .row1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .action .date { font-size: 12.5px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+  .status-chip { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .status-chip.active { color: var(--green-deep); background: var(--green-soft); }
+  .status-chip.graduated { color: #7A5E16; background: var(--amber-soft); }
+  .status-chip.paused { color: var(--ink-3); background: var(--bg); }
+  .action .input { font-size: 15px; font-weight: 700; color: var(--ink-2); line-height: 1.5; }
+  .action .plan-pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    color: var(--green-deep); background: var(--green-soft); border: 1px solid #CFE9DC;
+    padding: 4px 11px; border-radius: 999px; margin-top: 8px; align-self: flex-start;
+  }
+  .action .tiny {
+    position: relative; font-size: 15px; font-weight: 800; color: var(--green-deep);
+    background: linear-gradient(180deg, var(--green-soft), #F1FAF5); border-left: 4px solid var(--green);
+    padding: 12px 14px 12px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.6; margin-top: 10px;
+  }
+  .action .a-source { font-size: 12px; color: var(--ink-3); margin-top: 10px; line-height: 1.6; }
+  .action .a-source b { color: var(--green-deep); }
+  .action .a-reflect { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+  .action .a-reflect b { color: var(--amber); font-size: 12px; }
+  .action .anchor { font-size: 13px; color: var(--ink-2); margin-top: 10px; line-height: 1.6; }
+  .action .meta { display: flex; gap: 14px; font-size: 12px; color: var(--ink-3); margin-top: 12px; flex-wrap: wrap; }
+  .action .foot { display: flex; gap: 8px; margin-top: auto; padding-top: 12px; }
+  .mini {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line);
+    padding: 9px 8px; min-height: var(--touch); border-radius: 10px; cursor: pointer; transition: all .18s; font-family: inherit; text-decoration: none;
+  }
+  .mini:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .mini.solid:hover { background: var(--green); }
+
+  /* Foldable asset cards: show title only by default, expand on click */
+  .fold-card { cursor: pointer; }
+  .fold-head { position: relative; }
+  .fold-head::after {
+    content: "";
+    position: absolute; right: 18px; top: 50%;
+    width: 7px; height: 7px;
+    border-right: 2px solid var(--ink-3); border-bottom: 2px solid var(--ink-3);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform .25s var(--ease);
+  }
+  .fold-card.open .fold-head::after { transform: translateY(-30%) rotate(-135deg); }
+  .model.fold-card, .insight.fold-card, .action.fold-card { transition: border-color .2s, box-shadow .2s; }
+  .model.fold-card:hover, .insight.fold-card:hover, .action.fold-card:hover { border-color: var(--green-light); }
+  .action.fold-card:hover { transform: none; box-shadow: var(--shadow); border-color: #CDE6DA; }
+  .fold-body { display: none; }
+  .fold-card.open .fold-body { display: block; animation: rise .25s var(--ease); }
+  .model .m-scenario, .insight .i-scenario, .action .input { padding-right: 28px; }
+
+  /* pattern识别 */
+  .pattern-cta {
+    background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
+    border: 1.5px solid var(--green); border-radius: var(--radius-lg); padding: 22px;
+    margin-bottom: 14px;
+  }
+  .pattern-cta h3 { font-size: 16px; font-weight: 800; }
+  .pattern-cta p { font-size: 13.5px; color: var(--ink-2); margin-top: 6px; line-height: 1.7; }
+  .pattern-cta .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-ai { background: var(--green-soft); color: var(--green-deep); padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid rgba(29,158,117,.25); cursor: pointer; font-family: inherit; transition: all .2s; }
+  .btn-ai:hover { background: var(--green-light); }
+  .btn-ghost { background: var(--bg); color: var(--ink-2); padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line); cursor: pointer; font-family: inherit; transition: all .2s; }
+  .btn-ghost:hover { color: var(--green-deep); border-color: var(--green); }
+  .pattern { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow); animation: rise .5s cubic-bezier(.16,1,.3,1); }
+  .pattern .p-title { font-size: 15px; font-weight: 800; color: var(--ink); }
+  .pattern .p-title .tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--green-deep); background: var(--green-soft); padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+  .pattern .p-evidence { font-size: 13px; color: var(--ink-2); margin-top: 8px; line-height: 1.7; }
+  .pattern .p-insight { font-size: 13.5px; color: var(--green-deep); margin-top: 10px; line-height: 1.7; font-weight: 700; }
+  .pattern-meta { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+
+  .empty { text-align: center; color: var(--ink-3); padding: 50px 20px; font-size: 14px; }
+  .empty .big { width: 60px; height: 60px; margin: 0 auto 14px; border-radius: 20px; background: var(--green-soft); display: flex; align-items: center; justify-content: center; }
+  .empty a { color: var(--green); text-decoration: none; font-weight: 700; }
+
+  /* 设置弹窗 + toast */
+  .modal-mask { position: fixed; inset: 0; background: rgba(20,28,25,.45); z-index: 90; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal-mask.show { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 420px; box-shadow: var(--shadow-hover); }
+  .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
+  .modal label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
+  .modal select, .modal input {
+    width: 100%; padding: 12px 14px; font-family: inherit; font-size: 15px; color: var(--ink);
+    background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md);
+  }
+  .modal .row { display: flex; gap: 10px; margin-top: 20px; }
+  /* ===== 资产编辑（通用：编辑/归类/删除） ===== */
+  .asset-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .asset-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink-2); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .asset-btn:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .asset-btn.del:hover { background: var(--red-soft, #fdecea); color: #c0392b; border-color: #c0392b; }
+  .asset-btn.tag:hover { background: var(--amber-soft); color: #8B5A1B; border-color: var(--amber); }
+  .modal textarea {
+    width: 100%; min-height: 76px; padding: 12px 14px; font-family: inherit; font-size: 14.5px;
+    color: var(--ink); background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); resize: vertical; line-height: 1.6;
+  }
+  .modal .tag-input-row { display: flex; gap: 8px; align-items: center; }
+  .modal .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .modal-existing-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .existing-tag {
+    font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px;
+    cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .existing-tag:hover { color: var(--green-deep); background: var(--green-soft); border-color: var(--green); }
+  .modal .tag-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--amber-soft); color: #8B5A1B;
+    border: 1px solid rgba(217,123,41,.3); border-radius: 999px;
+    padding: 4px 11px; font-size: 12.5px; font-weight: 600;
+  }
+  .modal .tag-item .x { cursor: pointer; opacity: .7; font-weight: 800; }
+  .modal .tag-item .x:hover { opacity: 1; color: #c0392b; }
+  .modal .btn-ghost, .modal .btn-ok {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .modal .btn-ghost { background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--line-2); }
+  .modal .btn-ghost:hover { border-color: var(--green); color: var(--green-deep); }
+  .modal .btn-ok { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(14,107,80,.3); }
+  .modal .btn-ok:hover { background: var(--green-deep); }
+  .modal .btn-danger {
+    padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    background: #c0392b; color: #fff; border: none; cursor: pointer; font-family: inherit;
+  }
+  .toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 20px);
+    background: var(--ink); color: #fff; font-size: 14px; font-weight: 600;
+    padding: 12px 22px; border-radius: 999px; opacity: 0; pointer-events: none;
+    transition: all .25s var(--ease); z-index: 100; max-width: 86vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  @media (min-width: 900px) {
+    .wrap { max-width: 940px; }
+    #insightList, #modelList { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+    #actionList { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; grid-auto-rows: 1fr; }
+    .model, .insight, .action { margin-bottom: 0; }
+  }
+  @media (min-width: 1200px) {
+    .wrap { max-width: 1100px; }
+    #actionList { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  @media (max-width: 520px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<script>
+  (function(){
+    try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); } catch(e){}
+  })();
+</script>
+<link rel="icon" href="data:,">
+  <meta name="app-version" content="v2.0-draft">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="nav-link" href="index-en.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Home
+    </a>
+    <a class="nav-link primary" href="app-en.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 8a7 7 0 0114 0v2M5 16a7 7 0 0014 0v-2M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Guided Insight
+    </a>
+    <a class="nav-link primary" href="act-en.html">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      Guided Change
+    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
+  </div>
+
+  <div class="page-head">
+    <h1>Behavior Archive</h1>
+    <div class="page-sub">Every action completed becomes a long-term behavioral asset</div>
+  </div>
+
+  <div class="toolbar">
+    <a class="act solid" href="act-en.html">Start a Behavior Change</a>
+    <a class="act" href="cognitive-en.html">View Insight Archive</a>
+    <button class="act" onclick="downloadAll()">Export Data</button>
+    <button class="act" onclick="openSettings()">AI Settings</button>
+  </div>
+
+  <!-- 顶部：身份 + 紧凑统计条 -->
+  <div id="identityArea" style="scroll-margin-top:14px;"></div>
+  <div class="stat-strip" id="statsArea"></div>
+
+  
+  <section class="archive-section beh">
+    <div class="archive-head">
+      <div class="archive-icon">🧪</div>
+      <div>
+        <h2>Behavior Archive</h2>
+        <p>Every action completed becomes a long-term behavioral asset</p>
+      </div>
+    </div>
+
+    <div class="expand-card beh" data-section="experiments">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">⚡</span>
+        <span class="expand-title">
+          <span class="expand-name">Behavior Experiment</span>
+          <span class="expand-sub">Records of turning insight into action</span>
+        </span>
+        <span class="expand-count" id="experimentsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner">
+        <div class="filter-row" id="actionFilters"></div>
+        <div id="actionList"></div>
+      </div></div>
+    </div>
+
+    <div class="expand-card beh" data-section="patterns">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">🔍</span>
+        <span class="expand-title">
+          <span class="expand-name">Pattern Recognition</span>
+          <span class="expand-sub">Repeated patterns Transform finds across time</span>
+        </span>
+        <span class="expand-count" id="patternsCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
+    </div>
+  </section>
+
+  <!-- Trash -->
+  <section class="archive-section trash">
+    <div class="archive-head">
+      <div class="archive-icon">🗑️</div>
+      <div>
+        <h2>Trash</h2>
+        <p>Deleted assets land here and can be restored within 30 days</p>
+      </div>
+    </div>
+    <div class="expand-card trash-card" data-section="trash">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">🗑️</span>
+        <span class="expand-title">
+          <span class="expand-name">Deleted Assets</span>
+          <span class="expand-sub">auto-purged after 30 days</span>
+        </span>
+        <span class="expand-count" id="trashCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner">
+        <div class="trash-toolbar"><button class="mini del" id="trashEmptyBtn" onclick="emptyTrash()">Empty Trash</button></div>
+        <div id="trashList"></div>
+      </div></div>
+    </div>
+  </section>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="modal-mask" id="settingsMask" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h3>AI Assistant Settings</h3>
+    <label>Provider</label>
+    <select id="cfgBrand">
+      <option value="DeepSeek">DeepSeek</option>
+      <option value="OpenAI">OpenAI</option>
+      <option value="Gemini">Gemini</option>
+    </select>
+    <label>API Key</label>
+    <input type="text" id="cfgApiKey" placeholder="Paste your API Key">
+    <div class="row">
+      <button class="btn-ai" style="flex:1;" onclick="saveSettings()">Save</button>
+      <button class="btn-ghost" onclick="closeSettings()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Common asset editor modal (Edit / Tag / Delete) -->
+<div class="modal-mask" id="assetModalMask" onclick="if(event.target===this)closeAssetModal()">
+  <div class="modal" id="assetModalBox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 数据层 ===================== */
+const LS_ARCHIVE = 'trf_archive';
+const LS_ACTIONS = 'trf_actions';
+const LS_PROFILE = 'trf_profile';
+const LS_AI = 'trf_ai_config_v1';
+const LS_PATTERNS = 'trf_patterns';
+const BRAND_PROFILES = {
+  'DeepSeek': { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+  'OpenAI':   { baseUrl: 'https://api.openai.com/v1',  model: 'gpt-4o-mini' },
+  'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
+};
+
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200); }
+function fmtDate(iso){ try { return new Date(iso).toLocaleDateString('zh-CN', {year:'numeric', month:'numeric', day:'numeric'}); } catch(e){ return ''; } }
+function loadArchive(){ try { return JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e){ return []; } }
+function loadActions(){ try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e){ return []; } }
+function loadProfile(){ try { return JSON.parse(localStorage.getItem(LS_PROFILE)) || { identityStatements: [] }; } catch(e){ return { identityStatements: [] }; } }
+function getAI(){
+  let cfg; try { cfg = JSON.parse(localStorage.getItem(LS_AI)) || {}; } catch(e){ cfg = {}; }
+  const brand = cfg.brand || 'DeepSeek';
+  const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
+  return { brand, apiKey: cfg.apiKey || '', baseUrl: cfg.baseUrl || profile.baseUrl, model: cfg.model || profile.model };
+}
+async function aiCall(prompt, attempt = 1){
+  const cfg = getAI();
+  if (!cfg.apiKey){ toast('Set your API Key so Transform AI can find patterns across time'); return null; }
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  const maxAttempts = 5;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.5, max_tokens: 1200 })
+    });
+    if (!res.ok){
+      if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
+        await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+        return aiCall(prompt, attempt + 1);
+      }
+      throw new Error('AI request failed: ' + res.status);
+    }
+    return (await res.json()).choices[0].message.content;
+  } catch(e){
+    if (attempt < maxAttempts && ((e.message||'').includes('Failed to fetch') || (e.message||'').includes('aborted'))){
+      await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+      return aiCall(prompt, attempt + 1);
+    }
+    toast('AI unavailable right now \u2014 try again later');
+    return null;
+  }
+}
+
+/* ===================== 身份 ===================== */
+function renderIdentity(){
+  const profile = loadProfile();
+  const votes = (profile.identityStatements || []).slice();
+  const area = $('identityArea');
+  if (!votes.length){
+    area.innerHTML = `<div class="identity-empty">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
+      No identity votes yet. Each completed Guided Insight or Guided Change session casts a vote for \u201cthe person I want to become\u201d \u2014 votes accumulate here.
+    </div>`;
+    return;
+  }
+  const map = new Map();
+  votes.forEach(s => {
+    const it = map.get(s.text) || { text: s.text, votes: 0, date: s.date };
+    it.votes += (s.votes || 1);
+    if (new Date(s.date) > new Date(it.date)) it.date = s.date;
+    map.set(s.text, it);
+  });
+  const list = Array.from(map.values()).sort((a,b) => (b.votes - a.votes) || (new Date(b.date) - new Date(a.date)));
+  const top = list[0];
+  const rest = list.slice(1);
+  area.innerHTML = `
+    <div class="identity-card">
+      <div class="k">I am becoming</div>
+      <div class="v">a \u201c<em>${escapeHtml(top.text)}</em>\u201d person</div>
+      <div class="count">${top.votes} votes${rest.length ? ' \u00b7 ' + rest.length + ' more identities building' : ' \u00b7 you are becoming this person'}</div>
+    </div>`;
+}
+
+/* ===================== 统计 ===================== */
+function renderStats(){
+  const actions = loadActions();
+  const graduated = actions.filter(a => a.status === 'graduated').length;
+  const totalDone = actions.reduce((a,b) => a + (b.totalDone || 0), 0);
+  const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
+  const active = actions.filter(a => a.status === 'active').length;
+  $('statsArea').innerHTML = `
+    <span class="item"><span class="num">${actions.length}</span>experiments</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${graduated}</span>graduated</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${active}</span>active</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${bestStreak}</span>best streak</span>
+    <span class="sep">·</span>
+    <span class="item"><span class="num">${totalDone}</span>total done</span>
+  `;
+  $('experimentsCount').textContent = actions.length;
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  $('patternsCount').textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
+}
+
+/* ===================== 展开 / 收起 ===================== */
+function toggleExpand(head){
+  const card = head.closest('.expand-card');
+  card.classList.toggle('open');
+}
+function toggleFold(card){
+  card.classList.toggle('open');
+}
+
+// merge by scenario title: same title -> one card, count = number of occurrences; empty/default titles stay separate
+function groupByScenario(list){
+  const def = ['一次梳理', '一次认知梳理', '一次想清楚', 'a session', 'a thinking session'];
+  const map = new Map();
+  list.forEach(s => {
+    const sc = (s.scenario || '').trim();
+    const key = (sc && !def.includes(sc)) ? sc : ('__' + (s.id != null ? s.id : (JSON.stringify(s).length + '_' + Math.random())));
+    if (!map.has(key)) map.set(key, { scenario: sc || 'a session', items: [] });
+    map.get(key).items.push(s);
+  });
+  return [...map.values()];
+}
+
+/* ===================== mental model（复盘产出） ===================== */
+function renderModels(){
+  const box = $('modelList'); if (!box) return;
+  const archive = loadArchive();
+  const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
+  const box = $('modelList');
+  if (!models.length){
+    box.innerHTML = `<div class="expand-empty">No mental models banked yet.<br>Complete a Guided Insight session and review it \u2014 your new framework will appear here.<br><a href="app-en.html">Think something through →</a></div>`;
+    return;
+  }
+  box.innerHTML = groupByScenario(models).map(g => {
+    const n = g.items.length;
+    const latest = g.items.slice().sort((a,b)=> new Date(b.reflectedAt||b.completedAt||b.createdAt||0) - new Date(a.reflectedAt||a.completedAt||a.createdAt||0))[0];
+    const countBadge = n > 1 ? `<span class="fold-count">produced ${n} times</span>` : '';
+    const occHtml = g.items.map(s => {
+      const fw = (s.mentalModel || '').trim();
+      const changed = (s.reflection && s.reflection.changed || '').trim();
+      return `<div class="occ">
+        <div class="occ-date">Reviewed on ${fmtDate(s.reflectedAt || s.completedAt || s.createdAt)}</div>
+        ${fw ? `<div class="m-framework">${escapeHtml(fw)}</div>` : ''}
+        ${changed ? `<div class="m-changed"><b>What changed:</b> ${escapeHtml(changed)}</div>` : ''}
+        ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        ${assetActions('model', s.id)}
+      </div>`;
+    }).join('');
+    return `<div class="model fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="m-scenario">${escapeHtml(g.scenario)}</div>
+        <div class="fold-meta">${countBadge}<span class="m-date">Reviewed on ${fmtDate(latest.reflectedAt || latest.completedAt || latest.createdAt)}</span></div>
+      </div>
+      <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== Insight library (tag + search filters) ===================== */
+let insightFilter = '';
+let insightSearch = '';
+function setInsightSearch(v){
+  insightSearch = (v || '').trim();
+  renderInsights();
+}
+function renderTagFilters(){
+  const archive = loadArchive();
+  const box = $('tagFilters'); if (!box) return;
+  const tags = [];
+  archive.forEach(s => (s.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
+  if (!tags.length){ box.innerHTML = ''; return; }
+  box.innerHTML = '<button class="filter-chip' + (insightFilter ? '' : ' on') + '" onclick="setTagFilter(\'\')">All</button>' +
+    tags.map(t => `<button class="filter-chip${insightFilter === t ? ' on' : ''}" onclick="setTagFilter('${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
+}
+function setTagFilter(t){ insightFilter = t; renderTagFilters(); renderInsights(); }
+function renderInsights(){
+  const box = $('insightList'); if (!box) return;
+  let archive = loadArchive();
+  if (!archive.length){
+    box.innerHTML = `<div class="expand-empty">No insights yet.<br>Every Guided Insight session\u2019s core insight is banked here.<br><a href="app-en.html">Create your first insight →</a></div>`;
+    return;
+  }
+  if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
+  if (insightSearch){
+    const q = insightSearch.toLowerCase();
+    archive = archive.filter(s => {
+      const e = s.essence || {};
+      const hay = [(s.scenario || ''), (e.nature || ''), (e.insight || ''), ((s.reflection && s.reflection.learned) || '')].join(' ').toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  if (!archive.length){ box.innerHTML = '<div class="expand-empty">No insights match the current filter.</div>'; return; }
+  box.innerHTML = groupByScenario(archive).map(g => {
+    const n = g.items.length;
+    const latest = g.items.slice().sort((a,b)=> new Date(b.completedAt||b.createdAt||0) - new Date(a.completedAt||a.createdAt||0))[0];
+    const countBadge = n > 1 ? `<span class="fold-count">appeared ${n} times</span>` : '';
+    const occHtml = g.items.map(s => {
+      const e = s.essence || {};
+      const nature = (e.nature || '').trim();
+      const insight = (e.insight || '').trim();
+      const learned = (s.reflection && s.reflection.learned || '').trim();
+      return `<div class="occ">
+        <div class="occ-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' \u00b7 reviewed' : ''}</div>
+        ${nature ? `<div class="i-row"><b>Essence</b>${escapeHtml(nature)}</div>` : ''}
+        ${insight ? `<div class="i-row"><b>Insight</b>${escapeHtml(insight)}</div>` : ''}
+        ${learned ? `<div class="i-row"><b>Learned</b>${escapeHtml(learned)}</div>` : ''}
+        ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        ${assetActions('insight', s.id)}
+      </div>`;
+    }).join('');
+    return `<div class="insight fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="i-scenario">${escapeHtml(g.scenario)}</div>
+        <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' \u00b7 reviewed' : ''}</span></div>
+      </div>
+      <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== behavior experiment ===================== */
+let actionFilter = { status: '', tag: '', q: '' };
+
+function renderActions(){
+  const actions = loadActions();
+  renderActionFilters(actions);
+  const box = $('actionList');
+  if (!actions.length){
+    box.innerHTML = `<div class="expand-empty">No behavior experiments yet.<br>Every Guided Change session is a life experiment \u2014 from insight to action, fully recorded here.<br><a href="act-en.html">Start your first experiment →</a></div>`;
+    return;
+  }
+  const filtered = filterActions(actions);
+  if (!filtered.length){
+    box.innerHTML = `<div class="expand-empty">No behavior experiments match the current filters.</div>`;
+    return;
+  }
+  box.innerHTML = filtered.map(a => {
+    const status = a.status || 'active';
+    const statusText = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || status;
+    const statusClass = { active: 'active', graduated: 'graduated', paused: 'paused' }[status] || 'paused';
+    const lastLog = (a.logs || []).slice(-1)[0];
+    const lastDate = lastLog ? fmtDate(lastLog.date) : fmtDate(a.createdAt);
+    const N = a.targetDays || 0;
+    const totalDone = a.totalDone || 0;
+    const plan = a.plan || [];
+    const curDay = a.currentDay || 1;
+    const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro : ((a.tiny && a.tiny.text) || '');
+    const microText = status === 'graduated' ? 'completed all ' + N + ' days' : (curMicro || '');
+    return `<div class="action fold-card" onclick="toggleFold(this)">
+      <div class="fold-head">
+        <div class="row1">
+          <span class="date">${lastDate}</span>
+          <span class="status-chip ${statusClass}">${statusText}</span>
+        </div>
+        <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
+        ${N ? `<span class="plan-pill">📅 ${N}-day experiment \u00b7 ${totalDone}/${N} done</span>` : ''}
+      </div>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
+        ${a.insight ? `<div class="a-source"><b>From insight:</b> ${escapeHtml(a.insight.replace(/\n+/g, ' \u00b7 '))}</div>` : ''}
+        ${a.anchor && a.anchor.after ? `<div class="anchor">Anchor: after I ${escapeHtml(a.anchor.after)}</div>` : ''}
+        ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
+          ${a.result ? `<div><b>Result</b> ${escapeHtml(a.result)}</div>` : ''}
+          ${a.habit ? `<div><b>New habit</b> ${escapeHtml(a.habit)}</div>` : ''}
+          ${a.reflection && a.reflection.changed ? `<div><b>Change</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
+        </div>` : ''}
+        ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="meta">
+          <span>${a.streak || 0}-day streak</span>
+          <span>${totalDone} days total</span>
+          <span>${a.totalDone || 0} identity votes</span>
+        </div>
+        <div class="foot">
+          <a class="mini solid" href="act-en.html?id=${a.id}">Do / Continue</a>
+          <button class="mini" onclick="exportOne('${a.id}')">Export</button>
+        </div>
+        ${assetActions('action', a.id)}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderActionFilters(actions){
+  const box = $('actionFilters');
+  if (!box) return;
+  if (!actions.length){ box.innerHTML = ''; return; }
+  const tags = [];
+  actions.forEach(a => (a.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
+  const statusOpts = [
+    { k: '', v: 'All' },
+    { k: 'active', v: 'Active' },
+    { k: 'graduated', v: 'Graduated' },
+    { k: 'paused', v: 'Paused' }
+  ];
+  let html = statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
+  if (tags.length){
+    html += '<span class="filter-sep"></span>' +
+      '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">All tags</button>' +
+      tags.map(t => `<button class="filter-chip${actionFilter.tag === t ? ' on' : ''}" onclick="setActionFilter('tag','${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
+  }
+  html += '<span class="filter-sep"></span>' +
+    `<input type="text" class="filter-search" placeholder="Search experiments…" value="${escapeHtml(actionFilter.q)}" oninput="setActionFilter('q', this.value)">`;
+  box.innerHTML = html;
+}
+function setActionFilter(key, value){
+  actionFilter[key] = value;
+  renderActions();
+}
+function filterActions(actions){
+  return actions.filter(a => {
+    if (actionFilter.status && (a.status || 'active') !== actionFilter.status) return false;
+    if (actionFilter.tag && !(a.tags || []).includes(actionFilter.tag)) return false;
+    if (actionFilter.q){
+      const q = actionFilter.q.toLowerCase();
+      const hay = [(a.input || a.goal || ''), (a.result || ''), (a.habit || ''), (a.goal || '')].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ===================== pattern识别 ===================== */
+function renderPatterns(){
+  const area = $('patternArea');
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  const archive = loadArchive(); const actions = loadActions();
+  const hasData = archive.length || actions.length;
+  if (saved && saved.patterns && saved.patterns.length){
+    area.innerHTML = `<div class="pattern-cta">
+      <h3>Patterns Transform found across time</h3>
+      <p>Based on your ${archive.length} insight sessions + ${actions.length} behavior experiments, ${saved.patterns.length} repeating patterns identified. Analyzed on ${fmtDate(saved.generatedAt)}。</p>
+      <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(true)">Re-analyze</button><button class="btn-ghost" onclick="clearPatterns()">Clear</button></div>
+    </div>` +
+    saved.patterns.map((p, i) => `<div class="pattern">
+      <div class="p-title">${escapeHtml(p.title)}<span class="tag">Pattern ${i+1}</span></div>
+      <div class="p-evidence">${escapeHtml(p.evidence || '')}</div>
+      <div class="p-insight">${escapeHtml(p.insight || '')}</div>
+      ${(p.tags || []).length ? `<div class="asset-tags">${p.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      ${assetActions('pattern', i)}
+    </div>`).join('') + `<div class="pattern-meta">Transform · Growth Memory Agent</div>`;
+    return;
+  }
+  if (!hasData){
+    area.innerHTML = `<div class="expand-empty">Not enough data to find patterns yet.<br>Complete a few Guided Insight or Guided Change sessions first, so Transform can see the problems, roles, and obstacles that keep recurring across time.</div>`;
+    return;
+  }
+  area.innerHTML = `<div class="pattern-cta">
+    <h3>Transform finds patterns across time</h3>
+    <p>AI reads all your ${archive.length} insight sessions and ${actions.length} behavior experiments to find \u201cproblems that keep recurring\u201d, \u201cthe role you keep wanting to become\u201d, and \u201cobstacles you keep tripping on\u201d \u2014 the real long-term value of growth assets.</p>
+    <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform, find my patterns</button></div>
+  </div>
+  <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
+  // 无 API Key 时给出基础素材提示
+  const cfg = getAI();
+  if (!cfg.apiKey) $('patternHint').innerHTML = '(API Key not set: check the tags in \u201cIdentity\u201d and \u201cInsight Library\u201d as starter material)';
+}
+function buildPatternSource(){
+  const archive = loadArchive(); const actions = loadActions();
+  const parts = [];
+  archive.slice(0, 30).forEach(s => {
+    const e = s.essence || {};
+    parts.push('Insight[' + (s.scenario || '?') + '] essence:' + (e.nature || '').slice(0, 50) + ' insight:' + (e.insight || '').slice(0, 60) + (s.mentalModel ? ' framework:' + s.mentalModel.slice(0, 60) : '') + (s.tags && s.tags.length ? ' tags:' + s.tags.join('/') : ''));
+  });
+  actions.slice(0, 30).forEach(a => {
+    parts.push('Behavior[' + (a.input || '?') + '] status:' + (a.status || '') + (a.result ? ' result:' + a.result.slice(0, 50) : '') + (a.habit ? ' habit:' + a.habit.slice(0, 50) : '') + (a.reflection && a.reflection.changed ? ' change:' + a.reflection.changed.slice(0, 50) : ''));
+  });
+  return parts.join('\n').slice(0, 3200);
+}
+async function aiDiscoverPatterns(regen){
+  const src = buildPatternSource();
+  const prompt = 'You are the user\u2019s Growth Memory Agent. Read the growth records below across time and identify 2-4 repeating patterns most worth the user\u2019s attention: problems that keep recurring, the role they keep wanting to become, obstacles they keep tripping on, or strengths still forming.\nGrowth records:\n' + src + '\nReturn strict JSON: {"patterns":[{"title":"one-line title","evidence":"supporting evidence (quote specific records, within 40 words)","insight":"insight and advice for the user (within 40 words)"}]}';
+  toast(regen ? 'Re-analyzing…' : 'Scanning your growth records across time…');
+  const text = await aiCall(prompt);
+  if (!text) return;
+  try {
+    const j = JSON.parse(text.replace(/```json|```/g, '').trim());
+    if (!j.patterns || !j.patterns.length) throw new Error('no patterns');
+    localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: j.patterns, generatedAt: new Date().toISOString() }));
+    renderPatterns();
+    $('patterns').scrollIntoView({ behavior: 'smooth' });
+  } catch(err){
+    const area = $('patternArea');
+    area.innerHTML += `<div class="pattern" style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;
+  }
+}
+/* ===================== 资产编辑（通用：编辑 / 归类 / 删除） ===================== */
+let assetModalCtx = null; // { type, id, tagOnly }
+
+function assetActions(type, id){
+  return `<div class="asset-actions">
+    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ Edit</button>
+    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 Tag</button>
+    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 Delete</button>
+  </div>`;
+}
+
+// 定位资产对象 + 保存
+function assetFind(type, id){
+  if (type === 'insight' || type === 'model'){
+    return loadArchive().find(s => String(s.id) === String(id));
+  }
+  if (type === 'action') return loadActions().find(a => String(a.id) === String(id));
+  if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns) return saved.patterns[parseInt(id)];
+  }
+  return null;
+}
+function assetSave(type, id, mutate){
+  if (type === 'insight' || type === 'model'){
+    const list = loadArchive();
+    const i = list.findIndex(s => String(s.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+  } else if (type === 'action'){
+    const list = loadActions();
+    const i = list.findIndex(a => String(a.id) === String(id));
+    if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+  } else if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns && saved.patterns[parseInt(id)]){ mutate(saved.patterns[parseInt(id)]); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
+  }
+  renderAll();
+}
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); }
+
+function openAssetModal(html){
+  const mask = $('assetModalMask'); const box = $('assetModalBox');
+  if (!mask || !box) return;
+  box.innerHTML = html;
+  mask.classList.add('show');
+}
+function closeAssetModal(){
+  const mask = $('assetModalMask');
+  if (mask) mask.classList.remove('show');
+  assetModalCtx = null;
+}
+
+// 编辑
+function openAssetEdit(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const e = obj.essence || {};
+  const r = obj.reflection || {};
+  let fields = '';
+  if (type === 'model'){
+    fields = `
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Framework</label><textarea id="ae2">${escapeHtml(obj.mentalModel || '')}</textarea>
+      <label>What changed</label><textarea id="ae3">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'insight'){
+    fields = `
+      <label>Scenario</label><input id="ae1" value="${escapeHtml(obj.scenario || '')}">
+      <label>Essence</label><textarea id="ae2">${escapeHtml(e.nature || '')}</textarea>
+      <label>Insight</label><textarea id="ae3">${escapeHtml(e.insight || '')}</textarea>
+      <label>Learned</label><textarea id="ae4">${escapeHtml(r.learned || '')}</textarea>`;
+  } else if (type === 'action'){
+    fields = `
+      <label>Goal / Input</label><textarea id="ae1">${escapeHtml(obj.input || obj.goal || '')}</textarea>
+      <label>Result</label><textarea id="ae2">${escapeHtml(obj.result || '')}</textarea>
+      <label>New habit</label><textarea id="ae3">${escapeHtml(obj.habit || '')}</textarea>
+      <label>Change</label><textarea id="ae4">${escapeHtml(r.changed || '')}</textarea>`;
+  } else if (type === 'pattern'){
+    fields = `
+      <label>Pattern title</label><input id="ae1" value="${escapeHtml(obj.title || '')}">
+      <label>Evidence</label><textarea id="ae2">${escapeHtml(obj.evidence || '')}</textarea>
+      <label>Insight & advice</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
+  }
+  openAssetModal(`
+    <h3>✏️ Edit ${assetTypeName(type)}</h3>
+    ${fields}
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">Save</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function saveAssetEdit(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const v = i => { const el = document.getElementById(i); return el ? el.value.trim() : ''; };
+  assetSave(ctx.type, ctx.id, obj => {
+    const e = obj.essence || (obj.essence = {});
+    const r = obj.reflection || (obj.reflection = {});
+    if (ctx.type === 'model'){
+      obj.scenario = v('ae1'); obj.mentalModel = v('ae2'); r.changed = v('ae3');
+    } else if (ctx.type === 'insight'){
+      obj.scenario = v('ae1'); e.nature = v('ae2'); e.insight = v('ae3'); r.learned = v('ae4');
+    } else if (ctx.type === 'action'){
+      obj.input = v('ae1'); obj.result = v('ae2'); obj.habit = v('ae3'); r.changed = v('ae4');
+    } else if (ctx.type === 'pattern'){
+      obj.title = v('ae1'); obj.evidence = v('ae2'); obj.insight = v('ae3');
+    }
+  });
+  closeAssetModal();
+  toast('Saved');
+}
+
+// 归类（标签）
+function openAssetTag(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const tags = obj.tags || [];
+  renderTagModal(tags);
+}
+function collectAllTags(){
+  const tags = [];
+  const add = t => { if (t && !tags.includes(t)) tags.push(t); };
+  loadArchive().forEach(s => (s.tags || []).forEach(add));
+  loadActions().forEach(a => (a.tags || []).forEach(add));
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  (saved && saved.patterns || []).forEach(p => (p.tags || []).forEach(add));
+  return tags.sort((a,b) => a.localeCompare(b, 'en'));
+}
+function renderTagModal(tags){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const allTags = collectAllTags();
+  const available = allTags.filter(t => !tags.includes(t));
+  openAssetModal(`
+    <h3>🏷 Tag ${assetTypeName(ctx.type)}</h3>
+    <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">Tag this asset so you can find it by topic later.</p>
+    <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
+    ${available.length ? `<div style="margin-top:14px;"><p style="font-size:12px;color:var(--ink-3);margin-bottom:6px;">Choose from existing tags</p><div class="modal-existing-tags">${available.map(t => `<button class="existing-tag" onclick="addAssetTagByText('${String(t).replace(/'/g, "\\'")}')">+ ${escapeHtml(t)}</button>`).join('')}</div></div>` : ''}
+    <div class="tag-input-row" style="margin-top:14px;">
+      <input id="newTagInput" placeholder="Or type a new tag" style="flex:1;" maxlength="20" onkeydown="if(event.key==='Enter')addAssetTag()">
+      <button class="btn-ok" onclick="addAssetTag()">Add</button>
+    </div>
+    <div class="row">
+      <button class="btn-ok" style="flex:1;" onclick="closeAssetModal()">Done</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function addAssetTagByText(t){
+  const ctx = assetModalCtx; if (!ctx || !t) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = obj.tags || [];
+    if (!obj.tags.includes(t)) obj.tags.push(t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+}
+function addAssetTag(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  const inp = $('newTagInput'); if (!inp) return;
+  const t = (inp.value || '').trim(); if (!t) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = obj.tags || [];
+    if (!obj.tags.includes(t)) obj.tags.push(t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+  inp.value = '';
+}
+function removeAssetTag(t){
+  const ctx = assetModalCtx; if (!ctx) return;
+  assetSave(ctx.type, ctx.id, obj => {
+    obj.tags = (obj.tags || []).filter(x => x !== t);
+  });
+  const obj = assetFind(ctx.type, ctx.id);
+  renderTagModal((obj && obj.tags) || []);
+}
+
+// 删除
+function openAssetDelete(type, id){
+  const obj = assetFind(type, id);
+  if (!obj){ toast('Asset not found'); return; }
+  assetModalCtx = { type, id };
+  const preview = (type === 'pattern') ? obj.title : (obj.scenario || obj.input || obj.goal || obj.title || '这条资产');
+  openAssetModal(`
+    <h3>🗑 Delete ${assetTypeName(type)}</h3>
+    <p style="font-size:14px;color:var(--ink);line-height:1.7;">Delete "<b>${escapeHtml(String(preview).slice(0, 30))}</b>"? It will move to Trash and can be restored within 30 days.</p>
+    <div class="row">
+      <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">Move to Trash</button>
+      <button class="btn-ghost" onclick="closeAssetModal()">Cancel</button>
+    </div>`);
+}
+function confirmDeleteAsset(){
+  const ctx = assetModalCtx; if (!ctx) return;
+  moveToTrash(ctx.type, ctx.id);
+  closeAssetModal();
+  renderAll();
+  toast('Moved to Trash (restorable within 30 days)');
+}
+function assetTypeName(type){
+  return { model: 'mental model', insight: 'insight', action: 'behavior experiment', pattern: 'pattern' }[type] || '';
+}
+
+function clearPatterns(){
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  if (saved && saved.patterns && saved.patterns.length){
+    const trash = loadTrash();
+    saved.patterns.forEach(p => trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type: 'pattern', data: p, deletedAt: new Date().toISOString() }));
+    saveTrash(trash);
+  }
+  localStorage.removeItem(LS_PATTERNS);
+  renderPatterns();
+  renderTrash();
+}
+
+/* ===================== Trash (delete = move to trash, auto-purge after 30 days) ===================== */
+const LS_TRASH = 'trf_trash';
+const TRASH_TTL = 30 * 86400000;
+function loadTrash(){ try { return JSON.parse(localStorage.getItem(LS_TRASH)) || []; } catch(e){ return []; } }
+function saveTrash(list){ localStorage.setItem(LS_TRASH, JSON.stringify(list)); }
+function trashPreview(obj, type){
+  if (type === 'pattern') return obj.title || 'pattern';
+  if (type === 'action') return obj.input || obj.goal || 'behavior experiment';
+  return obj.scenario || 'a session';
+}
+function moveToTrash(type, id){
+  let item = null;
+  if (type === 'insight' || type === 'model'){
+    const list = loadArchive();
+    const i = list.findIndex(s => String(s.id) === String(id));
+    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
+  } else if (type === 'action'){
+    const list = loadActions();
+    const i = list.findIndex(a => String(a.id) === String(id));
+    if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+  } else if (type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+    if (saved && saved.patterns){ const i = parseInt(id); if (i >= 0 && i < saved.patterns.length){ item = saved.patterns[i]; saved.patterns.splice(i, 1); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); } }
+  }
+  if (!item) return false;
+  const trash = loadTrash();
+  trash.push({ tid: 't_' + Date.now() + '_' + Math.floor(Math.random()*1000), type, data: item, deletedAt: new Date().toISOString() });
+  saveTrash(trash);
+  return true;
+}
+function restoreFromTrash(tid){
+  const trash = loadTrash();
+  const i = trash.findIndex(t => t.tid === tid);
+  if (i < 0) return;
+  const t = trash[i];
+  const obj = t.data;
+  if (t.type === 'pattern'){
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ saved = null; }
+    if (!saved) saved = { patterns: [], generatedAt: null };
+    if (!saved.patterns) saved.patterns = [];
+    saved.patterns.push(obj);
+    localStorage.setItem(LS_PATTERNS, JSON.stringify(saved));
+  } else if (t.type === 'action'){
+    const list = loadActions();
+    if (!list.find(a => String(a.id) === String(obj.id))) list.push(obj);
+    localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
+  } else {
+    const list = loadArchive();
+    if (!list.find(s => String(s.id) === String(obj.id))) list.push(obj);
+    localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
+  }
+  trash.splice(i, 1);
+  saveTrash(trash);
+  renderAll();
+  renderTrash();
+  toast('Restored to growth assets');
+}
+function purgeTrashItem(tid){
+  let trash = loadTrash();
+  trash = trash.filter(t => t.tid !== tid);
+  saveTrash(trash);
+  renderTrash();
+}
+function purgeOldTrash(){
+  const now = Date.now();
+  let trash = loadTrash();
+  const before = trash.length;
+  trash = trash.filter(t => (now - new Date(t.deletedAt).getTime()) < TRASH_TTL);
+  if (trash.length !== before) saveTrash(trash);
+}
+function emptyTrash(){ saveTrash([]); renderTrash(); toast('Trash emptied'); }
+function renderTrash(){
+  const box = $('trashList'); if (!box) return;
+  const trash = loadTrash();
+  const cnt = $('trashCount'); if (cnt) cnt.textContent = trash.length;
+  const emptyBtn = $('trashEmptyBtn'); if (emptyBtn) emptyBtn.style.display = trash.length ? '' : 'none';
+  if (!trash.length){ box.innerHTML = `<div class="expand-empty">Trash is empty.<br>Deleted assets land here first and can be restored within 30 days.</div>`; return; }
+  const now = Date.now();
+  box.innerHTML = trash.map(t => {
+    const daysLeft = Math.max(0, Math.ceil((TRASH_TTL - (now - new Date(t.deletedAt).getTime())) / 86400000));
+    const leftText = daysLeft <= 0 ? 'will be purged soon' : ('permanently deleted in ' + daysLeft + ' days');
+    return `<div class="trash-item">
+      <div class="ti-main">
+        <span class="ti-type">${assetTypeName(t.type)}</span>
+        <div class="ti-title">${escapeHtml(String(trashPreview(t.data, t.type)).slice(0, 40))}</div>
+        <div class="ti-sub">Deleted ${fmtDate(t.deletedAt)} \u00b7 ${leftText}</div>
+      </div>
+      <div class="ti-actions">
+        <button class="mini" onclick="restoreFromTrash('${t.tid}')">Restore</button>
+        <button class="mini del" onclick="purgeTrashItem('${t.tid}')">Purge</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== 导出 ===================== */
+function exportOne(id){
+  const a = loadActions().find(x => x.id === id);
+  if (!a) return;
+  const blob = new Blob([JSON.stringify(a, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = u; el.download = 'transform-action-' + a.id + '.json';
+  el.click(); URL.revokeObjectURL(u);
+}
+function downloadAll(){
+  const data = { archive: loadArchive(), actions: loadActions(), profile: loadProfile(), patterns: (() => { try { return JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ return null; } })() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = u; el.download = 'transform-growth-assets.json';
+  el.click(); URL.revokeObjectURL(u);
+}
+
+/* ===================== 设置 + 主题 ===================== */
+function toggleTheme(){
+  const root = document.documentElement;
+  const dark = root.getAttribute('data-theme') === 'dark';
+  root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  try { localStorage.setItem('trf_theme', dark ? 'light' : 'dark'); } catch(e){}
+}
+function openSettings(){
+  const cfg = getAI();
+  $('cfgBrand').value = cfg.brand;
+  $('cfgApiKey').value = cfg.apiKey || '';
+  $('settingsMask').classList.add('show');
+}
+function closeSettings(){ $('settingsMask').classList.remove('show'); }
+function saveSettings(){
+  const brand = $('cfgBrand').value;
+  const apiKey = $('cfgApiKey').value.trim();
+  const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
+  localStorage.setItem(LS_AI, JSON.stringify({ brand, apiKey, baseUrl: profile.baseUrl, model: profile.model }));
+  closeSettings();
+  toast('AI settings saved');
+  renderPatterns();
+}
+
+/* ===================== 启动 ===================== */
+purgeOldTrash();
+renderIdentity();
+renderStats();
+renderModels();
+renderTagFilters();
+renderInsights();
+renderActions();
+renderPatterns();
+renderTrash();
+(function(){
+  const h = location.hash;
+  if (h && document.querySelector(h)){
+    setTimeout(() => document.querySelector(h).scrollIntoView({ behavior: 'smooth' }), 120);
+  }
+})();
+</script>
+</body>
+</html>

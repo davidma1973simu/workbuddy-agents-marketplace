@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Daily Progress · Transform</title>
+<style>
+  :root {
+    --bg: #F8F7F3;
+    --surface: #FFFFFF;
+    --surface-2: #F2F1EC;
+    --ink: #151B19;
+    --ink-2: #3D4A45;
+    --ink-3: #7A8A83;
+    --line: #E6E9E7;
+    --line-2: #DDE2DF;
+    --green: #0E6B50;
+    --green-deep: #0A5A42;
+    --green-2: #158A68;
+    --green-3: #1D9E75;
+    --green-soft: #E8F4EE;
+    --green-light: #C8EBD9;
+    --green-50: #F0F9F4;
+    --amber: #C87A2A;
+    --amber-soft: #FDF3E6;
+    --amber-2: #EAA052;
+    --coral: #C05B3C;
+    --coral-soft: #F9EBE5;
+    --violet: #5B4AA8;
+    --violet-soft: #EEECFA;
+    --radius-xl: 32px;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --shadow-1: 0 1px 2px rgba(21,27,25,.04);
+    --shadow-2: 0 4px 12px rgba(21,27,25,.06), 0 16px 40px rgba(21,27,25,.08);
+    --shadow-3: 0 8px 24px rgba(21,27,25,.08), 0 32px 64px rgba(21,27,25,.12);
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+  [data-theme="dark"] {
+    --bg: #0C100F;
+    --surface: #161C1A;
+    --surface-2: #1E2523;
+    --ink: #EEF4F1;
+    --ink-2: #A7B6B0;
+    --ink-3: #6A7A74;
+    --line: #252E2C;
+    --line-2: #2F3A37;
+    --green: #34D29E;
+    --green-2: #2BBB8A;
+    --green-3: #1D9E75;
+    --green-soft: #132A24;
+    --green-light: #1E4A3E;
+    --green-50: #0F1F1B;
+    --amber: #EAA052;
+    --amber-soft: #2E2417;
+    --coral: #D9714F;
+    --coral-soft: #2E1E18;
+    --violet: #A99BE8;
+    --violet-soft: #23203A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 110px; }
+
+  
+  .full-link-bar {
+    text-align: center; margin-top: 24px; padding: 16px 0 0;
+    border-top: 1px dashed var(--line);
+  }
+  .full-link-bar a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13.5px; font-weight: 700; color: var(--amber);
+    text-decoration: none; padding: 8px 16px; border-radius: 999px;
+    transition: all .2s;
+  }
+  .full-link-bar a:hover { background: var(--amber-soft); }
+
+  
+  .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; flex-wrap: wrap; }
+  
+  .gnav {
+    display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
+    padding: 4px; border-radius: 999px; background: var(--surface-2);
+    justify-content: center; flex-wrap: wrap;
+  }
+  .gnav .gn-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+    text-decoration: none; white-space: nowrap; transition: all .2s;
+    flex-shrink: 0;
+  }
+  .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
+  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
+  @media (max-width: 720px) {
+    .topbar { gap: 6px; }
+    .topbar .back { order: 1; }
+    .topbar .spacer { display: none; }
+    .gnav { order: 3; width: 100%; flex: none; padding: 6px; gap: 4px; }
+    .gnav .gn-item { flex: 1 1 calc(50% - 4px); padding: 9px 10px; font-size: 12.5px; justify-content: center; white-space: nowrap; }
+    .topbar .theme-toggle, .topbar .arch-btn, .topbar button { order: 2; padding: 8px 12px; font-size: 12.5px; }
+  }
+{ display: flex; align-items: center; gap: 10px; padding: 16px 0; }
+  .back {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
+    font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s;
+  }
+  .back:hover { background: var(--surface-2); color: var(--ink); }
+  .topbar .spacer { flex: 1; }
+  .topbar button {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13.5px;
+    padding: 9px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line);
+    font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
+  .arch-btn { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
+  .arch-btn:hover { color: #fff !important; border-color: transparent !important; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.32); }
+  
+  .topbar button.arch-btn,
+  .topbar button.arch-btn:hover { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
+
+  
+  .cta-done {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 18px; border: none; border-radius: 14px;
+    background: var(--green-3); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease); box-shadow: 0 8px 24px rgba(29,158,117,.28);
+  }
+  .cta-done:hover { transform: translateY(-2px); background: var(--green-2); box-shadow: 0 12px 32px rgba(29,158,117,.36); }
+  .cta-done:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .restart-row { text-align: center; }
+  .restart-link {
+    display: inline-block; padding: 8px 16px;
+    background: transparent; color: var(--ink-3);
+    border: 1.5px solid var(--line-2); border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all .2s;
+    text-decoration: none;
+  }
+  .restart-link:hover { background: var(--green-soft); color: var(--green-deep); border-color: var(--green); }
+  .cta-miss {
+    display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px;
+    background: transparent; border: 1.5px dashed var(--line-2); color: var(--ink-3); font-size: 14px;
+    cursor: pointer; font-family: inherit; transition: all .2s;
+  }
+  .cta-miss:hover { border-color: var(--amber); color: var(--amber); }
+  .tf-hint {
+    margin-top: 14px; padding: 12px 14px; background: var(--surface-2); border-radius: 12px;
+    font-size: 13.5px; color: var(--ink-2); line-height: 1.6; text-align: center;
+  }
+  .tf-hint b, .tf-hint strong { color: var(--green); font-weight: 800; }
+
+  
+  .today-feedback { margin-top: 14px; }
+  .today-feedback.hidden { display: none; }
+  .tf-card {
+    background: linear-gradient(135deg, var(--green-soft) 0%, var(--green-50) 100%);
+    border: 1.5px solid var(--green-light); border-radius: var(--radius-lg);
+    padding: 24px 22px 16px; text-align: center;
+    box-shadow: 0 8px 28px rgba(29,158,117,.14);
+    animation: tf-slide .6s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes tf-slide { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .tf-crown { font-size: 40px; line-height: 1; margin-bottom: 6px; animation: tf-bounce 1.4s ease infinite; }
+  @keyframes tf-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .tf-title { font-size: 21px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+  .tf-body { font-size: 15px; color: var(--ink); line-height: 1.7; margin-bottom: 14px; }
+  .tf-stats { display: flex; justify-content: center; gap: 22px; padding: 12px 0; border-top: 1px dashed var(--green-light); border-bottom: 1px dashed var(--green-light); }
+  .tf-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tf-stat span { font-size: 11px; color: var(--ink-3); }
+  .tf-stat b { font-size: 24px; font-weight: 800; color: var(--green); line-height: 1; }
+  .tf-stat em { font-size: 10px; color: var(--ink-3); font-style: normal; }
+  .tf-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 10px; }
+  .tf-actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    font-family: inherit; cursor: pointer; border: none; transition: all .25s var(--ease);
+  }
+  .btn-ghost { background: var(--surface); color: var(--green); border: 1.5px solid var(--green-light); }
+  .btn-ghost:hover { border-color: var(--green); background: var(--green-50); }
+  .btn-primary { background: var(--green-3); color: #fff; }
+  .btn-primary:hover { background: var(--green-2); }
+  .btn-amber { background: var(--amber); color: #fff; }
+  .btn-amber:hover { filter: brightness(1.06); }
+
+  
+  .block-box { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px; display: none; }
+  .block-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
+  .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .reason {
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 12px; font-size: 13.5px; color: var(--ink); cursor: pointer; font-family: inherit;
+    text-align: left; line-height: 1.5; transition: all .2s;
+  }
+  .reason b { display: block; font-size: 15px; }
+  .reason:hover { border-color: var(--amber); background: var(--amber-soft); }
+  .ai-result { margin-top: 12px; background: var(--green-soft); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13.5px; line-height: 1.7; }
+
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  
+  .create-hero {
+    background: linear-gradient(135deg, #0A5A42, var(--green-3));
+    border-radius: var(--radius-lg); padding: 30px 26px; color: #fff; margin-top: 8px;
+  }
+  .create-hero .ch-eyebrow { font-size: 12.5px; opacity: .85; letter-spacing: .5px; margin-bottom: 10px; }
+  .create-hero h1 { font-size: 24px; font-weight: 800; line-height: 1.4; margin-bottom: 8px; }
+  .create-hero p { font-size: 14px; opacity: .92; line-height: 1.7; margin-bottom: 18px; word-break: break-word; overflow-wrap: anywhere; }
+  .create-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px; border: none; font-size: 15px;
+    font-family: inherit; color: var(--ink); outline: none; background: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  }
+  .create-input::placeholder { color: var(--ink-3); word-break: break-word; opacity: .65; }
+  .cta-start {
+    display: block; width: 100%; margin-top: 12px; padding: 15px; border: none; border-radius: 12px;
+    background: #fff; color: #0A5A42; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+  .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .ctx-card {
+    background: var(--amber-soft); border: 1.5px solid rgba(200,122,42,.3); border-radius: var(--radius-md);
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .ctx-card .ctx-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--amber); margin-bottom: 6px; text-transform: uppercase; }
+  .ctx-card .ctx-row { font-size: 13.5px; color: var(--ink); line-height: 1.7; }
+  .ctx-card .ctx-row b { color: var(--amber); font-weight: 800; }
+
+  .suggest-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    padding: 24px; margin-top: 16px;
+  }
+  .suggest-card .sc-tag {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
+    letter-spacing: 1px; color: var(--green); margin-bottom: 12px; text-transform: uppercase;
+  }
+  .suggest-card .sc-title { font-size: 19px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; color: var(--ink); }
+  .suggest-card .sc-desc { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; margin-bottom: 16px; }
+  .sc-field { font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin: 14px 0 8px; }
+  .sc-rationale { background: var(--amber-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); margin: 6px 0 2px; }
+  .sc-row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .sc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sc-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px;
+    border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+    font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .sc-chip:hover { border-color: var(--green); color: var(--green); background: var(--green-50); }
+  .sc-chip.sel { background: var(--green); border-color: var(--green); color: #fff; }
+  .sc-input {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line-2);
+    background: var(--surface); font-size: 14px; font-family: inherit; color: var(--ink); outline: none;
+  }
+  .sc-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .plan-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; }
+  .plan-day { display: flex; align-items: baseline; gap: 12px; padding: 8px 12px; border-radius: 8px; background: var(--surface); font-size: 13.5px; line-height: 1.5; }
+  .plan-day.today { background: var(--green-50); border-left: 3px solid var(--green); }
+  .plan-day-label { flex-shrink: 0; font-weight: 700; color: var(--green-deep); min-width: 88px; font-size: 12px; letter-spacing: 0.3px; }
+  .plan-day-text { color: var(--ink); flex: 1; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
+  .sc-hint { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+  .sc-textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-2); background: var(--surface); font-size: 13.5px; font-family: inherit; color: var(--ink); outline: none; resize: vertical; min-height: 56px; line-height: 1.5; box-sizing: border-box; }
+  .sc-textarea:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .sc-obstacle-result { background: var(--green-50); border-left: 3px solid var(--green); border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+  .sc-summary { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+  .sc-summary b { color: var(--green-deep); }
+  .cta-confirm {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
+    background: var(--green-3); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-confirm:hover { transform: translateY(-2px); background: var(--green-2); }
+  .cta-confirm:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .cta-confirm.loading { opacity: .6; pointer-events: none; }
+  .ai-out-box {
+    margin-top: 12px; padding: 12px 14px; background: var(--green-soft); border-radius: 12px;
+    font-size: 13.5px; line-height: 1.7; display: none;
+  }
+  .ai-out-box.show { display: block; animation: fade-in .3s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 14px 90px; }
+    .create-hero { padding: 22px 18px 18px; }
+    .create-hero h1 { font-size: 21px; }
+  }
+</style>
+<script>
+  (function(){
+    try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); }
+    catch(e){}
+  })();
+</script>
+  <meta name="app-version" content="v2.0-draft">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index-en.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Home
+    </a>
+  <nav class="gnav" aria-label="Global navigation">
+    <a class="gn-item" href="think-en.html">Daily Insight</a>
+    <a class="gn-item on" href="punch-en.html">Daily Change</a>
+    <a class="gn-item" href="app-en.html">Guided Insight</a>
+    <a class="gn-item" href="act-en.html">Guided Change</a>
+  </nav>    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
+    <button class="arch-btn" onclick="location.href='growth-en.html#experiments'" aria-label="Behavior archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 Behavior</button>
+  </div>
+
+  <!-- Daily progress main screen -->
+  <div id="punchArea"></div>
+  <div class="full-link-bar">
+    <a href="act-en.html">Full Guided Change →</a>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+
+const LS_ACTIONS = 'trf_actions';
+const LS_PROFILE = 'trf_profile';
+const LS_AI = 'trf_ai_config_v1';
+const BRAND_PROFILES = {
+  'DeepSeek': { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
+  'OpenAI':   { baseUrl: 'https://api.openai.com/v1',  model: 'gpt-4o-mini' },
+  'Gemini':   { baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/', model: 'gemini-2.0-flash' }
+};
+
+let current = null;
+
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? '' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('trf_theme', next); } catch(e){}
+}
+function getAI(){
+  let cfg; try { cfg = JSON.parse(localStorage.getItem(LS_AI)) || {}; } catch(e){ cfg = {}; }
+  const brand = cfg.brand || 'DeepSeek';
+  const profile = BRAND_PROFILES[brand] || BRAND_PROFILES['DeepSeek'];
+  return { brand, apiKey: cfg.apiKey || '', baseUrl: cfg.baseUrl || profile.baseUrl, model: cfg.model || profile.model };
+}
+function loadActions(){ try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e){ return []; } }
+function saveActions(list){ localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
+function loadProfile(){ try { return JSON.parse(localStorage.getItem(LS_PROFILE)) || { identityStatements: [] }; } catch(e){ return { identityStatements: [] }; } }
+function saveProfile(p){ localStorage.setItem(LS_PROFILE, JSON.stringify(p)); }
+function persistAction(){ const list = loadActions(); const i = list.findIndex(a => a.id === current.id); if (i >= 0) list[i] = current; else list.push(current); saveActions(list); }
+
+async function aiCall(prompt, attempt = 1){
+  const cfg = getAI();
+  if (!cfg.apiKey) return null;
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  const maxAttempts = 4;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({ model: cfg.model, messages: [{ role:'user', content: prompt }], temperature: 0.6, max_tokens: 400 })
+    });
+    if (!res.ok){
+      if (attempt < maxAttempts && [503,502,500,429].includes(res.status)){
+        await new Promise(r => setTimeout(r, 250 * Math.pow(2, attempt)));
+        return aiCall(prompt, attempt + 1);
+      }
+      return null;
+    }
+    return (await res.json()).choices[0].message.content;
+  } catch(e){ return null; }
+}
+function parseJSON(text){
+  if (!text) return null;
+  try { const m = text.match(/\{[\s\S]*\}/); if (!m) return null; return JSON.parse(m[0]); } catch(e){ return null; }
+}
+
+
+function logCompletion(done, day, difficulty, note){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const lastDone = (current.logs || []).filter(l => l.done).slice(-1)[0];
+  if (done){
+    current.logs.push({ day, date: new Date().toISOString(), done: true, difficulty: difficulty||null, note: note||'' });
+    current.totalDone = (current.totalDone || 0) + 1;
+    if (lastDone){
+      const ld = new Date(lastDone.date); ld.setHours(0,0,0,0);
+      const diff = Math.round((today - ld) / 86400000);
+      if (diff === 1) current.streak = (current.streak || 0) + 1;
+      else if (diff > 1) current.streak = 1;
+    } else {
+      current.streak = 1;
+    }
+    current.bestStreak = Math.max(current.bestStreak || 0, current.streak);
+    current.currentDay = day + 1;
+    if (current.currentDay > current.targetDays){
+      current.status = 'graduated'; current.graduatedAt = new Date().toISOString();
+    } else current.status = 'active';
+    if (current.identity){
+      const profile = loadProfile();
+      profile.identityStatements = profile.identityStatements || [];
+      const ex = profile.identityStatements.find(s => s.text === current.identity);
+      if (ex){ ex.votes = (ex.votes||0) + 1; ex.date = new Date().toISOString(); ex.source = 'action'; }
+      else profile.identityStatements.push({ text: current.identity, votes: 1, date: new Date().toISOString(), source: 'action' });
+      saveProfile(profile);
+    }
+  } else {
+    current.logs.push({ day, date: new Date().toISOString(), done: false, difficulty: difficulty||null, note: note||'' });
+    current.streak = 0;
+  }
+  persistAction();
+}
+
+
+function renderPunch(){
+  const area = $('punchArea');
+  if (!current){
+    area.innerHTML = `<div class="create-hero">
+      <div class="ch-eyebrow">Guided Change</div>
+      <h1>No change started yet</h1>
+      <p>Pick something you want to change. Transform will break it into one small step you can do today.</p>
+      <a class="cta-start" href="act-en.html" style="text-decoration:none;">Create a full experiment →</a>
+    </div>`;
+    return;
+  }
+
+  const isGrad = current.status === 'graduated';
+  const today = (current.plan || []).find(p => p.day === current.currentDay) || (current.plan || [])[0];
+  const micro = today ? (today.micro || current.input) : current.input;
+  const anchor = current.anchor && current.anchor.after;
+  const phase = isGrad ? 'All ' + (current.targetDays||0) + ' days completed' : 'Day ' + current.currentDay + ' of ' + (current.targetDays||0);
+  const votes = countVotes();
+
+  let html = '';
+
+
+  if (isGrad){
+    html += `<div class="create-hero" style="background:linear-gradient(135deg, var(--amber-soft), var(--green-soft));color:var(--ink);">
+      <div class="ch-eyebrow" style="color:var(--amber);">Experiment complete</div>
+      <h1 style="color:var(--ink);">In ${current.targetDays} days, you turned \u201c${escapeHtml(current.input)}\u201d into a real track record</h1>
+      <p style="color:var(--ink-2);">${current.identity ? 'You have become a \u201c' + escapeHtml(current.identity) + '\u201d person' : 'New habits and identity have taken root'}</p>
+      <a class="cta-start" href="act-en.html?id=${current.id}" style="text-decoration:none;color:var(--green-deep);">Review & refine →</a>
+    </div>`;
+    area.innerHTML = html;
+    return;
+  }
+
+
+  html += `<div class="create-hero">
+    <div class="ch-eyebrow">${escapeHtml(phase)}</div>
+    <h1>${escapeHtml(micro)}</h1>
+    <p>${anchor ? 'Right after <b>' + escapeHtml(anchor) + '</b>, I take this one small step.' : 'When that moment comes, take this one small step.'}</p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;opacity:.92;">
+      <span><b style="font-size:16px;">${current.streak || 0}</b>-day streak</span>
+      <span><b style="font-size:16px;">${current.totalDone || 0}</b> days total</span>
+      <span><b style="font-size:16px;">${votes}</b> identity votes</span>
+    </div>
+  </div>`;
+
+
+  html += `<div class="tf-hint">Today's goal is <strong>${escapeHtml(micro)}</strong>.${today && today.seconds ? ' About '+today.seconds+' seconds.' : ' Small enough that it can\u2019t fail.'}</div>`;
+  html += `<div class="restart-row" style="margin-top:18px;"><a class="restart-link" href="punch-en.html">↻ Start a new experiment</a></div>`;
+
+
+  html += `<button class="cta-done" id="doneBtn" onclick="markDone()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Done
+  </button>
+  <button class="cta-miss" onclick="showBlock()">Missed today (forgot / too much hassle / no time)</button>
+
+  <div class="block-box" id="blockBox">
+    <h3>What happened? Pick the closest one</h3>
+    <div class="reason-grid">
+      <button class="reason" onclick="pickReason('forgot')"><b>Forgot</b>never crossed my mind</button>
+      <button class="reason" onclick="pickReason('hassle')"><b>Too much hassle</b>too many steps</button>
+      <button class="reason" onclick="pickReason('demotivated')"><b>Didn\u2019t feel like it</b>no motivation in the moment</button>
+      <button class="reason" onclick="pickReason('time')"><b>No time</b>couldn\u2019t spare 30 seconds</button>
+    </div>
+    <div id="aiBlockResult"></div>
+    <div class="btn" style="margin-top:12px;width:100%;" onclick="hideBlock()">← Back</div>
+  </div>
+
+  <!-- Feedback card (hidden by default, shown after completion) -->
+  <div class="today-feedback hidden" id="todayFeedbackWrap">
+    <div class="tf-card">
+      <div class="tf-crown" id="tfCrown">🎉</div>
+      <div class="tf-title" id="tfTitle">Day X done!</div>
+      <div class="tf-body" id="tfBody"></div>
+      <div class="tf-stats">
+        <div class="tf-stat"><span>Streak</span><b id="tfStreak">0</b><em>days</em></div>
+        <div class="tf-stat"><span>Total</span><b id="tfTotal">0</b><em>days</em></div>
+        <div class="tf-stat"><span>Votes</span><b id="tfVotes">+1</b><em>votes</em></div>
+      </div>
+      <div class="tf-sub" id="tfSub"></div>
+      <div class="tf-actions">
+        <button class="btn btn-primary" onclick="hideTodayFeedback()">Continue → tomorrow\u2019s step is ready</button>
+        <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
+      </div>
+      <div class="restart-row">
+        <button class="restart-link" onclick="restartExperiment()">↻ Start a new experiment</button>
+      </div>
+    </div>
+  </div>`;
+
+  area.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function countVotes(){
+  const profile = loadProfile();
+  if (!current || !current.identity) return 0;
+  const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
+  return stmt ? stmt.votes : 0;
+}
+
+function markDone(){
+  const today = current.plan.find(p => p.day === current.currentDay);
+  if (today && today.sub && today.sub.length && !today.subDone.every(Boolean)){ toast('Check off today\u2019s steps first'); return; }
+  logCompletion(true, current.currentDay, null, '');
+  if (current.status === 'graduated'){
+    renderPunch();
+    toast('All done! New habits and identity have taken root 🎓');
+    return;
+  }
+  renderPunch();
+  showTodayFeedback();
+}
+
+function hideTodayFeedback(){
+  const w = $('todayFeedbackWrap'); if (w) w.classList.add('hidden');
+}
+
+// Restart: go back to create state (do not delete the saved action)
+function restartExperiment(){
+  current = null; handoffInsight = ''; handoffNature = ''; handoffScenario = '';
+  renderCreate();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('Ready for a new experiment');
+}
+
+async function showTodayFeedback(){
+  if (!current) return;
+  const w = $('todayFeedbackWrap'); if (!w) return;
+  const day = current.currentDay - 1;
+  const streak = current.streak || 0;
+  const total = current.totalDone || 0;
+  const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
+  const micro = (todayPlan && todayPlan.micro) || current.input;
+  const votes = countVotes();
+  const isFirst = day <= 0;
+  const LOCAL_MSGS = isFirst
+    ? [
+      'Today\u2019s behavior experiment has begun: \u201c' + micro + '\u201d.',
+      'That\u2019s the first vote for \u201c' + (current.identity || 'your intended identity') + '\u201d.',
+      'Your anchor is set. Start today\u2019s step within 30 seconds.',
+      'Day 1 \u2014 finish \u201c' + micro + '\u201d first.'
+    ]
+    : [
+      '\u201c' + micro + '\u201d has moved from \u201cwanting to do\u201d to \u201cdone\u201d.',
+      streak + ' days in a row \u2014 your behavior is reminding you.',
+      'Casting vote #' + (votes + 1) + ' for \u201c' + (current.identity || 'your intended identity') + '\u201d.',
+      'Tomorrow\u2019s step will appear automatically. One more day closer to \u201c' + (current.identity || 'who you want to be') + '\u201d.'
+    ];
+  $('tfCrown').textContent = isFirst ? '🚀' : ((day > 0 && day % 7 === 0) ? '🏆' : '🎉');
+  $('tfTitle').textContent = isFirst ? 'Today\u2019s behavior experiment begins' : ('Day ' + day + ' done!');
+  $('tfBody').textContent = LOCAL_MSGS[Math.abs((day - 1)) % LOCAL_MSGS.length];
+  $('tfStreak').textContent = streak;
+  $('tfTotal').textContent = total;
+  $('tfVotes').textContent = '+1';
+  $('tfSub').textContent = isFirst ? 'Your goal for today is recorded. Finish it, then come back and tap Done.' : 'Today is recorded. Tomorrow\u2019s step is ready.';
+  w.classList.remove('hidden');
+  w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  try {
+    if (getAI().apiKey && micro && !isFirst) {
+      const aiText = await aiCall(
+        'A user just completed day ' + day + ' of a multi-day behavior experiment: ' + micro + '.\n' +
+        'Current status: ' + streak + '-day streak, ' + total + ' days total, target identity: \u201c' + (current.identity || 'to be determined') + '\u201d.\n' +
+        'Praise this completion in one sentence (max 30 words), emphasizing the concrete behavior, not \u201cpersistence\u201d. Avoid the word \u201cpersistence\u201d.'
+      );
+      if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 120);
+    }
+  } catch(e){}
+}
+
+function showBlock(){ const b = $('blockBox'); if (b) b.style.display = 'block'; }
+function hideBlock(){ const b = $('blockBox'); if (b) b.style.display = 'none'; }
+
+async function pickReason(reason){
+  const day = current.currentDay;
+  logCompletion(false, day, reason, '');
+  const block = $('blockBox'); if (block) block.style.display = 'none';
+  renderPunch();
+  const today = current.plan.find(p => p.day === day);
+  const text = await aiCall('The user missed today\u2019s action \u201c' + ((today && today.micro) || current.input) + '\u201d because of: ' + reason + '.\nGive 1 adjustment that does not rely on willpower, making it easier next time. No \u201cyou can do it\u201d or \u201ckeep going\u201d. Max 2 sentences.');
+  if (text){
+    const box = $('aiBlockResult');
+    if (box) box.innerHTML = `<div class="ai-result">${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+  }
+  toast('It\u2019s okay \u2014 missing a day isn\u2019t failure. Adjust once, try again.');
+}
+
+
+let handoffInsight = '';
+let handoffNature = '';
+let handoffScenario = '';
+let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
+
+function renderCreate(){
+  const area = $('punchArea');
+  const showCtx = handoffNature || handoffInsight;
+
+  area.innerHTML = `
+    <div class="create-hero">
+      <div class="ch-eyebrow">Daily Change · start a new step</div>
+      <h1>Start a new behavior change</h1>
+      <p>Small habit or big ambition \u2014 type it in. Transform breaks any goal into an N-day experiment: today\u2019s smallest step, then one micro-action per day (1 day for one-shots, 7 days for habits, 14-30 days for deep change).</p>
+      ${showCtx ? `
+        <div class="ctx-card">
+          <div class="ctx-label">From today's insight · starting point</div>
+          ${handoffNature ? `<div class="ctx-row"><b>Essence:</b> ${escapeHtml(handoffNature)}</div>` : ''}
+          ${handoffInsight ? `<div class="ctx-row"><b>Insight:</b> ${escapeHtml(handoffInsight)}</div>` : ''}
+        </div>` : ''}
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('What do you want to change about \u201c' + handoffScenario + '\u201d?') : 'e.g. drink water every morning, or master WorkBuddy'}" maxlength="120">
+      <button class="cta-start" id="startChangeBtn" onclick="startChange()">Start Changing →</button>
+    </div>`;
+  const input = $('changeInput');
+  if (handoffScenario) input.value = handoffScenario;
+  input.addEventListener('input', e => {
+    $('startChangeBtn').disabled = e.target.value.trim().length < 4;
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') startChange(); });
+  $('startChangeBtn').disabled = (input.value || '').trim().length < 4;
+  input.focus();
+}
+
+async function startChange(){
+  const goal = ($('changeInput').value || '').trim();
+  if (goal.length < 4) { toast('Add a few more words'); return; }
+  const cfg = getAI();
+  if (!cfg.apiKey) { toast('Please set your API Key in Settings first'); return; }
+  const btn = $('startChangeBtn');
+  btn.disabled = true; btn.textContent = 'Transform is thinking about your goal\u2026';
+  draft.goal = goal;
+  // Stage 1: ask AI for the experiment draft (length + rationale + daily plan)
+  let d = await aiExperimentDraft(goal, 0);
+  btn.disabled = false; btn.textContent = 'Start Changing \u2192';
+  if (!d){
+    toast('Transform could not generate a plan right now \u2014 check Settings (API Key) and try again');
+    return;
+  }
+  applyDraft(d);
+  renderPlanDraft();
+}
+
+/* ---------- Stage 1: AI experiment draft (length + rationale + days) ---------- */
+async function aiExperimentDraft(goal, lenHint){
+  const lenRule = lenHint > 0
+    ? `\nThe user asked for exactly ${lenHint} days. Use planLength = ${lenHint}.`
+    : `\n- Adapt the experiment length to the goal:\n  * 1 day if the goal is a single one-shot action (e.g. "check gas before locking the door").\n  * 3 days if the goal is a tiny habit to confirm ("focus for 10 minutes on one task").\n  * 7 days if the goal is a real habit to form ("drink water every morning").\n  * 14-30 days if the goal is a deep change ("become a master of WorkBuddy").`;
+  const prompt = `User\u2019s change goal: \u201c${goal}\u201d\nStarting point: essence \u201c${handoffNature || 'not provided'}\u201d, insight \u201c${handoffInsight || 'not provided'}\u201d\n\nTask: Build a behavior experiment draft.${lenRule}\n\nRequirements:\n1. planLength: integer 1, 3, 7, 14, or 30.\n2. rationale: one short sentence (max 30 words) explaining why this length fits the goal.\n3. micro: ONE sentence (10-25 words) for today\u2019s smallest step. Small enough to never fail, doable within 30 seconds.\n4. steps: break today\u2019s micro into 2-3 even smaller steps (each max 10 words).\n5. anchors: 3 stable trigger moments (after ___).\n6. days: planLength entries, one per day, progressive Day 1 -> Day N, each max 20 words, each small enough to never fail. Day 1 MUST equal the string in micro. If planLength = 1, days array has just one entry.\n\nStrict JSON:\n{"planLength":7,"rationale":"...","micro":"...","steps":["...","..."],"anchors":["after I ...","after ...","before ..."],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  for (let attempt = 0; attempt < 3; attempt++){
+    const r = await aiCall(prompt);
+    const d = parseJSON(r);
+    if (d && d.micro && d.micro.trim() && Array.isArray(d.days)){
+      const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
+      return {
+        planLength: N,
+        rationale: String(d.rationale || '').trim().slice(0, 120),
+        micro: d.micro.trim().slice(0, 60),
+        steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+        anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
+        days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N)
+      };
+    }
+  }
+  return null;
+}
+
+function applyDraft(d){
+  draft.micro = d.micro;
+  draft.steps = d.steps.length ? d.steps : ['Complete this small step'];
+  draft.days = d.days;
+  draft.planLength = d.planLength;
+  draft.targetDays = d.planLength;
+  draft.rationale = d.rationale;
+  draft.anchors = d.anchors;
+}
+
+function renderPlanDraft(){
+  const area = $('punchArea');
+  const N = draft.planLength || 7;
+  const dayLabels = ['Day 1 (today)'];
+  for (let i = 2; i <= N; i++) dayLabels.push('Day ' + i);
+  const daysHtml = draft.days.map((d, i) => `
+    <div class="plan-day${i === 0 ? ' today' : ''}">
+      <span class="plan-day-label">${dayLabels[i]}</span>
+      <span class="plan-day-text">${escapeHtml(d)}</span>
+    </div>
+  `).join('');
+  const lengths = [1, 3, 7, 14, 30];
+  const lenChips = lengths.map(L =>
+    `<button class="sc-chip${L === N ? ' sel' : ''}" onclick="resizePlan(${L})">${L} days</button>`
+  ).join('');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">Step 1 \u00b7 Experiment draft</div>
+      <div class="sc-title">Transform suggests a <b>${N}-day</b> experiment</div>
+      ${draft.rationale ? `<div class="sc-rationale">\ud83d\udca1 ${escapeHtml(draft.rationale)}</div>` : ''}
+
+      <div class="sc-field">Adjust the length (Transform re-plans it)</div>
+      <div class="sc-chips" id="lenChips">${lenChips}</div>
+
+      <div class="sc-field">The daily plan</div>
+      <div class="plan-list">${daysHtml}</div>
+
+      <button class="cta-confirm" onclick="goTodayDraft()">Confirm draft \u2192</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function resizePlan(L){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, L);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not re-plan right now \u2014 try again'); return; }
+  applyDraft(d);
+  renderPlanDraft();
+}
+
+/* ---------- Stage 2: today action + anchor (user interacts) ---------- */
+function goTodayDraft(){
+  if (!draft.micro){ toast('Draft not ready'); return; }
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+function renderTodayDraft(anchors){
+  const area = $('punchArea');
+  const commitOptions = [
+    {id:'photo', label:'Take a photo as evidence'},
+    {id:'note', label:'Write a one-line note'},
+    {id:'check', label:'Just tick the box (self-report)'}
+  ];
+  const commitChipsHtml = commitOptions.map(o =>
+    `<button class="sc-chip${draft.commitMethod === o.id ? ' sel' : ''}" data-cid="${o.id}" onclick="pickCommitMethod('${o.id}')">${o.label}</button>`
+  ).join('');
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">Step 2 \u00b7 Today\u2019s action + execution commitment</div>
+      <div class="sc-title" id="todayTitle">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">Before you start: how will you prove you did it? What\u2019s the most likely obstacle?</div>
+
+      <div class="sc-field">Micro-steps (today)</div>
+      <div class="sc-chips" id="stepChips">
+        ${draft.steps.map((s, i) => `<span class="sc-chip" style="cursor:default;">${i+1}. ${escapeHtml(s)}</span>`).join('')}
+      </div>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateToday()">\u21bb Swap today\u2019s action</button>
+        <button class="ai-btn-cap" onclick="reviseToday()">\ud83d\udcdd Revise</button>
+      </div>
+
+      <div class="sc-field">When? Pick an anchor moment (tap to choose)</div>
+      <div class="sc-chips" id="anchorChips">
+        ${anchors.map((a, i) => `<button class="sc-chip ${draft.anchor === a ? 'sel' : (i === 0 && !draft.anchor ? 'sel' : '')}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)} \u2192 do it</button>`).join('')}
+      </div>
+      <div class="sc-row-actions">
+        <button class="ai-btn-cap" onclick="regenerateAnchors()">\u21bb Swap anchors</button>
+      </div>
+
+      <div class="sc-field">How will you prove you did it? (commit method, shown at check-in)</div>
+      <div class="sc-chips" id="commitChips">${commitChipsHtml}</div>
+      <div class="sc-hint" id="commitHint">${draft.commitMethod ? ('Selected: ' + (commitOptions.find(o=>o.id===draft.commitMethod)||{}).label) : 'Pick one, you will be reminded at check-in'}</div>
+
+      <div class="sc-field">Anticipate the most likely obstacle today</div>
+      <textarea class="sc-textarea" id="obstacleText" placeholder="e.g. I will forget / too troublesome / no time / cannot find my water bottle..." maxlength="80">${escapeHtml(draft.obstacle)}</textarea>
+      <button class="ai-btn-cap" id="obstacleBtn" onclick="anticipateObstacle()">\ud83d\udca1 Get one-line plan from Transform</button>
+      ${draft.obstaclePlan ? `<div class="sc-obstacle-result"><b>Plan:</b> ${escapeHtml(draft.obstaclePlan)}</div>` : ''}
+
+      <button class="cta-confirm" onclick="goIdentityStage()">Start today\u2019s behavior experiment \u2192</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  if (!draft.anchor) draft.anchor = anchors[0] || '';
+  const ta = $('obstacleText');
+  if (ta){
+    ta.addEventListener('input', e => { draft.obstacle = e.target.value.trim(); });
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pickCommitMethod(id){
+  draft.commitMethod = id;
+  const labels = {photo:'Take a photo as evidence', note:'Write a one-line note', check:'Just tick the box (self-report)'};
+  const hint = $('commitHint');
+  if (hint) hint.textContent = 'Selected: ' + (labels[id] || id);
+  const chips = document.querySelectorAll('#commitChips .sc-chip');
+  chips.forEach(c => c.classList.toggle('sel', (c.getAttribute('data-cid')||'') === id));
+}
+
+async function anticipateObstacle(){
+  const btn = $('obstacleBtn');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const userOb = (draft.obstacle || '').trim() || 'forgetting';
+  const prompt = `Today\u2019s micro-action: \u201c${draft.micro}\u201d. The user anticipates the most likely obstacle: \u201c${userOb}\u201d.\\n\\nGive a one-line plan (max 50 words) describing exactly how to handle it. Direct, no preamble.\\nStrict JSON:\\n{"plan":"..."}`;
+  let plan = '';
+  for (let attempt = 0; attempt < 2 && !plan; attempt++){
+    const r = await aiCall(prompt);
+    const d = parseJSON(r);
+    if (d && d.plan && d.plan.trim()) plan = d.plan.trim().slice(0, 120);
+  }
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!plan){ toast('Transform could not generate a plan right now \u2014 write your own'); return; }
+  draft.obstaclePlan = plan;
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+function pickAnchorChip(i){
+  const chips = document.querySelectorAll('#anchorChips .sc-chip');
+  chips.forEach((c, j) => c.classList.toggle('sel', j === i));
+  const sel = chips[i];
+  if (sel) draft.anchor = (sel.getAttribute('data-a') || '');
+}
+
+async function regenerateToday(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not re-plan right now \u2014 try again'); return; }
+  applyDraft(d);
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+function reviseToday(){
+  const title = $('todayTitle');
+  if (!title) return;
+  const current = draft.micro;
+  const next = prompt('Revise today\u2019s action:', current);
+  if (next && next.trim()){
+    draft.micro = next.trim().slice(0, 60);
+    // keep days aligned: update day 1
+    if (draft.days.length) draft.days[0] = draft.micro;
+    renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+  }
+}
+
+async function regenerateAnchors(){
+  const btn = $('punchArea').querySelector('.cta-confirm');
+  if (btn){ btn.classList.add('loading'); btn.disabled = true; }
+  const d = await aiExperimentDraft(draft.goal, draft.planLength);
+  if (btn){ btn.classList.remove('loading'); btn.disabled = false; }
+  if (!d){ toast('Could not refresh anchors right now \u2014 try again'); return; }
+  draft.anchors = d.anchors;
+  draft.micro = d.micro; draft.steps = d.steps; draft.days = d.days;
+  renderTodayDraft(draft.anchors || ['after I pick up my phone in the morning', 'after lunch', 'before bed']);
+}
+
+/* ---------- Stage 3: identity + confirm ---------- */
+function goIdentityStage(){
+  if (!draft.micro){ toast('Draft not ready'); return; }
+  if (!draft.anchor){ toast('Pick an anchor moment'); return; }
+  if (!draft.commitMethod){ toast('Pick a commit method (how you will prove you did it)'); return; }
+  const area = $('punchArea');
+  const commitLabel = {photo:'Take a photo', note:'Write a note', check:'Self-report'}[draft.commitMethod] || draft.commitMethod;
+  area.innerHTML = `
+    <div class="suggest-card">
+      <div class="sc-tag">Step 3 \u00b7 Identity \u2014 the final vote</div>
+      <div class="sc-title">${escapeHtml(draft.micro)}</div>
+      <div class="sc-desc">Every day you complete this, you become a little more of the person below.</div>
+      <div class="sc-summary">
+        <div><b>Anchor:</b> after ${escapeHtml(draft.anchor)}</div>
+        <div><b>Commit:</b> ${escapeHtml(commitLabel)}${draft.obstacle ? (' \u00b7 anticipated obstacle: ' + escapeHtml(draft.obstacle)) : ''}</div>
+      </div>
+      <div class="sc-field">Who do you want to become? (identity votes go here)</div>
+      <input class="sc-input" id="identityInput" placeholder="e.g. a person who takes care of their body" maxlength="30">
+      <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">Confirm \u00b7 start the ${draft.planLength || 7}-day experiment \u2192</button>
+      <div class="ai-out-box" id="aiOut"></div>
+    </div>`;
+  $('identityInput').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function confirmChange(){
+  const identity = ($('identityInput').value || '').trim();
+  if (!draft.micro) { toast('Let Transform suggest today\u2019s change first'); return; }
+  if (!draft.anchor) { toast('Pick an anchor moment'); return; }
+  if (!draft.commitMethod) { toast('Pick a commit method (how you will prove you did it)'); return; }
+  if (!identity) { toast('Write who you want to become (identity votes go here)'); return; }
+  const btn = $('confirmBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+
+  // Use the plan already generated in the draft (no second AI call)
+  const N = draft.planLength || draft.days.length || 7;
+  const plan = (draft.days && draft.days.length)
+    ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
+    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: ('Keep going with \u201c' + draft.micro + '\u201d'), sub:[], subDone:[]}); return p; })();
+
+  const goal = draft.goal || handoffScenario || 'behavior change';
+  current = {
+    id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+    input: (goal || '').trim() || draft.micro,
+    createdAt: new Date().toISOString(),
+    targetDays: N,
+    currentDay: 1,
+    plan,
+    logs: [],
+    status: 'active',
+    streak: 0, totalDone: 0, bestStreak: 0,
+    anchor: { after: draft.anchor },
+    reminder: '',
+    identity: identity,
+    celebration: '',
+    support: { people:[], tools:[], info:[] },
+    source: 'punch',
+    insight: handoffInsight || '',
+    scenario: handoffScenario || '',
+    commitMethod: draft.commitMethod,
+    obstacle: draft.obstacle || '',
+    obstaclePlan: draft.obstaclePlan || ''
+  };
+  persistAction();
+  draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
+  renderPunch();
+
+  showTodayFeedback();
+}
+
+
+
+(function init(){
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  // From think-en.html: carries the insight
+  handoffInsight = (params.get('insight') || '').trim();
+  handoffNature = (params.get('nature') || '').trim();
+  handoffScenario = (params.get('scenario') || '').trim();
+  // 1. URL ?insight= → render create state with handoff (from think)
+  // 2. URL ?id=xxx → load that specific experiment
+  // 3. Default → render create state (start a NEW experiment)
+  //    Recent experiments are listed below the hero as links (do NOT auto-load)
+  if (handoffInsight){
+    renderCreate();
+    return;
+  }
+  if (id){
+    current = loadActions().find(a => a.id === id) || null;
+    if (current && current.status === 'active'){ renderPunch(); return; }
+    renderCreate();
+    return;
+  }
+  // Default: create state (do not auto-load old action)
+  renderCreate();
+})();
+</script>
+</body>
+</html>
