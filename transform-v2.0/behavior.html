@@ -515,6 +515,8 @@
       </div>
     </div>
 
+    <div id="discoveryBox"></div>
+
     <div class="expand-card beh" data-section="experiments">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
         <span class="expand-icon">⚡</span>
@@ -1383,6 +1385,7 @@ renderInsights();
 renderActions();
 renderPatterns();
 renderTrash();
+renderDiscovery();
 (function(){
   const h = location.hash;
   if (h && document.querySelector(h)){

@@ -581,7 +581,7 @@
     </div>
   </div>
 
-  <!-- 模块一：拆解细分（N 天计划） -->
+  <!-- 模块一：拆解目标（N 天行为实验） -->
   <div id="stage-decompose" class="hidden">
     <div class="card">
       <h2>拆解目标</h2>
@@ -629,7 +629,7 @@
 
       <div class="hint" style="margin-top:16px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        每天要做的微行动会随计划推进自动更新：
+        每天要做的微行动会随实验推进自动更新：
       </div>
       <div id="anchorTodayEcho" style="margin-top:10px;background:var(--green-50);border:1px solid var(--green-light);border-radius:var(--radius-md);padding:14px 16px;font-size:15px;color:var(--ink-2);font-weight:600;"></div>
 
@@ -696,7 +696,7 @@
           <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
           <div class="tf-stat"><span>证明身份</span><b id="tfVotes">+1</b><em>次</em></div>
         </div>
-        <div class="tf-sub" id="tfSub">明天我会看到今天的微行动被记录在左侧计划全景里。</div>
+        <div class="tf-sub" id="tfSub">明天我会看到今天的微行动被记录在左侧实验全景里。</div>
         <div class="btn-row" style="justify-content:center;margin-top:14px;">
           <button class="btn btn-ghost" onclick="hideTodayFeedback()">继续 → 看看明天的小事</button>
         </div>
@@ -1027,7 +1027,7 @@ function renderDecompose(){
   }
   $('decInputEcho').textContent = echo;
   $('planDaysEcho').textContent = current.targetDays;
-  $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我生成 ' + current.targetDays + ' 天计划';
+  $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> 帮我生成 ' + current.targetDays + ' 天行为实验';
   if (current.identity) $('identityInput').value = current.identity;
   renderPlan();
 }
@@ -1119,8 +1119,8 @@ async function aiGeneratePlan(){
   btn.disabled = false; btn.innerHTML = orig;
   renderPlan();
   if (filled > 0){
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 计划草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
-    toast('已生成计划，确认后进入下一步');
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 实验草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
+    toast('已生成实验安排，确认后进入下一步');
   } else {
     $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 提示</div>没能自动生成，可手动在每天的输入框填写，或重试。</div>`;
   }
@@ -1148,7 +1148,7 @@ function goDecompose(){
 function goAnchor(){
   // 校验：每天都要有微行动
   const empty = current.plan.filter(p => !p.micro.trim()).length;
-  if (empty > 0){ toast('还有 ' + empty + ' 天没填行动，先把计划补全'); return; }
+  if (empty > 0){ toast('还有 ' + empty + ' 天没填行动，先把实验补全'); return; }
   current.identity = $('identityInput').value.trim();
   current.stage = 'anchor';
   persistAction();
@@ -1166,7 +1166,7 @@ function renderAnchor(){
 }
 function renderAnchorToday(){
   const today = current.plan.find(p => p.day === current.currentDay);
-  $('anchorTodayEcho').textContent = today ? ('第 ' + today.day + ' 天行动：' + (today.micro || '（待填）')) : '计划已全部完成';
+  $('anchorTodayEcho').textContent = today ? ('第 ' + today.day + ' 天行动：' + (today.micro || '（待填）')) : '实验已全部排完';
 }
 
 async function aiFindAnchor(){
@@ -1256,7 +1256,7 @@ function renderDashboard(){
     $('dashAnchor').textContent = (current.anchor.after ? '在我 ' + current.anchor.after + ' 之后，我就做这一天的行动。' : '') + (current.reminder ? ' 环境提示：' + current.reminder : '');
     renderSubSteps(today);
   } else {
-    $('dashTiny').textContent = '计划已全部完成 🎉';
+    $('dashTiny').textContent = '实验已全部完成 🎉';
     $('dashAnchor').textContent = '';
     $('subStepsBox').innerHTML = '';
   }
@@ -1451,7 +1451,7 @@ async function showTodayFeedback(){
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
-  $('tfSub').textContent = '今天的事已记录在左侧计划全景，明天的小事自动出现。';
+  $('tfSub').textContent = '今天的事已记录在左侧实验全景，明天的小事自动出现。';
   w.classList.remove('hidden');
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
   // 可选：用 AI 给一句真正有针对性的鼓励（无 Key 时回退本地）
@@ -1480,8 +1480,22 @@ async function pickReason(reason){
   if (text){
     $('aiBlockResult').innerHTML = `<div class="ai-msg"><div class="ai-head">知行 · 调整建议</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
     setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 6000);
+  } else {
+    // 本地降级：AI 不可用（无 Key / 限流 / 503）时给出固定可执行的下一步，不阻断闭环
+    $('aiBlockResult').innerHTML = `<div class="ai-msg" style="border-left:3px solid var(--green);"><div class="ai-head">调整建议</div>${escapeHtml(localFailAdvice(reason))}</div>`;
+    setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 8000);
   }
   toast('没关系，没做到不是失败。看看上面的调整建议。');
+}
+
+function localFailAdvice(reason){
+  const map = {
+    '忘了': '重新设计一个更自然的提醒：把这一步放进一个你本来就会做的事之后，或在眼前放一个看得见的环境提示。',
+    '太麻烦': '把今天的动作再缩小：能做到的最小一步是什么？先做那一步，其余的以后再说。',
+    '不想做': '连接身份意义：这件事对你想成为的人意味着什么？把这句话写在看得见的地方。',
+    '没时间': '换个发生时间：把它塞进一段本来就空着、或你固定会做的时段里。'
+  };
+  return map[reason] || '把今天的动作缩小到最小的一步，放进一个你每天都会经过的时刻之后。';
 }
 
 /* 社会支持 */
@@ -1603,7 +1617,7 @@ function closeOnboard() {
     $('changeInput').placeholder = '例如：未来 21 天，每周访谈 3 个客户来验证这个判断';
     document.querySelector('.card .hint').innerHTML =
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
-      + ' 先定下要花多少天，把这条洞察变成一段每天都能做到的计划——下一步会按天数拆解。';
+      + ' 先定下要花多少天，把这条洞察变成一段每天都能做的行为实验——下一步会按天数拆解。';
   }
   showStage('input');
 })();

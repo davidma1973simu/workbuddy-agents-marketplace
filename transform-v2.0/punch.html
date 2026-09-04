@@ -903,6 +903,14 @@ let handoffNature = '';
 let handoffScenario = '';
 let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
 
+/* P0-14 语音输入预留：本轮只留接口，不实现。开启 VOICE_ENABLED 后由 #voiceSlot 挂载入口 */
+const VOICE_ENABLED = false;
+function initVoiceInput(inputId){
+  if (!VOICE_ENABLED) return;
+  const slot = document.getElementById('voiceSlot');
+  if (!slot) return;
+  // TODO(v2.1)：接入 Web Speech API，把识别结果写入 inputId 对应的输入框
+}
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
@@ -929,6 +937,7 @@ function renderCreate(){
   input.addEventListener('keydown', e => { if (e.key === 'Enter') startChange(); });
   $('startChangeBtn').disabled = (input.value || '').trim().length < 4;
   input.focus();
+  initVoiceInput('changeInput');
 }
 
 async function startChange(){

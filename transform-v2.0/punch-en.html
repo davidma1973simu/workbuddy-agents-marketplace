@@ -181,6 +181,10 @@
   .tf-stat em { font-size: 10px; color: var(--ink-3); font-style: normal; }
   .tf-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 10px; }
   .tf-actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .tf-upgrade { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--green-light); text-align: center; }
+  .tu-q { font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+  .tu-link { display: inline-block; font-size: 13.5px; font-weight: 700; color: var(--green-deep); text-decoration: none; border-bottom: 1.5px solid var(--green); padding-bottom: 1px; }
+  .tu-link:hover { color: var(--green); }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 700;
@@ -318,7 +322,7 @@
     <a class="gn-item" href="app-en.html">Guided Insight</a>
     <a class="gn-item" href="act-en.html">Guided Change</a>
   </nav>    <button onclick="toggleTheme()" aria-label="Toggle dark mode">☾ Dark</button>
-    <button class="arch-btn" onclick="location.href='growth-en.html#experiments'" aria-label="Behavior archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 Behavior</button>
+    <button class="arch-btn" onclick="location.href='behavior-en.html'" aria-label="Behavior archive" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 Behavior</button>
   </div>
 
   <!-- Daily progress main screen -->
@@ -470,7 +474,7 @@ function renderPunch(){
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;opacity:.92;">
       <span><b style="font-size:16px;">${current.streak || 0}</b>-day streak</span>
       <span><b style="font-size:16px;">${current.totalDone || 0}</b> days total</span>
-      <span><b style="font-size:16px;">${votes}</b> identity votes</span>
+      <span>Proven by action <b style="font-size:16px;">${votes}</b> times</span>
     </div>
   </div>`;
 
@@ -506,12 +510,16 @@ function renderPunch(){
       <div class="tf-stats">
         <div class="tf-stat"><span>Streak</span><b id="tfStreak">0</b><em>days</em></div>
         <div class="tf-stat"><span>Total</span><b id="tfTotal">0</b><em>days</em></div>
-        <div class="tf-stat"><span>Votes</span><b id="tfVotes">+1</b><em>votes</em></div>
+        <div class="tf-stat"><span>Proof</span><b id="tfVotes">+1</b><em>times</em></div>
       </div>
       <div class="tf-sub" id="tfSub"></div>
       <div class="tf-actions">
         <button class="btn btn-primary" onclick="hideTodayFeedback()">Continue → tomorrow\u2019s step is ready</button>
-        <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
+        <a class="btn btn-ghost" href="behavior-en.html">View Behavior Archive</a>
+      </div>
+      <div class="tf-upgrade">
+        <div class="tu-q">You know exactly what to do, and still don\u2019t do it?</div>
+        <a class="tu-link" href="act-en.html">Let\u2019s redesign this together \u2192</a>
       </div>
       <div class="restart-row">
         <button class="restart-link" onclick="restartExperiment()">↻ Start a new experiment</button>
@@ -612,8 +620,21 @@ async function pickReason(reason){
   if (text){
     const box = $('aiBlockResult');
     if (box) box.innerHTML = `<div class="ai-result">${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
+  } else {
+    const box = $('aiBlockResult');
+    if (box) box.innerHTML = `<div class="ai-result" style="background:var(--green-50,#EAF6F0);border-left:3px solid var(--green);"><b>Adjustment:</b>${escapeHtml(localFailAdvice(reason))}</div>`;
   }
   toast('It\u2019s okay \u2014 missing a day isn\u2019t failure. Adjust once, try again.');
+}
+
+function localFailAdvice(reason){
+  const map = {
+    forgot: 'Redesign a more natural reminder: attach this step to something you already do every day, or leave a visible cue where you will see it.',
+    hassle: 'Shrink today\u2019s action: what is the smallest step you can really do? Do just that, leave the rest for later.',
+    demotivated: 'Reconnect it to identity: what does this mean for the person you want to be? Write that sentence where you can see it.',
+    time: 'Change the timing: slot it into a stretch that is already empty, or into a moment you always have.'
+  };
+  return map[reason] || 'Shrink the action to its smallest step and place it right after a moment you pass every day.';
 }
 
 
@@ -622,6 +643,14 @@ let handoffNature = '';
 let handoffScenario = '';
 let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], commitMethod:'', obstacle:'', obstaclePlan:'' };
 
+/* P0-14 语音输入预留：本轮只留接口，不实现。开启 VOICE_ENABLED 后由 #voiceSlot 挂载入口 */
+const VOICE_ENABLED = false;
+function initVoiceInput(inputId){
+  if (!VOICE_ENABLED) return;
+  const slot = document.getElementById('voiceSlot');
+  if (!slot) return;
+  // TODO(v2.1)：接入 Web Speech API，把识别结果写入 inputId 对应的输入框
+}
 function renderCreate(){
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
@@ -648,6 +677,7 @@ function renderCreate(){
   input.addEventListener('keydown', e => { if (e.key === 'Enter') startChange(); });
   $('startChangeBtn').disabled = (input.value || '').trim().length < 4;
   input.focus();
+  initVoiceInput('changeInput');
 }
 
 async function startChange(){

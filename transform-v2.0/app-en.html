@@ -2383,19 +2383,19 @@
   <div class="path" id="stepsBar" data-progress="1">
     <div class="p-node active" data-step="0">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">Organize</span>
+      <span class="p-label">Lay It Out</span>
     </div>
     <div class="p-node" data-step="1">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">Insight</span>
+      <span class="p-label">See Through</span>
     </div>
     <div class="p-node" data-step="2">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="p-label">Apply</span>
+      <span class="p-label">Try It</span>
     </div>
     <div class="p-node" data-step="3">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg></div>
-      <span class="p-label">Deliver</span>
+      <span class="p-label">Bank It</span>
     </div>
   </div>
 
@@ -2404,9 +2404,9 @@
     <!-- Step 0 归类 -->
     <div class="panel panel-redesign" id="panel-0">
       <header class="step-head">
-        <div class="step-eyebrow">Step 1 · Organize</div>
+        <div class="step-eyebrow">Lay It Out · put everything on the table</div>
         <h1>Make sense of the mess</h1>
-        <p class="step-lead">Lay out what you have, see what it is and where it came from, then group it.</p>
+        <p class="step-lead">Lay out what you have one item at a time, see what it is and where it came from, then sort it into groups.</p>
       </header>
 
       <section class="field">
@@ -2450,27 +2450,27 @@
       </section>
 
       <section class="field">
-        <label>Group into categories</label>
+        <label>Sort into a few groups</label>
         <p class="field-hint">Give each group a name to clear your head.</p>
         <button class="ai-cta" id="aiGroup" onclick="aiGroup()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h6v6H4zM14 7h6v6h-6zM4 17h6v3H4zM14 17h6v3h-6z" stroke="currentColor" stroke-width="1.8"/></svg>
-          AI, help me group these
+          AI, help me sort these out
         </button>
         <div class="groups" id="groupsArea"></div>
         <div class="signal" id="signal0" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Information organized. Clarity emerging.
+          You can see the shape of it now.
         </div>
       </section>
 
-      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>Go to Insight →</button></div>
+      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>Go to See Through →</button></div>
     </div>
 
     <!-- Step 1 洞察（用户主导，Transform辅助启发）v8：只读标签 + 渐进出题 + 凸显整合 -->
     <!-- Step 1 洞察（用户主导，Transform辅助启发）v9：单焦点问题流 -->
     <div class="panel panel-redesign" id="panel-1" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">Step 2 · Insight</div>
+        <div class="step-eyebrow">See Through · find what you haven’t noticed</div>
         <h1>See through the surface</h1>
         <p class="step-lead">Transform will prompt you one question at a time. Keep asking for the next until you feel ready, then let it synthesize.</p>
       </header>
@@ -2565,7 +2565,7 @@
         </div>
         <div class="btn-row" id="nextBtnArea" style="display:none;">
           <button class="btn btn-prev" onclick="goStep(0)">Back</button>
-          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>Go to Apply →</button>
+          <button class="btn btn-next" id="next1" onclick="goStep(2)" disabled>Go to Try It →</button>
         </div>
         <div class="restart-row">
           <button class="restart-link" onclick="redoInsight()">↻ New questions + synthesize</button>
@@ -2574,7 +2574,7 @@
     <!-- Step 2 应用（用户写 + AI 评价反馈，按 PRD） -->
     <div class="panel panel-app" id="panel-2" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">Step 3 · Apply</div>
+        <div class="step-eyebrow">Try It · put it into a real scenario</div>
         <h1>Take the insight into a real scenario</h1>
         <p class="step-lead">Try it once in a familiar scenario, then migrate to an unfamiliar one. Focus on one thing at a time.</p>
       </header>
@@ -2596,7 +2596,7 @@
       <!-- 阶段指示 -->
       <div class="phase-bar" id="phaseBar">
         <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> Near apply · familiar scenario</div>
-        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> Far apply · unfamiliar scenario</div>
+        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> A completely different scenario</div>
       </div>
 
       <!-- Near apply阶段 -->
@@ -2682,7 +2682,7 @@
           <p class="fw-text">Truly mastering an insight is not about using it in a familiar setting — it is about carrying it into a completely unfamiliar one. The near application proves you understood it; the far application proves you can actually transfer it. Only when the same insight works across different industries, roles, and scenarios does it become genuinely your own capability.</p>
         </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
-          <span class="app-badge far">Far scene · transfer to an unfamiliar domain</span>
+          <span class="app-badge far">Far scene · try it in another domain</span>
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">Pick a scenario to migrate to</span></div>
             <div class="title-list" id="farTitleList"></div>
@@ -2924,7 +2924,7 @@
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(3)">Back</button>
         <button class="btn btn-next" onclick="saveReflection()">Finish review · bank as growth asset</button>
-        <a class="btn btn-ghost" href="growth-en.html#insights">Review later</a>
+        <a class="btn btn-ghost" href="cognitive-en.html">Review later</a>
       </div>
     </div>
   </div>
@@ -5067,7 +5067,7 @@ function updateVoteStats(text, readOnly) {
     </div>
   </div>
 </div>
-<a class="fab-archive" href="growth-en.html" title="View my growth assets anytime">
+<a class="fab-archive" href="cognitive-en.html" title="View my growth assets anytime">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   My Archive
 </a>

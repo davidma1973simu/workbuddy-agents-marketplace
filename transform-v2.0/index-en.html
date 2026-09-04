@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Transform · 想清楚，做得到</title>
+<title>Transform · Think Clearly, Act.</title>
 <link rel="icon" href="data:,">
+  <meta name="app-version" content="v2.0-draft">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap">
 <style>
   :root {
     --bg: #F8F7F3;
@@ -203,13 +207,16 @@
   .zhx-bubble.b2 { bottom: 64px; left: 0; animation-delay: .45s; }
   .zhx-bubble-row { display: flex; align-items: center; gap: 10px; }
   .zhx-char {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
+    min-width: 38px; height: 34px; padding: 0 12px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
     background: var(--green-soft); color: var(--green);
-    font-size: 22px; font-weight: 800; line-height: 1;
+    font-size: 13px; font-weight: 800; line-height: 1;
+    letter-spacing: 0.2px; white-space: nowrap;
   }
   .zhx-bubble-flow { font-size: 13px; color: var(--ink-2); margin-bottom: 2px; white-space: nowrap; }
   .zhx-bubble-flow strong { color: var(--green); font-weight: 700; }
+  .brand-tag { display: inline-block; padding: 2px 9px; border-radius: 6px; background: var(--green-soft); color: var(--green); font-weight: 800; font-size: 12.5px; margin-right: 2px; letter-spacing: 0.2px; }
+  .brand-name { font-family: 'Playfair Display', 'Georgia', serif; font-weight: 700; font-style: italic; letter-spacing: 0.5px; }
   .zhx-bubble .zhx-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
   .zhx-bubble .zhx-sub strong { color: var(--green); font-weight: 700; }
   @keyframes bubble-in { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform: none; } }
@@ -480,7 +487,6 @@
     .hero-cta-wrap { gap: 16px; }
     .hero-cta { flex-direction: column; }
   }
-
   /* v2.0：首页主动发现（基于真实数据，不达阈值不显示） */
   .home-discovery:empty { display: none; }
   .home-discovery { max-width: 760px; margin: 0 auto; }
@@ -497,7 +503,6 @@
     catch(e){}
   })();
 </script>
-  <meta name="app-version" content="v2.0-draft">
 </head>
 <body>
 <div class="bg-atmo" aria-hidden="true">
@@ -509,24 +514,25 @@
 
 <div class="wrap">
   <nav class="nav">
-    <a class="nav-brand" href="index.html">
+    <a class="nav-brand" href="index-en.html">
       <div class="nav-mark">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
           <circle cx="12" cy="19.5" r="1.8" fill="#fff"/>
         </svg>
       </div>
-      <span class="nav-name">Transform</span>
+      <span class="nav-name brand-name">Transform</span>
     </a>
     <div class="nav-links">
-      <a href="cognitive.html">
+      <a href="cognitive-en.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-        <span>认知档案</span>
+        <span>Insights</span>
       </a>
-      <a href="behavior.html">
+      <a href="behavior-en.html">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
-        <span>行为档案</span>
+        <span>Behavior</span>
       </a>
+      <a href="index.html" class="lang-switch" title="Switch to 中文" style="border:1.5px solid var(--line-2);padding:8px 12px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--ink-2);text-decoration:none;transition:all .2s;">中文</a>
     </div>
   </nav>
 
@@ -534,42 +540,42 @@
     <div class="hero-main">
       <div class="hero-badge">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-        AI 认知-行为进化引擎
+        AI Cognition–Behavior Evolution Engine
       </div>
-      <h1>想清楚，<span class="grad">做得到</span></h1>
-      <p class="hero-sub">每天花几分钟，想清楚一件小事，或让一个行为向前一步。遇到真正重要、复杂的事，让知行陪你深入处理。</p>
+      <h1>Think Clearly, <span class="grad">Act.</span></h1>
+      <p class="hero-sub">Spend a few minutes a day seeing one small thing clearly, or moving one behavior a step forward. When something is truly important and complex, let <span class="brand-name">Transform</span> go deeper with you.</p>
       <div class="hero-cta-wrap">
         <div class="hero-tier">
-          <div class="tier-q">今天，我想做什么？</div>
+          <div class="tier-q">What would I like to do today?</div>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="think.html">
-              每日洞察
+            <a class="btn btn-primary" href="think-en.html">
+              Daily Insight
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a class="btn btn-ghost" href="punch.html">
-              每日改变
+            <a class="btn btn-ghost" href="punch-en.html">
+              Daily Change
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
           </div>
-          <div class="tier-sub">每日洞察：花几分钟，看清一件事。 · 每日改变：花几分钟，让一个行为向前一步。</div>
+          <div class="tier-sub">Daily Insight: a few minutes to see one thing clearly. · Daily Change: a few minutes to move one behavior forward.</div>
         </div>
         <div class="hero-tier">
-          <div class="tier-q">有件重要的事，需要认真处理？</div>
+          <div class="tier-q">Something important that needs real attention?</div>
           <div class="hero-cta">
-            <a class="btn btn-ghost" href="app.html">
-              伴我洞察
+            <a class="btn btn-ghost" href="app-en.html">
+              Guided Insight
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a class="btn btn-ghost" href="act.html">
-              伴我改变
+            <a class="btn btn-ghost" href="act-en.html">
+              Guided Change
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
           </div>
-          <div class="tier-sub">伴我洞察：和我一起，把复杂问题真正想清楚。 · 伴我改变：和我一起，把长期改变真正做起来。</div>
+          <div class="tier-sub">Guided Insight: let’s think a complex problem through properly. · Guided Change: let’s make a long-term change actually stick.</div>
         </div>
       </div>
       <div class="hero-sub-links">
-        <span>每天一小步，重要时深一步</span>
+        <span>A small step every day, a deeper step when it matters</span>
       </div>
     </div>
     <div class="hero-visual">
@@ -585,19 +591,19 @@
       </div>
       <div class="zhx-bubble b1">
         <div class="zhx-bubble-row">
-          <span class="zhx-char">知</span>
+          <span class="zhx-char">T</span>
           <div>
-            <div class="zhx-bubble-flow"><strong>摊开</strong> → 想透 → 试试看</div>
-            <div class="zhx-sub">已沉淀 <strong id="insightCount">0</strong> 条认知</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Think</span> → See through → Try it</div>
+            <div class="zhx-sub"><strong id="insightCount">0</strong> insights banked</div>
           </div>
         </div>
       </div>
       <div class="zhx-bubble b2">
         <div class="zhx-bubble-row">
-          <span class="zhx-char">行</span>
+          <span class="zhx-char">A</span>
           <div>
-            <div class="zhx-bubble-flow"><strong>做一步</strong> → 做到了 → 变一变</div>
-            <div class="zhx-sub">已做到 <strong id="behaviorCount">0</strong> 次</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Act</span> → One step done → Change takes hold</div>
+            <div class="zhx-sub"><strong id="behaviorCount">0</strong> actions completed</div>
           </div>
         </div>
       </div>
@@ -608,28 +614,28 @@
 
   <section class="manifesto">
     <div class="manifesto-block">
-      <h3>AI 是脚手架，不是答案</h3>
-      <p>知行不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
+      <h3>AI is scaffolding, not the answer</h3>
+      <p><span class="brand-name">Transform</span> never thinks for you. It helps you clarify, challenge, and verify, turning messy information into a climbable structure. The final judgment stays with you.</p>
     </div>
     <div class="manifesto-divider"></div>
     <div class="manifesto-block">
-      <h3>从认知到行为，一次闭环</h3>
-      <p>想清楚还不够。把洞察放进真实场景推演，获得反馈，再调整认知——这才是真正的改变。</p>
+      <h3>From insight to action, one complete loop</h3>
+      <p>Thinking clearly is not enough. Test your insight in real scenarios, gather feedback, and adjust your thinking — that is real change.</p>
     </div>
   </section>
 
   <footer class="foot">
-    <span class="foot-copy">© Transform · 想清楚，做得到</span>
+    <span class="foot-copy">© <span class="brand-name">Transform</span> · Think Clearly, Act.</span>
     <div class="foot-links">
       <a href="https://github.com/davidma1973simu/workbuddy-agents-marketplace" target="_blank" rel="noopener">GitHub</a>
-      <a class="foot-settings" href="app.html?settings=1">AI 设置</a>
+      <a class="foot-settings" href="app-en.html?settings=1">AI Settings</a>
     </div>
   </footer>
 </div>
 
-<a class="fab-archive" href="cognitive.html" title="随时查看我的成长资产">
+<a class="fab-archive" href="cognitive-en.html" title="View my growth assets anytime">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-  成长资产
+  Growth Assets
 </a>
 <script>
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -646,7 +652,7 @@ function startTodayThink(e){
   const input = document.getElementById('todayTopic');
   const topic = (input && input.value || '').trim();
   if (topic.length < 4) return;
-  location.href = 'think.html?topic=' + encodeURIComponent(topic);
+  location.href = 'think-en.html?topic=' + encodeURIComponent(topic);
 }
 function setupTodayTopicInput(){
   const input = document.getElementById('todayTopic');
@@ -674,42 +680,42 @@ function renderTodayChange(){
   const meta3 = document.getElementById('todayChangeMeta3');
   const desc = document.getElementById('todayChangeDesc');
   if (!active){
-    if (meta1) meta1.textContent = '1 分钟';
-    if (meta2) meta2.textContent = '1 个微行动';
-    if (meta3) meta3.textContent = '连续天数';
-    if (desc) desc.textContent = '每天做一步小事，把想清楚的事变成真正会发生的行为。';
+    if (meta1) meta1.textContent = '1 min';
+    if (meta2) meta2.textContent = '1 micro-action';
+    if (meta3) meta3.textContent = 'day streak';
+    if (desc) desc.textContent = 'One small step each day to turn what you thought through into real behavior.';
     box.innerHTML = `
-      <a class="ta-primary ta-amber" href="act.html" onclick="event.stopPropagation()">
+      <a class="ta-primary ta-amber" href="act-en.html" onclick="event.stopPropagation()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        先建一个 N 天行为实验
+        Create a behavior experiment
       </a>
-      <div class="ta-meta">还没有开始实验 · 去「伴我改变」拆解出每天的小事</div>`;
+      <div class="ta-meta">No experiment yet · break it down in the full behavior-change flow</div>`;
     return;
   }
   const today = (active.plan || []).find(p => p.day === active.currentDay);
   const micro = (today && today.micro) || active.input;
   const todayDone = isTodayDone(active);
-  if (meta1) meta1.textContent = '第 ' + active.currentDay + ' / ' + active.targetDays + ' 天';
-  if (meta2) meta2.textContent = (today && today.seconds ? (today.seconds + ' 秒微行动') : '一个微行动');
-  if (meta3) meta3.textContent = '连续 ' + (active.streak || 0) + ' 天';
+  if (meta1) meta1.textContent = 'Day ' + active.currentDay + ' / ' + active.targetDays;
+  if (meta2) meta2.textContent = (today && today.seconds ? (today.seconds + '-sec action') : 'one micro-action');
+  if (meta3) meta3.textContent = 'streak ' + (active.streak || 0) + ' days';
   if (desc) desc.textContent = active.anchor && active.anchor.after
-    ? ('在我「' + active.anchor.after + '」之后，做这一步。')
-    : '把想清楚的事变成真正会发生的行为。';
+    ? ('Right after I "' + active.anchor.after + '", I take this step.')
+    : 'Turn what you thought through into real behavior.';
   if (todayDone){
     box.innerHTML = `
       <div class="ta-done">
         <div class="ta-done-crown">🎉</div>
-        <div class="ta-done-title">今天做到了！</div>
-        <div class="ta-done-meta">累计 <b style="color:var(--green);">${active.totalDone || 0}</b> 天 · 连续 <b style="color:var(--green);">${active.streak || 0}</b> 天</div>
-        <a href="behavior.html" onclick="event.stopPropagation()">查看行为档案 →</a>
+        <div class="ta-done-title">Done today!</div>
+        <div class="ta-done-meta">Total <b style="color:var(--green);">${active.totalDone || 0}</b> days · streak <b style="color:var(--green);">${active.streak || 0}</b> days</div>
+        <a href="behavior-en.html" onclick="event.stopPropagation()">View Behavior Archive →</a>
       </div>`;
   } else {
     box.innerHTML = `
-      <a class="ta-primary" href="punch.html" onclick="event.stopPropagation()">
+      <a class="ta-primary" href="punch-en.html" onclick="event.stopPropagation()">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        做完了：${escapeHtml(micro)}
+        Done: ${escapeHtml(micro)}
       </a>
-      <div class="ta-meta">第 <b>${active.currentDay}</b> 天 · 累计 <b>${active.totalDone || 0}</b> 天 · 连续 <b>${active.streak || 0}</b> 天</div>`;
+      <div class="ta-meta">Day <b>${active.currentDay}</b> · total <b>${active.totalDone || 0}</b> days · streak <b>${active.streak || 0}</b> days</div>`;
   }
 }
 
@@ -741,7 +747,7 @@ function renderTodayChange(){
     });
   });
 
-/* P0-12：首页主动发现（真实数据阈值：洞察 ≥ 5 或 行为实验 ≥ 3，不达标不显示） */
+/* P0-12: home discovery (real data only - insights >= 5 or experiments >= 3) */
 function renderHomeDiscovery(){
   const box = document.getElementById('homeDiscovery'); if (!box) return;
   let archive = [], actions = [];
@@ -749,7 +755,7 @@ function renderHomeDiscovery(){
   try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]') || []; } catch(e){ actions = []; }
   const exps = actions.filter(a => a && (a.status === 'graduated' || (a.logs && a.logs.length)));
   if (archive.length < 5 && exps.length < 3) return;
-  const label = '我发现了一个关于你的模式';
+  const label = 'I noticed a pattern about you';
   let body, href, go;
   if (archive.length >= 5){
     const tagCount = {};
@@ -757,18 +763,18 @@ function renderHomeDiscovery(){
     let topTag = null, topN = 0;
     Object.keys(tagCount).forEach(t => { if (tagCount[t] > topN){ topN = tagCount[t]; topTag = t; } });
     body = (topTag && topN >= 2)
-      ? `你沉淀的 <b>${archive.length}</b> 条洞察里，有 <b>${topN}</b> 条都涉及「<b>${escapeHtml(topTag)}</b>」——你反复在思考同一类事。`
-      : `你已经沉淀了 <b>${archive.length}</b> 条洞察。再多积累几次，就能看出自己反复在想什么。`;
-    href = 'cognitive.html'; go = '看认知档案 →';
+      ? `Of the <b>${archive.length}</b> insights you have banked, <b>${topN}</b> touch on &ldquo;<b>${escapeHtml(topTag)}</b>&rdquo; &mdash; you keep circling the same kind of question.`
+      : `You have banked <b>${archive.length}</b> insights. A few more, and the pattern will show itself.`;
+    href = 'cognitive-en.html'; go = 'Insight Archive &rarr;';
   } else {
     const reasonCount = {};
     exps.forEach(a => (a.logs || []).forEach(l => { if (l && l.done === false && l.reason) reasonCount[l.reason] = (reasonCount[l.reason] || 0) + 1; }));
     let topReason = null, topN = 0;
     Object.keys(reasonCount).forEach(r => { if (reasonCount[r] > topN){ topN = reasonCount[r]; topReason = r; } });
     body = (topReason && topN >= 2)
-      ? `过去 <b>${exps.length}</b> 次行为实验里，你最容易因为「<b>${escapeHtml(topReason)}</b>」没做到——下次可以从缩小这一步开始。`
-      : `你已经完成了 <b>${exps.length}</b> 次行为实验。再多积累几次，就能看出自己在哪一步最容易卡住。`;
-    href = 'behavior.html'; go = '看行为档案 →';
+      ? `Across <b>${exps.length}</b> behavior experiments, &ldquo;<b>${escapeHtml(topReason)}</b>&rdquo; is the reason you miss most often &mdash; next time, start by shrinking the step.`
+      : `You have run <b>${exps.length}</b> behavior experiments. A few more, and you will see which step trips you up.`;
+    href = 'behavior-en.html'; go = 'Behavior Archive &rarr;';
   }
   box.innerHTML = `<div class="hd-card"><div><div class="hd-label">${label}</div><div class="hd-body">${body}</div></div><a class="hd-go" href="${href}">${go}</a></div>`;
 }

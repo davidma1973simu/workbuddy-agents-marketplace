@@ -444,6 +444,22 @@
     .stats { grid-template-columns: repeat(2, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* v2.0: discovery card (pattern found from real data) */
+  .discovery-card {
+    margin: 18px 0 4px; padding: 18px 20px; border-radius: 18px;
+    background: linear-gradient(135deg, var(--green-50, #EAF6F0) 0%, #F3FAF6 100%);
+    border: 1px solid var(--green-light, #CDE9DC);
+    position: relative; overflow: hidden;
+  }
+  .dc-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--green-deep);
+    letter-spacing: .3px; margin-bottom: 8px;
+  }
+  .dc-label::before { content: '💡'; }
+  .dc-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; }
+  .dc-body b { color: var(--green-deep); }
 </style>
 <script>
   (function(){
@@ -495,6 +511,8 @@
         <p>Every action completed becomes a long-term behavioral asset</p>
       </div>
     </div>
+
+    <div id="discoveryBox"></div>
 
     <div class="expand-card beh" data-section="experiments">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
@@ -714,7 +732,6 @@ function renderModels(){
   const box = $('modelList'); if (!box) return;
   const archive = loadArchive();
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
-  const box = $('modelList');
   if (!models.length){
     box.innerHTML = `<div class="expand-empty">No mental models banked yet.<br>Complete a Guided Insight session and review it \u2014 your new framework will appear here.<br><a href="app-en.html">Think something through →</a></div>`;
     return;
@@ -1009,8 +1026,32 @@ function assetSave(type, id, mutate){
   }
   renderAll();
 }
-function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); }
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderDiscovery(); }
 
+
+/* P0-11/12: local discovery from real behavior data (no API key; shown only past threshold) */
+function renderDiscovery(){
+  const box = $('discoveryBox'); if (!box) return;
+  const actions = (loadActions() || []).filter(a => a && (a.status === 'graduated' || (a.logs && a.logs.length)));
+  box.innerHTML = '';
+  if (actions.length < 3) return; // threshold: experiments >= 3
+  const reasonCount = {};
+  actions.forEach(a => (a.logs || []).forEach(l => {
+    if (l && l.done === false && l.reason) reasonCount[l.reason] = (reasonCount[l.reason] || 0) + 1;
+  }));
+  let topReason = null, topN = 0;
+  Object.keys(reasonCount).forEach(r => { if (reasonCount[r] > topN){ topN = reasonCount[r]; topReason = r; } });
+  let body;
+  if (topReason && topN >= 2){
+    body = `Across <b>${actions.length}</b> behavior experiments, \u201c<b>${escapeHtml(topReason)}</b>\u201d is the reason you miss most often \u2014 next time, start by shrinking the step.`;
+  } else {
+    body = `You have run <b>${actions.length}</b> behavior experiments. A few more, and you will see which step trips you up.`;
+  }
+  box.innerHTML = `<div class="discovery-card">
+    <div class="dc-label">I noticed a pattern about you</div>
+    <div class="dc-body">${body}</div>
+  </div>`;
+}
 function openAssetModal(html){
   const mask = $('assetModalMask'); const box = $('assetModalBox');
   if (!mask || !box) return;
@@ -1332,6 +1373,7 @@ renderInsights();
 renderActions();
 renderPatterns();
 renderTrash();
+renderDiscovery();
 (function(){
   const h = location.hash;
   if (h && document.querySelector(h)){

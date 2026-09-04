@@ -524,13 +524,13 @@
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>
-      <span class="p-label">Reinforce</span>
+      <span class="p-label">Check-in</span>
     </div>
     <div class="p-node" data-step="reflection">
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg>
       </div>
-      <span class="p-label">Deliver</span>
+      <span class="p-label">Bank It</span>
     </div>
   </div>
 
@@ -541,19 +541,19 @@
   <div id="stage-input">
     <div class="page-head">
       <h1>From thinking it through to real behavior change</h1>
-      <p>Facing a big change? Decide how many days to invest, break it into a daily plan you can actually do, then anchor and reinforce it day by day into new habits and identity.</p>
+      <p>Facing a big change? Decide how many days to invest, break it into a daily behavior experiment you can actually run, then set a trigger, get feedback every day, and let it slowly become a habit.</p>
     </div>
     <div class="card">
       <div id="insightContext" class="insight-context hidden">
         <div class="ic-label">💡 Your starting insight (from Guided Insight)</div>
         <div class="ic-text" id="insightContextText"></div>
-        <div class="ic-tip">Next, translate this insight into a <strong>behavior experiment</strong> you commit to \u2014 this is the \u201cdecision\u201d step: what does this insight actually mean you should do?</div>
+        <div class="ic-tip">Next, translate this insight into a <strong>behavior experiment</strong> you commit to — this is the “decision” step: what does this insight actually mean you should do?</div>
       </div>
       <label class="fld" id="changeLabel" for="changeInput">What do you want to change or practice? (a big problem is fine)</label>
-      <textarea id="changeInput" placeholder="e.g.&#10;• I want to master Xiaohongshu operations&#10;• I want to build a daily 30-min reading habit&#10;\u2022 I want to make the insight \u2018AI will reshape the whole architecture\u2019 actually land\"></textarea>
+      <textarea id="changeInput" placeholder="e.g.&#10;• I want to master Xiaohongshu operations&#10;• I want to build a daily 30-min reading habit&#10;• I want to make the insight ‘AI will reshape the whole architecture’ actually land\"></textarea>
       <div class="hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Write the big problem down. Next, it will be broken into a daily plan based on the number of days you set.
+        Write the big problem down. Next, it will be broken into a daily behavior experiment based on the number of days you set.
       </div>
 
       <label class="fld">How many days do you want for this behavior change?</label>
@@ -576,35 +576,35 @@
           Start Breaking Down
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
+        <a class="btn btn-ghost" href="behavior-en.html">View Behavior Archive</a>
       </div>
     </div>
   </div>
 
-  <!-- 模块一：拆解细分（N 天计划） -->
+  <!-- 模块一：拆解目标（N 天行为实验） -->
   <div id="stage-decompose" class="hidden">
     <div class="card">
-      <h2>Break It Down</h2>
+      <h2>Break Down the Goal</h2>
       <div class="sub" id="decInputEcho"></div>
 
-      <label class="fld">Break this into a <b id="planDaysEcho">21</b>-day action plan</label>
+      <label class="fld">Break this into a <b id="planDaysEcho">21</b>-day behavior experiment</label>
       <div class="hint" style="margin-top:0;margin-bottom:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-         Let \u201cZhixing\u201d lay out the daily micro-actions; if any day feels too big, tap \u201cbreak down\u201d to split it into steps.
+         Let “Zhixing” lay out the daily micro-actions; if any day feels too big, tap “break down” to split it into steps.
       </div>
       <button class="btn btn-ai" id="aiPlanBtn" onclick="aiGeneratePlan()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Generate my 21-day plan
+        Generate my 21-day experiment
       </button>
       <div id="aiPlanResult"></div>
 
       <div class="plan-list" id="planList"></div>
 
-      <label class="fld">Who do you want to become? (every completed day casts a vote for this person)</label>
+      <label class="fld">Who do you want to become? (each time you follow through, you prove this person with action)</label>
       <input type="text" id="identityInput" placeholder="e.g. someone who follows through / someone who takes care of their body">
 
       <div class="btn-row">
-        <button class="btn btn-primary" id="toAnchorBtn" onclick="goAnchor()">Next \u00b7 Anchor It \u2192</button>
+        <button class="btn btn-primary" id="toAnchorBtn" onclick="goAnchor()">Next · Set the Trigger →</button>
       </div>
     </div>
   </div>
@@ -612,8 +612,8 @@
   <!-- 模块二：行动锚定 -->
   <div id="stage-anchor" class="hidden">
     <div class="card">
-      <h2>Anchor the Action</h2>
-      <div class="sub">Give the whole plan a stable trigger \u2014 when that moment comes each day, you automatically start today\u2019s action. No willpower needed.</div>
+      <h2>Set the Trigger</h2>
+      <div class="sub">Give the whole experiment a stable trigger — when that moment comes each day, you automatically start today’s action. No willpower needed.</div>
 
       <label class="fld">Stable trigger sentence</label>
       <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:2;">
@@ -623,21 +623,21 @@
       </div>
       <button class="btn btn-ai" id="aiAnchorBtn" onclick="aiFindAnchor()" style="margin-top:14px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-         Help me find an anchor
+         Help me find a trigger
       </button>
       <div id="aiAnchorResult"></div>
 
       <div class="hint" style="margin-top:16px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-         The daily micro-action updates automatically as the plan progresses:
+         The daily micro-action updates automatically as the experiment progresses:
       </div>
       <div id="anchorTodayEcho" style="margin-top:10px;background:var(--green-50);border:1px solid var(--green-light);border-radius:var(--radius-md);padding:14px 16px;font-size:15px;color:var(--ink-2);font-weight:600;"></div>
 
-      <label class="fld">Environment cue (optional) \u2014 let the environment remember for you</label>
+      <label class="fld">Environment cue (optional) — let the environment remember for you</label>
       <input type="text" id="reminderInput" placeholder="e.g. put the notebook on my nightstand">
 
-      <label class="fld">Celebration move (optional) \u2014 give yourself positive feedback when done</label>
-      <input type="text" id="celebrationInput" placeholder="e.g. give myself a thumbs-up and say \u2018did it again\u2019">
+      <label class="fld">Celebration move (optional) — give yourself positive feedback when done</label>
+      <input type="text" id="celebrationInput" placeholder="e.g. give myself a thumbs-up and say ‘did it again’">
 
       <div class="identity-vote">
         <span class="v-emoji">🎯</span>
@@ -659,7 +659,7 @@
     <div id="gradWrap" class="hidden">
       <div class="grad-card">
         <div class="crown">🎓</div>
-        <h3>Plan complete!</h3>
+        <h3>Experiment complete!</h3>
         <p id="gradText"></p>
         <div class="id-tag" id="gradIdentity"></div>
       </div>
@@ -668,9 +668,9 @@
         <!-- 复盘入口：毕业时引导进入第 4 阶段「产出」 -->
     <div id="reflectEntry" class="hidden" style="margin-top:14px;">
       <div class="card" style="text-align:center;padding:22px;">
-        <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Experiment complete \u2014 one last step</div>
-        <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">Answer five reflection questions to bank this change into your growth assets (behavior outcomes \u00b7 new habits).</div>
-        <button class="btn btn-primary" onclick="showStage('reflection')">Review & bank \u00b7 Deliver \u2192</button>
+        <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Experiment complete — one last step</div>
+        <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">Answer five reflection questions to bank this change into your growth assets (behavior outcomes · new habits).</div>
+        <button class="btn btn-primary" onclick="showStage('reflection')">Review & bank · Deliver →</button>
       </div>
     </div>
 
@@ -681,7 +681,7 @@
       <div class="meta">
         <span><b id="dashStreak">0</b>-day streak</span>
         <span><b id="dashTotal">0</b> days total</span>
-        <span>Identity votes <b id="dashVotes">0</b></span>
+        <span>Proven by action <b id="dashVotes">0</b> times</span>
       </div>
     </div>
 
@@ -694,11 +694,11 @@
         <div class="tf-stats">
           <div class="tf-stat"><span>Streak</span><b id="tfStreak">0</b><em>days</em></div>
           <div class="tf-stat"><span>Total</span><b id="tfTotal">0</b><em>days</em></div>
-          <div class="tf-stat"><span>Votes</span><b id="tfVotes">+1</b><em>votes</em></div>
+          <div class="tf-stat"><span>Proof</span><b id="tfVotes">+1</b><em>times</em></div>
         </div>
-        <div class="tf-sub" id="tfSub">Tomorrow you\u2019ll see today\u2019s action recorded in the plan overview on the left.</div>
+        <div class="tf-sub" id="tfSub">Tomorrow you’ll see today’s action recorded in the experiment overview on the left.</div>
         <div class="btn-row" style="justify-content:center;margin-top:14px;">
-          <button class="btn btn-ghost" onclick="hideTodayFeedback()">Continue \u2192 see tomorrow\u2019s step</button>
+          <button class="btn btn-ghost" onclick="hideTodayFeedback()">Continue → see tomorrow’s step</button>
         </div>
       </div>
     </div>
@@ -725,8 +725,8 @@
         <div class="reason-grid">
           <button class="reason" onclick="pickReason('forgot')"><b>Forgot</b>never crossed my mind</button>
           <button class="reason" onclick="pickReason('hassle')"><b>Too much hassle</b>too many steps</button>
-          <button class="reason" onclick="pickReason('demotivated')"><b>Didn\u2019t feel like it</b>no motivation in the moment</button>
-          <button class="reason" onclick="pickReason('time')"><b>No time</b>couldn\u2019t spare 30 seconds</button>
+          <button class="reason" onclick="pickReason('demotivated')"><b>Didn’t feel like it</b>no motivation in the moment</button>
+          <button class="reason" onclick="pickReason('time')"><b>No time</b>couldn’t spare 30 seconds</button>
         </div>
         <div id="aiBlockResult"></div>
         <div class="btn-row">
@@ -737,13 +737,13 @@
       <!-- 身份强化 -->
       <div class="identity-vote">
         <span class="v-emoji">🪪</span>
-        <div class="v-text">Identity reinforcement: every completed day casts a vote for \u201c<b id="dashIdentity"></b>\u201d</div>
+        <div class="v-text">Proven by action: every day you complete is proof that you are “<b id="dashIdentity"></b>”</div>
         <div class="v-count" id="dashVotes2">0</div>
       </div>
 
       <!-- 社会支持 -->
       <div class="support-box">
-        <label class="fld" style="margin-top:22px;">Social support \u00b7 who or what can help you</label>
+        <label class="fld" style="margin-top:22px;">Social support · who or what can help you</label>
         <input type="text" id="supportInput" placeholder="Add a person / tool / information source, press Enter">
         <div class="chip-row" id="supportChips"></div>
         <div class="hint" style="margin-top:10px;">
@@ -755,17 +755,17 @@
       </div>
 
       <div class="plan-mini">
-        <div class="pm-title">Plan overview \u00b7 tap any day to review its action</div>
-        <div class="pm-hint">Done days have green background, today is highlighted solid, future days are transparent. Each cell shows that day\u2019s micro-action.</div>
+        <div class="pm-title">Experiment overview · tap any day to review its action</div>
+        <div class="pm-hint">Done days have green background, today is highlighted solid, future days are transparent. Each cell shows that day’s micro-action.</div>
         <div class="pm-grid" id="planMini"></div>
       </div>
 
       <div class="btn-row">
         <a class="btn btn-primary" href="punch.html" style="text-decoration:none;background:linear-gradient(135deg, var(--green-deep), var(--green-3));">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Daily Progress \u2192
+          Daily Progress →
         </a>
-        <a class="btn btn-ghost" href="growth-en.html#experiments">View Behavior Archive</a>
+        <a class="btn btn-ghost" href="behavior-en.html">View Behavior Archive</a>
         <button class="btn btn-ghost" onclick="goAnchor()">Adjust anchor</button>
       </div>
     </div>
@@ -774,7 +774,7 @@
   <!-- 模块四：产出（毕业复盘沉淀，与 app.html 的「产出」步骤对应） -->
   <div id="stage-reflection" class="hidden">
     <div class="card">
-      <div class="badge" style="margin-bottom:10px;">Deliver \u00b7 review & bank</div>
+      <div class="badge" style="margin-bottom:10px;">Deliver · review & bank</div>
       <h2 style="font-size:24px;">Bank this change into your growth assets</h2>
       <div class="sub" id="reflectContextB"></div>
       <div class="hint" style="margin-top:0;margin-bottom:16px;">
@@ -784,7 +784,7 @@
       <label class="fld">What happened?</label>
       <textarea id="reBWhat" class="reflect-q" placeholder="e.g. did X of 21 days, missed X times along the way, day X was the hardest..."></textarea>
       <label class="fld">Why?</label>
-      <textarea id="reBWhy" class="reflect-q" placeholder="Why did / didn\u2019t this happen? Where was the resistance?"></textarea>
+      <textarea id="reBWhy" class="reflect-q" placeholder="Why did / didn’t this happen? Where was the resistance?"></textarea>
       <label class="fld">What did you learn?</label>
       <textarea id="reBLearned" class="reflect-q" placeholder="What did this experiment teach me?"></textarea>
       <label class="fld">What did you do differently?</label>
@@ -798,9 +798,9 @@
       <label class="fld">The result of this behavior experiment</label>
       <textarea id="reBResultText" class="reflect-q" placeholder="Summarize the execution outcome in one sentence..."></textarea>
       <label class="fld">Where did the new habit take root?</label>
-      <textarea id="reBHabit" class="reflect-q" placeholder="e.g. I folded \u201c3 morning client touchpoints\u201d into my daily morning routine \u2014 no reminders needed."></textarea>
+      <textarea id="reBHabit" class="reflect-q" placeholder="e.g. I folded “3 morning client touchpoints” into my daily morning routine — no reminders needed."></textarea>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="saveReflectionB()">Finish Review \u00b7 Bank as Growth Asset</button>
+        <button class="btn btn-primary" onclick="saveReflectionB()">Finish Review · Bank as Growth Asset</button>
         <button class="btn btn-ghost" onclick="showStage('dashboard')">Back to Reinforce</button>
       </div>
     </div>
@@ -810,18 +810,18 @@
 <aside class="app-aside">
   <div class="aside-card">
     <div class="aside-title">🎯 Anchor reminder</div>
-    <div class="aside-insight" id="asideAnchor">After finishing Anchor, your stable trigger appears here: \u201cAfter I ____, I do today\u2019s action.\u201d</div>
+    <div class="aside-insight" id="asideAnchor">After finishing Anchor, your stable trigger appears here: “After I ____, I do today’s action.”</div>
   </div>
   <div class="aside-card">
     <div class="aside-title">📈 Current progress</div>
-    <div class="aside-insight" id="asideProgress">After finishing daily progress: N-day streak / N days done / N identity votes.</div>
+    <div class="aside-insight" id="asideProgress">After finishing daily progress: N-day streak / N days done / N times proven by action.</div>
   </div>
 </aside>
 
 </div>  <!-- end wrap -->
 
 <!-- 浮动档案 -->
-<a class="fab-archive" href="growth-en.html#experiments" title="View behavior archive anytime">
+<a class="fab-archive" href="behavior-en.html" title="View behavior archive anytime">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19.5" r="1.8" fill="currentColor"/></svg>
    Behavior Archive
 </a>
@@ -972,16 +972,16 @@ function updatePath(stage){
 function updateAside(stage){
   const a = $('asideAnchor'), p = $('asideProgress');
   if (!a || !p) return;
-  if (!current){ a.innerHTML = 'After finishing Anchor, your stable trigger will appear here: \u201cAfter I ____, I do today\u2019s action.\u201d'; p.innerHTML = 'After finishing daily progress, you will see: N-day streak / N days done / N identity votes.'; return; }
+  if (!current){ a.innerHTML = 'After finishing Anchor, your stable trigger will appear here: \u201cAfter I ____, I do today\u2019s action.\u201d'; p.innerHTML = 'After finishing daily progress, you will see: N-day streak / N days done / N times proven by action.'; return; }
   if (current.anchor && current.anchor.after){
     a.innerHTML = 'Stable trigger: <b style="color:var(--green-deep)">After I ' + escapeHtml(current.anchor.after) + ', I do today\u2019s action.</b>';
   } else {
     a.innerHTML = 'No trigger set yet. After finishing Anchor, it will appear here automatically.';
   }
   if (stage === 'dashboard' || current.status === 'graduated' || (current.logs && current.logs.length)){
-    p.innerHTML = '<b>' + (current.streak || 0) + '</b>-day streak \u00b7 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> days \u00b7 identity votes <b>' + (current.totalDone || 0) + '</b>';
+    p.innerHTML = '<b>' + (current.streak || 0) + '</b>-day streak \u00b7 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> days \u00b7 proven by action <b>' + (current.totalDone || 0) + '</b> times';
   } else {
-    p.innerHTML = 'After finishing daily progress, your streak, total days, and identity votes appear here in real time.';
+    p.innerHTML = 'After finishing daily progress, your streak, total days, and times proven by action appear here in real time.';
   }
 }
 
@@ -1027,7 +1027,7 @@ function renderDecompose(){
   }
   $('decInputEcho').textContent = echo;
   $('planDaysEcho').textContent = current.targetDays;
-  $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Generate my ' + current.targetDays + '-day plan';
+  $('aiPlanBtn').innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Generate my ' + current.targetDays + '-day experiment';
   if (current.identity) $('identityInput').value = current.identity;
   renderPlan();
 }
@@ -1087,7 +1087,7 @@ function onSubEdit(day, val){
 
 async function aiGeneratePlan(){
   const btn = $('aiPlanBtn'); btn.disabled = true; const orig = btn.innerHTML;
-  btn.textContent = 'Zhixing is planning…';
+  btn.textContent = 'Zhixing is laying out your experiment…';
   const N = current.targetDays;
   const map = {};
   let prevCount = -1, safety = 0;
@@ -1119,7 +1119,7 @@ async function aiGeneratePlan(){
   btn.disabled = false; btn.innerHTML = orig;
   renderPlan();
   if (filled > 0){
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Zhixing \u00b7 plan draft</div>Planned ${filled} days of micro-actions \u2014 edit freely, or tap \u201cBreak down\u201d on any day that feels too big.</div>`;
+    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Zhixing \u00b7 experiment draft</div>Laid out ${filled} days of micro-actions \u2014 edit freely, or tap \u201cBreak down\u201d on any day that feels too big.</div>`;
     toast('Plan generated \u2014 confirm to continue');
   } else {
     $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Zhixing \u00b7 note</div>Couldn\u2019t generate automatically \u2014 fill in each day\u2019s box manually, or retry.</div>`;
@@ -1166,7 +1166,7 @@ function renderAnchor(){
 }
 function renderAnchorToday(){
   const today = current.plan.find(p => p.day === current.currentDay);
-  $('anchorTodayEcho').textContent = today ? ('Day ' + today.day + ' action: ' + (today.micro || '(pending)')) : 'plan fully completed';
+  $('anchorTodayEcho').textContent = today ? ('Day ' + today.day + ' action: ' + (today.micro || '(pending)')) : 'experiment fully laid out';
 }
 
 async function aiFindAnchor(){
@@ -1480,8 +1480,22 @@ async function pickReason(reason){
   if (text){
     $('aiBlockResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Zhixing \u00b7 adjustment tip</div>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
     setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 6000);
+  } else {
+    // local fallback: no key / rate limit / 503 -> still give a concrete next step
+    $('aiBlockResult').innerHTML = `<div class="ai-msg" style="border-left:3px solid var(--green);"><div class="ai-head">Adjustment</div>${escapeHtml(localFailAdvice(reason))}</div>`;
+    setTimeout(()=>{ $('aiBlockResult').innerHTML=''; }, 8000);
   }
   toast('It\u2019s okay \u2014 missing a day isn\u2019t failure. Check the adjustment tip above.');
+}
+
+function localFailAdvice(reason){
+  const map = {
+    forgot: 'Redesign a more natural reminder: attach this step to something you already do every day, or leave a visible cue where you will see it.',
+    hassle: 'Shrink today\u2019s action: what is the smallest step you can really do? Do just that, leave the rest for later.',
+    demotivated: 'Reconnect it to identity: what does this mean for the person you want to be? Write that sentence where you can see it.',
+    time: 'Change the timing: slot it into a stretch that is already empty, or into a moment you always have.'
+  };
+  return map[reason] || 'Shrink the action to its smallest step and place it right after a moment you pass every day.';
 }
 
 /* 社会支持 */
@@ -1550,9 +1564,9 @@ function toggleTheme(){
 /* ============ 首次引导（与 app.html 同款） ============ */
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const OB_SLIDES = [
-  { h: 'From thinking through to real change', p: 'Zhixing walks you through four steps: Break Down \u2192 Anchor \u2192 Reinforce \u2192 Deliver & Review. Each step takes minutes.' },
-  { h: 'One big problem, broken into an N-day plan', p: '\u2460 Break Down: split the big goal into daily micro-actions; \u2461 Anchor: tie the action to a daily moment that always happens \u2014 no willpower; \u2462 Reinforce: do it daily, get feedback, cast identity votes; \u2463 Deliver: graduation review \u2014 bank new habits and identity.' },
-  { h: 'Your behavior archive keeps growing', p: 'Each completion banks the experiment, streaks, and identity votes into \u201cGrowth Assets\u201d. Start with the big thing you want to change now.' }
+  { h: 'From thinking through to real change', p: 'Zhixing walks you through four steps: Break Down \u2192 Set Trigger \u2192 Check-in \u2192 Bank It & Review. Each step takes minutes.' },
+  { h: 'One big problem, broken into an N-day behavior experiment', p: '\u2460 Break Down: split the big goal into daily micro-actions; \u2461 Set the trigger: tie the action to a daily moment that always happens \u2014 no willpower; \u2462 Check-in: do it daily, get feedback, prove your identity with action; \u2463 Bank it: graduation review \u2014 new habits and identity.' },
+  { h: 'Your behavior archive keeps growing', p: 'Each completion banks the experiment, streaks, and the times you proved it by action into \u201cGrowth Assets\u201d. Start with the big thing you want to change now.' }
 ];
 let obIdx = 0;
 function maybeShowOnboard() {
