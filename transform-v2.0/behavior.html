@@ -447,6 +447,22 @@
     .stats { grid-template-columns: repeat(2, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* v2.0：主动发现卡（基于真实数据的模式提示） */
+  .discovery-card {
+    margin: 18px 0 4px; padding: 18px 20px; border-radius: 18px;
+    background: linear-gradient(135deg, var(--green-50, #EAF6F0) 0%, #F3FAF6 100%);
+    border: 1px solid var(--green-light, #CDE9DC);
+    position: relative; overflow: hidden;
+  }
+  .dc-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--green-deep);
+    letter-spacing: .3px; margin-bottom: 8px;
+  }
+  .dc-label::before { content: '💡'; }
+  .dc-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; }
+  .dc-body b { color: var(--green-deep); }
 </style>
 <script>
   (function(){
@@ -1126,7 +1142,32 @@ function assetSave(type, id, mutate){
   }
   renderAll();
 }
-function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); }
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderDiscovery(); }
+
+/* P0-11/12：基于真实行为数据的本地主动发现（无需 API Key，达到阈值才显示） */
+function renderDiscovery(){
+  const box = $('discoveryBox'); if (!box) return;
+  const actions = (loadActions() || []).filter(a => a && (a.status === 'graduated' || (a.logs && a.logs.length)));
+  box.innerHTML = '';
+  if (actions.length < 3) return; // 阈值：行为实验 ≥ 3
+  // 统计失败原因
+  const reasonCount = {};
+  actions.forEach(a => (a.logs || []).forEach(l => {
+    if (l && l.done === false && l.reason) reasonCount[l.reason] = (reasonCount[l.reason] || 0) + 1;
+  }));
+  let topReason = null, topN = 0;
+  Object.keys(reasonCount).forEach(r => { if (reasonCount[r] > topN){ topN = reasonCount[r]; topReason = r; } });
+  let body;
+  if (topReason && topN >= 2){
+    body = `过去 <b>${actions.length}</b> 次行为实验里，你最容易因为「<b>${escapeHtml(topReason)}</b>」没做到——下次可以从缩小这一步开始。`;
+  } else {
+    body = `你已经完成了 <b>${actions.length}</b> 次行为实验。再多积累几次，就能看出自己在哪一步最容易卡住。`;
+  }
+  box.innerHTML = `<div class="discovery-card">
+    <div class="dc-label">我发现了一个关于你的模式</div>
+    <div class="dc-body">${body}</div>
+  </div>`;
+}
 
 function openAssetModal(html){
   const mask = $('assetModalMask'); const box = $('assetModalBox');

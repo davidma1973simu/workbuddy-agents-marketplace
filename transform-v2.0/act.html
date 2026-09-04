@@ -512,7 +512,7 @@
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       </div>
-      <span class="p-label">拆解细分</span>
+      <span class="p-label">拆解目标</span>
     </div>
     <div class="p-node" data-step="anchor">
       <div class="p-dot">
@@ -524,13 +524,13 @@
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>
-      <span class="p-label">反馈强化</span>
+      <span class="p-label">每次反馈</span>
     </div>
     <div class="p-node" data-step="reflection">
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg>
       </div>
-      <span class="p-label">产出</span>
+      <span class="p-label">沉淀</span>
     </div>
   </div>
 
@@ -541,7 +541,7 @@
   <div id="stage-input">
     <div class="page-head">
       <h1>从想明白到真正发生行为改变</h1>
-      <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做到的计划，再一天天锚定、强化，沉淀成新的习惯和角色。</p>
+      <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做的行为实验，再定下触发点、每天拿到反馈，慢慢变成习惯。</p>
     </div>
     <div class="card">
       <div id="insightContext" class="insight-context hidden">
@@ -553,7 +553,7 @@
       <textarea id="changeInput" placeholder="例如：&#10;• 我要实践掌握小红书运营&#10;• 我要养成每天阅读 30 分钟的习惯&#10;• 我想把『AI 时代要做整体架构』这个认知真正落地"></textarea>
       <div class="hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        把大问题写下来，下一步会按你设定的天数，把它拆成一段每天都能做的计划。
+        把大问题写下来，下一步会按你设定的天数，把它拆成一段每天都能做的行为实验。
       </div>
 
       <label class="fld">你希望用多少天实现行为改变？</label>
@@ -584,27 +584,27 @@
   <!-- 模块一：拆解细分（N 天计划） -->
   <div id="stage-decompose" class="hidden">
     <div class="card">
-      <h2>拆解细分</h2>
+      <h2>拆解目标</h2>
       <div class="sub" id="decInputEcho"></div>
 
-      <label class="fld">把这件事拆成 <b id="planDaysEcho">21</b> 天的行动计划</label>
+      <label class="fld">把这件事拆成 <b id="planDaysEcho">21</b> 天的行为实验</label>
       <div class="hint" style="margin-top:0;margin-bottom:12px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         让「知行」先帮你排好每天的微行动；哪一天的动作偏大，就点「再拆细」把它分成几步。
       </div>
       <button class="btn btn-ai" id="aiPlanBtn" onclick="aiGeneratePlan()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        帮我生成 21 天计划
+        帮我生成 21 天行为实验
       </button>
       <div id="aiPlanResult"></div>
 
       <div class="plan-list" id="planList"></div>
 
-      <label class="fld">你期待自己成为谁？（每完成一天都给这个人投一票）</label>
+      <label class="fld">你期待自己成为谁？（每完成一次，都是在用行动证明这个人）</label>
       <input type="text" id="identityInput" placeholder="例如：一个说到做到的人 / 一个照顾自己身体的人">
 
       <div class="btn-row">
-        <button class="btn btn-primary" id="toAnchorBtn" onclick="goAnchor()">下一步 · 行动锚定 →</button>
+        <button class="btn btn-primary" id="toAnchorBtn" onclick="goAnchor()">下一步 · 定下触发点 →</button>
       </div>
     </div>
   </div>
@@ -612,8 +612,8 @@
   <!-- 模块二：行动锚定 -->
   <div id="stage-anchor" class="hidden">
     <div class="card">
-      <h2>行动锚定</h2>
-      <div class="sub">给整段计划一个稳定的触发点——每天到了那个时刻，就自动开始做「当天的行动」，不靠意志力。</div>
+      <h2>定下触发点</h2>
+      <div class="sub">给整段行为实验一个稳定的触发点——每天到了那个时刻，就自动开始做「当天的行动」，不靠意志力。</div>
 
       <label class="fld">稳定触发句式</label>
       <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:2;">
@@ -623,7 +623,7 @@
       </div>
       <button class="btn btn-ai" id="aiAnchorBtn" onclick="aiFindAnchor()" style="margin-top:14px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        帮我找锚点
+        帮我找触发点
       </button>
       <div id="aiAnchorResult"></div>
 
@@ -659,7 +659,7 @@
     <div id="gradWrap" class="hidden">
       <div class="grad-card">
         <div class="crown">🎓</div>
-        <h3>计划完成！</h3>
+        <h3>行为实验完成！</h3>
         <p id="gradText"></p>
         <div class="id-tag" id="gradIdentity"></div>
       </div>
@@ -681,7 +681,7 @@
       <div class="meta">
         <span>连续 <b id="dashStreak">0</b> 天</span>
         <span>累计 <b id="dashTotal">0</b> 天</span>
-        <span>身份票 <b id="dashVotes">0</b> 张</span>
+        <span>已用行动证明 <b id="dashVotes">0</b> 次</span>
       </div>
     </div>
 
@@ -694,7 +694,7 @@
         <div class="tf-stats">
           <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
           <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
-          <div class="tf-stat"><span>身份票</span><b id="tfVotes">+1</b><em>张</em></div>
+          <div class="tf-stat"><span>证明身份</span><b id="tfVotes">+1</b><em>次</em></div>
         </div>
         <div class="tf-sub" id="tfSub">明天我会看到今天的微行动被记录在左侧计划全景里。</div>
         <div class="btn-row" style="justify-content:center;margin-top:14px;">
@@ -737,7 +737,7 @@
       <!-- 身份强化 -->
       <div class="identity-vote">
         <span class="v-emoji">🪪</span>
-        <div class="v-text">身份强化：每完成一天，就给「<b id="dashIdentity"></b>」投一票</div>
+        <div class="v-text">用行动证明：每完成一天，都是在证明「<b id="dashIdentity"></b>」</div>
         <div class="v-count" id="dashVotes2">0</div>
       </div>
 
@@ -755,7 +755,7 @@
       </div>
 
       <div class="plan-mini">
-        <div class="pm-title">计划全景 · 点任一天可回看行动</div>
+        <div class="pm-title">实验全景 · 点任一天可回看行动</div>
         <div class="pm-hint">今日已做绿底，今日高亮实心，未来透底，每格里是该天微行动摘要。</div>
         <div class="pm-grid" id="planMini"></div>
       </div>
@@ -979,9 +979,9 @@ function updateAside(stage){
     a.innerHTML = '尚未设置触发点。完成「行动锚定」后，这里会自动显示。';
   }
   if (stage === 'dashboard' || current.status === 'graduated' || (current.logs && current.logs.length)){
-    p.innerHTML = '连续 <b>' + (current.streak || 0) + '</b> 天 · 累计 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> 天 · 身份票 <b>' + (current.totalDone || 0) + '</b> 张';
+    p.innerHTML = '连续 <b>' + (current.streak || 0) + '</b> 天 · 累计 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> 天 · 已用行动证明 <b>' + (current.totalDone || 0) + '</b> 次';
   } else {
-    p.innerHTML = '完成每日进步后，这里会实时显示你的连续天数、累计天数与身份票。';
+    p.innerHTML = '完成每日进步后，这里会实时显示你的连续天数、累计天数与用行动证明的次数。';
   }
 }
 
@@ -1550,9 +1550,9 @@ function toggleTheme(){
 /* ============ 首次引导（与 app.html 同款） ============ */
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const OB_SLIDES = [
-  { h: '从想明白，到真正改变', p: '知行会陪你走完四步：拆解细分 → 行动锚定 → 反馈强化 → 产出复盘。每一步只花几分钟。' },
-  { h: '一个大问题，拆成一段 N 天计划', p: '① 拆解细分：把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 反馈强化：每天做到、拿反馈、投身份票；④ 产出：毕业复盘，沉淀成新的习惯与角色。' },
-  { h: '行为改变档案会越积越厚', p: '每次完成，行为实验、连续天数、身份票都会存进「成长资产」。现在，从想改变的那件大事开始吧。' }
+  { h: '从想明白，到真正改变', p: '知行会陪你走完四步：拆解目标 → 定下触发点 → 每次反馈 → 复盘沉淀。每一步只花几分钟。' },
+  { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：把大目标拆成每天都能做到的微行动；② 定触发点：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到、拿反馈、用行动证明身份；④ 沉淀：毕业复盘，沉淀成新的习惯与角色。' },
+  { h: '行为改变档案会越积越厚', p: '每次完成，行为实验、连续天数、用行动证明的次数都会存进「成长资产」。现在，从想改变的那件大事开始吧。' }
 ];
 let obIdx = 0;
 function maybeShowOnboard() {

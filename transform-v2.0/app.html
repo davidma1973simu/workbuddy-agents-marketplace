@@ -1973,19 +1973,19 @@
   <div class="path" id="stepsBar" data-progress="1">
     <div class="p-node active" data-step="0">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">归类</span>
+      <span class="p-label">摊开</span>
     </div>
     <div class="p-node" data-step="1">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <span class="p-label">洞察</span>
+      <span class="p-label">想透</span>
     </div>
     <div class="p-node" data-step="2">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="p-label">应用</span>
+      <span class="p-label">试试看</span>
     </div>
     <div class="p-node" data-step="3">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg></div>
-      <span class="p-label">产出</span>
+      <span class="p-label">沉淀</span>
     </div>
   </div>
 
@@ -1994,9 +1994,9 @@
     <!-- Step 0 归类 · Apple 极简方向样本 -->
     <div class="panel panel-redesign" id="panel-0">
       <header class="step-head">
-        <div class="step-eyebrow">第 1 步 · 归类</div>
+        <div class="step-eyebrow">摊开 · 把事情摆到桌面上</div>
         <h1>把杂乱信息理出头绪</h1>
-        <p class="step-lead">先把手里的信息摊开，看清它是什么、从哪来，再归成几类。</p>
+        <p class="step-lead">先把你手里的信息一条条摊开，看清它是什么、从哪来，再理成几类。</p>
       </header>
 
       <section class="field">
@@ -2040,34 +2040,34 @@
       </section>
 
       <section class="field">
-        <label>归成几类</label>
+        <label>理成几类</label>
         <p class="field-hint">给每类一个名字，理清头绪。</p>
         <button class="ai-cta" id="aiGroup" onclick="aiGroup()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h6v6H4zM14 7h6v6h-6zM4 17h6v3H4zM14 17h6v3h-6z" stroke="currentColor" stroke-width="1.8"/></svg>
-          AI 帮我整理归类
+          AI 帮我理一理
         </button>
         <div class="groups" id="groupsArea"></div>
         <div class="signal" id="signal0" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          杂乱信息已归类，头绪有了
+          信息已经理出头绪
         </div>
       </section>
 
-      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去洞察 →</button></div>
+      <div class="btn-row right"><button class="btn btn-next" id="next0" onclick="goStep(1)" disabled>去想透 →</button></div>
     </div>
 
     <!-- Step 1 洞察（用户主导，Transform辅助启发）v9：单焦点问题流 -->
     <div class="panel panel-redesign" id="panel-1" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">第 2 步 · 洞察</div>
+        <div class="step-eyebrow">想透 · 找到你没看见的东西</div>
         <h1>透过现象看本质</h1>
         <p class="step-lead">Transform 会一题一题地启发你。答完可以一直要下一题，直到你觉得够了，再让它整合。</p>
       </header>
 
       <!-- ① 归类罗列（只读，全部参与） -->
       <section class="field">
-        <label>你的归类</label>
-        <p class="field-hint">下面这些分类会参与本次洞察。</p>
+        <label>你理出的几类</label>
+        <p class="field-hint">下面这些分类会参与本次想透。</p>
         <div class="label-picker" id="labelPicker"></div>
       </section>
 
@@ -2165,7 +2165,7 @@
     <!-- Step 2 应用（重新设计：单一场景 · 单一焦点 · 补充可选） -->
     <div class="panel panel-app" id="panel-2" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">第 3 步 · 应用</div>
+        <div class="step-eyebrow">试试看 · 把认知放进真实场景</div>
         <h1>把新认知带到场景里</h1>
         <p class="step-lead">先在一个熟悉的场景里试一次，再迁移到一个陌生场景。一次只专注一件事。</p>
       </header>
@@ -2187,7 +2187,7 @@
       <!-- 阶段指示 -->
       <div class="phase-bar" id="phaseBar">
         <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> 近应用 · 熟悉的场景</div>
-        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> 远应用 · 陌生场景</div>
+        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> 换个完全不同的场景</div>
       </div>
 
       <!-- 近应用阶段 -->
@@ -2273,7 +2273,7 @@
           <p class="fw-text">真正掌握一个认知，不在于"熟悉的场景会用"，而在于"能把它带到一个完全陌生的领域去用"。近应用验证你"理解了"，远应用验证你"真的会迁移"——把同一个认知用在不同的行业、角色、场景里，它才真正变成你自己的能力。</p>
         </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
-          <span class="app-badge far">远场景 · 迁移到陌生领域</span>
+          <span class="app-badge far">远场景 · 换个领域试试</span>
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想迁移到的场景</span></div>
             <div class="title-list" id="farTitleList"></div>

@@ -447,6 +447,22 @@
     .stats { grid-template-columns: repeat(2, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* v2.0：主动发现卡（基于真实数据的模式提示） */
+  .discovery-card {
+    margin: 18px 0 4px; padding: 18px 20px; border-radius: 18px;
+    background: linear-gradient(135deg, var(--green-50, #EAF6F0) 0%, #F3FAF6 100%);
+    border: 1px solid var(--green-light, #CDE9DC);
+    position: relative; overflow: hidden;
+  }
+  .dc-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; color: var(--green-deep);
+    letter-spacing: .3px; margin-bottom: 8px;
+  }
+  .dc-label::before { content: '💡'; }
+  .dc-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; }
+  .dc-body b { color: var(--green-deep); }
 </style>
 <script>
   (function(){
@@ -498,6 +514,8 @@
         <p>每一次想清楚，沉淀出的长期认知资产</p>
       </div>
     </div>
+
+    <div id="discoveryBox"></div>
 
     <div class="expand-card cog open" data-section="models">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
@@ -1126,7 +1144,30 @@ function assetSave(type, id, mutate){
   }
   renderAll();
 }
-function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); }
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderDiscovery(); }
+
+/* P0-11/12：基于真实数据的本地主动发现（无需 API Key，达到阈值才显示） */
+function renderDiscovery(){
+  const box = $('discoveryBox'); if (!box) return;
+  const archive = loadArchive();
+  box.innerHTML = '';
+  if (archive.length < 5) return; // 阈值：洞察 ≥ 5
+  // 统计标签频次
+  const tagCount = {};
+  archive.forEach(s => (s.tags || []).forEach(t => { if (t) tagCount[t] = (tagCount[t] || 0) + 1; }));
+  let topTag = null, topN = 0;
+  Object.keys(tagCount).forEach(t => { if (tagCount[t] > topN){ topN = tagCount[t]; topTag = t; } });
+  let body;
+  if (topTag && topN >= 2){
+    body = `过去 <b>${archive.length}</b> 条洞察里，有 <b>${topN}</b> 条都涉及「<b>${escapeHtml(topTag)}</b>」——你反复在思考同一类事。`;
+  } else {
+    body = `你已经沉淀了 <b>${archive.length}</b> 条洞察。再多积累几次，就能看出自己反复在想什么。`;
+  }
+  box.innerHTML = `<div class="discovery-card">
+    <div class="dc-label">我发现了一个关于你的模式</div>
+    <div class="dc-body">${body}</div>
+  </div>`;
+}
 
 function openAssetModal(html){
   const mask = $('assetModalMask'); const box = $('assetModalBox');

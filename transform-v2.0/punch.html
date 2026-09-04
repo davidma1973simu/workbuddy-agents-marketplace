@@ -204,6 +204,10 @@
     font-size: 12px; color: var(--ink-3); margin-top: 4px;
   }
   .tf-actions { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .tf-upgrade { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--green-light); text-align: center; }
+  .tu-q { font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+  .tu-link { display: inline-block; font-size: 13.5px; font-weight: 700; color: var(--green-deep); text-decoration: none; border-bottom: 1.5px solid var(--green); padding-bottom: 1px; }
+  .tu-link:hover { color: var(--green); }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 700;
@@ -640,7 +644,7 @@ function renderPunch(){
     <p>${anchor ? '在我 <b>' + escapeHtml(anchor) + '</b> 之后，我就做这一小步。' : '到了那个时刻，就做这一小步。'}</p>
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;opacity:.92;">
       <span>累计 <b style="font-size:16px;">${current.totalDone || 0}</b> 天</span>
-      <span>身份票 <b style="font-size:16px;">${votes}</b> 张</span>
+      <span>已用行动证明 <b style="font-size:16px;">${votes}</b> 次</span>
     </div>
     ${renderWeekProgress()}
     ${renderBadges()}
@@ -696,12 +700,16 @@ function renderPunch(){
       <div class="tf-stats">
         <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
         <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
-        <div class="tf-stat"><span>身份票</span><b id="tfVotes">+1</b><em>张</em></div>
+        <div class="tf-stat"><span>证明身份</span><b id="tfVotes">+1</b><em>次</em></div>
       </div>
 
       <div class="tf-actions">
         <button class="cta-ok" onclick="confirmDone()">✓ 确认 · 闭环</button>
         <a class="btn btn-ghost" href="behavior.html">看行为档案</a>
+      </div>
+      <div class="tf-upgrade">
+        <div class="tu-q">一直知道该怎么做，却还是做不到？</div>
+        <a class="tu-link" href="act.html">和我一起，把这个长期改变真正做起来 →</a>
       </div>
     </div>
   </div>`;
@@ -871,11 +879,22 @@ async function pickReason(reason){
   if (text){
     const box = $('aiBlockResult');
     if (box) box.innerHTML = `<div class="ai-result"><b>AI 建议：</b>${escapeHtml(text).replace(/\n/g,'<br>')}</div>`;
-  } else if (aiErr(aiResp)){
+  } else {
+    // 本地降级：AI 不可用（限流/503）时给出固定可执行的下一步，不阻断闭环
     const box = $('aiBlockResult');
-    if (box) box.innerHTML = `<div class="ai-result" style="background:var(--amber-soft);border-left:3px solid var(--amber);"><b>AI 没响应：</b>${escapeHtml(aiResp.msg)}</div>`;
+    if (box) box.innerHTML = `<div class="ai-result" style="background:var(--green-50,#EAF6F0);border-left:3px solid var(--green);"><b>调整建议：</b>${escapeHtml(localFailAdvice(reason))}</div>`;
   }
   toast('没关系，没做到不是失败。调整一次，再试一次。');
+}
+
+function localFailAdvice(reason){
+  const map = {
+    '忘了': '重新设计一个更自然的提醒：把这一步放进一个你本来就会做的事之后，或在眼前放一个看得见的环境提示。',
+    '太麻烦': '把今天的动作再缩小：能做到的最小一步是什么？先做那一步，其余的以后再说。',
+    '不想做': '连接身份意义：这件事对你想成为的人意味着什么？把这句话写在看得见的地方。',
+    '没时间': '换个发生时间：把它塞进一段本来就空着、或你固定会做的时段里。'
+  };
+  return map[reason] || '把今天的动作缩小到最小的一步，放进一个你每天都会经过的时刻之后。';
 }
 
 /* ===================== 社会支持 ===================== */
@@ -1137,7 +1156,7 @@ function goIdentityStage(){
       <div class="sc-tag">第 3 步 · 确认</div>
       <div class="sc-title">${escapeHtml(draft.micro)}</div>
       <div class="sc-desc">在「${escapeHtml(draft.anchor)}」之后，做这一小步。做完不需要记录，点「做到了」即可。</div>
-      <div class="sc-field">你期待自己成为什么样的人？（身份票会投给它）</div>
+      <div class="sc-field">你期待自己成为什么样的人？（每一次完成，都是在为它投票）</div>
       <input class="sc-input" id="identityInput" placeholder="例如：一个照顾自己身体的人" maxlength="30">
       <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 开始 ${draft.planLength || 7} 天实验 →</button>
       <div class="ai-out-box" id="aiOut"></div>
@@ -1150,7 +1169,7 @@ async function confirmChange(){
   const identity = ($('identityInput').value || '').trim();
   if (!draft.micro) { toast('先让 Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
-  if (!identity) { toast('写下你期待成为的人（身份票要投给它）'); return; }
+  if (!identity) { toast('写下你期待成为的人（每一次完成都在为它投票）'); return; }
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
 
