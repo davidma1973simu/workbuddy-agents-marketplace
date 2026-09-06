@@ -476,17 +476,11 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* v2.0：首页每日/伴我 双层入口 */
-  .hero-cta-wrap { display: flex; flex-direction: column; gap: 20px; }
-  .hero-tier { display: flex; flex-direction: column; gap: 10px; }
-  .tier-q { font-size: 13px; font-weight: 700; color: var(--ink-3); letter-spacing: .3px; }
-  .tier-sub { font-size: 12.5px; color: var(--ink-3); line-height: 1.6; }
-  .hero-tier .hero-cta { margin: 0; }
   .foot-links a.foot-settings { font-size: 12px; color: var(--ink-3); opacity: .8; }
   @media (max-width: 520px) {
-    .hero-cta-wrap { gap: 16px; }
     .hero-cta { flex-direction: column; }
   }
+
   /* v2.0：首页主动发现（基于真实数据，不达阈值不显示） */
   .home-discovery:empty { display: none; }
   .home-discovery { max-width: 760px; margin: 0 auto; }
@@ -543,39 +537,19 @@
         AI Cognition–Behavior Evolution Engine
       </div>
       <h1>Think Clearly, <span class="grad">Act.</span></h1>
-      <p class="hero-sub">Spend a few minutes a day seeing one small thing clearly, or moving one behavior a step forward. When something is truly important and complex, let <span class="brand-name">Transform</span> go deeper with you.</p>
-      <div class="hero-cta-wrap">
-        <div class="hero-tier">
-          <div class="tier-q">What would I like to do today?</div>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="think-en.html">
-              Daily Insight
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a class="btn btn-ghost" href="punch-en.html">
-              Daily Change
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-          <div class="tier-sub">Daily Insight: a few minutes to see one thing clearly. · Daily Change: a few minutes to move one behavior forward.</div>
-        </div>
-        <div class="hero-tier">
-          <div class="tier-q">Something important that needs real attention?</div>
-          <div class="hero-cta">
-            <a class="btn btn-ghost" href="app-en.html">
-              Guided Insight
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a class="btn btn-ghost" href="act-en.html">
-              Guided Change
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-          <div class="tier-sub">Guided Insight: let’s think a complex problem through properly. · Guided Change: let’s make a long-term change actually stick.</div>
-        </div>
+      <p class="hero-sub">Work through a complex challenge until you truly understand it, then drive real behavior change into new habits and identity. Let <span class="brand-name">Transform</span> walk you through the full loop from insight to action.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="think-en.html">
+          Start an Insight Session
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="punch-en.html">
+          Start a Behavior Change
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
       <div class="hero-sub-links">
-        <span>A small step every day, a deeper step when it matters</span>
+        <span>From insight to action, one complete loop</span>
       </div>
     </div>
     <div class="hero-visual">
@@ -593,7 +567,7 @@
         <div class="zhx-bubble-row">
           <span class="zhx-char">T</span>
           <div>
-            <div class="zhx-bubble-flow"><span class="brand-tag">Think</span> → See through → Try it</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Think</span> → Insight → Apply</div>
             <div class="zhx-sub"><strong id="insightCount">0</strong> insights banked</div>
           </div>
         </div>
@@ -602,7 +576,7 @@
         <div class="zhx-bubble-row">
           <span class="zhx-char">A</span>
           <div>
-            <div class="zhx-bubble-flow"><span class="brand-tag">Act</span> → One step done → Change takes hold</div>
+            <div class="zhx-bubble-flow"><span class="brand-tag">Act</span> → Anchor → Reinforce</div>
             <div class="zhx-sub"><strong id="behaviorCount">0</strong> actions completed</div>
           </div>
         </div>
