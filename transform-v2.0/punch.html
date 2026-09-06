@@ -622,6 +622,12 @@ function renderPunch(){
   const anchor = current.anchor && current.anchor.after;
   const phase = isGrad ? '已完成全部 ' + (current.targetDays||0) + ' 天' : '第 ' + current.currentDay + ' 天 · 连续 ' + (current.streak||0) + ' 天';
   const votes = countVotes();
+  // P1-W3：升级到伴我改变时带上已有上下文（目标 / 今天已做的小步 / 最近失败原因）
+  const lastFail = (current.logs || []).filter(l => l && l.done === false).pop();
+  const failReason = (lastFail && lastFail.reason) || '';
+  const upUrl = 'act.html?goal=' + encodeURIComponent(current.input || '')
+    + '&micro=' + encodeURIComponent(micro)
+    + (failReason ? '&fail=' + encodeURIComponent(failReason) : '&from=keep');
 
   let html = '';
 
@@ -709,7 +715,7 @@ function renderPunch(){
       </div>
       <div class="tf-upgrade">
         <div class="tu-q">一直知道该怎么做，却还是做不到？</div>
-        <a class="tu-link" href="act.html">和我一起，把这个长期改变真正做起来 →</a>
+        <a class="tu-link" href="${upUrl}">和我一起，把这个长期改变真正做起来 →</a>
       </div>
     </div>
   </div>`;

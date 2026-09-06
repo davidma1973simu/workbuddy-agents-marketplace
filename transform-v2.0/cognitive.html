@@ -545,6 +545,7 @@
           <input type="text" class="filter-search" id="insightSearch" placeholder="搜索洞察…" oninput="setInsightSearch(this.value)">
         </div>
         <div class="filter-row" id="tagFilters"></div>
+        <div class="filter-row" id="insightTime"></div>
         <div id="insightList"></div>
       </div></div>
     </div>
@@ -573,6 +574,18 @@
         <div class="trash-toolbar"><button class="mini del" id="trashEmptyBtn" onclick="emptyTrash()">清空回收箱</button></div>
         <div id="trashList"></div>
       </div></div>
+    </div>
+    <div class="expand-card trash-card archived-card" data-section="archived">
+      <button class="expand-head" type="button" onclick="toggleExpand(this)">
+        <span class="expand-icon">📦</span>
+        <span class="expand-title">
+          <span class="expand-name">已归档 Archived</span>
+          <span class="expand-sub">封存不删 · 不参与统计与模式发现</span>
+        </span>
+        <span class="expand-count" id="archivedCount">0</span>
+        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="expand-body"><div class="inner"><div id="archivedList"></div></div></div>
     </div>
   </section>
 </div>
@@ -620,8 +633,10 @@ function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200); }
 function fmtDate(iso){ try { return new Date(iso).toLocaleDateString('zh-CN', {year:'numeric', month:'numeric', day:'numeric'}); } catch(e){ return ''; } }
-function loadArchive(){ try { return JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e){ return []; } }
-function loadActions(){ try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e){ return []; } }
+function loadArchive(){ try { return (JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []).filter(s => !s.archived); } catch(e){ return []; } }
+function loadArchiveAll(){ try { return JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []; } catch(e){ return []; } }
+function loadActions(){ try { return (JSON.parse(localStorage.getItem(LS_ACTIONS)) || []).filter(a => !a.archived); } catch(e){ return []; } }
+function loadActionsAll(){ try { return JSON.parse(localStorage.getItem(LS_ACTIONS)) || []; } catch(e){ return []; } }
 function loadProfile(){ try { return JSON.parse(localStorage.getItem(LS_PROFILE)) || { identityStatements: [] }; } catch(e){ return { identityStatements: [] }; } }
 function getAI(){
   let cfg; try { cfg = JSON.parse(localStorage.getItem(LS_AI)) || {}; } catch(e){ cfg = {}; }
@@ -795,6 +810,7 @@ function renderInsights(){
       return hay.includes(q);
     });
   }
+  if (insightTime !== 'all') archive = archive.filter(s => withinTime(insightDateOf(s), insightTime));
   if (!archive.length){ box.innerHTML = '<div class="expand-empty">没有找到符合当前条件的洞察。</div>'; return; }
   box.innerHTML = groupByScenario(archive).map(g => {
     const n = g.items.length;
@@ -825,7 +841,7 @@ function renderInsights(){
 }
 
 /* ===================== 行为实验 ===================== */
-let actionFilter = { status: '', tag: '', q: '' };
+let actionFilter = { status: '', tag: '', q: '', time: 'all' };
 
 function renderActions(){
   const actions = loadActions();
@@ -898,7 +914,8 @@ function renderActionFilters(actions){
     { k: 'graduated', v: '已毕业' },
     { k: 'paused', v: '已暂停' }
   ];
-  let html = statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
+  const timeHtml = timeChipsHtml(actionFilter.time, "setActionFilter('time'");
+  let html = timeHtml + (timeHtml ? '<span class="filter-sep"></span>' : '') + statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
   if (tags.length){
     html += '<span class="filter-sep"></span>' +
       '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">全部标签</button>' +
@@ -916,6 +933,7 @@ function filterActions(actions){
   return actions.filter(a => {
     if (actionFilter.status && (a.status || 'active') !== actionFilter.status) return false;
     if (actionFilter.tag && !(a.tags || []).includes(actionFilter.tag)) return false;
+    if (actionFilter.time && actionFilter.time !== 'all' && !withinTime(actionDateOf(a), actionFilter.time)) return false;
     if (actionFilter.q){
       const q = actionFilter.q.toLowerCase();
       const hay = [(a.input || a.goal || ''), (a.result || ''), (a.habit || ''), (a.goal || '')].join(' ').toLowerCase();
@@ -1024,11 +1042,11 @@ function trashPreview(obj, type){
 function moveToTrash(type, id){
   let item = null;
   if (type === 'insight' || type === 'model'){
-    const list = loadArchive();
+    const list = loadArchiveAll();
     const i = list.findIndex(s => String(s.id) === String(id));
     if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
   } else if (type === 'action'){
-    const list = loadActions();
+    const list = loadActionsAll();
     const i = list.findIndex(a => String(a.id) === String(id));
     if (i >= 0){ item = list[i]; list.splice(i, 1); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
   } else if (type === 'pattern'){
@@ -1054,11 +1072,11 @@ function restoreFromTrash(tid){
     saved.patterns.push(obj);
     localStorage.setItem(LS_PATTERNS, JSON.stringify(saved));
   } else if (t.type === 'action'){
-    const list = loadActions();
+    const list = loadActionsAll();
     if (!list.find(a => String(a.id) === String(obj.id))) list.push(obj);
     localStorage.setItem(LS_ACTIONS, JSON.stringify(list));
   } else {
-    const list = loadArchive();
+    const list = loadArchiveAll();
     if (!list.find(s => String(s.id) === String(obj.id))) list.push(obj);
     localStorage.setItem(LS_ARCHIVE, JSON.stringify(list));
   }
@@ -1113,6 +1131,7 @@ function assetActions(type, id){
   return `<div class="asset-actions">
     <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ 编辑</button>
     <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 归类</button>
+    ${type !== 'pattern' ? `<button class="asset-btn arch" onclick="openAssetArchive('${type}','${id}')">📦 归档</button>` : ''}
     <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 删除</button>
   </div>`;
 }
@@ -1120,9 +1139,9 @@ function assetActions(type, id){
 // 定位资产对象 + 保存
 function assetFind(type, id){
   if (type === 'insight' || type === 'model'){
-    return loadArchive().find(s => String(s.id) === String(id));
+    return loadArchiveAll().find(s => String(s.id) === String(id));
   }
-  if (type === 'action') return loadActions().find(a => String(a.id) === String(id));
+  if (type === 'action') return loadActionsAll().find(a => String(a.id) === String(id));
   if (type === 'pattern'){
     let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
     if (saved && saved.patterns) return saved.patterns[parseInt(id)];
@@ -1131,11 +1150,11 @@ function assetFind(type, id){
 }
 function assetSave(type, id, mutate){
   if (type === 'insight' || type === 'model'){
-    const list = loadArchive();
+    const list = loadArchiveAll();
     const i = list.findIndex(s => String(s.id) === String(id));
     if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); }
   } else if (type === 'action'){
-    const list = loadActions();
+    const list = loadActionsAll();
     const i = list.findIndex(a => String(a.id) === String(id));
     if (i >= 0){ mutate(list[i]); localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); }
   } else if (type === 'pattern'){
@@ -1144,7 +1163,7 @@ function assetSave(type, id, mutate){
   }
   renderAll();
 }
-function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderDiscovery(); }
+function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderArchived(); renderDiscovery(); }
 
 /* P0-11/12：基于真实数据的本地主动发现（无需 API Key，达到阈值才显示） */
 function renderDiscovery(){
@@ -1326,13 +1345,87 @@ function confirmDeleteAsset(){
   renderAll();
   toast('已移入回收箱（30 天内可恢复）');
 }
+/* P1-W11：归档（封存不删，不参与统计/发现，可随时恢复） */
+function archivedItems(){
+  const out = [];
+  (loadArchiveAll() || []).forEach(s => { if (s.archived){ out.push({ type:'insight', id:s.id, title:s.scenario || ((s.essence && s.essence.insight) ? '一条洞察' : '一次梳理'), sub:(s.insight || (s.essence && s.essence.insight) || s.scenario || '') }); } });
+  (loadActionsAll() || []).forEach(a => { if (a.archived){ out.push({ type:'action', id:a.id, title:a.input || a.goal || '行为实验', sub:((a.logs && a.logs.length) ? a.logs.length + ' 天记录' : '') }); } });
+  return out;
+}
+function renderArchived(){
+  const box = $('archivedList'); if (!box) return;
+  const cnt = $('archivedCount'); if (cnt) cnt.textContent = archivedItems().length;
+  const list = archivedItems();
+  if (!list.length){ box.innerHTML = '<div class="empty-tip" style="color:var(--ink-3);padding:10px 2px;font-size:13px;">还没有归档的记录 —— 想封存、又不想删的资产会放在这里。</div>'; return; }
+  box.innerHTML = list.map(o => `<div class="trash-item">
+      <div class="ti-main">
+        <span class="ti-type">${o.type === 'action' ? '行为实验' : '记录'}</span>
+        <div class="ti-title">${escapeHtml(String(o.title).slice(0, 40))}</div>
+        <div class="ti-sub">${escapeHtml(String(o.sub).slice(0, 60))}</div>
+      </div>
+      <div class="ti-actions">
+        <button class="mini" onclick="restoreArchived('${o.type}','${o.id}')">↩ 恢复</button>
+        <button class="mini del" onclick="if(moveToTrash('${o.type}','${o.id}')){renderAll();toast('已移入回收箱');}">🗑 删除</button>
+      </div>
+    </div>`).join('');
+}
+function openAssetArchive(type, id){
+  if (type === 'pattern'){ toast('模式总结暂不支持归档'); return; }
+  if (type === 'action'){
+    const list = loadActionsAll();
+    const o = list.find(a => String(a.id) === String(id));
+    if (o){ o.archived = true; localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); toast('已归档 · 封存不删，可从下方「已归档」恢复'); renderAll(); }
+    return;
+  }
+  const list = loadArchiveAll();
+  const o = list.find(s => String(s.id) === String(id));
+  if (o){ o.archived = true; localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); toast('已归档 · 封存不删，可从下方「已归档」恢复'); renderAll(); }
+}
+function restoreArchived(type, id){
+  if (type === 'action'){
+    const list = loadActionsAll();
+    const o = list.find(a => String(a.id) === String(id));
+    if (o){ o.archived = false; localStorage.setItem(LS_ACTIONS, JSON.stringify(list)); toast('已恢复'); renderAll(); }
+    return;
+  }
+  const list = loadArchiveAll();
+  const o = list.find(s => String(s.id) === String(id));
+  if (o){ o.archived = false; localStorage.setItem(LS_ARCHIVE, JSON.stringify(list)); toast('已恢复'); renderAll(); }
+}
+
+/* P1-W6：时间维度过滤（全部 / 近7天 / 近30天 / 本月） */
+let insightTime = 'all';
+function withinTime(dstr, mode){
+  if (!mode || mode === 'all') return true;
+  const raw = String(dstr || '').trim();
+  if (!raw) return false;
+  const t = new Date(raw.length <= 10 ? raw + 'T00:00:00' : raw);
+  if (isNaN(t.getTime())) return false;
+  const now = new Date();
+  if (mode === 'month') return t.getFullYear() === now.getFullYear() && t.getMonth() === now.getMonth();
+  const days = mode === '7' ? 7 : 30;
+  return t.getTime() <= now.getTime() + 864e5 && (now.getTime() - t.getTime()) <= days * 864e5;
+}
+function insightDateOf(s){ return s.completedAt || s.createdAt || s.date || ''; }
+function actionDateOf(a){ const l = (a.logs || []).slice(-1)[0]; return a.createdAt || (l && l.date) || ''; }
+function timeChipsHtml(cur, onClick){
+  const label = { all: '全部时间', '7': '近 7 天', '30': '近 30 天', month: '本月' };
+  return ['all','7','30','month'].map(m =>
+    `<button class="filter-chip${cur === m ? ' on' : ''}" onclick="${onClick}('${m}')">${label[m]}</button>`).join('');
+}
+function renderInsightTime(){
+  const box = $('insightTime'); if (!box) return;
+  box.innerHTML = timeChipsHtml(insightTime, 'setInsightTime');
+}
+function setInsightTime(m){ insightTime = m; renderInsightTime(); renderInsights(); }
+
 function assetTypeName(type){
   return { model: '认知模型', insight: '洞察', action: '行为实验', pattern: '模式' }[type] || '';
 }
 
 /* ===================== 导出 ===================== */
 function exportOne(id){
-  const a = loadActions().find(x => x.id === id);
+  const a = loadActionsAll().find(x => x.id === id);
   if (!a) return;
   const blob = new Blob([JSON.stringify(a, null, 2)], { type: 'application/json' });
   const u = URL.createObjectURL(blob);
@@ -1341,7 +1434,7 @@ function exportOne(id){
   el.click(); URL.revokeObjectURL(u);
 }
 function downloadAll(){
-  const data = { archive: loadArchive(), actions: loadActions(), profile: loadProfile(), patterns: (() => { try { return JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ return null; } })() };
+  const data = { archive: loadArchiveAll(), actions: loadActionsAll(), profile: loadProfile(), patterns: (() => { try { return JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){ return null; } })() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const u = URL.createObjectURL(blob);
   const el = document.createElement('a');
@@ -1383,6 +1476,8 @@ renderInsights();
 renderActions();
 renderPatterns();
 renderTrash();
+renderArchived();
+renderInsightTime();
 renderDiscovery();
 (function(){
   const h = location.hash;

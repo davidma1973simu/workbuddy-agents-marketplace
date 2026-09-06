@@ -1619,6 +1619,22 @@ function closeOnboard() {
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
       + ' 先定下要花多少天，把这条洞察变成一段每天都能做的行为实验——下一步会按天数拆解。';
   }
+  // P1-W3：从「每日改变」升级而来（punch 反馈页带入 goal / 今天的小步 / 最近失败原因）
+  const upGoal = (params.get('goal') || '').trim();
+  const upMicro = (params.get('micro') || '').trim();
+  const upFail = (params.get('fail') || '').trim();
+  if (upGoal && !handoffInsight){
+    $('changeInput').value = upGoal;
+    $('changeLabel').textContent = upMicro
+      ? '你已经在每天做「' + upMicro + '」。想把它变成更完整的长期改变，目标是：'
+      : '把这个每日改变，升级成一段完整的行为实验，目标是：';
+    const hintTxt = upFail
+      ? '你最近因为「' + upFail + '」没做到——这不一定是意志力问题，也可能是设计问题。这次会把触发点与提醒一起设计，让它不容易失败。'
+      : '把现在每天的这一小步，变成有触发点、有反馈的完整实验——下一步会按天数拆解。';
+    document.querySelector('.card .hint').innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      + hintTxt;
+  }
   showStage('input');
 })();
 window.addEventListener('DOMContentLoaded', maybeShowOnboard);
