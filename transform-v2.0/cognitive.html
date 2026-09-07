@@ -279,6 +279,28 @@
   .insight .i-scenario { font-size: 14px; font-weight: 700; color: var(--ink); }
   .insight .i-row { margin-top: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
   .insight .i-row b { color: var(--green-deep); font-size: 12px; display: inline-block; min-width: 44px; }
+
+  /* 洞察下的子项卡（应用反馈 / 支持资源） */
+  .sub-card { margin: 10px 0; padding: 12px 14px; border-radius: var(--radius-md); font-size: 13px; line-height: 1.65; }
+  .sub-feedback { background: var(--green-soft); border: 1px solid var(--green-light); }
+  .sub-resource { background: var(--surface-2); border: 1px solid var(--line); }
+  .sub-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .sub-icon { color: var(--green); font-size: 13px; }
+  .sub-title { font-size: 13px; font-weight: 700; color: var(--green-deep); }
+  .sub-target { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
+  .sub-score { display: inline-flex; align-items: baseline; gap: 4px; padding: 4px 10px; background: var(--surface); border-radius: 8px; margin-bottom: 8px; }
+  .sub-score b { font-size: 20px; font-weight: 800; color: var(--green-deep); }
+  .sub-score span { font-size: 12px; color: var(--ink-3); }
+  .sub-pros, .sub-improve { font-size: 13px; color: var(--ink); margin: 4px 0; }
+  .sub-pros b, .sub-improve b, .sub-section b, .sub-actions b { color: var(--green-deep); font-weight: 700; font-size: 12px; display: block; margin-bottom: 2px; }
+  .sub-actions { margin-top: 8px; }
+  .sub-actions ol { margin: 4px 0 0 18px; padding: 0; }
+  .sub-actions li { font-size: 12.5px; color: var(--ink); margin: 3px 0; }
+  .sub-section { font-size: 13px; color: var(--ink); margin: 6px 0; }
+  .sub-section div { color: var(--ink-2); margin-top: 2px; }
+  .sub-note { margin-top: 6px; font-size: 12.5px; }
+  .sub-note summary { cursor: pointer; color: var(--green-deep); font-weight: 600; padding: 4px 0; }
+  .sub-note-text { padding: 8px 10px; background: var(--surface); border-radius: 8px; line-height: 1.6; margin-top: 4px; }
   .asset-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
   .tag-chip { font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: var(--bg); border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; }
   .filter-sep { display: inline-block; width: 1px; height: 22px; background: var(--line); margin: 4px 4px; }
@@ -845,11 +867,14 @@ function renderInsights(){
       const nature = (e.nature || '').trim();
       const insight = (e.insight || '').trim();
       const learned = (s.reflection && s.reflection.learned || '').trim();
+      // 反馈卡 + 支持资源卡 子项
+      const sub = renderInsightSubItems(s);
       return `<div class="occ">
         <div class="occ-date">${fmtDate(s.completedAt || s.createdAt)}${s.reflectedAt ? ' · 已复盘' : ''}</div>
         ${nature ? `<div class="i-row"><b>本质</b>${escapeHtml(nature)}</div>` : ''}
         ${insight ? `<div class="i-row"><b>洞察</b>${escapeHtml(insight)}</div>` : ''}
         ${learned ? `<div class="i-row"><b>学到</b>${escapeHtml(learned)}</div>` : ''}
+        ${sub}
         ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         ${assetActions('insight', s.id)}
       </div>`;
@@ -857,11 +882,45 @@ function renderInsights(){
     return `<div class="insight fold-card" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="i-scenario">${escapeHtml(g.scenario)}</div>
-        <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' · 已复盘' : ''}</span></div>
+        <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' · 已复盘' : ' · 已应用'}</span></div>
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
     </div>`;
   }).join('');
+}
+// 渲染每条洞察下的「应用反馈卡」与「支持资源卡」子项
+function renderInsightSubItems(s){
+  let html = '';
+  // 1. 应用反馈卡（near/far 都存在时只展示近应用，避免重复）
+  const fb = s.nearFeedback || s.farFeedback;
+  if (fb){
+    const fbScene = (s.nearScenario && s.nearScenario.title) || (s.farScenario && s.farScenario.title) || '';
+    const fbTarget = s.nearFeedback ? '近应用反馈' : '远应用反馈';
+    const acts = (fb.actions || []).slice(0, 3);
+    html += `<div class="sub-card sub-feedback">
+      <div class="sub-head"><span class="sub-icon">●</span><span class="sub-title">Transform · ${escapeHtml(fbTarget)}</span></div>
+      ${fbScene ? `<div class="sub-target">针对场景：「${escapeHtml(fbScene)}」</div>` : ''}
+      <div class="sub-score"><b>${fb.score || 0}</b><span> / 5</span></div>
+      ${fb.pros ? `<div class="sub-pros"><b>做得好的</b>${escapeHtml(fb.pros)}</div>` : ''}
+      ${fb.improvements ? `<div class="sub-improve"><b>可改进的</b>${escapeHtml(fb.improvements)}</div>` : ''}
+      ${acts.length ? `<div class="sub-actions"><b>下一步行动</b><ol>${acts.map(a => `<li>${escapeHtml(a)}</li>`).join('')}</ol></div>` : ''}
+    </div>`;
+  }
+  // 2. 支持资源卡
+  const rp = s.nearResourcesPlan || s.farResourcesPlan;
+  if (rp){
+    const rpScene = (s.nearScenario && s.nearScenario.title) || (s.farScenario && s.farScenario.title) || '';
+    const rpTarget = s.nearResourcesPlan ? '近应用支持资源' : '远应用支持资源';
+    const mergedRes = [...(rp.resources || []), ...(rp.conditions || [])];
+    html += `<div class="sub-card sub-resource">
+      <div class="sub-head"><span class="sub-icon">●</span><span class="sub-title">Transform · ${escapeHtml(rpTarget)}</span></div>
+      ${rpScene ? `<div class="sub-target">为了把「${escapeHtml(rpScene)}」落地：</div>` : ''}
+      ${rp.people && rp.people.length ? `<div class="sub-section"><b>关键人</b><div>${rp.people.map(p => escapeHtml(p)).join('、')}</div></div>` : ''}
+      ${mergedRes.length ? `<div class="sub-section"><b>资源 / 工具 / 条件</b><div>${mergedRes.map(r => escapeHtml(r)).join('、')}</div></div>` : ''}
+      ${rp.note ? `<details class="sub-note"><summary>Transform 补充说明</summary><div class="sub-note-text">${escapeHtml(rp.note)}</div></details>` : ''}
+    </div>`;
+  }
+  return html;
 }
 
 /* ===================== 行为实验 ===================== */

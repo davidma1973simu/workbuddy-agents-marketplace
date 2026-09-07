@@ -727,6 +727,19 @@
   .fb-actions ol { margin: 8px 0 0 20px; padding: 0; }
   .fb-actions li { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
   .app-feedback-result { margin-top: 12px; }
+  .ai-msg-card { background: var(--green-soft); border-radius: var(--radius-md); padding: 12px 16px; }
+  .ai-msg-card .fb-target { font-size: 12.5px; color: var(--green-deep); margin: 4px 0 8px; font-weight: 600; }
+  .ai-msg-card .fb-overall { margin-bottom: 10px; padding: 10px 14px; }
+
+  /* 精简版资源卡 */
+  .resource-card { background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; }
+  .resource-card .rc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .resource-card .rc-icon { color: var(--green); font-size: 14px; }
+  .resource-card .rc-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
+  .resource-card .rc-sub { font-size: 12.5px; color: var(--ink-2); margin-bottom: 12px; }
+  .resource-card .rc-note { font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
+  .resource-card .rc-note summary { cursor: pointer; color: var(--green-deep); font-weight: 600; padding: 6px 0; }
+  .resource-card .rc-n-text { padding: 10px 12px; background: var(--surface); border-radius: 8px; line-height: 1.65; margin-top: 4px; }
 
   /* Step 2 打分可视化 */
   .score-display {
@@ -758,6 +771,58 @@
 
   /* Step 3 产出页 */
   .outcome-section { background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px; margin: 12px 0 18px; }
+  /* 折叠区（① 下一步行动 / ② 支持资源 / ④ 我要付出的代价） */
+  .outcome-fold {
+    border: 1.5px solid var(--line); border-radius: var(--radius-md);
+    background: var(--surface); margin: 12px 0 18px;
+    transition: border-color .2s;
+  }
+  .outcome-fold[open] { border-color: var(--green-light); background: var(--bg); }
+  .outcome-fold > summary {
+    display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+    cursor: pointer; list-style: none; user-select: none;
+  }
+  .outcome-fold > summary::-webkit-details-marker { display: none; }
+  .outcome-fold > summary:hover { background: var(--surface-2); }
+  .outcome-fold .of-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-deep);
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .outcome-fold[open] .of-num { background: var(--green); color: #fff; }
+  .outcome-fold .of-label { font-size: 14.5px; font-weight: 600; color: var(--ink); flex-shrink: 0; }
+  .outcome-fold .of-meta { font-size: 12.5px; color: var(--ink-3); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .outcome-fold .of-chevron { color: var(--ink-3); flex-shrink: 0; transition: transform .2s; }
+  .outcome-fold[open] .of-chevron { transform: rotate(180deg); color: var(--green-deep); }
+  .outcome-fold .of-body { padding: 4px 16px 16px; }
+  /* 我要付出的代价：特殊配色（amber 暖色） */
+  .outcome-fold-pay { border-color: rgba(217,123,41,.2); background: var(--amber-soft); }
+  .outcome-fold-pay > summary { background: transparent; }
+  .outcome-fold-pay[open] { border-color: var(--amber); background: var(--amber-soft); }
+  .outcome-fold-pay .of-num { background: var(--amber); color: #fff; }
+  .outcome-fold-pay .of-label { color: #8B5A1B; }
+  .cost-lead { font-size: 13.5px; color: var(--ink-2); margin: 0 0 14px; line-height: 1.7; }
+  .cost-q { margin-top: 14px; }
+  .cost-q .app-label b { color: #8B5A1B; font-size: 13.5px; font-weight: 700; display: block; margin-bottom: 4px; }
+  .cost-q .app-label .app-em { display: block; margin-top: 2px; margin-left: 0; font-size: 12.5px; }
+  /* 轻承诺切换：不要签字按钮 */
+  .cost-light-toggle {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    margin-top: 16px; background: var(--surface); border-radius: var(--radius-md);
+    border: 1.5px solid var(--line);
+  }
+  .cost-light-q { font-size: 13.5px; color: var(--ink-2); flex: 1; }
+  .cost-toggle {
+    background: var(--bg); color: var(--ink-3); border: 1.5px solid var(--line-2);
+    padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all .2s;
+  }
+  .cost-toggle:hover { border-color: var(--amber); color: #8B5A1B; }
+  .cost-toggle[aria-pressed="true"] {
+    background: var(--amber); color: #fff; border-color: var(--amber);
+  }
+  .cost-toggle[aria-pressed="true"]:hover { background: #B05E1E; border-color: #B05E1E; }
   .outcome-section.outcome-core {
     background: linear-gradient(135deg, var(--green-soft), var(--green-50));
     border-color: var(--green-light);
@@ -923,20 +988,39 @@
   .viewpoint-area .vp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .viewpoint-area .vp-title { font-size: 14px; font-weight: 700; color: var(--green-deep); }
   .viewpoint-area .vp-sub { font-size: 12px; color: var(--ink-3); flex: 1; min-width: 180px; }
-  .viewpoint-area .vp-body { margin-top: 12px; }
-  .viewpoint-area .vp-body .vp-option {
-    display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px;
-    border: 1.5px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px;
-    cursor: pointer; background: var(--bg); transition: all .15s;
+  .viewpoint-area .vp-body { margin-top: 14px; }
+  .viewpoint-area .vp-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
   }
-  .viewpoint-area .vp-body .vp-option:hover { border-color: var(--green); }
-  .viewpoint-area .vp-body .vp-option.selected { border-color: var(--green); background: var(--green-soft); }
-  .viewpoint-area .vp-body .vp-option .vp-rad { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-2); flex-shrink: 0; margin-top: 2px; }
-  .viewpoint-area .vp-body .vp-option.selected .vp-rad { border-color: var(--green); background: var(--green); box-shadow: inset 0 0 0 3px #fff; }
-  .viewpoint-area .vp-body .vp-option .vp-opt-t { font-size: 13.5px; font-weight: 700; color: var(--ink); }
-  .viewpoint-area .vp-body .vp-option .vp-opt-d { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; line-height: 1.6; }
-  .viewpoint-area .vp-body .vp-option .vp-opt-q { font-size: 12.5px; color: var(--green-deep); margin-top: 4px; font-style: italic; }
-  .viewpoint-area .vp-revise { margin-top: 12px; }
+  @media (max-width: 720px) {
+    .viewpoint-area .vp-grid { grid-template-columns: 1fr; }
+  }
+  .viewpoint-area .vp-card {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 14px 16px; border: 1.5px solid var(--line);
+    border-radius: var(--radius-md); cursor: pointer; background: var(--bg);
+    transition: all .15s; text-align: left; font-family: inherit;
+  }
+  .viewpoint-area .vp-card:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(14,107,80,.08); }
+  .viewpoint-area .vp-card.selected { border-color: var(--green); background: var(--green-soft); box-shadow: 0 4px 18px rgba(14,107,80,.16); }
+  .viewpoint-area .vp-card .vp-tag {
+    display: inline-flex; align-items: center; align-self: flex-start;
+    padding: 3px 10px; border-radius: 999px;
+    background: var(--surface-2); color: var(--green-deep);
+    font-size: 11.5px; font-weight: 700; letter-spacing: .3px;
+  }
+  .viewpoint-area .vp-card.selected .vp-tag { background: var(--green); color: #fff; }
+  .viewpoint-area .vp-card .vp-text {
+    font-size: 14px; line-height: 1.75; color: var(--ink);
+    font-weight: 500;
+  }
+  .viewpoint-area .vp-card .vp-cta {
+    font-size: 12px; color: var(--ink-3); margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .viewpoint-area .vp-card.selected .vp-cta { color: var(--green-deep); font-weight: 600; }
+  .viewpoint-area .vp-revise { margin-top: 14px; border-top: 1px dashed var(--line-2); padding-top: 14px; }
+  .viewpoint-area .vp-revise .lb-essence-label { font-weight: 600; color: var(--ink-2); margin-bottom: 6px; font-size: 13px; }
   .viewpoint-area .vp-done { text-align: right; margin-top: 10px; }
   .viewpoint-area .vp-done button {
     background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--green-light);
@@ -1813,7 +1897,7 @@
   .panel-app .app-core-more .insight-highlight { margin-top: 10px; }
 
   /* 阶段条 */
-  .panel-app .phase-bar { display: flex; gap: 10px; margin: 18px 0 6px; }
+  .panel-app .phase-bar { display: flex; gap: 10px; margin: 18px 0 6px; align-items: center; flex-wrap: wrap; }
   .panel-app .phase {
     flex: 1; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 13px;
     background: var(--surface-2); font-size: 13.5px; font-weight: 600; color: var(--ink-3); border: 1px solid transparent;
@@ -1823,6 +1907,21 @@
     background: var(--surface); color: var(--ink-3); font-size: 12px; font-weight: 700; border: 1px solid var(--line);
   }
   .panel-app .phase.phase-on { color: var(--green-deep); background: var(--green-50); border-color: var(--green-light); }
+  /* 远应用展开链接（可选） */
+  .panel-app .far-expand-link {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+    background: transparent; color: var(--green-deep); border: 1px dashed var(--green-light);
+    border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: all .2s;
+  }
+  .panel-app .far-expand-link:hover { background: var(--green-soft); border-style: solid; }
+  .panel-app .far-expand-link.collapsing { color: var(--ink-3); border-color: var(--line-2); }
+  .panel-app .far-expand-link.collapsing:hover { background: var(--surface-2); }
+  .panel-app .far-hint {
+    font-size: 12.5px; color: var(--ink-3); line-height: 1.65;
+    padding: 10px 14px; background: var(--surface-2); border-radius: var(--radius-md);
+    border-left: 3px solid var(--green-light);
+  }
   .panel-app .phase.phase-on .phase-n { background: var(--green); color: #fff; border-color: var(--green); }
 
   /* 阶段容器 */
@@ -1847,6 +1946,14 @@
     background: var(--green-soft); color: var(--green-deep); font-size: 13px; font-weight: 700;
   }
   .panel-app .app-step-label { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+  /* 应用计划上下文引子：把场景问题具体化 */
+  .panel-app .app-lead-context {
+    font-size: 13.5px; line-height: 1.75; color: var(--ink-2);
+    padding: 12px 14px; background: var(--green-soft); border-left: 3px solid var(--green);
+    border-radius: var(--radius-md); margin: 8px 0 14px;
+  }
+  .panel-app .app-lead-context b { color: var(--green-deep); font-weight: 700; }
+  .panel-app .app-em { font-size: 12.5px; color: var(--ink-3); font-style: normal; margin-left: 4px; }
 
   /* 标题列表 + 操作 */
   .panel-app .title-list { display: grid; gap: 8px; }
@@ -1985,7 +2092,7 @@
     </div>
     <div class="p-node" data-step="2">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <span class="p-label">试试看</span>
+      <span class="p-label">应用</span>
     </div>
     <div class="p-node" data-step="3">
       <div class="p-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg></div>
@@ -2122,13 +2229,13 @@
           <!-- 视角必选（启发，不是答案） -->
           <div class="viewpoint-area" id="viewpointArea" style="display:none;">
             <div class="vp-head">
-              <span class="vp-title">换一个视角看它</span>
-              <span class="vp-sub">强迫自己跳出原来的模式 —— 选一个让你不舒服的视角，用它修订你的核心认知</span>
-              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">让Transform给出不同视角</button>
+              <span class="vp-title">让 Transform 帮你换 4 种方式重新讲这件事</span>
+              <span class="vp-sub">挑选最贴你的一种，可微调；这才是这个认知真正的样子</span>
+              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">让Transform给 4 个版本</button>
             </div>
             <div class="vp-body" id="viewpointResult" style="display:none;"></div>
             <div class="vp-revise" id="viewpointRevise" style="display:none;">
-              <div class="lb-essence-label">用选定的视角修订你的核心认知（可保留原文）</div>
+              <div class="lb-essence-label">在选中的版本上微调（这是最后落定的核心认知）</div>
               <textarea id="restateRevised" class="essence-nature" placeholder="基于这个视角，我重新理解这件事……"></textarea>
             </div>
           </div>
@@ -2169,7 +2276,7 @@
     <!-- Step 2 应用（重新设计：单一场景 · 单一焦点 · 补充可选） -->
     <div class="panel panel-app" id="panel-2" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">试试看 · 把认知放进真实场景</div>
+        <div class="step-eyebrow">应用 · 把认知放进真实场景</div>
         <h1>把新认知带到场景里</h1>
         <p class="step-lead">先在一个熟悉的场景里试一次，再迁移到一个陌生场景。一次只专注一件事。</p>
       </header>
@@ -2191,7 +2298,14 @@
       <!-- 阶段指示 -->
       <div class="phase-bar" id="phaseBar">
         <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> 近应用 · 熟悉的场景</div>
-        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> 换个完全不同的场景</div>
+        <button type="button" class="far-expand-link" id="farExpandLink" onclick="toggleFarApp()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="farExpandLabel">远应用 · 换个完全不同的场景（可选）</span>
+        </button>
+      </div>
+      <!-- 远应用可选说明（默认隐藏，展开后才显示） -->
+      <div class="far-hint" id="farHint" style="display:none;margin-bottom:8px;">
+        真正掌握一个认知，不在于"熟悉的场景会用"，而在于"能把它带到一个完全陌生的领域去用"。近应用验证你"理解了"，远应用验证你"真的会迁移"——这个步骤是可选项，不必勉强；觉得没必要就继续到下一步。
       </div>
 
       <!-- 近应用阶段 -->
@@ -2229,13 +2343,14 @@
             <div class="detail-card" id="nearDetailCardPlan"></div>
 
             <div class="app-step-row app-step-plan"><span class="app-step-num">2</span><span class="app-step-label">写下你的应用计划</span></div>
+            <p class="app-lead-context" id="appNearContext"></p>
             <div class="app-field">
-              <span class="app-label">你打算怎么做？</span>
-              <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="例：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段"></textarea>
+              <span class="app-label">你打算怎么做？<em class="app-em">针对上面的具体场景，写一个"第一句话就要做的动作"</em></span>
+              <textarea class="app-input app-plan-input" data-app="near" data-key="plan" placeholder="例如：不再用'我有 N 年经验'证明价值，而是先陪客户设计一个 30 分钟体验片段"></textarea>
             </div>
             <div class="app-field">
-              <span class="app-label">怎么知道它发生了？<em>一个外部的、可观察的信号</em></span>
-              <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="例：客户主动提出续约 / 有人问我怎么做的 / 数据涨了 20%"></textarea>
+              <span class="app-label">怎么知道它发生了？<em class="app-em">一个外部的、可观察的信号 —— 别人能看见才算</em></span>
+              <textarea class="app-input app-plan-input" data-app="near" data-key="verifySignal" placeholder="例如：客户主动提出续约 / 有人问我怎么做的 / 数据涨了 20%"></textarea>
             </div>
             <details class="app-more">
               <summary>更多细节（可选）</summary>
@@ -2267,15 +2382,8 @@
         </div>
       </section>
 
-      <!-- 远应用阶段（近应用完成后解锁） -->
+      <!-- 远应用阶段（手动展开，可选） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
-        <!-- 远应用「为什么」说明：近应用完成后才出现 -->
-        <div class="far-why" id="farWhyCard">
-          <div class="fw-head">
-            <span class="fw-title">为什么要用远场景？</span>
-          </div>
-          <p class="fw-text">真正掌握一个认知，不在于"熟悉的场景会用"，而在于"能把它带到一个完全陌生的领域去用"。近应用验证你"理解了"，远应用验证你"真的会迁移"——把同一个认知用在不同的行业、角色、场景里，它才真正变成你自己的能力。</p>
-        </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
           <span class="app-badge far">远场景 · 换个领域试试</span>
           <div class="app-stage" data-stage="title">
@@ -2298,12 +2406,13 @@
             <div class="detail-card" id="farDetailCardPlan"></div>
 
             <div class="app-step-row app-step-plan"><span class="app-step-num">2</span><span class="app-step-label">写下你的应用计划</span></div>
+            <p class="app-lead-context" id="appFarContext"></p>
             <div class="app-field">
-              <span class="app-label">你打算怎么做？</span>
+              <span class="app-label">你打算怎么做？<em class="app-em">把同一个认知搬到完全陌生的领域，第一步动作是什么？</em></span>
               <textarea class="app-input app-plan-input" data-app="far" data-key="plan" placeholder="例：建议销售团队把'系统工具'升级为'激发客户 + 陪跑过程'，让 AI 做信息处理，销售做情感连接"></textarea>
             </div>
             <div class="app-field">
-              <span class="app-label">怎么知道它发生了？<em>一个外部的、可观察的信号</em></span>
+              <span class="app-label">怎么知道它发生了？<em class="app-em">一个外部的、可观察的信号 —— 在新领域里也成立</em></span>
               <textarea class="app-input app-plan-input" data-app="far" data-key="verifySignal" placeholder="例：销售主动来请教 / 客户转介绍 / 数据可见变化"></textarea>
             </div>
             <details class="app-more">
@@ -2358,15 +2467,29 @@
         <div class="outcome-section outcome-core" id="coreInsightOutcome"></div>
       </section>
 
-      <section class="field plain">
-        <label>① Transform 建议的下一步行动</label>
-        <div class="outcome-section" id="actionsOutcome"></div>
-      </section>
+      <details class="outcome-fold" id="actionsFold">
+        <summary>
+          <span class="of-num">①</span>
+          <span class="of-label">Transform 建议的下一步行动</span>
+          <span class="of-meta" id="actionsMeta">—</span>
+          <svg class="of-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 9l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <div class="of-body">
+          <div class="outcome-section" id="actionsOutcome"></div>
+        </div>
+      </details>
 
-      <section class="field plain">
-        <label>② 需要的支持资源</label>
-        <div class="outcome-section" id="resourcesOutcome"></div>
-      </section>
+      <details class="outcome-fold" id="resourcesFold">
+        <summary>
+          <span class="of-num">②</span>
+          <span class="of-label">需要的支持资源</span>
+          <span class="of-meta" id="resourcesMeta">—</span>
+          <svg class="of-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 9l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <div class="of-body">
+          <div class="outcome-section" id="resourcesOutcome"></div>
+        </div>
+      </details>
 
       <section class="field plain">
         <label>③ 为期待的身份投票</label>
@@ -2393,68 +2516,44 @@
         </div>
       </section>
 
-      <section class="field plain">
-        <label>④ 为改变创造空间：你愿意投入什么？<em class="field-soft">（改变不是失去，而是把能量重新分配给真正重要的事）</em></label>
-        <div class="outcome-section" id="costOutcome">
-          <div class="app-row">
-            <span class="app-label">为了让这个改变真的发生，我需要先为它腾出哪些空间？</span>
-            <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="例如：每天睡前 20 分钟刷手机的时间、一个旧的自我定义、一种惯性回应方式"></textarea>
-          </div>
-          <div class="app-row" style="margin-top:12px;">
-            <span class="app-label">当我觉得难以为继时，最可能让我停下来的信号是什么？</span>
-            <textarea class="app-input app-plan-input" id="costRisk" placeholder="例如：连续几天看不到反馈、感到疲惫、开始自我怀疑"></textarea>
-          </div>
+      <details class="outcome-fold outcome-fold-pay" id="costFold" open>
+        <summary>
+          <span class="of-num">④</span>
+          <span class="of-label">我要付出的代价</span>
+          <span class="of-meta">改变不是失去，是把能量重新分配给真正重要的事</span>
+          <svg class="of-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 9l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <div class="of-body">
+          <div class="outcome-section" id="costOutcome">
+            <p class="cost-lead">为让这个改变真的发生，我需要回答下面四个问题。它们会变成你下次回看时的方向盘。</p>
 
-          <!-- 投入 → 承诺：分别为「创造空间」和「遇到阻力」给出温暖、可执行的支持设计 -->
-          <div class="cost-commit" id="costCommit">
-
-            <!-- 子承诺 A：我愿意为改变创造什么空间 -->
-            <div class="cost-subcommit" id="giveUpCommit">
-              <div class="cc-head">
-                <span>承诺 A · 我愿意为改变创造什么空间</span>
-                <button class="ai-btn" onclick="aiCourage('giveUp', this)" style="padding:7px 14px;font-size:12.5px;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  让Transform帮我看到这份投入的价值
-                </button>
-              </div>
-              <div class="cc-ai-result" id="courageGiveUpResult" style="display:none;"></div>
-              <div class="app-row" style="margin-top:12px;">
-                <span class="app-label">我承诺：在 <input type="text" id="costGiveUpDate" class="app-input-sm" style="width:120px;display:inline-block;" placeholder="例：9 月 15 日"> 前，开始为改变腾出这个空间。</span>
-              </div>
-              <div class="app-row" style="margin-top:10px;">
-                <span class="app-label">如果我发现自己被旧习惯拉回，我会 <input type="text" id="costGiveUpFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="例如：先把动作拆到最小，只做 2 分钟"> 。</span>
-              </div>
-              <div class="cc-sign" id="costGiveUpSign">
-                <span class="cc-sign-text">我愿意创造这个空间。</span>
-                <button class="btn-ok cc-sign-btn" onclick="signCostCommit('giveUp')" id="costGiveUpSignBtn">签名承诺</button>
-              </div>
+            <div class="app-row cost-q">
+              <span class="app-label"><b>1. 我愿意让出哪些空间？</b><em class="app-em">时间、习惯、旧定义 —— 都是能量，挪一点给真正重要的</em></span>
+              <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="例如：每天睡前 20 分钟刷手机的时间、一个旧的自我定义、一种惯性回应方式"></textarea>
             </div>
 
-            <!-- 子承诺 B：遇到阻力时，我怎么温柔地把自己带回 -->
-            <div class="cost-subcommit" id="riskCommit" style="margin-top:18px;">
-              <div class="cc-head">
-                <span>承诺 B · 遇到阻力时，我怎么温柔地把自己带回</span>
-                <button class="ai-btn" onclick="aiCourage('risk', this)" style="padding:7px 14px;font-size:12.5px;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115-6.7M21 3v6h-6M21 12a9 9 0 01-15 6.7M3 21v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  让Transform帮我设计一个回拉策略
-                </button>
-              </div>
-              <div class="cc-ai-result" id="courageRiskResult" style="display:none;"></div>
-              <div class="app-row" style="margin-top:12px;">
-                <span class="app-label">我承诺：当 <input type="text" id="costRiskTrigger" class="app-input-sm" style="width:180px;display:inline-block;" placeholder="例：连续 3 天没反馈"> 出现时，我把它当作需要调整的提示。</span>
-              </div>
-              <div class="app-row" style="margin-top:10px;">
-                <span class="app-label">如果真的感到困难，我会 <input type="text" id="costRiskFallback" class="app-input-sm" style="width:62%;display:inline-block;" placeholder="例如：找一个支持者，或回到最小一步重新开始"> 。</span>
-              </div>
-              <div class="cc-sign" id="costRiskSign">
-                <span class="cc-sign-text">我愿意使用这个回拉策略。</span>
-                <button class="btn-ok cc-sign-btn" onclick="signCostCommit('risk')" id="costRiskSignBtn">签名承诺</button>
-              </div>
+            <div class="app-row cost-q">
+              <span class="app-label"><b>2. 哪一刻我会最可能放弃？</b><em class="app-em">难以为继的早期信号 —— 自己最容易掉队的那个时刻</em></span>
+              <textarea class="app-input app-plan-input" id="costRisk" placeholder="例如：连续几天看不到反馈、感到疲惫、开始自我怀疑"></textarea>
             </div>
 
+            <div class="app-row cost-q">
+              <span class="app-label"><b>3. 那个时刻到来时，我会怎么温柔地带自己回来？</b><em class="app-em">回拉策略 —— 不是意志力，是一个具体动作</em></span>
+              <textarea class="app-input app-plan-input" id="costRiskFallback" placeholder="例如：找一个人说出来 / 把动作拆到 2 分钟 / 回到最小一步"></textarea>
+            </div>
+
+            <div class="app-row cost-q">
+              <span class="app-label"><b>4. 我准备投入的最大代价是什么？</b><em class="app-em">时间、金钱、关系、舒适 —— 一句话写清楚你愿意付的</em></span>
+              <textarea class="app-input app-plan-input" id="costGiveUpFallback" placeholder="例如：每周至少 8 小时 / 一次拒绝过去会接的私单 / 接受前 3 个月进展缓慢"></textarea>
+            </div>
+
+            <div class="cost-light-toggle">
+              <span class="cost-light-q">我准备好为这个改变付出上述代价。</span>
+              <button type="button" class="cost-toggle" id="costLightToggle" onclick="toggleCostReady()" aria-pressed="false">未承诺</button>
+            </div>
           </div>
         </div>
-      </section>
+      </details>
 
       <div class="insight-to-behavior">
         <button class="btn btn-primary" onclick="sendInsightToBehavior()" id="toBehaviorBtn">
@@ -3549,19 +3648,21 @@ async function aiViewpoint(btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const e = state.data.essence || {};
-  const restate = (state.data.restate || $('essenceRestate') ? $('essenceRestate').value : '') || '';
+  const restate = (state.data.restate || ($('essenceRestate') ? $('essenceRestate').value : '')) || '';
   const scenario = state.data.scenario || '';
   if (!e.nature && !e.insight) { toast('先让Transform总结出本质和洞察'); return; }
   if (btn) btn.classList.add('loading');
   const r = await aiCall(
-    '用户正在做一次认知梳理。\n场景：「' + scenario + '」\n用户提炼的本质：「' + e.nature + '」\n用户提炼的洞察：「' + e.insight + '」\n用户的理解：「' + restate + '」\n\n' +
-    '请不要给答案。请给出 4 个完全不同视角的启发式问题，强迫用户跳出他原来的思维模式：\n' +
-    '1. 正向视角：这件事里，最好的可能性是什么？用户没看见的积极面是什么？\n' +
-    '2. 长远视角：10 年后回看今天，这件事会怎么被定义？现在的焦虑值多少？\n' +
-    '3. 利他视角：如果你最关心的人处在同样的处境，你会劝他怎么想？你愿意把什么经验留给他们？\n' +
-    '4. 反身视角：这个处境，和你一直逃避的某个模式/角色有关吗？你在其中扮演了什么？\n\n' +
-    '每个视角给出：视角名 + 一句话启发 + 一个启发式提问。\n' +
-    '要求：每项 ≤ 30 字，直接、有力量、不鸡汤。\n严格返回 JSON 数组：[{"name":"正向视角","insight":"...","question":"..."},{"name":"长远视角","insight":"...","question":"..."},{"name":"利他视角","insight":"...","question":"..."},{"name":"反身视角","insight":"...","question":"..."}]'
+    '用户正在做一次认知梳理，已经提炼出本质与洞察。\n场景：「' + scenario + '」\n用户的本质：「' + e.nature + '」\n用户的洞察：「' + e.insight + '」\n用户当前的理解：「' + restate + '」\n\n' +
+    '请基于 4 个完全不同视角，**直接改写**这段核心认知（不是启发式提问，是改写后的完整句子）。用户要的是 4 个候选版本，挑一个最贴的当最终认知。\n\n' +
+    '4 个视角分别是：\n' +
+    '1. 正向视角：把"问题"重述为"正在发生的好事/机会"，看到隐藏的可能性\n' +
+    '2. 长远视角：10 年后回看今天，把"焦虑"重述为"职业叙事里的小逗号"，淡化当下情绪\n' +
+    '3. 利他视角：把"自己最痛的没用功经验"重述为"可留给别人的礼物"，赋予传承意义\n' +
+    '4. 反身视角：把"看似在帮别人"重述为"自己在回避被洞察的未知领域"，揭示逃避模式\n\n' +
+    '每个视角给出：视角名（短）+ 改写后的核心认知（完整句子，30-60 字）。\n' +
+    '要求：每项的 text 字段 = 直接可用的核心认知改写版，不要解释、不要提问、不要鸡汤；保持原本质不变，只是表达视角不同。\n' +
+    '严格返回 JSON 数组：[{"name":"正向视角","text":"..."},{"name":"长远视角","text":"..."},{"name":"利他视角","text":"..."},{"name":"反身视角","text":"..."}]'
   );
   if (btn) btn.classList.remove('loading');
   const arr = parseViewpoints(r);
@@ -3580,7 +3681,7 @@ function parseViewpoints(text) {
     const m = text.match(/\[[\s\S]*\]/);
     if (!m) return null;
     const arr = JSON.parse(m[0]);
-    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && v.insight).slice(0, 4);
+    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && v.text).slice(0, 4);
   } catch(e){}
   return null;
 }
@@ -3593,17 +3694,14 @@ function renderViewpoints() {
   if (!arr.length) return;
   if (area) area.style.display = 'block';
   box.style.display = 'block';
-  box.innerHTML = arr.map((v, i) =>
-    `<div class="vp-option${viewpointSelected === i ? ' selected' : ''}" onclick="selectViewpoint(${i})">
-      <span class="vp-rad"></span>
-      <span style="flex:1;">
-        <span class="vp-opt-t">${escapeHtml(v.name)}</span>
-        <span class="vp-opt-d">${escapeHtml(v.insight)}</span>
-        <span class="vp-opt-q">"${escapeHtml(v.question)}"</span>
-      </span>
-    </div>`
-  ).join('') +
-  `<div class="vp-done"><button onclick="confirmViewpoint()">就用这个视角，去修订我的认知</button></div>`;
+  box.innerHTML =
+    `<div class="vp-grid">${arr.map((v, i) =>
+      `<button type="button" class="vp-card${viewpointSelected === i ? ' selected' : ''}" onclick="selectViewpoint(${i})">
+        <span class="vp-tag">${escapeHtml(v.name)}</span>
+        <span class="vp-text">${escapeHtml(v.text || '')}</span>
+        <span class="vp-cta">${viewpointSelected === i ? '✓ 已选 · 可在下方微调' : '点选这个版本 →'}</span>
+      </button>`
+    ).join('')}</div>`;
 }
 function selectViewpoint(i) {
   viewpointSelected = i;
@@ -3614,20 +3712,22 @@ function selectViewpoint(i) {
     revise.style.display = 'block';
     const vp = state.data.viewpoint;
     if (vp) {
-      const cur = ($('essenceRestate') ? $('essenceRestate').value : '') || '';
-      $('restateRevised').value = cur;
-      $('restateRevised').setAttribute('data-hint', vp.name + '：' + vp.question);
+      $('restateRevised').value = vp.text || $('essenceRestate').value || '';
+      $('restateRevised').setAttribute('data-hint', vp.name + '：这是 AI 改写的版本，可继续调整');
     }
   }
+  toast('已选「' + (vp && vp.name) + '」，可在下方微调');
+  // 轻提示保存按钮：让用户知道选完可以保存
+  setTimeout(() => { try { checkNext1(); } catch(_){} }, 0);
 }
 function confirmViewpoint() {
   const vp = state.data.viewpoint;
-  if (!vp) { toast('先选一个视角'); return; }
+  if (!vp) { toast('先从 4 个版本里挑一个'); return; }
   // 修订后的核心认知填进复述框（用户可再改）
   const revised = $('restateRevised');
   const cur = revised ? revised.value.trim() : '';
   if (cur && $('essenceRestate')) $('essenceRestate').value = cur;
-  toast('已选「' + vp.name + '」，你的核心认知已更新，可继续打分并保存');
+  toast('已选「' + vp.name + '」，核心认知已落定，可继续打分并保存');
 }
 
 function checkNext1() {
@@ -3732,7 +3832,7 @@ async function aiAppFeedback(type) {
   try {
     const d = obj.details || {};
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景标题：${obj.title}\n场景细节：\n- 时间：${d.time || '未填'}\n- 地点：${d.place || '未填'}\n- 人物：${d.people || '未填'}\n- 目的：${d.purpose || '未填'}\n- 价值：${d.value || '未填'}\n挑战细节：\n- 现状：${d.currentState || '未填'}\n- 目标：${d.goal || '未填'}\n- 差距：${d.gap || '未填'}\n- 困难：${d.difficulty || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 什么时候试：${obj.when}\n- 期待产出结果：${obj.expectedOutcome}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高如何降低阻力；如果重要性低是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 验证信号：${obj.verifySignal}\n- 什么时候试：${obj.when}\n- 期待结果：${obj.expectedOutcome}\n\n任务：针对这个应用计划，给出简短反馈卡（≤50 字/项）。\n1. 评分（1-5 分）\n2. 做得好的（≤50 字）\n3. 可改进的（≤50 字）\n4. 下一步行动（1-3 条，每条 ≤40 字）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","actions":["行动1","行动2","行动3"]}`
     );
     const data = parseAppFeedback(r);
     if (data) {
@@ -3845,6 +3945,27 @@ async function confirmApplyTitle(type) {
   }
   // 详情生成完成后切到 plan 阶段（detail + plan 一屏合并展示）
   renderApplyStages();
+  updateAppContext(type);
+}
+
+// 基于场景生成一个具体问题作为「应用计划」的引子（让用户更容易回答）
+function updateAppContext(type) {
+  const obj = ensureAppScenario(type);
+  const d = obj.details || {};
+  const label = type === 'near' ? '近应用' : '远应用';
+  const sceneTitle = obj.title || '';
+  const who = d.people || '';
+  const goal = d.goal || '';
+  let lead;
+  if (sceneTitle && goal) {
+    lead = `在「${sceneTitle}」中，与 ${who || '相关人'} 一起，<b>为了 ${goal}</b> —— 你打算怎么迈出第一步？`;
+  } else if (sceneTitle) {
+    lead = `在「${sceneTitle}」中，你打算怎么迈出第一步？`;
+  } else {
+    lead = `选定 ${label} 场景后，把动作写在下面。`;
+  }
+  const el = $('app' + (type === 'near' ? 'Near' : 'Far') + 'Context');
+  if (el) el.innerHTML = lead;
 }
 
 // ③ AI 生成场景细节（弹窗卡片）
@@ -3953,18 +4074,21 @@ function isNearComplete() {
   if (!state.data.nearFeedback) return false;
   return true;
 }
-function unlockFarApp() {
-  const block = $('farAppBlock');
+// 远应用：手动展开/收起（可选步骤，不强制）
+let farExpanded = false;
+function toggleFarApp() {
+  farExpanded = !farExpanded;
   const phase = $('farPhase');
-  if (phase) phase.style.display = 'block';
-  if (block) {
-    block.classList.remove('locked');
-    block.querySelectorAll('.app-stage').forEach(el => el.classList.remove('hidden'));
-  }
-  renderApplyStages();
-  const fp = document.querySelector('.phase[data-phase="far"]');
-  if (fp) fp.classList.add('phase-on');
-  if (isNearComplete()) toast('近应用完成，远应用已解锁');
+  const hint = $('farHint');
+  const link = $('farExpandLink');
+  const label = $('farExpandLabel');
+  if (phase) phase.style.display = farExpanded ? 'block' : 'none';
+  if (hint) hint.style.display = farExpanded ? 'block' : 'none';
+  if (link) link.classList.toggle('collapsing', !farExpanded);
+  if (label) label.textContent = farExpanded
+    ? '收起远应用'
+    : '远应用 · 换个完全不同的场景（可选）';
+  if (farExpanded) renderApplyStages();
 }
 function toggleNearExpand() {
   const block = $('nearAppBlock');
@@ -3996,16 +4120,12 @@ function renderApplyStages() {
       }
     }
 
-    if (type === 'far' && !isNearComplete()) {
-      block.classList.add('locked');
+    if (type === 'far' && !farExpanded) {
+      block.classList.add('is-hidden-via-toggle');
       block.querySelectorAll('.app-stage').forEach(el => el.classList.add('hidden'));
-      const label = $('farAppLockLabel');
-      if (label) label.classList.add('locked-label');
       return;
     } else if (type === 'far') {
-      block.classList.remove('locked');
-      const label = $('farAppLockLabel');
-      if (label) label.classList.remove('locked-label');
+      block.classList.remove('is-hidden-via-toggle');
     }
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
@@ -4032,16 +4152,14 @@ function renderApplyStages() {
   });
   updateResourceSections();
   const fp = $('farPhase');
-  if (fp) fp.style.display = isNearComplete() ? 'block' : 'none';
-  const whyCard = $('farWhyCard');
-  if (whyCard) whyCard.style.display = isNearComplete() ? 'block' : 'none';
-  const nearChip = document.querySelector('.phase[data-phase="near"]');
-  const farChip = document.querySelector('.phase[data-phase="far"]');
-  if (nearChip) nearChip.classList.add('phase-on');
-  if (farChip) {
-    farChip.classList.toggle('phase-on', !!isNearComplete());
-    farChip.style.display = isNearComplete() ? '' : 'none';
-  }
+  const hasFarContent = state.data.farScenario && (state.data.farScenario.title || state.data.farFeedback);
+  if (fp) fp.style.display = (farExpanded || hasFarContent) ? 'block' : 'none';
+  const link = $('farExpandLink');
+  const label = $('farExpandLabel');
+  const hint = $('farHint');
+  if (link) link.classList.toggle('collapsing', !(farExpanded || hasFarContent));
+  if (label) label.textContent = (farExpanded || hasFarContent) ? '收起远应用' : '远应用 · 换个完全不同的场景（可选）';
+  if (hint) hint.style.display = farExpanded ? 'block' : 'none';
 }
 
 // 支持资源区：仅在该应用已有反馈后才显示
@@ -4076,22 +4194,21 @@ function parseAppFeedback(text) {
 function renderAppFeedback(type, data) {
   const box = $(type + 'FeedbackResult');
   const title = type === 'near' ? '近应用反馈' : '远应用反馈';
-  const impact = state.data.impact || 0;
-  const effort = state.data.effort || 0;
   const scenario = ensureAppScenario(type);
-  let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
+  // 精简版反馈卡：评分 + 短反馈 + ≤3 条行动建议；不显示重要性/费力元数据
+  let html = '<div class="ai-msg ai-msg-card"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
   html += '<div class="ai-msg-name">Transform · ' + title + '</div>';
   if (scenario.title) {
-    html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
+    html += '<div class="fb-target">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
   }
   html += '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span></div>';
-  html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
-  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
-  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
-  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
+  html += '<div class="fb-pros"><b>做得好的</b>' + escapeHtml(data.pros || '—') + '</div>';
+  html += '<div class="fb-improve"><b>可改进的</b>' + escapeHtml(data.improvements || '—') + '</div>';
   if (data.actions && data.actions.length) {
+    // 限制 ≤3 条行动建议，避免卡片太长
+    const acts = data.actions.slice(0, 3);
     html += '<div class="fb-actions"><div class="fb-title">下一步行动</div><ol>';
-    data.actions.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
+    acts.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
     html += '</ol></div>';
   }
   html += '</div></div>';
@@ -4121,7 +4238,7 @@ async function aiSuggestResources(type) {
   const targetLabel = type === 'near' ? '近应用' : '远应用';
   const btnId = type === 'near' ? 'aiResourcesNear' : 'aiResourcesFar';
   const resultId = type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult';
-  // 校验：该应用必须已完成计划（标题 + 细节 + 计划 + 时间 + 期待结果）
+  // 校验：该应用必须已完成计划
   const d = obj.details || {};
   if (!obj.title || !obj.title.trim() || !d.time || !obj.plan || !obj.plan.trim()) {
     toast('先完成「' + targetLabel + '」的计划（标题/细节/打算怎么做）'); return;
@@ -4132,7 +4249,7 @@ async function aiSuggestResources(type) {
   setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\nTransform反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：${e.nature || '未填'} ｜ ${e.insight || '未填'}\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景：${obj.title}\n挑战：${d.currentState || '未填'} ｜ ${d.goal || '未填'} ｜ ${d.gap || '未填'} ｜ ${d.difficulty || '未填'}\n计划：${obj.plan}\n验证信号：${obj.verifySignal}\n反馈建议：${fb.suggestion || '未填'}\n\n任务：专门针对这个应用计划，建议用户需要去找什么人、争取什么资源/条件。要求简短。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具1","资源/工具2","条件/前提1","条件/前提2"],"note":"一段话说明为什么需要这些（≤80 字）"}\n\n要求：people 写角色/具体对象；resources 合并资源和条件，统一为可拿到的资源/工具/前提；note 可空。`
     );
     const data = parseResources(r);
     if (data) {
@@ -4169,49 +4286,57 @@ function arrToTextarea(arr) {
 function textareaToArr(el) {
   return el.value.split(/\n/).map(s => s.trim()).filter(Boolean);
 }
+// 精简版资源卡：2 个 textarea（人 + 资源/条件），Transform 补充收纳进折叠
 function renderResourcesResult(type, rp) {
   const box = $(type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult');
   if (!box) return;
   const targetLabel = type === 'near' ? '近应用' : '远应用';
+  // 合并 conditions 到 resources 显示
+  const mergedRes = [...(rp.resources || []), ...(rp.conditions || [])];
   let html = '';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要的资源 / 工具 / 平台</label><textarea id="rpResources' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要满足的条件 / 前提</label><textarea id="rpConditions' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>Transform补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-card"><div class="rc-head"><span class="rc-icon">●</span><span class="rc-title">Transform · 「' + targetLabel + '」支持资源</span></div>';
+  html += '<div class="rc-sub">为了把「' + escapeHtml((state.data[type + 'Scenario'] || {}).title || '') + '」落地，需要：</div>';
+  html += '<div class="resource-block"><label>需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">'+ escapeHtml(arrToTextarea(rp.people)) +'</textarea></div>';
+  html += '<div class="resource-block"><label>需要的资源 / 工具 / 条件</label><textarea id="rpResources' + type + '" placeholder="每行一个">'+ escapeHtml(arrToTextarea(mergedRes)) +'</textarea></div>';
+  if (rp.note) {
+    html += '<details class="rc-note"><summary>Transform 补充说明</summary><div class="rc-n-text">'+ escapeHtml(rp.note) +'</div></details>';
+  }
   html += '<div class="resource-actions">';
   html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认「' + targetLabel + '」支持资源</button>';
   html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让Transform 建议</button>';
   html += '</div>';
+  html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
+  box.classList.add('resource-card-box');
   box.style.display = 'block';
+  updateResourceSections();
 }
 function confirmResources(type) {
+  const noteEl = $('rpNote' + type);
   state.data[type + 'ResourcesPlan'] = {
     people: textareaToArr($('rpPeople' + type)),
     resources: textareaToArr($('rpResources' + type)),
-    conditions: textareaToArr($('rpConditions' + type)),
-    note: ($('rpNote' + type).value || '').trim(),
+    conditions: [],
+    note: (noteEl ? (noteEl.value || '').trim() : ''),
     confirmed: true
   };
   saveDraft();
-  if (type === 'near' && isNearComplete()) unlockFarApp();
+  if (type === 'near' && isNearComplete()) {
+    // 远应用不再需要解锁，仅记录日志
+  }
   checkNext2();
   toast('「' + (type === 'near' ? '近应用' : '远应用') + '」支持资源已确认');
 }
 
 function checkNext2() {
+  // 只要求近应用完成 + 近应用支持资源确认，远应用完全可选
   const nearOk = isNearComplete();
-  const far = state.data.farScenario || {};
-  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.verifySignal && far.verifySignal.trim() && state.data.farFeedback;
-  // 两个都完成（近应用 + 远应用 + 各自的支持资源都确认）
-  const appOk = nearOk && farOk;
   const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
-  const farResOk = state.data.farResourcesPlan && state.data.farResourcesPlan.confirmed;
-  const resourcesOk = nearResOk && farResOk;
-  const ok = appOk && resourcesOk;
+  const ok = nearOk && nearResOk;
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
+  else $('signal2').style.display = 'none';
 }
 
 /* ============ Step 3 产出页 ============ */
@@ -4304,12 +4429,9 @@ function complete() {
     viewpoint: state.data.viewpoint || null,
     costGiveUp: state.data.costGiveUp || '',
     costRisk: state.data.costRisk || '',
-    costGiveUpDate: state.data.costGiveUpDate || '',
-    costGiveUpFallback: state.data.costGiveUpFallback || '',
-    costGiveUpSigned: !!state.data.costGiveUpSigned,
-    costRiskTrigger: state.data.costRiskTrigger || '',
     costRiskFallback: state.data.costRiskFallback || '',
-    costRiskSigned: !!state.data.costRiskSigned,
+    costGiveUpFallback: state.data.costGiveUpFallback || '',
+    costReady: !!state.data.costReady,
     inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
     insightAiHelps: state.data.insightAiHelps || [],
     insightRevisions: state.data.insightRevisions || [],
@@ -4621,30 +4743,69 @@ window.goStep = function(n) {
     if ($('costGiveUp')) {
       $('costGiveUp').value = d.costGiveUp || '';
       $('costRisk').value = d.costRisk || '';
-      $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; saveDraft(); };
-      $('costRisk').oninput = e => { d.costRisk = e.target.value; saveDraft(); };
-      // 子承诺 A：创造空间
-      $('costGiveUpDate').value = d.costGiveUpDate || '';
-      $('costGiveUpFallback').value = d.costGiveUpFallback || '';
-      $('costGiveUpDate').oninput = e => { d.costGiveUpDate = e.target.value; saveDraft(); };
-      $('costGiveUpFallback').oninput = e => { d.costGiveUpFallback = e.target.value; saveDraft(); };
-      if (d.costGiveUpSigned) {
-        const btn = $('costGiveUpSignBtn');
-        if (btn) { btn.textContent = '✓ 已签名承诺'; btn.disabled = true; }
-      }
-      // 子承诺 B：阻力回拉策略
-      $('costRiskTrigger').value = d.costRiskTrigger || '';
       $('costRiskFallback').value = d.costRiskFallback || '';
-      $('costRiskTrigger').oninput = e => { d.costRiskTrigger = e.target.value; saveDraft(); };
-      $('costRiskFallback').oninput = e => { d.costRiskFallback = e.target.value; saveDraft(); };
-      if (d.costRiskSigned) {
-        const btn = $('costRiskSignBtn');
-        if (btn) { btn.textContent = '✓ 已签名承诺'; btn.disabled = true; }
+      $('costGiveUpFallback').value = d.costGiveUpFallback || '';
+      $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; updateCostMeta(); saveDraft(); };
+      $('costRisk').oninput = e => { d.costRisk = e.target.value; updateCostMeta(); saveDraft(); };
+      $('costRiskFallback').oninput = e => { d.costRiskFallback = e.target.value; updateCostMeta(); saveDraft(); };
+      $('costGiveUpFallback').oninput = e => { d.costGiveUpFallback = e.target.value; updateCostMeta(); saveDraft(); };
+      // 轻承诺切换（不要签字按钮）
+      const tg = $('costLightToggle');
+      if (tg) {
+        const ready = !!d.costReady;
+        tg.setAttribute('aria-pressed', ready ? 'true' : 'false');
+        tg.textContent = ready ? '✓ 我准备好' : '未承诺';
+        d.costReady = ready;
       }
+      updateCostMeta();
     }
+
+    // 折叠区 of-meta 摘要
+    updateOutcomeMeta();
   }
   origGo(n);
 };
+
+// 折叠区 of-meta 摘要更新（① 下一步行动 / ② 支持资源）
+function updateOutcomeMeta(){
+  const d = state.data || {};
+  const actions = [];
+  if (d.nearFeedback && d.nearFeedback.actions) actions.push(...d.nearFeedback.actions);
+  if (d.farFeedback && d.farFeedback.actions) actions.push(...d.farFeedback.actions);
+  const aMeta = $('actionsMeta');
+  if (aMeta) aMeta.textContent = actions.length ? actions.length + ' 条具体行动' : '—';
+  const rMeta = $('resourcesMeta');
+  const hasRp = (d.nearResourcesPlan && d.nearResourcesPlan.confirmed) || (d.farResourcesPlan && d.farResourcesPlan.confirmed);
+  if (rMeta) rMeta.textContent = hasRp ? '已确认' : '—';
+}
+
+function updateCostMeta(){
+  const d = state.data || {};
+  const fields = [d.costGiveUp, d.costRisk, d.costRiskFallback, d.costGiveUpFallback];
+  const filled = fields.filter(s => (s || '').trim()).length;
+  const cMeta = document.querySelector('#costFold .of-meta');
+  if (cMeta) cMeta.textContent = filled === 4 ? '已全部回答 · ' + (d.costReady ? '已承诺' : '未承诺') : (filled + ' / 4 已回答');
+}
+
+// 轻承诺切换
+function toggleCostReady(){
+  const d = state.data;
+  const tg = $('costLightToggle');
+  if (!d || !tg) return;
+  const fields = [d.costGiveUp, d.costRisk, d.costRiskFallback, d.costGiveUpFallback];
+  const filled = fields.filter(s => (s || '').trim()).length;
+  if (filled < 4 && !d.costReady) {
+    toast('先把上面 4 个问题都填完，再表达承诺');
+    const cf = $('costFold');
+    if (cf) cf.setAttribute('open', '');
+    return;
+  }
+  d.costReady = !d.costReady;
+  tg.setAttribute('aria-pressed', d.costReady ? 'true' : 'false');
+  tg.textContent = d.costReady ? '✓ 我准备好' : '未承诺';
+  saveDraft();
+  updateCostMeta();
+}
 
 /* 投入 → 承诺：分别为「创造空间」和「阻力回拉」提供温暖支持 */
 async function aiCourage(type, btn) {
