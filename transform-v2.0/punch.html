@@ -87,19 +87,19 @@
   .topbar { display: flex; align-items: center; gap: 10px; padding: 16px 0; flex-wrap: wrap; }
   /* ===== 全局导航（所有页面互跳） ===== */
   .gnav {
-    display: flex; align-items: center; gap: 2px; flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
     padding: 4px; border-radius: 999px; background: var(--surface-2);
     justify-content: center; flex-wrap: wrap;
   }
   .gnav .gn-item {
     display: inline-flex; align-items: center; gap: 4px;
-    padding: 6px 12px; border-radius: 999px;
-    font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+    padding: 7px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
     text-decoration: none; white-space: nowrap; transition: all .2s;
     flex-shrink: 0;
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
-  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; }
+  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(14,107,80,.28); }
   /* 主题切换按钮双 span（t-light 默认显示，t-dark 仅深色时显示） */
   .t-dark { display: none; }
   [data-theme="dark"] .t-light { display: none; }
