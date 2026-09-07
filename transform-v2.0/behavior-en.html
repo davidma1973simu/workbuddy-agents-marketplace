@@ -72,31 +72,47 @@
   }
   .nav-link:hover { color: var(--green-deep); border-color: var(--green); }
   .nav-link.primary { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .tool-icon-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); font-family: inherit;
+    transition: all .2s;
+  }
+  .tool-icon-btn:hover { color: var(--green-deep); border-color: var(--green); }
   .theme-toggle {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 13px; font-weight: 600; color: var(--ink-2);
     padding: 8px 14px; border-radius: 999px; cursor: pointer;
     background: var(--surface); border: 1px solid var(--line); font-family: inherit;
-    transition: all .2s; margin-left: auto;
+    transition: all .2s;
   }
   .theme-toggle:hover { color: var(--green-deep); border-color: var(--green); }
   .theme-toggle .t-dark { display: none; }
   [data-theme="dark"] .theme-toggle .t-light { display: none; }
   [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
 
-  .page-head { margin: 14px 0 18px; }
+  .page-head {
+    margin: 14px 0 22px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .page-head .title-block { display: flex; flex-direction: column; }
   h1 { font-size: 27px; font-weight: 800; letter-spacing: -.5px; }
   .page-sub { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
 
-  .toolbar { display: flex; gap: 10px; margin: 16px 0 18px; flex-wrap: wrap; }
-  .toolbar .act {
-    display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600;
-    padding: 10px 16px; border-radius: 999px; cursor: pointer; transition: all .2s; font-family: inherit;
-    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); text-decoration: none;
+  .arch-toggle {
+    display: inline-flex; align-items: center; padding: 4px;
+    border-radius: 999px; background: var(--surface-2);
+    border: 1px solid var(--line); flex-shrink: 0;
   }
-  .toolbar .act:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
-  .toolbar .act.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
-  .toolbar .act.solid:hover { background: var(--green); }
+  .arch-toggle a {
+    display: inline-flex; align-items: center; padding: 7px 16px;
+    border-radius: 999px; font-size: 13px; font-weight: 600;
+    color: var(--ink-2); text-decoration: none; transition: all .2s;
+  }
+  .arch-toggle a.on { background: var(--green); color: #fff; box-shadow: 0 2px 8px rgba(14,107,80,.18); }
+  .arch-toggle a:not(.on):hover { color: var(--green-deep); }
 
   /* 档案区域 */
   .archive-section { margin-top: 32px; }
@@ -483,19 +499,27 @@
     <a class="nav-link primary" href="act-en.html">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       Guided Change
-    </a>    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
+    </a>
+    <button class="tool-icon-btn" onclick="downloadAll()" aria-label="Export data">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Export
+    </button>
+    <button class="tool-icon-btn" onclick="openSettings()" aria-label="AI settings">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.9"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+      AI Settings
+    </button>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span class="t-light">☾ Dark</span><span class="t-dark">☀ Light</span></button>
   </div>
 
   <div class="page-head">
-    <h1>Behavior Archive</h1>
-    <div class="page-sub">Every action completed becomes a long-term behavioral asset</div>
-  </div>
-
-  <div class="toolbar">
-    <a class="act solid" href="act-en.html">Start a Behavior Change</a>
-    <a class="act" href="cognitive-en.html">View Insight Archive</a>
-    <button class="act" onclick="downloadAll()">Export Data</button>
-    <button class="act" onclick="openSettings()">AI Settings</button>
+    <div class="title-block">
+      <h1>Behavior Archive</h1>
+      <div class="page-sub">Every action completed becomes a long-term behavioral asset</div>
+    </div>
+    <div class="arch-toggle" role="tablist" aria-label="Archive switch">
+      <a href="cognitive-en.html" role="tab" aria-selected="false">Insight Archive</a>
+      <a href="behavior-en.html" class="on" role="tab" aria-selected="true">Behavior Archive</a>
+    </div>
   </div>
 
   <!-- 顶部：身份 + 紧凑统计条 -->
