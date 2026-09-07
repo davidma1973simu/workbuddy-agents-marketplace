@@ -441,6 +441,44 @@
   .ai-out-box.show { display: block; animation: fade-in .3s ease; }
   @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+  /* ---------- 步骤条（path/p-node/p-dot/p-label）— 与 app/act 同款，4 节点版 ---------- */
+  .path { display: flex; align-items: flex-start; justify-content: space-between; margin: 6px 4px 28px; position: relative; }
+  .path::before {
+    content: ''; position: absolute; top: 16px; left: 9%; right: 9%;
+    height: 2px; background: var(--line); border-radius: 2px;
+  }
+  .path::after {
+    content: ''; position: absolute; top: 16px; left: 9%;
+    height: 2px; background: var(--green); border-radius: 2px;
+    transition: width .5s cubic-bezier(.16,1,.3,1); width: 0;
+  }
+  .path[data-progress="1"]::after { width: 22%; }
+  .path[data-progress="2"]::after { width: 49%; }
+  .path[data-progress="3"]::after { width: 76%; }
+  .path[data-progress="4"]::after { width: 82%; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; width: 64px; cursor: pointer; }
+  .p-node button { all: unset; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .p-dot {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); border: 2.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .4s cubic-bezier(.16,1,.3,1);
+    color: var(--ink-3);
+  }
+  .p-node.active .p-dot { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 5px rgba(29,158,117,.12); color: var(--green-deep); }
+  .p-node.done .p-dot { background: var(--green); border-color: var(--green); color: #fff; }
+  .p-node.disabled { cursor: not-allowed; }
+  .p-node.disabled .p-dot { opacity: .45; }
+  .p-node.disabled .p-label { color: var(--ink-3); }
+  .p-label { font-size: 12px; color: var(--ink-3); transition: color .3s; white-space: nowrap; text-align: center; }
+  .p-node.active .p-label { color: var(--green-deep); font-weight: 600; }
+  .p-node.done .p-label { color: var(--ink-2); }
+  @media (min-width: 1024px) {
+    .p-dot { width: 40px; height: 40px; }
+    .p-node .p-label { font-size: 13px; }
+    .path::before, .path::after { top: 19px; height: 3px; }
+  }
+
   @media (max-width: 640px) {
     .wrap { padding: 0 14px 90px; }
     .create-hero { padding: 22px 18px 18px; }
@@ -465,13 +503,12 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item" href="think.html">每日洞察</a>
     <a class="gn-item on" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
     <button class="arch-btn" onclick="location.href='behavior.html'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
   </div>
 
   <!-- 每日进步主屏 -->
+  <div id="punchStepsBarWrap"></div>
   <div id="punchArea"></div>
   <div class="full-link-bar">
     <a href="act.html">伴我改变 →</a>
@@ -909,6 +946,70 @@ let handoffNature = '';
 let handoffScenario = '';
 let draft = { goal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[] };
 
+/* ===================== 步骤条（path/4节点，可回跳） ===================== */
+const PUNCH_STEPS = [
+  { label: '定目标', svg: '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+  { label: 'AI 拆解', svg: '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>' },
+  { label: '选锚点', svg: '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="1.9"/><path d="M12 7v13M7 11h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>' },
+  { label: '身份确认', svg: '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' }
+];
+let punchStep = 0;         // 当前所在 stage
+let punchMaxReached = 0;    // 到达过的最远 stage（回跳边界：i<=punchMaxReached 才允许）
+function calcMaxReachedFromDraft(){
+  let m = 0;
+  if (draft && draft.micro) m = Math.max(m, 1);
+  if (draft && draft.micro && draft.anchor) m = Math.max(m, 2);
+  if (draft && draft.micro && draft.anchor && draft.identity) m = Math.max(m, 3);
+  return m;
+}
+function advancePunchStep(i){
+  if (i > punchMaxReached) punchMaxReached = i;
+  punchStep = i;
+}
+function renderPunchStepsBar(){
+  const wrap = document.getElementById('punchStepsBarWrap');
+  if (!wrap) return;
+  // 已经创建实验（current）后不再显示
+  if (typeof current !== 'undefined' && current && current.id && current.status !== 'archived'){
+    const hasProgress = (current && current.currentDay) || (current && current.id);
+    if (hasProgress) { wrap.innerHTML = ''; return; }
+  }
+  const nodes = PUNCH_STEPS.map((s, i) => {
+    const cls = i === punchStep ? 'p-node active'
+              : (i <= punchMaxReached) ? 'p-node done'
+              : 'p-node disabled';
+    const clickable = (i <= punchMaxReached) ? ' onclick="punchGo(' + i + ')"' : '';
+    return `<div class="${cls}">
+      <button type="button" ${clickable} aria-label="回到第 ${i+1} 步 ${s.label}">${s.svg}</button>
+      <span class="p-label">${s.label}</span>
+    </div>`;
+  }).join('');
+  wrap.innerHTML = `<div class="path" id="punchPath" data-progress="${punchStep + 1}">${nodes}</div>`;
+}
+function punchGo(i){
+  if (i > punchMaxReached) return; // 没走到过的步骤禁止跳
+  if (i === punchStep) return;     // 已在当前阶段
+  const prev = punchStep;
+  punchStep = i; // 仅改 punchStep，punchMaxReached 保持
+  if (i === 0) { renderPunchStepsBar(); renderCreate(); return; }
+  if (i === 1) {
+    if (!draft.micro){ punchStep = prev; renderPunchStepsBar(); toast('先重新定目标，让 Transform 给出建议'); return; }
+    renderPunchStepsBar(); renderPlanDraft();
+    toast('如需调整计划内容，可修改目标后点「重新出题 →」');
+    return;
+  }
+  if (i === 2) {
+    if (!draft.micro){ punchStep = prev; renderPunchStepsBar(); return; }
+    renderPunchStepsBar();
+    renderTodayDraft(draft.anchors && draft.anchors.length ? draft.anchors : ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+    return;
+  }
+  if (i === 3) {
+    if (!draft.micro || !draft.anchor){ punchStep = prev; renderPunchStepsBar(); toast('先把前面几步选完'); return; }
+    renderPunchStepsBar(); goIdentityStage();
+  }
+}
+
 /* P0-14 语音输入预留：本轮只留接口，不实现。开启 VOICE_ENABLED 后由 #voiceSlot 挂载入口 */
 const VOICE_ENABLED = false;
 function initVoiceInput(inputId){
@@ -918,6 +1019,7 @@ function initVoiceInput(inputId){
   // TODO(v2.1)：接入 Web Speech API，把识别结果写入 inputId 对应的输入框
 }
 function renderCreate(){
+  // 注：punchStep 由调用方（init/punchGo）控制，本函数不重置
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
 
@@ -937,6 +1039,7 @@ function renderCreate(){
     </div>`;
   const input = $('changeInput');
   if (handoffScenario) input.value = handoffScenario;
+  if (draft.goal) input.value = draft.goal;
   input.addEventListener('input', e => {
     $('startChangeBtn').disabled = e.target.value.trim().length < 4;
   });
@@ -966,6 +1069,8 @@ async function startChange(){
     return;
   }
   applyDraft(d);
+  advancePunchStep(1);
+  renderPunchStepsBar();
   renderPlanDraft();
 }
 
@@ -1081,6 +1186,8 @@ function renderPlanDraft(){
 /* ---------- Stage 2：今日行动 + 锚点（用户互动） ---------- */
 function goTodayDraft(){
   if (!draft.micro){ toast('拆解建议还没准备好'); return; }
+  advancePunchStep(2);
+  renderPunchStepsBar();
   renderTodayDraft(draft.anchors || ['在我早震拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
 }
 
@@ -1165,6 +1272,8 @@ function useCustomAnchor(){
 function goIdentityStage(){
   if (!draft.micro){ toast('今日行动还没准备好'); return; }
   if (!draft.anchor){ toast('先选一个锚点时刻'); return; }
+  advancePunchStep(3);
+  renderPunchStepsBar();
   const area = $('punchArea');
   area.innerHTML = `
     <div class="suggest-card">
@@ -1176,7 +1285,9 @@ function goIdentityStage(){
       <button class="cta-confirm" id="confirmBtn" onclick="confirmChange()">确认 · 开始 ${draft.planLength || 7} 天实验 →</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
-  $('identityInput').focus();
+  const idInp = $('identityInput');
+  if (idInp && draft.identity) idInp.value = draft.identity;
+  idInp.focus();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1185,6 +1296,7 @@ async function confirmChange(){
   if (!draft.micro) { toast('先让 Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
   if (!identity) { toast('写下你期待成为的人（每一次完成都在为它投票）'); return; }
+  draft.identity = identity; // 同步到 draft，便于回跳保留
   const btn = $('confirmBtn');
   btn.classList.add('loading'); btn.disabled = true;
 
@@ -1223,6 +1335,9 @@ async function confirmChange(){
 
 /* ===================== 初始化 ===================== */
 (function init(){
+  punchStep = 0;
+  punchMaxReached = calcMaxReachedFromDraft();
+  renderPunchStepsBar();
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
   // 从 think.html 跳转：携带洞察

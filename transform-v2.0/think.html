@@ -142,6 +142,19 @@
   }
   .cta-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
   .cta-start:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .cta-back-q {
+    display: block; width: 100%; margin-top: 8px; padding: 13px; border: 1.5px solid rgba(255,255,255,.55);
+    border-radius: 12px; background: transparent; color: #fff; font-size: 14.5px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: all .25s var(--ease);
+  }
+  .cta-back-q:hover { background: rgba(255,255,255,.14); }
+  .tk-card {
+    background: #fff; border-radius: 12px; padding: 12px 14px; margin-top: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15); color: var(--ink);
+  }
+  .tk-card .tk-line { font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+  .tk-card .tk-line b { color: var(--green-deep); }
+  .tk-card .tk-hint { font-size: 12px; color: var(--ink-3); margin-top: 5px; line-height: 1.55; }
 
   /* 阶段 2：AI 出题 + 回答 */
   .q-card {
@@ -253,6 +266,43 @@
     z-index: 100; max-width: 90vw; text-align: center;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 路径式步骤条（与 app/act 同款，3 节点：写下来/想清楚/已沉淀） */
+  .path { display: flex; align-items: flex-start; justify-content: space-between; position: relative; max-width: 360px; margin: 2px auto 8px; }
+  .path::before {
+    content: ''; position: absolute; top: 16px; left: 7.8%; right: 7.8%;
+    height: 2px; background: var(--line); border-radius: 2px;
+  }
+  .path::after {
+    content: ''; position: absolute; top: 16px; left: 7.8%;
+    height: 2px; background: var(--green); border-radius: 2px;
+    transition: width .5s cubic-bezier(.16,1,.3,1); width: 0;
+  }
+  .path[data-progress="2"]::after { width: 42%; }
+  .path[data-progress="3"]::after { width: 84%; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; width: 56px; cursor: default; }
+  .p-node.clickable { cursor: pointer; }
+  .p-node.clickable:hover .p-dot { border-color: var(--green); box-shadow: 0 0 0 5px rgba(29,158,117,.10); }
+  .p-dot {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); border: 2.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center; color: var(--ink-3);
+    transition: all .4s cubic-bezier(.16,1,.3,1);
+  }
+  .p-node svg { width: 15px; height: 15px; }
+  .p-node.active .p-dot { border-color: var(--green); background: var(--green-soft); color: var(--green-deep); box-shadow: 0 0 0 5px rgba(29,158,117,.12); }
+  .p-node.done .p-dot { background: var(--green); border-color: var(--green); color: #fff; }
+  .p-node .p-label { font-size: 12px; color: var(--ink-3); transition: color .3s; white-space: nowrap; }
+  .p-node.active .p-label { color: var(--green-deep); font-weight: 600; }
+  .p-node.done .p-label { color: var(--ink-2); }
+  @media (min-width: 1024px) {
+    .p-dot { width: 40px; height: 40px; }
+    .p-node .p-label { font-size: 13px; }
+    .p-node svg { width: 17px; height: 17px; }
+    .path::before, .path::after { top: 19px; height: 3px; }
+    .path[data-progress="2"]::after { width: 42%; }
+    .path[data-progress="3"]::after { width: 84%; }
+  }
 </style>
 <script>
   (function(){
@@ -272,11 +322,24 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item on" href="think.html">每日洞察</a>
     <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>
     <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
     <button class="arch-btn" onclick="location.href='cognitive.html'" aria-label="认知档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 认知档案</button>
+  </div>
+
+  <div class="path" id="stepsBar" style="display:none;">
+    <div class="p-node" data-step="0">
+      <div class="p-dot"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="p-label">写下来</span>
+    </div>
+    <div class="p-node" data-step="1">
+      <div class="p-dot"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.9"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+      <span class="p-label">想清楚</span>
+    </div>
+    <div class="p-node" data-step="2">
+      <div class="p-dot"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="p-label">已沉淀</span>
+    </div>
   </div>
 
   <div id="thinkArea"></div>
@@ -304,6 +367,7 @@ let answer = '';       // 用户回答（canonical）
 let aiHelps = [];      // 三按钮协助历史 [{cap, text, at}]
 let revisions = [];    // 修订轨迹 [text...]
 let integrating = false;
+let qTopic = '';       // 出题时的主题（用于判断主题是否被改 → 决定重出题还是返回答题）
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -362,22 +426,59 @@ function initVoiceInput(inputId){
   // TODO(v2.1)：接入 Web Speech API，把识别结果写入 inputId 对应的输入框
 }
 function renderInputStage(){
+  const hasQ = !!question;                       // 已有进行中的题目（回看/修改主题模式）
   $('thinkArea').innerHTML = `
     <div class="think-hero">
       <div class="th-eyebrow">每日洞察 · 几分钟想清楚一件事</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
       <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
-      <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60">
-      <button class="cta-start" id="startBtn" onclick="startThink()">开始想清楚 →</button>
+      <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60" value="${escapeHtml(topic)}">
+      ${hasQ ? `
+        <div class="tk-card" id="tkCard">
+          <div class="tk-line">正在进行：<b>${escapeHtml(question)}</b></div>
+          <div class="tk-hint" id="tkHint">主题没有改动，可直接返回继续答题；若改动主题，将基于新主题重新出题。</div>
+        </div>` : ''}
+      <button class="cta-start" id="startBtn" onclick="startThink()">${hasQ ? '重新出题 →' : '开始想清楚 →'}</button>
+      ${hasQ ? '<button class="cta-back-q" id="backToQaBtn" onclick="backToQA()">← 返回想清楚</button>' : ''}
     </div>`;
   const input = $('topicInput');
+  const syncButtons = () => {
+    const changed = input.value.trim() !== topic;
+    const bq = $('backToQaBtn'), st = $('startBtn'), hint = $('tkHint');
+    if (bq) bq.style.display = changed ? 'none' : 'block';
+    if (st) { st.style.display = changed ? 'block' : 'none'; st.disabled = input.value.trim().length < 4; }
+    if (hint) hint.textContent = changed ? '主题有改动——下方按钮会基于新主题重新出题，当前问答会重新开始。' : '主题没有改动，可直接返回继续答题；若改动主题，将基于新主题重新出题。';
+    if (st && !changed && hasQ) st.textContent = '重新出题 →';
+  };
   input.addEventListener('input', e => {
-    topic = e.target.value.trim();
-    $('startBtn').disabled = topic.length < 4;
+    syncButtons();
   });
-  $('startBtn').disabled = true;
+  syncButtons();
   input.focus();
   initVoiceInput('topicInput');
+  stepGo(0);
+}
+
+function backToQA(){
+  // 主题未改动 → 恢复答题现场（question/answer/aiHelps/revisions 均在内存）
+  if (question) renderQuestionStage(); else renderInputStage();
+}
+
+/* 步骤条：cur = 0 写下来 / 1 想清楚 / 2 已沉淀 */
+function stepGo(cur){
+  const bar = $('stepsBar'); if (!bar) return;
+  bar.style.display = 'flex';
+  const nodes = Array.prototype.slice.call(bar.querySelectorAll('.p-node'));
+  nodes.forEach((n, i) => {
+    n.classList.toggle('active', i === cur);
+    n.classList.toggle('done', i < cur);
+    // 已在流程中（答题/沉淀）时，「写下来」可点回退；沉淀为终态不回退
+    const canBack = i < cur && cur < 2;
+    n.classList.toggle('clickable', canBack);
+    n.onclick = canBack ? function(){ if (i === 0) renderInputStage(); } : null;
+    n.title = canBack ? '回看 / 修改这一步' : '';
+  });
+  bar.dataset.progress = cur + 1;
 }
 
 async function startThink(){
@@ -401,6 +502,7 @@ async function startThink(){
     toast('知行暂时出不了题，请稍后再试');
     return;
   }
+  qTopic = topic;
   question = q;
   answer = ''; aiHelps = []; revisions = [];
   renderQuestionStage();
@@ -440,6 +542,7 @@ function renderQuestionStage(){
   ta.focus();
   // 回车出结果
   $('qAiResult').innerHTML = '';
+  stepGo(1);
 }
 
 function toggleRevBox(force){
@@ -575,6 +678,7 @@ function renderInsightResult(session){
         <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
       </div>
     </div>`;
+  stepGo(2);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -611,6 +715,7 @@ async function startThinkWithTopic(t){
     toast('知行暂时出不了题，请稍后再试');
     return;
   }
+  qTopic = topic;
   question = q;
   answer = ''; aiHelps = []; revisions = [];
   renderQuestionStage();

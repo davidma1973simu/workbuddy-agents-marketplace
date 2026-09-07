@@ -202,6 +202,12 @@
   .p-node .p-label { font-size: 12px; color: var(--ink-3); transition: color .3s; white-space: nowrap; }
   .p-node.active .p-label { color: var(--green-deep); font-weight: 600; }
   .p-node.done .p-label { color: var(--ink-2); }
+  /* v2.0 步骤条：已到达节点变可点击 */
+  .p-node.active, .p-node.done { cursor: pointer; transition: transform .2s; }
+  .p-node.active:hover, .p-node.done:hover { transform: translateY(-2px); }
+  .p-node.active:hover .p-dot, .p-node.done:hover .p-dot { box-shadow: 0 0 0 6px rgba(29,158,117,.18); }
+  .p-node.disabled { cursor: not-allowed; opacity: .55; }
+  .p-node button { all: unset; cursor: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 
   /* 主卡片 */
   .panel {
@@ -1959,8 +1965,6 @@
   <nav class="gnav" aria-label="全局导航">
     <a class="gn-item" href="think.html">每日洞察</a>
     <a class="gn-item" href="punch.html">每日改变</a>
-    <a class="gn-item on" href="app.html">伴我洞察</a>
-    <a class="gn-item" href="act.html">伴我改变</a>
   </nav>    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </button>
@@ -2667,7 +2671,9 @@ function escapeHtml(s) {
 function uid() { return 'n' + Date.now() + Math.floor(Math.random()*1000); }
 
 /* ============ 步骤导航 ============ */
+let appMaxStep = 0; // 到达过的最远 stage（=appMaxStep + 1 个 panel 可被切换）
 function goStep(n) {
+  if (n > appMaxStep) appMaxStep = n; // 推进
   state.step = n;
   renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
@@ -2835,9 +2841,46 @@ function restartApp(){
     completedAt: ''
   };
   localStorage.removeItem(LS_SESSION);
+  appMaxStep = 0;
   goStep(0);
   toast('已清空，可以开始新的一次认知梳理');
 }
+/* ============ 步骤条点击：仅回跳到已走过的步骤 ============ */
+function goStepByBar(n){
+  if (n > appMaxStep){ toast('先完成前面的步骤再回来查看'); return; }
+  if (n === state.step) return;
+  goStep(n);
+}
+
+// 初始化：让 stepBar 的 4 个节点可点击
+(function bindAppStepBar(){
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAppStepBar);
+    return;
+  }
+  const nodes = document.querySelectorAll('#stepsBar .p-node');
+  nodes.forEach((n, i) => {
+    n.addEventListener('click', () => {
+      if (i > appMaxStep){
+        toast('先完成前面的步骤再回来查看');
+        return;
+      }
+      goStepByBar(i);
+    });
+    n.setAttribute('role', 'button');
+    n.setAttribute('aria-label', '跳到第 ' + (i + 1) + ' 步');
+  });
+  // 根据已有 state.data 推算 appMaxStep（让用户上次进度可回跳）
+  let m = 0;
+  const d = state.data || {};
+  if (d.scenario || (d.notes||[]).length || (d.groups||[]).length) m = Math.max(m, 1);
+  if ((d.insightQuestions||[]).length || d.method || d.insight || d.confirmed || (d.essence && (d.essence.nature || d.essence.insight))) m = Math.max(m, 2);
+  if ((d.nearScenario && (d.nearScenario.title || d.nearScenario.plan))
+    || (d.farScenario && (d.farScenario.title || d.farScenario.plan))
+    || d.identity) m = Math.max(m, 3);
+  if (m > appMaxStep) appMaxStep = m;
+})();
+
 /* ============ Step 0 归类 ============ */
 // 信息源选择（第 1 层：来源标注，四类既是类型也是来源）
 document.querySelectorAll('#noteSourceChips .src-chip').forEach(c => {
