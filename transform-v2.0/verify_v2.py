@@ -4,7 +4,7 @@
 import subprocess, time, sys, json
 from playwright.sync_api import sync_playwright
 
-ROOT = '/Users/davidma/WorkBuddy/transform-v2.0'
+ROOT = '/Users/davidma/WorkBuddy/workbuddy-agents-marketplace/transform-v2.0'
 PORT = 8772
 BASE = f'http://localhost:{PORT}/'
 srv = subprocess.Popen(
@@ -43,7 +43,7 @@ with sync_playwright() as p:
     # ---------------- 首页：阈值以下不显示 ----------------
     pg.goto(BASE + 'index.html', wait_until='networkidle'); time.sleep(0.4)
     body = pg.inner_text('body')
-    check('ZH 首页-每日/深度分层', '今天，我想做什么？' in body and '有件重要的事' in body)
+    check('ZH 首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '开始一次认知提升' in body and '开始一次行为改变' in body)
     check('ZH 首页-设置移出主导航', '设置' not in (pg.inner_text('.nav-links') or ''))
     check('ZH 首页-页脚保留 AI 设置', 'AI 设置' in body)
     check('ZH 首页-发现容器存在', pg.query_selector('#homeDiscovery') is not None)
@@ -62,7 +62,7 @@ with sync_playwright() as p:
     # 注意：同一 origin 下 localStorage 跨页共享，先清空再测，避免前序 archive 种子污染
     pg.goto(BASE + 'index-en.html', wait_until='networkidle'); time.sleep(0.3)
     body = pg.inner_text('body')
-    check('EN 首页-每日/深度分层', 'What would I like to do today?' in body and 'Something important' in body)
+    check('EN 首页-v1.1 单层双入口', 'Think Clearly' in body and 'Start an Insight Session' in body and 'Start a Behavior Change' in body)
     check('EN 首页-设置移出主导航', 'Settings' not in (pg.inner_text('.nav-links') or ''))
     pg.evaluate("() => localStorage.removeItem('trf_archive')")
     pg.reload(wait_until='networkidle'); time.sleep(0.3)
@@ -105,7 +105,7 @@ with sync_playwright() as p:
     # ---------------- 伴我洞察 ----------------
     pg.goto(BASE + 'app.html', wait_until='networkidle'); time.sleep(0.4)
     html = pg.content(); body = pg.inner_text('body')
-    check('ZH 伴我洞察-三阶段', '摊开' in body and '想透' in body and ('试试看' in html))
+    check('ZH 伴我洞察-四阶段', '摊开' in body and '想透' in body and '应用' in html and '沉淀' in html)
     check('ZH 伴我洞察-去术语', 'AI 帮我理一理' in html)
     check('ZH 伴我洞察-远应用强化', '换个完全不同的场景' in html)
     pg.goto(BASE + 'app-en.html', wait_until='networkidle'); time.sleep(0.4)

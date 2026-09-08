@@ -1,7 +1,7 @@
 import subprocess, time, sys
 from playwright.sync_api import sync_playwright
 
-ROOT = '/Users/davidma/WorkBuddy/transform-v2.0'
+ROOT = '/Users/davidma/WorkBuddy/workbuddy-agents-marketplace/transform-v2.0'
 PORT = 8770
 BASE = f'http://localhost:{PORT}/'
 srv = subprocess.Popen(
@@ -28,11 +28,11 @@ with sync_playwright() as p:
     pg.goto(BASE + 'index.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
     body = pg.inner_text('body')
-    check('首页-每日分层', '今天，我想做什么？' in body and '有件重要的事' in body)
-    check('首页-四入口链接(HTML)', all(h in html for h in ['每日洞察','每日改变','伴我洞察','伴我改变']))
+    check('首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '开始一次认知提升' in body and '开始一次行为改变' in body)
+    check('首页-双入口链接(HTML)', 'href="think.html"' in html and 'href="punch.html"' in html and '开始一次认知提升' in body and '开始一次行为改变' in body)
     nav = pg.inner_text('.nav-links') if pg.query_selector('.nav-links') else ''
     check('首页-设置移出主导航', '设置' not in nav)
-    check('首页-远应用术语已去', '归类 → 洞察 → 应用' not in html and '摊开 → 想透 → 试试看' in html)
+    check('首页-旧 P0-06 流程文案已去', '摊开 → 想透 → 试试看' not in html)
 
     # 2) think.html P0-02/04/05 (升级在结果页, 用 HTML 校验)
     pg.goto(BASE + 'think.html', wait_until='networkidle'); time.sleep(0.5)
@@ -52,7 +52,7 @@ with sync_playwright() as p:
     # 4) app.html P0-06/07 (远应用在隐藏面板, 用 HTML 校验)
     pg.goto(BASE + 'app.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
-    check('伴我洞察-三阶段标签(可见)', '摊开' in pg.inner_text('body') and '想透' in pg.inner_text('body') and '试试看' in html)
+    check('伴我洞察-四阶段标签(可见)', '摊开' in pg.inner_text('body') and '想透' in pg.inner_text('body') and '应用' in html and '沉淀' in html)
     check('伴我洞察-去归类术语', 'AI 帮我整理归类' not in html and 'AI 帮我理一理' in html)
     check('伴我洞察-远应用强化(HTML)', '换个完全不同的场景' in html)
 
