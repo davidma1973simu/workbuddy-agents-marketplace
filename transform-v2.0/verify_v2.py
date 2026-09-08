@@ -92,15 +92,15 @@ with sync_playwright() as p:
         check(f'{lang} 每日洞察-语音插槽', pg.query_selector('#voiceSlot') is not None)
 
     # ---------------- 每日改变 ----------------
-    for f, lang, kw, proof in [
-        ('punch.html', 'ZH', '一直知道该怎么做', '已用行动证明'),
-        ('punch-en.html', 'EN', 'You know exactly what to do', 'Proven by action'),
+    for f, lang, kw, proof, has_tip in [
+        ('punch.html',     'ZH', '想把这个改变做得更完整', 'id="tfEvidence"',  'localFailTip'),
+        ('punch-en.html',  'EN', 'You know exactly what to do', 'Proven by action', 'localFailAdvice'),
     ]:
         pg.goto(BASE + f, wait_until='networkidle'); time.sleep(0.3)
         html = pg.content()
         check(f'{lang} 每日改变-升级入口', kw in html)
         check(f'{lang} 每日改变-身份票→证据', proof in html)
-        check(f'{lang} 每日改变-失败本地降级函数', pg.evaluate("typeof localFailAdvice === 'function'"))
+        check(f'{lang} 每日改变-失败本地降级函数', pg.evaluate(f"typeof {has_tip} === 'function'"))
 
     # ---------------- 伴我洞察 ----------------
     pg.goto(BASE + 'app.html', wait_until='networkidle'); time.sleep(0.4)

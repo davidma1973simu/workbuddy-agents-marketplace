@@ -44,10 +44,10 @@ with sync_playwright() as p:
     # 3) punch.html P0-05/09/10 (升级/证据在反馈页, 用 HTML 校验)
     pg.goto(BASE + 'punch.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
-    check('每日改变-升级入口(HTML)', '一直知道该怎么做' in html)
-    has_fn = pg.evaluate("typeof localFailAdvice === 'function'")
+    check('每日改变-升级入口(HTML)', '想把这个改变做得更完整' in html)
+    has_fn = pg.evaluate("typeof localFailTip === 'function'")
     check('每日改变-失败本地降级函数', has_fn)
-    check('每日改变-身份票→证据(HTML)', '已用行动证明' in html)
+    check('每日改变-身份票→证据(HTML)', 'id="tfEvidence"' in html and 'id="tfWitness"' in html)
 
     # 4) app.html P0-06/07 (远应用在隐藏面板, 用 HTML 校验)
     pg.goto(BASE + 'app.html', wait_until='networkidle'); time.sleep(0.5)
