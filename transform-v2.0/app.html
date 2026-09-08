@@ -813,6 +813,13 @@
     background: var(--amber); color: #fff; border-color: var(--amber);
   }
   .cost-toggle[aria-pressed="true"]:hover { background: #B05E1E; border-color: #B05E1E; }
+  /* 主题 + 新认知 高亮条（自动从前面任务的产出填充） */
+  .cost-hl { background: var(--surface); border: 1px solid rgba(217,123,41,.18); border-radius: var(--radius-md); padding: 12px 14px; margin: 0 0 12px; }
+  .cost-hl-row { display: flex; align-items: baseline; gap: 10px; }
+  .cost-hl-row + .cost-hl-row { margin-top: 8px; }
+  .cost-hl-tag { font-size: 10.5px; font-weight: 700; color: #8B5A1B; background: var(--amber-soft); padding: 3px 9px; border-radius: 999px; flex-shrink: 0; letter-spacing: .5px; line-height: 1.3; }
+  .cost-hl-text { font-size: 13.5px; color: var(--ink); line-height: 1.6; word-break: break-word; }
+  .cost-hl-text:empty::before { content: '—'; color: var(--ink-3); }
   .outcome-section.outcome-core {
     background: linear-gradient(135deg, var(--green-soft), var(--green-50));
     border-color: var(--green-light);
@@ -2500,30 +2507,32 @@
         <summary>
           <span class="of-num">④</span>
           <span class="of-label">我要付出的代价</span>
-          <span class="of-meta">改变不是失去，是把能量重新分配给真正重要的事</span>
+          <span class="of-meta">延续你刚才想透的事，先回答下面两个问题</span>
           <svg class="of-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 9l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </summary>
         <div class="of-body">
           <div class="outcome-section" id="costOutcome">
-            <p class="cost-lead">为让这个改变真的发生，我需要回答下面四个问题。它们会变成你下次回看时的方向盘。</p>
+            <!-- 主题 + 新认知 HIGHLIGHT（从前面任务的产出动态填充） -->
+            <div class="cost-hl">
+              <div class="cost-hl-row">
+                <span class="cost-hl-tag">主题</span>
+                <span class="cost-hl-text" id="costHlTopic"></span>
+              </div>
+              <div class="cost-hl-row">
+                <span class="cost-hl-tag">新认知</span>
+                <span class="cost-hl-text" id="costHlRestate"></span>
+              </div>
+            </div>
+
+            <p class="cost-lead">延续你刚才的 <b id="costLeadTopic">这个主题</b> 和 <b id="costLeadCognition">这份新认知</b>，下面两个问题会变成你下次回看时的方向盘。</p>
 
             <div class="app-row cost-q">
-              <span class="app-label"><b>1. 我愿意让出哪些空间？</b><em class="app-em">时间、习惯、旧定义 —— 都是能量，挪一点给真正重要的</em></span>
+              <span class="app-label"><b>1. 我愿意让出哪些资源和空间？</b><em class="app-em">挪一点能量给 <i id="costEm1Target">这份新认知</i> 指向的方向</em></span>
               <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="例如：每天睡前 20 分钟刷手机的时间、一个旧的自我定义、一种惯性回应方式"></textarea>
             </div>
 
             <div class="app-row cost-q">
-              <span class="app-label"><b>2. 哪一刻我会最可能放弃？</b><em class="app-em">难以为继的早期信号 —— 自己最容易掉队的那个时刻</em></span>
-              <textarea class="app-input app-plan-input" id="costRisk" placeholder="例如：连续几天看不到反馈、感到疲惫、开始自我怀疑"></textarea>
-            </div>
-
-            <div class="app-row cost-q">
-              <span class="app-label"><b>3. 那个时刻到来时，我会怎么温柔地带自己回来？</b><em class="app-em">回拉策略 —— 不是意志力，是一个具体动作</em></span>
-              <textarea class="app-input app-plan-input" id="costRiskFallback" placeholder="例如：找一个人说出来 / 把动作拆到 2 分钟 / 回到最小一步"></textarea>
-            </div>
-
-            <div class="app-row cost-q">
-              <span class="app-label"><b>4. 我准备投入的最大代价是什么？</b><em class="app-em">时间、金钱、关系、舒适 —— 一句话写清楚你愿意付的</em></span>
+              <span class="app-label"><b>2. 我准备投入的最大代价是什么？</b><em class="app-em">为了能成为 <i id="costEm2Target">这份新认知</i> 指向的人，你愿意付的最大代价</em></span>
               <textarea class="app-input app-plan-input" id="costGiveUpFallback" placeholder="例如：每周至少 8 小时 / 一次拒绝过去会接的私单 / 接受前 3 个月进展缓慢"></textarea>
             </div>
 
@@ -4408,8 +4417,6 @@ function complete() {
     restate: state.data.restate || '',
     viewpoint: state.data.viewpoint || null,
     costGiveUp: state.data.costGiveUp || '',
-    costRisk: state.data.costRisk || '',
-    costRiskFallback: state.data.costRiskFallback || '',
     costGiveUpFallback: state.data.costGiveUpFallback || '',
     costReady: !!state.data.costReady,
     inputStats: (state.data.notes || []).reduce((acc, n) => { const s = n.source || '观察'; acc[s] = (acc[s] || 0) + 1; return acc; }, {}),
@@ -4722,12 +4729,8 @@ window.goStep = function(n) {
     // ④ 投入与承诺恢复（编辑后可随时保存）
     if ($('costGiveUp')) {
       $('costGiveUp').value = d.costGiveUp || '';
-      $('costRisk').value = d.costRisk || '';
-      $('costRiskFallback').value = d.costRiskFallback || '';
       $('costGiveUpFallback').value = d.costGiveUpFallback || '';
       $('costGiveUp').oninput = e => { d.costGiveUp = e.target.value; updateCostMeta(); saveDraft(); };
-      $('costRisk').oninput = e => { d.costRisk = e.target.value; updateCostMeta(); saveDraft(); };
-      $('costRiskFallback').oninput = e => { d.costRiskFallback = e.target.value; updateCostMeta(); saveDraft(); };
       $('costGiveUpFallback').oninput = e => { d.costGiveUpFallback = e.target.value; updateCostMeta(); saveDraft(); };
       // 轻承诺切换（不要签字按钮）
       const tg = $('costLightToggle');
@@ -4737,6 +4740,8 @@ window.goStep = function(n) {
         tg.textContent = ready ? '✓ 我准备好' : '未承诺';
         d.costReady = ready;
       }
+      // 主题 + 新认知 HIGHLIGHT（从前面任务的产出填充）
+      renderCostHighlight();
       updateCostMeta();
     }
 
@@ -4761,10 +4766,27 @@ function updateOutcomeMeta(){
 
 function updateCostMeta(){
   const d = state.data || {};
-  const fields = [d.costGiveUp, d.costRisk, d.costRiskFallback, d.costGiveUpFallback];
+  const fields = [d.costGiveUp, d.costGiveUpFallback];
   const filled = fields.filter(s => (s || '').trim()).length;
   const cMeta = document.querySelector('#costFold .of-meta');
-  if (cMeta) cMeta.textContent = filled === 4 ? '已全部回答 · ' + (d.costReady ? '已承诺' : '未承诺') : (filled + ' / 4 已回答');
+  if (cMeta) cMeta.textContent = filled === 2 ? '已全部回答 · ' + (d.costReady ? '已承诺' : '未承诺') : (filled + ' / 2 已回答');
+}
+
+/* 主题 + 新认知 HIGHLIGHT：从 state.data 填充
+   主题 = insight (或 scenario / essence.insight)；
+   新认知 = restate (或 essence.insight / viewpoint) */
+function renderCostHighlight(){
+  const d = state.data || {};
+  const topic = (d.insight || d.scenario || (d.essence && d.essence.insight) || '').toString().trim();
+  const cognition = (d.restate || (d.essence && d.essence.insight) || d.viewpoint || '').toString().trim();
+  const fallback = '你刚才的思考';
+  const setText = (id, val) => { const el = $(id); if (el) el.textContent = val || fallback; };
+  setText('costHlTopic', topic);
+  setText('costHlRestate', cognition);
+  setText('costLeadTopic', topic || '这个主题');
+  setText('costLeadCognition', cognition || '这份新认知');
+  setText('costEm1Target', cognition || '这份新认知');
+  setText('costEm2Target', cognition || '这份新认知');
 }
 
 // 轻承诺切换
@@ -4772,10 +4794,10 @@ function toggleCostReady(){
   const d = state.data;
   const tg = $('costLightToggle');
   if (!d || !tg) return;
-  const fields = [d.costGiveUp, d.costRisk, d.costRiskFallback, d.costGiveUpFallback];
+  const fields = [d.costGiveUp, d.costGiveUpFallback];
   const filled = fields.filter(s => (s || '').trim()).length;
-  if (filled < 4 && !d.costReady) {
-    toast('先把上面 4 个问题都填完，再表达承诺');
+  if (filled < 2 && !d.costReady) {
+    toast('先把上面 2 个问题都填完，再表达承诺');
     const cf = $('costFold');
     if (cf) cf.setAttribute('open', '');
     return;
