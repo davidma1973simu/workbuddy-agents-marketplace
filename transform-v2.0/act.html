@@ -395,6 +395,15 @@
   }
   .p-node.done .p-dot svg { display: none; }
   .p-node:hover:not(.active) .p-dot { transform: scale(1.07); }
+  /* 未到达：明显低饱和，避免与 active 视觉撞车 */
+  .p-node.pending { cursor: default; }
+  .p-node.pending .p-dot {
+    background: transparent; color: var(--ink-3);
+    border-color: var(--line-2); border-style: dashed;
+    box-shadow: none;
+  }
+  .p-node.pending .p-dot svg { opacity: .45; }
+  .p-node.pending .p-label { color: var(--ink-3); font-weight: 500; }
   .p-node .p-label { font-size: 12.5px; color: var(--ink-3); font-weight: 500; white-space: nowrap; }
   .p-node.active .p-label { color: var(--green-deep); font-weight: 700; }
   .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
@@ -529,7 +538,7 @@
       <div class="p-dot">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="2"/></svg>
       </div>
-      <span class="p-label">沉淀</span>
+      <span class="p-label">改变归档</span>
     </div>
   </div>
 
@@ -764,6 +773,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           每日进步屏 →
         </a>
+        <button class="btn btn-ghost" id="preArchiveBtn" onclick="showStage('reflection')">提前归档 →</button>
         <a class="btn btn-ghost" href="behavior.html">查看行为档案</a>
         <button class="btn btn-ghost" onclick="goAnchor()">调整锚点</button>
       </div>
@@ -798,8 +808,12 @@
       <textarea id="reBResultText" class="reflect-q" placeholder="用一句话总结行为改变的执行结果…"></textarea>
       <label class="fld">新的习惯，融入在哪一步？</label>
       <textarea id="reBHabit" class="reflect-q" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
+      <div id="archiveSuccess" class="hidden" style="margin:8px 0 14px;background:var(--green-50);border:1px solid var(--green-light);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <span style="color:var(--green-deep);font-weight:700;font-size:14px;">已归档到行为档案</span>
+        <a class="btn btn-primary" id="archiveGoBehavior" style="text-decoration:none;padding:8px 14px;font-size:13px;" href="behavior.html">查看行为档案 →</a>
+      </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="saveReflectionB()">完成复盘 · 沉淀成长资产</button>
+        <button class="btn btn-primary" id="reflSaveBtn" onclick="saveReflectionB()">完成归档 · 沉淀成长资产</button>
         <button class="btn btn-ghost" onclick="showStage('dashboard')">返回反馈强化</button>
       </div>
     </div>
@@ -954,10 +968,12 @@ function updatePath(stage){
   bar.dataset.progress = (idx + 1);
   document.querySelectorAll('#stepsBar .p-node').forEach(n => {
     const s = n.dataset.step;
+    const sIdx = order.indexOf(s);
     n.classList.toggle('active', s === currentStep);
-    n.classList.toggle('done', order.indexOf(s) < idx);
+    n.classList.toggle('done', sIdx >= 0 && sIdx < idx);
+    n.classList.toggle('pending', sIdx > idx);
     // 已完成节点可点击回退查看（仅查看，不影响数据）
-    const canClickBack = order.indexOf(s) < idx; // 已完成
+    const canClickBack = sIdx >= 0 && sIdx < idx; // 已完成
     n.onclick = canClickBack ? () => {
       if (s === 'decompose') showStage('decompose');
       else if (s === 'anchor') showStage('anchor');
@@ -1246,6 +1262,9 @@ function renderDashboard(){
     $('gradWrap').classList.add('hidden');
     $('reflectEntry').classList.add('hidden');
   }
+  // 提前归档按钮：未毕业时常驻显示；毕业后由 gradWrap 反射卡主导，避免重复
+  const preArc = $('preArchiveBtn');
+  if (preArc) preArc.classList.toggle('hidden', isGrad);
   // 当前天行动
   const today = current.plan.find(p => p.day === current.currentDay);
   const phase = isGrad ? ('已完成全部 ' + current.targetDays + ' 天') : ('我的第 ' + current.currentDay + ' 天 / 共 ' + current.targetDays + ' 天');
@@ -1374,7 +1393,24 @@ function saveReflectionB(){
   current.reflectedAt = new Date().toISOString();
   current.stage = 'reflection';
   persistAction();
-  toast('复盘已沉淀进你的成长资产 ✓');
+  toast('已归档到行为档案 ✓');
+  // 显示「已归档」成功条 + 改主按钮为「继续调整」形态（避免视觉撞车）
+  const box = $('archiveSuccess'); if (box) box.classList.remove('hidden');
+  const btn = $('reflSaveBtn');
+  if (btn){
+    btn.textContent = '继续调整复盘';
+    btn.classList.remove('btn-primary'); btn.classList.add('btn-ghost');
+    btn.onclick = reopenReflection;
+  }
+}
+function reopenReflection(){
+  const box = $('archiveSuccess'); if (box) box.classList.add('hidden');
+  const btn = $('reflSaveBtn');
+  if (btn){
+    btn.textContent = '完成归档 · 沉淀成长资产';
+    btn.classList.remove('btn-ghost'); btn.classList.add('btn-primary');
+    btn.onclick = saveReflectionB;
+  }
 }
 
 function renderPlanMini(doneDays){
@@ -1500,6 +1536,9 @@ function localFailAdvice(reason){
 /* 社会支持 */
 function renderSupport(){
   const box = $('supportChips');
+  if (!box) return;
+  // 老存档 / 早期创建的 action 可能没有 support 字段，默认空
+  current.support = current.support || { people:[], tools:[], info:[] };
   const all = [];
   (current.support.people||[]).forEach(p => all.push({ type:'people', v:p }));
   (current.support.tools||[]).forEach(p => all.push({ type:'tools', v:p }));
