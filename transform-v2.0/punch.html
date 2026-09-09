@@ -560,8 +560,59 @@
   .rd-dismiss { display: block; margin: 12px auto 0; border: none; background: transparent; color: var(--ink-3); font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .rd-dismiss:hover { color: var(--amber); }
 
-  /* ===== 创建态：大目标轻提示 ===== */
-  .create-hint { margin-top: 10px; font-size: 12.5px; opacity: .8; line-height: 1.6; }
+  /* ===== 每日改变上下文行：正在改变 / 换项目 / 开新目标 ===== */
+  .now-line {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    margin: 2px 2px 12px; padding: 10px 14px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+  }
+  .now-name { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13.5px; color: var(--ink); }
+  .now-label {
+    flex-shrink: 0; font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--ink-3);
+    background: var(--surface-2); border-radius: 999px; padding: 3px 9px;
+  }
+  .now-name b {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;
+    font-weight: 700; color: var(--ink);
+  }
+  .now-acts { display: flex; gap: 8px; }
+  .now-btn {
+    border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+    border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all .2s var(--ease);
+  }
+  .now-btn:hover { border-color: var(--green); color: var(--green-deep); }
+  .now-btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+  .now-btn.primary:hover { background: var(--green-2); color: #fff; }
+  .proj-panel {
+    margin: -4px 2px 12px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .proj-panel.hidden { display: none; }
+  .proj-item {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-decoration: none;
+    color: var(--ink); border-bottom: 1px solid var(--line); transition: background .15s;
+  }
+  .proj-item:last-child { border-bottom: none; }
+  .proj-item:hover { background: var(--surface-2); }
+  .proj-item .pj-name {
+    flex: 1; min-width: 0; font-size: 13.5px; font-weight: 700;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .proj-item .pj-stat {
+    flex-shrink: 0; font-size: 11.5px; color: var(--ink-3);
+    background: var(--surface-2); border-radius: 999px; padding: 3px 9px;
+  }
+  .proj-item .pj-arrow { flex-shrink: 0; color: var(--green); font-weight: 800; }
+
+  /* ===== 创建态浅卡 ===== */
+  .create-start { margin-top: 8px; }
+  .create-nokey {
+    margin-top: 10px; font-size: 12.5px; color: var(--ink-3); line-height: 1.7;
+    background: var(--amber-soft); border-radius: 10px; padding: 9px 12px;
+  }
+  .create-nokey a { color: var(--amber); font-weight: 800; text-decoration: none; }
+  .create-nokey a:hover { text-decoration: underline; }
 
   /* ===== 收窄确认卡（复杂目标分流） ===== */
   .fc-line { font-size: 14px; color: var(--ink-2); line-height: 1.7; }
@@ -782,6 +833,51 @@ function downscaleMicro(micro){
 }
 
 /* ===================== 极简打卡态（think 同款） ===================== */
+/* ---- 项目上下文行：正在改变 / 换项目 / 开新目标（旧项目不劫持今日） ---- */
+function othersActions(){
+  const all = loadActions() || [];
+  return all.filter(a => a && !a.archived && a.status !== 'archived'
+    && a.id !== (current && current.id) && (a.status === 'active' || a.status === 'graduated'))
+    .sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')));
+}
+function projectNowLine(){
+  if (!current) return '';
+  const others = othersActions();
+  const label = current.input || current.goal || '这个目标';
+  let html = `<div class="now-line">
+      <div class="now-name"><span class="now-label">正在改变</span><b>${escapeHtml(label)}</b></div>
+      <div class="now-acts">`;
+  if (others.length) html += `<button type="button" class="now-btn" onclick="toggleProjList()">换项目</button>`;
+  html += `<button type="button" class="now-btn primary" onclick="startNewGoal()">开新目标</button>`;
+  html += `</div></div>`;
+  if (others.length){
+    const items = others.map(a => {
+      const stat = a.status === 'graduated'
+        ? '已完成 ' + (a.targetDays || 0) + ' 天'
+        : ('第 ' + (a.currentDay || 1) + ' 天 · 连续 ' + (a.streak || 0) + ' 天');
+      return `<a class="proj-item" href="punch.html?id=${encodeURIComponent(a.id)}">
+        <span class="pj-name">${escapeHtml(a.input || a.goal || '未命名目标')}</span>
+        <span class="pj-stat">${escapeHtml(stat)}</span><span class="pj-arrow">→</span></a>`;
+    }).join('');
+    html += `<div class="proj-panel hidden" id="projPanel">${items}</div>`;
+  }
+  return html;
+}
+function toggleProjList(){
+  const p = $('projPanel'); if (!p) return;
+  p.classList.toggle('hidden');
+}
+function startNewGoal(){
+  // 从今日打卡回到创建态：重置草稿与会话上下文，不清任何存档
+  draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], focus:'', focusReason:'', isComplex:false };
+  handoffInsight = ''; handoffNature = ''; handoffScenario = '';
+  current = null;
+  punchStep = 0; punchMaxReached = 0;
+  renderPunchStepsBar();
+  renderCreate();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function renderPunch(){
   const area = $('punchArea');
   if (!current){
@@ -824,6 +920,7 @@ function renderPunch(){
   // ===== A 态：今日行为 = 一张行为卡 + 一个主按钮（系统先开口，不堆信息） =====
   const gapDays = daysSinceLastDone();
   const weekC = weekDoneCount();
+  html += projectNowLine();
   html += `<div class="tx-top">
       <span class="tx-day">${escapeHtml(phase)}</span>
       <span class="tx-ev">本周 ${weekC}/7 · 累计 ${current.totalDone || 0} 天</span>
@@ -1249,12 +1346,14 @@ function renderCreate(){
   // 注：punchStep 由调用方（init/punchGo）控制，本函数不重置
   const area = $('punchArea');
   const showCtx = handoffNature || handoffInsight;
+  const cfg = getAI();
+  const hasKey = !!(cfg && cfg.apiKey);
 
   area.innerHTML = `
-    <div class="create-hero">
-      <div class="ch-eyebrow">伴我改变 · 开始新的行为实验</div>
-      <h1>开启一次新的行为改变</h1>
-      <p>小习惯或大目标都可以写下来。Transform 会把它变成 7 天行为实验：先定今天的最小一步，再每天一个小行动。</p>
+    <div class="suggest-card create-start">
+      <div class="sc-tag">每日改变 · 还没有进行中的实验</div>
+      <h2 class="sc-title">先写下想改变的那一件小事</h2>
+      <div class="sc-desc">不用写大目标。写一件这周你真想让它发生的小事——Transform 会帮你拆成 7 天，每天只需做今天那一小步。</div>
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">来自今日洞察 · 认知起点</div>
@@ -1262,8 +1361,9 @@ function renderCreate(){
           ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
       <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '例如：每天早上一杯温水，或成为 WorkBuddy 的高手'}" maxlength="120">
-      ${!handoffScenario ? '<div class="create-hint">大目标？先写最近一周你最想先动的一件具体事，更好拆。</div>' : ''}
-      <button class="cta-start" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
+      ${!handoffScenario ? '<div class="sc-hint">大目标？先写最近一周你最想先动的一件具体事——小到明天就能做。</div>' : ''}
+      ${!hasKey ? '<div class="create-nokey">AI 还没连接：连上后，这里会自动帮你拆成 7 天微行动。<a href="app.html?settings=1">去连接 AI →</a></div>' : ''}
+      <button class="cta-confirm" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
     </div>`;
   const input = $('changeInput');
   if (handoffScenario) input.value = handoffScenario;
@@ -1281,7 +1381,7 @@ async function startChange(){
   const goal = ($('changeInput').value || '').trim();
   if (goal.length < 4) { toast('再多写几个字'); return; }
   const cfg = getAI();
-  if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
+  if (!cfg.apiKey) { toast('AI 还没连接：连上后这里会自动帮你拆成 7 天计划（入口在上方提示里）'); return; }
   const btn = $('startChangeBtn');
   btn.disabled = true; btn.textContent = 'Transform 正在思考你的目标…';
   draft.goal = goal;
@@ -1630,7 +1730,8 @@ async function confirmChange(){
   // 4. 无任何进行中实验 → 创建态
   if (id){
     current = loadActions().find(a => a.id === id) || null;
-    if (current && current.status !== 'archived'){ renderPunchStepsBar(); renderPunch(); return; }
+    // 已归档的实验不进入打卡流（在行为档案中管理）
+    if (current && current.status !== 'archived' && !current.archived){ renderPunchStepsBar(); renderPunch(); return; }
     renderCreate();
     return;
   }
@@ -1638,7 +1739,7 @@ async function confirmChange(){
     renderCreate();
     return;
   }
-  const actives = loadActions().filter(a => a.status === 'active');
+  const actives = loadActions().filter(a => a.status === 'active' && !a.archived);
   if (actives.length){
     actives.sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')));
     current = actives[0];
