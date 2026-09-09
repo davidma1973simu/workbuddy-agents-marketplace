@@ -501,6 +501,53 @@
   .dc-label::before { content: '💡'; }
   .dc-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; }
   .dc-body b { color: var(--green-deep); }
+
+  /* ===== v2.0 备份与恢复（「存数据」按钮弹出面板） ===== */
+  .bk-pop {
+    position: fixed; top: 58px; right: 14px; z-index: 320;
+    width: 302px; max-width: calc(100vw - 28px);
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-hover);
+    padding: 8px; display: none; font-family: inherit;
+  }
+  .bk-pop.show { display: block; animation: bkIn .16s ease; }
+  @keyframes bkIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+  .bk-item {
+    display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
+    padding: 11px 12px; border-radius: var(--radius-sm); border: none; background: none;
+    font-family: inherit; cursor: pointer; transition: background .15s;
+  }
+  .bk-item:hover { background: var(--green-50); }
+  .bk-item .t { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .bk-item .t svg { flex: none; color: var(--green-deep); }
+  .bk-item .s { font-size: 12px; color: var(--ink-3); line-height: 1.5; padding-left: 25px; }
+  .bk-sep { height: 1px; background: var(--line); margin: 4px 8px; }
+  .bk-note { font-size: 11.5px; color: var(--ink-3); text-align: center; padding: 5px 8px 3px; line-height: 1.6; }
+  .bk-sum { padding: 6px 4px 2px; }
+  .bk-sum .h { font-size: 14.5px; font-weight: 700; color: var(--ink); margin: 2px 2px 10px; }
+  .bk-sum .rows { display: flex; flex-direction: column; gap: 6px; }
+  .bk-sum .r { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2);
+    background: var(--bg); border-radius: 10px; padding: 7px 12px; }
+  .bk-sum .r b { color: var(--ink); font-weight: 600; }
+  .bk-mode { display: flex; gap: 6px; margin: 12px 2px; }
+  .bk-mode button {
+    flex: 1; padding: 9px 0; border-radius: 999px; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+    cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+  .bk-mode button.on { background: var(--green-deep); border-color: var(--green-deep); color: #fff; }
+  .bk-mode .sub { display:block; font-size: 11px; font-weight: 500; opacity: .75; margin-top: 1px; }
+  .bk-acts { display: flex; flex-direction: column; gap: 4px; padding: 0 2px 6px; }
+  .bk-go {
+    padding: 12px 0; border-radius: 999px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 700; color: #fff; font-family: inherit;
+    background: linear-gradient(135deg, var(--green-deep), var(--green));
+  }
+  .bk-go:hover { filter: brightness(1.05); }
+  .bk-cancel { padding: 8px 0; border-radius: 999px; border: none; background: none; cursor: pointer;
+    font-size: 13px; color: var(--ink-3); font-family: inherit; }
+  .bk-cancel:hover { color: var(--ink-2); }
+
 </style>
 <script>
   (function(){
@@ -511,6 +558,10 @@
   <meta name="app-version" content="v2.0-draft">
 </head>
 <body>
+
+  <div class="bk-pop" id="bkPop" role="menu" aria-label="备份与恢复"></div>
+  <input type="file" id="bkFile" accept=".json,application/json" style="display:none">
+
 <div class="wrap">
   <div class="topbar">
     <a class="nav-link" href="index.html">
@@ -525,7 +576,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       每日改变
     </a>
-    <button class="tool-icon-btn" onclick="downloadAll()" aria-label="存数据">
+    <button class="tool-icon-btn" onclick="bkToggle()" aria-label="存数据" title="备份与恢复：下载完整备份或从文件恢复">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       存数据
     </button>
@@ -1524,6 +1575,150 @@ function downloadAll(){
   el.href = u; el.download = 'transform-growth-assets.json';
   el.click(); URL.revokeObjectURL(u);
 }
+
+
+/* ===================== 备份与恢复（集成于「存数据」按钮） ===================== */
+var bkModeSel = 'merge';
+function bkToggle(){
+  const pop = $('bkPop');
+  if (pop.classList.contains('show')){ bkClose(); return; }
+  bkModeSel = 'merge';
+  pop.innerHTML =
+    '<button class="bk-item" onclick="downloadAll();bkClose();">' +
+      '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>下载完整备份</span>' +
+      '<span class="s">认知档案、行为实验、身份与模式，存成一个 JSON 文件</span>' +
+    '</button>' +
+    '<button class="bk-item" onclick="bkPick()">' +
+      '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21V9m0 0l-5 5m5-5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 3h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>从备份恢复</span>' +
+      '<span class="s">选择之前下载的文件，合并或覆盖当前数据</span>' +
+    '</button>' +
+    '<div class="bk-sep"></div>' +
+    '<div class="bk-note">所有数据只保存在这台设备的浏览器里，不会上传。</div>';
+  pop.classList.add('show');
+}
+function bkClose(){ const p = $('bkPop'); p.classList.remove('show'); }
+function bkPick(){ const inp = $('bkFile'); inp.value = ''; inp.click(); }
+function bkOnFile(ev){
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = function(){
+    let data; try { data = JSON.parse(rd.result); } catch(e){ toast('这个文件不是有效的备份 JSON'); return; }
+    const c = bkCounts(data);
+    if (!c.ok){ toast('这个文件里没有可恢复的 Transform 数据'); return; }
+    window._bkData = data;
+    const pop = $('bkPop');
+    const row = function(k, v){ return '<div class="r"><span>' + k + '</span><b>' + v + '</b></div>'; };
+    let rows = row('认知档案', c.archive + ' 份') + row('行为实验', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
+    if (c.pats) rows += row('AI 模式', c.pats + ' 条');
+    pop.innerHTML =
+      '<div class="bk-sum">' +
+        '<div class="h">备份里找到</div>' +
+        '<div class="rows">' + rows + '</div>' +
+        '<div class="bk-mode">' +
+          '<button data-m="merge" class="on" onclick="bkSetMode(\'merge\')">合并<span class="sub">保留当前，补上没有的</span></button>' +
+          '<button data-m="over" onclick="bkSetMode(\'over\')">覆盖<span class="sub">以备份为准</span></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bk-acts">' +
+        '<button class="bk-go" onclick="bkApply()">恢复所选数据</button>' +
+        '<button class="bk-cancel" onclick="bkToggle()">取消</button>' +
+      '</div>' +
+      '<div class="bk-note">开始前会先自动下载一份当前数据，可随时还原。</div>';
+    pop.classList.add('show');
+  };
+  rd.readAsText(f);
+}
+function bkSetMode(m){
+  bkModeSel = (m === 'over') ? 'over' : 'merge';
+  var btns = document.querySelectorAll('#bkPop .bk-mode button');
+  for (var i = 0; i < btns.length; i++){
+    btns[i].classList.toggle('on', btns[i].getAttribute('data-m') === bkModeSel);
+  }
+}
+function bkCounts(d){
+  d = d || {};
+  var archive = Array.isArray(d.archive) ? d.archive : [];
+  var actions = Array.isArray(d.actions) ? d.actions : [];
+  var stmts = (d.profile && Array.isArray(d.profile.identityStatements)) ? d.profile.identityStatements : [];
+  var pats = (d.patterns && Array.isArray(d.patterns.patterns)) ? d.patterns.patterns : [];
+  return {
+    ok: (archive.length + actions.length + stmts.length + pats.length) > 0,
+    archive: archive.length, actions: actions.length, stmts: stmts.length, pats: pats.length
+  };
+}
+function bkSnapshot(){
+  // 导入前：把当前数据存一份到内存文件下载，供回滚
+  try {
+    var data = { archive: loadArchiveAll(), actions: loadActionsAll(), profile: loadProfile(), patterns: JSON.parse(localStorage.getItem(LS_PATTERNS)) };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var u = URL.createObjectURL(blob);
+    var el = document.createElement('a');
+    var d = new Date(), p = function(n){ return n < 10 ? '0' + n : '' + n; };
+    el.href = u; el.download = 'transform-growth-assets.before-restore-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + '.json';
+    el.click(); URL.revokeObjectURL(u);
+  } catch(e){}
+}
+function bkApply(){
+  const d = window._bkData; if (!d) return;
+  bkSnapshot();
+  var merge = bkModeSel !== 'over';
+  try {
+    if (merge){
+      // 合并：本地已有 id/text 保留，只补备份中缺失的
+      var arch = loadArchiveAll();
+      var aidx = {}; arch.forEach(function(x){ if (x && x.id) aidx[String(x.id)] = true; });
+      (Array.isArray(d.archive) ? d.archive : []).forEach(function(x){ if (x && x.id && !aidx[String(x.id)]) arch.push(x); });
+      localStorage.setItem(LS_ARCHIVE, JSON.stringify(arch));
+
+      var acts = loadActionsAll();
+      var bidx = {}; acts.forEach(function(a){ if (a && a.id) bidx[String(a.id)] = true; });
+      (Array.isArray(d.actions) ? d.actions : []).forEach(function(a){ if (a && a.id && !bidx[String(a.id)]) acts.push(a); });
+      localStorage.setItem(LS_ACTIONS, JSON.stringify(acts));
+
+      var prof = loadProfile();
+      var stmts = prof.identityStatements = Array.isArray(prof.identityStatements) ? prof.identityStatements : [];
+      var tidx = {}; stmts.forEach(function(s){ if (s && s.text) tidx[String(s.text)] = true; });
+      var inc = (d.profile && Array.isArray(d.profile.identityStatements)) ? d.profile.identityStatements : [];
+      inc.forEach(function(s){ if (s && s.text && !tidx[String(s.text)]){ tidx[String(s.text)] = true; stmts.push(s); } });
+      localStorage.setItem(LS_PROFILE, JSON.stringify(prof));
+
+      // patterns：按 JSON 串去重拼接
+      var sp = null; try { sp = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+      var bp = (d.patterns && Array.isArray(d.patterns.patterns)) ? d.patterns.patterns : [];
+      if (bp.length){
+        if (!sp) sp = { patterns: [], generatedAt: new Date().toISOString() };
+        sp.patterns = sp.patterns || [];
+        var seen = {}; sp.patterns.forEach(function(x){ try { seen[JSON.stringify(x)] = true; } catch(e){} });
+        bp.forEach(function(x){ try { var k = JSON.stringify(x); if (!seen[k]){ seen[k] = true; sp.patterns.push(x); } } catch(e){} });
+        localStorage.setItem(LS_PATTERNS, JSON.stringify(sp));
+      }
+    } else {
+      // 覆盖：以备份为准（备份缺的 key 不动，避免旧文件删掉新数据）
+      if (Array.isArray(d.archive)) localStorage.setItem(LS_ARCHIVE, JSON.stringify(d.archive));
+      if (Array.isArray(d.actions)) localStorage.setItem(LS_ACTIONS, JSON.stringify(d.actions));
+      if (d.profile && Array.isArray(d.profile.identityStatements)) localStorage.setItem(LS_PROFILE, JSON.stringify(d.profile));
+      if (d.patterns && Array.isArray(d.patterns.patterns)) localStorage.setItem(LS_PATTERNS, JSON.stringify(d.patterns));
+    }
+  } catch(e){ toast('恢复失败：浏览器存储空间不足或数据异常'); bkClose(); return; }
+  window._bkData = null;
+  bkClose();
+  renderAll();
+  toast(merge ? '已合并恢复：原有数据都在，补上了备份里没有的 ✓' : '已覆盖恢复：当前数据已替换为备份内容 ✓');
+}
+// 绑定文件选择
+(function(){
+  const inp = document.getElementById('bkFile');
+  if (inp && !inp.__bkBound){ inp.__bkBound = true; inp.addEventListener('change', bkOnFile); }
+  // 点击空白处关闭面板
+  document.addEventListener('click', function(e){
+    const pop = document.getElementById('bkPop');
+    if (!pop || !pop.classList.contains('show')) return;
+    if (pop.contains(e.target)) return;
+    if (e.target.closest && e.target.closest('[onclick="bkToggle()"]')) return;
+    pop.classList.remove('show');
+  });
+})();
 
 /* ===================== 设置 + 主题 ===================== */
 function toggleTheme(){
