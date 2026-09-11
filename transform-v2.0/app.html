@@ -3879,13 +3879,24 @@ async function recommendApplyTitles(type, btn) {
 }
 function parseTitleList(text) {
   if (!text) return null;
+  const clean = x => String(x).trim().slice(0, 30);
+  // 主路径：模型按约定返回单个 JSON 数组（容忍 markdown 代码围栏）
   try {
     const m = text.match(/\[[\s\S]*\]/);
-    if (!m) return null;
-    const arr = JSON.parse(m[0]);
-    if (!Array.isArray(arr) || arr.length !== 3) return null;
-    return arr.map(x => String(x).trim().slice(0, 30)).filter(Boolean);
-  } catch(e) { return null; }
+    if (m) {
+      const arr = JSON.parse(m[0]);
+      if (Array.isArray(arr) && arr.length === 3) return arr.map(clean).filter(Boolean);
+    }
+  } catch(e) {}
+  // 兼容路径：DeepSeek 实测会把 3 个标题拆成每行一个独立数组，逐段解析后合并
+  try {
+    const out = [];
+    (text.match(/\[[^\[\]]*\]/g) || []).forEach(seg => {
+      try { JSON.parse(seg).forEach(x => out.push(clean(x))); } catch(e) {}
+    });
+    if (out.length === 3) return out.filter(Boolean);
+  } catch(e) {}
+  return null;
 }
 function renderApplyTitles(type) {
   const list = state.data[type + 'Recommends'] || [];
@@ -4065,6 +4076,10 @@ function isNearComplete() {
 }
 // 远应用：手动展开/收起（可选步骤，不强制）
 let farExpanded = false;
+function unlockFarApp() {
+  // 近应用完成后自动展开远应用区（可选，不强制）；重复调用保持幂等
+  if (!farExpanded) toggleFarApp();
+}
 function toggleFarApp() {
   farExpanded = !farExpanded;
   const phase = $('farPhase');
