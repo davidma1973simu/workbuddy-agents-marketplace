@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>想清楚 · Transform</title>
+<title>每日洞察 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -69,7 +69,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版「想清楚 · 深挖」入口（底部小链接） */
+  /* 完整版「深入洞察」入口（底部小链接） */
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -328,9 +328,9 @@
       首页
     </a>
     <nav class="gnav" aria-label="全局导航">
-      <a class="gn-item on" href="think.html">想清楚</a>
-      <a class="gn-item" href="punch.html">做到</a>
-      <a class="gn-item" href="cognitive.html">我的资产</a>
+      <a class="gn-item on" href="think.html">每日洞察</a>
+      <a class="gn-item" href="punch.html">每日改变</a>
+      <a class="gn-item" href="cognitive.html">成长资产</a>
     </nav>
     <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
@@ -353,7 +353,7 @@
   <div id="thinkArea"></div>
   <div id="voiceSlot" data-voice-slot hidden></div>
   <div class="full-link-bar">
-    <a href="app.html">想清楚 · 深挖 →</a>
+    <a href="app.html">深入洞察 →</a>
   </div>
   <div id="toast"></div>
 </div>
@@ -437,7 +437,7 @@ function renderInputStage(){
   const hasQ = !!question;                       // 已有进行中的题目（回看/修改主题模式）
   $('thinkArea').innerHTML = `
     <div class="think-hero">
-      <div class="th-eyebrow">想清楚 · 几分钟理清一件事</div>
+      <div class="th-eyebrow">每日洞察 · 几分钟理清一件事</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
       <p>把最想不通、最想搞清楚的一件事写下来。Transform 会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
       <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60" value="${escapeHtml(topic)}">
@@ -625,7 +625,7 @@ async function finishThink(){
     toast('Transform 整合失败，请稍后再试');
     return;
   }
-  // 存入「我的资产 · 想法」（与 app.html complete() 的条目格式一致）
+  // 存入「成长资产 · 想法」（与 app.html complete() 的条目格式一致）
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -685,9 +685,9 @@ function renderInsightResult(session){
         <div class="ir-upgrade">
           <div class="iu-q">这个问题，值得认真处理吗？</div>
           <a class="iu-link" href="app.html?topic=${encodeURIComponent(topic)}">和我一起，把这件事真正想清楚 →</a>
-          <div class="iu-sub">遇上反复卡住、或牵扯很多人的复杂问题，「想清楚 · 深挖」会陪你多轮想透。</div>
+          <div class="iu-sub">遇上反复卡住、或牵扯很多人的复杂问题，「深入洞察」会陪你多轮想透。</div>
         </div>
-        <div class="ir-note">已存入「我的资产 · 想法」 · 随时可查</div>
+        <div class="ir-note">已存入「成长资产 · 想法」 · 随时可查</div>
       </div>
     </div>`;
   stepGo(2);

@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>做到 · 拆解 · Transform</title>
+<title>帮我改变 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -125,7 +125,7 @@
 
   label.fld { display: block; font-size: 14px; font-weight: 700; color: var(--ink-2); margin: 18px 0 10px; }
 
-  /* 认知→行为 衔接：来自「想清楚」的想法上下文 */
+  /* 认知→行为 衔接：来自「每日洞察」的想法上下文 */
   .insight-context {
     background: linear-gradient(120deg, rgba(29,158,117,.10), rgba(29,158,117,.04));
     border: 1.5px solid var(--green); border-radius: var(--radius-md);
@@ -506,9 +506,9 @@
       首页
     </a>
     <nav class="gnav" aria-label="全局导航">
-      <a class="gn-item" href="think.html">想清楚</a>
-      <a class="gn-item on" href="punch.html">做到</a>
-      <a class="gn-item" href="cognitive.html">我的资产</a>
+      <a class="gn-item" href="think.html">每日洞察</a>
+      <a class="gn-item on" href="punch.html">每日改变</a>
+      <a class="gn-item" href="cognitive.html">成长资产</a>
     </nav>
     <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
@@ -552,7 +552,7 @@
     </div>
     <div class="card">
       <div id="insightContext" class="insight-context hidden">
-        <div class="ic-label">你的认知起点（来自「想清楚」）</div>
+        <div class="ic-label">你的认知起点（来自「每日洞察」）</div>
         <div class="ic-text" id="insightContextText"></div>
         <div class="ic-tip">接下来，把这条洞察翻译成一个你决定去做的<strong>行为实验</strong>——这正是「决策生成」的一步：这条洞察，到底意味着你要做什么？</div>
       </div>
@@ -676,7 +676,7 @@
     <div id="reflectEntry" class="hidden" style="margin-top:14px;">
       <div class="card" style="text-align:center;padding:22px;">
         <div style="font-size:16px;font-weight:800;margin-bottom:6px;">行为实验完成，还有最后一步</div>
-        <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">复盘五个问题，把这次改变存入你的「我的资产」（行为结果 · 新习惯）。</div>
+        <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">复盘五个问题，把这次改变存入你的「成长资产」（行为结果 · 新习惯）。</div>
         <button class="btn btn-primary" onclick="showStage('reflection')">去复盘沉淀 · 产出 →</button>
       </div>
     </div>
@@ -770,7 +770,7 @@
       <div class="btn-row">
         <a class="btn btn-primary" href="punch.html" style="text-decoration:none;background:linear-gradient(135deg, var(--green-deep), var(--green-3));">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          做到屏 →
+          每日改变屏 →
         </a>
         <button class="btn btn-ghost" id="preArchiveBtn" onclick="showStage('reflection')">提前归档 →</button>
         <a class="btn btn-ghost" href="behavior.html">查看证据</a>
@@ -783,7 +783,7 @@
   <div id="stage-reflection" class="hidden">
     <div class="card">
       <div class="badge" style="margin-bottom:10px;">产出 · 复盘沉淀</div>
-      <h2 style="font-size:24px;">把这次改变，存入你的「我的资产」</h2>
+      <h2 style="font-size:24px;">把这次改变，存入你的「成长资产」</h2>
       <div class="sub" id="reflectContextB"></div>
       <div class="hint" style="margin-top:0;margin-bottom:16px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -812,7 +812,7 @@
         <a class="btn btn-primary" id="archiveGoBehavior" style="text-decoration:none;padding:8px 14px;font-size:13px;" href="behavior.html">查看证据 →</a>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" id="reflSaveBtn" onclick="saveReflectionB()">完成归档 · 存入我的资产</button>
+        <button class="btn btn-primary" id="reflSaveBtn" onclick="saveReflectionB()">完成归档 · 存入成长资产</button>
         <button class="btn btn-ghost" onclick="showStage('dashboard')">返回反馈强化</button>
       </div>
     </div>
@@ -826,13 +826,13 @@
   </div>
   <div class="aside-card">
     <div class="aside-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M3.5 17.5l5-5 3.5 3.5 6-6.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 9h4v4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> 当前进展</div>
-    <div class="aside-insight" id="asideProgress">完成「做到」后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。</div>
+    <div class="aside-insight" id="asideProgress">完成「每日改变」后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。</div>
   </div>
 </aside>
 
 </div>  <!-- end wrap -->
 
-<!-- R-10/R-11：移除浮动「行为档案」入口，与顶栏「我的资产」重复；统一入口以降低认知负荷 -->
+<!-- R-10/R-11：移除浮动「行为档案」入口，与顶栏「成长资产」重复；统一入口以降低认知负荷 -->
 
 <!-- 首次引导弹窗（与 app.html 同款） -->
 <div class="onboard-mask" id="onboardMask">
@@ -883,9 +883,9 @@ const BRAND_PROFILES = {
 };
 
 let current = null; // 当前 Action
-let handoffInsight = '';   // 来自「想清楚」的想法（认知→行为 衔接）
+let handoffInsight = '';   // 来自「每日洞察」的想法（认知→行为 衔接）
 let handoffScenario = '';  // 原挑战场景名
-let handoffInsightId = ''; // 来自「我的资产 · 想法」的具体想法 id（用于双向关联）
+let handoffInsightId = ''; // 来自「成长资产 · 想法」的具体想法 id（用于双向关联）
 
 function $(id){ return document.getElementById(id); }
 function uid(){ return 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
@@ -983,7 +983,7 @@ function updatePath(stage){
 function updateAside(stage){
   const a = $('asideAnchor'), p = $('asideProgress');
   if (!a || !p) return;
-  if (!current){ a.innerHTML = '完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。'; p.innerHTML = '完成「做到」后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。'; return; }
+  if (!current){ a.innerHTML = '完成「行动锚定」后，这里会显示你的稳定触发点：「在我____之后，我就做今天的行动」。'; p.innerHTML = '完成「每日改变」后，这里会显示：连续 N 天 / 已完成 N 天 / 身份票 N 张。'; return; }
   if (current.anchor && current.anchor.after){
     a.innerHTML = '稳定触发点：<b style="color:var(--green-deep)">在我 ' + escapeHtml(current.anchor.after) + ' 之后，我就做这一天的行动。</b>';
   } else {
@@ -992,7 +992,7 @@ function updateAside(stage){
   if (stage === 'dashboard' || current.status === 'graduated' || (current.logs && current.logs.length)){
     p.innerHTML = '连续 <b>' + (current.streak || 0) + '</b> 天 · 累计 <b>' + (current.totalDone || 0) + '/' + (current.targetDays || 0) + '</b> 天 · 已用行动证明 <b>' + (current.totalDone || 0) + '</b> 次';
   } else {
-    p.innerHTML = '完成「做到」后，这里会实时显示你的连续天数、累计天数与用行动证明的次数。';
+    p.innerHTML = '完成「每日改变」后，这里会实时显示你的连续天数、累计天数与用行动证明的次数。';
   }
 }
 
@@ -1355,7 +1355,7 @@ function renderReflection(){
 
 async function aiReflectB(){
   const box = $('reBResultBox');
-  const base = '帮用户复盘一次行为实验（做到）。目标/行为：' + current.input + (current.insight ? '\n认知起点（洞察）：' + current.insight.replace(/\n+/g, ' · ') : '') + '\n期待身份：' + (current.identity || '未填') + '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「这次行为实验的结果」和一句「新的习惯融入日常的哪一步」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","result":"…","habit":"…"}';
+  const base = '帮用户复盘一次行为实验（每日改变）。目标/行为：' + current.input + (current.insight ? '\n认知起点（洞察）：' + current.insight.replace(/\n+/g, ' · ') : '') + '\n期待身份：' + (current.identity || '未填') + '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「这次行为实验的结果」和一句「新的习惯融入日常的哪一步」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","result":"…","habit":"…"}';
   const text = await aiCall(base);
   if (!text) return;
   box.classList.remove('hidden');
@@ -1405,7 +1405,7 @@ function reopenReflection(){
   const box = $('archiveSuccess'); if (box) box.classList.add('hidden');
   const btn = $('reflSaveBtn');
   if (btn){
-    btn.textContent = '完成归档 · 存入我的资产';
+    btn.textContent = '完成归档 · 存入成长资产';
     btn.classList.remove('btn-ghost'); btn.classList.add('btn-primary');
     btn.onclick = saveReflectionB;
   }
@@ -1602,7 +1602,7 @@ const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11
 const OB_SLIDES = [
   { h: '从想明白，到真正改变', p: 'Transform 会陪你走完四步：拆解目标 → 定下触发点 → 每次反馈 → 复盘沉淀。每一步只花几分钟。' },
   { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：把大目标拆成每天都能做到的微行动；② 定触发点：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到、拿反馈、用行动证明身份；④ 沉淀：毕业复盘，沉淀成新的习惯与角色。' },
-  { h: '你的证据会越积越厚', p: '每次完成，行为实验、连续天数、用行动证明的次数都会存进「我的资产 · 证据」。现在，从想改变的那件大事开始吧。' }
+  { h: '你的证据会越积越厚', p: '每次完成，行为实验、连续天数、用行动证明的次数都会存进「成长资产 · 证据」。现在，从想改变的那件大事开始吧。' }
 ];
 let obIdx = 0;
 function maybeShowOnboard() {
@@ -1642,10 +1642,10 @@ function closeOnboard() {
       return;
     }
   }
-  // 认知→行为 衔接：从「想清楚」带入的想法
+  // 认知→行为 衔接：从「每日洞察」带入的想法
   handoffInsight = (params.get('insight') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
-  // 从「我的资产 · 想法」点「用它开一个实验 →」带 ?from=<想法id> 过来：
+  // 从「成长资产 · 想法」点「用它开一个实验 →」带 ?from=<想法id> 过来：
   // 只给 id，就地取回那条想法，并记下来用于双向关联
   handoffInsightId = (params.get('from') || '').trim();
   if (handoffInsightId && !handoffInsight){
@@ -1672,7 +1672,7 @@ function closeOnboard() {
       '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
       + ' 先定下要花多少天，把这条洞察变成一段每天都能做的行为实验——下一步会按天数拆解。';
   }
-  // P1-W3：从「做到」升级而来（punch 反馈页带入 goal / 今天的小步 / 最近失败原因）
+  // P1-W3：从「每日改变」升级而来（punch 反馈页带入 goal / 今天的小步 / 最近失败原因）
   const upGoal = (params.get('goal') || '').trim();
   const upMicro = (params.get('micro') || '').trim();
   const upFail = (params.get('fail') || '').trim();

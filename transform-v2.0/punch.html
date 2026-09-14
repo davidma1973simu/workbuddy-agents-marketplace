@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>做到 · Transform</title>
+<title>每日改变 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -70,7 +70,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版「做到 · 拆解」入口（底部小链接） */
+  /* 完整版「帮我改变」入口（底部小链接） */
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -570,7 +570,7 @@
   .rd-dismiss { display: block; margin: 12px auto 0; border: none; background: transparent; color: var(--ink-3); font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .rd-dismiss:hover { color: var(--amber); }
 
-  /* ===== 做到上下文行：正在改变 / 换项目 / 开新目标 ===== */
+  /* ===== 每日改变上下文行：正在改变 / 换项目 / 开新目标 ===== */
   .now-line {
     display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     margin: 2px 2px 12px; padding: 10px 14px;
@@ -657,18 +657,18 @@
       首页
     </a>
     <nav class="gnav" aria-label="全局导航">
-      <a class="gn-item" href="think.html">想清楚</a>
-      <a class="gn-item on" href="punch.html">做到</a>
-      <a class="gn-item" href="cognitive.html">我的资产</a>
+      <a class="gn-item" href="think.html">每日洞察</a>
+      <a class="gn-item on" href="punch.html">每日改变</a>
+      <a class="gn-item" href="cognitive.html">成长资产</a>
     </nav>
     <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
 
-  <!-- 做到主屏 -->
+  <!-- 每日改变主屏 -->
   <div id="punchStepsBarWrap"></div>
   <div id="punchArea"></div>
   <div class="full-link-bar">
-    <a href="act.html">做到 · 拆解 →</a>
+    <a href="act.html">帮我改变 →</a>
   </div>
 
   <div id="toast"></div>
@@ -762,7 +762,7 @@ function parseJSON(text){
 function aiText(r){ return r && r.ok ? r.text : null; }
 function aiErr(r){ return r && !r.ok ? r : null; }
 
-/* ===================== 做到 核心 ===================== */
+/* ===================== 每日改变 核心 ===================== */
 // done=true：正常完成；done=true + extra.rescued：受阻后靠最小版补做（也算完成，连续不清零）
 // done=false：明确今天不做（记 reason，供 D 态重新设计）；失败不惩罚——不在此清零 streak，
 //             连续值由下一次完成按间隔天数自然重算（隔断则归 1）
@@ -902,7 +902,7 @@ function renderPunch(){
   const area = $('punchArea');
   if (!current){
     area.innerHTML = `<div class="create-hero">
-      <div class="ch-eyebrow">做到</div>
+      <div class="ch-eyebrow">每日改变</div>
       <h1>还没有开始一次改变</h1>
       <p>先定一个想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
       <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
@@ -916,7 +916,7 @@ function renderPunch(){
   const anchor = current.anchor && current.anchor.after;
   const phase = isGrad ? '已完成全部 ' + (current.targetDays||0) + ' 天' : '第 ' + current.currentDay + ' 天 · 连续 ' + (current.streak||0) + ' 天';
   const votes = countVotes();
-  // P1-W3：升级到「做到 · 拆解」时带上已有上下文（目标 / 今天已做的小步 / 最近失败原因）
+  // P1-W3：升级到「帮我改变」时带上已有上下文（目标 / 今天已做的小步 / 最近失败原因）
   const lastFail = (current.logs || []).filter(l => l && l.done === false).pop();
   const failReason = (lastFail && lastFail.reason) || '';
   const upUrl = 'act.html?goal=' + encodeURIComponent(current.input || '')
@@ -1234,7 +1234,7 @@ async function showTodayFeedback(isRescued){
   try {
     if (getAI().apiKey && micro) {
       const aiResp = await aiCall(
-        '用户刚完成了一个「做到」实验' + (isRescued ? '（靠最小版补做完成）' : '') + '的第 ' + day + ' 天。\n' +
+        '用户刚完成了一个「每日改变」实验' + (isRescued ? '（靠最小版补做完成）' : '') + '的第 ' + day + ' 天。\n' +
         '今天做了：在「' + (anchor || '未指定') + '」之后，' + micro + '。\n' +
         '大目标：「' + (current.input || '') + '」，目标身份：「' + (identity || '待定') + '」。\n' +
         '当前：连续 ' + streak + ' 天，累计 ' + total + ' / ' + targetDays + ' 天。\n' +
@@ -1372,7 +1372,7 @@ function renderCreate(){
 
   area.innerHTML = `
     <div class="suggest-card create-start">
-      <div class="sc-tag">做到 · 还没有进行中的实验</div>
+      <div class="sc-tag">每日改变 · 还没有进行中的实验</div>
       <h2 class="sc-title">先写下想改变的那一件小事</h2>
       <div class="sc-desc">不用写大目标。写一件这周你真想让它发生的小事——Transform 会帮你拆成 7 天，每天只需做今天那一小步。</div>
       ${showCtx ? `
@@ -1747,7 +1747,7 @@ async function confirmChange(){
   // 路由优先级：
   // 1. ?id=xxx → 精确加载该实验
   // 2. 洞察 handoff → 创建态（带入认知起点）
-  // 3. 有进行中的实验 → 默认直接进「今日行为」（A）——做到 = 每天做那一步，而不是每天定义主题
+  // 3. 有进行中的实验 → 默认直接进「今日行为」（A）——每日改变 = 每天做那一步，而不是每天定义主题
   // 4. 无任何进行中实验 → 创建态
   if (id){
     current = loadActions().find(a => a.id === id) || null;
