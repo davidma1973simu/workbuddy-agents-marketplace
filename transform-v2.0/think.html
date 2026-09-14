@@ -439,7 +439,7 @@ function renderInputStage(){
     <div class="think-hero">
       <div class="th-eyebrow">想清楚 · 几分钟理清一件事</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
-      <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
+      <p>把最想不通、最想搞清楚的一件事写下来。Transform 会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
       <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60" value="${escapeHtml(topic)}">
       ${hasQ ? `
         <div class="tk-card" id="tkCard">
@@ -491,11 +491,11 @@ function stepGo(cur){
 
 async function startThink(){
   topic = ($('topicInput').value || '').trim();
-  if (topic.length < 4) { toast('再多写几个字，知行才能出好题'); return; }
+  if (topic.length < 4) { toast('再多写几个字，Transform 才能出好题'); return; }
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key 再开始'); return; }
   const btn = $('startBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在出题…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform 正在出题…';
   // 出 1 题
   let q = null;
   for (let attempt = 0; attempt < 3 && !q; attempt++){
@@ -507,7 +507,7 @@ async function startThink(){
   }
   if (!q){
     btn.classList.remove('loading'); btn.textContent = '开始想清楚 →'; btn.disabled = false;
-    toast('知行暂时出不了题，请稍后再试');
+    toast('Transform 暂时出不了题，请稍后再试');
     return;
   }
   qTopic = topic;
@@ -522,13 +522,13 @@ function renderQuestionStage(){
     <div class="q-card">
       <div class="q-tag">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
-        知行基于你的主题出的第一题
+        Transform 基于你的主题出的第一题
       </div>
       <div class="q-text">${escapeHtml(question)}</div>
       <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
       <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
+        <span class="q-ai-label">Transform 可以帮助你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
@@ -543,7 +543,7 @@ function renderQuestionStage(){
           <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
         </div>
       </div>
-      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让知行整合出洞察 →</button>
+      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让 Transform整合出洞察 →</button>
     </div>`;
   const ta = $('qAnswer');
   ta.addEventListener('input', e => { answer = e.target.value; });
@@ -582,13 +582,13 @@ async function aiInspireQ(cap, btn){
     `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
   );
   btn.classList.remove('loading');
-  if (!r){ toast('知行暂时没响应，请稍后再试'); return; }
+  if (!r){ toast('Transform 暂时没响应，请稍后再试'); return; }
   const text = r.trim().slice(0, 300);
   aiHelps.push({ cap, text, at: new Date().toISOString() });
   const box = $('qAiResult');
   // 累积式呈现：理清/质疑/查证是一条递进的思考链，后一次不能覆盖前一次
   box.innerHTML = aiHelps.map(h =>
-    '<div class="q-ai-item"><span class="ai-tag">知行 · ' + escapeHtml(h.cap) + '</span><br>' +
+    '<div class="q-ai-item"><span class="ai-tag">Transform · ' + escapeHtml(h.cap) + '</span><br>' +
     escapeHtml(h.text).replace(/\n/g, '<br>') + '</div>'
   ).join('');
   box.classList.add('show');
@@ -603,11 +603,11 @@ async function finishThink(){
   if (!a) { toast('先写下你的回答'); return; }
   integrating = true;
   const btn = $('integrateBtn');
-  btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在整合…';
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform 正在整合…';
   const qaPairs =
     `问题：${question}\n用户最终回答：${a}` +
-    (aiHelps.length ? `\n知行协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
-    (revisions.length ? `\n（该题经知行启发后由用户主动修订 ${revisions.length} 次）` : '');
+    (aiHelps.length ? `\nTransform 协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
+    (revisions.length ? `\n（该题经Transform 启发后由用户主动修订 ${revisions.length} 次）` : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
@@ -621,8 +621,8 @@ async function finishThink(){
   }
   if (!essence){
     integrating = false;
-    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让知行整合出洞察 →';
-    toast('知行整合失败，请稍后再试');
+    btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '让 Transform整合出洞察 →';
+    toast('Transform 整合失败，请稍后再试');
     return;
   }
   // 存入「我的资产 · 想法」（与 app.html complete() 的条目格式一致）
@@ -724,7 +724,7 @@ async function startThinkWithTopic(t){
   }
   if (!q){
     renderInputStage();
-    toast('知行暂时出不了题，请稍后再试');
+    toast('Transform 暂时出不了题，请稍后再试');
     return;
   }
   qTopic = topic;

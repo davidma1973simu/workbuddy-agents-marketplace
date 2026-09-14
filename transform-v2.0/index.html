@@ -465,9 +465,14 @@
   }
   @media (max-width: 520px) {
     .wrap { padding: 0 18px; }
-    .nav { padding: 18px 0; }
-    .nav-links a { padding: 8px 12px; }
-    .nav-links a span { display: none; }
+    /* R-20：窄屏导航换两行 —— 第一行「品牌 + 工具图标」，第二行三个主入口铺满。
+       之前 nav 需要 477px，在 375px 屏上会把布局视口撑到 496px（整页被缩小）。 */
+    .nav { padding: 16px 0; flex-wrap: wrap; row-gap: 12px; }
+    .nav-links { order: 3; width: 100%; gap: 6px; }
+    .nav-links a { flex: 1 1 0; justify-content: center; padding: 10px 6px; font-size: 13.5px; white-space: nowrap; }
+    .nav-aux { padding-left: 8px; margin-left: 0; }
+    .nav-aux a { padding: 7px 10px; font-size: 0; }   /* 工具链接收成图标，文字由 title 提供可访问名 */
+    .nav-aux svg { opacity: .8; }
     .hero h1 { font-size: 38px; letter-spacing: -1.4px; }
     .entry-card { padding: 24px 22px; }
     .entry-card h2 { font-size: 22px; }
@@ -578,7 +583,7 @@
         AI 认知-行为进化引擎
       </div>
       <h1>想清楚，<span class="grad">做得到</span></h1>
-      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让知行陪你完成从洞察到改变的闭环。</p>
+      <p class="hero-sub">把一个复杂的场景挑战想通，看透，再推动行为改变，形成新的习惯和身份认知。让 Transform陪你完成从洞察到改变的闭环。</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="think.html">
           想清楚一件事
@@ -633,7 +638,7 @@
   <section class="manifesto">
     <div class="manifesto-block">
       <h3>AI 是脚手架，不是答案</h3>
-      <p>知行不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
+      <p>Transform 不会替你思考。它帮你理清、质疑、查证，把混乱的信息搭成可攀爬的结构，最终判断仍在你手里。</p>
     </div>
     <div class="manifesto-divider"></div>
     <div class="manifesto-block">
