@@ -1449,12 +1449,26 @@ function renderTrash(){
 /* ===================== 资产动作：使用优先，管理收进「更多」 ===================== */
 let assetModalCtx = null; // { type, id, tagOnly }
 
+// 「拿它去用」→ 每日改变（简单版）：沿用 think.html→punch.html 的 insight/nature/scenario 通道，
+// 把这条想法当作「认知起点」带过去（punch 会显示起点卡并预填输入），入口语义才和行为一致。
+function punchHandoffUrl(obj){
+  const e = (obj && obj.essence) || {};
+  const r = (obj && obj.reflection) || {};
+  const ins = String(e.insight || e.nature || r.learned || '').trim();
+  const nat = String(e.nature || '').trim();
+  const sc  = String((obj && obj.scenario) || '').trim();
+  const qs = [];
+  if (ins) qs.push('insight=' + encodeURIComponent(ins));
+  if (nat && nat !== ins) qs.push('nature=' + encodeURIComponent(nat));
+  if (sc) qs.push('scenario=' + encodeURIComponent(sc));
+  return 'punch.html' + (qs.length ? '?' + qs.join('&') : '');
+}
 function assetActions(type, id){
   const obj = assetFind(type, id) || {};
   let html = '<div class="asset-actions">';
   if (type === 'insight' || type === 'model'){
-    html += `<a class="use-btn solid" href="app.html?from=${encodeURIComponent(id)}" onclick="markUse('${type}','${id}','app.html')">拿它去用 →</a>`;
-    html += `<a class="use-btn" href="act.html?from=${encodeURIComponent(id)}" onclick="markUse('${type}','${id}','act.html')">用它开一个实验 →</a>`;
+    html += `<a class="use-btn solid" href="app.html?from=${encodeURIComponent(id)}" onclick="markUse('${type}','${id}','app.html')">深入洞察 →</a>`;
+    html += `<a class="use-btn" href="${punchHandoffUrl(obj)}" onclick="markUse('${type}','${id}','punch.html')">拿它去用 →</a>`;
     html += `<button class="use-btn pin${obj.pinned ? ' on' : ''}" onclick="togglePin('${type}','${id}')">${obj.pinned ? '已待用' : '待用'}</button>`;
   }
   html += `<button class="more-btn" onclick="toggleMoreMenu(this)">⋯ 更多</button>`;

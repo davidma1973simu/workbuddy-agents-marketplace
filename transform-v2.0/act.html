@@ -1645,8 +1645,8 @@ function closeOnboard() {
   // 认知→行为 衔接：从「每日洞察」带入的想法
   handoffInsight = (params.get('insight') || '').trim();
   handoffScenario = (params.get('scenario') || '').trim();
-  // 从「成长资产 · 想法」点「用它开一个实验 →」带 ?from=<想法id> 过来：
-  // 只给 id，就地取回那条想法，并记下来用于双向关联
+  // 兼容：带 ?from=<想法id> 过来时，只给 id，就地取回那条想法，并记下来用于双向关联
+  // （成长资产卡的「拿它去用 →」现已改投「每日改变」简单版，此路径保留兼容，当前无入站入口）
   handoffInsightId = (params.get('from') || '').trim();
   if (handoffInsightId && !handoffInsight){
     let _arch = [];

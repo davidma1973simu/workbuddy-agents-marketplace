@@ -98,19 +98,26 @@ async def main():
         chk("R-04a 展开洞察卡使用类按钮 ≥ 2", vis_use >= 2, f"实测 {vis_use}")
         vis_mgmt = await pg.evaluate(JS_VISIBLE, ".insight.open .more-menu .asset-btn")
         chk("R-04b 管理类按钮默认不可见", vis_mgmt == 0, f"实测 {vis_mgmt}")
-        hrefs = await pg.evaluate("""() => Array.from(document.querySelectorAll('.insight.open .use-btn')).map(a => a.getAttribute('href') || '')""")
-        has_from = any("from=" in h for h in hrefs)
-        chk("R-04c 使用按钮带 ?from=", has_from, str(hrefs))
+        hrefs = await pg.evaluate("""() => Array.from(document.querySelectorAll('.insight.open .asset-actions a.use-btn')).map(a => a.getAttribute('href') || '')""")
+        has_from = any("app.html?from=" in h for h in hrefs)
+        has_punch = any("punch.html?insight=" in h for h in hrefs)
+        chk("R-04c 出口按钮带来源：深入洞察=app.html?from= · 拿它去用=punch.html?insight=", has_from and has_punch, str(hrefs))
         # ⋯ 展开后管理动作出现
         await pg.evaluate("""() => { const b = document.querySelector('.insight.open .more-btn'); b.click(); }""")
         await pg.wait_for_timeout(120)
         vis_mgmt2 = await pg.evaluate(JS_VISIBLE, ".insight.open .more-menu .asset-btn")
         chk("R-04d 点「更多」后管理动作出现", vis_mgmt2 >= 3, f"实测 {vis_mgmt2}")
 
-        # 折叠态头部「去用 →」
-        head_use = await pg.evaluate("""() => Array.from(document.querySelectorAll('.insight .head-use')).filter(a=>{
-            const r=a.getBoundingClientRect(); return r.height>0; }).length""")
-        chk("R-04e 折叠态头部有「去用 →」", head_use >= 1, f"实测 {head_use}")
+        # 折叠态头部有「深入洞察 →」，展开态则收起（避免同屏两个同名入口）
+        head_vis = await pg.evaluate("""() => Array.from(document.querySelectorAll('.insight.fold-card')).map(c => {
+            const a = c.querySelector('.head-use');
+            const r = a && a.getBoundingClientRect();
+            return {open: c.classList.contains('open'), vis: !!(r && r.height > 0),
+                    text: a ? a.innerText.trim() : ''};
+        })""")
+        closed_ok = any((not h['open']) and h['vis'] and h['text'] == '深入洞察 →' for h in head_vis)
+        open_hidden = all((not h['vis']) for h in head_vis if h['open'])
+        chk("R-04e 头部「深入洞察 →」折叠可见 / 展开收起", closed_ok and open_hidden, str(head_vis))
 
         await pg.screenshot(path=OUT + "/b1_cognitive_first_screen.png")
 
