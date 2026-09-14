@@ -1846,7 +1846,8 @@
   }
   .panel-redesign .app-more[open] > summary::after { transform: rotate(-135deg); }
   .panel-redesign .app-more .personal-view-main { margin-top: 12px; min-height: 80px; }
-  .panel-redesign .q-action-row { margin-top: 16px; }
+  .panel-redesign .q-action-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+  .panel-redesign .q-action-row .btn { flex: 0 0 auto; }
   .panel-redesign .btn-link {
     color: var(--green-deep); font-weight: 600; background: none; border: none;
     font-family: inherit; font-size: 14px; cursor: pointer; padding: 8px 0;
@@ -2444,7 +2445,7 @@
     <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
     <div class="panel panel-redesign" id="panel-3" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">第 4 步 · 产出</div>
+        <div class="step-eyebrow">沉淀 · 把这次想清楚变成资产</div>
         <h1>把这次想清楚，带走的产出</h1>
         <p class="step-lead">梳理有了结果。这里是你这次能带走的：一个核心认知、几个下一步、和你想成为的人。</p>
       </header>
@@ -2527,12 +2528,12 @@
             <p class="cost-lead">延续你刚才的 <b id="costLeadTopic">这个主题</b> 和 <b id="costLeadCognition">这份新认知</b>，下面两个问题会变成你下次回看时的方向盘。</p>
 
             <div class="app-row cost-q">
-              <span class="app-label"><b>1. 我愿意让出哪些资源和空间？</b><em class="app-em">挪一点能量给 <i id="costEm1Target">这份新认知</i> 指向的方向</em></span>
+              <span class="app-label"><b>1. 我愿意让出哪些资源和空间？</b><em class="app-em">挪一点能量给这份新认知指向的方向</em></span>
               <textarea class="app-input app-plan-input" id="costGiveUp" placeholder="例如：每天睡前 20 分钟刷手机的时间、一个旧的自我定义、一种惯性回应方式"></textarea>
             </div>
 
             <div class="app-row cost-q">
-              <span class="app-label"><b>2. 我准备投入的最大代价是什么？</b><em class="app-em">为了能成为 <i id="costEm2Target">这份新认知</i> 指向的人，你愿意付的最大代价</em></span>
+              <span class="app-label"><b>2. 我准备投入的最大代价是什么？</b><em class="app-em">为了能成为这份新认知指向的那种人，你愿意付的最大代价</em></span>
               <textarea class="app-input app-plan-input" id="costGiveUpFallback" placeholder="例如：每周至少 8 小时 / 一次拒绝过去会接的私单 / 接受前 3 个月进展缓慢"></textarea>
             </div>
 
@@ -4644,8 +4645,8 @@ function renderAppAside() {
 
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
-  { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把杂乱信息归类 → 看透本质 → 推演应用 → 带走产出。每一步只花几分钟。' },
-  { h: '四步，一次想通一件事', p: '① 归类：把信息摊开（观察/事实/听说/猜测）；② 洞察：透过现象看本质，用自己的话说出核心认知；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 产出：带走行动、资源、投入承诺与回拉策略。' },
+  { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把信息摊开 → 想透本质 → 推演应用 → 沉淀成资产。每一步只花几分钟。' },
+  { h: '四步，一次想通一件事', p: '① 摊开：把信息摆到桌面上（观察/事实/听说/猜测）；② 想透：透过现象看本质，用自己的话说出核心认知；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 沉淀：带走行动、资源、投入承诺与回拉策略。' },
   { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
 ];
 let obIdx = 0;
@@ -4672,6 +4673,15 @@ function closeOnboard() {
 }
 
 loadDraft();
+// 从「伴我洞察」的结果页跳来时会带上 ?topic=：直接预填挑战，不让用户重输一遍自己刚写下的困扰
+// （用户是明确点「把这件事真正想清楚」过来的，所以以链接里的主题为准）
+try {
+  const _topic = (new URLSearchParams(location.search).get('topic') || '').trim();
+  if (_topic && _topic !== state.data.scenario) {
+    state.data.scenario = _topic;
+    saveDraft();
+  }
+} catch (e) {}
 $('scenario').value = state.data.scenario;
 $('scenario').addEventListener('input', e => { state.data.scenario = e.target.value; saveDraft(); });
 renderNotes(); renderGroups();
@@ -4800,8 +4810,6 @@ function renderCostHighlight(){
   setText('costHlRestate', cognition);
   setText('costLeadTopic', topic || '这个主题');
   setText('costLeadCognition', cognition || '这份新认知');
-  setText('costEm1Target', cognition || '这份新认知');
-  setText('costEm2Target', cognition || '这份新认知');
 }
 
 // 轻承诺切换

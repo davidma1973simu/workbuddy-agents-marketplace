@@ -766,10 +766,13 @@ function renderIdentity(){
   const list = Array.from(map.values()).sort((a,b) => (b.votes - a.votes) || (new Date(b.date) - new Date(a.date)));
   const top = list[0];
   const rest = list.slice(1);
+  // 用户写的身份常以「…的人 / …者」结尾，避免渲染成「…的人」的人
+  const idText = String(top.text || '').trim();
+  const idTail = /(人|者|员|家|师|匠)$/.test(idText) ? '' : '的人';
   area.innerHTML = `
     <div class="identity-card">
       <div class="k">我正在成为</div>
-      <div class="v">「<em>${escapeHtml(top.text)}</em>」的人</div>
+      <div class="v">「<em>${escapeHtml(idText)}</em>」${idTail}</div>
       <div class="count">已投 ${top.votes} 票${rest.length ? ' · 还有 ' + rest.length + ' 个身份在累积中' : ' · 你正在成为这个人'}</div>
     </div>`;
 }

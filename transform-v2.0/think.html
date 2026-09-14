@@ -190,6 +190,8 @@
   .q-ai-result.show { display: block; animation: fade-in .3s ease; }
   @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   .ai-tag { display: inline-block; font-size: 11px; font-weight: 800; color: var(--violet); margin-bottom: 4px; }
+  /* 脚手架结果累积：保留每一次（理清 → 质疑 → 查证），不互相覆盖 */
+  .q-ai-item + .q-ai-item { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
 
   /* 修订区 */
   .q-rev-toggle {
@@ -222,7 +224,7 @@
   .cta-integrate {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
-    background: var(--violet); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    background: var(--green-deep); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
     font-family: inherit; transition: all .25s var(--ease);
   }
   .cta-integrate:hover { transform: translateY(-2px); filter: brightness(1.08); }
@@ -579,7 +581,11 @@ async function aiInspireQ(cap, btn){
   const text = r.trim().slice(0, 300);
   aiHelps.push({ cap, text, at: new Date().toISOString() });
   const box = $('qAiResult');
-  box.innerHTML = '<span class="ai-tag">知行 · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
+  // 累积式呈现：理清/质疑/查证是一条递进的思考链，后一次不能覆盖前一次
+  box.innerHTML = aiHelps.map(h =>
+    '<div class="q-ai-item"><span class="ai-tag">知行 · ' + escapeHtml(h.cap) + '</span><br>' +
+    escapeHtml(h.text).replace(/\n/g, '<br>') + '</div>'
+  ).join('');
   box.classList.add('show');
   // 出现后可立即修订
   $('revToggle').style.display = 'inline-flex';

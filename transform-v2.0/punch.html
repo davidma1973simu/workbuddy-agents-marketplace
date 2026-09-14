@@ -163,6 +163,7 @@
   }
   @keyframes tf-slide { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   .tf-crown { font-size: 40px; line-height: 1; margin-bottom: 6px; animation: tf-bounce 1.4s ease infinite; }
+  .tf-crown svg { display: block; margin: 0 auto; }
   @keyframes tf-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
   .tf-title { font-size: 21px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
   .tf-body { font-size: 15px; color: var(--ink); line-height: 1.7; margin-bottom: 14px; }
@@ -275,6 +276,12 @@
   .today-prompt { margin-top: 12px; background: var(--amber-soft); border-left: 3px solid var(--amber); border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: var(--ink); }
   .today-prompt b { color: var(--amber); }
 
+  #toast {
+    position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--surface); padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .3s var(--ease);
+    z-index: 100; max-width: 90vw; text-align: center;
+  }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ===== 创建态（think 同款风格） ===== */
@@ -650,7 +657,7 @@
     <a class="gn-item" href="think.html">每日洞察</a>
     <a class="gn-item on" href="punch.html">每日改变</a>
   </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
-    <button class="arch-btn" onclick="location.href='behavior.html'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📁 行为档案</button>
+    <button class="arch-btn" onclick="location.href='behavior.html'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">行为档案</button>
   </div>
 
   <!-- 每日进步主屏 -->
@@ -801,13 +808,22 @@ function todayAlreadyDone(){
     return d.getTime() === ts;
   });
 }
-// 距最近一次完成（done，含 rescued）的自然日间隔；从未完成过 → Infinity
+// 距最近一次完成（done，含 rescued）的自然日间隔；从未完成过 → 按实验开始日算
+// 注意：绝不能返回 Infinity（会在界面上渲染成「连续 Infinity 天没发生」）
 function daysSinceLastDone(){
   const ld = (current.logs || []).filter(l => l.done).slice(-1)[0];
-  if (!ld) return Infinity;
+  const base = ld ? ld.date : (current.createdAt || '');
+  if (!base) return 0;
   const now = new Date(); now.setHours(0,0,0,0);
-  const d = new Date(ld.date); d.setHours(0,0,0,0);
+  const d = new Date(base); d.setHours(0,0,0,0);
+  if (isNaN(d.getTime())) return 0;
   return Math.max(0, Math.round((now - d) / 86400000));
+}
+// 身份措辞：用户写的身份本身常以「…的人 / …者」结尾，避免渲染成「…的人」的人
+function idPhrase(id){
+  const s = String(id == null ? '' : id).trim();
+  if (!s) return '';
+  return /(人|者|员|家|师|匠)$/.test(s) ? ('「' + s + '」') : ('「' + s + '」的人');
 }
 // 本周（周一起）实际完成天数（done 含 rescued），供证据行
 function weekDoneCount(){
@@ -910,7 +926,7 @@ function renderPunch(){
     html += `<div class="create-hero" style="background:linear-gradient(135deg, var(--amber-soft), var(--green-soft));color:var(--ink);">
       <div class="ch-eyebrow" style="color:var(--amber);">行为实验完成</div>
       <h1 style="color:var(--ink);">你用 ${current.targetDays} 天，把「${escapeHtml(current.input)}」变成了真实轨迹</h1>
-      <p style="color:var(--ink-2);">${current.identity ? '你已经是「' + escapeHtml(current.identity) + '」的人' : '新的习惯与角色已生根'}</p>
+      <p style="color:var(--ink-2);">${current.identity ? '你已经是' + escapeHtml(idPhrase(current.identity)) : '新的习惯与角色已生根'}</p>
       <a class="cta-start" href="act.html?id=${current.id}" style="text-decoration:none;color:var(--green-deep);">去复盘沉淀 · 产出 →</a>
     </div>`;
     area.innerHTML = html;
@@ -961,7 +977,7 @@ function renderPunch(){
   // B 态容器：完成反馈（markDone 后就地展开，证据 + 见证 + 闭环）
   html += `<div class="today-feedback hidden" id="todayFeedbackWrap">
       <div class="tf-card">
-        <div class="tf-crown" id="tfCrown">🎉</div>
+        <div class="tf-crown" id="tfCrown" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#0E6B50" stroke-width="1.8"/><path d="M7.6 12.3l3 3 5.8-6" stroke="#0E6B50" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
         <div class="tf-evidence" id="tfEvidence"></div>
         <div class="tf-body" id="tfWitness"></div>
@@ -1025,8 +1041,9 @@ function renderRedesignCard(gap, upUrl){
   const chips = presets.map((a, i) => `
     <button type="button" class="anchor-key${a === curAnchor ? ' sel' : ''}" data-a="${escapeHtml(a)}" onclick="rdPickAnchor(this)">${escapeHtml(a)}</button>
   `).join('');
+  const gapText = Number.isFinite(Number(gap)) ? ('连续 ' + gap + ' 天没发生') : '还没开始记录 · 今天就是第 1 天';
   return `<div class="rd-card">
-    <div class="rd-head">连续 ${gap} 天没发生</div>
+    <div class="rd-head">${gapText}</div>
     <div class="rd-line">不是你的问题——是这个设计还没对上你。挑一个方向，把它重新调顺手：</div>
     <div class="rd-opts">
       <button type="button" class="rd-opt" onclick="rdShowPanel('anchor')"><b>想不起来</b>换个触发时刻</button>
@@ -1115,7 +1132,7 @@ function markDone(){
   logCompletion(true, current.currentDay, null, '', {});
   if (current.status === 'graduated'){
     renderPunch();
-    toast('全部完成！新的习惯和角色已生根 🎓');
+    toast('全部完成！新的习惯和角色已生根');
     return;
   }
   renderPunch();
@@ -1129,7 +1146,7 @@ function markDoneRescued(reason){
   logCompletion(true, current.currentDay, reason || '', '', { rescued: true, reason: reason || '' });
   if (current.status === 'graduated'){
     renderPunch();
-    toast('全部完成！新的习惯和角色已生根 🎓');
+    toast('全部完成！新的习惯和角色已生根');
     return;
   }
   renderPunch();
@@ -1175,7 +1192,7 @@ async function showTodayFeedback(isRescued){
   const isFirst = total <= 1;
 
   // 1. 标题（rescued = 用最小版接住了）
-  $('tfCrown').textContent = isRescued ? '🛟' : (isFirst ? '🚀' : ((streak > 0 && streak % 7 === 0) ? '🏆' : '🎉'));
+  // 图标固定为「完成」标记，状态差异由标题与证据行承担（UI 不使用 emoji）
   $('tfTitle').textContent = isFirst
     ? '今天的行为实验开始了'
     : (isRescued ? ('第 ' + day + ' 天 · 最小版也接住了！') : ('第 ' + day + ' 天做到了！'));
@@ -1188,14 +1205,14 @@ async function showTodayFeedback(isRescued){
   let witness;
   if (isRescued){
     witness = identity
-      ? '今天状态没那么好，但你用最小版接住了。不完美的完成，也在让你成为「' + identity + '」的人。'
+      ? '今天状态没那么好，但你用最小版接住了。不完美的完成，也在让你成为' + idPhrase(identity) + '。'
       : '今天状态没那么好，但你用最小版接住了。能接住，就能继续。';
   } else if (isFirst){
     witness = identity
-      ? '第一次完成。你在用行动回答：我想成为「' + identity + '」的人。'
+      ? '第一次完成。你在用行动回答：我想成为' + idPhrase(identity) + '。'
       : '第一次完成。改变从今天这一小步开始。';
   } else if (streak >= 3){
-    witness = '连续 ' + streak + ' 天在锚点时刻做到。这个动作正从「刻意」变成「顺手」——你正在成为' + (identity ? '「' + identity + '」的人。' : '那个想成为的自己。');
+    witness = '连续 ' + streak + ' 天在锚点时刻做到。这个动作正从「刻意」变成「顺手」——你正在成为' + (identity ? idPhrase(identity) + '。' : '那个想成为的自己。');
   } else if (weekC >= 5){
     witness = '这一周大部分日子你都做到了。这就是' + (identity ? '「' + identity + '」' : '改变') + '的证据。';
   } else {
@@ -1360,7 +1377,7 @@ function renderCreate(){
           ${handoffNature ? `<div class="ctx-row"><b>本质：</b>${escapeHtml(handoffNature)}</div>` : ''}
           ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
-      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '例如：每天早上一杯温水，或成为 WorkBuddy 的高手'}" maxlength="120">
+      <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '例如：每天早上一杯温水，或每天读 10 页书'}" maxlength="120">
       ${!handoffScenario ? '<div class="sc-hint">大目标？先写最近一周你最想先动的一件具体事——小到明天就能做。</div>' : ''}
       ${!hasKey ? '<div class="create-nokey">AI 还没连接：连上后，这里会自动帮你拆成 7 天微行动。<a href="app.html?settings=1">去连接 AI →</a></div>' : ''}
       <button class="cta-confirm" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
@@ -1449,10 +1466,10 @@ function renderAIDebugCard(goal, err){
 async function aiExperimentDraft(goal, lenHint, skipComplex){
   const lenRule = lenHint > 0
     ? `\n用户指定实验长度为 ${lenHint} 天，请用 planLength = ${lenHint}。`
-    : `\n- 根据目标自动选择实验长度：\n  * 1 天：一次性动作（如「锁门前检查煤气」）。\n  * 3 天：短期习惯确认（如「专注 10 分钟做一件事」）。\n  * 7 天：真正要养成的习惯（如「每天早上一杯温水」）。\n  * 14-30 天：深度改变（如「成为 WorkBuddy 高手」）。`;
+    : `\n- 根据目标自动选择实验长度：\n  * 1 天：一次性动作（如「锁门前检查煤气」）。\n  * 3 天：短期习惯确认（如「专注 10 分钟做一件事」）。\n  * 7 天：真正要养成的习惯（如「每天早上一杯温水」）。\n  * 14-30 天：深度改变（如「成为行业专家」）。`;
   const complexityRule = skipComplex
     ? `\n目标已由洞察收窄为聚焦处境（skipComplex）：isComplex 恒为 false，直接围绕目标拆解，不做复杂度判断。`
-    : `\n拆解前先判断一次目标的体量：\n- 若目标是**小而具体的行为**（如「每天早上一杯温水」「晚饭后拉伸 2 分钟」）→ isComplex=false，直接按目标拆。\n- 若目标是**宏大 / 抽象 / 长期 / 复合处境**（如「成为 WorkBuddy 专家」「改善和家人关系」「培养表达能力」）→ isComplex=true，此时**不要直接拆大目标**：先把它收窄为「最近一周每天都能实验的一个具体处境」focus（一句话、可每天行动、30 秒能开个头、不靠他人），focusReason 用 ≤40 字说明为何这样收窄；随后 days / micro / steps / anchors 一律围绕 focus 展开，不要回到大目标。`;
+    : `\n拆解前先判断一次目标的体量：\n- 若目标是**小而具体的行为**（如「每天早上一杯温水」「晚饭后拉伸 2 分钟」）→ isComplex=false，直接按目标拆。\n- 若目标是**宏大 / 抽象 / 长期 / 复合处境**（如「成为行业专家」「改善和家人关系」「培养表达能力」）→ isComplex=true，此时**不要直接拆大目标**：先把它收窄为「最近一周每天都能实验的一个具体处境」focus（一句话、可每天行动、30 秒能开个头、不靠他人），focusReason 用 ≤40 字说明为何这样收窄；随后 days / micro / steps / anchors 一律围绕 focus 展开，不要回到大目标。`;
   const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}${complexityRule}\n\n⚠️ 关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","micro":"...","steps":["...","..."],"anchors":["在早震打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
   for (let attempt = 0; attempt < 3; attempt++){
     const aiResp = await aiCall(prompt);
@@ -1511,13 +1528,13 @@ function renderPlanDraft(){
     <div class="suggest-card">
       <div class="sc-tag">第 1 步 · 实验拆解</div>
       <div class="sc-title">Transform 建议 <b>${N}</b> 天实验</div>
-      ${draft.rationale ? `<div class="sc-rationale">💡 ${escapeHtml(draft.rationale)}</div>` : ''}
+      ${draft.rationale ? `<div class="sc-rationale">${escapeHtml(draft.rationale)}</div>` : ''}
 
       <div class="sc-field">今天要做的微行动</div>
       <div class="sc-micro-card">${escapeHtml(draft.micro)}</div>
 
       <details class="sc-details">
-        <summary>📅 查看本周 ${N} 天整体任务（Day 1–${N}）</summary>
+        <summary>查看本周 ${N} 天整体任务（Day 1–${N}）</summary>
         <div class="plan-list" style="margin-top:10px;">${daysHtml}</div>
       </details>
 
@@ -1596,7 +1613,7 @@ function renderTodayDraft(anchors){
           <button type="button" class="anchor-submit" onclick="useCustomAnchor()">使用这个</button>
         </div>
       </div>
-      <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。' : '选一个时刻，让今天的行动自动发生。'}</div>
+      <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。' : '选一个时刻，让今天的行动自动发生。'}</div>
 
       <div class="sc-field">今日小步骤</div>
       <div class="step-list" id="stepList">${stepsHtml}</div>
@@ -1623,7 +1640,7 @@ function pickAnchorChip(i){
   draft.userTypedAnchor = false;
   const inp = $('anchorCustomInput');
   if (inp) inp.classList.remove('anchor-input-active');
-  anchorFeedbackSay('👋 你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。');
+  anchorFeedbackSay('你会在「<b>' + escapeHtml(draft.anchor) + '</b>」之后做今天的行动。到点就做，不用想。');
   updateStageConfirmBtn();
 }
 
@@ -1641,7 +1658,7 @@ function useCustomAnchor(){
   // 高亮已选中的自定义（移除其他 keys 的 sel）
   document.querySelectorAll('.anchor-key').forEach(c => c.classList.remove('sel'));
   inp.classList.add('anchor-input-active');
-  anchorFeedbackSay('👋 你会在「<b>' + escapeHtml(v) + '</b>」之后做今天的行动。这个时刻很自然，做起来会更顺。');
+  anchorFeedbackSay('你会在「<b>' + escapeHtml(v) + '</b>」之后做今天的行动。这个时刻很自然，做起来会更顺。');
   toast('已设置锚点：在「' + v + '」之后');
   updateStageConfirmBtn();
 }
