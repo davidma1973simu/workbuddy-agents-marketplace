@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>伴我洞察 · Transform</title>
+<title>想清楚 · 深挖 · Transform</title>
 <style>
   :root {
     /* ===== 设计令牌 Design Tokens · Transform 世界级标杆版 ===== */
@@ -17,10 +17,10 @@
     --line: #E6E9E7;
     --line-2: #DDE2DF;
 
-    /* 品牌绿 */
-    --green: #1D9E75;
+    /* 品牌绿：按钮底色只用 --green（深绿）；--green-3 仅用于渐变/进度/头像等装饰 */
+    --green: #0E6B50;
     --green-deep: #0E6B50;
-    --green-2: #158A68;
+    --green-2: #0A5A42;
     --green-3: #34D29E;
     --green-soft: #E8F4EE;
     --green-50: #F0F9F4;
@@ -75,9 +75,9 @@
     --ink-3: #6A7A74;
     --line: #252E2C;
     --line-2: #2F3A37;
-    --green: #34D29E;
+    --green: #2BBB8A;
     --green-deep: #2BBB8A;
-    --green-2: #3DE2AA;
+    --green-2: #34D29E;
     --green-3: #34D29E;
     --green-soft: #132A24;
     --green-50: #0F1F1B;
@@ -139,7 +139,7 @@
     flex-shrink: 0;
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
-  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(14,107,80,.28); }
+  .gnav .gn-item.on { background: var(--surface); color: var(--green-deep); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(14,107,80,.26), 0 1px 4px rgba(30,42,38,.08); }
   @media (max-width: 720px) {
     .topbar { gap: 6px; }
     .topbar .back { order: 1; }
@@ -169,6 +169,9 @@
   .theme-toggle .t-dark { display: none; }
   [data-theme="dark"] .theme-toggle .t-light { display: none; }
   [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
+  /* R-11：主题开关统一为图标按钮（与其它页逐字一致） */
+  .tb-theme { padding: 9px 12px !important; }
+  .tb-theme .t-light, .tb-theme .t-dark { font-size: 15px; line-height: 1; }
 
   /* 路径式步骤条 */
   .path { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 30px; position: relative; }
@@ -960,7 +963,7 @@
   .essence-restate-feedback.ok { color: var(--green-deep); }
   .essence-restate-feedback.warn { color: #c0392b; }
   .lb-explain-upgrade { margin-top: 18px; border: 1.5px dashed var(--line-2); border-radius: var(--radius-md); padding: 14px 16px; }
-  /* 🎯 核心产出：我理解到的核心认知（HIGHLIGHT） */
+  /* 核心产出：我理解到的核心认知（HIGHLIGHT） */
   .restate-core {
     margin-top: 18px; padding: 20px 22px;
     background: linear-gradient(135deg, var(--green-soft), var(--green-50));
@@ -1270,6 +1273,16 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* v2.1 从「我的资产」带想法进来时的轻提示 */
+  .using-banner {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+    background: var(--green-soft, #E3F3EC); border: 1px solid var(--green-light, #BFE9D8);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 14px;
+  }
+  .using-banner .ub-label { font-size: 11.5px; font-weight: 700; color: var(--green-deep); letter-spacing: .4px; flex: none; }
+  .using-banner .ub-text { font-size: 13.5px; font-weight: 700; color: var(--ink); line-height: 1.6; }
+  .using-banner .ub-scene { font-size: 12px; color: var(--ink-2); }
+
   @media (max-width: 420px) {
     .panel { padding: 26px 20px; }
     .p-node { width: 48px; }
@@ -1298,6 +1311,27 @@
 .ai-msg-body { flex: 1; min-width: 0; }
 .ai-msg-name { font-size: 12px; font-weight: 800; color: var(--green-deep); margin-bottom: 5px; letter-spacing: .3px; }
 .ai-result .ai-msg { animation: rise .35s var(--ease); }
+
+/* ===== R-17：AI 分步进度（用真实数据说话，不做装饰性 spinner） ===== */
+.ai-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 10px 0 4px; font-size: 13px; color: var(--ink-2); }
+.ai-steps .st { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); animation: rise .3s var(--ease); }
+.ai-steps .st .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .35; flex: none; }
+.ai-steps .st.done { color: var(--green-deep); border-color: var(--green-light); background: var(--green-soft); }
+.ai-steps .st.done .dot { opacity: .8; }
+.ai-steps .st.cur { color: var(--ink); border-color: var(--green); font-weight: 600; }
+.ai-steps .st.cur .dot { opacity: 1; animation: aiPulse 1.1s ease-in-out infinite; }
+.ai-steps .arrow { opacity: .3; }
+@keyframes aiPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: .4; } }
+/* R-17：AI 又给了一版 —— 就地展开，覆盖前先问你（旧内容不清除） */
+.ai-suggest { margin-top: 12px; padding: 13px 15px; border: 1px solid var(--green-light); background: var(--green-soft); border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.65; color: var(--ink); animation: rise .3s var(--ease); }
+.ai-suggest .as-head { font-size: 12.5px; font-weight: 700; color: var(--green-deep); margin-bottom: 7px; }
+.ai-suggest .as-row { margin: 3px 0; }
+.ai-suggest .as-row b { color: var(--ink-2); font-weight: 600; margin-right: 6px; }
+.ai-suggest .as-acts { display: flex; gap: 8px; margin-top: 11px; }
+.ai-suggest .as-acts button { font: inherit; font-size: 13px; padding: 6px 15px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+.ai-suggest .as-acts button:active { transform: scale(.97); }
+.ai-suggest .as-acts button.adopt { border-color: var(--green); color: var(--green-deep); background: #fff; font-weight: 600; }
+.ai-suggest .as-acts button.adopt:hover { background: var(--green-soft); }
 
 /* ===== Phase 2-A 统一微交互（节奏一致） ===== */
 .btn, .ai-btn, .ai-btn-primary, .type-chip, .label-chip, .ai-btn-cap, .mini, .session-menu, .theme-toggle, .back {
@@ -1762,10 +1796,10 @@
   .panel-redesign .note-add input { flex: 1; }
   .panel-redesign .btn-soft {
     flex-shrink: 0; padding: 0 22px; border-radius: var(--radius-sm);
-    background: var(--green); border: 1px solid var(--green); color: #fff;
+    background: var(--green-soft); border: 1px solid rgba(14,107,80,.24); color: var(--green-deep);
     font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .18s;
   }
-  .panel-redesign .btn-soft:hover { background: var(--green-deep); border-color: var(--green-deep); }
+  .panel-redesign .btn-soft:hover { background: var(--green-light); border-color: var(--green); }
 
   /* 笔记：分组列表，发丝分隔 */
   .panel-redesign .notes {
@@ -2057,15 +2091,12 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item" href="think.html">每日洞察</a>
-    <a class="gn-item" href="punch.html">每日改变</a>
-  </nav>    <button onclick="openSettings()" aria-label="设置" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);font-size:14px;padding:9px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-family:inherit;cursor:pointer;transition:all .2s;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14 3h-4l-.6 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2L10 21h4l.6-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式">
-      <span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span>
-    </button>
+    <nav class="gnav" aria-label="全局导航">
+      <a class="gn-item on" href="think.html">想清楚</a>
+      <a class="gn-item" href="punch.html">做到</a>
+      <a class="gn-item" href="cognitive.html">我的资产</a>
+    </nav>
+    <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
 
   <!-- 路径步骤条 -->
@@ -2203,10 +2234,10 @@
             <textarea id="essenceInsight" class="essence-insight" placeholder="我们对这个问题的新洞察和认知是……"></textarea>
           </div>
 
-          <!-- 🎯 核心产出：我理解到的核心认知（HIGHLIGHT） -->
+          <!-- 核心产出：我理解到的核心认知（HIGHLIGHT） -->
           <div class="restate-core" id="restateCore">
             <div class="restate-core-title">
-              <span class="rc-badge">🎯</span>
+              <span class="rc-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><circle cx="12" cy="12" r="8.6" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg></span>
               <span class="rc-title">我理解到的核心认知</span>
               <span class="rc-sub">用自己的话说出来 —— 这是这个阶段的<u>核心产出</u></span>
             </div>
@@ -2487,7 +2518,7 @@
             <div class="identity-hint">写下你期待自己成为什么样的人</div>
           </div>
           <div class="identity-badge" id="identityBadge" style="display:none;">
-            <div class="badge-icon">🗳️</div>
+            <div class="badge-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="8" width="17" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7 8V5.5A1.5 1.5 0 018.5 4h7A1.5 1.5 0 0117 5.5V8M8 14l2.5 2.5L16.5 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="badge-body">
               <div class="badge-k">我投给</div>
               <div class="badge-v" id="identityBadgeText">—</div>
@@ -2615,7 +2646,7 @@
 
       <div class="btn-row">
         <button class="btn btn-prev" onclick="goStep(3)">上一步</button>
-        <button class="btn btn-next" onclick="saveReflection()">完成复盘 · 沉淀成长资产</button>
+        <button class="btn btn-next" onclick="saveReflection()">完成复盘 · 存入我的资产</button>
         <a class="btn btn-ghost" href="cognitive.html">稍后再复盘</a>
       </div>
     </div>
@@ -2872,7 +2903,7 @@ async function aiEvaluateSources() {
         <div class="sq-score"><span class="sq-num">${data.score}</span><span class="sq-label">${escapeHtml(data.scoreLabel || '')}</span></div>
         <div class="sq-row"><b>可信度：</b>${escapeHtml(data.reliability || '')}</div>
         <div class="sq-row"><b>视角丰富度：</b>${escapeHtml(data.perspective || '')}</div>
-        ${data.warning ? `<div class="sq-row sq-warn"><b>⚠ 注意：</b>${escapeHtml(data.warning)}</div>` : ''}
+        ${data.warning ? `<div class="sq-row sq-warn"><b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 4l8.5 15h-17L12 4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1" fill="currentColor"/></svg> 注意：</b>${escapeHtml(data.warning)}</div>` : ''}
         <div class="sq-row sq-suggest"><b>建议：</b>${escapeHtml(data.suggestion || '')}</div>
       </div>`;
     } else if (box) {
@@ -3168,6 +3199,14 @@ async function aiAskNext(btn) {
   const groups = state.data.groups || [];
   if (!groups.length) { toast('先完成归类'); return; }
   btn.classList.add('loading');
+  // R-17：分步进度（条目数 / 已答题数都取真实数据，不编造）
+  const noteN = groups.reduce((k, g) => k + (g.notes || []).length, 0);
+  const askedN = (state.data.insightQuestions || []).length;
+  const _prog = aiStepsStart(btn, [
+    '正在读你的 ' + noteN + ' 条信息',
+    askedN ? '正在避开已问过的 ' + askedN + ' 个问题' : '正在找一个新角度',
+    '正在写一个好问题'
+  ]);
   const groupsStr = groups.map(g =>
     `[${g.label}]: ${g.notes.map(n => `[${n.source || '观察'}] ${n.text}`).join('; ')}`
   ).join('\n');
@@ -3193,12 +3232,14 @@ async function aiAskNext(btn) {
       }
       q = candidate;
     } catch(e) {
+      _prog.stop();   // R-17
       btn.classList.remove('loading');
       toast(e.message || '出题失败');
       return;
     }
   }
 
+  _prog.stop();   // R-17
   btn.classList.remove('loading');
   if (!q) {
     toast('AI 暂时提不出不一样的问题，请换个角度手动输入或稍后再试');
@@ -3451,17 +3492,34 @@ async function aiIntegrate(btn) {
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '（未填）';
   btn.classList.add('loading');
+  // R-17：分步进度（真实条目数 / 分组数 / 问答数）
+  const _noteN = groups.reduce((k, g) => k + (g.notes || []).length, 0);
+  const _qaN = (state.data.insightQuestions || []).length;
+  const _prog = aiStepsStart(btn, [
+    '正在读你的 ' + _noteN + ' 条信息',
+    '正在归纳 ' + groups.length + ' 组现象',
+    '正在写本质与洞察' + (_qaN ? '（' + _qaN + ' 轮问答）' : '')
+  ]);
   try {
     const r = await aiCall(
       `场景：「${state.data.scenario || '未提供'}」\n\n所有归类信息：\n${groupsStr}\n\n用户在问题下的思考：\n${qaPairs}\n\n用户的整体看法：\n${personal}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
     );
     const data = parseSingleEssence(r);
     if (data) {
-      state.data.essence = { nature: data.nature || '', insight: data.newInsight || '' };
-      state.data.confirmed = false;
-      restoreEssenceUI();
-      checkNext1();
-      toast('Transform整合完成，请修订并打分');
+      const prev = state.data.essence || {};
+      const had = !!((prev.nature || '').trim() || (prev.insight || '').trim());
+      const next = { nature: (data.nature || '').trim(), insight: (data.newInsight || '').trim() };
+      if (had) {
+        // R-17：已有内容绝不清除 —— 就地展开「新一版建议」，采用与否由用户决定
+        renderAISuggest(next);
+        toast('Transform 又给了一版，你原来的内容还在');
+      } else {
+        state.data.essence = next;
+        state.data.confirmed = false;
+        restoreEssenceUI();
+        checkNext1();
+        toast('Transform整合完成，请修订并打分');
+      }
     } else {
       toast('AI 没返回有效内容，重试');
     }
@@ -3471,7 +3529,37 @@ async function aiIntegrate(btn) {
     else if (msg.includes('503') || msg.includes('502') || msg.includes('500') || msg.includes('429')) toast('AI 服务暂时不可用（' + msg + '），已自动重试 3 次。请稍后手动再试，或切换模型品牌');
     else toast('Transform总结失败：' + msg);
   }
+  _prog.stop();   // R-17
   btn.classList.remove('loading');
+}
+/* R-17：AI 新建议就地展开（不动已有内容），采用 / 保留由用户决定 */
+function renderAISuggest(next){
+  const box = $('aiIntegrateResult');
+  if (!box) return;
+  window.__aiSuggest = next;
+  box.style.display = 'block';
+  box.innerHTML =
+    '<div class="ai-suggest"><div class="as-head">Transform 又给了一版（你原来的内容还在）</div>' +
+    (next.nature ? '<div class="as-row"><b>本质</b>' + escapeHtml(next.nature) + '</div>' : '') +
+    (next.insight ? '<div class="as-row"><b>洞察</b>' + escapeHtml(next.insight) + '</div>' : '') +
+    '<div class="as-acts"><button class="adopt" onclick="adoptAISuggest()">采用这一版</button>' +
+    '<button onclick="dismissAISuggest()">保留我的</button></div></div>';
+}
+function adoptAISuggest(){
+  const next = window.__aiSuggest;
+  if (!next) return;
+  state.data.essence = { nature: next.nature || '', insight: next.insight || '' };
+  state.data.confirmed = false;
+  dismissAISuggest();
+  restoreEssenceUI();
+  checkNext1();
+  saveDraft();
+  toast('已采用这一版');
+}
+function dismissAISuggest(){
+  const box = $('aiIntegrateResult');
+  if (box){ box.style.display = 'none'; box.innerHTML = ''; }
+  window.__aiSuggest = null;
 }
 function parseSingleEssence(text) {
   try {
@@ -3642,6 +3730,8 @@ async function aiViewpoint(btn) {
   const scenario = state.data.scenario || '';
   if (!e.nature && !e.insight) { toast('先让Transform总结出本质和洞察'); return; }
   if (btn) btn.classList.add('loading');
+  // R-17：分步进度
+  const _prog = aiStepsStart(btn, ['正在读你的本质与洞察', '正在换 4 种视角', '正在写成一句话']);
   const r = await aiCall(
     '用户正在做一次认知梳理，已经提炼出本质与洞察。\n场景：「' + scenario + '」\n用户的本质：「' + e.nature + '」\n用户的洞察：「' + e.insight + '」\n用户当前的理解：「' + restate + '」\n\n' +
     '请基于 4 个完全不同视角，**直接改写**这段核心认知（不是启发式提问，是改写后的完整句子）。用户要的是 4 个候选版本，挑一个最贴的当最终认知。\n\n' +
@@ -3654,6 +3744,7 @@ async function aiViewpoint(btn) {
     '要求：每项的 text 字段 = 直接可用的核心认知改写版，不要解释、不要提问、不要鸡汤；保持原本质不变，只是表达视角不同。\n' +
     '严格返回 JSON 数组：[{"name":"正向视角","text":"..."},{"name":"长远视角","text":"..."},{"name":"利他视角","text":"..."},{"name":"反身视角","text":"..."}]'
   );
+  _prog.stop();   // R-17
   if (btn) btn.classList.remove('loading');
   const arr = parseViewpoints(r);
   const box = $('viewpointResult');
@@ -3850,6 +3941,8 @@ async function recommendApplyTitles(type, btn) {
   const e = state.data.essence || {};
   if (!e.nature && !e.insight) { toast('先去洞察步骤确认核心认知'); return; }
   if (btn) btn.classList.add('loading');
+  // R-17：分步进度
+  const _prog = aiStepsStart(btn, ['正在读你的核心认知', type === 'near' ? '正在找你熟悉的场景' : '正在找一个跨行业的场景', '正在写出 3 个标题']);
   const baseContext = `核心认知：\n本质：${e.nature || '未填'}\n洞察：${e.insight || '未填'}\n重要性：${state.data.impact || '?'}/5\n接受费力：${state.data.effort || '?'}/5\n`;
   let label, typeRule;
   if (type === 'near') {
@@ -3875,6 +3968,7 @@ async function recommendApplyTitles(type, btn) {
     else toast('Transform推荐失败，已用本地生成');
   }
   if (btn) btn.classList.remove('loading');
+  _prog.stop();   // R-17
   renderApplyTitles(type);
   saveDraft();
 }
@@ -3976,6 +4070,8 @@ async function generateApplyDetails(type, btn) {
   const obj = ensureAppScenario(type);
   if (!obj.title) { toast('先选择场景标题'); return; }
   if (btn) btn.classList.add('loading');
+  // R-17：分步进度
+  const _prog = aiStepsStart(btn, ['正在读你的核心认知', '正在展开「' + (obj.title || '') + '」', '正在写场景细节']);
   const e = state.data.essence || {};
   const label = type === 'near' ? '熟悉场景' : '陌生场景';
   try {
@@ -3998,6 +4094,7 @@ async function generateApplyDetails(type, btn) {
     toast('Transform细节生成失败，已用本地生成');
   }
   if (btn) btn.classList.remove('loading');
+  _prog.stop();   // R-17
 }
 function parseDetailJSON(text) {
   if (!text) return null;
@@ -4396,6 +4493,30 @@ function setAILoading(btnId, loading) {
   if (!btn) return;
   btn.classList.toggle('loading', loading);
 }
+
+/* ===== R-17：AI 分步进度 =====
+   等待 20-30 秒时给出「正在做什么」的真实步骤（条目数/分组数都取真实数据）；
+   返回一个 { stop() }，无论成功失败都必须 stop()，绝不留残影。 */
+function aiStepsStart(anchor, steps){
+  if (!anchor || !anchor.parentElement) return { stop(){} };
+  let host = anchor.parentElement.querySelector('.ai-steps');
+  if (!host){
+    host = document.createElement('div');
+    host.className = 'ai-steps';
+    anchor.insertAdjacentElement('afterend', host);
+  }
+  let cur = 0;
+  const paint = () => {
+    host.innerHTML = steps.map((s, i) =>
+      `<span class="st ${i < cur ? 'done' : (i === cur ? 'cur' : '')}"><span class="dot"></span>${escapeHtml(String(s))}</span>`
+    ).join('<span class="arrow">→</span>');
+  };
+  paint();
+  const timer = setInterval(() => { if (cur < steps.length - 1){ cur++; paint(); } }, 2400);
+  // 兜底：极慢/异常也不让进度条永久残留
+  const hardStop = setTimeout(() => { clearInterval(timer); if (host && host.parentElement) host.remove(); }, 90000);
+  return { stop(){ clearInterval(timer); clearTimeout(hardStop); if (host && host.parentElement) host.remove(); } };
+}
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 
 function showAIResult(elId, text) {
@@ -4457,7 +4578,7 @@ function complete() {
   }
   localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
   localStorage.removeItem(LS_SESSION);
-  toast('已存入认知档案');
+  toast('已存入「我的资产 · 想法」');
   openReflection(session);
 }
 
@@ -4519,7 +4640,7 @@ function saveReflection(){
       localStorage.setItem(LS_ARCHIVE, JSON.stringify(archive));
     }
   } catch(e) {}
-  toast('复盘已沉淀进你的成长资产 ✓');
+  toast('复盘已存入「我的资产」 ✓');
   setTimeout(() => location.href = 'cognitive.html', 1100);
 }
 
@@ -4637,8 +4758,8 @@ function renderAppAside() {
     }
   } catch (e) {}
   aside.innerHTML =
-    '<div class="aside-card"><div class="aside-title">🏷️ 主题沉淀</div>' + tagsHtml + '</div>' +
-    '<div class="aside-card"><div class="aside-title">💡 最近一次洞察</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
+    '<div class="aside-card"><div class="aside-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M3 11.5V4.5A1.5 1.5 0 014.5 3h7a1.5 1.5 0 011.06.44l8 8a1.5 1.5 0 010 2.12l-6.44 6.44a1.5 1.5 0 01-2.12 0l-8-8A1.5 1.5 0 013 11.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7.6" cy="7.6" r="1.4" fill="currentColor"/></svg> 主题沉淀</div>' + tagsHtml + '</div>' +
+    '<div class="aside-card"><div class="aside-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 00-3.6 10.8c.4.3.6.7.6 1.2v1h6v-1c0-.5.2-.9.6-1.2A6 6 0 0012 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 最近一次洞察</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
   const isEmpty = tags.length === 0 && recent === '—';
   document.body.classList.toggle('aside-empty', isEmpty);
 }
@@ -4647,7 +4768,7 @@ function renderAppAside() {
 const OB_SLIDES = [
   { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把信息摊开 → 想透本质 → 推演应用 → 沉淀成资产。每一步只花几分钟。' },
   { h: '四步，一次想通一件事', p: '① 摊开：把信息摆到桌面上（观察/事实/听说/猜测）；② 想透：透过现象看本质，用自己的话说出核心认知；③ 应用：在熟悉与陌生的场景里推演怎么做；④ 沉淀：带走行动、资源、投入承诺与回拉策略。' },
-  { h: '你的认知档案会越积越厚', p: '每次完成后，洞察会存进「我的认知档案」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
+  { h: '你的想法会越积越厚', p: '每次完成后，洞察会存进「我的资产 · 想法」，带标签、可回看、可调用。现在，从眼前这件复杂挑战开始吧。' }
 ];
 let obIdx = 0;
 function maybeShowOnboard() {
@@ -4673,7 +4794,7 @@ function closeOnboard() {
 }
 
 loadDraft();
-// 从「伴我洞察」的结果页跳来时会带上 ?topic=：直接预填挑战，不让用户重输一遍自己刚写下的困扰
+// 从「想清楚」的结果页跳来时会带上 ?topic=：直接预填挑战，不让用户重输一遍自己刚写下的困扰
 // （用户是明确点「把这件事真正想清楚」过来的，所以以链接里的主题为准）
 try {
   const _topic = (new URLSearchParams(location.search).get('topic') || '').trim();
@@ -4682,6 +4803,43 @@ try {
     saveDraft();
   }
 } catch (e) {}
+// 从「我的资产 · 想法」点「拿它去用 →」跳来时带 ?from=<想法id>：
+// 把那条想法带进来，并在页面顶部轻提示"正在用这条想法"
+try {
+  const _from = (new URLSearchParams(location.search).get('from') || '').trim();
+  if (_from) {
+    let _arch = [];
+    try { _arch = JSON.parse(localStorage.getItem('trf_archive')) || []; } catch (e) {}
+    const _it = _arch.find(s => String(s.id) === String(_from));
+    if (_it) {
+      const _e = _it.essence || {};
+      const _lead = ((_e.insight || _e.nature || '') + '').trim();
+      const _sc = (_it.scenario || '').trim();
+      if (_sc && !state.data.scenario) { state.data.scenario = _sc; saveDraft(); }
+      state.data.fromInsightId = _from;
+      state.data.fromInsight = _lead;
+      saveDraft();
+      showUsingBanner(_lead, _sc);
+    }
+  }
+} catch (e) {}
+
+// 顶部"正在用这条想法"轻提示（不打断流程，只在本次梳理里生效）
+function showUsingBanner(text, scene) {
+  if (!text) return;
+  const host = document.getElementById('scenario');
+  const card = host ? host.closest('.card, section, .panel, .step-panel') : null;
+  const banner = document.createElement('div');
+  banner.className = 'using-banner';
+  banner.innerHTML =
+    '<span class="ub-label">正在用这条想法</span>' +
+    '<span class="ub-text"></span>' +
+    (scene ? '<span class="ub-scene"></span>' : '');
+  banner.querySelector('.ub-text').textContent = text;
+  if (scene) banner.querySelector('.ub-scene').textContent = '· 来自「' + scene + '」';
+  const anchor = card || host;
+  if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(banner, anchor);
+}
 $('scenario').value = state.data.scenario;
 $('scenario').addEventListener('input', e => { state.data.scenario = e.target.value; saveDraft(); });
 renderNotes(); renderGroups();
@@ -4844,10 +5002,13 @@ async function aiCourage(type, btn) {
     return;
   }
   if (btn) btn.classList.add('loading');
+  // R-17：分步进度
+  const _prog = aiStepsStart(btn, ['正在读你写下的这一句', '正在换一个角度', '正在写一段话']);
   const prompt = type === 'giveUp'
     ? '用户为了让改变发生，准备为它创造空间：「' + giveUp + '」\n\n请给出一段温暖、克制的「空间创造判断」——不是恐吓、不是喊口号。包含：\n1. 这个交换真正挑战的是什么（≤25字）\n2. 为什么这个「放下」其实是在为更重要的事腾出空间（≤25字）\n3. 最小可开始的一步：今天就能做的、不带压力的动作（≤30字）\n\n严格返回 JSON：{"truth":"...","reframe":"...","step":"..."}'
     : '用户担心在改变过程中遇到阻力时会停下来。他/她识别的阻力信号是：「' + risk + '」\n\n请给出一段温暖、克制的「阻力应对设计」——不是自我批评、不是道德绑架。包含：\n1. 这个阻力通常以什么信号出现（≤25字）\n2. 如何把它重新定义为「需要照顾自己」而不是失败（≤25字）\n3. 一个具体、温柔的回拉动作：真的感到困难时，第一步可以做什么（≤30字）\n\n严格返回 JSON：{"trigger":"...","reframe":"...","pullback":"..."}';
   const r = await aiCall(prompt);
+  _prog.stop();   // R-17
   if (btn) btn.classList.remove('loading');
   const data = parseCourage(r, type);
   const box = type === 'giveUp' ? $('courageGiveUpResult') : $('courageRiskResult');
@@ -4905,7 +5066,7 @@ function signCostCommit(type) {
   }
   toast(isGiveUp ? '已签名 —— 这个空间，你愿意创造' : '已签名 —— 这个回拉策略，你愿意使用');
 }
-// 把当前核心洞察作为"认知起点"带入「伴我改变」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
+// 把当前核心洞察作为"认知起点"带入「做到」，完成 认知→行为 的自然衔接（同时补上"决策生成"段）
 function sendInsightToBehavior(){
   const d = state.data;
   const e = d.essence || {};
@@ -4993,7 +5154,7 @@ function updateVoteStats(text, readOnly) {
     </div>
   </div>
 </div>
-<a class="fab-archive" href="cognitive.html" title="随时查看我的成长资产">
+<a class="fab-archive" href="cognitive.html" title="随时查看我的资产">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
   我的档案
 </a>

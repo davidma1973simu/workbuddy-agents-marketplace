@@ -28,8 +28,8 @@ with sync_playwright() as p:
     pg.goto(BASE + 'index.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
     body = pg.inner_text('body')
-    check('首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '开始一次认知提升' in body and '开始一次行为改变' in body)
-    check('首页-双入口链接(HTML)', 'href="think.html"' in html and 'href="punch.html"' in html and '开始一次认知提升' in body and '开始一次行为改变' in body)
+    check('首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '想清楚一件事' in body and '做到一件事' in body)
+    check('首页-双入口链接(HTML)', 'href="think.html"' in html and 'href="punch.html"' in html and '想清楚一件事' in body and '做到一件事' in body)
     nav = pg.inner_text('.nav-links') if pg.query_selector('.nav-links') else ''
     check('首页-设置移出主导航', '设置' not in nav)
     check('首页-旧 P0-06 流程文案已去', '摊开 → 想透 → 试试看' not in html)
@@ -37,7 +37,7 @@ with sync_playwright() as p:
     # 2) think.html P0-02/04/05 (升级在结果页, 用 HTML 校验)
     pg.goto(BASE + 'think.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
-    check('每日洞察-眉标修正', '每日洞察 · 几分钟想清楚一件事' in html)
+    check('每日洞察-眉标修正', '想清楚 · 几分钟理清一件事' in html)
     check('每日洞察-升级入口(HTML)', '值得认真处理' in html)
     check('每日洞察-无JS错误', True)
 

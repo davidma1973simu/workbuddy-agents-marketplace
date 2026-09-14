@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>每日进步 · Transform</title>
+<title>做到 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -70,7 +70,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版伴我改变入口（底部小链接） */
+  /* 完整版「做到 · 拆解」入口（底部小链接） */
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -99,11 +99,14 @@
     flex-shrink: 0;
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
-  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(14,107,80,.28); }
+  .gnav .gn-item.on { background: var(--surface); color: var(--green-deep); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(14,107,80,.26), 0 1px 4px rgba(30,42,38,.08); }
   /* 主题切换按钮双 span（t-light 默认显示，t-dark 仅深色时显示） */
   .t-dark { display: none; }
   [data-theme="dark"] .t-light { display: none; }
   [data-theme="dark"] .t-dark { display: inline; }
+  /* R-11：主题开关统一为图标按钮（与其它页逐字一致） */
+  .tb-theme { padding: 9px 12px !important; }
+  .tb-theme .t-light, .tb-theme .t-dark { font-size: 15px; line-height: 1; }
   @media (max-width: 720px) {
     .topbar { gap: 6px; }
     .topbar .back { order: 1; }
@@ -134,10 +137,10 @@
   .cta-done {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%; padding: 18px; border: none; border-radius: 14px;
-    background: var(--green-3); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer;
+    background: var(--green); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer;
     font-family: inherit; transition: all .25s var(--ease); box-shadow: 0 8px 24px rgba(29,158,117,.28);
   }
-  .cta-done:hover { transform: translateY(-2px); background: var(--green-2); box-shadow: 0 12px 32px rgba(29,158,117,.36); }
+  .cta-done:hover { transform: translateY(-2px); background: #0A5A42; box-shadow: 0 12px 32px rgba(29,158,117,.36); }
   .cta-done:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
   .cta-miss {
     display: block; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px;
@@ -216,8 +219,8 @@
   }
   .btn-ghost { background: var(--surface); color: var(--green); border: 1.5px solid var(--green-light); }
   .btn-ghost:hover { border-color: var(--green); background: var(--green-50); }
-  .btn-primary { background: var(--green-3); color: #fff; }
-  .btn-primary:hover { background: var(--green-2); }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: #0A5A42; }
   .btn-amber { background: var(--amber); color: #fff; }
   .btn-amber:hover { filter: brightness(1.06); }
 
@@ -376,10 +379,10 @@
   .cta-confirm {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     margin-top: 16px; padding: 16px; border: none; border-radius: var(--radius-md);
-    background: var(--green-3); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
+    background: var(--green); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer;
     font-family: inherit; transition: all .25s var(--ease);
   }
-  .cta-confirm:hover { transform: translateY(-2px); background: var(--green-2); }
+  .cta-confirm:hover { transform: translateY(-2px); background: #0A5A42; }
   .cta-confirm:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
   /* ===== Stage 2：checklist + 大按键 + 自定义锚点 ===== */
@@ -567,7 +570,7 @@
   .rd-dismiss { display: block; margin: 12px auto 0; border: none; background: transparent; color: var(--ink-3); font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; text-underline-offset: 3px; }
   .rd-dismiss:hover { color: var(--amber); }
 
-  /* ===== 每日改变上下文行：正在改变 / 换项目 / 开新目标 ===== */
+  /* ===== 做到上下文行：正在改变 / 换项目 / 开新目标 ===== */
   .now-line {
     display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
     margin: 2px 2px 12px; padding: 10px 14px;
@@ -589,8 +592,8 @@
     font-family: inherit; transition: all .2s var(--ease);
   }
   .now-btn:hover { border-color: var(--green); color: var(--green-deep); }
-  .now-btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
-  .now-btn.primary:hover { background: var(--green-2); color: #fff; }
+  .now-btn.primary { background: var(--green-soft); border-color: rgba(14,107,80,.26); color: var(--green-deep); }
+  .now-btn.primary:hover { background: var(--green-light); color: var(--green-deep); }
   .proj-panel {
     margin: -4px 2px 12px; background: var(--surface); border: 1px solid var(--line);
     border-radius: var(--radius-md); overflow: hidden;
@@ -653,18 +656,19 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item" href="think.html">每日洞察</a>
-    <a class="gn-item on" href="punch.html">每日改变</a>
-  </nav>    <button onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
-    <button class="arch-btn" onclick="location.href='behavior.html'" aria-label="行为档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">行为档案</button>
+    <nav class="gnav" aria-label="全局导航">
+      <a class="gn-item" href="think.html">想清楚</a>
+      <a class="gn-item on" href="punch.html">做到</a>
+      <a class="gn-item" href="cognitive.html">我的资产</a>
+    </nav>
+    <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
 
-  <!-- 每日进步主屏 -->
+  <!-- 做到主屏 -->
   <div id="punchStepsBarWrap"></div>
   <div id="punchArea"></div>
   <div class="full-link-bar">
-    <a href="act.html">伴我改变 →</a>
+    <a href="act.html">做到 · 拆解 →</a>
   </div>
 
   <div id="toast"></div>
@@ -758,7 +762,7 @@ function parseJSON(text){
 function aiText(r){ return r && r.ok ? r.text : null; }
 function aiErr(r){ return r && !r.ok ? r : null; }
 
-/* ===================== 每日进步核心 ===================== */
+/* ===================== 做到 核心 ===================== */
 // done=true：正常完成；done=true + extra.rescued：受阻后靠最小版补做（也算完成，连续不清零）
 // done=false：明确今天不做（记 reason，供 D 态重新设计）；失败不惩罚——不在此清零 streak，
 //             连续值由下一次完成按间隔天数自然重算（隔断则归 1）
@@ -898,7 +902,7 @@ function renderPunch(){
   const area = $('punchArea');
   if (!current){
     area.innerHTML = `<div class="create-hero">
-      <div class="ch-eyebrow">伴我改变</div>
+      <div class="ch-eyebrow">做到</div>
       <h1>还没有开始一次改变</h1>
       <p>先定一个想改变的事，Transform会帮你定出今天就能完成的一小步。</p>
       <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
@@ -912,7 +916,7 @@ function renderPunch(){
   const anchor = current.anchor && current.anchor.after;
   const phase = isGrad ? '已完成全部 ' + (current.targetDays||0) + ' 天' : '第 ' + current.currentDay + ' 天 · 连续 ' + (current.streak||0) + ' 天';
   const votes = countVotes();
-  // P1-W3：升级到伴我改变时带上已有上下文（目标 / 今天已做的小步 / 最近失败原因）
+  // P1-W3：升级到「做到 · 拆解」时带上已有上下文（目标 / 今天已做的小步 / 最近失败原因）
   const lastFail = (current.logs || []).filter(l => l && l.done === false).pop();
   const failReason = (lastFail && lastFail.reason) || '';
   const upUrl = 'act.html?goal=' + encodeURIComponent(current.input || '')
@@ -987,7 +991,7 @@ function renderPunch(){
         </details>
         <div class="tf-actions">
           <button class="cta-ok" onclick="confirmDone()">✓ 今天闭环 · 明天见</button>
-          <a class="btn btn-ghost" href="behavior.html">行为档案</a>
+          <a class="btn btn-ghost" href="behavior.html">证据</a>
         </div>
         <div class="tf-upgrade">
           <div class="tu-q">想把这个改变做得更完整（含复盘与沉淀）？</div>
@@ -1230,7 +1234,7 @@ async function showTodayFeedback(isRescued){
   try {
     if (getAI().apiKey && micro) {
       const aiResp = await aiCall(
-        '用户刚完成了一个「每日改变」实验' + (isRescued ? '（靠最小版补做完成）' : '') + '的第 ' + day + ' 天。\n' +
+        '用户刚完成了一个「做到」实验' + (isRescued ? '（靠最小版补做完成）' : '') + '的第 ' + day + ' 天。\n' +
         '今天做了：在「' + (anchor || '未指定') + '」之后，' + micro + '。\n' +
         '大目标：「' + (current.input || '') + '」，目标身份：「' + (identity || '待定') + '」。\n' +
         '当前：连续 ' + streak + ' 天，累计 ' + total + ' / ' + targetDays + ' 天。\n' +
@@ -1368,7 +1372,7 @@ function renderCreate(){
 
   area.innerHTML = `
     <div class="suggest-card create-start">
-      <div class="sc-tag">每日改变 · 还没有进行中的实验</div>
+      <div class="sc-tag">做到 · 还没有进行中的实验</div>
       <h2 class="sc-title">先写下想改变的那一件小事</h2>
       <div class="sc-desc">不用写大目标。写一件这周你真想让它发生的小事——Transform 会帮你拆成 7 天，每天只需做今天那一小步。</div>
       ${showCtx ? `
@@ -1470,7 +1474,7 @@ async function aiExperimentDraft(goal, lenHint, skipComplex){
   const complexityRule = skipComplex
     ? `\n目标已由洞察收窄为聚焦处境（skipComplex）：isComplex 恒为 false，直接围绕目标拆解，不做复杂度判断。`
     : `\n拆解前先判断一次目标的体量：\n- 若目标是**小而具体的行为**（如「每天早上一杯温水」「晚饭后拉伸 2 分钟」）→ isComplex=false，直接按目标拆。\n- 若目标是**宏大 / 抽象 / 长期 / 复合处境**（如「成为行业专家」「改善和家人关系」「培养表达能力」）→ isComplex=true，此时**不要直接拆大目标**：先把它收窄为「最近一周每天都能实验的一个具体处境」focus（一句话、可每天行动、30 秒能开个头、不靠他人），focusReason 用 ≤40 字说明为何这样收窄；随后 days / micro / steps / anchors 一律围绕 focus 展开，不要回到大目标。`;
-  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}${complexityRule}\n\n⚠️ 关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","micro":"...","steps":["...","..."],"anchors":["在早震打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}${complexityRule}\n\n关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","micro":"...","steps":["...","..."],"anchors":["在早震打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
   for (let attempt = 0; attempt < 3; attempt++){
     const aiResp = await aiCall(prompt);
     if (aiErr(aiResp)) return { data: null, error: aiResp };
@@ -1702,7 +1706,7 @@ async function confirmChange(){
     ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
     : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[]}); return p; })();
 
-  const goal = draft.goal || handoffScenario || '行为改变';
+  const goal = draft.goal || handoffScenario || '做到一件事';
   current = {
     id: 'a_' + Date.now() + '_' + Math.floor(Math.random()*1000),
     input: (goal || '').trim() || draft.micro,
@@ -1743,11 +1747,11 @@ async function confirmChange(){
   // 路由优先级：
   // 1. ?id=xxx → 精确加载该实验
   // 2. 洞察 handoff → 创建态（带入认知起点）
-  // 3. 有进行中的实验 → 默认直接进「今日行为」（A）——每日改变 = 每天做那一步，而不是每天定义主题
+  // 3. 有进行中的实验 → 默认直接进「今日行为」（A）——做到 = 每天做那一步，而不是每天定义主题
   // 4. 无任何进行中实验 → 创建态
   if (id){
     current = loadActions().find(a => a.id === id) || null;
-    // 已归档的实验不进入打卡流（在行为档案中管理）
+    // 已归档的实验不进入打卡流（在「证据」中管理）
     if (current && current.status !== 'archived' && !current.archived){ renderPunchStepsBar(); renderPunch(); return; }
     renderCreate();
     return;

@@ -43,7 +43,7 @@ with sync_playwright() as p:
     # ---------------- 首页：阈值以下不显示 ----------------
     pg.goto(BASE + 'index.html', wait_until='networkidle'); time.sleep(0.4)
     body = pg.inner_text('body')
-    check('ZH 首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '开始一次认知提升' in body and '开始一次行为改变' in body)
+    check('ZH 首页-v1.1 单层双入口', '想清楚' in body and '做得到' in body and '想清楚一件事' in body and '做到一件事' in body)
     check('ZH 首页-设置移出主导航', '设置' not in (pg.inner_text('.nav-links') or ''))
     check('ZH 首页-页脚保留 AI 设置', 'AI 设置' in body)
     check('ZH 首页-发现容器存在', pg.query_selector('#homeDiscovery') is not None)
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     check('ZH 首页-洞察≥5 出现发现卡', card is not None)
     if card:
         txt = card.inner_text()
-        check('ZH 首页-发现卡文案真实', '洞察' in txt and '认知档案' in txt, txt.replace('\n', ' ')[:80])
+        check('ZH 首页-发现卡文案真实', '洞察' in txt and '想法' in txt, txt.replace('\n', ' ')[:80])
 
     # ---------------- 首页：行为实验 ≥3 触发（EN） ----------------
     # 注意：同一 origin 下 localStorage 跨页共享，先清空再测，避免前序 archive 种子污染
@@ -81,7 +81,7 @@ with sync_playwright() as p:
 
     # ---------------- 每日洞察 ----------------
     for f, lang, eyebrow, up in [
-        ('think.html', 'ZH', '每日洞察 · 几分钟想清楚一件事', '值得认真处理'),
+        ('think.html', 'ZH', '想清楚 · 几分钟理清一件事', '值得认真处理'),
         ('think-en.html', 'EN', 'Daily Insight · See one thing clearly in minutes', 'Does this deserve a proper look?'),
     ]:
         pg.goto(BASE + f, wait_until='networkidle'); time.sleep(0.3)

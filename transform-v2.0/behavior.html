@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>行为档案 · Transform</title>
+<title>证据 · 我的资产 · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -15,8 +15,9 @@
     --ink-2: #5A6B64;
     --ink-3: #93A09A;
     --line: #E4E8E3;
-    --green: #1D9E75;
+    --green: #0E6B50;
     --green-deep: #0E6B50;
+    --green-2: #0A5A42;
     --green-soft: #E3F3EC;
     --green-50: #ECF8F3;
     --green-light: #BFE9D8;
@@ -39,8 +40,9 @@
     --ink-2: #A9B8B2;
     --ink-3: #6E7E78;
     --line: #2C3633;
-    --green: #2BBB8A;
+    --green: #34D29E;
     --green-deep: #34D29E;
+    --green-2: #2BBB8A;
     --green-soft: #16302A;
     --green-50: #10221D;
     --green-light: #1E4A3E;
@@ -63,7 +65,34 @@
   }
   .wrap { max-width: 600px; margin: 0 auto; padding: 22px 20px 110px; }
 
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+  .topbar { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  /* ===== R-11：统一全局导航（与 think/punch/app/act 逐字一致） ===== */
+  .topbar .back {
+    display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
+    font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s; flex-shrink: 0;
+  }
+  .topbar .back:hover { background: var(--surface-2); color: var(--ink); }
+  .gnav {
+    display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
+    padding: 4px; border-radius: 999px; background: var(--surface-2);
+    overflow-x: auto; justify-content: center; scrollbar-width: none;
+  }
+  .gnav::-webkit-scrollbar { display: none; }
+  .gnav .gn-item {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 7px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    text-decoration: none; white-space: nowrap; transition: all .2s;
+    flex-shrink: 0;
+  }
+  .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
+  .gnav .gn-item.on { background: var(--surface); color: var(--green-deep); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(14,107,80,.26), 0 1px 4px rgba(30,42,38,.08); }
+  @media (max-width: 560px) {
+    .gnav { gap: 4px; }
+    .gnav .gn-item { padding: 6px 11px; font-size: 12px; }
+  }
+  .tb-theme { padding: 9px 12px !important; flex-shrink: 0; }
+  .tb-theme .t-light, .tb-theme .t-dark { font-size: 15px; line-height: 1; }
   .nav-link {
     display: inline-flex; align-items: center; gap: 6px;
     text-decoration: none; color: var(--ink-2); font-size: 14px;
@@ -111,7 +140,7 @@
     border-radius: 999px; font-size: 13px; font-weight: 600;
     color: var(--ink-2); text-decoration: none; transition: all .2s;
   }
-  .arch-toggle a.on { background: var(--green); color: #fff; box-shadow: 0 2px 8px rgba(14,107,80,.18); }
+  .arch-toggle a.on { background: var(--surface); color: var(--green-deep); box-shadow: inset 0 0 0 1px rgba(14,107,80,.26), 0 1px 3px rgba(30,42,38,.07); }
   .arch-toggle a:not(.on):hover { color: var(--green-deep); }
 
   /* 档案区域 */
@@ -334,7 +363,7 @@
   }
   .mini:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
   .mini.solid { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
-  .mini.solid:hover { background: var(--green); }
+  .mini.solid:hover { background: var(--green-2); }
 
   /* 折叠卡片：默认只露标题，点击展开详情 */
   .fold-card { cursor: pointer; }
@@ -353,6 +382,24 @@
   .action.fold-card:hover { transform: none; box-shadow: var(--shadow); border-color: #CDE6DA; }
   .fold-body { display: none; }
   .fold-card.open .fold-body { display: block; animation: rise .25s var(--ease); }
+
+  /* ===== R-15：二级展开（保证单卡展开 ≤ 一屏） ===== */
+  .more-occ {
+    margin-top: 12px; width: 100%; padding: 11px 14px; border-radius: 10px;
+    background: var(--surface-2); border: 1px dashed var(--line-2); color: var(--ink-2);
+    font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .2s;
+  }
+  .more-occ:hover { border-color: var(--green); color: var(--green-deep); background: var(--green-soft); }
+  .occ-rest { margin-top: 4px; }
+  .occ-sub { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .occ-sub > summary {
+    display: flex; align-items: center; gap: 6px; list-style: none; cursor: pointer;
+    font-size: 13px; font-weight: 700; color: var(--green-deep);
+  }
+  .occ-sub > summary::-webkit-details-marker { display: none; }
+  .occ-sub > summary::after { content: '＋'; margin-left: auto; font-weight: 700; opacity: .55; }
+  .occ-sub[open] > summary::after { content: '－'; }
+  .occ-sub-body { margin-top: 10px; }
   /* 标题行在折叠态增加一点内边距，让点击区域更大 */
   .model .m-scenario, .insight .i-scenario, .action .input {
     padding-right: 28px;
@@ -434,7 +481,7 @@
   .modal .btn-ghost { background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--line-2); }
   .modal .btn-ghost:hover { border-color: var(--green); color: var(--green-deep); }
   .modal .btn-ok { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(14,107,80,.3); }
-  .modal .btn-ok:hover { background: var(--green-deep); }
+  .modal .btn-ok:hover { background: var(--green-2); }
   .modal .btn-danger {
     padding: 11px 20px; border-radius: 999px; font-size: 14px; font-weight: 700;
     background: #c0392b; color: #fff; border: none; cursor: pointer; font-family: inherit;
@@ -476,7 +523,7 @@
     font-size: 12px; font-weight: 700; color: var(--green-deep);
     letter-spacing: .3px; margin-bottom: 8px;
   }
-  .dc-label::before { content: '💡'; }
+  .dc-label::before { content: none; }
   .dc-body { font-size: 14.5px; color: var(--ink); line-height: 1.7; }
   .dc-body b { color: var(--green-deep); }
 
@@ -526,6 +573,61 @@
     font-size: 13px; color: var(--ink-3); font-family: inherit; }
   .bk-cancel:hover { color: var(--ink-2); }
 
+  /* ===== v2.1 证据库：首屏即内容，使用优先 ===== */
+  [hidden] { display: none !important; }
+  .lib-section { margin-top: 4px; }
+  .lib-search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .filter-search.lib-search { max-width: none; flex: 1; padding: 12px 16px; font-size: 14px; border-radius: 14px; }
+  .filter-toggle {
+    flex: none; font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 14px; cursor: pointer; font-family: inherit; transition: all .18s;
+  }
+  .filter-toggle.on, .filter-toggle:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .filter-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; }
+  .filter-panel .filter-row { margin-bottom: 6px; }
+  .filter-panel .filter-row:last-child { margin-bottom: 0; }
+
+  .i-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .i-lead { font-size: 15.5px; font-weight: 700; color: var(--ink); line-height: 1.55; margin-top: 8px; padding-right: 24px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .fold-use { font-size: 11.5px; font-weight: 700; color: var(--green-deep); background: var(--green-soft); border: 1px solid rgba(29,158,117,.2); border-radius: 999px; padding: 1px 8px; }
+  .head-use { margin-left: auto; font-size: 12.5px; font-weight: 700; color: var(--green-deep); text-decoration: none; padding: 3px 10px; border-radius: 999px; background: var(--green-soft); border: 1px solid rgba(29,158,117,.25); }
+  .head-use:hover { background: var(--green-light); }
+
+  .use-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); transition: all .18s;
+  }
+  .use-btn:hover { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .use-btn.solid { background: var(--green-deep); border-color: var(--green-deep); color: #fff; }
+  .use-btn.solid:hover { background: var(--green-2); border-color: var(--green-2); color: #fff; }
+  .use-btn.pin.on { color: var(--green-deep); border-color: var(--green); background: var(--green-soft); }
+  .more-btn { padding: 8px 12px; border-radius: 999px; background: none; border: 1px dashed var(--line); color: var(--ink-3); font-size: 12.5px; font-family: inherit; cursor: pointer; }
+  .more-btn:hover { color: var(--ink-2); border-color: var(--ink-3); }
+  .more-menu { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+  .page-foot { margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .page-foot .stat-strip { margin: 0 0 10px; }
+  .foot-line { font-size: 12.5px; color: var(--ink-3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 2px; }
+  .foot-sep { color: var(--line); }
+  .foot-link { background: none; border: none; padding: 0; font-family: inherit; font-size: 12.5px; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .foot-link:hover { color: var(--green-deep); }
+
+  .onboard-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 30px 24px; text-align: center; box-shadow: var(--shadow); margin-top: 8px; }
+  .onboard-card .ob-title { font-size: 17px; font-weight: 800; color: var(--ink); }
+  .onboard-card .ob-body { font-size: 13.5px; color: var(--ink-2); margin: 8px 0 18px; line-height: 1.7; }
+  .onboard-card .ob-cta { display: inline-flex; align-items: center; justify-content: center; background: var(--green-deep); color: #fff; font-size: 15px; font-weight: 700; padding: 13px 30px; border-radius: 999px; text-decoration: none; }
+  .onboard-card .ob-cta:hover { background: var(--green-2); }
+
+  /* 双向关联（实验 ↔ 想法） */
+  .rel-line { font-size: 12.5px; color: var(--ink-2); margin-top: 10px; line-height: 1.9; }
+  .rel-line b { color: var(--green-deep); }
+  .rel-link { color: var(--green-deep); text-decoration: none; border-bottom: 1px solid rgba(29,158,117,.35); margin-right: 10px; white-space: nowrap; }
+  .rel-link:hover { border-bottom-color: var(--green); }
+
 </style>
 <script>
   (function(){
@@ -542,101 +644,75 @@
 
 <div class="wrap">
   <div class="topbar">
-    <a class="nav-link" href="index.html">
+    <a class="back" href="index.html">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
-    <a class="nav-link" href="think.html">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      每日洞察
-    </a>
-    <a class="nav-link" href="punch.html">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-      每日改变
-    </a>
-    <button class="tool-icon-btn" onclick="bkToggle()" aria-label="存数据" title="备份与恢复：下载完整备份或从文件恢复">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      存数据
-    </button>
-    <button class="tool-icon-btn" onclick="openSettings()" aria-label="AI 设置">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.9"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-      AI 设置
-    </button>
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="切换深色模式"><span class="t-light">☾ 深色</span><span class="t-dark">☀ 浅色</span></button>
+    <nav class="gnav" aria-label="全局导航">
+      <a class="gn-item" href="think.html">想清楚</a>
+      <a class="gn-item" href="punch.html">做到</a>
+      <a class="gn-item on" href="cognitive.html">我的资产</a>
+    </nav>
+    <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
 
   <div class="page-head">
     <div class="title-block">
-      <h1>行为档案</h1>
-      <div class="page-sub">每一次做到，沉淀出的长期行为资产</div>
+      <h1>我的资产 · 证据</h1>
+      <div class="page-sub">我做到了什么</div>
     </div>
     <div class="arch-toggle" role="tablist" aria-label="档案切换">
-      <a href="cognitive.html" role="tab" aria-selected="false">认知档案</a>
-      <a href="behavior.html" class="on" role="tab" aria-selected="true">行为档案</a>
+      <a href="cognitive.html" role="tab" aria-selected="false">想法</a>
+      <a href="behavior.html" class="on" role="tab" aria-selected="true">证据</a>
     </div>
   </div>
 
-  <!-- 顶部：身份 + 紧凑统计条 -->
-  <div id="identityArea" style="scroll-margin-top:14px;"></div>
-  <div class="stat-strip" id="statsArea"></div>
+  <!-- 空状态：仅零资产时显示（一句引导，代替多句「还没有」） -->
+  <div id="emptyOnboard" hidden></div>
 
-  
-  <section class="archive-section beh">
-    <div class="archive-head">
-      <div class="archive-icon">🧪</div>
-      <div>
-        <h2>行为档案</h2>
-        <p>每一次做到，沉淀出的长期行为资产</p>
-      </div>
+  <!-- 首屏：证据库（实验记录始终可见） -->
+  <section class="lib-section" id="libSection">
+    <div class="lib-search-row">
+      <input type="text" class="filter-search lib-search" id="actionSearch" placeholder="搜索任何一个实验…" value="" oninput="setActionFilter('q', this.value)">
+      <button class="filter-toggle" id="filterToggleBtn" type="button" onclick="toggleFilterPanel()" hidden>筛选</button>
     </div>
-
+    <div class="filter-row" id="actionFilters"></div>
+    <div class="filter-panel" id="filterPanel" hidden>
+      <div class="filter-row" id="actionMoreFilters"></div>
+    </div>
     <div id="discoveryBox"></div>
-
-    <div class="expand-card beh" data-section="experiments">
-      <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">⚡</span>
-        <span class="expand-title">
-          <span class="expand-name">行为实验 Behavior Experiment</span>
-          <span class="expand-sub">从认知到行动的转化记录</span>
-        </span>
-        <span class="expand-count" id="experimentsCount">0</span>
-        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="expand-body"><div class="inner">
-        <div class="filter-row" id="actionFilters"></div>
-        <div id="actionList"></div>
-      </div></div>
-    </div>
-
-    <div class="expand-card beh" data-section="patterns">
-      <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">🔍</span>
-        <span class="expand-title">
-          <span class="expand-name">模式识别 Pattern Recognition</span>
-          <span class="expand-sub">Transform跨时间发现的重复模式</span>
-        </span>
-        <span class="expand-count" id="patternsCount">0</span>
-        <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
-    </div>
+    <div id="actionList"></div>
   </section>
 
-  <!-- 回收箱 -->
-  <section class="archive-section trash">
-    <div class="archive-head">
-      <div class="archive-icon">🗑️</div>
-      <div>
-        <h2>回收箱</h2>
-        <p>删除的资产会先到这里，30 天内可随时恢复</p>
-      </div>
-    </div>
+  <!-- 跨时间的模式（次级） -->
+  <div class="expand-card beh" data-section="patterns" id="modelsSection">
+    <button class="expand-head" type="button" onclick="toggleExpand(this)">
+      <span class="expand-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><circle cx="10.5" cy="10.5" r="6.4" stroke="currentColor" stroke-width="1.8"/><path d="M15.4 15.4L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+      <span class="expand-title">
+        <span class="expand-name">跨时间的模式</span>
+        <span class="expand-sub">Transform 发现的重复模式</span>
+      </span>
+      <span class="expand-count" id="patternsCount">0</span>
+      <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
+  </div>
+
+  <!-- 页脚：身份 + 统计 + 归档/回收箱入口 -->
+  <div class="page-foot" id="pageFoot">
+    <div id="identityArea"></div>
+    <div class="stat-strip" id="statsArea"></div>
+    <div class="foot-line" id="footLine"></div>
+  </div>
+
+  <!-- 归档 / 回收箱（0 项整段隐藏，有项时从页脚进入） -->
+  <section class="archive-section trash" id="trashSection" hidden>
     <div class="expand-card trash-card" data-section="trash">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">🗑️</span>
+        <span class="expand-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M4 7h16M9.5 7V5.2a1.2 1.2 0 011.2-1.2h2.6a1.2 1.2 0 011.2 1.2V7M6.5 7l.9 12.1a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1L17.5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="expand-title">
-          <span class="expand-name">已删除资产 Trash</span>
-          <span class="expand-sub">30 天后自动彻底删除</span>
+          <span class="expand-name">回收箱</span>
+          <span class="expand-sub">删除的资产先到这里，30 天内可恢复</span>
         </span>
         <span class="expand-count" id="trashCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -648,10 +724,10 @@
     </div>
     <div class="expand-card trash-card archived-card" data-section="archived">
       <button class="expand-head" type="button" onclick="toggleExpand(this)">
-        <span class="expand-icon">📦</span>
+        <span class="expand-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M3.5 7.5L12 3.5l8.5 4v9L12 20.5l-8.5-4v-9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.5 7.5L12 11.5l8.5-4M12 11.5v9" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
         <span class="expand-title">
-          <span class="expand-name">已归档 Archived</span>
-          <span class="expand-sub">封存不删 · 不参与统计与模式发现</span>
+          <span class="expand-name">已归档</span>
+          <span class="expand-sub">封存不删 · 可随时恢复</span>
         </span>
         <span class="expand-count" id="archivedCount">0</span>
         <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -752,7 +828,7 @@ function renderIdentity(){
   if (!votes.length){
     area.innerHTML = `<div class="identity-empty">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-      还没有身份票。每完成一次「伴我洞察」或「伴我改变」，都会给「我想成为的人」投一票，票数在这里累积。
+      还没有身份票。每完成一次「想清楚」或「做到」，都会给「我想成为的人」投一票，票数在这里累积。
     </div>`;
     return;
   }
@@ -782,32 +858,138 @@ function renderStats(){
   const actions = loadActions();
   const graduated = actions.filter(a => a.status === 'graduated').length;
   const totalDone = actions.reduce((a,b) => a + (b.totalDone || 0), 0);
-  const bestStreak = Math.max(...actions.map(a => a.bestStreak || 0), 0);
-  const active = actions.filter(a => a.status === 'active').length;
+  const active = actions.filter(a => (a.status || 'active') === 'active').length;
   $('statsArea').innerHTML = `
     <span class="item"><span class="num">${actions.length}</span>行为实验</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${graduated}</span>已毕业</span>
-    <span class="sep">·</span>
     <span class="item"><span class="num">${active}</span>进行中</span>
     <span class="sep">·</span>
-    <span class="item"><span class="num">${bestStreak}</span>最长连续</span>
+    <span class="item"><span class="num">${graduated}</span>已毕业</span>
     <span class="sep">·</span>
     <span class="item"><span class="num">${totalDone}</span>累计做到</span>
   `;
-  $('experimentsCount').textContent = actions.length;
   let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
-  $('patternsCount').textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
+  const pc = $('patternsCount'); if (pc) pc.textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
+}
+
+/* ===================== 首屏/空状态/页脚 ===================== */
+function hasAnyAsset(){
+  return loadArchive().length > 0 || loadActions().length > 0;
+}
+function renderEmptyState(){
+  const box = $('emptyOnboard'); if (!box) return;
+  const any = hasAnyAsset();
+  const secs = [$('libSection'), $('modelsSection'), $('pageFoot')];
+  if (any){
+    box.setAttribute('hidden', '');
+    box.innerHTML = '';
+    secs.forEach(el => { if (el) el.removeAttribute('hidden'); });
+    return;
+  }
+  secs.forEach(el => { if (el) el.setAttribute('hidden', ''); });
+  box.removeAttribute('hidden');
+  box.innerHTML = `<div class="onboard-card">
+    <div class="ob-title">你的证据会在这里累积</div>
+    <p class="ob-body">先做一件今晚就能完成的小事 —— 明天你就有了第一条。</p>
+    <a class="ob-cta" href="punch.html">开始做到 →</a>
+  </div>`;
+}
+function renderFootLine(){
+  const box = $('footLine'); if (!box) return;
+  const actions = loadActions();
+  const active = actions.filter(a => (a.status || 'active') === 'active').length;
+  const graduated = actions.filter(a => a.status === 'graduated').length;
+  const trashN = loadTrash().length;
+  const archN = archivedItems().length;
+  const parts = [`实验 ${actions.length}`, `进行中 ${active}`, `已毕业 ${graduated}`];
+  if (archN) parts.push(`<button class="foot-link" onclick="showFootSection('archived')">归档 ${archN}</button>`);
+  if (trashN) parts.push(`<button class="foot-link" onclick="showFootSection('trash')">回收箱 ${trashN}</button>`);
+  /* R-11：从顶栏下沉到页脚（技术配置不占主视线） */
+  parts.push(`<button class="foot-link" onclick="bkToggle()">备份与恢复</button>`);
+  parts.push(`<button class="foot-link" onclick="openSettings()">AI 设置</button>`);
+  box.innerHTML = parts.join('<span class="foot-sep">·</span>');
+  const sec = $('trashSection');
+  if (sec){ if (archN + trashN > 0) sec.removeAttribute('hidden'); else sec.setAttribute('hidden', ''); }
+}
+function showFootSection(which){
+  const sec = $('trashSection'); if (!sec) return;
+  sec.removeAttribute('hidden');
+  const card = sec.querySelector(`.expand-card[data-section="${which}"]`);
+  if (card && !card.classList.contains('open')) card.classList.add('open');
+  if (card) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
 }
 
 /* ===================== 展开 / 收起 ===================== */
 function toggleExpand(head){
   const card = head.closest('.expand-card');
   card.classList.toggle('open');
+  if (card.dataset.section){
+    sectionOpen['sec:' + card.dataset.section] = card.classList.contains('open');
+    saveUIState();
+  }
 }
 function toggleFold(card){
   card.classList.toggle('open');
+  sectionOpen['fold:' + card.id] = card.classList.contains('open');
+  saveUIState();
 }
+/* R-15：二次展开「更早的记录」 */
+function toggleRestOcc(btn){
+  const body = btn.closest('.fold-body'); if (!body) return;
+  const rest = body.querySelector('.occ-rest'); if (!rest) return;
+  const n = rest.children.length;
+  if (rest.hasAttribute('hidden')){ rest.removeAttribute('hidden'); btn.textContent = '收起较早的 ' + n + ' 次记录'; }
+  else { rest.setAttribute('hidden', ''); btn.textContent = '还有 ' + n + ' 次较早的记录 · 展开全部'; }
+}
+
+/* ===================== R-16 · UI 状态持久化（trf_ui：展开态 / 滚动位置） ===================== */
+const TRF_UI_KEY = 'trf_ui';
+let sectionOpen = {};   // { 'sec:<name>' | 'fold:<id>': true }
+let uiScroll = 0;
+
+(function loadUIState(){
+  let u = {};
+  try { u = JSON.parse(localStorage.getItem(TRF_UI_KEY) || '{}') || {}; } catch(e){ u = {}; }
+  sectionOpen = (u.open && typeof u.open === 'object') ? u.open : {};
+  uiScroll = Number(u.scroll) || 0;
+})();
+function saveUIState(){
+  let u = {};
+  try { u = JSON.parse(localStorage.getItem(TRF_UI_KEY) || '{}') || {}; } catch(e){ u = {}; }
+  u.open = sectionOpen;
+  u.scroll = uiScroll;
+  try { localStorage.setItem(TRF_UI_KEY, JSON.stringify(u)); } catch(e){}
+}
+// 渲染前：把 DOM 上的展开态读入内存（避免重渲染把用户展开的卡折叠回去）
+function captureOpenState(){
+  document.querySelectorAll('.expand-card[data-section]').forEach(c => {
+    sectionOpen['sec:' + c.dataset.section] = c.classList.contains('open');
+  });
+  document.querySelectorAll('.fold-card[id]').forEach(c => {
+    sectionOpen['fold:' + c.id] = c.classList.contains('open');
+  });
+  saveUIState();
+}
+// 渲染后：把内存里的展开态回写到 DOM
+function applyOpenState(){
+  document.querySelectorAll('.expand-card[data-section]').forEach(c => {
+    c.classList.toggle('open', !!sectionOpen['sec:' + c.dataset.section]);
+  });
+  document.querySelectorAll('.fold-card[id]').forEach(c => {
+    const k = 'fold:' + c.id;
+    if (k in sectionOpen) c.classList.toggle('open', !!sectionOpen[k]);
+  });
+}
+// 滚动位置持久化（节流）
+let uiScrollTimer = null;
+window.addEventListener('scroll', function(){
+  if (uiScrollTimer) return;
+  uiScrollTimer = setTimeout(function(){
+    uiScrollTimer = null;
+    uiScroll = window.scrollY || 0;
+    saveUIState();
+  }, 200);
+}, { passive: true });
 
 // 按场景标题归并：相同标题合并为一张卡，count 代表出现次数；空标题/默认标题各自独立
 function groupByScenario(list){
@@ -828,14 +1010,17 @@ function renderModels(){
   const archive = loadArchive();
   const models = archive.filter(s => (s.mentalModel && s.mentalModel.trim()) || (s.reflection && s.reflection.changed && s.reflection.changed.trim()));
   if (!models.length){
-    box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「伴我洞察」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有沉淀的认知模型。<br>完成一次「想清楚」并复盘后，你的新认知框架会出现在这里。<br><a href="app.html">去想清楚一件事 →</a></div>`;
     return;
   }
+  captureOpenState();   // R-16
   box.innerHTML = groupByScenario(models).map(g => {
     const n = g.items.length;
     const latest = g.items.slice().sort((a,b)=> new Date(b.reflectedAt||b.completedAt||b.createdAt||0) - new Date(a.reflectedAt||a.completedAt||a.createdAt||0))[0];
     const countBadge = n > 1 ? `<span class="fold-count">产出 ${n} 次</span>` : '';
-    const occHtml = g.items.map(s => {
+    // R-15：模型卡同样只展开最近一次
+    const mOrdered = g.items.slice().sort((a,b)=> new Date(b.reflectedAt||b.completedAt||b.createdAt||0) - new Date(a.reflectedAt||a.completedAt||a.createdAt||0));
+    const occOne = s => {
       const fw = (s.mentalModel || '').trim();
       const changed = (s.reflection && s.reflection.changed || '').trim();
       return `<div class="occ">
@@ -845,15 +1030,23 @@ function renderModels(){
         ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         ${assetActions('model', s.id)}
       </div>`;
-    }).join('');
-    return `<div class="model fold-card" onclick="toggleFold(this)">
+    };
+    const firstOcc = occOne(mOrdered[0]);
+    const restN = mOrdered.length - 1;
+    const restOcc = mOrdered.slice(1).map(occOne).join('');
+    return `<div class="model fold-card" id="mod-${escapeHtml(String(latest.id))}" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="m-scenario">${escapeHtml(g.scenario)}</div>
         <div class="fold-meta">${countBadge}<span class="m-date">复盘于 ${fmtDate(latest.reflectedAt || latest.completedAt || latest.createdAt)}</span></div>
       </div>
-      <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        <div class="occ-first">${firstOcc}</div>
+        ${restN ? `<div class="occ-rest" hidden>${restOcc}</div>
+        <button class="more-occ" type="button" onclick="toggleRestOcc(this)">还有 ${restN} 次较早的复盘 · 展开全部</button>` : ''}
+      </div>
     </div>`;
   }).join('');
+  applyOpenState();   // R-16：渲染后回写展开态
 }
 
 /* ===================== 洞察库（含标签过滤与搜索） ===================== */
@@ -877,7 +1070,7 @@ function renderInsights(){
   const box = $('insightList'); if (!box) return;
   let archive = loadArchive();
   if (!archive.length){
-    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「伴我洞察」的核心认知都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「想清楚」得到的想法都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
@@ -891,11 +1084,14 @@ function renderInsights(){
   }
   if (insightTime !== 'all') archive = archive.filter(s => withinTime(insightDateOf(s), insightTime));
   if (!archive.length){ box.innerHTML = '<div class="expand-empty">没有找到符合当前条件的洞察。</div>'; return; }
+  captureOpenState();   // R-16：重渲染前保留用户已展开的卡
   box.innerHTML = groupByScenario(archive).map(g => {
     const n = g.items.length;
     const latest = g.items.slice().sort((a,b)=> new Date(b.completedAt||b.createdAt||0) - new Date(a.completedAt||a.createdAt||0))[0];
     const countBadge = n > 1 ? `<span class="fold-count">出现 ${n} 次</span>` : '';
-    const occHtml = g.items.map(s => {
+    // R-15：默认只展开「最近一次」，更早的记录二次展开
+    const ordered = g.items.slice().sort((a,b)=> new Date(b.completedAt||b.createdAt||0) - new Date(a.completedAt||a.createdAt||0));
+    const occOne = s => {
       const e = s.essence || {};
       const nature = (e.nature || '').trim();
       const insight = (e.insight || '').trim();
@@ -908,15 +1104,23 @@ function renderInsights(){
         ${(s.tags || []).length ? `<div class="asset-tags">${s.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         ${assetActions('insight', s.id)}
       </div>`;
-    }).join('');
-    return `<div class="insight fold-card" onclick="toggleFold(this)">
+    };
+    const firstOcc = occOne(ordered[0]);
+    const restN = ordered.length - 1;
+    const restOcc = ordered.slice(1).map(occOne).join('');
+    return `<div class="insight fold-card" id="ins-${escapeHtml(String(latest.id))}" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="i-scenario">${escapeHtml(g.scenario)}</div>
         <div class="fold-meta">${countBadge}<span class="i-date">${fmtDate(latest.completedAt || latest.createdAt)}${latest.reflectedAt ? ' · 已复盘' : ''}</span></div>
       </div>
-      <div class="fold-body" onclick="event.stopPropagation()">${occHtml}</div>
+      <div class="fold-body" onclick="event.stopPropagation()">
+        <div class="occ-first">${firstOcc}</div>
+        ${restN ? `<div class="occ-rest" hidden>${restOcc}</div>
+        <button class="more-occ" type="button" onclick="toggleRestOcc(this)">还有 ${restN} 次较早的记录 · 展开全部</button>` : ''}
+      </div>
     </div>`;
   }).join('');
+  applyOpenState();   // R-16：渲染后回写展开态
 }
 
 /* ===================== 行为实验 ===================== */
@@ -926,15 +1130,17 @@ function renderActions(){
   const actions = loadActions();
   renderActionFilters(actions);
   const box = $('actionList');
+  if (!box) return;
   if (!actions.length){
-    box.innerHTML = `<div class="expand-empty">还没有行为实验。<br>每一次「伴我改变」都是一个人生实验——从认知到行动，在这里留下完整记录。<br><a href="act.html">开始第一个实验 →</a></div>`;
+    box.innerHTML = '';   // 空状态由 renderEmptyState 统一承担
     return;
   }
   const filtered = filterActions(actions);
   if (!filtered.length){
-    box.innerHTML = `<div class="expand-empty">没有符合当前筛选条件的行为实验。</div>`;
+    box.innerHTML = `<div class="expand-empty">没有符合当前筛选条件的实验。</div>`;
     return;
   }
+  captureOpenState();   // R-16
   box.innerHTML = filtered.map(a => {
     const status = a.status || 'active';
     const statusText = { active: '进行中', graduated: '已毕业', paused: '已暂停' }[status] || status;
@@ -947,24 +1153,29 @@ function renderActions(){
     const curDay = a.currentDay || 1;
     const curMicro = (plan.length && plan[Math.min(curDay, plan.length) - 1]) ? plan[Math.min(curDay, plan.length) - 1].micro : ((a.tiny && a.tiny.text) || '');
     const microText = status === 'graduated' ? '已完成全部 ' + N + ' 天计划' : (curMicro || '');
-    return `<div class="action fold-card" onclick="toggleFold(this)">
+    return `<div class="action fold-card" id="act-${escapeHtml(String(a.id))}" onclick="toggleFold(this)">
       <div class="fold-head">
         <div class="row1">
           <span class="date">${lastDate}</span>
           <span class="status-chip ${statusClass}">${statusText}</span>
         </div>
         <div class="input">${escapeHtml(a.input || a.goal || '')}</div>
-        ${N ? `<span class="plan-pill">📅 ${N} 天实验 · 已完成 ${totalDone}/${N}</span>` : ''}
+        ${microText ? `<div class="i-lead">${escapeHtml(microText)}</div>` : ''}
+        <div class="fold-meta">
+          ${N ? `<span class="plan-pill">${N} 天 · 已完成 ${totalDone}/${N}</span>` : ''}
+          <a class="head-use" href="act.html?id=${encodeURIComponent(a.id)}" onclick="event.stopPropagation()">继续做 →</a>
+        </div>
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">
-        ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
-        ${a.insight ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(a.insight.replace(/\n+/g, ' · '))}</div>` : ''}
         ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
-        ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
+        ${(a.sourceInsightId || a.insight || a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<details class="occ-sub"><summary>来源与复盘</summary><div class="occ-sub-body">
+          ${(a.sourceInsightId || a.insight) ? `<div class="a-source"><b>源于想法：</b>${escapeHtml(String(a.insight || '').replace(/\n+/g, ' · '))}${a.sourceInsightId ? ` <a class="rel-link" href="cognitive.html#ins-${encodeURIComponent(a.sourceInsightId)}">查看那条想法 →</a>` : ''}</div>` : ''}
+          ${(a.result || a.habit || (a.reflection && a.reflection.changed)) ? `<div class="a-reflect">
           ${a.result ? `<div><b>结果</b> ${escapeHtml(a.result)}</div>` : ''}
           ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
           ${a.reflection && a.reflection.changed ? `<div><b>改变</b> ${escapeHtml(a.reflection.changed)}</div>` : ''}
         </div>` : ''}
+        </div></details>` : ''}
         ${(a.tags || []).length ? `<div class="asset-tags">${a.tags.map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
         <div class="meta">
           <span>连续 ${a.streak || 0} 天</span>
@@ -979,6 +1190,7 @@ function renderActions(){
       </div>
     </div>`;
   }).join('');
+  applyOpenState();   // R-16：渲染后回写展开态
 }
 function renderActionFilters(actions){
   const box = $('actionFilters');
@@ -986,24 +1198,57 @@ function renderActionFilters(actions){
   if (!actions.length){ box.innerHTML = ''; return; }
   const tags = [];
   actions.forEach(a => (a.tags || []).forEach(t => { if (t && !tags.includes(t)) tags.push(t); }));
-  const statusOpts = [
+  // 首屏只留 3 个视图 chip
+  const viewOpts = [
     { k: '', v: '全部' },
     { k: 'active', v: '进行中' },
-    { k: 'graduated', v: '已毕业' },
-    { k: 'paused', v: '已暂停' }
+    { k: 'graduated', v: '已毕业' }
   ];
-  const timeHtml = timeChipsHtml(actionFilter.time, "setActionFilter('time'");
-  let html = timeHtml + (timeHtml ? '<span class="filter-sep"></span>' : '') + statusOpts.map(o => `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
+  box.innerHTML = viewOpts.map(o =>
+    `<button class="filter-chip${actionFilter.status === o.k ? ' on' : ''}" onclick="setActionFilter('status','${o.k}')">${o.v}</button>`).join('');
+
+  const more = $('actionMoreFilters');
+  const toggle = $('filterToggleBtn');
+  if (toggle) toggle.hidden = false;
+  if (!more) return;
+  let html = timeChipsHtml(actionFilter.time, "setActionFilter('time'");
+  html += `<button class="filter-chip${actionFilter.status === 'paused' ? ' on' : ''}" onclick="setActionFilter('status','${actionFilter.status === 'paused' ? '' : 'paused'}')">只看已暂停</button>`;
   if (tags.length){
     html += '<span class="filter-sep"></span>' +
       '<button class="filter-chip' + (actionFilter.tag ? '' : ' on') + '" onclick="setActionFilter(\'tag\',\'\')">全部标签</button>' +
       tags.map(t => `<button class="filter-chip${actionFilter.tag === t ? ' on' : ''}" onclick="setActionFilter('tag','${String(t).replace(/'/g, "\\'")}')">${escapeHtml(t)}</button>`).join('');
   }
-  html += '<span class="filter-sep"></span>' +
-    `<input type="text" class="filter-search" placeholder="搜索行为实验…" value="${escapeHtml(actionFilter.q)}" oninput="setActionFilter('q', this.value)">`;
-  box.innerHTML = html;
+  more.innerHTML = html;
+}
+function toggleFilterPanel(){
+  const p = $('filterPanel'); const b = $('filterToggleBtn');
+  if (!p || !b) return;
+  const willOpen = p.hasAttribute('hidden');
+  if (willOpen) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+  b.classList.toggle('on', willOpen);
+}
+// 使用动作：记录这条想法被带去了哪里
+function markUse(type, id, where){
+  try {
+    assetSave(type, id, obj => {
+      obj.uses = Array.isArray(obj.uses) ? obj.uses : [];
+      obj.uses.push({ at: new Date().toISOString(), where: where });
+    }, true);
+  } catch(e){}
+}
+function togglePin(type, id){
+  let now = false;
+  assetSave(type, id, obj => { obj.pinned = !obj.pinned; now = !!obj.pinned; });
+  toast(now ? '已加入「待用」' : '已从「待用」移除');
+}
+function toggleMoreMenu(btn){
+  const menu = btn.parentElement.querySelector('.more-menu');
+  if (!menu) return;
+  if (menu.hasAttribute('hidden')) menu.removeAttribute('hidden');
+  else menu.setAttribute('hidden', '');
 }
 function setActionFilter(key, value){
+  if (key !== 'q'){ const inp = $('actionSearch'); if (inp && inp.value !== actionFilter.q) inp.value = actionFilter.q || ''; }
   actionFilter[key] = value;
   renderActions();
 }
@@ -1044,12 +1289,12 @@ function renderPatterns(){
     return;
   }
   if (!hasData){
-    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「伴我洞察」或「伴我改变」，Transform才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
+    area.innerHTML = `<div class="expand-empty">还没有足够的数据发现模式。<br>先完成几次「想清楚」或「做到」，Transform才能跨时间看到你反复出现的问题、角色与阻力。</div>`;
     return;
   }
   area.innerHTML = `<div class="pattern-cta">
     <h3>Transform 帮你跨时间发现模式</h3>
-    <p>AI 会阅读你全部 ${archive.length} 次认知梳理与 ${actions.length} 个行为实验，找出「你反复出现的问题」「一直想成为的角色」「重复踩过的阻力」——这才是成长资产的长期价值。</p>
+    <p>AI 会阅读你全部 ${archive.length} 次认知梳理与 ${actions.length} 个行为实验，找出「你反复出现的问题」「一直想成为的角色」「重复踩过的阻力」——这才是我的资产的长期价值。</p>
     <div class="btn-row"><button class="btn-ai" onclick="aiDiscoverPatterns(false)">Transform帮我发现模式</button></div>
   </div>
   <div class="pattern-meta" id="patternHint" style="margin-top:2px;"></div>`;
@@ -1161,7 +1406,7 @@ function restoreFromTrash(tid){
   saveTrash(trash);
   renderAll();
   renderTrash();
-  toast('已恢复到成长资产');
+  toast('已恢复到我的资产');
 }
 function purgeTrashItem(tid){
   let trash = loadTrash();
@@ -1201,16 +1446,26 @@ function renderTrash(){
   }).join('');
 }
 
-/* ===================== 资产编辑（通用：编辑 / 归类 / 删除） ===================== */
+/* ===================== 资产动作：使用优先，管理收进「更多」 ===================== */
 let assetModalCtx = null; // { type, id, tagOnly }
 
 function assetActions(type, id){
-  return `<div class="asset-actions">
-    <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">✏️ 编辑</button>
-    <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">🏷 归类</button>
-    ${type !== 'pattern' ? `<button class="asset-btn arch" onclick="openAssetArchive('${type}','${id}')">📦 归档</button>` : ''}
-    <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">🗑 删除</button>
-  </div>`;
+  const obj = assetFind(type, id) || {};
+  let html = '<div class="asset-actions">';
+  if (type === 'insight' || type === 'model'){
+    html += `<a class="use-btn solid" href="app.html?from=${encodeURIComponent(id)}" onclick="markUse('${type}','${id}','app.html')">拿它去用 →</a>`;
+    html += `<a class="use-btn" href="act.html?from=${encodeURIComponent(id)}" onclick="markUse('${type}','${id}','act.html')">用它开一个实验 →</a>`;
+    html += `<button class="use-btn pin${obj.pinned ? ' on' : ''}" onclick="togglePin('${type}','${id}')">${obj.pinned ? '已待用' : '待用'}</button>`;
+  }
+  html += `<button class="more-btn" onclick="toggleMoreMenu(this)">⋯ 更多</button>`;
+  html += `<span class="more-menu" hidden>
+      <button class="asset-btn" onclick="openAssetEdit('${type}','${id}')">编辑</button>
+      <button class="asset-btn tag" onclick="openAssetTag('${type}','${id}')">归类</button>
+      ${type !== 'pattern' ? `<button class="asset-btn arch" onclick="openAssetArchive('${type}','${id}')">归档</button>` : ''}
+      <button class="asset-btn del" onclick="openAssetDelete('${type}','${id}')">删除</button>
+    </span>`;
+  html += '</div>';
+  return html;
 }
 
 // 定位资产对象 + 保存
@@ -1225,7 +1480,7 @@ function assetFind(type, id){
   }
   return null;
 }
-function assetSave(type, id, mutate){
+function assetSave(type, id, mutate, silent){
   if (type === 'insight' || type === 'model'){
     const list = loadArchiveAll();
     const i = list.findIndex(s => String(s.id) === String(id));
@@ -1238,9 +1493,23 @@ function assetSave(type, id, mutate){
     let saved = null; try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
     if (saved && saved.patterns && saved.patterns[parseInt(id)]){ mutate(saved.patterns[parseInt(id)]); localStorage.setItem(LS_PATTERNS, JSON.stringify(saved)); }
   }
-  renderAll();
+  if (!silent) renderAll();
 }
-function renderAll(){ renderModels(); renderTagFilters(); renderInsights(); renderActions(); renderPatterns(); renderTrash(); renderArchived(); renderDiscovery(); }
+function renderAll(){
+  captureOpenState();   // R-16
+  renderEmptyState();
+  renderStats();
+  renderModels();
+  renderTagFilters();
+  renderInsights();
+  renderActions();
+  renderPatterns();
+  renderTrash();
+  renderArchived();
+  renderDiscovery();
+  renderFootLine();
+  applyOpenState();     // R-16
+}
 
 /* P0-11/12：基于真实行为数据的本地主动发现（无需 API Key，达到阈值才显示） */
 function renderDiscovery(){
@@ -1323,7 +1592,7 @@ function openAssetEdit(type, id){
       <label>洞察与建议</label><textarea id="ae3">${escapeHtml(obj.insight || '')}</textarea>`;
   }
   openAssetModal(`
-    <h3>✏️ 编辑${assetTypeName(type)}</h3>
+    <h3><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 编辑${assetTypeName(type)}</h3>
     ${fields}
     <div class="row">
       <button class="btn-ok" style="flex:1;" onclick="saveAssetEdit()">保存</button>
@@ -1372,7 +1641,7 @@ function renderTagModal(tags){
   const allTags = collectAllTags();
   const available = allTags.filter(t => !tags.includes(t));
   openAssetModal(`
-    <h3>🏷 归类${assetTypeName(ctx.type)}</h3>
+    <h3><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M3 11.5V4.5A1.5 1.5 0 014.5 3h7a1.5 1.5 0 011.06.44l8 8a1.5 1.5 0 010 2.12l-6.44 6.44a1.5 1.5 0 01-2.12 0l-8-8A1.5 1.5 0 013 11.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7.6" cy="7.6" r="1.4" fill="currentColor"/></svg> 归类${assetTypeName(ctx.type)}</h3>
     <p style="font-size:13px;color:var(--ink-2);margin-bottom:8px;">给这条资产打标签，便于日后按主题查找。</p>
     <div class="tag-list" id="tagList">${tags.map(t => `<span class="tag-item">${escapeHtml(t)}<span class="x" onclick="removeAssetTag('${escapeHtml(t)}')">×</span></span>`).join('')}</div>
     ${available.length ? `<div style="margin-top:14px;"><p style="font-size:12px;color:var(--ink-3);margin-bottom:6px;">从已有标签中选择</p><div class="modal-existing-tags">${available.map(t => `<button class="existing-tag" onclick="addAssetTagByText('${String(t).replace(/'/g, "\\'")}')">+ ${escapeHtml(t)}</button>`).join('')}</div></div>` : ''}
@@ -1422,7 +1691,7 @@ function openAssetDelete(type, id){
   assetModalCtx = { type, id };
   const preview = (type === 'pattern') ? obj.title : (obj.scenario || obj.input || obj.goal || obj.title || '这条资产');
   openAssetModal(`
-    <h3>🗑 删除${assetTypeName(type)}</h3>
+    <h3><svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M4 7h16M9.5 7V5.2a1.2 1.2 0 011.2-1.2h2.6a1.2 1.2 0 011.2 1.2V7M6.5 7l.9 12.1a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1L17.5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> 删除${assetTypeName(type)}</h3>
     <p style="font-size:14px;color:var(--ink);line-height:1.7;">确定删除「<b>${escapeHtml(String(preview).slice(0, 30))}</b>」吗？将移入回收箱，30 天内可随时恢复。</p>
     <div class="row">
       <button class="btn-danger" style="flex:1;" onclick="confirmDeleteAsset()">移入回收箱</button>
@@ -1456,7 +1725,7 @@ function renderArchived(){
       </div>
       <div class="ti-actions">
         <button class="mini" onclick="restoreArchived('${o.type}','${o.id}')">↩ 恢复</button>
-        <button class="mini del" onclick="if(moveToTrash('${o.type}','${o.id}')){renderAll();toast('已移入回收箱');}">🗑 删除</button>
+        <button class="mini del" onclick="if(moveToTrash('${o.type}','${o.id}')){renderAll();toast('已移入回收箱');}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M4 7h16M9.5 7V5.2a1.2 1.2 0 011.2-1.2h2.6a1.2 1.2 0 011.2 1.2V7M6.5 7l.9 12.1a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1L17.5 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> 删除</button>
       </div>
     </div>`).join('');
 }
@@ -1543,7 +1812,7 @@ function bkToggle(){
   pop.innerHTML =
     '<button class="bk-item" onclick="downloadAll();bkClose();">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>下载完整备份</span>' +
-      '<span class="s">认知档案、行为实验、身份与模式，存成一个 JSON 文件</span>' +
+      '<span class="s">想法、证据、身份与模式，存成一个 JSON 文件</span>' +
     '</button>' +
     '<button class="bk-item" onclick="bkPick()">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21V9m0 0l-5 5m5-5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 3h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>从备份恢复</span>' +
@@ -1566,7 +1835,7 @@ function bkOnFile(ev){
     window._bkData = data;
     const pop = $('bkPop');
     const row = function(k, v){ return '<div class="r"><span>' + k + '</span><b>' + v + '</b></div>'; };
-    let rows = row('认知档案', c.archive + ' 份') + row('行为实验', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
+    let rows = row('想法', c.archive + ' 份') + row('证据', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
     if (c.pats) rows += row('AI 模式', c.pats + ' 条');
     pop.innerHTML =
       '<div class="bk-sum">' +
@@ -1703,6 +1972,7 @@ function saveSettings(){
 
 /* ===================== 启动 ===================== */
 purgeOldTrash();
+renderEmptyState();
 renderIdentity();
 renderStats();
 renderModels();
@@ -1714,6 +1984,12 @@ renderTrash();
 renderArchived();
 renderInsightTime();
 renderDiscovery();
+renderFootLine();
+/* R-16：重载时还原展开态与滚动位置（有锚点时以锚点优先） */
+applyOpenState();
+if (uiScroll > 0 && !location.hash){
+  setTimeout(function(){ window.scrollTo(0, uiScroll); }, 80);
+}
 (function(){
   const h = location.hash;
   if (h && document.querySelector(h)){

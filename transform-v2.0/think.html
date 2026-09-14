@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>快速想清楚 · Transform</title>
+<title>想清楚 · Transform</title>
 <style>
   :root {
     --bg: #F8F7F3;
@@ -69,7 +69,7 @@
   }
   .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 20px 110px; }
 
-  /* 完整版伴我洞察入口（底部小链接） */
+  /* 完整版「想清楚 · 深挖」入口（底部小链接） */
   .full-link-bar {
     text-align: center; margin-top: 24px; padding: 16px 0 0;
     border-top: 1px dashed var(--line);
@@ -98,12 +98,11 @@
     flex-shrink: 0;
   }
   .gnav .gn-item:hover { color: var(--green); background: var(--green-soft); }
-  .gnav .gn-item.on { background: var(--green); color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(14,107,80,.28); }
+  .gnav .gn-item.on { background: var(--surface); color: var(--green-deep); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(14,107,80,.26), 0 1px 4px rgba(30,42,38,.08); }
   @media (max-width: 560px) {
     .gnav { gap: 4px; }
     .gnav .gn-item { padding: 6px 11px; font-size: 12px; }
   }
-{ display: flex; align-items: center; gap: 10px; padding: 16px 0; }
   .back {
     display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none;
     font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 999px; transition: all .2s;
@@ -116,6 +115,12 @@
     font-family: inherit; cursor: pointer; transition: all .2s;
   }
   .topbar button:hover { color: var(--ink); border-color: var(--line-2); }
+  /* R-11：主题开关统一为图标按钮（与其它页逐字一致） */
+  .tb-theme { padding: 9px 12px !important; }
+  .theme-toggle .t-dark { display: none; }
+  [data-theme="dark"] .theme-toggle .t-light { display: none; }
+  [data-theme="dark"] .theme-toggle .t-dark { display: inline; }
+  .tb-theme .t-light, .tb-theme .t-dark { font-size: 15px; line-height: 1; }
   .arch-btn { background: linear-gradient(135deg, #0A5A42, #0E6B50) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(14,107,80,.22); }
   .arch-btn:hover { color: #fff !important; border-color: transparent !important; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(14,107,80,.32); }
   /* 高特异性：覆盖 .topbar button */
@@ -216,8 +221,8 @@
     padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 700;
     font-family: inherit; cursor: pointer; border: none; transition: all .25s var(--ease);
   }
-  .btn-primary { background: var(--green-3); color: #fff; }
-  .btn-primary:hover { background: var(--green-2); }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: #0A5A42; }
   .btn-ghost { background: var(--surface); color: var(--green); border: 1.5px solid var(--green-light); }
   .btn-ghost:hover { border-color: var(--green); background: var(--green-50); }
 
@@ -322,12 +327,12 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       首页
     </a>
-  <nav class="gnav" aria-label="全局导航">
-    <a class="gn-item on" href="think.html">每日洞察</a>
-    <a class="gn-item" href="punch.html">每日改变</a>
-  </nav>
-    <button onclick="toggleTheme()" aria-label="切换深色模式">☾ 深色</button>
-    <button class="arch-btn" onclick="location.href='cognitive.html'" aria-label="认知档案" style="background:linear-gradient(135deg, #0A5A42, #0E6B50);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(14,107,80,.22);">📖 认知档案</button>
+    <nav class="gnav" aria-label="全局导航">
+      <a class="gn-item on" href="think.html">想清楚</a>
+      <a class="gn-item" href="punch.html">做到</a>
+      <a class="gn-item" href="cognitive.html">我的资产</a>
+    </nav>
+    <button class="theme-toggle tb-theme" onclick="toggleTheme()" aria-label="切换深色模式" title="切换深色模式"><span class="t-light">☾</span><span class="t-dark">☀</span></button>
   </div>
 
   <div class="path" id="stepsBar" style="display:none;">
@@ -348,7 +353,7 @@
   <div id="thinkArea"></div>
   <div id="voiceSlot" data-voice-slot hidden></div>
   <div class="full-link-bar">
-    <a href="app.html">伴我洞察 →</a>
+    <a href="app.html">想清楚 · 深挖 →</a>
   </div>
   <div id="toast"></div>
 </div>
@@ -432,7 +437,7 @@ function renderInputStage(){
   const hasQ = !!question;                       // 已有进行中的题目（回看/修改主题模式）
   $('thinkArea').innerHTML = `
     <div class="think-hero">
-      <div class="th-eyebrow">每日洞察 · 几分钟想清楚一件事</div>
+      <div class="th-eyebrow">想清楚 · 几分钟理清一件事</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
       <p>把最想不通、最想搞清楚的一件事写下来。知行会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
       <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60" value="${escapeHtml(topic)}">
@@ -529,7 +534,7 @@ function renderQuestionStage(){
         <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
       </div>
       <div class="q-ai-result" id="qAiResult"></div>
-      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()">📝 修订我的回答</button>
+      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 修订我的回答</button>
       <div class="q-rev-box" id="revBox">
         <label>把刚才的思考，修订成你真正认同的版本</label>
         <textarea class="q-rev-input" id="revInput">${escapeHtml(answer)}</textarea>
@@ -620,7 +625,7 @@ async function finishThink(){
     toast('知行整合失败，请稍后再试');
     return;
   }
-  // 存入认知档案（与 app.html complete() 的条目格式一致）
+  // 存入「我的资产 · 想法」（与 app.html complete() 的条目格式一致）
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -661,7 +666,7 @@ function renderInsightResult(session){
   $('thinkArea').innerHTML = `
     <div class="insight-result">
       <div class="ir-card">
-        <div class="ir-crown">✨</div>
+        <div class="ir-crown"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" fill="currentColor"/></svg></div>
         <div class="ir-title">想清楚了：一条新洞察已沉淀</div>
         <div class="ir-block">
           <div class="k">现象背后的本质</div>
@@ -675,14 +680,14 @@ function renderInsightResult(session){
           <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
             把这个洞察变成今天的改变 →
           </a>
-          <a class="btn btn-ghost" href="cognitive.html" style="text-decoration:none;">看认知档案</a>
+          <a class="btn btn-ghost" href="cognitive.html" style="text-decoration:none;">看想法</a>
         </div>
         <div class="ir-upgrade">
           <div class="iu-q">这个问题，值得认真处理吗？</div>
           <a class="iu-link" href="app.html?topic=${encodeURIComponent(topic)}">和我一起，把这件事真正想清楚 →</a>
-          <div class="iu-sub">遇上反复卡住、或牵扯很多人的复杂问题，伴我洞察会陪你多轮想透。</div>
+          <div class="iu-sub">遇上反复卡住、或牵扯很多人的复杂问题，「想清楚 · 深挖」会陪你多轮想透。</div>
         </div>
-        <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
+        <div class="ir-note">已存入「我的资产 · 想法」 · 随时可查</div>
       </div>
     </div>`;
   stepGo(2);
