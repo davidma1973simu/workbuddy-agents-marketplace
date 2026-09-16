@@ -1340,13 +1340,11 @@
 .panel { animation: rise .45s var(--ease); }
 .rec-card, .session, .app-feedback-result, .resource-result { transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
 
-/* ===== Phase 2-E 桌面响应式副栏（移动端默认隐藏，≥900px 出现） ===== */
-.app-aside { display: none; }
 @media (min-width: 900px) {
   .wrap {
     max-width: 1280px;
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr) 260px;
+    grid-template-columns: 120px minmax(0, 1fr);
     gap: 18px;
     align-items: start;
     padding-top: 20px;
@@ -1380,30 +1378,18 @@
   .p-node .p-label { font-size: 13px; }
   .p-dot { width: 32px; height: 32px; }
   .app-panel { grid-column: 2; grid-row: 2; min-width: 0; }
-  .app-aside {
-    display: block; grid-column: 3; grid-row: 2;
-    position: sticky; top: 20px; align-self: start;
   }
-}
 @media (min-width: 1100px) {
-  .wrap { grid-template-columns: 140px minmax(0, 1fr) 300px; gap: 24px; }
+  .wrap { grid-template-columns: 140px minmax(0, 1fr); gap: 24px; }
   .p-node .p-label { font-size: 14px; }
   .p-dot { width: 36px; height: 36px; }
 }
 @media (min-width: 1280px) {
-  .wrap { grid-template-columns: 160px minmax(0, 1fr) 340px; gap: 32px; }
+  .wrap { grid-template-columns: 160px minmax(0, 1fr); gap: 32px; }
 }
 @media (min-width: 1400px) {
   .wrap { gap: 40px; }
 }
-.aside-card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
-  padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
-}
-.aside-title { font-size: 12px; font-weight: 800; color: var(--green-deep); letter-spacing: .6px; margin-bottom: 12px; }
-.aside-tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.aside-tag { font-size: 12px; padding: 5px 11px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-2); }
-.aside-insight { font-size: 13.5px; color: var(--ink); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
 
 /* ===== Phase 2-C 首次引导 ===== */
 .onboard-mask {
@@ -1444,22 +1430,21 @@
   @media (min-width: 900px) {
     .wrap {
       max-width: 1400px;
-      grid-template-columns: 170px minmax(0, 1fr) 320px;
+      grid-template-columns: 170px minmax(0, 1fr);
       gap: 32px;
       padding: 28px 32px 100px;
     }
   }
   /* 设置页打开时，退出三栏网格，让设置面板居中显示 */
   body.settings .wrap { display: block; max-width: 720px; }
-  body.settings .app-aside { display: none !important; }
   @media (min-width: 1100px) {
-    .wrap { grid-template-columns: 190px minmax(0, 1fr) 360px; gap: 40px; }
+    .wrap { grid-template-columns: 190px minmax(0, 1fr); gap: 40px; }
   }
   @media (min-width: 1280px) {
-    .wrap { grid-template-columns: 200px minmax(0, 1fr) 400px; gap: 48px; }
+    .wrap { grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
   }
   @media (min-width: 1440px) {
-    .wrap { grid-template-columns: 210px minmax(0, 1fr) 420px; gap: 56px; }
+    .wrap { grid-template-columns: 210px minmax(0, 1fr); gap: 56px; }
   }
 
   /* 主流程面板居中：不要让大屏内容偏到右侧 */
@@ -1469,9 +1454,6 @@
     margin-left: auto;
     margin-right: auto;
   }
-  /* 当右侧副栏没有内容时，主面板扩展到右侧列并居中 */
-  body.aside-empty .app-panel { grid-column: 2 / -1; }
-  body.aside-empty .app-aside { display: none !important; }
 
   /* 顶部栏更精致 */
   .topbar { margin-bottom: 26px; }
@@ -1689,14 +1671,6 @@
   .rec-card:hover { transform: translateY(-2px); border-color: var(--green); box-shadow: var(--shadow-2); }
   .rec-sec { border-radius: 12px; }
 
-  /* 副栏升级 */
-  .aside-card {
-    border-radius: var(--radius-md); padding: 22px;
-    background: var(--surface); border: 1px solid var(--line);
-    box-shadow: var(--shadow-1);
-  }
-  .aside-title { font-size: 12px; font-weight: 800; letter-spacing: 1px; }
-  .aside-tag { border-radius: 999px; padding: 6px 12px; font-weight: 600; }
 
   /* 设置页品牌卡片升级 */
   .brand {
@@ -2123,7 +2097,7 @@
     <!-- Step 0 归类 · Apple 极简方向样本 -->
     <div class="panel panel-redesign" id="panel-0">
       <header class="step-head">
-        <div class="step-eyebrow">摊开 · 把事情摆到桌面上</div>
+        <div class="step-eyebrow">第 1 步 · 摊开 · 把事情摆到桌面上</div>
         <h1>把杂乱信息理出头绪</h1>
         <p class="step-lead">先把你手里的信息一条条摊开，看清它是什么、从哪来，再理成几类。</p>
       </header>
@@ -2188,7 +2162,7 @@
     <!-- Step 1 洞察（用户主导，Transform辅助启发）v9：单焦点问题流 -->
     <div class="panel panel-redesign" id="panel-1" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">想透 · 找到你没看见的东西</div>
+        <div class="step-eyebrow">第 2 步 · 想透 · 找到你没看见的东西</div>
         <h1>透过现象看本质</h1>
         <p class="step-lead">Transform 会一题一题地启发你。答完可以一直要下一题，直到你觉得够了，再让它整合。</p>
       </header>
@@ -2294,7 +2268,7 @@
     <!-- Step 2 应用（重新设计：单一场景 · 单一焦点 · 补充可选） -->
     <div class="panel panel-app" id="panel-2" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">应用 · 把认知放进真实场景</div>
+        <div class="step-eyebrow">第 3 步 · 应用 · 把认知放进真实场景</div>
         <h1>把新认知带到场景里</h1>
         <p class="step-lead">先在一个熟悉的场景里试一次，再迁移到一个陌生场景。一次只专注一件事。</p>
       </header>
@@ -2475,7 +2449,7 @@
     <!-- Step 3 产出：核心认知 + 行动建议 + 支持资源 + 身份投票 -->
     <div class="panel panel-redesign" id="panel-3" style="display:none;">
       <header class="step-head">
-        <div class="step-eyebrow">沉淀 · 把这次想清楚变成资产</div>
+        <div class="step-eyebrow">第 4 步 · 沉淀 · 把这次想清楚变成资产</div>
         <h1>把这次想清楚，带走的产出</h1>
         <p class="step-lead">梳理有了结果。这里是你这次能带走的：一个核心认知、几个下一步、和你想成为的人。</p>
       </header>
@@ -2693,8 +2667,6 @@
     </div>
   </div>
 
-  <!-- 桌面端副栏：进度 / 主题沉淀 / 最近洞察（移动端隐藏） -->
-  <aside class="app-aside" id="appAside"></aside>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -2794,7 +2766,6 @@ let appMaxStep = 0; // 到达过的最远 stage（=appMaxStep + 1 个 panel 可�
 function goStep(n) {
   if (n > appMaxStep) appMaxStep = n; // 推进
   state.step = n;
-  renderAppAside();
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-' + n).style.display = 'block';
   if (n === 0 && typeof renderInputStats === 'function') renderInputStats();
@@ -4736,33 +4707,6 @@ async function saveSettings() {
 if (new URLSearchParams(location.search).get('settings')) openSettings();
 
 /* ============ 初始化 ============ */
-/* ============ Phase 2-E 桌面副栏渲染（只读，取自我已完成的数据） ============ */
-function renderAppAside() {
-  const aside = $('appAside');
-  if (!aside) return;
-  let tags = [];
-  try {
-    const arc = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
-    arc.forEach(function (s) { (s.tags || []).forEach(function (t) { if (t && tags.indexOf(t) < 0) tags.push(t); }); });
-  } catch (e) {}
-  const tagsHtml = tags.length
-    ? '<div class="aside-tags">' + tags.slice(0, 14).map(function (t) { return '<span class="aside-tag">' + escapeHtml(t) + '</span>'; }).join('') + '</div>'
-    : '<div style="font-size:13px;color:var(--ink-3);">完成一次后会自动沉淀主题标签</div>';
-  let recent = '—';
-  try {
-    const arc = JSON.parse(localStorage.getItem(LS_ARCHIVE)) || [];
-    if (arc.length) {
-      const s = arc[0];
-      recent = (s.essence && s.essence.insight) ? s.essence.insight : (s.insight || '');
-    }
-  } catch (e) {}
-  aside.innerHTML =
-    '<div class="aside-card"><div class="aside-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M3 11.5V4.5A1.5 1.5 0 014.5 3h7a1.5 1.5 0 011.06.44l8 8a1.5 1.5 0 010 2.12l-6.44 6.44a1.5 1.5 0 01-2.12 0l-8-8A1.5 1.5 0 013 11.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7.6" cy="7.6" r="1.4" fill="currentColor"/></svg> 主题沉淀</div>' + tagsHtml + '</div>' +
-    '<div class="aside-card"><div class="aside-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 00-3.6 10.8c.4.3.6.7.6 1.2v1h6v-1c0-.5.2-.9.6-1.2A6 6 0 0012 3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 最近一次洞察</div><div class="aside-insight">' + escapeHtml(recent) + '</div></div>';
-  const isEmpty = tags.length === 0 && recent === '—';
-  document.body.classList.toggle('aside-empty', isEmpty);
-}
-
 /* ============ Phase 2-C 首次引导（纯增量，不阻断功能） ============ */
 const OB_SLIDES = [
   { h: '想清楚，做得到', p: 'Transform会陪你走完四步：把信息摊开 → 想透本质 → 推演应用 → 沉淀成资产。每一步只花几分钟。' },
@@ -4848,7 +4792,6 @@ renderIdentityVote();
 if (state.data.impact) { document.querySelectorAll('#impactScale button')[state.data.impact-1]?.classList.add('sel'); }
 if (state.data.effort) { document.querySelectorAll('#effortScale button')[state.data.effort-1]?.classList.add('sel'); }
 checkNext0(); checkNext1(); checkNext2();
-renderAppAside();
 window.addEventListener('DOMContentLoaded', maybeShowOnboard);
 // 从首页「设置」入口来时，自动打开设置弹窗
 try { if (new URLSearchParams(location.search).get('settings') === '1') openSettings(); } catch(e){}

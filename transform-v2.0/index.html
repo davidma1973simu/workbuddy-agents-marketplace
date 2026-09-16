@@ -158,6 +158,22 @@
   .hero-sub-links a { color: var(--ink-2); text-decoration: none; transition: color .2s; }
   .hero-sub-links a:hover { color: var(--green); }
   .hero-sub-links .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
+  /* UX §1.1-#2 首页「继续上次」：最多 1 条；没有未完成时完全不渲染，不占版面 */
+  .resume-bar { display: none; }
+  .resume-bar.show {
+    display: flex; align-items: center; gap: 12px; margin-top: 18px; max-width: 580px;
+    padding: 13px 18px; background: var(--green-50);
+    border: 1px solid var(--green-light); border-radius: 999px;
+    text-decoration: none; color: var(--ink); transition: all .25s var(--ease);
+  }
+  .resume-bar.show:hover { background: var(--green-soft); border-color: var(--green); transform: translateY(-1px); }
+  .resume-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; }
+  .resume-label { font-size: 13px; font-weight: 800; color: var(--green); flex: none; letter-spacing: .2px; }
+  .resume-txt {
+    font-size: 14px; font-weight: 600; color: var(--ink-2); line-height: 1.5;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .resume-arrow { margin-left: auto; flex: none; color: var(--green); font-size: 15px; font-weight: 800; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
@@ -594,6 +610,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
+      <a class="resume-bar" id="homeResume" href="punch.html"></a>
       <div class="hero-sub-links">
         <span>从认知到行为，一次闭环</span>
       </div>
@@ -750,6 +767,7 @@ function renderTodayChange(){
 
   setupTodayTopicInput();
   renderTodayChange();
+  renderHomeResume();
   renderHomeDiscovery();
   renderHomeResurface();
 
@@ -766,6 +784,36 @@ function renderTodayChange(){
       }
     });
   });
+
+/* UX §1.1-#2：首页「继续上次」——最多 1 条，只在真有未完成时出现。
+   优先级：① 进行中且今天还没打勾的改变实验 → punch.html；② 没想完的洞察草稿 → app.html。
+   今天已打勾 / 什么都没有 → 完全不显示（默认状态不强迫用户处理旧事务）。 */
+function renderHomeResume(){
+  const bar = document.getElementById('homeResume'); if (!bar) return;
+  let actions = [], draft = null;
+  try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]') || []; } catch(e){ actions = []; }
+  try { draft = JSON.parse(localStorage.getItem('trf_session_draft') || 'null'); } catch(e){ draft = null; }
+
+  function fill(href, txt){
+    bar.href = href;
+    bar.innerHTML = '<span class="resume-dot"></span>'
+      + '<span class="resume-label">继续上次</span>'
+      + '<span class="resume-txt">' + txt + '</span>'
+      + '<span class="resume-arrow">→</span>';
+    bar.classList.add('show');
+  }
+
+  const act = actions.find(a => a && a.status === 'active');
+  if (act && !isTodayDone(act)){
+    const day = act.currentDay || 1, total = act.targetDays || 7;
+    const micro = ((act.plan || []).find(p => p.day === day) || {}).micro || act.input || '';
+    fill('punch.html', '第 ' + day + ' / ' + total + ' 天 · ' + escapeHtml(micro));
+    return;
+  }
+  if (draft && ((draft.scenario || '').trim() || (draft.notes || []).length)){
+    fill('app.html', escapeHtml((draft.scenario || '').trim() || '上次没想完的那件事'));
+  }
+}
 
 /* P0-12：首页主动发现（真实数据阈值：洞察 ≥ 5 或 行为实验 ≥ 3，不达标不显示） */
 function renderHomeDiscovery(){
