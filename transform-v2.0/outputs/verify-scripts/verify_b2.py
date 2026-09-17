@@ -119,19 +119,21 @@ async def main():
         chk("R-08e 反向链接指向 cognitive.html#ins-a1", "cognitive.html#ins-a1" in rev["href"], rev["href"])
         await pg.screenshot(path=OUT + "/b2_behavior_relation.png")
 
-        # R-09 首页旧资产浮现
+        # R-09 下线回验（2026-09-17 David 裁定：弹出胶囊不允许直接出现在首页）
         await pg.goto(BASE + "/index.html")
         await pg.wait_for_timeout(500)
-        hr = await pg.evaluate("""() => {
-            const c = document.querySelector('.hr-card');
-            if (!c) return null;
-            return { text: c.innerText, go: (c.querySelector('.hr-go')||{}).getAttribute ? c.querySelector('.hr-go').getAttribute('href') : '' };
+        home_clean = await pg.evaluate("""() => {
+            const t = document.body.innerText;
+            return { resurface: document.querySelector('.hr-card') !== null
+                                || t.indexOf('天前你写下这句') >= 0,
+                     resume: document.getElementById('homeResume') !== null
+                                || t.indexOf('继续上次') >= 0,
+                     fab: document.querySelector('.fab-archive') !== null };
         }""")
-        chk("R-09a 首页浮现旧资产卡", hr is not None, (hr or {}).get("text", "")[:60])
-        if hr:
-            chk("R-09b 浮现卡含原句与时间", "天前你写下这句" in hr["text"], hr["text"][:40])
-            chk("R-09c 浮现卡「去用 →」带 ?from=", "app.html?from=a1" in hr["go"], hr["go"])
-        await pg.screenshot(path=OUT + "/b2_index_resurface.png")
+        chk("R-09下线 首页不再出现旧资产浮现卡", home_clean["resurface"] is False, str(home_clean))
+        chk("R-09下线 首页无「继续上次」胶囊", home_clean["resume"] is False, str(home_clean))
+        chk("R-09下线 首页无重复的成长资产 FAB", home_clean["fab"] is False, str(home_clean))
+        await pg.screenshot(path=OUT + "/b2_index_clean.png")
 
         chk("无页面 JS 报错", len(errs) == 0, str(errs[:3]))
         await b.close()

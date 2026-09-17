@@ -158,22 +158,6 @@
   .hero-sub-links a { color: var(--ink-2); text-decoration: none; transition: color .2s; }
   .hero-sub-links a:hover { color: var(--green); }
   .hero-sub-links .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--line-2); }
-  /* UX §1.1-#2 首页「继续上次」：最多 1 条；没有未完成时完全不渲染，不占版面 */
-  .resume-bar { display: none; }
-  .resume-bar.show {
-    display: flex; align-items: center; gap: 12px; margin-top: 18px; max-width: 580px;
-    padding: 13px 18px; background: var(--green-50);
-    border: 1px solid var(--green-light); border-radius: 999px;
-    text-decoration: none; color: var(--ink); transition: all .25s var(--ease);
-  }
-  .resume-bar.show:hover { background: var(--green-soft); border-color: var(--green); transform: translateY(-1px); }
-  .resume-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; }
-  .resume-label { font-size: 13px; font-weight: 800; color: var(--green); flex: none; letter-spacing: .2px; }
-  .resume-txt {
-    font-size: 14px; font-weight: 600; color: var(--ink-2); line-height: 1.5;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .resume-arrow { margin-left: auto; flex: none; color: var(--green); font-size: 15px; font-weight: 800; }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-size: 15px; font-weight: 700; text-decoration: none; border: none; cursor: pointer;
@@ -451,17 +435,6 @@
   .t-action .ta-done-meta { font-size: 12.5px; color: var(--ink-2); margin-bottom: 10px; }
   .t-action .ta-done a { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--green); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
 
-  /* FAB（R-14：不与主 CTA 争抢"唯一深绿实心"的地位，改浮层白底） */
-  .fab-archive {
-    position: fixed; right: 22px; bottom: 22px; z-index: 40;
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--surface); color: var(--green-deep);
-    border: 1px solid var(--green-light);
-    padding: 13px 21px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
-    box-shadow: 0 10px 30px rgba(30,42,38,.16); transition: all .25s var(--ease); font-family: inherit;
-  }
-  .fab-archive:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(30,42,38,.2); background: var(--green-soft); }
-
   @media (max-width: 980px) {
     .hero { grid-template-columns: 1fr; text-align: center; padding: 40px 0 48px; }
     .hero-sub { margin-left: auto; margin-right: auto; }
@@ -493,7 +466,6 @@
     .entry-card { padding: 24px 22px; }
     .entry-card h2 { font-size: 22px; }
     .ec-arrow { display: none; }
-    .fab-archive { right: 14px; bottom: 14px; padding: 12px 18px; }
     .manifesto { padding: 28px 22px; }
   }
 
@@ -516,28 +488,7 @@
   .hd-go { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--green); text-decoration: none; white-space: nowrap; }
   @media (max-width: 620px){ .hd-card { flex-direction: column; align-items: flex-start; } .hd-go { margin-left: 0; } }
 
-  /* v2.1 旧资产轻浮现（M5）：把用户自己写过的话，轻轻还给他 */
-  .home-resurface:empty { display: none; }
-  .home-resurface { max-width: 760px; margin: 12px auto 0; }
-  .hr-card {
-    background: var(--surface); border: 1px solid var(--line-2);
-    border-left: 4px solid var(--green); border-radius: 16px;
-    padding: 16px 20px; box-shadow: 0 6px 22px rgba(21,27,25,.05);
-  }
-  .hr-label { font-size: 12px; font-weight: 700; color: var(--ink-3); letter-spacing: .3px; }
-  .hr-text { font-size: 15.5px; font-weight: 700; color: var(--ink); line-height: 1.65; margin-top: 8px; }
-  .hr-foot { display: flex; align-items: center; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
-  .hr-q { font-size: 13px; color: var(--ink-2); }
-  /* R-14：浮现卡的「去用」不是主操作，用描边而非实心，避免与页面主 CTA 争抢 */
-  .hr-go {
-    margin-left: auto; font-size: 13px; font-weight: 700; text-decoration: none;
-    color: var(--green-deep); background: var(--surface); border: 1px solid var(--green-light);
-    padding: 7px 15px; border-radius: 999px;
-  }
-  .hr-go:hover { background: var(--green-soft); border-color: var(--green); }
-  .hr-more { font-size: 13px; font-weight: 700; color: var(--green); text-decoration: none; }
-  .hr-more:hover { text-decoration: underline; text-underline-offset: 3px; }
-  @media (max-width: 620px){ .hr-go { margin-left: 0; } }
+
 </style>
 <script>
   (function(){
@@ -610,7 +561,6 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
-      <a class="resume-bar" id="homeResume" href="punch.html"></a>
       <div class="hero-sub-links">
         <span>从认知到行为，一次闭环</span>
       </div>
@@ -649,9 +599,6 @@
 
   <div class="home-discovery" id="homeDiscovery"></div>
 
-  <!-- v2.1 M5：旧资产轻浮现（不催促、不强迫，每次 1 条） -->
-  <div class="home-resurface" id="homeResurface"></div>
-
   <section class="manifesto">
     <div class="manifesto-block">
       <h3>AI 是脚手架，不是答案</h3>
@@ -669,10 +616,6 @@
   </footer>
 </div>
 
-<a class="fab-archive" href="cognitive.html" title="随时查看成长资产">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 10h16M9 5v4M15 5v4" stroke="currentColor" stroke-width="1.8"/></svg>
-  成长资产
-</a>
 <script>
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function isTodayDone(action){
@@ -767,9 +710,7 @@ function renderTodayChange(){
 
   setupTodayTopicInput();
   renderTodayChange();
-  renderHomeResume();
   renderHomeDiscovery();
-  renderHomeResurface();
 
   document.querySelectorAll('.entry-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -784,36 +725,6 @@ function renderTodayChange(){
       }
     });
   });
-
-/* UX §1.1-#2：首页「继续上次」——最多 1 条，只在真有未完成时出现。
-   优先级：① 进行中且今天还没打勾的改变实验 → punch.html；② 没想完的洞察草稿 → app.html。
-   今天已打勾 / 什么都没有 → 完全不显示（默认状态不强迫用户处理旧事务）。 */
-function renderHomeResume(){
-  const bar = document.getElementById('homeResume'); if (!bar) return;
-  let actions = [], draft = null;
-  try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]') || []; } catch(e){ actions = []; }
-  try { draft = JSON.parse(localStorage.getItem('trf_session_draft') || 'null'); } catch(e){ draft = null; }
-
-  function fill(href, txt){
-    bar.href = href;
-    bar.innerHTML = '<span class="resume-dot"></span>'
-      + '<span class="resume-label">继续上次</span>'
-      + '<span class="resume-txt">' + txt + '</span>'
-      + '<span class="resume-arrow">→</span>';
-    bar.classList.add('show');
-  }
-
-  const act = actions.find(a => a && a.status === 'active');
-  if (act && !isTodayDone(act)){
-    const day = act.currentDay || 1, total = act.targetDays || 7;
-    const micro = ((act.plan || []).find(p => p.day === day) || {}).micro || act.input || '';
-    fill('punch.html', '第 ' + day + ' / ' + total + ' 天 · ' + escapeHtml(micro));
-    return;
-  }
-  if (draft && ((draft.scenario || '').trim() || (draft.notes || []).length)){
-    fill('app.html', escapeHtml((draft.scenario || '').trim() || '上次没想完的那件事'));
-  }
-}
 
 /* P0-12：首页主动发现（真实数据阈值：洞察 ≥ 5 或 行为实验 ≥ 3，不达标不显示） */
 function renderHomeDiscovery(){
@@ -847,48 +758,6 @@ function renderHomeDiscovery(){
   box.innerHTML = `<div class="hd-card"><div><div class="hd-label">${label}</div><div class="hd-body">${body}</div></div><a class="hd-go" href="${href}">${go}</a></div>`;
 }
 
-/* v2.1 M5：旧资产轻浮现 —— 只在用户自己有"用过的痕迹"时才浮现，每次 1 条 */
-function markResurfaceUse(id){
-  try {
-    const list = JSON.parse(localStorage.getItem('trf_archive') || '[]') || [];
-    const i = list.findIndex(s => String(s.id) === String(id));
-    if (i >= 0){
-      list[i].uses = Array.isArray(list[i].uses) ? list[i].uses : [];
-      list[i].uses.push({ at: new Date().toISOString(), where: 'home' });
-      localStorage.setItem('trf_archive', JSON.stringify(list));
-    }
-  } catch(e){}
-}
-function renderHomeResurface(){
-  const box = document.getElementById('homeResurface'); if (!box) return;
-  let archive = [], actions = [];
-  try { archive = JSON.parse(localStorage.getItem('trf_archive') || '[]') || []; } catch(e){ archive = []; }
-  try { actions = JSON.parse(localStorage.getItem('trf_actions') || '[]') || []; } catch(e){ actions = []; }
-  const linked = id => actions.some(a => a && String(a.sourceInsightId) === String(id));
-  const cands = archive.filter(s => s && (s.pinned || (s.uses || []).length || linked(s.id)));
-  if (!cands.length) return;
-  const daysOf = s => Math.max(1, Math.round((Date.now() - new Date(s.createdAt || s.completedAt || Date.now()).getTime()) / 86400000));
-  const old = cands.filter(s => daysOf(s) >= 14);
-  const pool = (old.length ? old : cands).slice().sort((a, b) =>
-    new Date(a.createdAt || a.completedAt || 0) - new Date(b.createdAt || b.completedAt || 0));
-  let shown = [];
-  try { shown = JSON.parse(localStorage.getItem('trf_resurface_seen') || '[]') || []; } catch(e){ shown = []; }
-  const pick = pool.find(s => !shown.includes(String(s.id))) || pool[0];
-  const text = String((pick.essence && (pick.essence.insight || pick.essence.nature)) || '').trim();
-  if (!text) return;
-  box.innerHTML = `<div class="hr-card">
-    <div class="hr-label">${daysOf(pick)} 天前你写下这句 ——</div>
-    <div class="hr-text">「${escapeHtml(text)}」</div>
-    <div class="hr-foot">
-      <span class="hr-q">现在做到了吗？</span>
-      <a class="hr-go" href="app.html?from=${encodeURIComponent(pick.id)}" onclick="markResurfaceUse('${pick.id}')">去用 →</a>
-      <a class="hr-more" href="cognitive.html#ins-${encodeURIComponent(pick.id)}">去看 →</a>
-    </div>
-  </div>`;
-  shown.unshift(String(pick.id));
-  shown = shown.slice(0, 3);
-  try { localStorage.setItem('trf_resurface_seen', JSON.stringify(shown)); } catch(e){}
-}
 
 })();
 </script>

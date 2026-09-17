@@ -345,56 +345,22 @@ async def main():
         chk("M4b 实验卡 →「源于这条认知」可见",
             bool(rel2["txt"]) and rel2["h"] > 0, f"实测 {rel2}")
 
-        # =============== M5 / R-09 首页旧资产浮现 ===============
+        # =============== M5 / §1.1-#2 首页克制（2026-09-17 David 裁定） ===============
+        # 「继续上次」胶囊与「旧资产浮现」卡不允许直接出现在首页；成长资产 FAB 与顶栏重复，一并下线
         await pg.goto(BASE + "/index.html")
-        await pg.wait_for_timeout(500)
-        float_card = await pg.evaluate("""() => {
+        await pg.wait_for_timeout(450)
+        home_clean = await pg.evaluate("""() => {
             const t = document.body.innerText;
-            const i = t.indexOf('你写下这句');
-            return i >= 0 ? t.slice(i, i + 60).replace(/\\n/g, ' / ') : null;
+            return { resume: t.indexOf('继续上次') >= 0,
+                     resurface: t.indexOf('天前你写下这句') >= 0,
+                     fab: !!document.querySelector('.fab-archive'),
+                     nav: !!Array.from(document.querySelectorAll('.nav-links a'))
+                            .find(a => a.textContent.indexOf('成长资产') >= 0) };
         }""")
-        chk("M5 首页浮现 1 条旧资产（≥14 天未看）", float_card is not None, f"实测 {float_card}")
-
-        # =============== §1.1 #2 首页「继续上次」 ===============
-        # 有未完成的改变实验（今天没打勾）→ 必须出现，且指向 punch.html
-        cont = await pg.evaluate("""() => {
-            const b = document.getElementById('homeResume');
-            if (!b) return { node: false };
-            const r = b.getBoundingClientRect();
-            return { node: true, shown: b.classList.contains('show'),
-                     href: b.getAttribute('href'),
-                     txt: (b.innerText || '').replace(/\\s+/g, ' ').trim(),
-                     top: Math.round(r.top), h: Math.round(r.height) };
-        }""")
-        chk("§1.1-#2a 有未完成时首页出现「继续上次」→ 每日改变",
-            cont.get("shown") is True and cont.get("href") == "punch.html", f"实测 {cont}")
-        chk("§1.1-#2b 「继续上次」在首屏内（top < 900，无需滚动）",
-            0 <= cont.get("top", -1) < 900 and cont.get("h", 0) > 0, f"实测 top={cont.get('top')} h={cont.get('h')}")
-        # 今天已打勾 → 不该再催（默认状态不强迫用户处理旧事务）
-        await pg.evaluate("""() => {
-            const a = JSON.parse(localStorage.getItem('trf_actions') || '[]');
-            (a || []).forEach(x => { if (x && x.status === 'active') {
-              x.logs = (x.logs || []).concat([{ day: x.currentDay || 1, date: new Date().toISOString(), done: true }]);
-            }});
-            localStorage.setItem('trf_actions', JSON.stringify(a));
-        }""")
-        await pg.goto(BASE + "/index.html")
-        await pg.wait_for_timeout(400)
-        cont_done = await pg.evaluate("""() => {
-            const b = document.getElementById('homeResume');
-            return b ? b.classList.contains('show') : null;
-        }""")
-        chk("§1.1-#2c 今天已完成时不再催（不显示）", cont_done is False, f"实测 shown={cont_done}")
-        # 什么都没有 → 完全不出现
-        await pg.evaluate("() => localStorage.clear()")
-        await pg.goto(BASE + "/index.html")
-        await pg.wait_for_timeout(400)
-        cont_empty = await pg.evaluate("""() => {
-            const b = document.getElementById('homeResume');
-            return b ? { shown: b.classList.contains('show'), h: Math.round(b.getBoundingClientRect().height) } : null;
-        }""")
-        chk("§1.1-#2d 空状态完全不出现（不占版面）",
-            cont_empty and cont_empty["shown"] is False and cont_empty["h"] == 0, f"实测 {cont_empty}")
+        chk("首页克制：无「继续上次」胶囊（下线）", home_clean["resume"] is False, str(home_clean))
+        chk("首页克制：无「旧资产浮现」卡（下线）", home_clean["resurface"] is False, str(home_clean))
+        chk("首页克制：无重复的成长资产 FAB（下线）", home_clean["fab"] is False, str(home_clean))
+        chk("首页克制：顶栏三链接保持（成长资产仍在导航）", home_clean["nav"] is True, str(home_clean))
 
         # =============== §1.1 #8 / §3.3 app 右侧浮卡 ===============
         await pg.goto(BASE + "/app.html")
