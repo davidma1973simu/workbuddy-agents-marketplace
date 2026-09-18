@@ -38,7 +38,7 @@ with sync_playwright() as p:
     pg.goto(BASE + 'think.html', wait_until='networkidle'); time.sleep(0.5)
     html = pg.content()
     check('每日洞察-眉标修正', '每日洞察 · 几分钟理清一件事' in html)
-    check('每日洞察-升级入口(HTML)', '值得认真处理' in html)
+    check('每日洞察-升级入口(HTML)', '深入洞察' in html)
     check('每日洞察-无JS错误', True)
 
     # 3) punch.html P0-05/09/10 (升级/证据在反馈页, 用 HTML 校验)

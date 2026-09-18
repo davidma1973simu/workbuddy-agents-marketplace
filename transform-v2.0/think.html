@@ -254,17 +254,6 @@
   .ir-block .v { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.7; }
   .ir-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .ir-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; text-align: center; }
-  .ir-upgrade {
-    margin-top: 18px; padding: 16px 18px; border-radius: 16px;
-    background: var(--green-50, #EAF6F0); border: 1px solid var(--green-light, #CDE9DC);
-  }
-  .iu-q { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-  .iu-link {
-    display: inline-block; font-size: 14px; font-weight: 700; color: var(--green-deep);
-    text-decoration: none; border-bottom: 1.5px solid var(--green); padding-bottom: 1px;
-  }
-  .iu-link:hover { color: var(--green); }
-  .iu-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 8px; line-height: 1.6; }
 
   /* toast */
   #toast {
@@ -625,7 +614,7 @@ async function finishThink(){
     toast('Transform 整合失败，请稍后再试');
     return;
   }
-  // 存入「成长资产 · 想法」（与 app.html complete() 的条目格式一致）
+  // 存入「成长资产 · 洞察」（与 app.html complete() 的条目格式一致）
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
@@ -677,19 +666,18 @@ function renderInsightResult(session){
           <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
         </div>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
-            把这个洞察变成今天的改变 →
-          </a>
-          <a class="btn btn-ghost" href="cognitive.html" style="text-decoration:none;">看想法</a>
+          <a class="btn btn-primary" href="think.html" style="text-decoration:none;flex:1;">全新洞察</a>
+          <a class="btn btn-ghost" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;">把这个洞察变成今天的改变 →</a>
         </div>
-        <div class="ir-upgrade">
-          <div class="iu-q">这个问题，值得认真处理吗？</div>
-          <a class="iu-link" href="app.html?topic=${encodeURIComponent(topic)}">和我一起，把这件事真正想清楚 →</a>
-          <div class="iu-sub">遇上反复卡住、或牵扯很多人的复杂问题，「深入洞察」会陪你多轮想透。</div>
-        </div>
-        <div class="ir-note">已存入「成长资产 · 想法」 · 随时可查</div>
+        <div class="ir-note">已存入「成长资产 · 洞察」 · 随时可查</div>
       </div>
     </div>`;
+  // 深入洞察只保留页面最底部一个入口：结果态带主题直达 app.html
+  const flb = document.querySelector('.full-link-bar a');
+  if (flb){
+    flb.href = 'app.html?topic=' + encodeURIComponent(topic || '');
+    flb.textContent = '想深入研究和了解这个主题？进入深入洞察 →';
+  }
   stepGo(2);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }

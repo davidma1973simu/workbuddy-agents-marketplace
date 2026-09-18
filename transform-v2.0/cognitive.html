@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>成长资产 · 想法 · Transform</title>
+<title>成长资产 · 洞察 · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -682,12 +682,12 @@
 
   <div class="page-head">
     <div class="title-block">
-      <h1>成长资产 · 想法</h1>
+      <h1>成长资产 · 洞察</h1>
       <div class="page-sub">我怎么看这件事</div>
     </div>
     <div class="arch-toggle" role="tablist" aria-label="档案切换">
-      <a href="cognitive.html" class="on" role="tab" aria-selected="true">想法</a>
-      <a href="behavior.html" role="tab" aria-selected="false">证据</a>
+      <a href="cognitive.html" class="on" role="tab" aria-selected="true">洞察</a>
+      <a href="behavior.html" role="tab" aria-selected="false">改变</a>
     </div>
   </div>
 
@@ -697,7 +697,7 @@
   <!-- 首屏：想法库（搜索 + 最近的想法，始终可见） -->
   <section class="lib-section" id="libSection">
     <div class="lib-search-row">
-      <input type="text" class="filter-search lib-search" id="insightSearch" placeholder="搜索任何一条想法…" oninput="setInsightSearch(this.value)">
+      <input type="text" class="filter-search lib-search" id="insightSearch" placeholder="搜索任何一条洞察…" oninput="setInsightSearch(this.value)">
       <button class="filter-toggle" id="filterToggleBtn" type="button" onclick="toggleFilterPanel()" hidden>筛选</button>
     </div>
     <div class="filter-row" id="viewChips"></div>
@@ -886,7 +886,7 @@ function renderStats(){
   archive.forEach(s => (s.tags || []).forEach(t => { if(t) tags.add(t); }));
   const used = archive.filter(s => (s.uses || []).length > 0).length;
   $('statsArea').innerHTML = `
-    <span class="item"><span class="num">${archive.length}</span>想法</span>
+    <span class="item"><span class="num">${archive.length}</span>洞察</span>
     <span class="sep">·</span>
     <span class="item"><span class="num">${models.length}</span>认知模型</span>
     <span class="sep">·</span>
@@ -914,7 +914,7 @@ function renderEmptyState(){
   secs.forEach(el => { if (el) el.setAttribute('hidden', ''); });
   box.removeAttribute('hidden');
   box.innerHTML = `<div class="onboard-card">
-    <div class="ob-title">你的想法会在这里长出来</div>
+    <div class="ob-title">你的洞察会在这里长出来</div>
     <p class="ob-body">先去想清楚一件事 —— 10 分钟就能有第一条。</p>
     <a class="ob-cta" href="think.html">开始每日洞察 →</a>
   </div>`;
@@ -926,7 +926,7 @@ function renderFootLine(){
   const used = archive.filter(s => (s.uses || []).length > 0).length;
   const trashN = loadTrash().length;
   const archN = archivedItems().length;
-  const parts = [`想法 ${archive.length}`, `模型 ${models.length}`];
+  const parts = [`洞察 ${archive.length}`, `模型 ${models.length}`];
   if (used) parts.push(`用过 ${used}`);
   if (archN) parts.push(`<button class="foot-link" onclick="showFootSection('archived')">归档 ${archN}</button>`);
   if (trashN) parts.push(`<button class="foot-link" onclick="showFootSection('trash')">回收箱 ${trashN}</button>`);
@@ -1165,7 +1165,7 @@ function renderInsights(){
     });
   }
   if (insightTime !== 'all') list = list.filter(s => withinTime(insightDateOf(s), insightTime));
-  if (!list.length){ box.innerHTML = '<div class="expand-empty">没有符合当前条件的想法。</div>'; return; }
+  if (!list.length){ box.innerHTML = '<div class="expand-empty">没有符合当前条件的洞察。</div>'; return; }
 
   const dateOf = s => new Date(s.completedAt || s.createdAt || 0).getTime();
   const groups = groupByScenario(list);
@@ -1930,7 +1930,7 @@ function bkToggle(){
   pop.innerHTML =
     '<button class="bk-item" onclick="downloadAll();bkClose();">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>下载完整备份</span>' +
-      '<span class="s">想法、证据、身份与模式，存成一个 JSON 文件</span>' +
+      '<span class="s">洞察、改变、身份与模式，存成一个 JSON 文件</span>' +
     '</button>' +
     '<button class="bk-item" onclick="bkPick()">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21V9m0 0l-5 5m5-5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 3h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>从备份恢复</span>' +
@@ -1953,7 +1953,7 @@ function bkOnFile(ev){
     window._bkData = data;
     const pop = $('bkPop');
     const row = function(k, v){ return '<div class="r"><span>' + k + '</span><b>' + v + '</b></div>'; };
-    let rows = row('想法', c.archive + ' 份') + row('证据', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
+    let rows = row('洞察', c.archive + ' 份') + row('改变', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
     if (c.pats) rows += row('AI 模式', c.pats + ' 条');
     pop.innerHTML =
       '<div class="bk-sum">' +

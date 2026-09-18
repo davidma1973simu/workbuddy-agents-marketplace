@@ -686,7 +686,7 @@ function renderTodayChange(){
         <div class="ta-done-crown"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12.5l2.8 2.8L16 9.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="ta-done-title">今天做到了！</div>
         <div class="ta-done-meta">累计 <b style="color:var(--green);">${active.totalDone || 0}</b> 天 · 连续 <b style="color:var(--green);">${active.streak || 0}</b> 天</div>
-        <a href="behavior.html" onclick="event.stopPropagation()">查看证据 →</a>
+        <a href="behavior.html" onclick="event.stopPropagation()">查看改变 →</a>
       </div>`;
   } else {
     box.innerHTML = `
@@ -744,7 +744,7 @@ function renderHomeDiscovery(){
     body = (topTag && topN >= 2)
       ? `你沉淀的 <b>${archive.length}</b> 条洞察里，有 <b>${topN}</b> 条都涉及「<b>${escapeHtml(topTag)}</b>」——你反复在思考同一类事。`
       : `你已经沉淀了 <b>${archive.length}</b> 条洞察。再多积累几次，就能看出自己反复在想什么。`;
-    href = 'cognitive.html'; go = '看想法 →';
+    href = 'cognitive.html'; go = '看洞察 →';
   } else {
     const reasonCount = {};
     exps.forEach(a => (a.logs || []).forEach(l => { if (l && l.done === false && l.reason) reasonCount[l.reason] = (reasonCount[l.reason] || 0) + 1; }));
@@ -753,7 +753,7 @@ function renderHomeDiscovery(){
     body = (topReason && topN >= 2)
       ? `过去 <b>${exps.length}</b> 次行为实验里，你最容易因为「<b>${escapeHtml(topReason)}</b>」没做到——下次可以从缩小这一步开始。`
       : `你已经完成了 <b>${exps.length}</b> 次行为实验。再多积累几次，就能看出自己在哪一步最容易卡住。`;
-    href = 'behavior.html'; go = '看证据 →';
+    href = 'behavior.html'; go = '看改变 →';
   }
   box.innerHTML = `<div class="hd-card"><div><div class="hd-label">${label}</div><div class="hd-body">${body}</div></div><a class="hd-go" href="${href}">${go}</a></div>`;
 }

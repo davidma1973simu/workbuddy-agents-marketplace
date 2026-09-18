@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>成长资产 · 证据 · Transform</title>
+<title>成长资产 · 改变 · Transform</title>
 <style>
   :root {
     --bg: #F6F5F1;
@@ -658,12 +658,12 @@
 
   <div class="page-head">
     <div class="title-block">
-      <h1>成长资产 · 证据</h1>
+      <h1>成长资产 · 改变</h1>
       <div class="page-sub">我做到了什么</div>
     </div>
     <div class="arch-toggle" role="tablist" aria-label="档案切换">
-      <a href="cognitive.html" role="tab" aria-selected="false">想法</a>
-      <a href="behavior.html" class="on" role="tab" aria-selected="true">证据</a>
+      <a href="cognitive.html" role="tab" aria-selected="false">洞察</a>
+      <a href="behavior.html" class="on" role="tab" aria-selected="true">改变</a>
     </div>
   </div>
 
@@ -889,7 +889,7 @@ function renderEmptyState(){
   secs.forEach(el => { if (el) el.setAttribute('hidden', ''); });
   box.removeAttribute('hidden');
   box.innerHTML = `<div class="onboard-card">
-    <div class="ob-title">你的证据会在这里累积</div>
+    <div class="ob-title">你的改变会在这里累积</div>
     <p class="ob-body">先做一件今晚就能完成的小事 —— 明天你就有了第一条。</p>
     <a class="ob-cta" href="punch.html">开始做到 →</a>
   </div>`;
@@ -1070,7 +1070,7 @@ function renderInsights(){
   const box = $('insightList'); if (!box) return;
   let archive = loadArchive();
   if (!archive.length){
-    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「每日洞察」得到的想法都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
+    box.innerHTML = `<div class="expand-empty">还没有洞察。<br>每一次「每日洞察」得到的洞察都会沉淀在这里。<br><a href="app.html">去产出你的第一个洞察 →</a></div>`;
     return;
   }
   if (insightFilter) archive = archive.filter(s => (s.tags || []).includes(insightFilter));
@@ -1169,7 +1169,7 @@ function renderActions(){
       <div class="fold-body" onclick="event.stopPropagation()">
         ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
         ${(a.sourceInsightId || a.insight || a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<details class="occ-sub"><summary>来源与复盘</summary><div class="occ-sub-body">
-          ${(a.sourceInsightId || a.insight) ? `<div class="a-source"><b>源于想法：</b>${escapeHtml(String(a.insight || '').replace(/\n+/g, ' · '))}${a.sourceInsightId ? ` <a class="rel-link" href="cognitive.html#ins-${encodeURIComponent(a.sourceInsightId)}">查看那条想法 →</a>` : ''}</div>` : ''}
+          ${(a.sourceInsightId || a.insight) ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(String(a.insight || '').replace(/\n+/g, ' · '))}${a.sourceInsightId ? ` <a class="rel-link" href="cognitive.html#ins-${encodeURIComponent(a.sourceInsightId)}">查看那条想法 →</a>` : ''}</div>` : ''}
           ${(a.result || a.habit || (a.reflection && a.reflection.changed)) ? `<div class="a-reflect">
           ${a.result ? `<div><b>结果</b> ${escapeHtml(a.result)}</div>` : ''}
           ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
@@ -1826,7 +1826,7 @@ function bkToggle(){
   pop.innerHTML =
     '<button class="bk-item" onclick="downloadAll();bkClose();">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>下载完整备份</span>' +
-      '<span class="s">想法、证据、身份与模式，存成一个 JSON 文件</span>' +
+      '<span class="s">洞察、改变、身份与模式，存成一个 JSON 文件</span>' +
     '</button>' +
     '<button class="bk-item" onclick="bkPick()">' +
       '<span class="t"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21V9m0 0l-5 5m5-5l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 3h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>从备份恢复</span>' +
@@ -1849,7 +1849,7 @@ function bkOnFile(ev){
     window._bkData = data;
     const pop = $('bkPop');
     const row = function(k, v){ return '<div class="r"><span>' + k + '</span><b>' + v + '</b></div>'; };
-    let rows = row('想法', c.archive + ' 份') + row('证据', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
+    let rows = row('洞察', c.archive + ' 份') + row('改变', c.actions + ' 个') + row('身份票', c.stmts + ' 张');
     if (c.pats) rows += row('AI 模式', c.pats + ' 条');
     pop.innerHTML =
       '<div class="bk-sum">' +

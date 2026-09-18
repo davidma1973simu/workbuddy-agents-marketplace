@@ -56,7 +56,7 @@ with sync_playwright() as p:
     check('ZH 首页-洞察≥5 出现发现卡', card is not None)
     if card:
         txt = card.inner_text()
-        check('ZH 首页-发现卡文案真实', '洞察' in txt and '想法' in txt, txt.replace('\n', ' ')[:80])
+        check('ZH 首页-发现卡文案真实', '洞察' in txt and '看洞察' in txt, txt.replace('\n', ' ')[:80])
 
     # ---------------- 首页：行为实验 ≥3 触发（EN） ----------------
     # 注意：同一 origin 下 localStorage 跨页共享，先清空再测，避免前序 archive 种子污染
@@ -81,7 +81,7 @@ with sync_playwright() as p:
 
     # ---------------- 每日洞察 ----------------
     for f, lang, eyebrow, up in [
-        ('think.html', 'ZH', '每日洞察 · 几分钟理清一件事', '值得认真处理'),
+        ('think.html', 'ZH', '每日洞察 · 几分钟理清一件事', '深入研究和了解这个主题'),
         ('think-en.html', 'EN', 'Daily Insight · See one thing clearly in minutes', 'Does this deserve a proper look?'),
     ]:
         pg.goto(BASE + f, wait_until='networkidle'); time.sleep(0.3)

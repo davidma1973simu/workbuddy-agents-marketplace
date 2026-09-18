@@ -78,7 +78,7 @@ async def main():
         await pg.wait_for_timeout(900)
         chk("R-07a 跳转到 app.html 并带 from 参数", "app.html" in pg.url and "from=a1" in pg.url, pg.url.split('/')[-1])
         banner = await pg.evaluate("() => { const b = document.querySelector('.using-banner'); return b ? b.innerText : ''; }")
-        chk("R-04f app.html 读到 ?from= 并显示「正在用这条想法」", "正在用这条想法" in banner, banner[:60])
+        chk("R-04f app.html 读到 ?from= 并显示「正在用这条洞察」", "正在用这条洞察" in banner, banner[:60])
         scen = await pg.evaluate("() => { const el = document.getElementById('scenario'); return el ? el.value : '(no el)'; }")
         chk("R-04g app.html 预填了想法所属场景", scen.strip() != "", scen)
         await pg.screenshot(path=OUT + "/b2_app_using_banner.png")
@@ -115,7 +115,7 @@ async def main():
             const l = c.querySelector('.a-source .rel-link');
             return { txt: c.querySelector('.a-source') ? c.querySelector('.a-source').innerText : '', href: l ? l.getAttribute('href') : '' };
         }""")
-        chk("R-08d 实验卡显示「源于想法」", "源于想法" in rev["txt"], rev["txt"][:50])
+        chk("R-08d 实验卡显示「源于洞察」", "源于洞察" in rev["txt"], rev["txt"][:50])
         chk("R-08e 反向链接指向 cognitive.html#ins-a1", "cognitive.html#ins-a1" in rev["href"], rev["href"])
         await pg.screenshot(path=OUT + "/b2_behavior_relation.png")
 
