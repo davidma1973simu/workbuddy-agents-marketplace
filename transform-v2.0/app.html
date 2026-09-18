@@ -3020,21 +3020,35 @@ async function aiExtract() {
 - 猜测：用户自己的推测、假设、默认前提
 输出格式：每行一条，格式为「来源：内容」。
 来源必须是 观察/事实/听闻/猜测 之一。
-提取 4-8 条，覆盖描述中的关键信息。`
+提取 4-8 条，覆盖描述中的关键信息。
+直接输出提取结果本身，不要输出解释、示例、格式说明或"我会按这样输出"之类的话。`
     );
-    // 解析并填入便签
-    const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes('：'));
-    lines.forEach(l => {
-      const sm = l.match(/^(观察|事实|听闻|猜测)\s*[:：]\s*/);
-      const source = sm ? sm[1] : '观察';
-      const text = l.replace(/^(观察|事实|听闻|猜测)\s*[:：]\s*/, '').trim();
-      if (text) {
+    // 解析并填入便签（兼容路径：markdown 围栏 / 编号与加粗 / 半角全角冒号 / 过滤格式回显）
+    const cleaned = r.replace(/```[a-z]*\n?/gi, '');
+    const lines = cleaned.split('\n').map(l => l.trim()).filter(Boolean);
+    let added = 0;
+    lines.forEach(raw => {
+      // 去掉行首的列表符号：- 、* 、1. 、1、 、① 等
+      let l = raw.replace(/^[\s\-\*•·\d①②③④⑤⑥⑦⑧⑨⑩]+[\.\、\)\]]*\s*/g, '').replace(/\*\*/g, '').trim();
+      const sm = l.match(/^(观察|事实|听闻|猜测)\s*[:：]\s*(.*)$/);
+      if (!sm) return;
+      const source = sm[1];
+      const text = sm[2].trim();
+      // 过滤：空内容、纯占位（……/...）、仍以冒号结尾的格式回显行
+      if (text && !/^[…\.。\-—:：\s]*$/.test(text) && !text.endsWith('：') && !text.endsWith(':')) {
         state.data.notes.push({ id: uid(), source, text });
+        added++;
       }
     });
     renderNotes(); checkNext0(); saveDraft();
-    showAIResult('aiExtractResult', '已提取 ' + lines.length + ' 条信息点，可删除或修改。');
-    toast('已提取信息点');
+    if (added > 0) {
+      showAIResult('aiExtractResult', '已提取 ' + added + ' 条信息点，可删除或修改。');
+      toast('已提取信息点');
+    } else {
+      // 解析失败：诚实显示原始回复，让用户直接取用，不静默归零
+      showAIResult('aiExtractResult', 'AI 的回复没能自动填入便签，原文如下，可直接参考：\n' + r);
+      toast('已收到 AI 回复');
+    }
   } catch(e) { toast(e.message); }
   setAILoading('aiExtract', false);
 }
