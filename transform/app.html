@@ -185,7 +185,8 @@
   .path[data-progress="2"]::after { width: 49%; }
   .path[data-progress="3"]::after { width: 76%; }
   .path[data-progress="4"]::after { width: 82%; }
-  .p-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; width: 56px; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; width: 56px; cursor: pointer; }
+  .p-node:hover .p-label { color: var(--green-deep); }
   .p-dot {
     width: 34px; height: 34px; border-radius: 50%;
     background: var(--surface); border: 2.5px solid var(--line);
@@ -3319,6 +3320,7 @@ function restoreEssenceUI() {
   const vpArea = $('viewpointArea');
   if (vpArea) vpArea.style.display = (state.data.essence && (state.data.essence.nature || state.data.essence.insight)) ? 'block' : 'none';
   if ($('essenceRestate')) $('essenceRestate').value = state.data.restate || '';
+  if (state.data.viewpoints && state.data.viewpoints.length) renderViewpoints();
   autoGrow($('essenceNature'));
   autoGrow($('essenceInsight'));
   if ($('essenceRestate')) autoGrow($('essenceRestate'));
@@ -3438,9 +3440,6 @@ function confirmEssence() {
   }
   state.data.confirmed = true;
   state.data.restate = restate;
-  // 若用户用视角回答修订过认知，则用修订版
-  const revised = (state.data.viewpointAnswer || '').trim();
-  if (revised) state.data.restate = revised;
   $('essenceBox').classList.add('locked');
   $('restateCore').classList.add('locked');
   $('viewpointArea').classList.add('locked');
@@ -3532,7 +3531,7 @@ function vpAnswerHtml() {
   return `<div class="vp-answer">
     <div class="lb-essence-label">${escapeHtml(vp.name)} · ${escapeHtml(vpQuestion(vp))}</div>
     <textarea id="restateRevised" class="essence-nature" placeholder="从这个视角回答……">${escapeHtml(state.data.viewpointAnswer || '')}</textarea>
-    <div class="vp-done"><button onclick="confirmViewpoint()">整合进我的认知</button></div>
+    <div class="vp-done"><button onclick="confirmViewpoint()">附加到我的认知</button></div>
   </div>`;
 }
 function selectViewpoint(i) {
@@ -3545,13 +3544,18 @@ function confirmViewpoint() {
   if (!vp) { toast('先选一个视角'); return; }
   const ta = document.querySelector('.vp-answer textarea');
   const ans = ta ? (ta.value || '').trim() : '';
-  state.data.viewpointAnswer = ans;
-  if (ans) {
-    // 用户的视角回答 = 修订后的核心认知（可再改）
-    state.data.restate = ans;
-    if ($('essenceRestate')) $('essenceRestate').value = ans;
-  }
-  toast('已用「' + vp.name + '」更新你的认知，可继续打分并保存');
+  if (!ans) { toast('先写下这个视角的回答'); return; }
+  // 附加，不覆盖：每个视角的回答都接在你原来写的内容后面
+  state.data.viewpointAnswers = state.data.viewpointAnswers || [];
+  state.data.viewpointAnswers.push({ name: vp.name, answer: ans });
+  const base = (($('essenceRestate') ? $('essenceRestate').value : '') || state.data.restate || '').replace(/\s+$/, '');
+  const merged = (base ? base + '\n' : '') + '【' + vp.name + '】' + ans;
+  state.data.restate = merged;
+  if ($('essenceRestate')) { $('essenceRestate').value = merged; autoGrow($('essenceRestate')); }
+  state.data.viewpointAnswer = '';
+  saveDraft();
+  renderViewpoints();
+  toast('已把「' + vp.name + '」的回答附加到你的认知。可换下一个视角继续答，或直接在上面的框里总结成新的认知');
 }
 
 function checkNext1() {
@@ -4022,11 +4026,11 @@ async function aiSuggestResources(type) {
     );
     const data = parseResources(r);
     if (data) {
-      state.data.nearResourcesPlan = { ...data, confirmed: false };
+      state.data.nearResourcesPlan = { ...data, confirmed: true };
       renderResourcesResult(type, state.data.nearResourcesPlan);
       saveDraft();
       checkNext2();
-      toast('Transform 建议已生成，可编辑后确认');
+      toast('资源建议已生成，不满意可直接改，或点重新生成');
     } else {
       showAIResult(resultId, r);
     }
@@ -4059,29 +4063,27 @@ function renderResourcesResult(type, rp) {
   const box = $('resourcesNearResult');
   if (!box) return;
   let html = '';
-  html += '<div class="resource-block"><label>要找的关键人</label><textarea id="rpPeople' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>要用的资源 / 工具</label><textarea id="rpResources' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>前提条件</label><textarea id="rpConditions' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>要找的关键人</label><textarea id="rpPeople' + type + '" rows="2" placeholder="每行一个" oninput="saveResourcesEdit(\'' + type + '\')">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>要用的资源 / 工具</label><textarea id="rpResources' + type + '" rows="2" placeholder="每行一个" oninput="saveResourcesEdit(\'' + type + '\')">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>前提条件</label><textarea id="rpConditions' + type + '" rows="2" placeholder="每行一个" oninput="saveResourcesEdit(\'' + type + '\')">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
   html += '<div class="resource-actions">';
-  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认支持资源</button>';
   html += '<button class="btn-link" onclick="aiSuggestResources(\'' + type + '\')">重新生成</button>';
   html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
   box.style.display = 'block';
 }
-function confirmResources(type) {
-  const pe = $('rpPeoplenear'), re = $('rpResourcesnear'), co = $('rpConditionsnear');
-  state.data.nearResourcesPlan = {
-    people: pe ? textareaToArr(pe) : [],
-    resources: re ? textareaToArr(re) : [],
-    conditions: co ? textareaToArr(co) : [],
-    note: (state.data.nearResourcesPlan && state.data.nearResourcesPlan.note) || '',
+// 直接生成、直接改：任何修改立即保存，无需确认步骤
+function saveResourcesEdit(type) {
+  const plan = state.data.nearResourcesPlan || {};
+  const pe = $('rpPeople' + type), re = $('rpResources' + type), co = $('rpConditions' + type);
+  state.data.nearResourcesPlan = Object.assign({}, plan, {
+    people: pe ? textareaToArr(pe) : (plan.people || []),
+    resources: re ? textareaToArr(re) : (plan.resources || []),
+    conditions: co ? textareaToArr(co) : (plan.conditions || []),
     confirmed: true
-  };
+  });
   saveDraft();
-  checkNext2();
-  toast('支持资源已确认');
 }
 
 function checkNext2() {
@@ -4435,7 +4437,7 @@ window.addEventListener('DOMContentLoaded', maybeShowOnboard);
 try { if (new URLSearchParams(location.search).get('settings') === '1') openSettings(); } catch(e){}
 // Step 3 产出页渲染
 const origGo = window.goStep || goStep;
-window.goStep = function(n) {
+window.goStep = function(n, opts) {
   if (n === 3) {
     const d = state.data;
 
@@ -4496,7 +4498,34 @@ window.goStep = function(n) {
     }
   }
   origGo(n);
+  // 把步骤写入浏览器历史：浏览器回退回到上一步，而不是退出页面
+  if (!(opts && opts.fromHistory)) {
+    try { history.pushState({ trfStep: n }, '', '#step' + (n + 1)); } catch (e) {}
+  }
 };
+
+// 左侧流程：随时点按回到对应环节（数据已自动存草稿，可放心前后跳转修订/查询）
+document.querySelectorAll('.p-node').forEach(function(node) {
+  node.addEventListener('click', function() {
+    const n = +node.dataset.step;
+    if (!isNaN(n) && n !== state.step) window.goStep(n);
+  });
+});
+// 浏览器回退 / 前进：回到对应步骤
+window.addEventListener('popstate', function(ev) {
+  let n = (ev.state && typeof ev.state.trfStep === 'number') ? ev.state.trfStep : NaN;
+  if (isNaN(n)) {
+    const m = (location.hash || '').match(/step(\d+)/);
+    if (m) n = +m[1] - 1;
+  }
+  if (!isNaN(n) && n >= 0 && n <= 4) window.goStep(n, { fromHistory: true });
+});
+// 入口页记为历史底部；刷新后按 hash 恢复所在步骤
+try { history.replaceState({ trfStep: state.step || 0 }, '', location.pathname + location.search + (location.hash || '')); } catch (e) {}
+(function () {
+  const m = (location.hash || '').match(/step(\d+)/);
+  if (m) { const n = Math.min(4, Math.max(0, +m[1] - 1)); if (n !== state.step) window.goStep(n, { fromHistory: true }); }
+})();
 
 /* 投入 → 承诺：分别为「创造空间」和「阻力回拉」提供温暖支持 */
 async function aiCourage(type, btn) {
