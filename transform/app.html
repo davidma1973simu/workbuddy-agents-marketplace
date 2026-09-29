@@ -404,21 +404,19 @@
     flex-shrink: 0; font-size: 11px; font-weight: 700; color: #fff;
     background: var(--green-deep); border-radius: 999px; padding: 2px 8px; margin-top: 2px;
   }
-  .q-block .q-rev-toggle {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 8px; font-size: 12.5px; font-weight: 600; color: var(--green-deep);
-    background: none; border: 1.5px dashed rgba(29,158,117,.4); border-radius: 999px;
-    padding: 5px 12px; cursor: pointer; font-family: inherit; transition: all .2s;
+  /* 追问区：每个按钮 → 一条追问 + 独立作答框（与每日洞察一致） */
+  .q-block .fu-area { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .q-block .fu-card { background: var(--green-soft); border-radius: var(--radius-sm); padding: 12px 14px; animation: fu-in .3s ease; }
+  .q-block .fu-tag { font-size: 11px; font-weight: 700; color: var(--green-deep); margin-bottom: 6px; }
+  .q-block .fu-q { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.6; margin-bottom: 8px; }
+  .q-block .fu-a {
+    width: 100%; min-height: 60px; padding: 10px 12px; border-radius: 10px;
+    border: 1.5px solid rgba(29,158,117,.25); background: var(--surface); font-size: 13.5px;
+    font-family: inherit; color: var(--ink); outline: none; resize: vertical; line-height: 1.7;
   }
-  .q-block .q-rev-toggle:hover { background: var(--green-soft); border-color: var(--green); }
-  .q-block .q-rev-toggle .cnt { font-weight: 800; }
-  .q-block .q-rev-box { margin-top: 10px; display: none; }
-  .q-block .q-rev-box.show { display: block; }
-  .q-block .q-rev-box textarea { width: 100%; min-height: 66px; resize: vertical; }
-  .q-block .q-rev-note { font-size: 11.5px; color: var(--ink-3); line-height: 1.5; margin: 2px 0 8px; }
-  .q-block .q-rev-row { display: flex; gap: 8px; align-items: center; }
-  .q-block .q-rev-history { margin-top: 8px; font-size: 11.5px; color: var(--ink-3); line-height: 1.6; }
-  .q-block .q-rev-history b { color: var(--green-deep); }
+  .q-block .fu-a:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .ai-btn-cap.done { border-style: solid; border-color: var(--green); background: var(--green-soft); }
+  @keyframes fu-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   /* v5 按标签独立卡片 */
   .label-block {
@@ -1505,7 +1503,7 @@
   .q-block.q-collapsed { padding: 10px 14px; margin-bottom: 8px; background: var(--surface-2); box-shadow: none; }
   .q-block.q-collapsed .q-head { margin-bottom: 0; }
   .q-block.q-collapsed .q-text { display: none; }
-  .q-block.q-collapsed .q-answer, .q-block.q-collapsed .q-ai-row, .q-block.q-collapsed .q-helps, .q-block.q-collapsed .q-rev-toggle, .q-block.q-collapsed .q-rev-box { display: none !important; }
+  .q-block.q-collapsed .q-answer, .q-block.q-collapsed .q-ai-row, .q-block.q-collapsed .fu-area { display: none !important; }
   .q-summary {
     display: flex; align-items: center; justify-content: space-between;
     padding: 10px 12px; margin-bottom: 10px; border-radius: var(--radius-sm);
@@ -2799,6 +2797,7 @@ function parseSourceQuality(text) {
 function redoInsight(){
   state.data.insightQuestions = [];
   state.data.insightAnswers = [];
+  state.data.insightFollowUps = {};
   state.data.insightAiHelps = [];
   state.data.insightAiInspirations = [];
   state.data.insightRevisions = [];
@@ -2819,7 +2818,7 @@ function restartApp(){
   state.data = {
     scenario: '', notes: [], groups: [],
     method: '', insight: '', impact: 0, effort: 0,
-    insightQuestions: [], insightAnswers: [], insightAiHelps: [], insightRevisions: [],
+    insightQuestions: [], insightAnswers: [], insightFollowUps: {}, insightAiHelps: [], insightRevisions: [],
     insightPersonalView: '',
     essence: { nature: '', insight: '' },
     confirmed: false,
@@ -2877,30 +2876,58 @@ async function aiExtract() {
   try {
     const r = await aiCall(
       `用户面对一个复杂挑战，场景描述：「${sc}」
-任务：像梳理杂物一样，从这段描述中提取杂乱的信息点。每条信息只标注一个维度——来源（这个信息来自哪里）：
+任务：从这段描述中提取杂乱的信息点。每条信息只标注一个维度——来源（这个信息来自哪里）：
 - 观察：用户亲眼所见、亲身经历
 - 事实：可验证、有依据的可靠信息
 - 听闻：听别人说的、二手信息
 - 猜测：用户自己的推测、假设、默认前提
-输出格式：每行一条，格式为「来源：内容」。
-来源必须是 观察/事实/听闻/猜测 之一。
-提取 4-8 条，覆盖描述中的关键信息。`
+提取 4-8 条，覆盖描述中的关键信息。
+【硬性要求】直接输出 JSON，不要任何说明、寒暄或格式示范，不要 markdown 代码块标记：
+{"items":[{"source":"观察","text":"信息点内容"},{"source":"事实","text":"..."}]}`
     );
-    // 解析并填入便签
-    const lines = r.split('\n').map(l => l.trim()).filter(l => l.includes('：'));
-    lines.forEach(l => {
-      const sm = l.match(/^(观察|事实|听闻|猜测)\s*[:：]\s*/);
-      const source = sm ? sm[1] : '观察';
-      const text = l.replace(/^(观察|事实|听闻|猜测)\s*[:：]\s*/, '').trim();
-      if (text) {
-        state.data.notes.push({ id: uid(), source, text });
-      }
-    });
+    // 解析：优先 JSON（严格 JSON 不可靠，多路径兼容），失败再按行解析；不匹配的一律丢弃，绝不让 AI 元文本混进便签
+    let items = parseItemsFromJSON(r);
+    if (!items) items = parseItemsFromLines(r);
+    if (!items.length) {
+      showAIResult('aiExtractResult', 'Transform 没能从这段场景里提取出信息点，请稍后再试或把场景写得更具体一些。');
+      toast('提取失败，请重试');
+      return;
+    }
+    items.forEach(it => state.data.notes.push({ id: uid(), source: it.source, text: it.text }));
     renderNotes(); checkNext0(); saveDraft();
-    showAIResult('aiExtractResult', '已提取 ' + lines.length + ' 条信息点，可删除或修改。');
+    showAIResult('aiExtractResult', '已提取 ' + items.length + ' 条信息点，可删除或修改。');
     toast('已提取信息点');
   } catch(e) { toast(e.message); }
   setAILoading('aiExtract', false);
+}
+// 从 JSON 解析信息点
+function parseItemsFromJSON(text) {
+  try {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    const arr = d.items || d.points || d.list;
+    if (!Array.isArray(arr)) return null;
+    return normalizeItems(arr);
+  } catch(e) { return null; }
+}
+// 从行文本解析信息点：必须带「来源：」前缀，否则丢弃
+function parseItemsFromLines(text) {
+  const out = [];
+  (text || '').split('\n').forEach(l => {
+    const line = l.trim().replace(/^[-•*]\s*/, '');
+    const m = line.match(/^(观察|事实|听闻|猜测)\s*[:：]\s*(.+)$/);
+    if (!m) return;
+    out.push({ source: m[1], text: m[2].trim() });
+  });
+  return normalizeItems(out);
+}
+// 清洗：去掉空占位（……/...）和过短内容，来源必须四选一
+function normalizeItems(arr) {
+  return arr.map(it => typeof it === 'string' ? { source: '观察', text: it } : { source: it.source, text: it.text })
+    .map(it => ({ source: ['观察','事实','听闻','猜测'].includes(it.source) ? it.source : null, text: (it.text || '').trim() }))
+    .filter(it => it.source && it.text && it.text.length >= 2 && !/^[.…。·\s-]+$/.test(it.text))
+    .slice(0, 8);
 }
 
 // AI 整理归类
@@ -3163,51 +3190,57 @@ function renderAllQuestions() {
       saveDraft();
     });
   });
-  box.querySelectorAll('.q-rev-input').forEach(ta => autoGrow(ta));
+  box.querySelectorAll('.fu-a').forEach(ta => {
+    autoGrow(ta);
+    ta.addEventListener('input', e => {
+      const qi = +e.target.dataset.qi;
+      const at = +e.target.dataset.fu;
+      const f = getFollowUps(qi).find(x => x.at === at);
+      if (f) { f.a = e.target.value; saveDraft(); }
+      autoGrow(e.target);
+    });
+  });
 }
 function renderQuestionBlock(i) {
   const q = (state.data.insightQuestions || [])[i];
-  let helps = state.data.insightAiHelps && state.data.insightAiHelps[i] ? state.data.insightAiHelps[i] : [];
-  if (!helps.length && state.data.insightAiInspirations && state.data.insightAiInspirations[i]) {
-    helps = [{ cap: 'Transform', text: state.data.insightAiInspirations[i] }];
-  }
-  const helpsHtml = helps.length
-    ? `<div class="q-helps show">${helps.map(h =>
-        `<div class="q-help-item"><span class="q-help-cap">${escapeHtml(h.cap)}</span><span>${escapeHtml(h.text).replace(/\n/g, '<br>')}</span></div>`).join('')}</div>`
-    : '';
-  const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
-  const revCount = revs.length;
   const curAns = state.data.insightAnswers[i] || '';
+  const fus = getFollowUps(i);
+  const capBtn = cap => {
+    const done = fus.some(f => f.cap === cap) ? ' done' : '';
+    return `<button class="ai-btn-cap${done}" onclick="aiInspireQ(${i}, '${cap}', this)">${cap}</button>`;
+  };
   return `
   <div class="q-block ${curAns.trim() ? 'q-done' : ''}" data-qi="${i}">
     <div class="q-head">
       <span class="q-tag">问题 ${i+1}</span>
-      <span class="q-state">${curAns.trim() ? '✓ 已回答' : '未答'}${revCount ? ` · 已修订 ${revCount} 次` : ''}</span>
+      <span class="q-state">${curAns.trim() ? '✓ 已回答' : '未答'}</span>
     </div>
     <div class="q-text">${escapeHtml(q)}</div>
     <textarea class="q-answer" data-qi="${i}" placeholder="写下你的思考...">${escapeHtml(curAns)}</textarea>
     <div class="q-ai-row">
-      <span class="q-ai-label">卡住时让 Transform：</span>
-      <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '理清', this)">理清</button>
-      <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '质疑', this)">质疑</button>
-      <button class="ai-btn-cap" onclick="aiInspireQ(${i}, '查证', this)">查证</button>
+      <span class="q-ai-label">想推进得更深，让 Transform：</span>
+      ${capBtn('理清')}${capBtn('质疑')}${capBtn('查证')}
     </div>
-    ${helpsHtml}
-    <button class="q-rev-toggle" onclick="toggleRevBox(${i})">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      修订我的回答<span class="cnt">${revCount || ''}</span>
-    </button>
-    <div class="q-rev-box" data-qi="${i}">
-      <div class="q-rev-note">把 Transform 的启发里有用的部分，融进你的回答。保存后会成为这道题的最终版本。</div>
-      <textarea class="q-rev-input" data-qi="${i}" placeholder="基于 Transform 的启发，修订你的回答...">${escapeHtml(curAns)}</textarea>
-      <div class="q-rev-row">
-        <button class="btn btn-next" style="padding:9px 18px;font-size:13.5px;" onclick="saveRevision(${i})">保存修订</button>
-        <button class="btn btn-prev" style="padding:9px 18px;font-size:13.5px;" onclick="toggleRevBox(${i})">取消</button>
-      </div>
-      ${revs.length ? `<div class="q-rev-history"><b>修订轨迹：</b>${revs.map((r, j) => `v${j+2}（${fmtTime(r.at)}）`).join(' → ')}</div>` : ''}
-    </div>
+    <div class="fu-area" id="fuArea_${i}">${fus.map(f => fuCardHtml(i, f)).join('')}</div>
   </div>
   `;
+}
+// 追问状态：{ [题目序号]: [{cap, q, a, at}] }
+function getFollowUps(i) {
+  const arr = (state.data.insightFollowUps || {})[i];
+  return Array.isArray(arr) ? arr : [];
+}
+function setFollowUps(i, fus) {
+  state.data.insightFollowUps = state.data.insightFollowUps || {};
+  state.data.insightFollowUps[i] = fus;
+}
+function fuCardHtml(i, f) {
+  return `
+    <div class="fu-card">
+      <div class="fu-tag">Transform · ${f.cap}</div>
+      <div class="fu-q">${escapeHtml(f.q)}</div>
+      <textarea class="fu-a" data-qi="${i}" data-fu="${f.at}" placeholder="回答这个问题…">${escapeHtml(f.a || '')}</textarea>
+    </div>`;
 }
 function toggleAllQuestions() {
   const box = $('allQuestions');
@@ -3215,62 +3248,54 @@ function toggleAllQuestions() {
   renderAllQuestions();
 }
 
-// 修订区展开 / 收起
-function toggleRevBox(idx) {
-  const box = document.querySelector('.q-rev-box[data-qi="' + idx + '"]');
-  if (!box) return;
-  box.classList.toggle('show');
-  const ta = box.querySelector('.q-rev-input');
-  if (ta) autoGrow(ta);
-}
-
-// 保存修订：更新 canonical 回答 + 记录修订轨迹
-function saveRevision(idx) {
-  const ta = document.querySelector('.q-rev-input[data-qi="' + idx + '"]');
-  if (!ta) return;
-  const v = ta.value.trim();
-  if (!v) { toast('修订不能为空'); return; }
-  state.data.insightRevisions = state.data.insightRevisions || [];
-  state.data.insightRevisions[idx] = state.data.insightRevisions[idx] || [];
-  state.data.insightRevisions[idx].push({ text: v, at: new Date().toISOString() });
-  state.data.insightAnswers[idx] = v; // canonical = 最新修订
-  saveDraft();
-  renderAllQuestions();
-  toast('已保存修订，将作为这道题的最终回答进入整合');
-}
-
-// AI 三个能力（输出必须简洁：≤100 字）
+// AI 三个能力：每个按钮 → 1 条追问 + 独立作答框（与每日洞察一致），整合时全部带入
+const FU_PROMPTS = {
+  '理清': '把散乱的想法理出头绪',
+  '质疑': '挑战这个思考里站不住脚的地方',
+  '查证': '检验其中的关键假设或事实是否站得住'
+};
 async function aiInspireQ(idx, cap, btn) {
   const qs = state.data.insightQuestions || [];
   const a = (state.data.insightAnswers || [])[idx] || '';
   if (!a.trim()) { toast('先写下你的思考'); return; }
+  // 该追问已在：直接聚焦作答框，不重复生成
+  const fus = getFollowUps(idx);
+  const existed = fus.find(f => f.cap === cap);
+  if (existed) {
+    const t = document.querySelector(`.fu-a[data-qi="${idx}"][data-fu="${existed.at}"]`);
+    if (t) { t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.focus(); }
+    return;
+  }
   btn.classList.add('loading');
-  const prompts = {
-    '理清': `帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。`,
-    '质疑': `苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。`,
-    '查证': `检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。`
-  };
   try {
-    const r = await aiCall(`场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】回答必须简洁准确，不超过 100 字，直接给内容，不要寒暄、不要重复问题、不要分段太长。`);
-    const text = (r || '').trim();
-    // 追加进协作历史（保留每次帮助）
-    state.data.insightAiHelps = state.data.insightAiHelps || [];
-    state.data.insightAiHelps[idx] = state.data.insightAiHelps[idx] || [];
-    state.data.insightAiHelps[idx].push({ cap: cap, text: text, at: new Date().toISOString() });
-    state.data.insightAiInspirations = state.data.insightAiInspirations || [];
-    state.data.insightAiInspirations[idx] = text; // 兼容旧字段
+    const r = await aiCall(
+      `场景：「${state.data.scenario || '未提供'}」\n问题：${qs[idx]}\n用户的回答：${a}\n\n任务：为了帮助用户${FU_PROMPTS[cap]}，向用户提出 1 个追问。\n严格要求：\n1. 只问 1 个问题（10-60 字），具体、直接，基于用户的回答\n2. 严格按 JSON 输出，不要任何解释或 markdown 标记：\n{"q":"追问问题"}`
+    );
+    const q = parseFollowUpQ(r);
+    if (!q) { toast('Transform 暂时没响应，请稍后再试'); return; }
+    const fu = { cap, q, a: '', at: Date.now() };
+    fus.push(fu);
+    setFollowUps(idx, fus);
     saveDraft();
-    renderAllQuestions();
-    // 自动展开修订区，趁热打铁
-    toggleRevBox(idx);
-    toast('Transform的启发已记录，可在下面修订你的回答');
+    btn.classList.add('done');
+    const area = $('fuArea_' + idx);
+    area.insertAdjacentHTML('beforeend', fuCardHtml(idx, fu));
+    const t = area.querySelector(`.fu-a[data-fu="${fu.at}"]`);
+    if (t) { autoGrow(t); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.focus(); }
   } catch(e) { toast(e.message); }
   btn.classList.remove('loading');
 }
-
-// 时间格式化（修订轨迹用）
-function fmtTime(iso) {
-  try { return new Date(iso).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }); } catch(e) { return ''; }
+// 解析追问：优先 JSON，失败时取第一个含问号的句子兜底
+function parseFollowUpQ(text) {
+  try {
+    const m = (text || '').match(/\{[\s\S]*\}/);
+    if (m) {
+      const d = JSON.parse(m[0]);
+      if (d && typeof d.q === 'string' && d.q.trim()) return d.q.trim().slice(0, 120);
+    }
+  } catch(e) {}
+  const s = (text || '').split(/[。\n]/).map(x => x.trim().replace(/^[-•*]\s*/, '')).find(x => /[？?]/.test(x) && x.length >= 6);
+  return s ? s.slice(0, 120) : null;
 }
 
 // 个人看法
@@ -3309,10 +3334,11 @@ async function aiIntegrate(btn) {
   ).join('\n');
   const qaPairs = state.data.insightQuestions.map((q, i) => {
     const a = state.data.insightAnswers[i] || '（未填）';
-    const helps = (state.data.insightAiHelps && state.data.insightAiHelps[i]) || [];
-    const helpsStr = helps.length ? helps.map(h => `[${h.cap}] ${h.text}`).join('；') : '';
-    const revs = (state.data.insightRevisions && state.data.insightRevisions[i]) || [];
-    return `问题 ${i+1}：${q}\n用户最终回答：${a}${helpsStr ? '\nTransform协助过程：' + helpsStr : ''}${revs.length ? `\n（该题经Transform启发后由用户主动修订 ${revs.length} 次）` : ''}`;
+    const fus = getFollowUps(i).filter(f => (f.a || '').trim());
+    const fuStr = fus.length
+      ? '\n追问与回答：\n' + fus.map(f => `（${f.cap}）${f.q}\n用户回答：${(f.a || '').trim()}`).join('\n')
+      : '';
+    return `问题 ${i+1}：${q}\n用户最终回答：${a}${fuStr}`;
   }).join('\n\n');
   const personal = state.data.insightPersonalView || '（未填）';
   btn.classList.add('loading');
@@ -4239,6 +4265,7 @@ function complete() {
     groups: state.data.groups,
     insightQuestions: state.data.insightQuestions,
     insightAnswers: state.data.insightAnswers,
+    insightFollowUps: state.data.insightFollowUps || {},
     insightPersonalView: state.data.insightPersonalView,
     essence: state.data.essence,
     confirmed: state.data.confirmed,
