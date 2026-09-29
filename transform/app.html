@@ -2862,6 +2862,8 @@ function removeNote(id) {
 }
 function renderNotes() {
   const box = $('notesList');
+  // 渲染前清掉任何空/占位便签，避免旧草稿残留的 "……" 显示出来
+  cleanEmptyNotes();
   if (!state.data.notes.length) { box.innerHTML = ''; return; }
   box.innerHTML = state.data.notes.map(n =>
     `<div class="note"><span class="tag tag-${SOURCE_TYPES[n.source] || 'observe'}">${n.source || '观察'}</span><span class="txt">${escapeHtml(n.text)}</span><button class="rm" onclick="removeNote('${n.id}')">×</button></div>`
@@ -2872,16 +2874,18 @@ function renderNotes() {
 async function aiExtract() {
   const sc = state.data.scenario.trim();
   if (!sc) { toast('先写下场景描述'); return; }
+  // 先清掉上一轮残留的空/占位便签（旧版曾把 "……" 当便签存下），保持列表干净
+  cleanEmptyNotes();
   setAILoading('aiExtract', true);
   try {
     const r = await aiCall(
       `用户面对一个复杂挑战，场景描述：「${sc}」
-任务：从这段描述中提取杂乱的信息点。每条信息只标注一个维度——来源（这个信息来自哪里）：
+任务：从这段描述中提取关键信息点。每条只标注一个维度——来源（信息来自哪里）：
 - 观察：用户亲眼所见、亲身经历
 - 事实：可验证、有依据的可靠信息
 - 听闻：听别人说的、二手信息
 - 猜测：用户自己的推测、假设、默认前提
-提取 4-8 条，覆盖描述中的关键信息。
+提取 3-6 条最关键的，每条都是一句有实质内容的具体信息，禁止占位、空泛或重复。
 【硬性要求】直接输出 JSON，不要任何说明、寒暄或格式示范，不要 markdown 代码块标记：
 {"items":[{"source":"观察","text":"信息点内容"},{"source":"事实","text":"..."}]}`
     );
@@ -2893,12 +2897,26 @@ async function aiExtract() {
       toast('提取失败，请重试');
       return;
     }
-    items.forEach(it => state.data.notes.push({ id: uid(), source: it.source, text: it.text }));
+    // 去重（按文本），避免重复点击产生重复便签
+    const seen = new Set(state.data.notes.map(n => (n.text || '').trim()));
+    items.forEach(it => {
+      if (seen.has(it.text)) return;
+      seen.add(it.text);
+      state.data.notes.push({ id: uid(), source: it.source, text: it.text });
+    });
+    cleanEmptyNotes();
     renderNotes(); checkNext0(); saveDraft();
     showAIResult('aiExtractResult', '已提取 ' + items.length + ' 条信息点，可删除或修改。');
     toast('已提取信息点');
   } catch(e) { toast(e.message); }
   setAILoading('aiExtract', false);
+}
+// 清除空/占位便签（防止 "……"、"无" 之类残留污染列表）
+function cleanEmptyNotes() {
+  state.data.notes = state.data.notes.filter(n => {
+    const t = (n.text || '').trim();
+    return t.length >= 2 && !/^[.…。·\-_\s]+$/.test(t) && !['无', '暂无', '（无）', '（暂无）', '...', '……'].includes(t);
+  });
 }
 // 从 JSON 解析信息点
 function parseItemsFromJSON(text) {
