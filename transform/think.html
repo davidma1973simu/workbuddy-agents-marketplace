@@ -172,28 +172,22 @@
   .ai-btn-cap:hover { border-color: var(--violet); color: var(--violet); background: var(--violet-soft); }
   .ai-btn-cap.loading { opacity: .5; pointer-events: none; }
 
-  .q-ai-result { margin-top: 12px; padding: 12px 14px; background: var(--violet-soft); border-radius: 12px; font-size: 13.5px; line-height: 1.7; display: none; }
-  .q-ai-result.show { display: block; animation: fade-in .3s ease; }
   @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-  .ai-tag { display: inline-block; font-size: 11px; font-weight: 800; color: var(--violet); margin-bottom: 4px; }
 
-  /* 修订区 */
-  .q-rev-toggle {
-    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
-    background: none; border: none; color: var(--green); font-size: 13px; font-weight: 700;
-    cursor: pointer; font-family: inherit; padding: 0;
+  /* 追问区：每个按钮 → 一条追问 + 独立作答框 */
+  .fu-card {
+    margin-top: 12px; padding: 14px 16px; background: var(--violet-soft);
+    border-radius: 12px; animation: fade-in .3s ease;
   }
-  .q-rev-toggle:hover { text-decoration: underline; }
-  .q-rev-box { margin-top: 12px; padding: 14px; background: var(--green-50); border: 1px solid var(--green-light); border-radius: 12px; display: none; }
-  .q-rev-box.show { display: block; }
-  .q-rev-box label { display: block; font-size: 12.5px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
-  .q-rev-input {
-    width: 100%; min-height: 70px; padding: 12px 14px; border-radius: 10px;
-    border: 1.5px solid var(--green-light); background: var(--surface); font-size: 14px;
-    font-family: inherit; color: var(--ink); outline: none; line-height: 1.7;
+  .fu-tag { font-size: 11px; font-weight: 800; color: var(--violet); margin-bottom: 6px; }
+  .fu-q { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.6; margin-bottom: 10px; }
+  .fu-a {
+    width: 100%; min-height: 64px; padding: 11px 13px; border-radius: 10px;
+    border: 1.5px solid rgba(91,74,168,.25); background: var(--surface); font-size: 14px;
+    font-family: inherit; color: var(--ink); outline: none; resize: vertical; line-height: 1.7;
   }
-  .q-rev-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
-  .q-rev-actions { display: flex; gap: 10px; margin-top: 10px; }
+  .fu-a:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(91,74,168,.1); }
+  .ai-btn-cap.done { border-color: var(--violet); color: var(--violet); background: var(--violet-soft); }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -231,7 +225,12 @@
   .ir-block { background: var(--surface); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
   .ir-block .k { font-size: 11.5px; font-weight: 800; letter-spacing: 1px; color: var(--green); margin-bottom: 4px; }
   .ir-block .v { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.7; }
-  .ir-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .ir-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .ir-actions .btn { width: 100%; }
+  .btn-saved { background: var(--green-soft); color: var(--green); cursor: default; }
+  .ir-hint { font-size: 12.5px; color: var(--ink-2); margin-top: 12px; text-align: center; line-height: 1.6; }
+  .ir-hint a { color: var(--green); font-weight: 700; text-decoration: none; }
+  .ir-hint a:hover { text-decoration: underline; }
   .ir-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; text-align: center; }
 
   /* toast */
@@ -286,9 +285,9 @@ const BRAND_PROFILES = {
 let topic = '';        // 当前主题
 let question = '';     // AI 出的题
 let answer = '';       // 用户回答（canonical）
-let aiHelps = [];      // 三按钮协助历史 [{cap, text, at}]
-let revisions = [];    // 修订轨迹 [text...]
+let followUps = [];    // 追问 [{cap, q, a, at}] — 每个按钮一条，独立作答
 let integrating = false;
+let lastSession = null; // 结果屏当前洞察（供存储按钮使用）
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -378,11 +377,11 @@ async function startThink(){
     return;
   }
   question = q;
-  answer = ''; aiHelps = []; revisions = [];
+  answer = ''; followUps = [];
   renderQuestionStage();
 }
 
-/* ===================== 阶段 2：回答 + 三按钮 ===================== */
+/* ===================== 阶段 2：回答 + 三按钮追问 ===================== */
 function renderQuestionStage(){
   $('thinkArea').innerHTML = `
     <div class="q-card">
@@ -394,67 +393,59 @@ function renderQuestionStage(){
       <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
       <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
-        <span class="q-ai-label">知行可以帮助你：</span>
+        <span class="q-ai-label">想推进得更深，知行帮你：</span>
         <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
         <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
       </div>
-      <div class="q-ai-result" id="qAiResult"></div>
-      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()">📝 修订我的回答</button>
-      <div class="q-rev-box" id="revBox">
-        <label>把刚才的思考，修订成你真正认同的版本</label>
-        <textarea class="q-rev-input" id="revInput">${escapeHtml(answer)}</textarea>
-        <div class="q-rev-actions">
-          <button class="btn btn-primary" onclick="saveRevision()">保存修订</button>
-          <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
-        </div>
-      </div>
+      <div id="followArea"></div>
       <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让知行整合出洞察 →</button>
     </div>`;
   const ta = $('qAnswer');
   ta.addEventListener('input', e => { answer = e.target.value; });
   ta.focus();
-  // 回车出结果
-  $('qAiResult').innerHTML = '';
 }
 
-function toggleRevBox(force){
-  const box = $('revBox');
-  const show = force !== undefined ? force : box.classList.contains('show') ? false : true;
-  box.classList.toggle('show', show);
-  if (show) $('revInput').value = answer;
-}
-function saveRevision(){
-  const v = ($('revInput').value || '').trim();
-  if (!v) { toast('写点什么再保存'); return; }
-  if (v !== answer) revisions.push(v);
-  answer = v;
-  $('qAnswer').value = v;
-  toggleRevBox(false);
-  toast('已保存为你的最终回答 ✓');
-}
+const FU_PROMPTS = {
+  '理清': '把散乱的想法理出头绪',
+  '质疑': '挑战这个思考里站不住脚的地方',
+  '查证': '检验其中的关键假设或事实是否站得住'
+};
 
 async function aiInspireQ(cap, btn){
   const a = answer.trim();
   if (!a) { toast('先写下你的思考'); return; }
+  // 该追问已在：直接聚焦到作答框，不重复生成
+  const existed = followUps.find(f => f.cap === cap);
+  if (existed){
+    const t = document.getElementById('fu_a_' + existed.at);
+    if (t) t.focus();
+    return;
+  }
   btn.classList.add('loading');
-  const prompts = {
-    '理清': '帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。',
-    '质疑': '苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。',
-    '查证': '检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。'
-  };
   const r = await aiCall(
-    `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
+    `主题：「${topic}」\n原问题：${question}\n用户的回答：${a}\n\n任务：为了帮助用户${FU_PROMPTS[cap]}，向用户提出 1 个追问。\n严格要求：\n1. 只问 1 个问题（10-30 字），具体、直接\n2. 基于用户的回答，不空泛\n3. 严格按 JSON 输出：\n{"q":"追问问题"}`
   );
   btn.classList.remove('loading');
-  if (!r){ toast('知行暂时没响应，请稍后再试'); return; }
-  const text = r.trim().slice(0, 300);
-  aiHelps.push({ cap, text, at: new Date().toISOString() });
-  const box = $('qAiResult');
-  box.innerHTML = '<span class="ai-tag">知行 · ' + cap + '</span><br>' + escapeHtml(text).replace(/\n/g, '<br>');
-  box.classList.add('show');
-  // 出现后可立即修订
-  $('revToggle').style.display = 'inline-flex';
+  const d = parseJSON(r);
+  if (!d || !d.q || !d.q.trim()){ toast('知行暂时没响应，请稍后再试'); return; }
+  const fu = { cap, q: d.q.trim().slice(0, 80), a: '', at: Date.now() };
+  followUps.push(fu);
+  renderFollowUp(fu);
+  btn.classList.add('done');
+  const t = document.getElementById('fu_a_' + fu.at);
+  if (t) t.focus();
+}
+
+function renderFollowUp(fu){
+  const div = document.createElement('div');
+  div.className = 'fu-card';
+  div.innerHTML = `
+    <div class="fu-tag">知行 · ${fu.cap}</div>
+    <div class="fu-q">${escapeHtml(fu.q)}</div>
+    <textarea class="fu-a" id="fu_a_${fu.at}" placeholder="回答这个问题…"></textarea>`;
+  div.querySelector('textarea').addEventListener('input', e => { fu.a = e.target.value; });
+  $('followArea').appendChild(div);
 }
 
 /* ===================== 阶段 3：整合出洞察 ===================== */
@@ -465,10 +456,10 @@ async function finishThink(){
   integrating = true;
   const btn = $('integrateBtn');
   btn.classList.add('loading'); btn.disabled = true; btn.textContent = '知行正在整合…';
+  const fuAnswered = followUps.filter(f => f.a.trim());
   const qaPairs =
-    `问题：${question}\n用户最终回答：${a}` +
-    (aiHelps.length ? `\n知行协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
-    (revisions.length ? `\n（该题经知行启发后由用户主动修订 ${revisions.length} 次）` : '');
+    `问题：${question}\n用户回答：${a}` +
+    (fuAnswered.length ? `\n追问与回答：\n` + fuAnswered.map(f => `（${f.cap}）${f.q}\n用户回答：${f.a.trim()}`).join('\n') : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
@@ -486,15 +477,15 @@ async function finishThink(){
     toast('知行整合失败，请稍后再试');
     return;
   }
-  // 存入认知档案（与 app.html complete() 的条目格式一致）
+  // 组装条目（与 app.html complete() 的格式一致；存储由结果屏主按钮触发）
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
     scenario: topic,
     notes: [],
     groups: [],
-    insightQuestions: [question],
-    insightAnswers: [answer],
+    insightQuestions: [question, ...fuAnswered.map(f => f.q)],
+    insightAnswers: [a, ...fuAnswered.map(f => f.a.trim())],
     insightPersonalView: '',
     essence,
     confirmed: false,
@@ -510,20 +501,19 @@ async function finishThink(){
     nearResourcesPlan: null,
     farResourcesPlan: null,
     identity: '',
-    insightAiHelps: [aiHelps],
-    insightRevisions: [revisions],
+    insightAiHelps: [followUps.map(f => ({ cap: f.cap, text: f.q, at: new Date(f.at).toISOString() }))],
+    insightRevisions: [[]],
     tags: [],
     completedAt: new Date().toISOString(),
     source: 'think'
   };
-  const archive = loadArchive();
-  archive.unshift(session);
-  saveArchive(archive);
   integrating = false;
   renderInsightResult(session);
 }
 
 function renderInsightResult(session){
+  lastSession = session;
+  const punchHref = `punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}`;
   $('thinkArea').innerHTML = `
     <div class="insight-result">
       <div class="ir-card">
@@ -538,15 +528,30 @@ function renderInsightResult(session){
           <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
         </div>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">
-            把这个洞察变成今天的改变 →
-          </a>
-          <a class="btn btn-ghost" href="cognitive.html" style="text-decoration:none;">看认知档案</a>
+          <button class="btn btn-primary" id="saveBtn" onclick="saveInsight(lastSession, this)">存入认知档案</button>
+          <a class="btn btn-ghost" href="${punchHref}" onclick="saveInsight(lastSession)" style="text-decoration:none;">把这个洞察变成今天的改变 →</a>
         </div>
-        <div class="ir-note">已存入成长资产 · 认知档案 · 随时可查</div>
+        <div class="ir-hint">对这个认知还不够透彻？<a href="app.html">用「伴我洞察」继续深入分析 →</a></div>
+        <div class="ir-note" id="irNote" style="display:none;">已存入成长资产 · 认知档案 · 随时可查</div>
       </div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function saveInsight(session, btn){
+  if (!session || session._saved) return;
+  const archive = loadArchive();
+  archive.unshift(session);
+  saveArchive(archive);
+  session._saved = true;
+  if (btn){
+    btn.disabled = true;
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-saved');
+    btn.textContent = '已存入认知档案 ✓';
+  }
+  const note = $('irNote');
+  if (note) note.style.display = 'block';
 }
 
 /* ===================== 初始化 ===================== */
@@ -583,7 +588,7 @@ async function startThinkWithTopic(t){
     return;
   }
   question = q;
-  answer = ''; aiHelps = []; revisions = [];
+  answer = ''; followUps = [];
   renderQuestionStage();
 }
 </script>
