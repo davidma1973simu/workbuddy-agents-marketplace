@@ -675,35 +675,8 @@
   .app-badge.far { background: var(--coral-soft); color: var(--coral); border: 1px solid var(--coral); }
   [data-theme="dark"] .app-badge.far { color: #F0A98C; border-color: rgba(217,113,79,.5); }
 
-  /* 远应用「为什么」说明卡（近应用完成后才出现，不提前暴露） */
-  .far-why {
-    background: var(--coral-soft); border: 1px solid var(--coral);
-    border-radius: var(--radius-lg); padding: 18px 20px; margin: 0 0 18px;
-  }
-  [data-theme="dark"] .far-why { background: rgba(201,91,60,.12); border-color: rgba(217,113,79,.4); }
-  .far-why .fw-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .far-why .fw-title { font-size: 14px; font-weight: 800; color: var(--coral); }
-  [data-theme="dark"] .far-why .fw-title { color: #F0A98C; }
-  .far-why .fw-text { font-size: 13.5px; line-height: 1.75; color: var(--ink-2); margin: 0; }
-
-  /* 近应用完成后的折叠态 */
-  .app-block.is-collapsed { background: var(--green-50); border-color: var(--green-light); }
-  .app-collapsed { display: flex; align-items: center; gap: 14px; }
-  .app-collapsed .ac-check {
-    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-    background: var(--green-deep); color: #fff;
-    display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;
-  }
-  .app-collapsed .ac-main { flex: 1; min-width: 0; }
-  .app-collapsed .ac-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.4; }
-  .app-collapsed .ac-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
-  .app-collapsed .ac-toggle {
-    font-size: 12.5px; font-weight: 700; color: var(--green-deep);
-    background: var(--surface); border: 1.5px solid var(--green-light);
-    border-radius: 999px; padding: 7px 16px; cursor: pointer; font-family: inherit; flex-shrink: 0;
-    transition: background .2s;
-  }
-  .app-collapsed .ac-toggle:hover { background: var(--green-soft); }
+  /* 远应用一句提示 */
+  .far-hint { font-size: 12.5px; color: var(--ink-3); margin: 0 0 12px; line-height: 1.6; }
 
   .app-plan-input { min-height: 72px; }
 
@@ -711,13 +684,17 @@
   .fb-overall { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--green-soft); border-radius: var(--radius-md); margin-bottom: 12px; }
   .fb-score { font-size: 28px; font-weight: 700; color: var(--green-deep); }
   .fb-score-label { font-size: 14px; color: var(--ink-3); }
+  /* 三卡片反馈 */
+  .fb-cards { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .fb-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px 14px; }
+  .fb-card-head { font-size: 12px; font-weight: 800; color: var(--green-deep); margin-bottom: 4px; letter-spacing: .5px; }
+  .fb-card-body { font-size: 13.5px; color: var(--ink); line-height: 1.65; }
+  .fb-card-next { background: var(--green-soft); border-color: var(--green-light); }
+  .fb-card-next .fb-card-head { color: var(--green-deep); }
+  .fb-card-next ol { margin: 0 0 0 18px; padding: 0; }
+  .fb-card-next li { font-size: 13.5px; line-height: 1.65; margin-bottom: 3px; }
   .fb-reason { font-size: 13.5px; color: var(--ink-2); flex: 1; }
   .fb-block { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 10px; }
-  .fb-title { font-size: 12px; font-weight: 700; color: var(--green-deep); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .fb-pros, .fb-improve, .fb-sug { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
-  .fb-actions { background: var(--surface); border: 1px dashed var(--green-light); border-radius: var(--radius-md); padding: 12px 16px; }
-  .fb-actions ol { margin: 8px 0 0 20px; padding: 0; }
-  .fb-actions li { font-size: 13px; color: var(--ink); line-height: 1.7; margin-bottom: 4px; }
   .app-feedback-result { margin-top: 12px; }
 
   /* Step 2 打分可视化 */
@@ -935,6 +912,9 @@
     padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
   }
   .viewpoint-area .vp-done button:hover { background: var(--green); color: #fff; }
+  .viewpoint-area .vp-answer { margin-top: 12px; padding: 12px 14px; background: var(--green-soft); border-radius: var(--radius-md); }
+  .viewpoint-area .vp-answer .lb-essence-label { margin-bottom: 8px; }
+  .viewpoint-area .vp-answer textarea { width: 100%; min-height: 60px; resize: vertical; }
   /* 投入 → 承诺：为改变创造空间与回拉策略 */
   .cost-commit { margin-top: 16px; border: 1.5px dashed var(--amber); border-radius: var(--radius-md); padding: 14px 16px; background: var(--amber-soft); }
   .cost-subcommit { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
@@ -1804,18 +1784,16 @@
   .panel-app .app-core-more[open] > summary::after { transform: rotate(-135deg); }
   .panel-app .app-core-more .insight-highlight { margin-top: 10px; }
 
-  /* 阶段条 */
-  .panel-app .phase-bar { display: flex; gap: 10px; margin: 18px 0 6px; }
-  .panel-app .phase {
-    flex: 1; display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 13px;
-    background: var(--surface-2); font-size: 13.5px; font-weight: 600; color: var(--ink-3); border: 1px solid transparent;
+  /* 近/远应用切换开关 */
+  .panel-app .phase-bar { display: flex; gap: 8px; margin: 18px 0 6px; background: var(--surface-2); border-radius: 13px; padding: 4px; }
+  .panel-app .phase-toggle {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 12px; border-radius: 10px;
+    background: none; border: none; font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink-3);
+    cursor: pointer; transition: all .2s;
   }
-  .panel-app .phase .phase-n {
-    width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
-    background: var(--surface); color: var(--ink-3); font-size: 12px; font-weight: 700; border: 1px solid var(--line);
-  }
-  .panel-app .phase.phase-on { color: var(--green-deep); background: var(--green-50); border-color: var(--green-light); }
-  .panel-app .phase.phase-on .phase-n { background: var(--green); color: #fff; border-color: var(--green); }
+  .panel-app .phase-toggle.on { color: var(--green-deep); background: var(--surface); box-shadow: var(--shadow-1); }
+  .panel-app .phase-toggle .ph-done { font-size: 12px; font-weight: 800; color: var(--green); display: none; }
+  .panel-app .phase-toggle.is-done .ph-done { display: inline; }
 
   /* 阶段容器 */
   .panel-app .app-phase { margin-top: 14px; }
@@ -1857,24 +1835,27 @@
   }
   .panel-app .ai-cta:hover { background: var(--green-soft); }
 
-  /* 细节卡：默认折叠成一行摘要，点击展开编辑 */
+  /* 细节卡：自然语言描述 + 可展开编辑 */
   .panel-app .detail-card { }
   .panel-app .detail-card .dc-card {
     background: var(--surface-2); border-radius: var(--radius-md); border: 1px solid var(--line);
+    padding: 14px 16px;
   }
-  .panel-app .detail-card .dc-card > summary {
-    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; font-size: 14px; user-select: none;
+  .panel-app .detail-card .dc-title-main { font-weight: 700; color: var(--ink); font-size: 14.5px; margin-bottom: 6px; line-height: 1.5; }
+  .panel-app .detail-card .dc-nl { font-size: 13.5px; line-height: 1.75; color: var(--ink-2); margin: 0 0 4px; }
+  .panel-app .detail-card .dc-edit { margin-top: 8px; }
+  .panel-app .detail-card .dc-edit > summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12.5px; font-weight: 600; color: var(--green-deep); user-select: none;
   }
-  .panel-app .detail-card .dc-card > summary::-webkit-details-marker { display: none; }
-  .panel-app .detail-card .dc-card > summary::before {
-    content: ""; width: 6px; height: 6px; border-right: 1.6px solid var(--ink-3); border-bottom: 1.6px solid var(--ink-3);
+  .panel-app .detail-card .dc-edit > summary::-webkit-details-marker { display: none; }
+  .panel-app .detail-card .dc-edit > summary::before {
+    content: ""; width: 5px; height: 5px; border-right: 1.5px solid var(--green-deep); border-bottom: 1.5px solid var(--green-deep);
     transform: rotate(45deg); transition: transform .25s; flex-shrink: 0;
   }
-  .panel-app .detail-card .dc-card[open] > summary::before { transform: rotate(-135deg); }
-  .panel-app .detail-card .dc-title { font-weight: 700; color: var(--ink); flex-shrink: 0; }
-  .panel-app .detail-card .dc-meta { color: var(--ink-2); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .panel-app .detail-card .dc-form { padding: 2px 14px 14px; border-top: 1px solid var(--line); }
+  .panel-app .detail-card .dc-edit[open] > summary::before { transform: rotate(-135deg); }
+  .panel-app .detail-card .dc-edit[open] > summary { margin-bottom: 10px; }
+  .panel-app .detail-card .dc-form { padding: 10px 0 2px; border-top: 1px solid var(--line); }
   .panel-app .detail-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .panel-app .detail-section { margin-bottom: 10px; }
   .panel-app .detail-section:last-child { margin-bottom: 0; }
@@ -1928,11 +1909,8 @@
   .panel-app .app-feedback-result .fb-overall { display: flex; align-items: baseline; gap: 4px; margin: 4px 0 10px; }
   .panel-app .app-feedback-result .fb-score { font-size: 32px; font-weight: 800; line-height: 1; }
   .panel-app .app-feedback-result .fb-score-label { font-size: 13px; opacity: .75; }
-  .panel-app .app-feedback-result .fb-pros, .panel-app .app-feedback-result .fb-improve, .panel-app .app-feedback-result .fb-sug { margin-top: 10px; font-size: 14px; line-height: 1.55; }
-  .panel-app .app-feedback-result .fb-actions { margin-top: 10px; }
-  .panel-app .app-feedback-result .fb-actions .fb-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; opacity: .75; margin-bottom: 4px; }
-  .panel-app .app-feedback-result .fb-actions ol { padding-left: 18px; margin: 0; }
-  .panel-app .app-feedback-result .fb-actions li { margin: 4px 0; font-size: 13.5px; }
+  .panel-app .app-feedback-result .fb-card-body { font-size: 14px; line-height: 1.55; }
+  .panel-app .app-feedback-result .fb-card-next li { font-size: 14px; }
 
   /* 资源：默认隐藏，有反馈后才出现 */
   .panel-app .app-resource { display: none; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
@@ -2114,14 +2092,10 @@
           <div class="viewpoint-area" id="viewpointArea" style="display:none;">
             <div class="vp-head">
               <span class="vp-title">换一个视角看它</span>
-              <span class="vp-sub">强迫自己跳出原来的模式 —— 选一个让你不舒服的视角，用它修订你的核心认知</span>
-              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">让Transform给出不同视角</button>
+              <span class="vp-sub">选一个视角，回答它的问题——你的认知会更完整</span>
+              <button class="btn btn-next" id="viewpointBtn" onclick="aiViewpoint(this)" style="padding:8px 16px;font-size:13px;">给我 4 个视角</button>
             </div>
             <div class="vp-body" id="viewpointResult" style="display:none;"></div>
-            <div class="vp-revise" id="viewpointRevise" style="display:none;">
-              <div class="lb-essence-label">用选定的视角修订你的核心认知（可保留原文）</div>
-              <textarea id="restateRevised" class="essence-nature" placeholder="基于这个视角，我重新理解这件事……"></textarea>
-            </div>
           </div>
 
           <div class="lb-score-row">
@@ -2162,7 +2136,7 @@
       <header class="step-head">
         <div class="step-eyebrow">第 3 步 · 应用</div>
         <h1>把新认知带到场景里</h1>
-        <p class="step-lead">先在一个熟悉的场景里试一次，再迁移到一个陌生场景。一次只专注一件事。</p>
+        <p class="step-lead">选一个场景试一次：构建场景 → 写下计划 → 得到打分和反馈。近或远完成任何一个都能继续。</p>
       </header>
 
       <!-- 核心认知：应用的总输入 -->
@@ -2179,24 +2153,15 @@
         </details>
       </section>
 
-      <!-- 阶段指示 -->
+      <!-- 近/远应用切换开关 -->
       <div class="phase-bar" id="phaseBar">
-        <div class="phase phase-on" data-phase="near"><span class="phase-n">1</span> 近应用 · 熟悉的场景</div>
-        <div class="phase" data-phase="far" style="display:none;"><span class="phase-n">2</span> 远应用 · 陌生场景</div>
+        <button class="phase-toggle on" id="phaseNearBtn" onclick="switchApplyPhase('near')">近应用 · 熟悉的场景<span class="ph-done">✓</span></button>
+        <button class="phase-toggle" id="phaseFarBtn" onclick="switchApplyPhase('far')">远应用 · 陌生场景<span class="ph-done">✓</span></button>
       </div>
 
       <!-- 近应用阶段 -->
       <section class="app-phase" id="nearPhase">
         <div class="app-block" id="nearAppBlock" data-type="near">
-          <!-- 完成后的折叠态 -->
-          <div class="app-collapsed" id="nearCollapsed" style="display:none;">
-            <div class="ac-check">✓</div>
-            <div class="ac-main">
-              <div class="ac-title" id="nearCollapsedTitle"></div>
-              <div class="ac-sub">近应用已完成 · Transform 已评分</div>
-            </div>
-            <button class="ac-toggle" id="nearToggleBtn" onclick="toggleNearExpand()">展开修改</button>
-          </div>
           <!-- 编辑态主体 -->
           <div class="app-body" id="nearBody">
             <span class="app-badge near">近场景</span>
@@ -2258,16 +2223,10 @@
         </div>
       </section>
 
-      <!-- 远应用阶段（近应用完成后解锁） -->
+      <!-- 远应用阶段（开关随时可切，非强制） -->
       <section class="app-phase far-phase" id="farPhase" data-type="far" style="display:none;">
-        <!-- 远应用「为什么」说明：近应用完成后才出现 -->
-        <div class="far-why" id="farWhyCard">
-          <div class="fw-head">
-            <span class="fw-title">为什么要用远场景？</span>
-          </div>
-          <p class="fw-text">真正掌握一个认知，不在于"熟悉的场景会用"，而在于"能把它带到一个完全陌生的领域去用"。近应用验证你"理解了"，远应用验证你"真的会迁移"——把同一个认知用在不同的行业、角色、场景里，它才真正变成你自己的能力。</p>
-        </div>
         <div class="app-block far-block" id="farAppBlock" data-type="far">
+          <p class="far-hint">把同一个认知带到一个完全陌生的领域——能迁移，才是真的会。</p>
           <span class="app-badge far">远场景 · 迁移到陌生领域</span>
           <div class="app-stage" data-stage="title">
             <div class="app-step-row"><span class="app-step-num">1</span><span class="app-step-label">选一个你想迁移到的场景</span></div>
@@ -3395,6 +3354,9 @@ function parseSingleEssence(text) {
 function restoreEssenceUI() {
   $('essenceNature').value = (state.data.essence && state.data.essence.nature) || '';
   $('essenceInsight').value = (state.data.essence && state.data.essence.insight) || '';
+  // 有本质/洞察后视角区直接可见，让用户一眼知道下一步是什么
+  const vpArea = $('viewpointArea');
+  if (vpArea) vpArea.style.display = (state.data.essence && (state.data.essence.nature || state.data.essence.insight)) ? 'block' : 'none';
   if ($('essenceRestate')) $('essenceRestate').value = state.data.restate || '';
   autoGrow($('essenceNature'));
   autoGrow($('essenceInsight'));
@@ -3515,9 +3477,8 @@ function confirmEssence() {
   }
   state.data.confirmed = true;
   state.data.restate = restate;
-  // 修订后的核心认知（如用户修订过则用修订版）
-  const revisedEl = $('restateRevised');
-  const revised = revisedEl ? (revisedEl.value || '').trim() : '';
+  // 若用户用视角回答修订过认知，则用修订版
+  const revised = (state.data.viewpointAnswer || '').trim();
   if (revised) state.data.restate = revised;
   $('essenceBox').classList.add('locked');
   $('restateCore').classList.add('locked');
@@ -3547,19 +3508,19 @@ async function aiViewpoint(btn) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const e = state.data.essence || {};
-  const restate = (state.data.restate || $('essenceRestate') ? $('essenceRestate').value : '') || '';
+  const restate = ($('essenceRestate') ? $('essenceRestate').value : '') || state.data.restate || '';
   const scenario = state.data.scenario || '';
   if (!e.nature && !e.insight) { toast('先让Transform总结出本质和洞察'); return; }
   if (btn) btn.classList.add('loading');
   const r = await aiCall(
     '用户正在做一次认知梳理。\n场景：「' + scenario + '」\n用户提炼的本质：「' + e.nature + '」\n用户提炼的洞察：「' + e.insight + '」\n用户的理解：「' + restate + '」\n\n' +
-    '请不要给答案。请给出 4 个完全不同视角的启发式问题，强迫用户跳出他原来的思维模式：\n' +
-    '1. 正向视角：这件事里，最好的可能性是什么？用户没看见的积极面是什么？\n' +
-    '2. 长远视角：10 年后回看今天，这件事会怎么被定义？现在的焦虑值多少？\n' +
-    '3. 利他视角：如果你最关心的人处在同样的处境，你会劝他怎么想？你愿意把什么经验留给他们？\n' +
-    '4. 反身视角：这个处境，和你一直逃避的某个模式/角色有关吗？你在其中扮演了什么？\n\n' +
-    '每个视角给出：视角名 + 一句话启发 + 一个启发式提问。\n' +
-    '要求：每项 ≤ 30 字，直接、有力量、不鸡汤。\n严格返回 JSON 数组：[{"name":"正向视角","insight":"...","question":"..."},{"name":"长远视角","insight":"...","question":"..."},{"name":"利他视角","insight":"...","question":"..."},{"name":"反身视角","insight":"...","question":"..."}]'
+    '请给出 4 个完全不同的视角，各带一个直接问用户的问题，逼他跳出原来的思维模式：\n' +
+    '1. 正向视角：最好的可能性是什么？\n' +
+    '2. 长远视角：10 年后回看，这件事算什么？\n' +
+    '3. 利他视角：你最关心的人处在同样处境，你会对他说什么？\n' +
+    '4. 反身视角：这和你一直逃避的模式有关吗？\n\n' +
+    '每个视角只输出：视角名 + 一个问题。问题必须针对用户的具体内容，≤ 25 字，直接、有力量，禁止空泛。\n' +
+    '严格返回 JSON 数组：[{"name":"正向视角","question":"..."},{"name":"长远视角","question":"..."},{"name":"利他视角","question":"..."},{"name":"反身视角","question":"..."}]'
   );
   if (btn) btn.classList.remove('loading');
   const arr = parseViewpoints(r);
@@ -3578,14 +3539,14 @@ function parseViewpoints(text) {
     const m = text.match(/\[[\s\S]*\]/);
     if (!m) return null;
     const arr = JSON.parse(m[0]);
-    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && v.insight).slice(0, 4);
+    if (Array.isArray(arr) && arr.length >= 2) return arr.filter(v => v && v.name && (v.question || v.insight)).slice(0, 4);
   } catch(e){}
   return null;
 }
+function vpQuestion(v) { return (v && (v.question || v.insight)) || ''; }
 function renderViewpoints() {
   const box = $('viewpointResult');
   const area = $('viewpointArea');
-  const revise = $('viewpointRevise');
   if (!box) return;
   const arr = state.data.viewpoints || [];
   if (!arr.length) return;
@@ -3596,36 +3557,40 @@ function renderViewpoints() {
       <span class="vp-rad"></span>
       <span style="flex:1;">
         <span class="vp-opt-t">${escapeHtml(v.name)}</span>
-        <span class="vp-opt-d">${escapeHtml(v.insight)}</span>
-        <span class="vp-opt-q">"${escapeHtml(v.question)}"</span>
+        <span class="vp-opt-q">${escapeHtml(vpQuestion(v))}</span>
       </span>
     </div>`
   ).join('') +
-  `<div class="vp-done"><button onclick="confirmViewpoint()">就用这个视角，去修订我的认知</button></div>`;
+  (viewpointSelected != null ? vpAnswerHtml() : '');
+  const ta = box.querySelector('.vp-answer textarea');
+  if (ta) { autoGrow(ta); ta.focus(); }
+}
+function vpAnswerHtml() {
+  const vp = (state.data.viewpoints || [])[viewpointSelected];
+  if (!vp) return '';
+  return `<div class="vp-answer">
+    <div class="lb-essence-label">${escapeHtml(vp.name)} · ${escapeHtml(vpQuestion(vp))}</div>
+    <textarea id="restateRevised" class="essence-nature" placeholder="从这个视角回答……">${escapeHtml(state.data.viewpointAnswer || '')}</textarea>
+    <div class="vp-done"><button onclick="confirmViewpoint()">整合进我的认知</button></div>
+  </div>`;
 }
 function selectViewpoint(i) {
   viewpointSelected = i;
   state.data.viewpoint = (state.data.viewpoints || [])[i];
   renderViewpoints();
-  const revise = $('viewpointRevise');
-  if (revise) {
-    revise.style.display = 'block';
-    const vp = state.data.viewpoint;
-    if (vp) {
-      const cur = ($('essenceRestate') ? $('essenceRestate').value : '') || '';
-      $('restateRevised').value = cur;
-      $('restateRevised').setAttribute('data-hint', vp.name + '：' + vp.question);
-    }
-  }
 }
 function confirmViewpoint() {
   const vp = state.data.viewpoint;
   if (!vp) { toast('先选一个视角'); return; }
-  // 修订后的核心认知填进复述框（用户可再改）
-  const revised = $('restateRevised');
-  const cur = revised ? revised.value.trim() : '';
-  if (cur && $('essenceRestate')) $('essenceRestate').value = cur;
-  toast('已选「' + vp.name + '」，你的核心认知已更新，可继续打分并保存');
+  const ta = document.querySelector('.vp-answer textarea');
+  const ans = ta ? (ta.value || '').trim() : '';
+  state.data.viewpointAnswer = ans;
+  if (ans) {
+    // 用户的视角回答 = 修订后的核心认知（可再改）
+    state.data.restate = ans;
+    if ($('essenceRestate')) $('essenceRestate').value = ans;
+  }
+  toast('已用「' + vp.name + '」更新你的认知，可继续打分并保存');
 }
 
 function checkNext1() {
@@ -3723,23 +3688,18 @@ async function aiAppFeedback(type) {
   if (!obj.plan || !obj.plan.trim()) { toast('先填写打算怎么做'); return; }
   if (!obj.verifySignal || !obj.verifySignal.trim()) { toast('先填写外部检验信号'); return; }
   const e = state.data.essence || {};
-  const impact = state.data.impact || 0;
-  const effort = state.data.effort || 0;
   const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
   setAILoading('aiAppFeedback' + (type === 'near' ? 'Near' : 'Far'), true);
   try {
     const d = obj.details || {};
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n用户对这个核心认知的评估（会直接影响你的评价侧重）：\n重要性：${impact}/5\n接受费力程度：${effort}/5\n\n说明：重要性高意味着这个认知值得大力推进；费力高意味着用户会面临较大阻力，需要给更温和的落地方案。\n\n【${label}】\n场景标题：${obj.title}\n场景细节：\n- 时间：${d.time || '未填'}\n- 地点：${d.place || '未填'}\n- 人物：${d.people || '未填'}\n- 目的：${d.purpose || '未填'}\n- 价值：${d.value || '未填'}\n挑战细节：\n- 现状：${d.currentState || '未填'}\n- 目标：${d.goal || '未填'}\n- 差距：${d.gap || '未填'}\n- 困难：${d.difficulty || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 什么时候试：${obj.when}\n- 期待产出结果：${obj.expectedOutcome}\n\n任务：针对这个应用计划，结合上面的重要性/费力评估，给出独立评价。\n1. 评分（1-5 分）\n2. 做得好的地方\n3. 可改进的地方（必须结合重要性/费力给出：如果费力高如何降低阻力；如果重要性低是否值得投入）\n4. 行动建议（一句话）\n5. 下一步具体行动（1-3 条）\n\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","suggestion":"...","actions":["行动1","行动2"]}`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n【${label}】\n场景标题：${obj.title}\n场景细节：\n- 时间：${d.time || '未填'}\n- 地点：${d.place || '未填'}\n- 人物：${d.people || '未填'}\n- 目的：${d.purpose || '未填'}\n应用计划：\n- 打算怎么做：${obj.plan}\n- 怎么知道发生了：${obj.verifySignal}\n\n任务：针对这个应用计划给出独立评价，输出三部分：做得好的、可改进的、下一步行动。\n\n【硬性要求】语言精炼是第一原则：pros 和 improvements 各不超过 60 字、只说最关键的一点；actions 只给 1-2 条、每条不超过 20 字、可直接执行。禁止堆砌、禁止面面俱到。\n格式（严格按 JSON）：\n{"score":4,"pros":"...","improvements":"...","actions":["行动1","行动2"]}`
     );
     const data = parseAppFeedback(r);
     if (data) {
         state.data[type + 'Feedback'] = data;
         renderAppFeedback(type, data);
         saveDraft();
-        if (type === 'near' && isNearComplete()) unlockFarApp();
-        // 同时支持资源确认时也解锁
-        if (type === 'near' && state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed) unlockFarApp();
         checkNext2();
         toast('Transform评价完成');
     } else {
@@ -3894,8 +3854,6 @@ function renderApplyDetail(type) {
   const obj = ensureAppScenario(type);
   const d = obj.details || {};
   const hasAnyDetail = d.time || d.place || d.people || d.purpose || d.value || d.currentState || d.goal || d.gap || d.difficulty;
-  const metaParts = [d.time, d.place, d.people, d.purpose, d.goal, d.difficulty].filter(Boolean);
-  const meta = metaParts.length ? metaParts.join(' · ') : '点击展开补充场景细节';
   const formHtml = `
     <div class="detail-section">
       <div class="detail-section-title">场景</div>
@@ -3914,8 +3872,27 @@ function renderApplyDetail(type) {
       <div class="detail-row"><b>困难</b><span contenteditable="true" class="editable" data-field="difficulty" onblur="saveApplyDetail('${type}','difficulty',this.textContent)">${escapeHtml(d.difficulty || '')}</span></div>
     </div>
   `;
+  // 自然语言描述（可读性优先；字段缺失时静默跳过）
+  const clean = s => (s || '').trim().replace(/[。，；]$/, '');
+  const sceneParts = [];
+  const where = [clean(d.time), clean(d.place) && '在' + clean(d.place)].filter(Boolean).join('，');
+  if (where) sceneParts.push(where);
+  if (clean(d.people)) sceneParts.push(clean(d.people));
+  if (clean(d.purpose)) sceneParts.push('为了' + clean(d.purpose).replace(/^为了/, ''));
+  const chParts = [];
+  if (clean(d.currentState)) chParts.push('现状是' + clean(d.currentState));
+  if (clean(d.goal)) chParts.push('想做到' + clean(d.goal));
+  if (clean(d.gap)) chParts.push('差距在' + clean(d.gap));
+  if (clean(d.difficulty)) chParts.push('最难的是' + clean(d.difficulty));
+  const nlHtml =
+    (sceneParts.length ? `<p class="dc-nl">${escapeHtml(sceneParts.join('，'))}。</p>` : '') +
+    (chParts.length ? `<p class="dc-nl">${escapeHtml(chParts.join('；'))}。</p>` : '');
   const html = hasAnyDetail
-    ? `<details class="dc-card"><summary><span class="dc-title">${escapeHtml(obj.title || '')}</span><span class="dc-meta">${escapeHtml(meta)}</span></summary><div class="dc-form">${formHtml}</div></details>`
+    ? `<div class="dc-card">
+        <div class="dc-title-main">${escapeHtml(obj.title || '')}</div>
+        ${nlHtml}
+        <details class="dc-edit"><summary>调整细节</summary><div class="dc-form">${formHtml}</div></details>
+      </div>`
     : `<div class="dc-card" style="padding:12px 14px;font-size:13.5px;color:var(--ink-2);">正在生成场景细节…</div>`;
   // 同时填充 detail 阶段卡 和 plan 阶段卡
   [$(type + 'DetailCard'), $(type + 'DetailCardPlan')]
@@ -3951,60 +3928,34 @@ function isNearComplete() {
   if (!state.data.nearFeedback) return false;
   return true;
 }
-function unlockFarApp() {
-  const block = $('farAppBlock');
-  const phase = $('farPhase');
-  if (phase) phase.style.display = 'block';
-  if (block) {
-    block.classList.remove('locked');
-    block.querySelectorAll('.app-stage').forEach(el => el.classList.remove('hidden'));
-  }
-  renderApplyStages();
-  const fp = document.querySelector('.phase[data-phase="far"]');
-  if (fp) fp.classList.add('phase-on');
-  if (isNearComplete()) toast('近应用完成，远应用已解锁');
+function isFarComplete() {
+  const obj = ensureAppScenario('far');
+  if (!obj.title || !obj.title.trim()) return false;
+  if (!obj.details || !obj.details.time) return false;
+  if (!obj.plan || !obj.plan.trim()) return false;
+  if (!obj.verifySignal || !obj.verifySignal.trim()) return false;
+  if (!state.data.farFeedback) return false;
+  return true;
 }
-function toggleNearExpand() {
-  const block = $('nearAppBlock');
-  if (!block) return;
-  block.dataset.expanded = block.dataset.expanded === '1' ? '0' : '1';
-  renderApplyStages();
+// 近/远应用开关切换（非强制、随时可切）
+function switchApplyPhase(type) {
+  renderApplyStages(type);
 }
-function renderApplyStages() {
+function renderApplyStages(activePhase) {
+  const cur = activePhase || state.data.applyPhase || 'near';
+  state.data.applyPhase = cur;
+  // 开关按钮状态 + 完成勾
+  const nb = $('phaseNearBtn'), fb = $('phaseFarBtn');
+  if (nb) { nb.classList.toggle('on', cur === 'near'); nb.classList.toggle('is-done', isNearComplete()); }
+  if (fb) { fb.classList.toggle('on', cur === 'far'); fb.classList.toggle('is-done', isFarComplete()); }
+  const np = $('nearPhase'), fp = $('farPhase');
+  if (np) np.style.display = cur === 'near' ? 'block' : 'none';
+  if (fp) fp.style.display = cur === 'far' ? 'block' : 'none';
+
   ['near', 'far'].forEach(type => {
     const obj = ensureAppScenario(type);
     const block = $(type + 'AppBlock');
     if (!block) return;
-
-    // 近应用完成 → 完全折叠，让用户聚焦远场景
-    if (type === 'near') {
-      const collapsed = isNearComplete() && block.dataset.expanded !== '1';
-      block.classList.toggle('is-collapsed', collapsed);
-      const colEl = $('nearCollapsed');
-      const bodyEl = $('nearBody');
-      if (colEl) colEl.style.display = collapsed ? 'flex' : 'none';
-      if (bodyEl) bodyEl.style.display = collapsed ? 'none' : '';
-      const tog = $('nearToggleBtn');
-      if (tog) tog.textContent = block.dataset.expanded === '1' ? '收起' : '展开修改';
-      if (collapsed) {
-        const t = (state.data.nearScenario && state.data.nearScenario.title) || '近应用场景';
-        const ct = $('nearCollapsedTitle');
-        if (ct) ct.textContent = t;
-        return; // 折叠态：不再渲染内部 stage
-      }
-    }
-
-    if (type === 'far' && !isNearComplete()) {
-      block.classList.add('locked');
-      block.querySelectorAll('.app-stage').forEach(el => el.classList.add('hidden'));
-      const label = $('farAppLockLabel');
-      if (label) label.classList.add('locked-label');
-      return;
-    } else if (type === 'far') {
-      block.classList.remove('locked');
-      const label = $('farAppLockLabel');
-      if (label) label.classList.remove('locked-label');
-    }
     const hasTitle = !!(obj.title && obj.title.trim());
     const hasDetails = !!(obj.details && obj.details.time);
     let stage = 'title';
@@ -4029,17 +3980,6 @@ function renderApplyStages() {
     });
   });
   updateResourceSections();
-  const fp = $('farPhase');
-  if (fp) fp.style.display = isNearComplete() ? 'block' : 'none';
-  const whyCard = $('farWhyCard');
-  if (whyCard) whyCard.style.display = isNearComplete() ? 'block' : 'none';
-  const nearChip = document.querySelector('.phase[data-phase="near"]');
-  const farChip = document.querySelector('.phase[data-phase="far"]');
-  if (nearChip) nearChip.classList.add('phase-on');
-  if (farChip) {
-    farChip.classList.toggle('phase-on', !!isNearComplete());
-    farChip.style.display = isNearComplete() ? '' : 'none';
-  }
 }
 
 // 支持资源区：仅在该应用已有反馈后才显示
@@ -4074,8 +4014,6 @@ function parseAppFeedback(text) {
 function renderAppFeedback(type, data) {
   const box = $(type + 'FeedbackResult');
   const title = type === 'near' ? '近应用反馈' : '远应用反馈';
-  const impact = state.data.impact || 0;
-  const effort = state.data.effort || 0;
   const scenario = ensureAppScenario(type);
   let html = '<div class="ai-msg"><span class="zhx-avatar">' + ZHIXING_AVATAR + '</span><div class="ai-msg-body">';
   html += '<div class="ai-msg-name">Transform · ' + title + '</div>';
@@ -4083,15 +4021,14 @@ function renderAppFeedback(type, data) {
     html += '<div style="font-size:12px;color:var(--green-deep);margin:2px 0 8px;font-weight:600;">针对场景：「' + escapeHtml(scenario.title) + '」</div>';
   }
   html += '<div class="fb-overall"><span class="fb-score">' + (data.score || 0) + '</span><span class="fb-score-label">/ 5</span></div>';
-  html += '<div style="font-size:12px;color:var(--ink-3);margin:6px 0 10px;padding:8px 10px;background:var(--green-soft);border-radius:8px;">结合你对这个认知的评估：重要性 <b>' + impact + '/5</b> · 接受费力 <b>' + effort + '/5</b></div>';
-  html += '<div class="fb-pros"><b>做得好的：</b>' + escapeHtml(data.pros || '—') + '</div>';
-  html += '<div class="fb-improve"><b>可改进的：</b>' + escapeHtml(data.improvements || '—') + '</div>';
-  html += '<div class="fb-sug"><b>行动建议：</b>' + escapeHtml(data.suggestion || '—') + '</div>';
-  if (data.actions && data.actions.length) {
-    html += '<div class="fb-actions"><div class="fb-title">下一步行动</div><ol>';
-    data.actions.forEach(a => { html += '<li>' + escapeHtml(a) + '</li>'; });
-    html += '</ol></div>';
-  }
+  html += '<div class="fb-cards">';
+  html += '<div class="fb-card"><div class="fb-card-head">✓ 做得好</div><div class="fb-card-body">' + escapeHtml(data.pros || '—') + '</div></div>';
+  html += '<div class="fb-card"><div class="fb-card-head">↻ 可以怎么改</div><div class="fb-card-body">' + escapeHtml(data.improvements || '—') + '</div></div>';
+  html += '<div class="fb-card fb-card-next"><div class="fb-card-head">→ 下一步</div><div class="fb-card-body">';
+  const acts = (data.actions && data.actions.length ? data.actions : (data.suggestion ? [data.suggestion] : []));
+  html += acts.length ? '<ol>' + acts.map(a => '<li>' + escapeHtml(a) + '</li>').join('') + '</ol>' : '—';
+  html += '</div></div>';
+  html += '</div>';
   html += '</div></div>';
   box.innerHTML = html;
   box.classList.add('show');
@@ -4114,23 +4051,20 @@ async function aiSuggestResources(type) {
   const cfg = getAI();
   if (!cfg.apiKey) { toast('请先在设置里配置 API Key'); openSettings(); return; }
   const obj = state.data[type + 'Scenario'] || {};
-  const fb = state.data[type + 'Feedback'] || {};
   const label = type === 'near' ? '近应用（熟悉的场景）' : '远应用（陌生的场景）';
   const targetLabel = type === 'near' ? '近应用' : '远应用';
   const btnId = type === 'near' ? 'aiResourcesNear' : 'aiResourcesFar';
   const resultId = type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult';
-  // 校验：该应用必须已完成计划（标题 + 细节 + 计划 + 时间 + 期待结果）
+  // 校验：该应用必须已完成计划（标题 + 细节 + 打算怎么做）
   const d = obj.details || {};
   if (!obj.title || !obj.title.trim() || !d.time || !obj.plan || !obj.plan.trim()) {
     toast('先完成「' + targetLabel + '」的计划（标题/细节/打算怎么做）'); return;
   }
   const e = state.data.essence || {};
-  const impact = state.data.impact || 0;
-  const effort = state.data.effort || 0;
   setAILoading(btnId, true);
   try {
     const r = await aiCall(
-      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n认知评估：重要性 ${impact}/5，接受费力 ${effort}/5\n\n【${label}】\n场景标题：${obj.title}\n场景细节：时间 ${d.time || '未填'}｜地点 ${d.place || '未填'}｜人物 ${d.people || '未填'}｜目的 ${d.purpose || '未填'}\n挑战：现状 ${d.currentState || '未填'}｜目标 ${d.goal || '未填'}｜差距 ${d.gap || '未填'}｜困难 ${d.difficulty || '未填'}\n计划：打算怎么做 ${obj.plan}\n时间：${obj.when}\n期待产出结果：${obj.expectedOutcome}\nTransform反馈：${fb.suggestion || '未填'}\n下一步行动：${(fb.actions || []).join('；') || '未填'}\n\n任务：专门针对上面的「${label}」计划，建议用户为了真正落地这个具体计划，需要去找什么人、争取什么资源、满足什么条件。不要涉及其他场景。\n\n格式（严格按 JSON）：\n{"people":["人1","人2","人3"],"resources":["资源/工具/平台1","资源/工具/平台2"],"conditions":["条件1","条件2"],"note":"一段补充说明，解释为什么需要这些，以及如何开口/获取"}\n\n要求：每条建议具体、可操作，避免空话；people 可以写角色或具体沟通对象；resources 可以是工具、预算、信息等；conditions 是前提条件。`
+      `用户的原始主题信息：\n${buildGroupsContext()}\n\n用户的核心认知：\n现象背后的本质：${e.nature || '未填'}\n新洞察和新认知：${e.insight || '未填'}\n\n【${label}】\n场景标题：${obj.title}\n计划：打算怎么做 ${obj.plan}\n\n任务：专门针对这个「${targetLabel}」计划，建议落地需要找的关键人、资源、前提条件。不要涉及其他场景。\n\n【硬性要求】每类最多 2 条、每条不超过 15 字、具体可直接行动，禁止空话。\n格式（严格按 JSON）：\n{"people":["人1"],"resources":["资源1"],"conditions":["条件1"]}`
     );
     const data = parseResources(r);
     if (data) {
@@ -4170,44 +4104,35 @@ function textareaToArr(el) {
 function renderResourcesResult(type, rp) {
   const box = $(type === 'near' ? 'resourcesNearResult' : 'resourcesFarResult');
   if (!box) return;
-  const targetLabel = type === 'near' ? '近应用' : '远应用';
   let html = '';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要找的关键人</label><textarea id="rpPeople' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要的资源 / 工具 / 平台</label><textarea id="rpResources' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>「' + targetLabel + '」需要满足的条件 / 前提</label><textarea id="rpConditions' + type + '" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
-  html += '<div class="resource-block"><label>Transform补充说明</label><textarea id="rpNote' + type + '" placeholder="可补充说明">' + escapeHtml(rp.note || '') + '</textarea></div>';
+  html += '<div class="resource-block"><label>要找的关键人</label><textarea id="rpPeople' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.people)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>要用的资源 / 工具</label><textarea id="rpResources' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.resources)) + '</textarea></div>';
+  html += '<div class="resource-block"><label>前提条件</label><textarea id="rpConditions' + type + '" rows="2" placeholder="每行一个">' + escapeHtml(arrToTextarea(rp.conditions)) + '</textarea></div>';
   html += '<div class="resource-actions">';
-  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认「' + targetLabel + '」支持资源</button>';
-  html += '<button class="btn btn-prev" onclick="aiSuggestResources(\'' + type + '\')">重新让Transform 建议</button>';
+  html += '<button class="btn btn-next resource-confirm" onclick="confirmResources(\'' + type + '\')">确认支持资源</button>';
+  html += '<button class="btn-link" onclick="aiSuggestResources(\'' + type + '\')">重新生成</button>';
   html += '</div>';
   box.innerHTML = html;
   box.classList.add('show');
   box.style.display = 'block';
 }
 function confirmResources(type) {
+  const pe = $('rpPeople' + type), re = $('rpResources' + type), co = $('rpConditions' + type);
   state.data[type + 'ResourcesPlan'] = {
-    people: textareaToArr($('rpPeople' + type)),
-    resources: textareaToArr($('rpResources' + type)),
-    conditions: textareaToArr($('rpConditions' + type)),
-    note: ($('rpNote' + type).value || '').trim(),
+    people: pe ? textareaToArr(pe) : [],
+    resources: re ? textareaToArr(re) : [],
+    conditions: co ? textareaToArr(co) : [],
+    note: (state.data[type + 'ResourcesPlan'] && state.data[type + 'ResourcesPlan'].note) || '',
     confirmed: true
   };
   saveDraft();
-  if (type === 'near' && isNearComplete()) unlockFarApp();
   checkNext2();
-  toast('「' + (type === 'near' ? '近应用' : '远应用') + '」支持资源已确认');
+  toast('支持资源已确认');
 }
 
 function checkNext2() {
-  const nearOk = isNearComplete();
-  const far = state.data.farScenario || {};
-  const farOk = far.title && far.title.trim() && far.details && far.details.time && far.plan && far.plan.trim() && far.verifySignal && far.verifySignal.trim() && state.data.farFeedback;
-  // 两个都完成（近应用 + 远应用 + 各自的支持资源都确认）
-  const appOk = nearOk && farOk;
-  const nearResOk = state.data.nearResourcesPlan && state.data.nearResourcesPlan.confirmed;
-  const farResOk = state.data.farResourcesPlan && state.data.farResourcesPlan.confirmed;
-  const resourcesOk = nearResOk && farResOk;
-  const ok = appOk && resourcesOk;
+  // 完成近或远任何一个即可进入下一步；支持资源为可选
+  const ok = isNearComplete() || isFarComplete();
   $('next2').disabled = !ok;
   if (ok) $('signal2').style.display = 'inline-flex';
 }
