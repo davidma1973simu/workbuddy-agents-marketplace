@@ -5,7 +5,7 @@
 import subprocess, time, json, datetime
 from playwright.sync_api import sync_playwright
 
-ROOT = '/Users/davidma/WorkBuddy/transform-v2.0'
+ROOT = '/Users/davidma/WorkBuddy/workbuddy-agents-marketplace/transform-v2.0'
 PORT = 8779
 BASE = f'http://localhost:{PORT}/'
 srv = subprocess.Popen(
