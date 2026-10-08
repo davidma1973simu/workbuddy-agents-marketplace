@@ -778,6 +778,13 @@ const BRAND_PROFILES = {
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* P1-7：锚点数据可能是完整句（「在我…之后」），展示模板已带包裹，先剥离避免「在我 在我…之后 之后」 */
+function anchorText(a){
+  let t = String(a == null ? '' : a).trim();
+  if (!t) return '';
+  t = t.replace(/^在(我)?/, '').replace(/(之后|以后|后)$/, '');
+  return t;
+}
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200); }
 function fmtDate(iso){ try { return new Date(iso).toLocaleDateString('zh-CN', {year:'numeric', month:'numeric', day:'numeric'}); } catch(e){ return ''; } }
 function loadArchive(){ try { return (JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []).filter(s => !s.archived); } catch(e){ return []; } }
@@ -1167,7 +1174,7 @@ function renderActions(){
         </div>
       </div>
       <div class="fold-body" onclick="event.stopPropagation()">
-        ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
+        ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(anchorText(a.anchor.after))} 之后</div>` : ''}
         ${(a.sourceInsightId || a.insight || a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<details class="occ-sub"><summary>来源与复盘</summary><div class="occ-sub-body">
           ${(a.sourceInsightId || a.insight) ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(String(a.insight || '').replace(/\n+/g, ' · '))}${a.sourceInsightId ? ` <a class="rel-link" href="cognitive.html#ins-${encodeURIComponent(a.sourceInsightId)}">查看那条想法 →</a>` : ''}</div>` : ''}
           ${(a.result || a.habit || (a.reflection && a.reflection.changed)) ? `<div class="a-reflect">
@@ -1271,6 +1278,7 @@ function renderPatterns(){
   const area = $('patternArea');
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  const pc = $('patternsCount'); if (pc) pc.textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
   const archive = loadArchive(); const actions = loadActions();
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
@@ -1333,7 +1341,8 @@ async function aiDiscoverPatterns(regen){
     }).slice(0, 4);
     localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: uniquePatterns, generatedAt: new Date().toISOString() }));
     renderPatterns();
-    $('patterns').scrollIntoView({ behavior: 'smooth' });
+    // P0-2：页面容器 id 是 patternArea（不存在 #patterns），原引用抛错被 catch 误当成解析失败导致重复渲染
+    $('patternArea').scrollIntoView({ behavior: 'smooth' });
   } catch(err){
     const area = $('patternArea');
     area.innerHTML += `<div class="pattern" style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;

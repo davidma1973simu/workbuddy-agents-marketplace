@@ -723,6 +723,20 @@
     <div class="expand-body"><div class="inner"><div id="modelList"></div></div></div>
   </div>
 
+  <!-- P0-2 关联：模式识别容器此前整体缺失，JS（renderPatterns/aiDiscoverPatterns）完好但永不渲染，此处补齐 -->
+  <div class="expand-card cog" data-section="patterns">
+    <button class="expand-head" type="button" onclick="toggleExpand(this)">
+      <span class="expand-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <span class="expand-title">
+        <span class="expand-name">模式识别</span>
+        <span class="expand-sub">Transform跨时间发现的重复模式</span>
+      </span>
+      <span class="expand-count" id="patternsCount">0</span>
+      <svg class="expand-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="expand-body"><div class="inner"><div id="patternArea"></div></div></div>
+  </div>
+
   <!-- 页脚：身份 + 统计 + 归档/回收箱入口 -->
   <div class="page-foot" id="pageFoot">
     <div id="identityArea"></div>
@@ -803,6 +817,13 @@ const BRAND_PROFILES = {
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* P1-7：锚点数据可能是完整句（「在我…之后」），展示模板已带包裹，先剥离避免「在我 在我…之后 之后」 */
+function anchorText(a){
+  let t = String(a == null ? '' : a).trim();
+  if (!t) return '';
+  t = t.replace(/^在(我)?/, '').replace(/(之后|以后|后)$/, '');
+  return t;
+}
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200); }
 function fmtDate(iso){ try { return new Date(iso).toLocaleDateString('zh-CN', {year:'numeric', month:'numeric', day:'numeric'}); } catch(e){ return ''; } }
 function loadArchive(){ try { return (JSON.parse(localStorage.getItem(LS_ARCHIVE)) || []).filter(s => !s.archived); } catch(e){ return []; } }
@@ -1319,7 +1340,7 @@ function renderActions(){
       <div class="fold-body" onclick="event.stopPropagation()">
         ${microText ? `<div class="tiny">${escapeHtml(microText)}</div>` : ''}
         ${a.insight ? `<div class="a-source"><b>源于洞察：</b>${escapeHtml(a.insight.replace(/\n+/g, ' · '))}</div>` : ''}
-        ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(a.anchor.after)} 之后</div>` : ''}
+        ${a.anchor && a.anchor.after ? `<div class="anchor">锚点：在我 ${escapeHtml(anchorText(a.anchor.after))} 之后</div>` : ''}
         ${(a.result || a.habit || (a.reflection && (a.reflection.changed || ''))) ? `<div class="a-reflect">
           ${a.result ? `<div><b>结果</b> ${escapeHtml(a.result)}</div>` : ''}
           ${a.habit ? `<div><b>新习惯</b> ${escapeHtml(a.habit)}</div>` : ''}
@@ -1388,6 +1409,7 @@ function renderPatterns(){
   if (!area) return;
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(LS_PATTERNS)); } catch(e){}
+  const pc = $('patternsCount'); if (pc) pc.textContent = (saved && saved.patterns) ? saved.patterns.length : 0;
   const archive = loadArchive(); const actions = loadActions();
   const hasData = archive.length || actions.length;
   if (saved && saved.patterns && saved.patterns.length){
@@ -1450,7 +1472,8 @@ async function aiDiscoverPatterns(regen){
     }).slice(0, 4);
     localStorage.setItem(LS_PATTERNS, JSON.stringify({ patterns: uniquePatterns, generatedAt: new Date().toISOString() }));
     renderPatterns();
-    $('patterns').scrollIntoView({ behavior: 'smooth' });
+    // P0-2：滚动目标修正为实际存在的 patternArea 容器
+    $('patternArea').scrollIntoView({ behavior: 'smooth' });
   } catch(err){
     const area = $('patternArea');
     area.innerHTML += `<div class="pattern" style="white-space:pre-wrap;">${escapeHtml(text)}</div>`;

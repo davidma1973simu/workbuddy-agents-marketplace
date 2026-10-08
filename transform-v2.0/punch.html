@@ -852,7 +852,7 @@ function daysSinceLastDone(){
 function anchorText(a){
   let t = String(a == null ? '' : a).trim();
   if (!t) return '';
-  t = t.replace(/^在/, '').replace(/(之后|以后)$/, '');
+  t = t.replace(/^在(我)?/, '').replace(/(之后|以后|后)$/, '');
   return t;
 }
 
@@ -966,15 +966,8 @@ function congratsHtml(day){
 
 function renderPunch(){
   const area = $('punchArea');
-  if (!current){
-    area.innerHTML = `<div class="create-hero">
-      <div class="ch-eyebrow">每日改变</div>
-      <h1>还没有开始一次改变</h1>
-      <p>先定一个想改变的事，Transform会帮你拆成 7 天，每天只需做那天的一小步。</p>
-      <a class="cta-start" href="act.html" style="text-decoration:none;">完整创建行为实验 →</a>
-    </div>`;
-    return;
-  }
+  // P2-3：全新态由 renderCreate 呈现（init 无进行中实验时默认进创建态），此处不再保留第二套同义引导文案
+  if (!current) return;
 
   const isGrad = current.status === 'graduated';
   const plan = current.plan || [];
@@ -1706,7 +1699,7 @@ function goTodayDraft(){
   if (!draft.micro){ toast('拆解建议还没准备好'); return; }
   advancePunchStep(2);
   renderPunchStepsBar();
-  renderTodayDraft(draft.anchors || ['在我早上拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
+  renderTodayDraft(draft.anchors && draft.anchors.length ? draft.anchors : ['在我早上拿起手机之后', '在我吃完午饭后', '在我晚上睡前']);
 }
 
 function renderTodayDraft(anchors){
@@ -1747,7 +1740,14 @@ function renderTodayDraft(anchors){
       <button class="cta-confirm" id="stageConfirmBtn" onclick="startExperiment()" ${canConfirm ? '' : 'disabled'}>${canConfirm ? '开始这 ' + N0 + ' 天的改变 →' : '先选一个触发时刻'}</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
-  if (!draft.anchor && !draft.userTypedAnchor) draft.anchor = anchors[0] || '';
+  // P0-3：自动选中第一个锚点后必须同步 UI（chip 高亮 / 反馈 / 确认按钮），否则按钮停留在禁用态，用户要凭空多点一次
+  if (!draft.anchor && !draft.userTypedAnchor && anchors.length){
+    draft.anchor = anchors[0];
+    const firstChip = area.querySelector('.anchor-key');
+    if (firstChip) firstChip.classList.add('sel');
+    anchorFeedbackSay('这 ' + N0 + ' 天都在「<b>' + escapeHtml(anchorText(draft.anchor)) + '</b>」之后做。到点就做，不用想。');
+    updateStageConfirmBtn();
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1808,9 +1808,15 @@ async function createExperiment(identity){
 
   // 使用 Stage 1 已生成的计划（不再二次 AI 调用）
   const N = draft.planLength || draft.days.length || 7;
+  // P1-8：AI 计划天数可能不足 N 天，必须补齐，保证 7 天清单完整
+  const fallbackMicro = '继续完成「' + draft.micro + '」';
   const plan = (draft.days && draft.days.length)
-    ? draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: m.trim().slice(0, 60), sub: [], subDone: [] }))
-    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: ('继续完成「' + draft.micro + '」'), sub:[], subDone:[]}); return p; })();
+    ? (function(){
+        const p = draft.days.slice(0, N).map((m, i) => ({ day: i + 1, micro: (m && String(m).trim() ? String(m).trim().slice(0, 60) : fallbackMicro), sub: [], subDone: [] }));
+        for (let d = p.length + 1; d <= N; d++) p.push({ day: d, micro: fallbackMicro, sub: [], subDone: [] });
+        return p;
+      })()
+    : (function(){ const p = [{day:1, micro:draft.micro, sub:[], subDone:[]}]; for (let d = 2; d <= N; d++) p.push({day:d, micro: fallbackMicro, sub:[], subDone:[]}); return p; })();
 
   const goal = draft.goal || handoffScenario || '做到一件事';
   current = {
