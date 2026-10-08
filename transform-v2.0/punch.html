@@ -529,6 +529,19 @@
     .ck-rec-k { width: auto; padding-top: 0; }
   }
 
+  /* 当天完成后：祝贺反馈折叠进清单当天行（可坍缩，跟随这一天） */
+  .ck-congrats { margin-top: 12px; border: 1px solid var(--green-light, #CDE9DC); background: var(--green-50, #EAF6F0); border-radius: 12px; overflow: hidden; }
+  .ck-cong-sum { display: flex; align-items: center; gap: 9px; padding: 11px 13px; cursor: pointer; list-style: none; font-weight: 800; font-size: 14px; color: var(--green-deep); }
+  .ck-cong-sum::-webkit-details-marker { display: none; }
+  .ck-cong-crown { flex-shrink: 0; color: var(--green); display: flex; }
+  .ck-cong-body { padding: 2px 14px 14px; }
+  .ck-cong-title { font-size: 14px; font-weight: 800; color: var(--ink); margin: 2px 0 4px; }
+  .ck-cong-ev { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; margin-bottom: 6px; }
+  .ck-cong-wit { font-size: 13.5px; color: var(--ink); line-height: 1.7; }
+  .ck-cong-meaning { margin-top: 10px; }
+  .ck-cong-meaning > summary { font-size: 12.5px; font-weight: 700; color: var(--ink-3); cursor: pointer; }
+  .ck-cong-meaning-body { font-size: 13px; color: var(--ink-2); line-height: 1.7; margin-top: 6px; white-space: pre-wrap; }
+
   /* ===== C 态：受阻 → 当场降维 ===== */
   .rescue-box { margin-top: 12px; background: var(--amber-soft); border: 1px solid rgba(200,122,42,.35); border-radius: var(--radius-sm); padding: 14px 14px 10px; }
   .rescue-tip { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 8px; }
@@ -908,6 +921,7 @@ function toggleProjList(){
   p.classList.toggle('hidden');
 }
 function startNewGoal(){
+  justDoneDay = 0;
   // 从今日打卡回到创建态：重置草稿与会话上下文，不清任何存档
   draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], focus:'', focusReason:'', isComplex:false };
   handoffInsight = ''; handoffNature = ''; handoffScenario = '';
@@ -934,6 +948,20 @@ function planOfDay(day){ return (current.plan || []).find(x => x.day === day) ||
 function microOfDay(day){
   const p = planOfDay(day);
   return (p && p.micro) || (current.plan && current.plan[0] && current.plan[0].micro) || current.input || '';
+}
+
+let justDoneDay = 0; // 刚完成的那一天：在清单行内显示可折叠的祝贺反馈
+
+/* 当天完成后的祝贺反馈（折叠进清单当天行，跟随那一天，可收起） */
+function congratsHtml(day){
+  if (day !== justDoneDay) return '';
+  return `<details class="ck-congrats" open>
+      <summary class="ck-cong-sum">
+        <span class="ck-cong-crown"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M7.6 12.3l3 3 5.8-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>今天做到啦</span>
+      </summary>
+      <div class="ck-cong-body" id="ckCongBody"></div>
+    </details>`;
 }
 
 function renderPunch(){
@@ -1017,18 +1045,7 @@ function renderPunch(){
     </div>`;
 
   // ⑦ 轻反馈：打勾后就地展开（行为证据 + 身份见证句），不再要求二次确认
-  html += `<div class="today-feedback hidden" id="todayFeedbackWrap">
-      <div class="tf-card">
-        <div class="tf-crown" id="tfCrown" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#0E6B50" stroke-width="1.8"/><path d="M7.6 12.3l3 3 5.8-6" stroke="#0E6B50" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <div class="tf-title" id="tfTitle">第 X 天完成</div>
-        <div class="tf-evidence" id="tfEvidence"></div>
-        <div class="tf-body" id="tfWitness"></div>
-        <details class="sc-details tf-meaning" id="tfMeaningFold">
-          <summary id="tfMeaningSummary">它对你成为的人意味着什么？</summary>
-          <div class="tf-meaning-body" id="tfMeaningBody"></div>
-        </details>
-      </div>
-    </div>`;
+  // ⑦ 祝贺反馈已改为「清单当天行内、可折叠」（见 renderCheckRow 的 congratsHtml + showTodayFeedback）
 
   // ⑧ 出口：更完整的复盘（不在每日流程里拦路；整轮走完时是主要出口）
   html += `<div class="tf-upgrade ck-foot">
@@ -1061,7 +1078,7 @@ function renderCheckRow(day, o){
           <span class="ck-txt">${escapeHtml(micro)}</span>
           <span class="ck-state">${rescued ? '最小版接住' : '已记录'}</span>
         </summary>
-        <div class="ck-body">${body}</div>
+        <div class="ck-body">${body}${congratsHtml(day)}</div>
       </details>`;
   }
 
@@ -1235,7 +1252,7 @@ function markDone(){
     toast('今天已经完成过一天了 —— 剩下几天明天接着来');
     return;
   }
-  if (todayAlreadyDone()){ renderPunch(); showTodayFeedback(false); return; } // 同日重复 → 只回放，不再重复计数
+  if (todayAlreadyDone()){ justDoneDay = current.currentDay; renderPunch(); showTodayFeedback(false); return; } // 同日重复 → 只回放，不再重复计数
   // R-24：每天留下「做了什么 + 产出物」，这一天才算真的发生过
   const noteEl = $('ckNote'); const outEl = $('ckOutput');
   const note = noteEl ? (noteEl.value || '').trim() : '';
@@ -1243,6 +1260,7 @@ function markDone(){
   if (noteEl && !note){ toast('写一句今天做了什么，就能打勾'); noteEl.focus(); return; }
   const day = current.currentDay;
   logCompletion(true, day, null, note, { output });
+  justDoneDay = day;
   renderPunch();
   // 刚打勾那天就地展开，让用户看到自己写下的记录
   const row = $('ck-day-' + day);
@@ -1257,13 +1275,15 @@ function markDone(){
 // C 态：受阻后选择做最小版 → rescued 完成（失败不惩罚：记完成、连续不清零）
 function markDoneRescued(reason){
   if (!current) return;
-  if (todayAlreadyDone()){ renderPunch(); showTodayFeedback(true); return; }
+  if (todayAlreadyDone()){ justDoneDay = current.currentDay; renderPunch(); showTodayFeedback(true); return; }
   logCompletion(true, current.currentDay, reason || '', '', { rescued: true, reason: reason || '' });
   if (current.status === 'graduated'){
+    justDoneDay = current.currentDay;
     renderPunch();
     toast('全部完成！新的习惯和角色已生根');
     return;
   }
+  justDoneDay = current.currentDay;
   renderPunch();
   showTodayFeedback(true);
 }
@@ -1271,6 +1291,7 @@ function markDoneRescued(reason){
 // C 态：明确今天不做了 → 记 miss + 原因（供 D 态重新设计；失败是输入不是判决）
 function markMiss(reason){
   if (!current) return;
+  justDoneDay = 0; // 没做到当天不显示祝贺
   if (todayAlreadyDone()){ renderPunch(); return; }
   logCompletion(false, current.currentDay, reason || '', '', { reason: reason || '' });
   renderPunch();
@@ -1283,12 +1304,12 @@ function markMiss(reason){
 /* ===== B 态：完成反馈 = 行为证据行 + 身份见证句（就地展开，不堆信息） ===== */
 async function showTodayFeedback(isRescued){
   if (!current) return;
-  const w = $('todayFeedbackWrap'); if (!w) return;
-  const day = current.currentDay - 1;
+  const bodyEl = $('ckCongBody'); if (!bodyEl) return;
+  const day = justDoneDay || current.currentDay;
   const streak = current.streak || 0;
   const total = current.totalDone || 0;
   const weekC = weekDoneCount();
-  const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
+  const todayPlan = current.plan[day - 1] || current.plan[current.currentDay - 1];
   const micro = (todayPlan && todayPlan.micro) || current.input;
   const anchor = current.anchor && current.anchor.after;
   const identity = current.identity || '';
@@ -1296,14 +1317,13 @@ async function showTodayFeedback(isRescued){
   const isFirst = total <= 1;
 
   // 1. 标题（rescued = 用最小版接住了）
-  // 图标固定为「完成」标记，状态差异由标题与证据行承担（UI 不使用 emoji）
-  $('tfTitle').textContent = isFirst
+  const title = isFirst
     ? '今天的行为实验开始了'
-    : (isRescued ? ('第 ' + day + ' 天 · 用最小版接住了') : ('第 ' + day + ' 天完成'));
+    : (isRescued ? ('第 ' + day + ' 天 · 用最小版接住了') : ('第 ' + day + ' 天做到了'));
 
   // 2. 行为证据行（本地计数：真实发生的事实，不是表扬）
   const evAnchor = (streak >= 2 && anchor) ? (' · 连续 ' + streak + ' 天在「' + anchorText(anchor) + '」之后做到') : '';
-  $('tfEvidence').textContent = '本周第 ' + weekC + ' 次 · 累计 ' + total + ' 天' + evAnchor + (isRescued ? '（今天靠最小版接住）' : '');
+  const ev = '本周第 ' + weekC + ' 次 · 累计 ' + total + ' 天' + evAnchor + (isRescued ? '（今天靠最小版接住）' : '');
 
   // 3. 身份见证句（证据 → 身份；结论让用户自己得出，不是自我审判）
   let witness;
@@ -1322,15 +1342,17 @@ async function showTodayFeedback(isRescued){
   } else {
     witness = '第 ' + day + ' 天完成，为' + (identity ? '「' + identity + '」' : '那个想成为的自己') + '又添了一条证据。';
   }
-  $('tfWitness').textContent = witness;
 
-  // 4. 折叠：「它对成为你意味着什么」（AI 2 句；无 API key 自动隐藏，不阻塞）
-  const fold = $('tfMeaningFold');
-  const summary = $('tfMeaningSummary');
-  const mb = $('tfMeaningBody');
-  if (fold) fold.style.display = (getAI().apiKey && micro) ? '' : 'none';
-  if (summary) summary.textContent = identity ? ('它对你成为「' + identity + '」意味着什么？') : '它对你想成为的自己意味着什么？';
-  if (mb) mb.textContent = '';
+  // 4. 折叠：「它对你意味着什么」（AI 2 句；无 API key 自动不渲染，不阻塞）
+  const meaningSummary = identity ? ('它对你成为「' + identity + '」意味着什么？') : '它对你想成为的自己意味着什么？';
+  bodyEl.innerHTML =
+    '<div class="ck-cong-title">' + escapeHtml(title) + '</div>' +
+    '<div class="ck-cong-ev">' + escapeHtml(ev) + '</div>' +
+    '<div class="ck-cong-wit">' + escapeHtml(witness) + '</div>' +
+    (getAI().apiKey && micro
+      ? '<details class="ck-cong-meaning" id="ckCongMeaning"><summary>' + escapeHtml(meaningSummary) + '</summary><div class="ck-cong-meaning-body" id="ckCongMeaningBody"></div></details>'
+      : '');
+
   try {
     if (getAI().apiKey && micro) {
       const aiResp = await aiCall(
@@ -1343,13 +1365,15 @@ async function showTodayFeedback(isRescued){
         '禁用"坚持"与说教。'
       );
       const aiTextVal = aiText(aiResp);
+      const mb = $('ckCongMeaningBody');
       if (aiTextVal && mb) mb.innerHTML = escapeHtml(aiTextVal.trim().slice(0, 220)).replace(/\n/g, '<br>');
       else if (aiErr(aiResp)) console.warn('AI meaning failed:', aiErr(aiResp).msg);
     }
   } catch(e){}
 
-  w.classList.remove('hidden');
-  w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // 滚动到当天行，让用户看到自己刚完成的这一行
+  const row = $('ck-day-' + day);
+  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // ===== C 态：没做到 → 选因 → 当场给最小版（帮助，不是 AI 说教） =====
@@ -1775,6 +1799,7 @@ function startExperiment(){
 }
 
 async function createExperiment(identity){
+  justDoneDay = 0;
   if (!draft.micro) { toast('先让 Transform 建议今天的改变'); return; }
   if (!draft.anchor) { toast('选一个锚点时刻'); return; }
   draft.identity = identity || '';
@@ -1815,6 +1840,7 @@ async function createExperiment(identity){
 
 /* ===================== 初始化 ===================== */
 (function init(){
+  justDoneDay = 0;
   punchStep = 0;
   punchMaxReached = calcMaxReachedFromDraft();
   renderPunchStepsBar();
