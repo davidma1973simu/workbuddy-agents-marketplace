@@ -241,7 +241,7 @@
     <button class="nav-link" onclick="scrollTo('io')">⇄ 输入输出</button>
     <button class="nav-link" onclick="scrollTo('exp')">💫 学员体验</button>
     <button class="nav-link" onclick="scrollTo('tips')">💡 避坑指南</button>
-    <button class="nav-link" onclick="scrollTo('agents')">🤖 Sub-Agent</button>
+    <button class="nav-link" onclick="scrollTo('agents')">🤖 技能·专家团</button>
     <button class="nav-link" onclick="scrollTo('api-config')">🔌 API 配置</button>
     <button class="nav-link" onclick="scrollTo('faq')">❓ 常见问题</button>
   </div>
@@ -747,41 +747,46 @@
     </a>
   </div>
 
-  <!-- ⑧ Sub-Agent -->
+  <!-- ⑧ 技能家族与专家团 -->
   <section class="section fade-in" id="agents">
-    <div class="section-label">🤖 AI Sub-Agent</div>
-    <h2 class="section-title">四大 Sub-Agent，每阶段的 AI 专家</h2>
-    <p class="section-desc">Eureka 不只是一个录入工具——当你需要 AI 协助<strong>生成内容</strong>时，可以在对应阶段唤醒专属 Sub-Agent，让它帮你从零产出结构化成果，再粘贴进仪表板。</p>
+    <div class="section-label">🤖 技能 · 专家团</div>
+    <h2 class="section-title">11 个技能 + 1 个专家团，每阶段的 AI 助手</h2>
+    <p class="section-desc">Eureka 不只是一个录入工具——当你需要 AI 协助<strong>生成内容</strong>时，在 WorkBuddy 对话中说一句触发话术即可召唤对应技能；想要全流程托管，就召唤创新教练团专家团，或用全流程自动化一键跑完五阶段。</p>
 
     <!-- 总体架构图 -->
     <div class="agent-hero">
       <div class="agent-hero-label">⚙️ AI 工作流架构</div>
-      <div class="agent-hero-title">TheArchitect 总调度 → 四阶段专家流水线</div>
-      <div class="agent-hero-desc">一句自然语言描述项目需求，TheArchitect 自动拉起整条流水线，依次激活四个 Specialist，逐阶段产出 JSON 成果，最终汇聚成一页看板。也可以单独唤起任意 Specialist 处理特定阶段。</div>
+      <div class="agent-hero-title">RISE 五阶段 × 技能家族流水线</div>
+      <div class="agent-hero-desc">每个阶段都有对应的已发布技能：Reveal 用选题与洞察，Inspire 用创意发散，Shape 用方案构建，Exam 用验证、价值、呈现与商业。想全流程托管，用 eureka-pro-automation 一句话跑完五阶段，或召唤创新教练团让 8 位专家分工协作。</div>
       <div class="agent-pipeline" style="margin-top: 28px;">
         <div class="ap-node">
-          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#764ba2);">🏗️</div>
-          <div class="ap-label">Build<br>TheArchitect</div>
+          <div class="ap-circle" style="background: linear-gradient(135deg,#667eea,#764ba2);">📝</div>
+          <div class="ap-label">项目需求</div>
         </div>
         <div class="ap-arrow">→</div>
         <div class="ap-node">
           <div class="ap-circle" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">🔍</div>
-          <div class="ap-label">Reveal<br>Specialist</div>
+          <div class="ap-label">Reveal<br>ideation / insight</div>
         </div>
         <div class="ap-arrow">→</div>
         <div class="ap-node">
           <div class="ap-circle" style="background: linear-gradient(135deg,#d97706,#f59e0b);">💡</div>
-          <div class="ap-label">Inspire<br>Specialist</div>
+          <div class="ap-label">Inspire<br>inspire</div>
         </div>
         <div class="ap-arrow">→</div>
         <div class="ap-node">
           <div class="ap-circle" style="background: linear-gradient(135deg,#10b981,#34d399);">🎨</div>
-          <div class="ap-label">Shape<br>Specialist</div>
+          <div class="ap-label">Shape<br>shape</div>
         </div>
         <div class="ap-arrow">→</div>
         <div class="ap-node">
           <div class="ap-circle" style="background: linear-gradient(135deg,#ef4444,#f87171);">✅</div>
-          <div class="ap-label">Exam<br>Specialist</div>
+          <div class="ap-label">Exam<br>exam / value</div>
+        </div>
+        <div class="ap-arrow">→</div>
+        <div class="ap-node">
+          <div class="ap-circle" style="background: linear-gradient(135deg,#0f766e,#14b8a6);">🎤</div>
+          <div class="ap-label">呈现 · 商业<br>pitch / business</div>
         </div>
         <div class="ap-arrow">→</div>
         <div class="ap-node">
@@ -791,282 +796,281 @@
       </div>
     </div>
 
-    <!-- 四个 Agent 卡片 -->
+    <!-- 技能卡片（按阶段） -->
     <div class="agent-grid">
 
-      <!-- Reveal -->
       <div class="agent-card">
         <div class="ac-hd" style="background: linear-gradient(135deg,#7c3aed,#9f67fa);">
-          <div class="ac-agent-name">🔍 Reveal Specialist</div>
-          <div class="ac-title">洞察专家</div>
-          <div class="ac-desc">负责用户洞察阶段，从 Project Brief 生成 POV、FIND 洞察和利益相关方分析，帮你看清「用户真正需要什么」。</div>
+          <div class="ac-agent-name">🔍 Reveal 洞察阶段</div>
+          <div class="ac-title">选题 + 洞察</div>
+          <div class="ac-desc">从「不知道做什么」到「看清用户要什么」：先筛选题，再挖洞察。</div>
         </div>
         <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🎯</div>
+            <div>
+              <div class="ac-skill-name">eureka-ideation · 创新选题专家</div>
+              <div class="ac-skill-desc">从行业与人群痛点产出 5-8 个可落地的创新选题，附一张选题评估卡。</div>
+            </div>
+          </div>
           <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">👁</div>
             <div>
-              <div class="ac-skill-name">pov_builder · POV 构建师</div>
-              <div class="ac-skill-desc">将项目简报转化为「用户画像 + 场景触点 + 痛点 + POV 陈述」四维结构。支持 AI 自动生成或 GUI 交互式手动填写。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🔬</div>
-            <div>
-              <div class="ac-skill-name">find_insight · FIND 洞察器</div>
-              <div class="ac-skill-desc">运用 FIND 模型（Facts→Interpret→Need→Design insight）从用户旅程事实中挖掘深层需求，生成精炼洞察卡片。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#ede9fe; color:#7c3aed;">🎭</div>
-            <div>
-              <div class="ac-skill-name">roleplay_stakeholder · 利益相关方模拟</div>
-              <div class="ac-skill-desc">AI 扮演多个利益相关方角色，模拟各方需求、影响力和潜在冲突，输出关系地图。</div>
+              <div class="ac-skill-name">eureka-insight · 用户洞察专家</div>
+              <div class="ac-skill-desc">设计访谈提纲、挖深层需求，提炼一句话用户洞察（POV）。</div>
             </div>
           </div>
           <div class="ac-trigger">
-            <div class="ac-trigger-label">💬 唤醒示例</div>
-            <div class="ac-trigger-text">「请用 pov_builder 帮我构建针对 20-35 岁都市白领女性购物场景的用户 POV」</div>
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「不知道做什么创新项目，帮我找选题？」／「我不了解用户，帮我做用户研究？」</div>
           </div>
         </div>
       </div>
 
-      <!-- Inspire -->
       <div class="agent-card">
         <div class="ac-hd" style="background: linear-gradient(135deg,#d97706,#fbbf24);">
-          <div class="ac-agent-name">💡 Inspire Specialist</div>
-          <div class="ac-title">启发专家</div>
-          <div class="ac-desc">负责创意生成阶段，从 POV 出发产出 HMW 机遇、交叉激发创意，并提炼最佳方案，帮你打开「可能性空间」。</div>
+          <div class="ac-agent-name">💡 Inspire 创意阶段</div>
+          <div class="ac-title">创意发散</div>
+          <div class="ac-desc">从 POV 和选题出发，交叉激发不重样的创意。</div>
         </div>
         <div class="ac-bd">
           <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">❓</div>
-            <div>
-              <div class="ac-skill-name">HMW_Reframer · HMW 机遇重构器</div>
-              <div class="ac-skill-desc">从 4 个维度重构用户 POV，生成 6-8 个「How Might We...」创新机遇，并按用户价值 × 商业可行双维度筛选最佳 HMW。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">⚡</div>
             <div>
-              <div class="ac-skill-name">NCO_Crosslinker · 新酷界外交叉激发器</div>
-              <div class="ac-skill-desc">强制从「新（New）/ 酷（Cool）/ 界外（Out of box）」三类生成灵感源，与最佳 HMW 交叉激发 20-30 个全新创意。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#fef3c7; color:#d97706;">💎</div>
-            <div>
-              <div class="ac-skill-name">Idea_Distiller · 创意提炼师</div>
-              <div class="ac-skill-desc">对创意列表进行评分（可行性/价值性/创新性）、聚类、提炼，选出最有潜力的核心创意并给出「为什么是它」的理由。</div>
+              <div class="ac-skill-name">eureka-inspire · 创意发散助手</div>
+              <div class="ac-skill-desc">用新趋势 / 跨界灵感 / 外行视角三条线交叉生成 12-20 个创意，因果筛选后输出 Top 5 创意卡片。</div>
             </div>
           </div>
           <div class="ac-trigger">
-            <div class="ac-trigger-label">💬 唤醒示例</div>
-            <div class="ac-trigger-text">「用 NCO_Crosslinker 对『如何让购物决策更轻松』这个 HMW 进行交叉激发，生成 20 个创意」</div>
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「想不出好点子，帮我头脑风暴？」</div>
           </div>
         </div>
       </div>
 
-      <!-- Shape -->
       <div class="agent-card">
         <div class="ac-hd" style="background: linear-gradient(135deg,#10b981,#34d399);">
-          <div class="ac-agent-name">🎨 Shape Specialist</div>
-          <div class="ac-title">构建专家</div>
-          <div class="ac-desc">负责方案构建阶段，对最佳创意进行四维压力测试，构建完整概念方案，并写出用户视角六幕体验故事。</div>
+          <div class="ac-agent-name">🎨 Shape 构建阶段</div>
+          <div class="ac-title">方案落地</div>
+          <div class="ac-desc">把创意拷问成站得住的 MVP 方案。</div>
         </div>
         <div class="ac-bd">
           <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🔨</div>
             <div>
-              <div class="ac-skill-name">Solution_Interrogator · 方案拷问员</div>
-              <div class="ac-skill-desc">从「用户 / 技术 / 商业 / 利益方」四个维度对最佳创意进行压力测试，发现风险与盲点，迫使方案自我完善。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🏗</div>
-            <div>
-              <div class="ac-skill-name">Solution_Build · 方案构建师</div>
-              <div class="ac-skill-desc">整合压力测试结果，构建完整概念方案：概念名称 + 核心功能特性（最多 6 个）+ AHA 价值设计，输出可直接填入仪表板的结构化内容。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#dcfce7; color:#15803d;">🎬</div>
-            <div>
-              <div class="ac-skill-name">Storyboard_Scriptor · 故事脚本师</div>
-              <div class="ac-skill-desc">以用户视角撰写六幕体验故事脚本：用户挑战→POV洞见→接触→使用→分享结果→持续感受，每幕含场景、情感和 AHA 瞬间。</div>
+              <div class="ac-skill-name">eureka-shape · 方案构建专家</div>
+              <div class="ac-skill-desc">对创意做价值/增长/技术/商业四维拷问，砍出 MVP：P0/P1 功能清单、用户流程、最低成功标准。</div>
             </div>
           </div>
           <div class="ac-trigger">
-            <div class="ac-trigger-label">💬 唤醒示例</div>
-            <div class="ac-trigger-text">「用 Solution_Interrogator 从四个维度拷问『AI 智能购物推荐』这个创意方案」</div>
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「这个创意怎么落地，帮我做个方案？」</div>
           </div>
         </div>
       </div>
 
-      <!-- Exam -->
       <div class="agent-card">
         <div class="ac-hd" style="background: linear-gradient(135deg,#ef4444,#f87171);">
-          <div class="ac-agent-name">✅ Exam Specialist</div>
-          <div class="ac-title">验证专家</div>
-          <div class="ac-desc">负责验证评估阶段，量化方案的 AHA 和 MAP 价值，撰写电梯演讲，制定迭代计划，完成商业模式画布。</div>
+          <div class="ac-agent-name">✅ Exam 验证与价值阶段</div>
+          <div class="ac-title">验证 · 评估 · 呈现 · 商业</div>
+          <div class="ac-desc">用最小成本验证，用数字说话，用讲稿过会。</div>
         </div>
         <div class="ac-bd">
           <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🧪</div>
+            <div>
+              <div class="ac-skill-name">eureka-exam · 验证决策专家</div>
+              <div class="ac-skill-desc">设计百元级最小验证实验，给出 go / no-go / pivot 判定线。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📊</div>
             <div>
-              <div class="ac-skill-name">AHA_MAP_Evaluator · 价值评估师</div>
-              <div class="ac-skill-desc">汇总测试报告，量化评估 AHA 用户价值（顿悟/高光/进步）和 MAP 商业价值（市场潜力/用户增长/优势壁垒），生成双雷达图数据。</div>
+              <div class="ac-skill-name">eureka-value · 价值评估专家</div>
+              <div class="ac-skill-desc">AHA 用户价值 + MAP 商业价值双维评估，直接告诉你先做哪个、砍掉哪个。</div>
             </div>
           </div>
           <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🎤</div>
             <div>
-              <div class="ac-skill-name">Pitch_Composer · 电梯呈现撰写师</div>
-              <div class="ac-skill-desc">生成 60 秒电梯演讲脚本（五段式：问题/方案/用户/价值/行动），语言精炼有力，适合向投资人或决策者呈现。</div>
-            </div>
-          </div>
-          <div class="ac-skill">
-            <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">📅</div>
-            <div>
-              <div class="ac-skill-name">Project_Iteration · 迭代计划师</div>
-              <div class="ac-skill-desc">制定 30-60-90 天分阶段迭代计划，每个节点包含具体里程碑、成功指标和资源需求。</div>
+              <div class="ac-skill-name">eureka-pitch · 汇报呈现助手</div>
+              <div class="ac-skill-desc">压成 30 秒 / 60 秒 / 5 分钟三档讲稿，预演常见追问。</div>
             </div>
           </div>
           <div class="ac-skill">
             <div class="ac-skill-icon" style="background:#fee2e2; color:#b91c1c;">🖼</div>
             <div>
-              <div class="ac-skill-name">BusinessModel_Painter · 商业模式画家</div>
-              <div class="ac-skill-desc">完整填写商业模式画布 9 格（价值主张/客户细分/渠道通路/客户关系/收入来源/核心资源/关键业务/重要合作/成本结构）。</div>
+              <div class="ac-skill-name">eureka-business · 商业模式专家</div>
+              <div class="ac-skill-desc">精益画布梳理赚钱逻辑，测算定价区间，对比 2-3 种可选模式。</div>
             </div>
           </div>
           <div class="ac-trigger">
-            <div class="ac-trigger-label">💬 唤醒示例</div>
-            <div class="ac-trigger-text">「用 Pitch_Composer 为『智能购物推荐系统』写一段 60 秒电梯演讲」</div>
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「怎么低成本验证这个想法？」／「帮我看看这个方案值不值得做？」／「怎么跟领导汇报这个方案？」／「这个方案怎么赚钱，定价定多少？」</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#0f766e,#14b8a6);">
+          <div class="ac-agent-name">🧰 通用助手</div>
+          <div class="ac-title">卡壳教练 + 社媒运营</div>
+          <div class="ac-desc">两类随时用得上的横向技能。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ccfbf1; color:#0f766e;">🧭</div>
+            <div>
+              <div class="ac-skill-name">eureka-coach · 卡壳教练</div>
+              <div class="ac-skill-desc">项目卡壳时只提问、不代劳，帮你区分事实 / 假设 / 情绪，收敛出问题结论和下一步指令。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#ccfbf1; color:#0f766e;">📱</div>
+            <div>
+              <div class="ac-skill-name">eureka-content-seeding · 社媒运营助手</div>
+              <div class="ac-skill-desc">按日历持续产出图文选题、卡片与文案，让账号更新不断档。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「我卡住了，不知道下一步做什么？」／「帮我排下个月的账号内容日历？」</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="ac-hd" style="background: linear-gradient(135deg,#17324F,#33507a);">
+          <div class="ac-agent-name">🤖 全流程 · 团队</div>
+          <div class="ac-title">全流程自动化 + 创新教练团</div>
+          <div class="ac-desc">两种全流程打开方式：一个技能跑完五阶段，或一个团队分工协作。</div>
+        </div>
+        <div class="ac-bd">
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#e2e8f0; color:#17324F;">🚀</div>
+            <div>
+              <div class="ac-skill-name">eureka-pro-automation · 全流程创新自动化</div>
+              <div class="ac-skill-desc">一句话描述需求，RISE 五阶段自动跑完，产出项目简报、洞察、创意、方案、评估与一页纸看板。</div>
+            </div>
+          </div>
+          <div class="ac-skill">
+            <div class="ac-skill-icon" style="background:#e2e8f0; color:#17324F;">👥</div>
+            <div>
+              <div class="ac-skill-name">创新教练团 · 专家团（eureka-innovation-team）</div>
+              <div class="ac-skill-desc">主理人带 8 位方法论专家按阶段协作，每个环节带专家署名产出，适合从 0 到 1 的完整项目和对外交付。</div>
+            </div>
+          </div>
+          <div class="ac-trigger">
+            <div class="ac-trigger-label">💬 触发话术</div>
+            <div class="ac-trigger-text">「帮我用 RISE 全流程做一遍这个项目？」／「召唤 Eureka 创新教练团，帮我从 0 到 1 做这个项目？」</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 对应关系总表 -->
-    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">📌 仪表板字段 × Sub-Agent 对应关系</h3>
-    <p class="section-desc" style="margin-bottom:0;">在仪表板哪个模块卡壳了，就用哪个 Agent——一一对应，不用猜。</p>
+    <h3 style="font-size:18px; font-weight:800; margin: 48px 0 6px; color: var(--text);">📌 仪表板字段 × 技能对应关系</h3>
+    <p class="section-desc" style="margin-bottom:0;">在仪表板哪个模块卡壳了，就用哪个技能——照触发话术说一句就行，不用猜。</p>
 
     <table class="usage-table">
       <thead>
         <tr>
           <th>仪表板模块</th>
-          <th>对应 Sub-Agent</th>
-          <th>对应 Skill</th>
+          <th>对应技能</th>
+          <th>WorkBuddy 触发话术</th>
           <th>你需要告诉 AI 的</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>基本信息</strong><br><span style="color:var(--muted);font-size:11px;">项目名/简报/目标用户/场景</span></td>
-          <td>🏗️ TheArchitect</td>
-          <td><code>build_project_brief</code></td>
-          <td>用一句话描述你的项目背景和想解决的问题</td>
+          <td><strong>基本信息 / 项目简报</strong></td>
+          <td><code>eureka-pro-automation</code></td>
+          <td>「帮我用 RISE 全流程做一遍这个项目？」</td>
+          <td>一句话项目背景 + 目标用户 + 想解决的问题</td>
         </tr>
         <tr>
-          <td><strong>Reveal › 项目简报</strong><br><span style="color:var(--muted);font-size:11px;">背景/机会/假设/范围/团队</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>build_project_brief</code></td>
-          <td>原始需求描述 + 目标用户群体</td>
+          <td><strong>Reveal › POV 洞察 / 用户画像</strong></td>
+          <td><code>eureka-insight</code></td>
+          <td>「我不了解用户，帮我做用户研究？」</td>
+          <td>用户群体描述 + 典型场景 + 观察到的困扰</td>
         </tr>
         <tr>
-          <td><strong>Reveal › POV 洞察</strong><br><span style="color:var(--muted);font-size:11px;">用户/痛点/洞见三段式</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>pov_builder</code></td>
-          <td>用户画像描述 + 典型场景 + 观察到的困扰</td>
+          <td><strong>Reveal › 访谈记录 / 亲和图</strong></td>
+          <td><code>eureka-insight</code></td>
+          <td>「我不了解用户，帮我做用户研究？」</td>
+          <td>访谈记录或观察素材，要求归类为 3-5 个主题</td>
         </tr>
         <tr>
-          <td><strong>Reveal › 用户画像</strong><br><span style="color:var(--muted);font-size:11px;">角色/特征/引语/痛点</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>pov_builder</code></td>
-          <td>目标用户群体描述（年龄/职业/行为特征）</td>
+          <td><strong>Reveal › HMW / 选题</strong></td>
+          <td><code>eureka-ideation</code></td>
+          <td>「不知道做什么创新项目，帮我找选题？」</td>
+          <td>行业背景 + 你能接触到的人群和他们最烦的事</td>
         </tr>
         <tr>
-          <td><strong>Reveal › 利益相关者</strong><br><span style="color:var(--muted);font-size:11px;">各方角色/影响力/需求</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>roleplay_stakeholder</code></td>
-          <td>项目名称 + 目标用户 + 你已知的相关方角色</td>
+          <td><strong>Inspire › 创意列表 / Crazy 8</strong></td>
+          <td><code>eureka-inspire</code></td>
+          <td>「想不出好点子，帮我头脑风暴？」</td>
+          <td>最佳选题或 HMW（1-2 条）+ 目标用户背景</td>
         </tr>
         <tr>
-          <td><strong>Reveal › HMW</strong><br><span style="color:var(--muted);font-size:11px;">5 个创新机遇</span></td>
-          <td>💡 Inspire Specialist</td>
-          <td><code>HMW_Reframer</code></td>
-          <td>POV 洞察陈述（一句话描述用户核心问题）</td>
+          <td><strong>Inspire › 最佳创意</strong></td>
+          <td><code>eureka-inspire</code></td>
+          <td>「想不出好点子，帮我头脑风暴？」</td>
+          <td>创意列表（可直接粘贴上一轮输出）</td>
         </tr>
         <tr>
-          <td><strong>Inspire › 创意列表</strong><br><span style="color:var(--muted);font-size:11px;">创意 + 三维评分</span></td>
-          <td>💡 Inspire Specialist</td>
-          <td><code>NCO_Crosslinker</code></td>
-          <td>最佳 HMW 机遇（1-2 条） + 目标用户背景</td>
+          <td><strong>Shape › 概念方案</strong></td>
+          <td><code>eureka-shape</code></td>
+          <td>「这个创意怎么落地，帮我做个方案？」</td>
+          <td>最佳创意描述 + 已知约束</td>
         </tr>
         <tr>
-          <td><strong>Inspire › 最佳创意</strong><br><span style="color:var(--muted);font-size:11px;">选择 + 理由</span></td>
-          <td>💡 Inspire Specialist</td>
-          <td><code>Idea_Distiller</code></td>
-          <td>创意列表（可直接粘贴 NCO 输出）</td>
-        </tr>
-        <tr>
-          <td><strong>Shape › 概念方案</strong><br><span style="color:var(--muted);font-size:11px;">名称/描述/功能特性</span></td>
-          <td>🎨 Shape Specialist</td>
-          <td><code>Solution_Build</code></td>
-          <td>最佳创意描述 + 压力测试结果（可选）</td>
-        </tr>
-        <tr>
-          <td><strong>Shape › 体验故事</strong><br><span style="color:var(--muted);font-size:11px;">六幕故事脚本</span></td>
-          <td>🎨 Shape Specialist</td>
-          <td><code>Storyboard_Scriptor</code></td>
+          <td><strong>Shape › 体验故事</strong></td>
+          <td><code>eureka-shape</code></td>
+          <td>「这个创意怎么落地，帮我做个方案？」</td>
           <td>概念方案 + 目标用户画像</td>
         </tr>
         <tr>
-          <td><strong>Shape › MAP 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">M/A/P 三维 1-10</span></td>
-          <td>✅ Exam Specialist</td>
-          <td><code>AHA_MAP_Evaluator</code></td>
+          <td><strong>Shape/Exam › MAP 雷达评分</strong></td>
+          <td><code>eureka-value</code></td>
+          <td>「帮我看看这个方案值不值得做？」</td>
           <td>概念方案全文 + 目标市场描述</td>
         </tr>
         <tr>
-          <td><strong>Exam › AHA 雷达评分</strong><br><span style="color:var(--muted);font-size:11px;">A/H/A 三维 1-10</span></td>
-          <td>✅ Exam Specialist</td>
-          <td><code>AHA_MAP_Evaluator</code></td>
+          <td><strong>Exam › AHA 雷达评分</strong></td>
+          <td><code>eureka-value</code></td>
+          <td>「帮我看看这个方案值不值得做？」</td>
           <td>用户测试反馈 / 体验故事 + 概念方案</td>
         </tr>
         <tr>
-          <td><strong>Exam › 电梯呈现</strong><br><span style="color:var(--muted);font-size:11px;">问题/方案/用户/价值/行动</span></td>
-          <td>✅ Exam Specialist</td>
-          <td><code>Pitch_Composer</code></td>
+          <td><strong>Exam › 电梯呈现</strong></td>
+          <td><code>eureka-pitch</code></td>
+          <td>「怎么跟领导汇报这个方案？」</td>
           <td>概念方案 + 核心价值主张 + 目标受众</td>
         </tr>
         <tr>
-          <td><strong>Exam › 迭代计划</strong><br><span style="color:var(--muted);font-size:11px;">30-60-90 天</span></td>
-          <td>✅ Exam Specialist</td>
-          <td><code>Project_Iteration</code></td>
+          <td><strong>Exam › 迭代计划</strong></td>
+          <td><code>eureka-exam</code></td>
+          <td>「怎么低成本验证这个想法？」</td>
           <td>概念方案 + 当前资源条件 + 优先级</td>
         </tr>
         <tr>
-          <td><strong>Exam › 商业模式画布</strong><br><span style="color:var(--muted);font-size:11px;">9 格全填</span></td>
-          <td>✅ Exam Specialist</td>
-          <td><code>BusinessModel_Painter</code></td>
-          <td>概念方案 + 电梯呈现 + 目标市场</td>
+          <td><strong>Exam › 商业模式画布</strong></td>
+          <td><code>eureka-business</code></td>
+          <td>「这个方案怎么赚钱，定价定多少？」</td>
+          <td>概念方案 + 目标市场 + 成本结构</td>
         </tr>
         <tr>
-          <td><strong>Reveal › 用户访谈记录</strong><br><span style="color:var(--muted);font-size:11px;">原始访谈文本</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>pov_builder</code></td>
-          <td>受访者角色描述 + 访谈问题 + 关键发现</td>
+          <td><strong>任何阶段卡壳</strong></td>
+          <td><code>eureka-coach</code></td>
+          <td>「我卡住了，不知道下一步做什么？」</td>
+          <td>把卡住的状态原样告诉它</td>
         </tr>
         <tr>
-          <td><strong>Reveal › 亲和图</strong><br><span style="color:var(--muted);font-size:11px;">洞察聚类分析</span></td>
-          <td>🔍 Reveal Specialist</td>
-          <td><code>pov_builder</code></td>
-          <td>访谈记录 / 观察便利贴，要求归类为 3–5 个主题</td>
-        </tr>
-        <tr>
-          <td><strong>Inspire › Crazy 8 草图</strong><br><span style="color:var(--muted);font-size:11px;">8 方向快速发散</span></td>
-          <td>💡 Inspire Specialist</td>
-          <td><code>NCO_Crosslinker</code></td>
-          <td>HMW 机遇（1–2 条），要求产出 8 个差异化方向</td>
+          <td><strong>全流程托管</strong></td>
+          <td><code>eureka-pro-automation / 专家团</code></td>
+          <td>「召唤 Eureka 创新教练团，帮我从 0 到 1 做这个项目？」</td>
+          <td>项目背景一次性交代清楚</td>
         </tr>
       </tbody>
     </table>
@@ -1077,17 +1081,17 @@
       <div class="qa-card" style="border-color:#c7d2fe;">
         <div class="qa-icon">⚡</div>
         <div class="qa-label">全自动模式（推荐新手）</div>
-        <div class="qa-desc">一句话描述项目，TheArchitect 自动执行完整五阶段流水线，所有 JSON 产出落地后，批量粘贴进仪表板。</div>
+        <div class="qa-desc">召唤专家团或全流程自动化，一句话跑完 RISE 五阶段，所有产出落地后批量粘贴进仪表板。</div>
         <div style="margin-top:10px; background:#f0f4ff; border-radius:8px; padding:10px 12px; font-size:12px; color:var(--purple-dark); font-family:monospace; line-height:1.7;">
-          「帮我用 Eureka 系统解决一个线下零售场景下，年轻消费者的排队等待焦虑问题，达到提升顾客满意度和门店转化率的目的」
+          「召唤 Eureka 创新教练团，帮我从 0 到 1 做这个项目：线下零售门店排队等待焦虑，想提升顾客满意度和转化率」
         </div>
       </div>
       <div class="qa-card" style="border-color:#a7f3d0;">
         <div class="qa-icon">🎯</div>
         <div class="qa-label">单点调用模式（推荐熟练用户）</div>
-        <div class="qa-desc">针对某个阶段卡壳或需要深化的内容，直接点名对应 Skill，输入上下文，获取精准产出。</div>
+        <div class="qa-desc">针对某个阶段卡壳或需要深化的内容，说对应技能的触发话术，输入上下文，获取精准产出。</div>
         <div style="margin-top:10px; background:#f0fdf4; border-radius:8px; padding:10px 12px; font-size:12px; color:#15803d; font-family:monospace; line-height:1.7;">
-          「用 Storyboard_Scriptor 给我的 AI 推荐系统概念写六幕体验故事」
+          「这个创意怎么落地，帮我做个方案？我的创意是：模板化 onboarding，帮中小客户降低上手成本」
         </div>
       </div>
     </div>
@@ -1095,8 +1099,8 @@
     <div class="callout-box" style="background:#f0f4ff; border: 1.5px solid #c7d2fe; margin-top:20px;">
       <div class="cb-title" style="color:var(--purple-dark);">🔄 AI 产出 → 仪表板的标准流程</div>
       <div class="cb-body" style="color:var(--text);">
-        ① 在对话中告诉 AI 你要用哪个 Skill + 提供输入内容<br>
-        ② AI 产出结构化文本（JSON 或 Markdown 格式）<br>
+        ① 在 WorkBuddy 对话中说一句触发话术 + 提供输入内容<br>
+        ② AI 产出结构化文本（卡片 / 清单 / Markdown）<br>
         ③ 打开仪表板 → 进入对应编辑器 Tab（如 Shape）<br>
         ④ 将 AI 产出的内容粘贴 / 填入对应字段<br>
         ⑤ 点「保存项目」 → 可视化卡片自动渲染
@@ -1107,7 +1111,7 @@
   <!-- ⑨ API 配置与 WorkBuddy 集成 -->
   <section class="section fade-in" id="api-config">
     <div class="section-label">🔌 API 配置</div>
-    <h2 class="section-title">如何配置 AI 与调用 Sub-Agent</h2>
+    <h2 class="section-title">如何配置 AI 与召唤技能和专家团</h2>
     <p class="section-desc">Eureka 支持两种 AI 调用方式：Dashboard 内直接配置 API Key，或通过 WorkBuddy 调用已集成的 Skills。选择适合你的方式开始使用。</p>
 
     <!-- 方式一：Dashboard API 配置 -->
@@ -1160,29 +1164,26 @@
       </div>
       <div style="padding: 28px;">
         <p style="font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 24px;">
-          如果你已经在使用 WorkBuddy，可以直接调用 Eureka 系列 Skills，无需在 Dashboard 中重复配置 API Key。WorkBuddy 会自动管理 API 调用和上下文传递。
+          Eureka 全系资产（11 个技能 + 1 个专家团）已在 WorkBuddy 开放平台公开发布。如果你已经在使用 WorkBuddy，直接说触发话术即可召唤，无需在 Dashboard 中重复配置 API Key。
         </p>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
           <div style="background: #f0fdfa; border-radius: 12px; padding: 20px; border: 1.5px solid #99f6e4;">
-            <div style="font-size: 20px; margin-bottom: 12px;">✨</div>
-            <div style="font-size: 14px; font-weight: 700; color: #0f766e; margin-bottom: 8px;">直接唤醒 Agent</div>
+            <div style="font-size: 20px; margin-bottom: 12px;">🤖</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0f766e; margin-bottom: 8px;">召唤专家团</div>
             <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
-              在 WorkBuddy 聊天框输入：<br>
-              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Reveal Specialist</code><br>
-              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">@Inspire Specialist</code><br>
-              即可直接调用对应阶段的专家智能体。
+              在 WorkBuddy 聊天框说：<br>
+              <code style="background: #ccfbf1; padding: 2px 6px; border-radius: 4px; color: #0f766e;">召唤 Eureka 创新教练团，帮我从 0 到 1 做这个项目？</code><br>
+              或在客户端【专家】→【专家团】Tab 搜索「创新教练团」召唤。
             </div>
           </div>
           <div style="background: #f0f9ff; border-radius: 12px; padding: 20px; border: 1.5px solid #bae6fd;">
             <div style="font-size: 20px; margin-bottom: 12px;">🎯</div>
-            <div style="font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 8px;">调用具体 Skill</div>
+            <div style="font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 8px;">说触发话术调用技能</div>
             <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
-              使用 Skill 名称精确调用：<br>
-              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">pov_builder</code>
-              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">HMW_Reframer</code><br>
-              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">NCO_Crosslinker</code>
-              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">Solution_Build</code>
+              11 个技能各有触发话术，例如：<br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">不知道做什么创新项目，帮我找选题？</code><br>
+              <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1;">怎么低成本验证这个想法？</code>
             </div>
           </div>
           <div style="background: #faf5ff; border-radius: 12px; padding: 20px; border: 1.5px solid #e9d5ff;">
@@ -1190,13 +1191,12 @@
             <div style="font-size: 14px; font-weight: 700; color: #7c3aed; margin-bottom: 8px;">自然语言描述</div>
             <div style="font-size: 12px; color: var(--muted); line-height: 1.7;">
               直接描述你的需求：<br>
-              <em style="color: #7c3aed;">"帮我为这个产品写一段 POV 洞察"</em><br>
-              <em style="color: #7c3aed;">"基于这个痛点生成 HMW 问题"</em><br>
-              WorkBuddy 会自动匹配最合适的 Skill。
+              <em style="color: #7c3aed;">"帮我为这个产品写一段用户洞察"</em><br>
+              <em style="color: #7c3aed;">"基于这个痛点帮我头脑风暴"</em><br>
+              WorkBuddy 会自动匹配最合适的技能。
             </div>
           </div>
         </div>
-
         <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 16px 20px;">
           <div style="font-size: 13px; color: #166534; line-height: 1.7;">
             <strong>✅ WorkBuddy 集成优势：</strong>无需管理 API Key · 自动上下文传递 · 支持多轮对话 · 可与其他 Skills 组合使用 · 团队共享配置
@@ -1227,9 +1227,9 @@
         </div>
       </div>
       <div style="background: var(--surface); border-radius: 12px; padding: 20px; border: 1.5px solid var(--border);">
-        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❓ WorkBuddy 中找不到 Eureka Skills</div>
+        <div style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px;">❓ WorkBuddy 中找不到 Eureka 技能或专家团</div>
         <div style="font-size: 13px; color: var(--muted); line-height: 1.7;">
-          确保 WorkBuddy 已更新到最新版本。Skills 列表中搜索 "Eureka" 或 "创新" 即可找到相关技能包。
+          在 WorkBuddy 客户端【专家·技能·连接器】中搜索「Eureka」可找到 11 个技能；专家团在【专家】→【专家团】Tab 搜索「创新教练团」召唤。
         </div>
       </div>
     </div>
