@@ -93,7 +93,7 @@ with sync_playwright() as p:
 
     # ---------------- 每日改变 ----------------
     for f, lang, kw, proof, has_tip in [
-        ('punch.html',     'ZH', '想把这个改变做得更完整', 'id="tfEvidence"',  'localFailTip'),
+        ('punch.html',     'ZH', 'ck-measure', 'id="tfEvidence"',  'localFailTip'),
         ('punch-en.html',  'EN', 'You know exactly what to do', 'Proven by action', 'localFailAdvice'),
     ]:
         pg.goto(BASE + f, wait_until='networkidle'); time.sleep(0.3)

@@ -28,23 +28,27 @@ async def main():
         # P2-3：全新态不再渲染第二套同义引导（不可达空态已删）
         body = await pg.evaluate("document.body.innerText")
         check("P2-3 punch 全新态无重复引导（不可达空态已删）", "还没有开始一次改变" not in body)
-        check("P2-3 punch 全新态仍显示创建卡", "今天想改变什么" in body)
+        check("P2-3 punch 全新态仍显示创建卡", "想改变什么" in body)
 
-        # P0-3：进入定锚点步，锚点自动选中后按钮立刻可用
+        # P0-3：拆解卡上锚点自动选中后按钮立刻可用
         await pg.evaluate("""() => {
+          draft.goal = '测试目标';
+          draft.rawGoal = '测试目标';
           draft.micro = '测试微行动';
           draft.steps = ['子步骤一', '子步骤二'];
           draft.days = ['第一天动作', '第二天动作', '第三天动作'];
           draft.planLength = 7;
-          draft.anchors = [];
-          goTodayDraft();
+          draft.anchors = ['在我早上拿起手机之后', '在我吃完午饭后'];
+          draft.anchor = '';
+          draft.rationale = '测试理由';
+          renderPlanDraft();
         }""")
         btn_disabled = await pg.evaluate("() => { const b = document.getElementById('stageConfirmBtn'); return b ? b.disabled : null; }")
         btn_text = await pg.evaluate("() => (document.getElementById('stageConfirmBtn')||{}).textContent || ''")
         sel_count = await pg.evaluate("document.querySelectorAll('.anchor-key.sel').length")
         fb = await pg.evaluate("() => (document.getElementById('anchorFeedback')||{}).textContent || ''")
         check("P0-3 自动选中锚点后按钮立即可用", btn_disabled is False, f"disabled={btn_disabled}")
-        check("P0-3 按钮文案为开始改变", "改变 →" in btn_text, btn_text)
+        check("P0-3 按钮文案为开始改变", "开始" in btn_text, btn_text)
         check("P0-3 第一个锚点 chip 高亮", sel_count == 1, f"sel={sel_count}")
         check("P0-3 反馈文案已更新", "之后做" in fb, fb)
 
