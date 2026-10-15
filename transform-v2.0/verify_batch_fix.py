@@ -28,7 +28,7 @@ async def main():
         # P2-3：全新态不再渲染第二套同义引导（不可达空态已删）
         body = await pg.evaluate("document.body.innerText")
         check("P2-3 punch 全新态无重复引导（不可达空态已删）", "还没有开始一次改变" not in body)
-        check("P2-3 punch 全新态仍显示创建卡", "先写下想改变的那一件小事" in body)
+        check("P2-3 punch 全新态仍显示创建卡", "今天想改变什么" in body)
 
         # P0-3：进入定锚点步，锚点自动选中后按钮立刻可用
         await pg.evaluate("""() => {

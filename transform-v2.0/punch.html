@@ -363,6 +363,34 @@
   .ck-seg.on { background: var(--green); }
   .ck-seg.cur { background: var(--green-light); }
 
+  /* 今天唯一焦点卡 */
+  .ck-today-focus { background: var(--surface); border: 1.5px solid var(--green); border-radius: var(--radius-lg); padding: 22px 20px 20px; margin-bottom: 14px; }
+  .ck-tf-tag { display: inline-block; font-size: 12px; font-weight: 800; color: var(--green-deep); background: var(--green-50); border-radius: 999px; padding: 4px 11px; margin-bottom: 12px; }
+  .ck-tf-micro { font-size: 20px; font-weight: 800; line-height: 1.5; color: var(--ink); margin-bottom: 10px; }
+  .ck-tf-anchor { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 16px; }
+  .ck-tf-anchor b { color: var(--green-deep); font-weight: 800; }
+  .ck-tf-done { display: flex; align-items: center; gap: 10px; padding: 6px 2px; }
+  .ck-tf-check { width: 26px; height: 26px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+  .ck-tf-txt { font-size: 16px; font-weight: 800; color: var(--ink); }
+  .ck-tf-done-micro { font-size: 14px; color: var(--ink-2); line-height: 1.6; margin-top: 10px; }
+  .ck-tf-done-note { font-size: 13px; color: var(--ink-3); line-height: 1.6; margin-top: 4px; }
+
+  /* 未来/过去清单折叠 */
+  .ck-rest { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); margin-bottom: 14px; overflow: hidden; }
+  .ck-rest-sum { cursor: pointer; list-style: none; padding: 12px 14px; font-size: 13px; font-weight: 800; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+  .ck-rest-sum::-webkit-details-marker { display: none; }
+  .ck-rest-sum::after { content: ''; width: 8px; height: 8px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(45deg); margin-left: auto; transition: transform .2s var(--ease); }
+  .ck-rest[open] .ck-rest-sum::after { transform: rotate(-135deg); }
+  .ck-rest .ck-list { padding: 0 12px 12px; }
+
+  /* 轻认领 */
+  .ck-claim { margin-top: 14px; border: 1px solid var(--green-light, #CDE9DC); background: var(--green-50, #EAF6F0); border-radius: 12px; padding: 14px; }
+  .ck-claim-q { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
+  .ck-claim-guess { font-size: 14px; color: var(--ink-2); line-height: 1.6; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; margin-bottom: 12px; }
+  .ck-claim-actions { display: flex; flex-direction: column; gap: 8px; }
+  .ck-claim-alt { width: 100%; padding: 8px; border: none; background: transparent; color: var(--ink-3); font-size: 13px; font-family: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .ck-claim-alt:hover { color: var(--green-deep); }
+
   .ck-listhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 2px 10px; flex-wrap: wrap; }
   .ck-listhead > span:first-child { font-size: 14px; font-weight: 800; color: var(--ink); }
   .ck-lh-sub { font-size: 12px; color: var(--ink-3); }
@@ -867,6 +895,12 @@ function renderPunch(){
     + '&micro=' + encodeURIComponent(microOfDay(isGrad ? N : curDay))
     + (failReason ? '&fail=' + encodeURIComponent(failReason) : '&from=keep');
 
+  // 今天这一小步（今天唯一焦点）
+  const todayPlan = planOfDay(curDay) || {};
+  const todayMicro = microOfDay(curDay);
+  // 「今天是否已完成」按真实自然日判断（todayAlreadyDone），而非 currentDay 推进到哪
+  const isTodayDone = !isGrad && todayAlreadyDone();
+
   let html = '';
   html += projectNowLine();
 
@@ -889,11 +923,38 @@ function renderPunch(){
     }).join('')
   }</div>`;
 
-  // ③ 清单标题
-  html += `<div class="ck-listhead"><span>${N} 天微行动</span><span class="ck-lh-sub">${isGrad ? '整轮已完成，清单留作记录' : '到点就做，做完打勾'}</span></div>`;
+  // ③ 今天唯一焦点（未来 6 天折叠）
+  if (!isGrad){
+    html += '<div class="ck-today-focus">';
+    if (isTodayDone){
+      // 今天已完成 → 焦点卡变成「今天已完成」的确认态，并回显今天做的事
+      const doneRec = (current.logs || []).filter(l => l && l.done).slice(-1)[0];
+      const doneNote = (doneRec && doneRec.note) || '';
+      const doneDay = (doneRec && doneRec.day) || curDay;
+      const doneMicro = microOfDay(doneDay);
+      html += `<div class="ck-tf-done">
+        <span class="ck-tf-check">✓</span>
+        <span class="ck-tf-txt">今天已经完成</span>
+      </div>
+      <div class="ck-tf-done-micro">${escapeHtml(doneMicro)}</div>
+      ${doneNote ? `<div class="ck-tf-done-note">${escapeHtml(doneNote)}</div>` : ''}`;
+    } else {
+      html += `<div class="ck-tf-tag">今天 · Day ${curDay}</div>
+        <div class="ck-tf-micro">${escapeHtml(todayMicro)}</div>
+        <div class="ck-tf-anchor">${anchor ? '到「<b>' + escapeHtml(anchorText(anchor)) + '</b>」之后做——到了就做，不用想。' : '到了那个时刻，就做这一小步。'}</div>
+        <button class="ck-do" id="ckDoBtn" onclick="markDone()">我做到了</button>
+        <button class="ck-miss-link" onclick="showBlock()">今天没做到</button>
+        <div class="ck-claim" id="ckClaim" style="display:none;"></div>`;
+    }
+    html += '</div>';
+  }
 
-  // ④ 清单本体：7 天全在眼前
-  html += '<div class="ck-list">';
+  // ④ 未来/过去清单：默认折叠成「还有 N 天」（点开才看明细）
+  const remaining = N - curDay;
+  const doneDays = Array.from(doneSet);
+  html += `<details class="ck-rest" ${isGrad ? 'open' : ''}>
+      <summary class="ck-rest-sum">${isGrad ? ('全部 ' + N + ' 天 · 已走完') : ('还有 ' + Math.max(0, remaining) + ' 天 · 展开查看')}</summary>
+      <div class="ck-list">`;
   for (let d = 1; d <= N; d++){
     html += renderCheckRow(d, {
       isDone: doneSet.has(d),
@@ -901,7 +962,7 @@ function renderPunch(){
       anchor: anchor,
     });
   }
-  html += '</div>';
+  html += '</div></details>';
 
   // ⑤ D 态：连续没做 → 重新设计卡（失败是给系统的输入，不是给你的判决）
   const gapDays = daysSinceLastDone();
@@ -920,17 +981,13 @@ function renderPunch(){
       <div class="btn btn-ghost" style="margin-top:12px;width:100%;" onclick="hideBlock()">← 返回</div>
     </div>`;
 
-  // ⑦ 轻反馈：打勾后就地展开（行为证据 + 身份见证句），不再要求二次确认
-  // ⑦ 祝贺反馈已改为「清单当天行内、可折叠」（见 renderCheckRow 的 congratsHtml + showTodayFeedback）
-
-  // ⑧ 出口：更完整的复盘（不在每日流程里拦路；整轮走完时是主要出口）
+  // ⑦ 出口：更完整的复盘（不在每日流程里拦路；整轮走完时是主要出口）
   html += `<div class="tf-upgrade ck-foot">
       <div class="tu-q">想把这个改变做得更完整（含复盘与沉淀）？</div>
       <a class="tu-link" href="${upUrl}">去完整行动页 →</a>
     </div>`;
 
   area.innerHTML = html;
-  refreshTodayRowState();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -959,30 +1016,13 @@ function renderCheckRow(day, o){
   }
 
   if (o.isToday){
-    const p = planOfDay(day);
-    const subs = (p && p.sub && p.sub.length) ? p.sub : [];
-    const subsHtml = subs.length
-      ? `<div class="ck-subs"><div class="ck-subs-label">今天的小步骤</div>${subs.map((s, i) => {
-          const on = !!(p.subDone && p.subDone[i]);
-          return `<label class="ck-sub${on ? ' on' : ''}"><input type="checkbox" ${on ? 'checked' : ''} onchange="toggleSub(${i})"><span>${escapeHtml(s)}</span></label>`;
-        }).join('')}</div>`
-      : '';
+    // 今天已在「焦点卡」里成为唯一主角，清单里的今天行只做轻标记（避免同屏两个焦点）
     return `<div class="ck-row today" id="ck-day-${day}">
         <div class="ck-sum">
           <span class="ck-tick cur" aria-hidden="true"></span>
           <span class="ck-dnum">Day ${day}</span>
-          <span class="ck-state ck-state-today">今天</span>
-        </div>
-        <div class="ck-body">
-          <div class="ck-micro">${escapeHtml(micro)}</div>
-          <div class="ck-anchor-tip">${o.anchor ? '到「<b>' + escapeHtml(anchorText(o.anchor)) + '</b>」之后做——到了就做，不用想。' : '到了那个时刻，就做这一小步。'}</div>
-          ${subsHtml}
-          <label class="ck-field"><span class="ck-lab">今天我做了什么</span>
-            <textarea class="ck-in" id="ckNote" rows="2" maxlength="300" placeholder="写一句，例如：午饭时我把手上的进度同步给了对方"></textarea></label>
-          <label class="ck-field"><span class="ck-lab">产出物 <em>没有可留空</em></span>
-            <input class="ck-in" id="ckOutput" maxlength="200" placeholder="例如：一段 3 行记录 / 一份发给对方的清单"></label>
-          <button class="ck-do" id="ckDoBtn" onclick="markDone()">完成今天，打勾</button>
-          <button class="ck-miss-link" onclick="showBlock()">今天没做到</button>
+          <span class="ck-txt">${escapeHtml(micro)}</span>
+          <span class="ck-state ck-state-today">今天 · 进行中</span>
         </div>
       </div>`;
   }
@@ -1121,24 +1161,61 @@ function countVotes(){
 // ===== 打卡动作：完成 / 最小版补做(rescued) / 明确不做(miss) =====
 function markDone(){
   if (!current) return;
-  const today = (current.plan || []).find(p => p.day === current.currentDay);
-  if (today && (today.sub || []).length && !(today.subDone || []).every(Boolean)){ toast('先把今天的几步都勾上'); return; }
   if (todayAlreadyDone() && !logRecForDay(current.currentDay)){
-    // 今天已经完成过一天了。规则不变，但不再静默吞掉——输入内容原样留在框里
     toast('今天已经完成过一天了 —— 剩下几天明天接着来');
     return;
   }
   if (todayAlreadyDone()){ justDoneDay = current.currentDay; renderPunch(); showTodayFeedback(false); return; } // 同日重复 → 只回放，不再重复计数
-  // R-24：每天留下「做了什么 + 产出物」，这一天才算真的发生过
-  const noteEl = $('ckNote'); const outEl = $('ckOutput');
-  const note = noteEl ? (noteEl.value || '').trim() : '';
-  const output = outEl ? (outEl.value || '').trim() : '';
-  if (noteEl && !note){ toast('写一句今天做了什么，就能打勾'); noteEl.focus(); return; }
+  // R-24 轻认领：点「我做到了」→ 就地弹一个轻确认（系统猜一句，选「对」/「换一句」），不做必填
   const day = current.currentDay;
-  logCompletion(true, day, null, note, { output });
+  const todayPlan = (current.plan || []).find(p => p.day === day) || {};
+  const micro = (todayPlan.micro || current.input || '').trim();
+  const guess = micro
+    ? ('在「' + anchorText(current.anchor && current.anchor.after) + '」之后，你' + (micro.length > 40 ? micro.slice(0, 40) + '…' : micro))
+    : '';
+  const box = $('ckClaim'); if (!box) return;
+  box.innerHTML =
+    '<div class="ck-claim-q">你做到了。是这件事吗？</div>' +
+    (guess ? '<div class="ck-claim-guess">' + escapeHtml(guess) + '</div>' : '') +
+    '<div class="ck-claim-actions">' +
+      '<button type="button" class="ck-do" onclick="claimDone(true)">对，就是这件事</button>' +
+      '<button type="button" class="ck-claim-alt" onclick="claimDone(false)">换一句，我写一句</button>' +
+    '</div>';
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// 轻认领结果：confirm=true 用系统猜测 / false 展开一句话输入
+function claimDone(confirm){
+  const day = current.currentDay;
+  if (!confirm){
+    const box = $('ckClaim'); if (!box) return;
+    box.innerHTML =
+      '<div class="ck-claim-q">写一句，你刚才做了什么</div>' +
+      '<textarea class="ck-in" id="ckClaimNote" rows="2" maxlength="300" placeholder="例如：午饭时我把手上的进度同步给了对方"></textarea>' +
+      '<div class="ck-claim-actions">' +
+        '<button type="button" class="ck-do" onclick="claimSave()">存下这一句</button>' +
+        '<button type="button" class="ck-claim-alt" onclick="claimSkip()">跳过，直接完成</button>' +
+      '</div>';
+    const ta = $('ckClaimNote'); if (ta) ta.focus();
+    return;
+  }
+  claimSave();
+}
+function claimSave(){
+  const day = current.currentDay;
+  const ta = $('ckClaimNote');
+  const note = ta ? (ta.value || '').trim() : '';
+  finalizeDone(day, note);
+}
+function claimSkip(){
+  finalizeDone(current.currentDay, '');
+}
+function finalizeDone(day, note){
+  logCompletion(true, day, null, note, {});
   justDoneDay = day;
+  const box = $('ckClaim'); if (box) box.style.display = 'none';
   renderPunch();
-  // 刚打勾那天就地展开，让用户看到自己写下的记录
   const row = $('ck-day-' + day);
   if (row && row.tagName === 'DETAILS') row.setAttribute('open', '');
   if (current.status === 'graduated'){
@@ -1310,24 +1387,9 @@ function advancePunchStep(i){
   punchStep = i;
 }
 function renderPunchStepsBar(){
+  // 一步到位：创建流程已从「3 步向导」压缩为「一句话 → 一个按钮」，步骤条机制整体废弃
   const wrap = document.getElementById('punchStepsBarWrap');
-  if (!wrap) return;
-  // 已经创建实验（current）后不再显示
-  if (typeof current !== 'undefined' && current && current.id && current.status !== 'archived'){
-    const hasProgress = (current && current.currentDay) || (current && current.id);
-    if (hasProgress) { wrap.innerHTML = ''; return; }
-  }
-  const nodes = PUNCH_STEPS.map((s, i) => {
-    const cls = i === punchStep ? 'p-node active'
-              : (i <= punchMaxReached) ? 'p-node done'
-              : 'p-node disabled';
-    const clickable = (i <= punchMaxReached) ? ' onclick="punchGo(' + i + ')"' : '';
-    return `<div class="${cls}">
-      <button type="button" ${clickable} aria-label="回到第 ${i+1} 步 ${s.label}">${s.svg}</button>
-      <span class="p-label">${s.label}</span>
-    </div>`;
-  }).join('');
-  wrap.innerHTML = `<div class="path" id="punchPath" data-progress="${punchStep + 1}">${nodes}</div>`;
+  if (wrap) wrap.innerHTML = '';
 }
 function punchGo(i){
   if (i > punchMaxReached) return; // 没走到过的步骤禁止跳
@@ -1367,8 +1429,8 @@ function renderCreate(){
   area.innerHTML = `
     <div class="suggest-card create-start">
       <div class="sc-tag">每日改变 · 还没有进行中的实验</div>
-      <h2 class="sc-title">先写下想改变的那一件小事</h2>
-      <div class="sc-desc">不用写大目标。写一件这周你真想让它发生的小事——Transform 会帮你拆成 7 天，每天只需做今天那一小步。</div>
+      <h2 class="sc-title">今天想改变什么？</h2>
+      <div class="sc-desc">写一件小事，Transform 帮你变成「今天就能做的一步」。</div>
       ${showCtx ? `
         <div class="ctx-card">
           <div class="ctx-label">来自你的洞察 · 认知起点</div>
@@ -1376,9 +1438,8 @@ function renderCreate(){
           ${handoffInsight ? `<div class="ctx-row"><b>洞察：</b>${escapeHtml(handoffInsight)}</div>` : ''}
         </div>` : ''}
       <input class="create-input" id="changeInput" placeholder="${handoffScenario ? escapeHtml('围绕「' + handoffScenario + '」，你想改变点什么？') : '例如：每天早上一杯温水，或每天读 10 页书'}" maxlength="120">
-      ${!handoffScenario ? '<div class="sc-hint">大目标？先写最近一周你最想先动的一件具体事——小到明天就能做。</div>' : ''}
-      ${!hasKey ? '<div class="create-nokey">AI 还没连接：连上后，这里会自动帮你拆成 7 天微行动。<a href="app.html?settings=1">去连接 AI →</a></div>' : ''}
-      <button class="cta-confirm" id="startChangeBtn" onclick="startChange()">开始改变 →</button>
+      ${!hasKey ? '<div class="create-nokey">AI 还没连接：连上后，这里会自动帮你拆成今天的一小步。<a href="app.html?settings=1">去连接 AI →</a></div>' : ''}
+      <button class="cta-confirm" id="startChangeBtn" onclick="startChange()">开始 →</button>
     </div>`;
   const input = $('changeInput');
   if (handoffScenario) input.value = handoffScenario;
@@ -1398,7 +1459,7 @@ async function startChange(){
   const cfg = getAI();
   if (!cfg.apiKey) { toast('AI 还没连接：连上后这里会自动帮你拆成 7 天计划（入口在上方提示里）'); return; }
   const btn = $('startChangeBtn');
-  btn.disabled = true; btn.textContent = 'Transform 正在思考你的目标…';
+  btn.disabled = true; btn.textContent = 'Transform 正在帮你拆成今天的一小步…';
   draft.goal = goal;
   draft.rawGoal = goal;
   // 洞察 handoff 已收窄出 scenario → 快路径：跳过复杂度判断，不再多一步
@@ -1407,7 +1468,6 @@ async function startChange(){
   const { data: d, error: aiErr0 } = await aiExperimentDraft(goal, 0, skipComplex);
   btn.disabled = false; btn.textContent = '开始改变 →';
   if (!d){
-    // 失败：在页面上渲染调试卡（即使无痕模式也能看到，不依赖 console）
     renderAIDebugCard(goal, aiErr0);
     let msg = aiErr0 ? aiErr0.msg : 'Transform 暂时生成不了计划——请检查设置（API Key）后重试';
     if (aiErr0 && aiErr0.kind === 'PARSE' && aiErr0.detail) msg = 'AI 返回的不是有效 JSON（80 字预览）：' + aiErr0.detail.slice(0, 80);
@@ -1415,11 +1475,10 @@ async function startChange(){
     return;
   }
   applyDraft(d);
-  advancePunchStep(1);
-  renderPunchStepsBar();
-  // 复杂/宏大目标 → 先出「收窄确认卡」（数据已在手，零二次 AI）；简单具体 → 直出 plan
-  if (d.isComplex) renderFocusConfirm();
-  else renderPlanDraft();
+  // 一步到位：AI 已生成 micro + anchors + days，锚点默认选第一个，直接进入「今天做这一步」
+  if (!draft.anchor && (draft.anchors && draft.anchors.length)) draft.anchor = draft.anchors[0];
+  draft.identity = '';
+  createExperiment('');
 }
 
 // 在页面上直接显示 AI 调试信息（不依赖 console）
