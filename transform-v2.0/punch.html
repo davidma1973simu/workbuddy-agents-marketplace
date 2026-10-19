@@ -344,10 +344,7 @@
   }
 
   /* ===== R-24 改变任务清单（常显：任务 · 7 天拆解 · 逐日打勾 · 每日记录） ===== */
-  .ck-head { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 18px 20px 16px; }
-  .ck-eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 1.2px; color: var(--green-deep); margin-bottom: 8px; }
-  .ck-goal { font-size: 20px; font-weight: 800; line-height: 1.45; color: var(--ink); letter-spacing: -.2px; word-break: break-word; }
-  .ck-meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+  .ck-meta-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 2px 8px; }
   .ck-anchor-tag { font-size: 13px; color: var(--ink-2); }
   .ck-count { font-size: 12.5px; font-weight: 700; color: var(--ink-3); }
 
@@ -382,10 +379,10 @@
     background: linear-gradient(135deg, var(--green-deep), var(--green)); color: #fff;
     font-size: 15px; font-weight: 800; font-family: inherit; cursor: pointer; }
   .ck-do:disabled { opacity: .55; cursor: default; }
-  .fusion-fallback { display: flex; gap: 10px; margin-top: 10px; }
-  .fusion-fb { flex: 1; padding: 9px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px;
-    font-size: 12.5px; color: var(--ink-2); font-family: inherit; cursor: pointer; }
-  .fusion-fb:hover { border-color: var(--green-light); color: var(--green-deep); }
+  .fusion-link { display: block; width: 100%; margin-top: 8px; padding: 8px; border: none; background: transparent;
+    color: var(--ink-3); font-size: 13px; font-family: inherit; cursor: pointer; text-decoration: underline;
+    text-underline-offset: 3px; }
+  .fusion-link:hover { color: var(--green-deep); }
   .fusion-rec { margin-top: 14px; border: 1px solid var(--green-light, #CDE9DC); background: var(--green-50, #EAF6F0); border-radius: 12px; padding: 14px; }
   .fusion-rec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .fusion-rec-label { font-size: 12px; font-weight: 800; color: var(--green-deep); }
@@ -456,7 +453,6 @@
   .ck-rec-empty { color: var(--ink-3); font-size: 12.5px; }
   .ck-foot { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px; margin-top: 18px; }
   @media (max-width: 520px) {
-    .ck-goal { font-size: 17px; }
     .ck-micro { font-size: 16px; }
     .ck-txt { font-size: 13px; }
     .ck-rec { display: block; }
@@ -909,14 +905,10 @@ function renderPunch(){
   let html = '';
   html += projectNowLine();
 
-  // ① 任务头：要改变的那件事（常显）+ 一次性锚点提醒
-  html += `<div class="ck-head">
-      <div class="ck-eyebrow">每日改变${isGrad ? ' · 已走完' : ''}</div>
-      <div class="ck-goal" id="ckGoal">${escapeHtml(current.input || '')}</div>
-      <div class="ck-meta">
-        <span class="ck-anchor-tag">${anchor ? '锚点 · 在「' + escapeHtml(anchorText(anchor)) + '」之后做' : '到了那个时刻，就做那一小步'}</span>
-        <span class="ck-count">${isGrad ? ('已完成 ' + N + ' / ' + N + ' 天') : ('第 ' + curDay + ' / ' + N + ' 天 · 已完成 ' + total + ' 天')}</span>
-      </div>
+  // ① 锚点 + 天数：单行 meta（目标已在上方「正在改变」项目行显示，不重复；页签已标明每日改变）
+  html += `<div class="ck-meta-line">
+      <span class="ck-anchor-tag">${anchor ? '锚点 · 在「' + escapeHtml(anchorText(anchor)) + '」之后做' : '到了那个时刻，就做那一小步'}</span>
+      <span class="ck-count">${isGrad ? ('已完成 ' + N + ' / ' + N + ' 天') : ('第 ' + curDay + ' / ' + N + ' 天 · 已完成 ' + total + ' 天')}</span>
     </div>`;
 
   // ② 进度 + 衡量（让用户看见自己的改变在发生）
@@ -925,8 +917,8 @@ function renderPunch(){
   // 衡量行：不渲染「连续 N 天 / 进度百分比」这类假度量（漏一天无影响，且制造羞耻）。
   // 改为「第 N 天 + 离不用想就会做越来越近」的自动性方向感（Wendy Wood 自动性）。
   const measureTxt = isGrad
-    ? `整轮走完：完成 ${N} / ${N} 天（100%）${current.bestStreak ? ' · 最好连续 ' + current.bestStreak + ' 天' : ''}`
-    : `第 ${curDay} / ${N} 天 · 离「不用想就会做」越来越近`;
+    ? `整轮走完：完成 ${N} / ${N} 天${current.bestStreak ? ' · 最好连续 ' + current.bestStreak + ' 天' : ''}`
+    : `离「不用想就会做」越来越近`;
   html += `<div class="ck-prog" role="img" aria-label="${measureTxt}">${
     Array.from({ length: N }, (_, i) => {
       const d = i + 1;
@@ -992,9 +984,7 @@ function renderTodayCard(curDay, todayMicro, anchor, isTodayDone){
     const recMicro = microOfDay(dayOfRec);
     const txt = (rec.note || rec.output || '');
     return `<div class="ck-today-focus fusion-done" id="ckTodayFocus">
-      <div class="ck-tf-tag">今天 · Day ${dayOfRec} · ${done ? '已记录' : '今天没做到'}</div>
       <div class="ck-tf-micro">${escapeHtml(recMicro)}</div>
-      ${anchorTxt ? `<div class="ck-tf-anchor">接在「<b>${escapeHtml(anchorTxt)}</b>」之后</div>` : ''}
       <div class="fusion-rec" id="fusionRec">
         <div class="fusion-rec-head">
           <span class="fusion-rec-label">${done ? '今天做了什么' : '今天的情况'}</span>
@@ -1008,16 +998,11 @@ function renderTodayCard(curDay, todayMicro, anchor, isTodayDone){
   }
   // 未记录 → 自然语言输入为主（打卡降级为次要路径）
   return `<div class="ck-today-focus fusion-input" id="ckTodayFocus">
-    <div class="ck-tf-tag">今天 · Day ${curDay}</div>
     <div class="ck-tf-micro">${escapeHtml(todayMicro)}</div>
-    ${anchorTxt ? `<div class="ck-tf-anchor">接在「<b>${escapeHtml(anchorTxt)}</b>」之后。到了那个时刻，就做这一小步。</div>` : `<div class="ck-tf-anchor">到了那个时刻，就做这一小步。</div>`}
-    <div class="fusion-q">今天这件事，实际怎么样了？</div>
-    <textarea class="fusion-input" id="fusionInput" rows="3" maxlength="400" placeholder="用一句话说说：做到了 / 没做到 / 做到但很费劲……比如「没想就顺手做了」或「忘了，今天没做」"></textarea>
-    <button class="ck-do" id="fusionBtn" onclick="advanceFusion()">推进 →</button>
-    <div class="fusion-fallback">
-      <button type="button" class="fusion-fb" onclick="quickDone()">直接标记完成</button>
-      <button type="button" class="fusion-fb" onclick="showBlock()">今天没做到</button>
-    </div>
+    <div class="fusion-q">今天，这件事怎么样了？</div>
+    <textarea class="fusion-input" id="fusionInput" rows="3" maxlength="400" placeholder="一句话就够了。比如「没想就顺手做了」或「今天忘了」"></textarea>
+    <button class="ck-do" id="fusionBtn" onclick="advanceFusion()">推进</button>
+    <button type="button" class="fusion-link" onclick="showBlock()">今天没做到</button>
     <div class="ai-out-box" id="fusionOut"></div>
   </div>`;
 }
