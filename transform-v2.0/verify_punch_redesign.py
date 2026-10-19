@@ -60,9 +60,11 @@ async def main():
         has_focus = await pg.evaluate("() => !!document.querySelector('.ck-today-focus')")
         ok("执行态出现今天唯一焦点卡", has_focus)
 
-        # 焦点卡显示今天的小步 + 我做到了按钮
-        btn_txt = await pg.evaluate("() => (document.getElementById('ckDoBtn')||{}).textContent || ''")
-        ok("焦点卡有「我做到了」按钮", "我做到了" in btn_txt, f"btn={btn_txt!r}")
+        # 焦点卡以自然语言输入为主（不是打卡按钮）
+        has_input = await pg.evaluate("() => !!document.getElementById('fusionInput')")
+        ok("焦点卡以自然语言输入为主", has_input)
+        btn_txt = await pg.evaluate("() => (document.getElementById('fusionBtn')||{}).textContent || ''")
+        ok("焦点卡有「推进」按钮", "推进" in btn_txt, f"btn={btn_txt!r}")
 
         # 未来清单折叠
         rest_sum = await pg.evaluate("() => (document.querySelector('.ck-rest-sum')||{}).textContent || ''")
@@ -72,31 +74,33 @@ async def main():
         anchor_tag = await pg.evaluate("() => (document.querySelector('.ck-anchor-tag')||{}).textContent || ''")
         ok("锚点展示一次（任务头）", "锚点" in anchor_tag, f"tag={anchor_tag!r}")
 
-        # === 3. 轻认领流程 ===
-        await pg.evaluate("() => { document.getElementById('ckDoBtn').click(); }")
-        await pg.wait_for_timeout(200)
-        claim_visible = await pg.evaluate("() => { const c = document.getElementById('ckClaim'); return c && c.style.display === 'block'; }")
-        ok("点我做到了 → 弹轻确认", claim_visible)
-
-        guess = await pg.evaluate("() => (document.querySelector('.ck-claim-guess')||{}).textContent || ''")
-        ok("轻确认有系统猜测句", guess.strip() != "", f"guess={guess!r}")
-
-        # 点「对，就是这件事」
-        await pg.evaluate("() => { const b = [...document.querySelectorAll('.ck-claim-actions .ck-do')].find(x => x.textContent.includes('就是这件事')); if(b) b.click(); }")
+        # === 3. 自然语言推进（融合），不是勾选打卡 ===
+        await pg.evaluate("() => { document.getElementById('fusionInput').value = '今天顺手就做了，很自然'; }")
+        await pg.evaluate("() => { document.getElementById('fusionBtn').click(); }")
         await pg.wait_for_timeout(300)
 
-        # 验证完成已落库 + 焦点卡变成「今天已完成」
-        done_state = await pg.evaluate("() => { const c = document.querySelector('.ck-tf-done'); return c ? c.textContent : ''; }")
-        ok("完成后焦点卡变「今天已完成」", "今天已经完成" in done_state, f"done={done_state!r}")
-
+        # 验证记录已落库（done）且焦点卡回显 + 可改
         saved = await pg.evaluate("() => JSON.parse(localStorage.getItem('trf_actions') || '[]')")
-        ok("完成已写入日志", len(saved) == 1 and len(saved[0]['logs']) == 1 and saved[0]['logs'][0]['done'] == True,
+        ok("推进已写入日志(done)", len(saved) == 1 and len(saved[0]['logs']) == 1 and saved[0]['logs'][0]['done'] == True,
            f"logs={saved[0].get('logs') if saved else None}")
+        rec_label = await pg.evaluate("() => (document.querySelector('.fusion-rec-label')||{}).textContent || ''")
+        ok("完成后焦点卡回显「今天做了什么」", "今天做了什么" in rec_label, f"label={rec_label!r}")
+        edit_btn = await pg.evaluate("() => !!document.querySelector('.fusion-edit')")
+        ok("完成后可点「改一句」修订", edit_btn)
+        # 修订：点「改一句」→ 改文案 → 保存，确保同天不重复计数
+        await pg.evaluate("() => { document.querySelector('.fusion-edit').click(); }")
+        await pg.wait_for_timeout(150)
+        await pg.evaluate("() => { document.getElementById('fusionInput').value = '其实是有点费劲，但还是做了'; }")
+        await pg.evaluate("() => { document.getElementById('fusionBtn').click(); }")
+        await pg.wait_for_timeout(300)
+        saved2 = await pg.evaluate("() => JSON.parse(localStorage.getItem('trf_actions') || '[]')")
+        ok("修订后当天仍只有一条记录（不重复计数）", len(saved2) == 1 and len(saved2[0]['logs']) == 1,
+           f"logs={saved2[0].get('logs') if saved2 else None}")
 
         # === 3.5 行为改变旅程（David 六步对齐） ===
-        # ⑥ 进展衡量：连续天数 + 百分比
+        # ⑥ 进展衡量：改为自动性方向（不再用「连续 N 天/百分比」假度量）
         measure = await pg.evaluate("() => (document.querySelector('.ck-measure')||{}).textContent || ''")
-        ok("执行态有进展衡量行（连续/百分比）", "连续" in measure and "%" in measure, f"measure={measure!r}")
+        ok("衡量行改为自动性方向（无连续/百分比）", ("不用想就会做" in measure) and ("%" not in measure) and ("连续" not in measure), f"measure={measure!r}")
 
         # 执行态不再有「去完整行动页」出口（与底部「帮我改变」重复）
         body_all = await pg.evaluate("() => document.body.innerText")
