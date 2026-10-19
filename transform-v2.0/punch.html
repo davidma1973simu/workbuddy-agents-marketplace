@@ -220,6 +220,25 @@
   .sc-narrow-k { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
   .sc-narrow-v { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.5; }
   .sc-narrow-r { margin-top: 6px; font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+  /* ===== 三段式路线（把大目标拆成「看清→替代→焊入」一段路） ===== */
+  .sc-route { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 4px; }
+  .sc-route-step {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 16px; border-radius: 14px;
+    background: var(--surface); border: 1.5px solid var(--line);
+    font-size: 14px; line-height: 1.55;
+  }
+  .sc-route-step.first { background: var(--green-50); border-color: var(--green-light); }
+  .sc-route-no {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    background: var(--green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; margin-top: 1px;
+  }
+  .sc-route-step:not(.first) .sc-route-no { background: var(--surface); color: var(--green-deep); border: 1.5px solid var(--green); }
+  .sc-route-text { color: var(--ink); }
+  .sc-route-span { display: block; margin-top: 10px; font-size: 12.5px; color: var(--ink-3); }
+
   .sc-details {
     margin: 12px 0;
     background: var(--surface-2);
@@ -793,7 +812,7 @@ function toggleProjList(){
 function startNewGoal(){
   justDoneDay = 0;
   // 从今日打卡回到创建态：重置草稿与会话上下文，不清任何存档
-  draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], focus:'', focusReason:'', isComplex:false };
+  draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], route:[], focus:'', focusReason:'', isComplex:false };
   handoffInsight = ''; handoffNature = ''; handoffScenario = '';
   current = null;
   punchStep = 0; punchMaxReached = 0;
@@ -1325,7 +1344,7 @@ function localFailTip(reason){
 let handoffInsight = '';
 let handoffNature = '';
 let handoffScenario = '';
-let draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], focus:'', focusReason:'', isComplex:false };
+let draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], route:[], focus:'', focusReason:'', isComplex:false };
 
 /* ===================== 步骤条（已废弃：创建一屏完成） ===================== */
 let punchStep = 0, punchMaxReached = 0;
@@ -1449,7 +1468,7 @@ async function aiExperimentDraft(goal, lenHint, skipComplex){
   const complexityRule = skipComplex
     ? `\n目标已由洞察收窄为聚焦处境（skipComplex）：isComplex 恒为 false，直接围绕目标拆解，不做复杂度判断。`
     : `\n拆解前先判断一次目标的体量：\n- 若目标是**小而具体的行为**（如「每天早上一杯温水」「晚饭后拉伸 2 分钟」）→ isComplex=false，直接按目标拆。\n- 若目标是**宏大 / 抽象 / 长期 / 复合处境**（如「成为行业专家」「改善和家人关系」「培养表达能力」）→ isComplex=true，此时**不要直接拆大目标**：先把它收窄为「最近一周每天都能实验的一个具体处境」focus（一句话、可每天行动、30 秒能开个头、不靠他人），focusReason 用 ≤40 字说明为何这样收窄；随后 days / micro / steps / anchors 一律围绕 focus 展开，不要回到大目标。`;
-  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：构建一个行为实验草案。${lenRule}${complexityRule}\n\n关键要求（避免"愚蠢的社交行为清单"）：\n- 不要把目标拆成"向同事问好/分享/邀请喝咖啡/午餐社交"这类通用社交行为——除非目标本身明确是社交。\n- 拆解的方向应是**元能力 + 具体微行动**：\n  · 学习/研究：学一个具体的知识点、读一段文档、练习一个具体技能\n  · 创作/产出：写一段话、做一个小东西、记录一个观察\n  · 复盘/反思：写下今天的发现、对比预期与结果\n  · 习惯固化：把一件大事缩小到 30 秒内、与已有的日常动作挂钩\n- micro（今天的行动）必须是**用户自己一个人、在 30 秒内、不靠他人**就能完成的。\n- steps 是 micro 的 2-3 步子动作，每步 ≤10 字，顺序明确。\n- anchors 选用户最容易触发的那一刻（起床后/打开电脑/吃完饭/睡前），用"在____之后"格式。\n- days 每天一个渐进动作，Day 1 = micro。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","micro":"...","steps":["...","..."],"anchors":["在早上打开电脑之后","在午饭后","在晚上睡前"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：把目标拆成「一段路」（三段式，不是按天拆，也不是社交行为清单）。${lenRule}${complexityRule}\n\n核心：这是一个「把新行为焊进已有习惯」的融合产品。拆解要讲清三步：\n1. 看清这件事背后的空档/卡点（为什么现在做不到）\n2. 用一个能落地的小动作替代（一个人、30 秒能开头）\n3. 把它焊进一个已有的日常动作之后（借旧习惯带动它）\n\n关键要求：\n- route 必须是**恰好 3 段**，每段一句、≤18 字，对应上面三步，不要写成「向同事问好/社交」这类通用清单。\n- micro 是第 2 段的落地小动作，**用户自己一个人、30 秒内、不靠他人**能完成。\n- anchors 给 3 个「已有的日常动作」，用「在我____后」格式（如「在我早饭后」「在我刷完牙后」「在我进家门后」），是旧习惯不是时间段。\n- days 每天一个渐进动作，Day 1 = micro（保留兼容，不必逐字对应 route）。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","route":["...","...","..."],"micro":"...","steps":["...","..."],"anchors":["在我早饭后","在我刷完牙后","在我进家门后"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
   for (let attempt = 0; attempt < 3; attempt++){
     const aiResp = await aiCall(prompt);
     if (aiErr(aiResp)) return { data: null, error: aiResp };
@@ -1463,6 +1482,7 @@ async function aiExperimentDraft(goal, lenHint, skipComplex){
         data: {
           planLength: N,
           rationale: String(d.rationale || '').trim().slice(0, 120),
+          route: Array.isArray(d.route) ? d.route.map(x => String(x).trim().slice(0, 24)).filter(Boolean).slice(0, 3) : [],
           micro: d.micro.trim().slice(0, 60),
           steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
           anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
@@ -1488,6 +1508,7 @@ function applyDraft(d){
   draft.targetDays = d.planLength;
   draft.rationale = d.rationale;
   draft.anchors = d.anchors;
+  draft.route = d.route && d.route.length === 3 ? d.route : [];
   draft.focus = (d.focus || '').trim();
   draft.focusReason = (d.focusReason || '').trim();
   draft.isComplex = !!d.isComplex;
@@ -1496,54 +1517,47 @@ function applyDraft(d){
 function renderPlanDraft(){
   const area = $('punchArea');
   const N = draft.planLength || 7;
-  // 锚点默认选第一个（用户可改可不改——提示已存在，不强迫决策）
-  if (!draft.anchor && (draft.anchors && draft.anchors.length)) draft.anchor = draft.anchors[0];
-  // 7 天渐进路线（保留折叠）
-  const daysHtml = draft.days.map((d, i) => `
-    <div class="plan-day${i === 0 ? ' today' : ''}">
-      <span class="plan-day-label">Day ${i + 1}${i === 0 ? '（今天）' : ''}</span>
-      <span class="plan-day-text">${escapeHtml(d)}</span>
+  // 三段式路线：看清空档 → 替代动作 → 焊进生活（路由由 draft.route 提供，缺省回退旧字段）
+  const route = (draft.route && draft.route.length === 3)
+    ? draft.route
+    : [
+        (draft.focus ? '看清「' + draft.focus + '」背后的空档' : '看清这件事背后的空档'),
+        (draft.micro || '先做一件能落地的小动作'),
+        '把它焊进你每天已经自动在做的事'
+      ];
+  const routeHtml = route.map((t, i) => `
+    <div class="sc-route-step${i === 0 ? ' first' : ''}">
+      <span class="sc-route-no">${i + 1}</span>
+      <span class="sc-route-text">${escapeHtml(t)}</span>
     </div>
   `).join('');
-  // 锚点 chips（复用 renderTodayDraft 的交互：pickAnchorChip / useCustomAnchor / updateStageConfirmBtn）
-  const anchors = (draft.anchors && draft.anchors.length) ? draft.anchors : ['在我早上拿起手机之后', '在我吃完午饭后', '在我晚上睡前'];
+  // 锚点：用户自己定义为主，chips 只作提示（默认不选，等用户写/点）
+  const anchors = (draft.anchors && draft.anchors.length) ? draft.anchors : ['在我早饭后', '在我刷完牙后', '在我进家门后'];
   if (!draft.anchors || !draft.anchors.length) draft.anchors = anchors;
   const anchorBtns = anchors.map((a, i) => `
     <button type="button" class="anchor-key${draft.anchor === a ? ' sel' : ''}" onclick="pickAnchorChip(${i})" data-a="${escapeHtml(a)}">${escapeHtml(a)}</button>
   `).join('');
   const rawGoal = draft.rawGoal || draft.goal || '';
-  const narrowed = draft.isComplex && draft.focus;
+  const spanText = (N >= 21) ? '21 天' : (N >= 14 ? '14 天' : (N >= 3 ? N + ' 天' : '几天'));
   area.innerHTML = `
     <div class="suggest-card">
-      <div class="sc-tag">拆解完成 · ${N} 天行为实验</div>
-      <div class="sc-title">把「${escapeHtml(rawGoal.length > 14 ? rawGoal.slice(0, 14) + '…' : rawGoal)}」拆成了每天可做的小行为</div>
-      ${narrowed ? `
-        <div class="sc-narrow">
-          <div class="sc-narrow-row"><span class="sc-narrow-k">这个目标有点大，先聚焦</span></div>
-          <div class="sc-narrow-v">${escapeHtml(draft.focus)}</div>
-          ${draft.focusReason ? `<div class="sc-narrow-r">${escapeHtml(draft.focusReason)}</div>` : ''}
-        </div>` : ''}
-      ${draft.rationale ? `<div class="sc-rationale">${escapeHtml(draft.rationale)}</div>` : ''}
+      <div class="sc-tag">做得到 · 拆成一段路</div>
+      <div class="sc-title">「${escapeHtml(rawGoal.length > 14 ? rawGoal.slice(0, 14) + '…' : rawGoal)}」可以这样走</div>
+      <div class="sc-route">${routeHtml}</div>
+      <div class="sc-route-span">大概 ${spanText}，它会慢慢长成你生活的一部分。</div>
 
-      <div class="sc-field">今天的一小步（30 秒能完成）</div>
-      <div class="sc-micro-card">${escapeHtml(draft.micro)}</div>
-
-      <div class="sc-field">到了哪个时刻就做？</div>
+      <div class="sc-field">接在哪件旧习惯后面？</div>
+      <div class="anchor-custom" style="grid-column:auto;margin-top:4px;">
+        <input class="anchor-input" id="anchorCustomInput" placeholder="写一件每天自动做的事，如「早饭后」" maxlength="40">
+        <button type="button" class="anchor-submit" onclick="useCustomAnchor()">接上</button>
+      </div>
+      <div class="sc-hint" style="margin:8px 2px 4px;">已经有这样的事？点一个现成的：</div>
       <div class="anchor-grid" id="anchorGrid">
         ${anchorBtns}
-        <div class="anchor-custom">
-          <input class="anchor-input" id="anchorCustomInput" placeholder="自定义锚点：在____之后" maxlength="40">
-          <button type="button" class="anchor-submit" onclick="useCustomAnchor()">使用这个</button>
-        </div>
       </div>
-      <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '这 ' + N + ' 天都在「<b>' + escapeHtml(anchorText(draft.anchor)) + '</b>」之后做。到点就做，不用想。' : '选一个时刻，让这 ' + N + ' 天自动发生。'}</div>
+      <div class="anchor-feedback" id="anchorFeedback">${draft.anchor ? '这 ' + N + ' 天都在「<b>' + escapeHtml(anchorText(draft.anchor)) + '</b>」之后做。到点就做，不用想。' : '把它接在一件你已经会自动做的事后面，它会跟着一起长。'}</div>
 
-      <details class="sc-details">
-        <summary>查看 ${N} 天渐进路线（Day 1–${N}）</summary>
-        <div class="plan-list" style="margin-top:10px;">${daysHtml}</div>
-      </details>
-
-      <button class="cta-confirm" id="stageConfirmBtn" onclick="startExperiment()" ${draft.anchor ? '' : 'disabled'}>就这样开始，今天做第一步 →</button>
+      <button class="cta-confirm" id="stageConfirmBtn" onclick="startExperiment()" ${draft.anchor ? '' : 'disabled'}>就这样开始 →</button>
       <div class="ai-out-box" id="aiOut"></div>
     </div>`;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1558,7 +1572,7 @@ function updateStageConfirmBtn(){
   const canConfirm = !!draft.anchor;
   const btn = $('stageConfirmBtn'); if (!btn) return;
   btn.disabled = !canConfirm;
-  btn.textContent = canConfirm ? ('开始这 ' + (draft.planLength || 7) + ' 天的改变 →') : '先选一个触发时刻';
+  btn.textContent = canConfirm ? '就这样开始 →' : '先把新行为接在一件旧习惯后面';
 }
 
 function pickAnchorChip(i){
@@ -1642,7 +1656,7 @@ async function createExperiment(identity){
     scenario: handoffScenario || '',
   };
   persistAction();
-  draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], focus:'', focusReason:'', isComplex:false };
+  draft = { goal:'', rawGoal:'', micro:'', steps:[], seconds:30, anchor:'', identity:'', days:[], planLength:7, targetDays:7, rationale:'', anchors:[], route:[], focus:'', focusReason:'', isComplex:false };
   renderPunchStepsBar();   // 已有进行中实验 → 清空步骤条，进入清单
   renderPunch();
 }

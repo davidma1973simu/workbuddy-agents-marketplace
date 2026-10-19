@@ -30,7 +30,7 @@ async def main():
         check("P2-3 punch 全新态无重复引导（不可达空态已删）", "还没有开始一次改变" not in body)
         check("P2-3 punch 全新态仍显示创建卡", "想改变什么" in body)
 
-        # P0-3：拆解卡上锚点自动选中后按钮立刻可用
+        # P0-3（已随新设计更新）：锚点改由用户单独定义，默认不自动选中，按钮禁用直到用户定义
         await pg.evaluate("""() => {
           draft.goal = '测试目标';
           draft.rawGoal = '测试目标';
@@ -38,7 +38,7 @@ async def main():
           draft.steps = ['子步骤一', '子步骤二'];
           draft.days = ['第一天动作', '第二天动作', '第三天动作'];
           draft.planLength = 7;
-          draft.anchors = ['在我早上拿起手机之后', '在我吃完午饭后'];
+          draft.anchors = ['在我早饭后', '在我刷完牙后'];
           draft.anchor = '';
           draft.rationale = '测试理由';
           renderPlanDraft();
@@ -47,10 +47,10 @@ async def main():
         btn_text = await pg.evaluate("() => (document.getElementById('stageConfirmBtn')||{}).textContent || ''")
         sel_count = await pg.evaluate("document.querySelectorAll('.anchor-key.sel').length")
         fb = await pg.evaluate("() => (document.getElementById('anchorFeedback')||{}).textContent || ''")
-        check("P0-3 自动选中锚点后按钮立即可用", btn_disabled is False, f"disabled={btn_disabled}")
-        check("P0-3 按钮文案为开始改变", "开始" in btn_text, btn_text)
-        check("P0-3 第一个锚点 chip 高亮", sel_count == 1, f"sel={sel_count}")
-        check("P0-3 反馈文案已更新", "之后做" in fb, fb)
+        check("P0-3 锚点未定义时按钮禁用（等用户单独定义）", btn_disabled is True, f"disabled={btn_disabled}")
+        check("P0-3 按钮文案为就这样开始", "就这样开始" in btn_text, btn_text)
+        check("P0-3 锚点不自动选中（0 个高亮）", sel_count == 0, f"sel={sel_count}")
+        check("P0-3 反馈文案提示接在旧习惯后", "接在" in fb, fb)
 
         # P1-7 punch：anchorText 剥离（含「我」）
         sa = await pg.evaluate("""() => [anchorText('在我早上拿起手机之后'), anchorText('在吃完午饭后'), anchorText('睡前')]""")

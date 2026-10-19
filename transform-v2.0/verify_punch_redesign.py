@@ -102,7 +102,7 @@ async def main():
         body_all = await pg.evaluate("() => document.body.innerText")
         ok("执行态无「去完整行动页」重复出口", "去完整行动页" not in body_all)
 
-        # ①③④ 拆解卡：大目标 → 聚焦 → 今天一小步 → 锚点 → 路线，一屏可见
+        # ①③④ 拆解卡：三段式路线（看清→替代→焊入）+ 锚点用户单独定义，一屏可见
         await pg.evaluate("""() => {
           draft.goal = '成为行业专家';
           draft.rawGoal = '成为行业专家';
@@ -110,22 +110,23 @@ async def main():
           draft.steps = ['打开文档', '读一段', '记一句'];
           draft.days = ['读一段行业文档', '写下一条收获', '对比昨天预期', '读一段行业文档', '写下一条收获', '对比昨天预期', '写下一条收获'];
           draft.planLength = 7;
-          draft.anchors = ['在我早上打开电脑之后', '在我吃完午饭后'];
+          draft.anchors = ['在我早饭后', '在我刷完牙后'];
           draft.anchor = '';
           draft.rationale = '先从每天 30 秒的输入开始';
+          draft.route = ['看清行业知识里的空档', '每天读一段行业文档', '焊进每天打开电脑之后'];
           draft.isComplex = true;
           draft.focus = '最近一周每天读一段行业文档';
           draft.focusReason = '大目标拆不到每天，先聚焦可每天动手的一件小事';
           renderPlanDraft();
         }""")
         await pg.wait_for_timeout(200)
-        narrow = await pg.evaluate("() => (document.querySelector('.sc-narrow-v')||{}).textContent || ''")
-        ok("拆解卡展示大目标收窄（聚焦处境）", "行业文档" in narrow, f"narrow={narrow!r}")
+        steps = await pg.evaluate("() => Array.from(document.querySelectorAll('.sc-route-step')).map(e => e.textContent)")
+        ok("拆解卡展示三段式路线（3 段）", len(steps) == 3, f"steps={steps!r}")
         title = await pg.evaluate("() => (document.querySelector('.sc-title')||{}).textContent || ''")
-        ok("拆解卡标题体现「拆成小行为」", "拆成" in title, f"title={title!r}")
+        ok("拆解卡标题体现「可以这样走」", "可以这样走" in title, f"title={title!r}")
         ok("拆解卡无「去完整行动页」", "去完整行动页" not in await pg.evaluate("() => document.body.innerText"))
-        btn_ok = await pg.evaluate("() => { const b = document.getElementById('stageConfirmBtn'); return b && !b.disabled; }")
-        ok("拆解卡锚点默认选中即开可点", btn_ok)
+        btn_ok = await pg.evaluate("() => { const b = document.getElementById('stageConfirmBtn'); return b && b.disabled; }")
+        ok("拆解卡锚点未定义时按钮禁用（等用户单独定义）", btn_ok)
 
         # === 4. 无 JS 错误 ===
         ok("全程无 JS 错误", len(errors) == 0, f"errors={errors}")
