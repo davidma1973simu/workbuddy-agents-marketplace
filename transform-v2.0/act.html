@@ -736,7 +736,7 @@
       <div class="card" style="text-align:center;padding:22px;">
         <div style="font-size:16px;font-weight:800;margin-bottom:6px;">行为实验完成，还有最后一步</div>
         <div style="font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:16px;">复盘五个问题，把这次改变存入你的「成长资产」（行为结果 · 新习惯）。</div>
-        <button class="btn btn-primary" onclick="showStage('reflection')">去复盘沉淀 · 产出 →</button>
+        <button class="btn btn-primary" onclick="showStage('reflection')">去改变归档 · 产出 →</button>
       </div>
     </div>
 
@@ -841,7 +841,7 @@
   <!-- 模块四：产出（毕业复盘沉淀，与 app.html 的「产出」步骤对应） -->
   <div id="stage-reflection" class="hidden">
     <div class="card">
-      <div class="badge" style="margin-bottom:10px;">产出 · 复盘沉淀</div>
+      <div class="badge" style="margin-bottom:10px;">产出 · 改变归档</div>
       <h2 style="font-size:24px;">把这次改变，存入你的「成长资产」</h2>
       <div class="sub" id="reflectContextB"></div>
       <div class="hint" style="margin-top:0;margin-bottom:16px;">
@@ -999,6 +999,8 @@ async function aiCall(prompt, attempt = 1){
 
 /* ===================== 流程控制 ===================== */
 function showStage(stage){
+  // 进入归档阶段前先渲染五问（所有入口统一走这里，避免「提前归档」等入口漏渲染导致问题卡为空）
+  if (stage === 'reflection' && current) renderReflection();
   ['input','decompose','anchor','dashboard','reflection'].forEach(s => {
     $('stage-' + s).classList.toggle('hidden', s !== stage);
   });
@@ -1474,8 +1476,12 @@ function renderReflection(){
   const qs = reflectQuestionsB(current);
   const saved = current.reflection || {};
   const hintStore = (current.reflectHints = current.reflectHints || {});
+  // 收割页面上未保存的输入，避免重复渲染时丢字（showStage 现在每次进入都会重渲染）
+  const unsaved = {};
+  document.querySelectorAll('#reflectBQList textarea').forEach(t => { if (t.value) unsaved[t.id] = t.value; });
   $('reflectBQList').innerHTML = qs.map((q, i) => {
-    const val = saved[q.k] ? escapeHtml(saved[q.k]) : '';
+    const id = 'reB' + q.k.charAt(0).toUpperCase() + q.k.slice(1);
+    const val = escapeHtml(saved[q.k] || unsaved[id] || '');
     const hint = hintStore[q.k] ? escapeHtml(hintStore[q.k]) : '';
     return `<div class="rq-card" data-k="${q.k}">
       <div class="rq-head">
@@ -1770,7 +1776,7 @@ function toggleTheme(){
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const OB_SLIDES = [
   { h: '从想明白，到真正改变', p: 'Transform 会陪你走完四步：拆解目标 → 行动锚定 → 每次反馈 → 改变归档。每一步只花几分钟。' },
-  { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：AI 帮你把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到后，拿到针对今天的反馈——庆祝、环境、外部支持；④ 改变归档：复盘沉淀，存进成长资产。' },
+  { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：AI 帮你把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到后，拿到针对今天的反馈——庆祝、环境、外部支持；④ 改变归档：把这次改变存进成长资产。' },
   { h: '你的改变会越积越厚', p: '每次完成，行为实验、连续天数、用行动证明的次数都会存进「成长资产 · 改变」。现在，从想改变的那件大事开始吧。' }
 ];
 let obIdx = 0;
