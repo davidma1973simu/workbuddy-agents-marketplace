@@ -1622,36 +1622,68 @@ async function aiExperimentDraft(goal, lenHint, skipComplex){
   const complexityRule = skipComplex
     ? `\n目标已由洞察收窄为聚焦处境（skipComplex）：isComplex 恒为 false，直接围绕目标拆解，不做复杂度判断。`
     : `\n拆解前先判断一次目标的体量：\n- 若目标是**小而具体的行为**（如「每天早上一杯温水」「晚饭后拉伸 2 分钟」）→ isComplex=false，直接按目标拆。\n- 若目标是**宏大 / 抽象 / 长期 / 复合处境**（如「成为行业专家」「改善和家人关系」「培养表达能力」）→ isComplex=true，此时**不要直接拆大目标**：先把它收窄为「最近一周每天都能实验的一个具体处境」focus（一句话、可每天行动、30 秒能开个头、不靠他人），focusReason 用 ≤40 字说明为何这样收窄；随后 days / micro / steps / anchors 一律围绕 focus 展开，不要回到大目标。`;
-  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：把目标拆成「一段路」（三段式，不是按天拆，也不是社交行为清单）。${lenRule}${complexityRule}\n\n核心：这是一个「把新行为焊进已有习惯」的融合产品。拆解要讲清三步：\n1. 看清这件事背后的空档/卡点（为什么现在做不到）\n2. 用一个能落地的小动作替代（一个人、30 秒能开头）\n3. 把它焊进一个已有的日常动作之后（借旧习惯带动它）\n\n关键要求：\n- route 必须是**恰好 3 段**，每段一句、≤18 字，对应上面三步，不要写成「向同事问好/社交」这类通用清单。\n- micro 是第 2 段的落地小动作，**用户自己一个人、30 秒内、不靠他人**能完成。\n- anchors 给 3 个「已有的日常动作」，用「在我____后」格式（如「在我早饭后」「在我刷完牙后」「在我进家门后」），是旧习惯不是时间段。\n- days 每天一个渐进动作，Day 1 = micro（保留兼容，不必逐字对应 route）。\n\n严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","route":["...","...","..."],"micro":"...","steps":["...","..."],"anchors":["在我早饭后","在我刷完牙后","在我进家门后"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  const prompt = `用户的改变目标：「${goal}」\n认知起点：本质「${handoffNature || '未提供'}」洞察「${handoffInsight || '未提供'}」\n\n任务：把目标拆成「一段路」（三段式）+ 一条 ${lenHint > 0 ? lenHint : 7} 天的微行为链。${lenRule}${complexityRule}\n\n═══ 三条铁律（违反任何一条即为无效拆解）═══\n\n【铁律一 · 主题相关性】每个微行为必须是目标领域里的**真实动作**，句中要出现目标指向的具体对象、工具或场景。禁止一切「万能元行为」——写便签、记卡点、自我提醒、复盘反思、深呼吸、给自己打气……这类行为套在任何目标上都成立，所以等于什么都没拆。\n  反例（目标「成为 WorkBuddy 高手」）：❌「在便签上写一句『我卡在：___』」——和 WorkBuddy 毫无关系，是无效拆解。\n  正例：✅「打开 WorkBuddy 的技能市场，把一个技能从头跑一遍」——动作和对象都长在目标上。\n\n【铁律二 · SMART 自检】每个微行为逐条过五关，不过关就重写：\n  S 具体：有明确的对象和动作，不能含糊；\n  M 可衡量：做完能明确回答「做没做到」；\n  A 可达成：一个人、30-60 秒内、不靠他人、零准备；\n  R 相关：直接推进主题本身，不是外围铺垫；\n  T 有时限：当天完成。\n\n【铁律三 · 行为链】days 不是 N 个孤立动作，是一条递进链：\n  Day 1 = 主题的最简单入门动作（= micro）；\n  之后每天在前一天的基础上**加深一步**（多用一个功能 / 多走一步 / 稍升一点难度），天数之间要有清晰的递进关系；\n  最后 1-2 天把前面练的整合成一个连贯动作；\n  严禁同义反复——「每天读一点」连说 7 天等于没拆。\n\nroute 也必须长在目标上：第 1 段点出这个目标卡在哪（要具体到这个目标的真实障碍），第 2 段给出替代动作方向，第 3 段说明焊进哪个日常场景。不要写「看清空档/替代动作/焊进生活」这种对任何目标都成立的空话。\n\n其他要求：\n- anchors 给 3 个「已有的日常动作」，用「在我____后」格式（如「在我早饭后」「在我刷完牙后」「在我进家门后」），是旧习惯不是时间段。\n- 严格按 JSON 输出：\n{"planLength":7,"rationale":"...","isComplex":false,"focus":"","focusReason":"","route":["...","...","..."],"micro":"...","steps":["...","..."],"anchors":["在我早饭后","在我刷完牙后","在我进家门后"],"days":[{"day":1,"micro":"..."},...,{"day":N,"micro":"..."}]}`;
+  // 本地质检：拆解质量问题清单（空=通过）
+  function qualityIssues(d, goal){
+    const issues = [];
+    const g = String(goal || '');
+    const days = (Array.isArray(d.days) ? d.days : []).map(x => String((x && x.micro) || x || '').trim()).filter(Boolean);
+    const all = [String(d.micro || '').trim()].concat(days).filter(Boolean);
+    // 1. 同义反复：去重后剩得太少（≤60% 视为换皮重复）
+    const uniq = new Set(all.map(s => s.replace(/\s/g, '')));
+    if (all.length >= 4 && uniq.size < Math.ceil(all.length * 0.6)) issues.push('多个天的微行为是同义反复（换个说法重复同一个动作）');
+    // 2. 万能元行为：句中出现通用词，而目标本身不含该词
+    const genericWords = ['便签', '卡在：', '记录卡点', '提醒自己', '给自己打气', '深呼吸', '冥想'];
+    const hit = all.find(s => genericWords.some(w => s.indexOf(w) >= 0 && g.indexOf(w.replace(/[：，。]/g, '')) < 0));
+    if (hit) issues.push('微行为「' + hit.slice(0, 20) + '」是与目标无关的万能元行为（写便签/记录/自我提醒类），必须换成目标领域里的真实动作');
+    // 3. 路线空话：route 全是对任何目标都成立的话
+    if (Array.isArray(d.route) && d.route.length === 3){
+      const emptyRoute = ['看清空档', '替代动作', '焊进生活', '看清这件事', '落地的小动作'];
+      if (d.route.every(t => emptyRoute.some(w => String(t).indexOf(w) >= 0))) issues.push('route 是对任何目标都成立的空话，必须长在目标本身上');
+    }
+    return issues;
+  }
+  let lastIssues = [];
+  let lastDetail = '';
   for (let attempt = 0; attempt < 3; attempt++){
-    const aiResp = await aiCall(prompt);
+    const aiResp = await aiCall(prompt + (attempt > 0 && lastIssues.length ? '\n\n⚠️ 你上一次的输出有以下质量问题，必须修正后重新输出：\n- ' + lastIssues.join('\n- ') : ''));
     if (aiErr(aiResp)) return { data: null, error: aiResp };
     const r = aiText(aiResp);
     const d = parseJSON(r);
     if (d && d.micro && d.micro.trim() && Array.isArray(d.days)){
-      const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
-      const focusTxt = String(d.focus || '').trim();
-      const isComplex = skipComplex ? false : !!(d.isComplex && focusTxt);
-      return {
-        data: {
-          planLength: N,
-          rationale: String(d.rationale || '').trim().slice(0, 120),
-          route: Array.isArray(d.route) ? d.route.map(x => String(x).trim().slice(0, 24)).filter(Boolean).slice(0, 3) : [],
-          micro: d.micro.trim().slice(0, 60),
-          steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
-          anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
-          days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N),
-          isComplex,
-          focus: focusTxt.slice(0, 60),
-          focusReason: String(d.focusReason || '').trim().slice(0, 60)
-        },
-        error: null
-      };
+      const issues = qualityIssues(d, goal);
+      if (!issues.length){
+        const N = [1,3,7,14,30].includes(parseInt(d.planLength)) ? parseInt(d.planLength) : d.days.length;
+        const focusTxt = String(d.focus || '').trim();
+        const isComplex = skipComplex ? false : !!(d.isComplex && focusTxt);
+        return {
+          data: {
+            planLength: N,
+            rationale: String(d.rationale || '').trim().slice(0, 120),
+            route: Array.isArray(d.route) ? d.route.map(x => String(x).trim().slice(0, 24)).filter(Boolean).slice(0, 3) : [],
+            micro: d.micro.trim().slice(0, 60),
+            steps: Array.isArray(d.steps) ? d.steps.map(x => String(x).trim().slice(0, 20)).filter(Boolean).slice(0, 3) : [],
+            anchors: Array.isArray(d.anchors) ? d.anchors.map(x => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 3) : [],
+            days: d.days.map(x => String(x.micro || '').trim().slice(0, 60)).filter(Boolean).slice(0, N),
+            isComplex,
+            focus: focusTxt.slice(0, 60),
+            focusReason: String(d.focusReason || '').trim().slice(0, 60)
+          },
+          error: null
+        };
+      }
+      // 质量不过关：记住问题，下一轮喂回给模型
+      lastIssues = issues;
+      lastDetail = r || '(空响应)';
+      continue;
     }
-    // 失败：把原始响应带回去（最后一次）
-    var lastErr = { kind: 'PARSE', msg: 'AI 返回的内容 3 次都解析失败', detail: r || '(空响应)' };
+    // 解析失败：把原始响应带回去（最后一次）
+    lastDetail = r || '(空响应)';
   }
-  return { data: null, error: lastErr };
+  if (lastIssues.length){
+    return { data: null, error: { kind: 'QUALITY', msg: '拆了 3 次都没达标（' + lastIssues[0] + '），请重试一次', detail: lastDetail } };
+  }
+  return { data: null, error: { kind: 'PARSE', msg: 'AI 返回的内容 3 次都解析失败', detail: lastDetail } };
 }
 
 function applyDraft(d){

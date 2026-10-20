@@ -204,6 +204,16 @@
   .day-sub textarea { min-height: 64px; font-size: 14px; background: var(--surface); }
   .day-sub .lbl { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; display: block; }
   .day-warn { color: var(--coral); font-size: 12.5px; margin-top: 6px; display: none; }
+  .day-edit-area { margin-top: 2px; }
+  .day-micro-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .day-micro { font-size: 15px; font-weight: 600; line-height: 1.5; flex: 1; }
+  .day-sec-val { font-weight: 700; color: var(--ink); }
+  .day-revise { flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: var(--green); background: var(--green-soft); border: 1px solid var(--green); border-radius: 999px; padding: 6px 15px; cursor: pointer; font-family: inherit; transition: all .2s; }
+  .day-revise:hover { background: var(--green); color: #fff; }
+  .day-revise.saving { color: #fff; background: var(--green); }
+  .day-revise.saving:hover { background: var(--green-deep); }
+  .day-micro-edit { width: 100%; padding: 11px 13px; border: 1.5px solid var(--green); border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; background: var(--surface); color: var(--ink); outline: none; }
+  .day-edit-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
 
   /* 进度 */
   .progress { margin-top: 4px; }
@@ -367,75 +377,79 @@
   .tb-theme { padding: 9px 12px !important; }
   .tb-theme .t-light, .tb-theme .t-dark { font-size: 15px; line-height: 1; }
 
-  /* 步骤条（桌面端垂直 / 移动端水平） */
-  .path { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; position: relative; }
+  /* 路径式步骤条（与「帮我洞察」app.html 完全一致的形态：移动端水平条 / 桌面端左栏 rail） */
+  .path { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 30px; position: relative; }
   .path::before {
-    content: ''; position: absolute; left: 0; right: 0; top: 14px; height: 2px;
-    background: var(--line); z-index: 0;
+    content: ''; position: absolute; top: 16px; left: 9%; right: 9%;
+    height: 2px; background: var(--line); border-radius: 2px;
   }
   .path::after {
-    content: ''; position: absolute; left: 0; top: 14px; height: 2px; width: 0;
-    background: var(--green); z-index: 0;
-    transition: width .5s cubic-bezier(.16,1,.3,1);
+    content: ''; position: absolute; top: 16px; left: 9%;
+    height: 2px; background: var(--green); border-radius: 2px;
+    transition: width .5s cubic-bezier(.16,1,.3,1); width: 0;
   }
-  .path[data-progress="2"]::after { width: 33%; }
-  .path[data-progress="3"]::after { width: 66%; }
-  .path[data-progress="4"]::after { width: 100%; }
-  .p-node { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; cursor: default; }
+  .path[data-progress="1"]::after { width: 22%; }
+  .path[data-progress="2"]::after { width: 49%; }
+  .path[data-progress="3"]::after { width: 76%; }
+  .path[data-progress="4"]::after { width: 82%; }
+  .p-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 1; width: 56px; }
   .p-dot {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: var(--surface); border: 2px solid var(--line); color: var(--ink-3);
-    display: inline-flex; align-items: center; justify-content: center; font-size: 13px;
-    transition: all .25s;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--surface); border: 2.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .4s cubic-bezier(.16,1,.3,1);
   }
-  .p-node.active .p-dot { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 0 0 5px rgba(29,158,117,.15); }
-  /* 已完成：弱化（浅绿描边 + 浅绿底 + 中心勾），而非深色实心圆 */
-  .p-node.done { cursor: pointer; }
-  .p-node.done .p-dot {
-    background: var(--green-soft); border-color: var(--green); color: var(--green);
-    font-weight: 800;
+  @media (min-width: 1024px) {
+    .p-dot { width: 40px; height: 40px; }
+    .p-node .p-label { font-size: 13px; }
+    .path::before, .path::after { top: 19px; height: 3px; }
   }
-  .p-node.done .p-dot svg { display: none; }
-  .p-node:hover:not(.active) .p-dot { transform: scale(1.07); }
-  /* 未到达：明显低饱和，避免与 active 视觉撞车 */
-  .p-node.pending { cursor: default; }
-  .p-node.pending .p-dot {
-    background: transparent; color: var(--ink-3);
-    border-color: var(--line-2); border-style: dashed;
-    box-shadow: none;
-  }
-  .p-node.pending .p-dot svg { opacity: .45; }
-  .p-node.pending .p-label { color: var(--ink-3); font-weight: 500; }
-  .p-node .p-label { font-size: 12.5px; color: var(--ink-3); font-weight: 500; white-space: nowrap; }
-  .p-node.active .p-label { color: var(--green-deep); font-weight: 700; }
-  .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
+  .p-node.active .p-dot { border-color: var(--green); background: var(--green-soft); box-shadow: 0 0 0 5px rgba(29,158,117,.12); }
+  .p-node.done .p-dot { background: var(--green); border-color: var(--green); }
+  .p-node .p-label { font-size: 12px; color: var(--ink-3); transition: color .3s; white-space: nowrap; }
+  .p-node.active .p-label { color: var(--green-deep); font-weight: 600; }
+  .p-node.done .p-label { color: var(--ink-2); }
+  /* 已到达节点变可点击（与 app 一致） */
+  .p-node.active, .p-node.done { cursor: pointer; transition: transform .2s; }
+  .p-node.active:hover, .p-node.done:hover { transform: translateY(-2px); }
+  .p-node.active:hover .p-dot, .p-node.done:hover .p-dot { box-shadow: 0 0 0 6px rgba(29,158,117,.18); }
+  .p-node.disabled { cursor: not-allowed; opacity: .55; }
+  .p-node button { all: unset; cursor: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 
-  /* 桌面端三栏 */
+  /* 桌面端：左侧 rail + 主面板 + 右侧栏（三栏，左栏 rail 形态与 app 完全一致） */
   .app-aside { display: none; }
   @media (min-width: 900px) {
-    .wrap { max-width: 1280px; display: grid; grid-template-columns: 130px minmax(0, 1fr) 280px; gap: 22px; align-items: start; padding-top: 24px; }
+    .wrap { max-width: 1280px; display: grid; grid-template-columns: 120px minmax(0, 1fr) 280px; gap: 18px; align-items: start; padding-top: 20px; }
     .topbar { grid-column: 1 / -1; margin-bottom: 14px; }
-    .path { grid-column: 1; grid-row: 2; flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 0; padding-top: 6px; position: sticky; top: 20px; align-self: start; }
-    .path::before { top: 18px; bottom: 18px; left: 19px; right: auto; width: 2px; height: auto; }
-    .path::after { top: 18px; left: 19px; width: 2px; height: 0; }
-    .path[data-progress="2"]::after { height: 33%; }
-    .path[data-progress="3"]::after { height: 66%; }
-    .path[data-progress="4"]::after { height: 100%; }
-    .p-node { flex-direction: row; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 10px; transition: background .2s; }
+    .path {
+      grid-column: 1; grid-row: 2;
+      flex-direction: column; align-items: stretch; gap: 4px;
+      margin-bottom: 0; padding-top: 6px;
+      position: sticky; top: 20px; align-self: start;
+    }
+    .path::before { top: 18px; bottom: 18px; left: 15px; right: auto; width: 2px; height: auto; }
+    .path::after { top: 18px; bottom: auto; left: 15px; right: auto; width: 2px; height: 0; transition: height .5s cubic-bezier(.16,1,.3,1); }
+    .path[data-progress="1"]::after { height: 0; }
+    .path[data-progress="2"]::after { height: 26%; }
+    .path[data-progress="3"]::after { height: 60%; }
+    .path[data-progress="4"]::after { height: 88%; }
+    .p-node { flex-direction: row; align-items: center; gap: 10px; width: auto; padding: 7px 8px; border-radius: 10px; transition: background .2s; }
     .p-node.active { background: var(--green-soft); }
-    .p-node .p-label { font-size: 13.5px; }
-    .p-dot { width: 34px; height: 34px; }
+    .p-node .p-label { font-size: 13px; }
+    .p-dot { width: 32px; height: 32px; }
     .app-panel { grid-column: 2; grid-row: 2; min-width: 0; }
     .app-aside { display: block; grid-column: 3; grid-row: 2; position: sticky; top: 20px; align-self: start; }
-    .stepbar { display: none; } /* 桌面端隐藏原水平步骤条，用左侧 rail 替代 */
   }
   @media (min-width: 1100px) {
-    .wrap { grid-template-columns: 150px minmax(0, 1fr) 320px; gap: 32px; padding: 28px 32px 100px; }
+    .wrap { grid-template-columns: 140px minmax(0, 1fr) 320px; gap: 24px; }
     .p-node .p-label { font-size: 14px; }
     .p-dot { width: 36px; height: 36px; }
   }
   @media (min-width: 1280px) {
-    .wrap { grid-template-columns: 170px minmax(0, 1fr) 340px; gap: 40px; }
+    .wrap { grid-template-columns: 160px minmax(0, 1fr) 340px; gap: 32px; }
+  }
+  @media (min-width: 1400px) {
+    .wrap { gap: 40px; }
   }
 
   /* 右侧工具卡 */
@@ -536,8 +550,8 @@
   <!-- 初始输入页 -->
   <div id="stage-input">
     <div class="page-head">
-      <h1>从想明白，到真正发生</h1>
-      <p>遇到一个想改变的大问题？先定下要花多少天，把它拆成一段每天都能做的行为实验，再定下触发点、每天拿到反馈，慢慢变成习惯。</p>
+      <h1>靠自己难啃的大改变，这里帮你做到</h1>
+      <p>遇到一个靠自己很难坚持的大改变？把大目标交进来，AI 帮你把它拆成每天都能做的小行动；卡住时，再借助 AI 或专家的外部支持一步步克服困难。这正是「帮我改变」的意义——它不解决轻量习惯，而是真正难的事。</p>
     </div>
     <div class="card">
       <div id="insightContext" class="insight-context hidden">
@@ -549,7 +563,7 @@
       <textarea id="changeInput" placeholder="例如：&#10;• 我要实践掌握小红书运营&#10;• 我要养成每天阅读 30 分钟的习惯&#10;• 我想把『AI 时代要做整体架构』这个认知真正落地"></textarea>
       <div class="hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        把大问题写下来，下一步会按你设定的天数，把它拆成一段每天都能做的行为实验。
+        把大问题写下来，AI 会按你设定的天数，把它拆成一段每天都能做、且循序渐进逼近大目标的行为实验。
       </div>
 
       <label class="fld">你希望用多少天做到？</label>
@@ -1056,8 +1070,13 @@ function renderPlan(){
         <span class="day-num">第 ${d.day} 天${isToday?'<span class="tag">今天</span>':''}${isDone?'<span class="tag done">已做</span>':''}</span>
         <button class="day-break" onclick="toggleSub(${d.day})">再拆细</button>
       </div>
-      <input class="day-micro" value="${escapeHtml(d.micro)}" placeholder="今天的微行动…" oninput="onDayMicro(${d.day}, this.value)">
-      <div class="day-sec">预计 <input type="number" min="1" max="600" value="${d.seconds||30}" oninput="onDaySec(${d.day}, this.value)"> 秒（建议 ≤30）${(d.seconds>30 && !(d.sub&&d.sub.length))?'<span class="mini-hint" style="display:inline;color:var(--coral)">· 偏大，可再拆细</span>':''}</div>
+      <div class="day-edit-area" id="edit-${d.day}">
+        <div class="day-micro-row">
+          <div class="day-micro">${escapeHtml(d.micro)}</div>
+          <button class="day-revise" onclick="editDay(${d.day})">修订</button>
+        </div>
+        <div class="day-sec">预计 <span class="day-sec-val">${d.seconds||30}</span> 秒（建议 ≤30）${(d.seconds>30 && !(d.sub&&d.sub.length))?'<span class="mini-hint" style="display:inline;color:var(--coral)">· 偏大，可再拆细</span>':''}</div>
+      </div>
       ${subHtml}
     </div>`;
   }).join('');
@@ -1068,6 +1087,24 @@ function onDayMicro(day, val){
 }
 function onDaySec(day, val){
   const d = current.plan.find(p => p.day === day); if (d){ d.seconds = parseInt(val,10)||30; persistAction(); }
+}
+/* 拆分内容默认以文字呈现；点「修订」才进入可编辑态，点「完成」存回 */
+function editDay(day){
+  const area = $('edit-' + day);
+  const d = current.plan.find(p => p.day === day);
+  if (!area || !d) return;
+  area.innerHTML = `<input class="day-micro-edit" id="mEdit-${day}" value="${escapeHtml(d.micro)}" placeholder="今天的微行动…" oninput="onDayMicro(${day}, this.value)">
+    <div class="day-edit-foot">
+      <div class="day-sec">预计 <input type="number" min="1" max="600" value="${d.seconds||30}" oninput="onDaySec(${day}, this.value)"> 秒（建议 ≤30）</div>
+      <button class="day-revise saving" onclick="commitDay(${day})">完成</button>
+    </div>`;
+  const inp = $('mEdit-' + day);
+  if (inp){ inp.focus(); inp.select(); }
+}
+function commitDay(day){
+  const inp = $('mEdit-' + day);
+  if (inp) onDayMicro(day, inp.value);
+  renderPlan();
 }
 function toggleSub(day){
   const wrap = $('subwrap-' + day);
@@ -1093,46 +1130,74 @@ function onSubEdit(day, val){
   renderPlan();
 }
 
+function parseJSON(text){
+  if (text == null) return null;
+  let s = String(text).trim();
+  const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) s = fence[1].trim();
+  const start = s.search(/[[{]/);
+  const end = s.lastIndexOf('}') > s.lastIndexOf(']') ? s.lastIndexOf('}') : s.lastIndexOf(']');
+  if (start >= 0 && end > start){
+    try { return JSON.parse(s.slice(start, end + 1)); } catch(e){}
+  }
+  try { return JSON.parse(s); } catch(e){}
+  return null;
+}
+
 async function aiGeneratePlan(){
   const btn = $('aiPlanBtn'); btn.disabled = true; const orig = btn.innerHTML;
   btn.textContent = 'Transform 规划中…';
   const N = current.targetDays;
-  const map = {};
-  let prevCount = -1, safety = 0;
-  while (Object.keys(map).length < N && safety < 12){
-    safety++;
-    const count = Object.keys(map).length;
-    if (count === prevCount) break;
-    prevCount = count;
-    const start = count ? Math.max(...Object.values(map).map(d=>d.day)) + 1 : 1;
-    const end = Math.min(start + 14, N);
-    const summary = Object.values(map).slice(-6).map(d => `第${d.day}天:${d.micro}`).join('；') || '（无）';
-    const prompt = `用户的大目标：「${current.input}」，计划用 ${N} 天做到/掌握。\n已规划的前 ${count} 天：${summary}\n请继续规划第 ${start}–${end} 天，每天一个微行动，循序渐进、由小到大，每天动作小到容易启动（建议 30 秒内可完成）。\n每行格式：天数|微行动（简短，≤20字，不要标点结尾）。只输出这些行，不要解释。`;
-    const text = await aiCall(prompt);
-    if (text == null) break;
-    text.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line=>{
-      const m = line.split(/[|｜]/);
-      if (m.length >= 2){
-        const dn = parseInt(m[0].replace(/[^0-9]/g,''),10);
-        const micro = m.slice(1).join('|').trim().replace(/[。.]$/,'');
-        if (dn >= start && dn <= end && micro) map[dn] = { day: dn, micro, seconds: 30, sub: [], subDone: [] };
+  const goal = current.input;
+  const prompt = `用户的「大改变」目标：「${goal}」\n计划用 ${N} 天去做到 / 掌握 / 养成。这是一个需要外部帮助（AI 或专家）才能啃下来的困难改变，不是轻量习惯。\n\n请把它拆成一条 ${N} 天的微行为链：每天一个小到不可能失败的动作，连起来逐步逼近这个大目标。\n\n═══ 三条铁律（违反任何一条即为无效拆解）═══\n【铁律一 · 主题相关性】每个微行为必须是「${goal}」这个领域里的真实动作，句中要出现该目标指向的具体对象 / 工具 / 场景 / 人群。禁止一切「万能元行为」——写便签、记卡点、自我提醒、复盘反思、深呼吸、给自己打气……这类行为套在任何目标上都成立，等于什么都没拆。\n  反例（目标「成为 WorkBuddy 高手」）：❌「在便签上写一句『我卡在：___』」——和 WorkBuddy 毫无关系。\n  正例：✅「打开 WorkBuddy 的技能市场，把一个技能从头跑一遍」。\n【铁律二 · SMART 自检】每天动作逐条过五关，不过关重写：\n  S 具体：有明确对象和动作；\n  M 可衡量：做完能明确回答「做没做到」；\n  A 可达成：一个人、30-60 秒内、不靠他人、零准备即可开做；\n  R 相关：直接推进这个大目标本身，不是外围铺垫；\n  T 有时限：当天完成。\n【铁律三 · 行为链递进】days 不是 N 个孤立动作，是一条递进链：\n  Day 1 = 这个大目标的最简单入门动作（先摸到边）；\n  之后每天在前一天基础上加深一步（多学一点 / 多用一个功能 / 多走一步 / 稍升一点难度）；\n  最后 1-2 天把前面练的整合成一个连贯动作；\n  严禁同义反复——「每天学一点」连说 ${N} 天等于没拆。\n\n严格只输出 JSON，不要任何解释：\n{"days":[{"day":1,"micro":"第一天入门动作（≤20字）"},...,{"day":${N},"micro":"..."}]}`;
+
+  /* 本地质检：违反三铁律则把问题喂回模型重试 */
+  function qualityIssues(days, goal){
+    const issues = [];
+    const g = String(goal || '');
+    const all = (Array.isArray(days) ? days : []).map(x => String((x && x.micro) || '').trim()).filter(Boolean);
+    if (all.length < Math.max(2, Math.ceil(N * 0.7))) issues.push('生成的微行为数量不足（需覆盖大部分天数，才能形成完整的行为链）');
+    const uniq = new Set(all.map(s => s.replace(/\s/g, '')));
+    if (all.length >= 4 && uniq.size < Math.ceil(all.length * 0.6)) issues.push('多个天的微行为是同义反复（换个说法重复同一个动作），必须每天都有新进展');
+    const genericWords = ['便签', '卡在：', '记录卡点', '提醒自己', '给自己打气', '深呼吸', '冥想', '反思一下', '复盘一下'];
+    const hit = all.find(s => genericWords.some(w => s.indexOf(w) >= 0 && g.indexOf(w.replace(/[：，。]/g, '')) < 0));
+    if (hit) issues.push('微行为「' + hit.slice(0, 20) + '」是与目标无关的万能元行为（写便签/自我提醒类），必须换成目标领域里的真实动作');
+    return issues;
+  }
+
+  let lastIssues = [], lastDetail = '';
+  for (let attempt = 0; attempt < 3; attempt++){
+    const text = await aiCall(prompt + (attempt > 0 && lastIssues.length ? '\n\n⚠️ 你上一次的输出有以下质量问题，必须修正后重新输出：\n- ' + lastIssues.join('\n- ') : ''));
+    if (text == null){ break; }
+    const d = parseJSON(text);
+    if (d && Array.isArray(d.days)){
+      const issues = qualityIssues(d.days, goal);
+      if (!issues.length){
+        const dayMap = {};
+        d.days.forEach(x => {
+          const dn = parseInt((x && x.day), 10);
+          const m = String((x && x.micro) || '').trim();
+          if (dn >= 1 && dn <= N && m) dayMap[dn] = m;
+        });
+        let filled = 0;
+        current.plan.forEach(p => { if (dayMap[p.day]){ p.micro = dayMap[p.day]; p.seconds = 30; filled++; } });
+        btn.disabled = false; btn.innerHTML = orig; renderPlan(); persistAction();
+        if (filled > 0){
+          $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 实验草稿</div>已为你排好 ${filled} 天的微行动（每天一个小到不可能失败的动作，连成一条逼近大目标的链）。可直接点「修订」调整，或把偏大的某天点「再拆细」。</div>`;
+          toast('已生成实验安排，确认后进入下一步');
+        } else {
+          $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 提示</div>没能自动生成，可手动在每天填写，或重试。</div>`;
+        }
+        return;
       }
-    });
+      lastIssues = issues; lastDetail = text || '(空响应)';
+    } else {
+      lastDetail = text || '(空响应)';
+    }
   }
-  // 写入 plan
-  let filled = 0;
-  current.plan.forEach(p => {
-    if (map[p.day]){ p.micro = map[p.day].micro; p.seconds = 30; filled++; }
-  });
   btn.disabled = false; btn.innerHTML = orig;
-  renderPlan();
-  persistAction();   // R-18：AI 排好的计划立刻落库，刷新不会丢
-  if (filled > 0){
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 实验草稿</div>已为你排好 ${filled} 天的微行动，可直接修改，或把偏大的某天点「再拆细」。</div>`;
-    toast('已生成实验安排，确认后进入下一步');
-  } else {
-    $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 提示</div>没能自动生成，可手动在每天的输入框填写，或重试。</div>`;
-  }
+  $('aiPlanResult').innerHTML = `<div class="ai-msg"><div class="ai-head">Transform · 提示</div>这次生成的计划没达到质量标准（${lastIssues[0] || '内容解析失败'}）。可换种说法重试，或直接手动在每天填写。</div>`;
+  toast('计划未达标，请手动修订或重试');
 }
 
 async function aiBreakDay(day){

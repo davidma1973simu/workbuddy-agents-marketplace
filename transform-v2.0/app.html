@@ -1740,10 +1740,23 @@
   .panel-redesign .field.plain > label { font-size: 16px; margin-bottom: 12px; }
   .panel-redesign .field-soft { font-weight: 400; font-style: normal; color: var(--ink-3); font-size: 12.5px; }
 
-  /* 复盘五问：同一张卡片内分题，紧凑而清晰的层级 */
-  .panel-redesign .reflect-q-row { margin-top: 18px; }
-  .panel-redesign .reflect-q-row:first-of-type { margin-top: 2px; }
-  .panel-redesign .reflect-q-row > .rq-label { display: block; font-size: 14px; font-weight: 600; color: var(--ink-2); margin-bottom: 8px; }
+  /* 复盘五问：每张独立卡片，问题长在本质/洞察上（非空泛通用问） */
+  .panel-redesign #reflectQList { display: grid; gap: 12px; }
+  .panel-redesign .rq-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 14px 16px;
+  }
+  .panel-redesign .rq-head { display: flex; gap: 11px; align-items: flex-start; }
+  .panel-redesign .rq-num {
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid rgba(14,107,80,.25);
+    font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .panel-redesign .rq-txt { flex: 1; min-width: 0; }
+  .panel-redesign .rq-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+  .panel-redesign .rq-hint { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin-top: 3px; }
+  .panel-redesign .rq-card .reflect-q { min-height: 56px; margin-top: 11px; }
 
   .panel-redesign textarea#scenario {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); min-height: 92px;
@@ -2570,7 +2583,7 @@
     <div class="panel panel-redesign" id="panel-4" style="display:none;">
       <header class="step-head">
         <h1>复盘 · 把这次想清楚，沉淀成认知资产</h1>
-        <p class="step-lead">五个问题想清楚，这次梳理才真正闭环——发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。AI 会用你的挑战与洞察帮你生成复盘草稿。</p>
+        <p class="step-lead">问题都来自你刚刚想出的本质和洞察——不问空话。一次想清楚一个，AI 会帮你生成草稿。</p>
       </header>
 
       <section class="field plain">
@@ -2583,28 +2596,8 @@
 
       <section class="field plain">
         <label>复盘五问</label>
-        <p class="field-hint">不赶时间，一次想清楚一个。</p>
-
-        <div class="reflect-q-row">
-          <span class="rq-label">发生了什么？</span>
-          <textarea id="reWhat" class="reflect-q" placeholder="例如：我把「…」这件事彻底想了一遍，分类时发现…"></textarea>
-        </div>
-        <div class="reflect-q-row">
-          <span class="rq-label">为什么？</span>
-          <textarea id="reWhy" class="reflect-q" placeholder="为什么会这样？我过去一直没想通的原因是什么？"></textarea>
-        </div>
-        <div class="reflect-q-row">
-          <span class="rq-label">学到了什么？</span>
-          <textarea id="reLearned" class="reflect-q" placeholder="这次梳理让我学到的最重要的一点是…"></textarea>
-        </div>
-        <div class="reflect-q-row">
-          <span class="rq-label">做了什么不同的？</span>
-          <textarea id="reDifferent" class="reflect-q" placeholder="和过去的我相比，这次的思考方式哪里不一样？"></textarea>
-        </div>
-        <div class="reflect-q-row">
-          <span class="rq-label">改变了什么？</span>
-          <textarea id="reChanged" class="reflect-q" placeholder="我的判断、情绪或对这件事的看法，发生了什么变化？"></textarea>
-        </div>
+        <p class="field-hint">每一问都长在这次的本质与洞察上。不赶时间，一次想清楚一个。</p>
+        <div id="reflectQList"></div>
 
         <div class="btn-row" style="justify-content:flex-start;margin-top:18px;">
           <button class="btn btn-ai" onclick="aiReflectA()">Transform帮我复盘</button>
@@ -4575,36 +4568,121 @@ function complete() {
 
 /* ============ Step 4 复盘（评估反馈段，闭合认知循环） ============ */
 let pendingSession = null;
+let reflectQuestions = [];   // 当前五问（动态生成，长在本质与洞察上）
 function openReflection(session){
   pendingSession = session;
+  // 导航修复：复盘不在左侧节点里，但要把全部节点标记为已完成，
+  // 并放行 appMaxStep，让用户可以随时点导航回退到前面任何一步
+  appMaxStep = Math.max(appMaxStep, 3);
+  state.step = 4;
   document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
   $('panel-4').style.display = 'block';
+  document.querySelectorAll('.p-node').forEach(s => { s.classList.add('done'); s.classList.remove('active'); });
+  $('stepsBar').dataset.progress = 4;
   $('reflectScenario').textContent = session.scenario || '这次挑战';
   const e = session.essence || {};
   $('reflectCore').innerHTML =
     (e.nature ? '<span><b>本质</b>' + escapeHtml(e.nature) + '</span>' : '') +
     (e.insight ? '<span><b>洞察</b>' + escapeHtml(e.insight) + '</span>' : '');
+  renderReflectQuestions(localReflectQuestions(session));
+  maybeAIQuestions(session);   // 有 Key 则异步升级为个性化提问（无 Key 保持本地模板，不阻塞）
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+/* 复盘五问 · 本地模板：每一问都嵌入本次 scenario / 本质 / 洞察，不问空话 */
+function localReflectQuestions(session){
+  const sc = (session.scenario || '').trim().slice(0, 22);
+  const nature = ((session.essence || {}).nature || '').trim().slice(0, 36);
+  const insight = ((session.essence || {}).insight || '').trim().slice(0, 36);
+  const q = [];
+  q.push({
+    t: sc ? '这次梳理「' + sc + '」，你想清楚了什么？' : '这次梳理，你想清楚了什么？',
+    h: '哪个瞬间你感觉「原来如此」？说清那个发现本身。',
+    p: '例如：我发现了…'
+  });
+  q.push({
+    t: nature ? ('过去为什么没想通？看到本质「' + nature + '」后哪里被纠正了？') : '过去为什么没想通？',
+    h: '过去你把它归因成什么？这个本质判断纠正了你的哪个旧归因？',
+    p: '例如：我一直以为是…其实是…'
+  });
+  q.push({
+    t: insight ? ('「' + insight + '」——这条洞察对你意味着什么？') : '这条新洞察，对你意味着什么？',
+    h: '它推翻或升级了你过去的哪个看法？',
+    p: '例如：它让我意识到…'
+  });
+  q.push({
+    t: '带着这条洞察，接下来会做得哪里不一样？',
+    h: '近处（这几天）和远处（这个阶段）各说一个具体改变。',
+    p: '例如：下次遇到…我会…'
+  });
+  q.push({
+    t: '把它浓缩成一句提醒自己的话？',
+    h: '一句话就够，放在你容易看到的地方。',
+    p: '例如：先问怕什么，再问缺什么。'
+  });
+  return q;
+}
+
+/* 渲染五问卡片（有答案时保留用户已填内容） */
+function renderReflectQuestions(list){
+  reflectQuestions = list;
+  const prev = (window.__reflectVals || []);
+  const box = $('reflectQList');
+  box.innerHTML = list.map((q, i) => `
+    <div class="rq-card">
+      <div class="rq-head">
+        <span class="rq-num">${i + 1}</span>
+        <div class="rq-txt">
+          <div class="rq-title">${escapeHtml(q.t)}</div>
+          <div class="rq-hint">${escapeHtml(q.h || '')}</div>
+        </div>
+      </div>
+      <textarea id="reQ${i}" class="reflect-q" placeholder="${escapeHtml(q.p || '')}">${escapeHtml(prev[i] || '')}</textarea>
+    </div>`).join('');
+  window.__reflectVals = prev.slice(0, list.length);
+}
+
+/* 有 AI：让 AI 长在本质/洞察上重新问这五问（用户已作答的题不动） */
+async function maybeAIQuestions(session){
+  const cfg = getAI();
+  if (!cfg.apiKey) return;
+  const e = session.essence || {};
+  const answered = [0,1,2,3,4].filter(i => { const ta = $('reQ'+i); return ta && ta.value.trim(); });
+  if (answered.length >= 3) return;   // 已答大半，不打扰
+  const prompt = '用户刚完成一次认知梳理，现在要复盘。请基于他的挑战、本质与洞察，生成 5 个**只属于他这个案例**的复盘问题（不要「发生了什么/为什么/学到了什么」这种对任何案例都成立的空泛问题；每个问题里要出现他案例中的具体内容）。\n挑战：' + (session.scenario || '未填') + '\n现象本质：' + (e.nature || '未填') + '\n新洞察：' + (e.insight || '未填') + '\n严格返回 JSON：{"q":[{"t":"问题（≤26字）","h":"一句提示（≤30字）"}]} 恰好 5 项。';
+  try {
+    const r = await aiCall(prompt);
+    const text = typeof r === 'string' ? r : (r && r.ok ? r.text : null);
+    if (!text) return;
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return;
+    const j = JSON.parse(m[0].replace(/```json|```/g, ''));
+    if (!Array.isArray(j.q) || j.q.length < 5) return;
+    const vals = [0,1,2,3,4].map(i => { const ta = $('reQ'+i); return ta ? ta.value : ''; });
+    const qs = j.q.slice(0, 5).map(x => ({ t: String(x.t || '').trim().slice(0, 40), h: String(x.h || '').trim().slice(0, 44), p: '例如：…' }));
+    if (qs.some(x => !x.t)) return;
+    window.__reflectVals = vals;
+    renderReflectQuestions(qs);
+  } catch(err) { /* 静默保持本地模板 */ }
+}
+
 async function aiReflectA(){
   const s = pendingSession; if (!s) return;
   const e = s.essence || {};
+  const qText = reflectQuestions.map((q, i) => (i + 1) + '. ' + q.t).join('\n');
   const prompt = '帮用户复盘一次认知梳理（Think Better 循环的末尾）。挑战：' + (s.scenario || '未填') +
     '\n现象本质：' + (e.nature || '未填') + '\n新洞察：' + (e.insight || '未填') +
     '\n期待身份：' + (s.identity || '未填') +
-    '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「我对这类问题的新认知框架」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","model":"…"}';
+    '\n请严格针对下面这 5 个问题，用第一人称各回答一句话（回答必须引用他的本质/洞察内容，不许空话）：\n' + qText +
+    '\n最后给一句「我对这类问题的新认知框架」。严格返回 JSON：{"a1":"…","a2":"…","a3":"…","a4":"…","a5":"…","model":"…"}';
   const text = await aiCall(prompt);
   const box = $('reReflectResult');
   if (!text) return;
   box.classList.remove('hidden');
   try {
     const j = JSON.parse(text.replace(/```json|```/g, '').trim());
-    $('reWhat').value = j.what || '';
-    $('reWhy').value = j.why || '';
-    $('reLearned').value = j.learned || '';
-    $('reDifferent').value = j.different || '';
-    $('reChanged').value = j.changed || '';
-    $('reModel').value = j.model || '';
+    [0,1,2,3,4].forEach(i => { const ta = $('reQ'+i); if (ta) ta.value = j['a' + (i+1)] || ta.value; });
+    $('reModel').value = j.model || $('reModel').value;
     box.classList.add('hidden');
     toast('已按你的复盘草稿填入，可再修改');
   } catch (err) {
@@ -4612,10 +4690,11 @@ async function aiReflectA(){
   }
 }
 function saveReflection(){
+  const answers = [0,1,2,3,4].map(i => { const ta = $('reQ'+i); return ta ? ta.value.trim() : ''; });
   const r = {
-    what: $('reWhat').value.trim(), why: $('reWhy').value.trim(),
-    learned: $('reLearned').value.trim(), different: $('reDifferent').value.trim(),
-    changed: $('reChanged').value.trim()
+    questions: reflectQuestions.map(q => q.t),
+    what: answers[0], why: answers[1], learned: answers[2],
+    different: answers[3], changed: answers[4]
   };
   const model = $('reModel').value.trim();
   if (!(r.what || r.why || r.learned || r.different || r.changed || model)){
