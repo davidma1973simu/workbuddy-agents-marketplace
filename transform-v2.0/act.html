@@ -138,6 +138,29 @@
   /* 复盘（评估反馈段） */
   .reflect-card h2 { font-size: 19px; }
   .reflect-q { min-height: 64px; }
+  /* 归档复盘：每张独立卡片，问题长在这次实验的真实数据上（与 app.html 复盘卡同款） */
+  #reflectBQList { display: grid; gap: 12px; }
+  .rq-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px 16px; }
+  .rq-head { display: flex; gap: 11px; align-items: flex-start; }
+  .rq-num {
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--green-soft); color: var(--green-deep); border: 1px solid rgba(14,107,80,.25);
+    font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .rq-txt { flex: 1; min-width: 0; }
+  .rq-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+  .rq-hint { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; margin-top: 3px; }
+  .rq-aihint { font-size: 12.5px; color: var(--green-deep); line-height: 1.5; margin-top: 5px; padding: 7px 10px; background: var(--green-soft); border-radius: 8px; }
+  .rq-aihint.hidden { display: none; }
+  .rq-hintbtn {
+    flex-shrink: 0; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+    padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink-2); transition: all .15s;
+  }
+  .rq-hintbtn:hover { border-color: var(--green); color: var(--green-deep); background: var(--green-soft); }
+  .rq-hintbtn:disabled { opacity: .55; cursor: default; }
+  .rq-card .reflect-q { min-height: 56px; margin-top: 11px; }
   .ai-out {
     margin: 12px 0; background: var(--green-soft); border: 1px solid rgba(29,158,117,.25);
     border-radius: var(--radius-md); padding: 12px 14px; font-size: 13.5px; line-height: 1.7;
@@ -259,11 +282,6 @@
   .reason:hover { border-color: var(--amber); background: var(--amber-soft); }
   .reason b { display: block; color: var(--ink); font-weight: 800; margin-bottom: 2px; }
 
-  .support-box { margin-top: 18px; }
-  .support-box .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .support-box .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--amber-soft); color: var(--amber); border-radius: 999px; padding: 7px 14px; font-size: 13.5px; font-weight: 600; }
-  .support-box .tag button { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: .7; }
-
   .plan-mini { margin-top: 18px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 16px 18px; }
   .plan-mini .pm-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
   .plan-mini .pm-hint { font-size: 12px; color: var(--ink-3); margin-top:-6px; margin-bottom: 10px; }
@@ -306,12 +324,20 @@
   .tf-stat b { font-size: 22px; font-weight: 800; color: var(--green-deep); line-height: 1; }
   .tf-stat em { font-size: 10px; color: var(--ink-3); font-style: normal; }
   .tf-sub { font-size: 12px; color: var(--ink-3); margin-top: 10px; }
-
-  .identity-vote { display: flex; align-items: center; gap: 12px; background: var(--green-soft); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 16px 18px; margin-top: 18px; }
-  .identity-vote .v-emoji { font-size: 22px; }
-  .identity-vote .v-text { flex: 1; }
-  .identity-vote .v-text b { color: var(--green); font-size: 16px; }
-  .identity-vote .v-count { font-size: 22px; font-weight: 800; color: var(--green); }
+  /* 反馈卡三维度：庆祝 / 环境 / 外部支持（左对齐，弱化装饰、突出内容） */
+  .tf-body, .tf-grid, .tf-item.tf-support { text-align: left; }
+  .tf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .tf-grid { grid-template-columns: 1fr; } }
+  .tf-item { background: rgba(255,255,255,.72); border: 1px solid var(--green-light); border-radius: var(--radius-md); padding: 11px 13px; }
+  .tf-k { font-size: 11.5px; font-weight: 800; color: var(--green-deep); letter-spacing: .5px; margin-bottom: 4px; }
+  .tf-v { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+  .tf-item.tf-support { margin-top: 0; }
+  .tf-support .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .tf-support .chip-row .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--amber-soft); color: var(--amber); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; }
+  .tf-support .chip-row .tag button { background: none; border: none; color: inherit; cursor: pointer; font-size: 13px; line-height: 1; padding: 0; opacity: .7; }
+  .tf-support-foot { display: flex; gap: 8px; margin-top: 9px; }
+  .tf-support-foot input[type="text"] { flex: 1; padding: 9px 12px; font-size: 13px; border-radius: 10px; }
+  .tf-support-foot .btn { padding: 9px 14px; font-size: 13px; flex-shrink: 0; }
 
   .hidden { display: none !important; }
 
@@ -493,6 +519,51 @@
   .onboard-foot { display: flex; padding: 8px 24px 22px; gap: 10px; }
   .onboard-foot .btn { flex: 1; }
 </style>
+<!-- World-Class UI Override · 与「帮我洞察」app.html 严格一致的左侧 rail 与栏宽 -->
+<style id="worldclass-css">
+  @media (min-width: 900px) {
+    .wrap { max-width: 1400px; grid-template-columns: 170px minmax(0, 1fr) 280px; gap: 32px; padding: 28px 32px 100px; }
+  }
+  @media (min-width: 1100px) { .wrap { grid-template-columns: 190px minmax(0, 1fr) 320px; gap: 40px; } }
+  @media (min-width: 1280px) { .wrap { grid-template-columns: 200px minmax(0, 1fr) 340px; gap: 48px; } }
+  @media (min-width: 1440px) { .wrap { grid-template-columns: 210px minmax(0, 1fr) 360px; gap: 56px; } }
+
+  /* 步骤条：去掉进度填充线，仅用节点状态表达进度（与 app 完全一致） */
+  .path::after { display: none; }
+  @media (min-width: 900px) {
+    .path { gap: 6px; padding-top: 10px; position: sticky; top: 28px; align-self: start; }
+    .path::before { top: 22px; bottom: 22px; left: 19px; width: 2px; background: var(--line); }
+    .p-node {
+      flex-direction: row; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 14px;
+      transition: background .2s var(--ease);
+      background: transparent;
+    }
+    .p-node:hover { background: transparent; }
+    .p-node.active { background: var(--green-soft); }
+    .p-node.active .p-dot {
+      border-color: var(--green); background: var(--green); color: #fff;
+      box-shadow: 0 0 0 5px rgba(29,158,117,.14);
+    }
+    /* 完成态：无背景，仅绿色对勾，降低视觉噪音 */
+    .p-node.done { background: transparent; }
+    .p-node.done .p-dot {
+      background: var(--surface); border-color: var(--green); color: var(--green);
+      position: relative;
+    }
+    .p-node.done .p-dot svg { display: none; }
+    .p-node.done .p-dot::after {
+      content: '✓'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+    }
+    .p-node .p-label { font-size: 14px; font-weight: 600; }
+    .p-node.active .p-label { font-weight: 700; }
+    .p-node.done .p-label { color: var(--ink-2); font-weight: 500; }
+    .p-dot { width: 40px; height: 40px; border-width: 2px; }
+    .p-dot svg { width: 16px; height: 16px; }
+  }
+</style>
 <script>
   (function(){
     try { if (localStorage.getItem('trf_theme') === 'dark') document.documentElement.setAttribute('data-theme','dark'); }
@@ -619,11 +690,11 @@
     </div>
   </div>
 
-  <!-- 模块二：行动锚定 -->
+  <!-- 模块二：行动锚定（只定一次锚点，与「每日改变」一致：绑在旧习惯上） -->
   <div id="stage-anchor" class="hidden">
     <div class="card">
-      <h2>定下触发点</h2>
-      <div class="sub">给整段行为实验一个稳定的触发点——每天到了那个时刻，就自动开始做「当天的行动」，不靠意志力。</div>
+      <h2>定下锚点</h2>
+      <div class="sub">只定一次，整段实验通用。把行动绑在一个你每天必然发生的旧习惯上——到了那个时刻，就自动开始做「当天的行动」，不靠意志力。</div>
 
       <label class="fld">稳定触发句式</label>
       <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:2;">
@@ -633,26 +704,11 @@
       </div>
       <button class="btn btn-ai" id="aiAnchorBtn" onclick="aiFindAnchor()" style="margin-top:14px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        帮我找触发点
+        帮我找锚点
       </button>
       <div id="aiAnchorResult"></div>
 
-      <div class="hint" style="margin-top:16px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        每天要做的微行动会随实验推进自动更新：
-      </div>
-      <div id="anchorTodayEcho" style="margin-top:10px;background:var(--green-50);border:1px solid var(--green-light);border-radius:var(--radius-md);padding:14px 16px;font-size:15px;color:var(--ink-2);font-weight:600;"></div>
-
-      <label class="fld">环境提示（可选）— 让环境替你记得</label>
-      <input type="text" id="reminderInput" placeholder="例如：把笔记本放在床头">
-
-      <label class="fld">庆祝动作（可选）— 做完给自己一个正反馈</label>
-      <input type="text" id="celebrationInput" placeholder="例如：对自己比个耶，说一句『又做到了』">
-
-      <div class="identity-vote">
-        <span class="v-emoji"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><circle cx="12" cy="12" r="8.6" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg></span>
-        <div class="v-text">身份：<b id="anchorIdentityEcho"></b></div>
-      </div>
+      <div class="hint" id="anchorTodayEcho" style="margin-top:16px;"></div>
 
       <div class="btn-row">
         <button class="btn btn-amber" onclick="doFirstTime()">
@@ -695,20 +751,43 @@
       </div>
     </div>
 
-    <!-- 「反馈强化」核心模块：每次「做完了」立刻出现的强化反馈 -->
+    <!-- 「反馈强化」核心模块：每次「做完了」立刻出现——不止打卡，而是针对今天的真实反馈与帮助 -->
     <div class="today-feedback hidden" id="todayFeedbackWrap">
       <div class="tf-card">
         <div class="tf-crown" id="tfCrown"><svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12.5l2.8 2.8L16 9.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="tf-title" id="tfTitle">第 X 天做到了！</div>
-        <div class="tf-body" id="tfBody">Transform 反馈一句话</div>
+        <div class="tf-body" id="tfBody"></div>
+
+        <div class="tf-grid">
+          <div class="tf-item">
+            <div class="tf-k">庆祝</div>
+            <div class="tf-v" id="tfCelebrate"></div>
+          </div>
+          <div class="tf-item">
+            <div class="tf-k">环境</div>
+            <div class="tf-v" id="tfEnv"></div>
+          </div>
+        </div>
+
+        <div class="tf-item tf-support">
+          <div class="tf-k">外部支持</div>
+          <div class="tf-v" id="tfSupport"></div>
+          <div class="chip-row" id="supportChips"></div>
+          <div id="aiSupportResult"></div>
+          <div class="tf-support-foot">
+            <input type="text" id="supportInput" placeholder="一个人 / 工具 / 信息源，回车添加">
+            <button class="btn btn-ai" id="aiSupportBtn" onclick="aiFindSupport()">找人支持</button>
+          </div>
+        </div>
+
         <div class="tf-stats">
           <div class="tf-stat"><span>连续</span><b id="tfStreak">0</b><em>天</em></div>
           <div class="tf-stat"><span>累计</span><b id="tfTotal">0</b><em>天</em></div>
           <div class="tf-stat"><span>证明身份</span><b id="tfVotes">+1</b><em>次</em></div>
         </div>
-        <div class="tf-sub" id="tfSub">明天我会看到今天的微行动被记录在左侧实验全景里。</div>
+        <div class="tf-sub" id="tfSub"></div>
         <div class="btn-row" style="justify-content:center;margin-top:14px;">
-          <button class="btn btn-ghost" onclick="hideTodayFeedback()">继续 → 看看明天的小事</button>
+          <button class="btn btn-ghost" onclick="hideTodayFeedback()">收下反馈 · 看看明天的小事</button>
         </div>
       </div>
     </div>
@@ -744,25 +823,7 @@
         </div>
       </div>
 
-      <!-- 身份强化 -->
-      <div class="identity-vote">
-        <span class="v-emoji"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><rect x="3" y="5" width="18" height="14" rx="2.2" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="11" r="2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 16.2c.6-1.3 1.7-2 3-2s2.4.7 3 2M14 10h4M14 13.5h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-        <div class="v-text">用行动证明：每完成一天，都是在证明「<b id="dashIdentity"></b>」</div>
-        <div class="v-count" id="dashVotes2">0</div>
-      </div>
-
-      <!-- 社会支持 -->
-      <div class="support-box">
-        <label class="fld" style="margin-top:22px;">社会支持 · 谁或什么能帮你</label>
-        <input type="text" id="supportInput" placeholder="输入一个人 / 工具 / 信息源，回车添加">
-        <div class="chip-row" id="supportChips"></div>
-        <div class="hint" style="margin-top:10px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          改变很少单独发生。把能支持你的人、工具或信息记下来。
-          <button class="btn btn-ai" id="aiSupportBtn" onclick="aiFindSupport()" style="margin-left:auto;">找人支持</button>
-        </div>
-        <div id="aiSupportResult"></div>
-      </div>
+      <!-- 已并入每次完成后的反馈卡（庆祝 / 环境 / 外部支持），不再作为常驻区块堆叠 -->
 
       <div class="plan-mini">
         <div class="pm-title">实验全景 · 点任一天可回看行动</div>
@@ -771,13 +832,8 @@
       </div>
 
       <div class="btn-row">
-        <a class="btn btn-primary" href="punch.html" style="text-decoration:none;background:linear-gradient(135deg, var(--green-deep), var(--green-3));">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          每日改变屏 →
-        </a>
-        <button class="btn btn-ghost" id="preArchiveBtn" onclick="showStage('reflection')">提前归档 →</button>
-        <a class="btn btn-ghost" href="behavior.html">查看改变</a>
         <button class="btn btn-ghost" onclick="goAnchor()">调整锚点</button>
+        <button class="btn btn-ghost" id="preArchiveBtn" onclick="showStage('reflection')">提前归档 →</button>
       </div>
     </div>
   </div>
@@ -790,26 +846,13 @@
       <div class="sub" id="reflectContextB"></div>
       <div class="hint" style="margin-top:0;margin-bottom:16px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        五个问题想清楚，这次行为实验才算真正结束：发生了什么，为什么，学到了什么，做了什么不同的，改变了什么。
+        五个问题都长在这次实验的真实经历上。答案自己写——卡住时点「给我提示」，AI 只帮你打开思路，不替你回答。
       </div>
-      <label class="fld">发生了什么？</label>
-      <textarea id="reBWhat" class="reflect-q" placeholder="例如：21 天里做到了 X 天，中途有 X 次没做到，第 X 天最吃力…"></textarea>
-      <label class="fld">为什么？</label>
-      <textarea id="reBWhy" class="reflect-q" placeholder="为什么这件事发生 / 没发生？阻力在哪里？"></textarea>
-      <label class="fld">学到了什么？</label>
-      <textarea id="reBLearned" class="reflect-q" placeholder="这次实验教会了我什么？"></textarea>
-      <label class="fld">做了什么不同的？</label>
-      <textarea id="reBDifferent" class="reflect-q" placeholder="和过去的我相比，这一次哪里不一样？"></textarea>
-      <label class="fld">改变了什么？</label>
-      <textarea id="reBChanged" class="reflect-q" placeholder="我的行为、习惯或对自己的看法，发生了什么变化？"></textarea>
-      <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
-        <button class="btn btn-ai" onclick="aiReflectB()">Transform 帮我复盘</button>
-      </div>
-      <div id="reBResultBox" class="ai-out hidden"></div>
-      <label class="fld">这次行为实验的结果是</label>
-      <textarea id="reBResultText" class="reflect-q" placeholder="用一句话总结行为改变的执行结果…"></textarea>
+      <div id="reflectBQList"></div>
+      <label class="fld" style="margin-top:20px;">这次行为实验的结果是（一句话）</label>
+      <textarea id="reBResultText" class="reflect-q" style="min-height:48px;" placeholder="例如：21 天里做到 18 天，行为链全部走完…"></textarea>
       <label class="fld">新的习惯，融入在哪一步？</label>
-      <textarea id="reBHabit" class="reflect-q" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
+      <textarea id="reBHabit" class="reflect-q" style="min-height:48px;" placeholder="例如：我把「晨间 3 个客户触点」融进了每天早上的固定流程，不再需要提醒。"></textarea>
       <div id="archiveSuccess" class="hidden" style="margin:8px 0 14px;background:var(--green-50);border:1px solid var(--green-light);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <span style="color:var(--green-deep);font-weight:700;font-size:14px;">已存入「成长资产 · 改变」</span>
         <a class="btn btn-primary" id="archiveGoBehavior" style="text-decoration:none;padding:8px 14px;font-size:13px;" href="behavior.html">查看改变 →</a>
@@ -1230,17 +1273,16 @@ function goAnchor(){
   showStage('anchor');
 }
 
-/* ===================== 模块二：行动锚定 ===================== */
+/* ===================== 模块二：行动锚定（只定一次锚点） ===================== */
 function renderAnchor(){
-  $('anchorIdentityEcho').textContent = current.identity || '（未填写）';
   if (current.anchor.after) $('anchorAfter').value = current.anchor.after;
-  if (current.reminder) $('reminderInput').value = current.reminder;
-  if (current.celebration) $('celebrationInput').value = current.celebration;
   renderAnchorToday();
 }
 function renderAnchorToday(){
   const today = current.plan.find(p => p.day === current.currentDay);
-  $('anchorTodayEcho').textContent = today ? ('第 ' + today.day + ' 天行动：' + (today.micro || '（待填）')) : '实验已全部排完';
+  $('anchorTodayEcho').textContent = today
+    ? ('到了锚点时刻就做 · 第 ' + today.day + ' 天行动：' + (today.micro || '（待填）'))
+    : '实验已全部排完';
 }
 
 async function aiFindAnchor(){
@@ -1259,9 +1301,6 @@ function doFirstTime(){
   const after = $('anchorAfter').value.trim();
   if (!after){ toast('先填稳定触发点'); return; }
   current.anchor = { after };
-  current.reminder = $('reminderInput').value.trim();
-  current.celebration = $('celebrationInput').value.trim();
-  if (!$('identityInput').value.trim() && !current.identity){ current.identity = $('identityInput').value.trim(); }
   current.stage = 'dashboard';
   logCompletion(true, 1, null, '');
   renderDashboard();
@@ -1330,7 +1369,7 @@ function renderDashboard(){
   $('dashPhase').textContent = phase;
   if (today){
     $('dashTiny').textContent = today.micro || '（待填）';
-    $('dashAnchor').textContent = (current.anchor.after ? '在我 ' + current.anchor.after + ' 之后，我就做这一天的行动。' : '') + (current.reminder ? ' 环境提示：' + current.reminder : '');
+    $('dashAnchor').textContent = current.anchor.after ? '在我 ' + current.anchor.after + ' 之后，我就做这一天的行动。' : '';
     renderSubSteps(today);
   } else {
     $('dashTiny').textContent = '实验已全部完成';
@@ -1340,12 +1379,10 @@ function renderDashboard(){
   // 统计
   $('dashStreak').textContent = current.streak || 0;
   $('dashTotal').textContent = current.totalDone || 0;
-  $('dashIdentity').textContent = current.identity || '（未填写）';
   const profile = loadProfile();
   const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
   const votes = stmt ? stmt.votes : 0;
   $('dashVotes').textContent = votes;
-  $('dashVotes2').textContent = votes;
   // 进度
   const pct = Math.round((current.totalDone / current.targetDays) * 100);
   $('progFill').style.width = pct + '%';
@@ -1398,43 +1435,97 @@ function updateDoneBtn(){
   } else { btn.disabled = false; btn.style.opacity = '1'; }
 }
 
-/* ============ 复盘（产出阶段 · 评估反馈段，闭合行为循环） ============ */
+/* ============ 复盘（产出阶段 · 评估反馈段，闭合行为循环） ============
+   问题全部长在这次实验的真实数据上（目标/天数/进度/锚点/卡点），不问空泛通用问；
+   AI 只按需给「提示」帮用户打开思路，绝不代填答案（支持，不替代）。 */
+const RE_FIELDS = ['what', 'why', 'learned', 'different', 'changed'];
+
+function reflectQuestionsB(c){
+  const goal = c.input || '这个改变';
+  const N = c.targetDays || 7;
+  const doneN = c.totalDone || 0;
+  const cur = Math.min(c.currentDay || doneN + 1, N);
+  const anchor = c.anchor && c.anchor.after ? c.anchor.after : null;
+  const missed = (c.logs || []).filter(l => !l.done).length;
+  const first = (c.plan && c.plan[0] && c.plan[0].micro) || '';
+  const last = (c.plan && c.plan[c.plan.length - 1] && c.plan[c.plan.length - 1].micro) || '';
+  return [
+    { k: 'what', t: '这次实验，实际发生了什么？',
+      h: '围绕「' + goal + '」：' + N + ' 天的行为链你走到了第 ' + cur + ' 天、做到 ' + doneN + ' 天' + (missed ? ('、有 ' + missed + ' 天没做到') : '') + '。哪一天最吃力？那天具体发生了什么？',
+      ph: '写事实，不写感想：第几天、做了什么、卡在哪…' },
+    { k: 'why', t: '为什么是这里最吃力？',
+      h: (anchor ? ('你的锚点是「在我 ' + anchor + ' 之后」。') : '') + '回头看：是锚点时刻被打断、行动本身偏大，还是有别的事把它挤掉了？',
+      ph: '找到真正的阻力，而不是「我不够自律」…' },
+    { k: 'learned', t: '这次实验让你对「' + goal + '」学到了什么？',
+      h: '从第 1 天「' + first + '」到最后一步「' + last + '」——哪一步比你想象的容易？哪一步比想象的难？这说明了什么？',
+      ph: '一条具体认识，而不是「贵在坚持」…' },
+    { k: 'different', t: '和实验前的自己相比，你做的最不一样的一件事是什么？',
+      h: '在「' + goal + '」这件事上，实验前的你遇到它会怎么办？现在的你怎么办？',
+      ph: '对比过去：以前…现在…' },
+    { k: 'changed', t: '「' + goal + '」接下来怎么继续？',
+      h: '如果用一句话告诉别人这件事现在进展到哪了，你会怎么说？未来 7 天，这条行为链的下一步是什么？',
+      ph: '现状一句话 + 下一步…' }
+  ];
+}
+
 function renderReflection(){
   if (!current) return;
   $('reflectContextB').textContent = '关于「' + current.input + '」的行为实验' + (current.insight ? '（基于洞察：' + current.insight.replace(/\n+/g, ' · ') + '）' : '');
-  // 已沉淀内容回填（不覆盖正在输入的内容）
-  if (current.reflection){
-    if (!$('reBWhat').value) $('reBWhat').value = current.reflection.what || '';
-    if (!$('reBWhy').value) $('reBWhy').value = current.reflection.why || '';
-    if (!$('reBLearned').value) $('reBLearned').value = current.reflection.learned || '';
-    if (!$('reBDifferent').value) $('reBDifferent').value = current.reflection.different || '';
-    if (!$('reBChanged').value) $('reBChanged').value = current.reflection.changed || '';
-    if (!$('reBResultText').value) $('reBResultText').value = current.result || '';
-    if (!$('reBHabit').value) $('reBHabit').value = current.habit || '';
-  }
+  const qs = reflectQuestionsB(current);
+  const saved = current.reflection || {};
+  const hintStore = (current.reflectHints = current.reflectHints || {});
+  $('reflectBQList').innerHTML = qs.map((q, i) => {
+    const val = saved[q.k] ? escapeHtml(saved[q.k]) : '';
+    const hint = hintStore[q.k] ? escapeHtml(hintStore[q.k]) : '';
+    return `<div class="rq-card" data-k="${q.k}">
+      <div class="rq-head">
+        <span class="rq-num">${i + 1}</span>
+        <div class="rq-txt">
+          <div class="rq-title">${escapeHtml(q.t)}</div>
+          <div class="rq-hint">${escapeHtml(q.h)}</div>
+          <div class="rq-aihint${hint ? '' : ' hidden'}">${hint}</div>
+        </div>
+        <button class="rq-hintbtn" onclick="hintReflectB(${i})">给我提示</button>
+      </div>
+      <textarea id="reB${q.k.charAt(0).toUpperCase() + q.k.slice(1)}" class="reflect-q" placeholder="${escapeHtml(q.ph)}">${val}</textarea>
+    </div>`;
+  }).join('');
+  // 结果/习惯回填（不覆盖正在输入的内容）
+  if (!$('reBResultText').value) $('reBResultText').value = current.result || '';
+  if (!$('reBHabit').value) $('reBHabit').value = current.habit || '';
 }
 
-async function aiReflectB(){
-  const box = $('reBResultBox');
-  const base = '帮用户复盘一次行为实验（每日改变）。目标/行为：' + current.input + (current.insight ? '\n认知起点（洞察）：' + current.insight.replace(/\n+/g, ' · ') : '') + '\n期待身份：' + (current.identity || '未填') + '\n请用第一人称，按五个问题各回答一句话：发生了什么？为什么？学到了什么？做了什么不同的？改变了什么？最后给一句「这次行为实验的结果」和一句「新的习惯融入日常的哪一步」。严格返回 JSON：{"what":"…","why":"…","learned":"…","different":"…","changed":"…","result":"…","habit":"…"}';
-  const text = await aiCall(base);
-  if (!text) return;
-  box.classList.remove('hidden');
+/* AI 提示：只给一句打开思路的追问/线索，绝不代写答案；无 AI 回退本地提示 */
+const LOCAL_REFLECT_HINTS = {
+  what: '先写数字和事实：第几天、做了/没做什么、当时在哪儿、在做什么之前。',
+  why: '把那天的过程倒放一遍：锚点时刻你人在哪？行动的第一步是什么挡住了？',
+  learned: '比较第 1 天和最后一天：同样这件事，哪次做得更顺？差别就是你学到的东西。',
+  different: '想想实验前的某一次类似场景，写「以前我会…，这次我…」。',
+  changed: '想象明天有人问起这件事，你一句话会怎么说？说完再加一句下一步。'
+};
+async function hintReflectB(i){
+  const qs = reflectQuestionsB(current);
+  const q = qs[i]; if (!q) return;
+  const card = document.querySelector('#reflectBQList .rq-card[data-k="' + q.k + '"]');
+  if (!card) return;
+  const box = card.querySelector('.rq-aihint');
+  const btn = card.querySelector('.rq-hintbtn');
+  btn.disabled = true; const orig = btn.textContent; btn.textContent = '想提示中…';
+  let hint = LOCAL_REFLECT_HINTS[q.k] || '';
   try {
-    const j = JSON.parse(text.replace(/```json|```/g, '').trim());
-    if (!$('reBWhat').value) $('reBWhat').value = j.what || '';
-    if (!$('reBWhy').value) $('reBWhy').value = j.why || '';
-    if (!$('reBLearned').value) $('reBLearned').value = j.learned || '';
-    if (!$('reBDifferent').value) $('reBDifferent').value = j.different || '';
-    if (!$('reBChanged').value) $('reBChanged').value = j.changed || '';
-    if (!$('reBResultText').value) $('reBResultText').value = j.result || '';
-    if (!$('reBHabit').value) $('reBHabit').value = j.habit || '';
-    box.classList.add('hidden');
-    toast('已按你的复盘草稿填入，可再修改');
-  } catch (err) {
-    box.innerHTML = '<b>Transform 复盘草稿：</b>' + escapeHtml(text);
-  }
+    if (getAI().apiKey){
+      const text = await aiCall('用户在做行为实验复盘，大目标：「' + (current.input || '') + '」。\n问题：「' + q.t + '」（背景：' + q.h + '）。\n用户暂时写不出来。请给 1 句（≤40字）打开思路的追问或线索，帮他自己想起答案。不要替他写答案，不要泛泛而谈。只输出这一句。');
+      if (text) hint = text.trim().split('\n')[0].slice(0, 80);
+    }
+  } catch(e) {}
+  btn.disabled = false; btn.textContent = orig;
+  if (!hint) return;
+  current.reflectHints[q.k] = hint;
+  persistAction();
+  box.textContent = hint;
+  box.classList.remove('hidden');
 }
+
 function saveReflectionB(){
   const r = {
     what: $('reBWhat').value.trim(), why: $('reBWhy').value.trim(),
@@ -1446,6 +1537,8 @@ function saveReflectionB(){
   if (!(r.what || r.why || r.learned || r.different || r.changed || result || habit)){
     toast('写一点复盘内容再保存吧'); return;
   }
+  const qs = reflectQuestionsB(current);
+  r.questions = qs.map(q => ({ k: q.k, t: q.t, h: q.h }));
   current.reflection = r;
   current.result = result;
   current.habit = habit;
@@ -1520,7 +1613,8 @@ function hideTodayFeedback(){
   const w = $('todayFeedbackWrap'); if (w) w.classList.add('hidden');
 }
 
-// 标记一天完成 → 弹出今日反馈卡（本地兜底；若有 AI Key 再加深）
+// 标记一天完成 → 弹出「今天的真实反馈」卡：不止打卡，而是针对当天行为与整段改变的帮
+// 四个维度：反馈与鼓励（长在目标上）· 庆祝 · 环境 · 外部支持。AI 可用则个性化，不可用回退本地模板（真实数据，不编造）
 async function showTodayFeedback(){
   if (!current) return;
   const w = $('todayFeedbackWrap'); if (!w) return;
@@ -1529,34 +1623,48 @@ async function showTodayFeedback(){
   const total = current.totalDone || 0;
   const todayPlan = current.plan[current.currentDay - 2] || current.plan[current.currentDay - 1];
   const micro = (todayPlan && todayPlan.micro) || current.input;
+  const goal = current.input || '';
   const profile = loadProfile();
   const stmt = (profile.identityStatements || []).filter(s => s.source === 'action' && s.text === current.identity)[0];
   const votes = stmt ? stmt.votes : 0;
-  // 本地兜底：4 句话按天轮换，避免每次都刷一样的
-  const LOCAL_MSGS = [
-    '「' + micro + '」已经从「想做」走到「做到了」。',
-    '连续 ' + streak + ' 天，是行为在替你提醒自己。',
-    '给「' + (current.identity || '期待的身份') + '」投上第 ' + (votes + 1) + ' 票。',
-    '明天的小事会自动出现，再 +1 天，更接近「' + (current.identity || '期望的自己') + '」。'
-  ];
+
+  /* ---- 本地兜底：全部来自真实数据 ---- */
+  const local = {
+    body: '第 ' + day + '/' + current.targetDays + ' 步「' + micro + '」做到了。它不是孤立的一步——是「' + goal + '」这条行为链上真实前进的一格' + (streak > 1 ? '，而且已经连续 ' + streak + ' 天' : '') + '。',
+    celebrate: current.celebration || '给自己一个明确的正反馈：说一句「又做到了」，或起身伸展一下——让大脑把这件事标记为「值得」。',
+    env: current.reminder ? ('你的环境提示「' + current.reminder + '」还在发挥作用。检查一下它是否仍然显眼，明天让它更容易被看见。') : '看一眼锚点时刻周围：放一个看得见的提示物，明天的启动会少一次「想起来」的成本。',
+    support: (current.support && ((current.support.people||[]).length || (current.support.tools||[]).length || (current.support.info||[]).length))
+      ? '你已有支持在 list 里。今天这一步，他们中的谁知情？让一个人知道你的进展，坚持的概率会明显提高。'
+      : '改变很少单独发生。找一个能托住这件事的人 / 工具 / 信息源记下来——卡住的那天，它是你的台阶。'
+  };
+
   $('tfCrown').innerHTML = (day > 0 && day % 7 === 0) ? '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M7 4h10v5a5 5 0 01-10 0V4z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M7 6H4.5v1.5A3.5 3.5 0 008 11M17 6h2.5v1.5A3.5 3.5 0 0116 11M12 14v3M9 20h6M10 17h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12.5l2.8 2.8L16 9.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   $('tfTitle').textContent = '第 ' + day + ' 天做到了！';
-  $('tfBody').textContent = LOCAL_MSGS[(day - 1) % LOCAL_MSGS.length];
+  $('tfBody').textContent = local.body;
+  $('tfCelebrate').textContent = local.celebrate;
+  $('tfEnv').textContent = local.env;
+  $('tfSupport').textContent = local.support;
   $('tfStreak').textContent = streak;
   $('tfTotal').textContent = total;
   $('tfVotes').textContent = '+1';
-  $('tfSub').textContent = '今天的事已记录在左侧实验全景，明天的小事自动出现。';
+  const tomorrow = current.plan.find(p => p.day === current.currentDay);
+  $('tfSub').textContent = tomorrow ? ('明天 · 第 ' + tomorrow.day + ' 天：' + (tomorrow.micro || '') ) : '明天见——整段实验已经走完。';
+  renderSupport();
   w.classList.remove('hidden');
   w.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  // 可选：用 AI 给一句真正有针对性的鼓励（无 Key 时回退本地）
+
+  /* ---- AI 可用时升级为针对性反馈（失败静默保留本地版） ---- */
   try {
-    if (getAI().apiKey && micro) {
-      const aiText = await aiCall(
-        '用户刚完成了一个持续多天的「行为实验」中第 ' + day + ' 天：' + micro + '。\n' +
-        '今天状态：连续 ' + streak + ' 天，累计 ' + total + ' 天，目标身份「' + (current.identity || '待定') + '」。\n' +
-        '请用 1 句话（≤ 30 字）肯定这次完成，强调"具体行为"而非"坚持"。禁用"坚持"这种词。'
-      );
-      if (aiText) $('tfBody').textContent = aiText.trim().slice(0, 120);
+    if (getAI().apiKey && goal) {
+      const prompt = '用户正在一段 ' + current.targetDays + ' 天的行为实验里（大目标：「' + goal + '」' + (current.identity ? '，期待身份：「' + current.identity + '」' : '') + '）。\n刚完成第 ' + day + ' 天，当天的微行为：「' + micro + '」。\n行为链（前几步摘要）：' + current.plan.slice(0, Math.min(7, current.plan.length)).map(p => '第' + p.day + '天:' + p.micro).join('；') + '。\n状态：连续 ' + streak + ' 天，累计 ' + total + ' 天。\n\n请以行为教练身份给出「今天做到了」的真实反馈，要求：\n- body：2-3 句。先具体肯定今天这个行为（不是空洞表扬），再点出它在整条行为链 / 大目标里的位置和作用。\n- celebrate：1 句具体的庆祝建议（贴合今天的行为，不用说教）。\n- env：1 句环境调整建议（让明天这一步更容易启动，基于锚点和行为本身）。\n- support：1 句外部支持建议（今天这个阶段最需要谁/什么帮助）。\n禁用「坚持」「加油」这类词。严格返回 JSON：{"body":"…","celebrate":"…","env":"…","support":"…"}';
+      const text = await aiCall(prompt);
+      const j = text ? parseJSON(text) : null;
+      if (j){
+        if (j.body) $('tfBody').textContent = String(j.body).slice(0, 160);
+        if (j.celebrate) $('tfCelebrate').textContent = String(j.celebrate).slice(0, 120);
+        if (j.env) $('tfEnv').textContent = String(j.env).slice(0, 120);
+        if (j.support) $('tfSupport').textContent = String(j.support).slice(0, 120);
+      }
     }
   } catch(e) {}
 }
@@ -1661,8 +1769,8 @@ function toggleTheme(){
 /* ============ 首次引导（与 app.html 同款） ============ */
 const ZHIXING_AVATAR = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z" fill="currentColor"/><path d="M9 15c2-3 5-5 8-6" stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const OB_SLIDES = [
-  { h: '从想明白，到真正改变', p: 'Transform 会陪你走完四步：拆解目标 → 定下触发点 → 每次反馈 → 复盘沉淀。每一步只花几分钟。' },
-  { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：把大目标拆成每天都能做到的微行动；② 定触发点：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到、拿反馈、用行动证明身份；④ 沉淀：毕业复盘，沉淀成新的习惯与角色。' },
+  { h: '从想明白，到真正改变', p: 'Transform 会陪你走完四步：拆解目标 → 行动锚定 → 每次反馈 → 改变归档。每一步只花几分钟。' },
+  { h: '一个大问题，拆成一段 N 天行为实验', p: '① 拆解目标：AI 帮你把大目标拆成每天都能做到的微行动；② 行动锚定：把行动绑到必然发生的日常瞬间，不靠意志力；③ 每次反馈：每天做到后，拿到针对今天的反馈——庆祝、环境、外部支持；④ 改变归档：复盘沉淀，存进成长资产。' },
   { h: '你的改变会越积越厚', p: '每次完成，行为实验、连续天数、用行动证明的次数都会存进「成长资产 · 改变」。现在，从想改变的那件大事开始吧。' }
 ];
 let obIdx = 0;
