@@ -746,10 +746,10 @@ function renderInsightResult(session){
         <div class="ir-title">想清楚了：一条新洞察已沉淀</div>
         <canvas id="insightCardCanvas" width="900" height="1200" class="ir-canvas"></canvas>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">把这个洞察变成今天的改变 →</a>
+          <button class="btn btn-primary" style="flex:1;" onclick="downloadInsightCard()">保存卡片图片</button>
         </div>
         <div class="ir-actions-sub">
-          <button class="btn btn-ghost" onclick="downloadInsightCard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>保存卡片图片</button>
+          <a class="btn btn-ghost" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;">把这个洞察变成今天的改变 →</a>
           <a class="btn btn-ghost" href="think.html" style="text-decoration:none;">全新洞察</a>
         </div>
         <div class="ir-note">已存入「成长资产 · 洞察」 · 随时可查</div>
