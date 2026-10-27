@@ -253,6 +253,9 @@
   .ir-block .k { font-size: 11.5px; font-weight: 800; letter-spacing: 1px; color: var(--green); margin-bottom: 4px; }
   .ir-block .v { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.7; }
   .ir-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .ir-actions-sub { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .ir-actions-sub .btn { flex: 1; padding: 10px 16px; font-size: 13.5px; }
+  .ir-canvas { display: block; width: min(100%, 340px); height: auto; margin: 6px auto 4px; border-radius: 18px; box-shadow: 0 8px 28px rgba(31,45,39,.12); }
   .ir-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; text-align: center; }
 
   /* toast */
@@ -716,21 +719,18 @@ function renderInsightResult(session){
       <div class="ir-card">
         <div class="ir-crown"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z" fill="currentColor"/></svg></div>
         <div class="ir-title">想清楚了：一条新洞察已沉淀</div>
-        <div class="ir-block">
-          <div class="k">现象背后的本质</div>
-          <div class="v">${escapeHtml(session.essence.nature || '（未生成）')}</div>
-        </div>
-        <div class="ir-block">
-          <div class="k">新洞察</div>
-          <div class="v">${escapeHtml(session.essence.insight || '（未生成）')}</div>
-        </div>
+        <canvas id="insightCardCanvas" width="900" height="1200" class="ir-canvas"></canvas>
         <div class="ir-actions">
-          <a class="btn btn-primary" href="think.html" style="text-decoration:none;flex:1;">全新洞察</a>
-          <a class="btn btn-ghost" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;">把这个洞察变成今天的改变 →</a>
+          <a class="btn btn-primary" href="punch.html?insight=${encodeURIComponent(session.essence.insight || '')}&nature=${encodeURIComponent(session.essence.nature || '')}&scenario=${encodeURIComponent(topic)}" style="text-decoration:none;flex:1;">把这个洞察变成今天的改变 →</a>
+        </div>
+        <div class="ir-actions-sub">
+          <button class="btn btn-ghost" onclick="downloadInsightCard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>保存卡片图片</button>
+          <a class="btn btn-ghost" href="think.html" style="text-decoration:none;">全新洞察</a>
         </div>
         <div class="ir-note">已存入「成长资产 · 洞察」 · 随时可查</div>
       </div>
     </div>`;
+  drawInsightCard(session);
   // 深入洞察只保留页面最底部一个入口：结果态带主题直达 app.html
   const flb = document.querySelector('.full-link-bar a');
   if (flb){
@@ -739,6 +739,107 @@ function renderInsightResult(session){
   }
   stepGo(2);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* —— 洞察卡片：竖版 4:3 图片（Canvas 绘制，可保存 PNG）——
+   内容：时间戳 · 用户的问题（主题）· 现象背后的本质 · 新洞察。 */
+function irWrapText(ctx, text, maxWidth, maxLines){
+  const lines = []; let line = '';
+  for (const ch of String(text || '')){
+    if (ch === '\n'){ lines.push(line); line = ''; continue; }
+    if (ctx.measureText(line + ch).width > maxWidth){ lines.push(line); line = ch; }
+    else line += ch;
+  }
+  if (line) lines.push(line);
+  if (lines.length > maxLines){
+    let last = lines[maxLines - 1];
+    while (last && ctx.measureText(last + '…').width > maxWidth) last = last.slice(0, -1);
+    return { lines: lines.slice(0, maxLines - 1).concat([last + '…']), cut: true };
+  }
+  return { lines, cut: false };
+}
+function irSparkle(ctx, x, y, r){
+  ctx.beginPath();
+  ctx.moveTo(x, y - r); ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.quadraticCurveTo(x, y, x, y + r); ctx.quadraticCurveTo(x, y, x - r, y);
+  ctx.quadraticCurveTo(x, y, x, y - r);
+  ctx.fill();
+}
+function irRoundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function drawInsightCard(session){
+  const cv = document.getElementById('insightCardCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = 900, H = 1200, PX = 70, CW = W - PX * 2;
+  const FONT = "'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif";
+  const C = { paper:'#FAF8F2', ink:'#1F2D27', sub:'#8A938D', green:'#0E6B50', line:'#E5E1D5', card:'#FFFFFF', cardLine:'#E8E4D8' };
+  // 底色
+  ctx.fillStyle = C.paper; ctx.fillRect(0, 0, W, H);
+  // 右上装饰星光
+  ctx.fillStyle = 'rgba(14,107,80,.14)';
+  irSparkle(ctx, W - 92, 96, 26); irSparkle(ctx, W - 140, 140, 13);
+  // 头部：品牌 + 时间戳
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = C.green; ctx.font = '800 26px ' + FONT; ctx.textAlign = 'left';
+  ctx.fillText('Transform · 每日洞察', PX, 92);
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const ts = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日 ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+  ctx.fillStyle = C.sub; ctx.font = '500 21px ' + FONT; ctx.textAlign = 'right';
+  ctx.fillText(ts, W - PX, 92);
+  ctx.textAlign = 'left';
+  // 用户的问题（主题）
+  ctx.fillStyle = C.sub; ctx.font = '800 20px ' + FONT;
+  ctx.fillText('用 户 的 问 题', PX, 168);
+  ctx.fillStyle = C.ink; ctx.font = '800 37px ' + FONT;
+  const t1 = irWrapText(ctx, topic, CW, 3);
+  t1.lines.forEach((l, i) => ctx.fillText(l, PX, 224 + i * 52));
+  // 分隔虚线
+  ctx.strokeStyle = C.line; ctx.lineWidth = 2; ctx.setLineDash([2, 10]);
+  ctx.beginPath(); ctx.moveTo(PX, 372); ctx.lineTo(W - PX, 372); ctx.stroke(); ctx.setLineDash([]);
+  // 卡 A：现象背后的本质（白卡）
+  irRoundRect(ctx, PX, 404, CW, 296, 26);
+  ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.cardLine; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = C.green;
+  irSparkle(ctx, PX + 44, 462, 13);
+  ctx.font = '800 22px ' + FONT;
+  ctx.fillText('现象背后的本质', PX + 72, 470);
+  ctx.fillStyle = '#33413B'; ctx.font = '600 27px ' + FONT;
+  const t2 = irWrapText(ctx, session.essence.nature || '（未生成）', CW - 88, 4);
+  t2.lines.forEach((l, i) => ctx.fillText(l, PX + 44, 524 + i * 42));
+  // 卡 B：新洞察（深绿卡 · 白字）
+  irRoundRect(ctx, PX, 728, CW, 356, 26);
+  ctx.fillStyle = C.green; ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.92)';
+  irSparkle(ctx, PX + 44, 786, 13);
+  ctx.font = '800 22px ' + FONT;
+  ctx.fillText('新 洞 察', PX + 72, 794);
+  ctx.fillStyle = '#FFFFFF'; ctx.font = '800 31px ' + FONT;
+  const t3 = irWrapText(ctx, session.essence.insight || '（未生成）', CW - 88, 5);
+  t3.lines.forEach((l, i) => ctx.fillText(l, PX + 44, 850 + i * 46));
+  // 页脚
+  ctx.strokeStyle = C.line; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(PX, 1128); ctx.lineTo(W - PX, 1128); ctx.stroke();
+  ctx.fillStyle = C.sub; ctx.font = '500 20px ' + FONT; ctx.textAlign = 'center';
+  ctx.fillText('Transform · 想清楚，做得到', W / 2, 1166);
+  ctx.textAlign = 'left';
+}
+function downloadInsightCard(){
+  const cv = document.getElementById('insightCardCanvas');
+  if (!cv) return;
+  const a = document.createElement('a');
+  a.download = 'transform-insight-' + new Date().toISOString().slice(0, 10) + '.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+  toast('洞察卡片已保存为图片 ✓');
 }
 
 /* ===================== 初始化 ===================== */
