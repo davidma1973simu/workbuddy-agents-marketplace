@@ -550,11 +550,13 @@ function renderArchived(){
 function renderIdentity(){
   const profile = loadProfile();
   const votes = (profile.identityStatements || []).slice();
-  const area = $('identityArea');
+  // R-26：身份是「价值获得感」最强的锚点，渲染到资产页最顶部的 #becomingArea；
+  // 兼容仍带 #identityArea 的旧页（如英文版），避免改版断裂。
+  const area = $('becomingArea') || $('identityArea');
+  if (!area) return;
   if (!votes.length){
-    area.innerHTML = `<div class="identity-empty">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#1D9E75" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/></svg>
-      还没有身份票。每完成一次「每日洞察」或「每日改变」，都会给「我想成为的人」投一票，票数在这里累积。
+    area.innerHTML = `<div class="becoming-empty">
+      <span class="be-dot"></span>我正在成为 —— 每完成一次「每日洞察」或「每日改变」，都会为你想成为的人投一票。
     </div>`;
     return;
   }
@@ -570,13 +572,25 @@ function renderIdentity(){
   const rest = list.slice(1);
   // 用户写的身份常以「…的人 / …者」结尾，避免渲染成「…的人」的人
   const idText = String(top.text || '').trim();
-  const idTail = /(人|者|员|家|师|匠)$/.test(idText) ? '' : '的人';
-  area.innerHTML = `
+  const idTail = /(人|者|员|家|师|匠|友|伙|派|迷|粉)$/.test(idText) ? '' : '的人';
+  const totalVotes = votes.reduce((a,b) => a + (b.votes || 1), 0);
+  let html = `
     <div class="identity-card">
       <div class="k">我正在成为</div>
       <div class="v">「<em>${escapeHtml(idText)}</em>」${idTail}</div>
-      <div class="count">已投 ${top.votes} 票${rest.length ? ' · 还有 ' + rest.length + ' 个身份在累积中' : ' · 你正在成为这个人'}</div>
+      <div class="count">领先身份 · 已投 ${top.votes} 票（共 ${totalVotes} 票）</div>
     </div>`;
+  if (rest.length){
+    html += `<div class="becoming-list">
+      <div class="becoming-list-title">同时也在成为</div>
+      ${rest.map(r => {
+        const t = String(r.text || '').trim();
+        const tail = /(人|者|员|家|师|匠|友|伙|派|迷|粉)$/.test(t) ? '' : '的人';
+        return `<div class="becoming-item"><span class="becoming-text">${escapeHtml(t)}${tail}</span><span class="becoming-votes">${r.votes}</span></div>`;
+      }).join('')}
+    </div>`;
+  }
+  area.innerHTML = html;
 }
 
 function renderInsightTime(){
