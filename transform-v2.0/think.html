@@ -198,23 +198,23 @@
   /* 脚手架结果累积：保留每一次（理清 → 质疑 → 查证），不互相覆盖 */
   .q-ai-item + .q-ai-item { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
 
-  /* 修订区 */
-  .q-rev-toggle {
-    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
-    background: none; border: none; color: var(--green); font-size: 13px; font-weight: 700;
-    cursor: pointer; font-family: inherit; padding: 0;
-  }
-  .q-rev-toggle:hover { text-decoration: underline; }
-  .q-rev-box { margin-top: 12px; padding: 14px; background: var(--green-50); border: 1px solid var(--green-light); border-radius: 12px; display: none; }
-  .q-rev-box.show { display: block; }
-  .q-rev-box label { display: block; font-size: 12.5px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
-  .q-rev-input {
-    width: 100%; min-height: 70px; padding: 12px 14px; border-radius: 10px;
-    border: 1.5px solid var(--green-light); background: var(--surface); font-size: 14px;
-    font-family: inherit; color: var(--ink); outline: none; line-height: 1.7;
-  }
-  .q-rev-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
-  .q-rev-actions { display: flex; gap: 10px; margin-top: 10px; }
+  /* 多轮问答 */
+  .q-round + .q-round { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .q-round-past { opacity: .82; }
+  .q-round-tag { font-size: 11px; font-weight: 800; color: var(--ink-3); letter-spacing: .04em; margin-bottom: 6px; }
+  /* 三类深化对话卡 */
+  .cap-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cap-card + .cap-card { margin-top: 10px; }
+  .cap-q { margin-bottom: 8px; }
+  .cap-ans { background: var(--green-50); border: 1px solid var(--green-light); border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--ink); white-space: pre-wrap; }
+  .cap-input { width: 100%; min-height: 72px; border: 1.5px solid var(--green-light); border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 13.5px; line-height: 1.6; resize: vertical; background: var(--surface); box-sizing: border-box; color: var(--ink); outline: none; }
+  .cap-input:focus { border-color: var(--green-3); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .cap-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .ai-btn-cap.done { border-color: var(--green-light); color: var(--green); background: var(--green-50); }
+  /* 底部操作行：追问 + 整合 */
+  .q-foot-row { display: flex; gap: 10px; margin-top: 16px; align-items: stretch; flex-wrap: wrap; }
+  .q-foot-row .cta-integrate { flex: 1.4; margin-top: 0; }
+  .q-foot-row .btn-ghost { flex: 1; }
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -359,12 +359,12 @@ const BRAND_PROFILES = {
 };
 
 let topic = '';        // 当前主题
-let question = '';     // AI 出的题
-let answer = '';       // 用户回答（canonical）
-let aiHelps = [];      // 三按钮协助历史 [{cap, text, at}]
-let revisions = [];    // 修订轨迹 [text...]
+let rounds = [];       // 多轮问答 [{q, a}] —— AI 一直追问，直到用户按「整合出洞察」
+let caps = {};         // 三类深化对话 {'理清': {q, a, at}, ...} —— 按类别单独显示，保存后叠加进主回答
+let capOpen = '';      // 当前展开待回答的类别
 let integrating = false;
 let qTopic = '';       // 出题时的主题（用于判断主题是否被改 → 决定重出题还是返回答题）
+const CAPS = ['理清', '质疑', '查证'];
 
 function $(id){ return document.getElementById(id); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -423,16 +423,16 @@ function initVoiceInput(inputId){
   // TODO(v2.1)：接入 Web Speech API，把识别结果写入 inputId 对应的输入框
 }
 function renderInputStage(){
-  const hasQ = !!question;                       // 已有进行中的题目（回看/修改主题模式）
+  const hasQ = rounds.length > 0;                // 已有进行中的问答（回看/修改主题模式）
   $('thinkArea').innerHTML = `
     <div class="think-hero">
       <div class="th-eyebrow">每日洞察 · 几分钟理清一件事</div>
       <h1>一件让你卡住的事，30 秒开始</h1>
-      <p>把最想不通、最想搞清楚的一件事写下来。Transform 会基于它自动出 1 个启发式问题，你回答、被理清、被质疑、被查证，最后整合成一条真正属于自己的洞察。</p>
+      <p>把最想不通、最想搞清楚的一件事写下来。Transform 会基于它出题并不断追问，帮你理清、质疑、查证；你觉得想明白了，就让 Transform 整合出一条真正属于自己的洞察。</p>
       <input class="think-input" id="topicInput" placeholder="例如：我到底要不要跳槽去创业？" maxlength="60" value="${escapeHtml(topic)}">
       ${hasQ ? `
         <div class="tk-card" id="tkCard">
-          <div class="tk-line">正在进行：<b>${escapeHtml(question)}</b></div>
+          <div class="tk-line">正在进行：<b>${escapeHtml(rounds[0].q)}</b>${rounds.length > 1 ? ` 等 ${rounds.length} 轮问答` : ''}</div>
           <div class="tk-hint" id="tkHint">主题没有改动，可直接返回继续答题；若改动主题，将基于新主题重新出题。</div>
         </div>` : ''}
       <button class="cta-start" id="startBtn" onclick="startThink()">${hasQ ? '重新出题 →' : '开始想清楚 →'}</button>
@@ -457,8 +457,8 @@ function renderInputStage(){
 }
 
 function backToQA(){
-  // 主题未改动 → 恢复答题现场（question/answer/aiHelps/revisions 均在内存）
-  if (question) renderQuestionStage(); else renderInputStage();
+  // 主题未改动 → 恢复答题现场（rounds/caps 均在内存）
+  if (rounds.length) renderQuestionStage(); else renderInputStage();
 }
 
 /* 步骤条：cur = 0 写下来 / 1 想清楚 / 2 已沉淀 */
@@ -500,108 +500,165 @@ async function startThink(){
     return;
   }
   qTopic = topic;
-  question = q;
-  answer = ''; aiHelps = []; revisions = [];
+  rounds = [{ q, a: '' }]; caps = {}; capOpen = '';
   renderQuestionStage();
 }
 
-/* ===================== 阶段 2：回答 + 三按钮 ===================== */
+/* ===================== 阶段 2：多轮问答 + 三类深化对话 ===================== */
 function renderQuestionStage(){
+  const cur = rounds.length - 1;
   $('thinkArea').innerHTML = `
     <div class="q-card">
       <div class="q-tag">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 3H3v6h6V3zM21 3h-6v6h6V3zM9 15H3v6h6v-6zM21 15h-6v6h6v-6z" stroke="currentColor" stroke-width="1.6"/></svg>
-        Transform 基于你的主题出的第一题
+        Transform 的提问 · 第 ${rounds.length} 题
       </div>
-      <div class="q-text">${escapeHtml(question)}</div>
+      ${rounds.map((r, i) => `
+        <div class="q-round${i < cur ? ' q-round-past' : ''}">
+          <div class="q-round-tag">${i === 0 ? '基于你的主题' : '基于你上面的回答'} · 第 ${i + 1} 题</div>
+          <div class="q-text">${escapeHtml(r.q)}</div>
+          <textarea class="q-answer" id="qa${i}" data-i="${i}" placeholder="写下你的第一反应，不用完美…">${escapeHtml(r.a)}</textarea>
+        </div>`).join('')}
       <div class="q-ctx">主题：「${escapeHtml(topic)}」</div>
-      <textarea class="q-answer" id="qAnswer" placeholder="写下你的第一反应，不用完美…">${escapeHtml(answer)}</textarea>
       <div class="q-ai-row">
         <span class="q-ai-label">Transform 可以帮助你：</span>
-        <button class="ai-btn-cap" onclick="aiInspireQ('理清', this)">理清</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ('质疑', this)">质疑</button>
-        <button class="ai-btn-cap" onclick="aiInspireQ('查证', this)">查证</button>
+        ${CAPS.map(c => `<button class="ai-btn-cap${caps[c] && caps[c].at ? ' done' : ''}" onclick="openCap('${c}', this)">${c}${caps[c] && caps[c].at ? ' ✓' : ''}</button>`).join('')}
       </div>
       <div class="q-ai-result" id="qAiResult"></div>
-      <button class="q-rev-toggle" id="revToggle" onclick="toggleRevBox()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> 修订我的回答</button>
-      <div class="q-rev-box" id="revBox">
-        <label>把刚才的思考，修订成你真正认同的版本</label>
-        <textarea class="q-rev-input" id="revInput">${escapeHtml(answer)}</textarea>
-        <div class="q-rev-actions">
-          <button class="btn btn-primary" onclick="saveRevision()">保存修订</button>
-          <button class="btn btn-ghost" onclick="toggleRevBox(false)">取消</button>
-        </div>
+      <div class="q-foot-row">
+        <button class="btn btn-ghost" id="nextQBtn" onclick="nextQuestion()">追问下一题 →</button>
+        <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让 Transform整合出洞察 →</button>
       </div>
-      <button class="cta-integrate" id="integrateBtn" onclick="finishThink()">让 Transform整合出洞察 →</button>
     </div>`;
-  const ta = $('qAnswer');
-  ta.addEventListener('input', e => { answer = e.target.value; });
-  ta.focus();
-  // 回车出结果
-  $('qAiResult').innerHTML = '';
+  $('thinkArea').querySelectorAll('.q-answer').forEach(ta => {
+    ta.addEventListener('input', e => { rounds[+e.target.dataset.i].a = e.target.value; });
+  });
+  renderCaps();
+  if (rounds.length === 1) $('qa0').focus();
   stepGo(1);
 }
 
-function toggleRevBox(force){
-  const box = $('revBox');
-  const show = force !== undefined ? force : box.classList.contains('show') ? false : true;
-  box.classList.toggle('show', show);
-  if (show) $('revInput').value = answer;
-}
-function saveRevision(){
-  const v = ($('revInput').value || '').trim();
-  if (!v) { toast('写点什么再保存'); return; }
-  if (v !== answer) revisions.push(v);
-  answer = v;
-  $('qAnswer').value = v;
-  toggleRevBox(false);
-  toast('已保存为你的最终回答 ✓');
+/* —— 三类深化对话：点按钮 → 出该类问题卡，用户只答该卡；保存后叠加进主回答 + 按类别单独显示 —— */
+const CAP_PROMPTS = {
+  '理清': '帮用户把刚才写的散乱想法重新组织，找出头绪。提出 1-2 个问题，指向关联或可能的盲点，让用户自己回答。只问问题，不下结论。',
+  '质疑': '苏格拉底式挑战。提出 1-2 个尖锐问题，挑战用户的现有思考，让用户自己回答。只问问题，不给答案。',
+  '查证': '提出 1-2 个能用事实、原则或案例检验用户判断的问题，让用户自己去找依据。只问问题，不替用户做判断。'
+};
+const LOCAL_CAP_Q = {   // AI 不可用 → 本地固定模板（长在真实主题上，不编造智能感）
+  '理清': () => `关于「${topic}」，你刚才写的哪一点最接近你的真实想法？哪一点其实你自己也没想透？`,
+  '质疑': () => `如果有人说「${topic}」这件事你想反了，你会拿什么证据反驳？你现在的判断，最脆弱的一环是什么？`,
+  '查证': () => `「${topic}」这件事上，有没有一个具体的事实或例子，能检验你刚才的判断是对是错？`
+};
+
+async function openCap(cap, btn){
+  if (caps[cap]){ capOpen = capOpen === cap ? '' : cap; renderCaps(); return; }
+  if (!rounds.some(r => r.a.trim())){ toast('先写下你的思考'); return; }
+  btn.classList.add('loading');
+  const ctx = rounds.map((r, i) => `问题${i + 1}：${r.q}\n用户回答${i + 1}：${r.a}`).join('\n');
+  let q = '';
+  try {
+    const r = await aiCall(
+      `主题：「${topic}」\n\n目前的问答：\n${ctx}\n\n${CAP_PROMPTS[cap]}\n\n【硬性要求】只输出你要问用户的问题（1-2 个，合计不超过 80 字），直接输出问题本身，不要寒暄、不要标题、不要给答案。`
+    );
+    if (r) q = r.trim().slice(0, 200);
+  } catch(e) {}
+  btn.classList.remove('loading');
+  if (!q) q = LOCAL_CAP_Q[cap]();
+  caps[cap] = { q, a: '', at: null };
+  capOpen = cap;
+  renderCaps();
 }
 
-async function aiInspireQ(cap, btn){
-  const a = answer.trim();
-  if (!a) { toast('先写下你的思考'); return; }
-  btn.classList.add('loading');
-  const prompts = {
-    '理清': '帮用户把刚才写的散乱想法重新组织一下，找出头绪。指 2-3 条关联或可能的盲点。只问问题，不下结论。',
-    '质疑': '苏格拉底式挑战。用 2-3 个尖锐问题挑战用户的现有思考。只问问题，不给答案。',
-    '查证': '检索 1-2 个相关的事实、原则或案例。客观陈述，不替用户做判断。'
-  };
-  const r = await aiCall(
-    `主题：「${topic}」\n问题：${question}\n用户的回答：${a}\n\n${prompts[cap]}\n\n【硬性要求】输出不超过 100 字，精准简洁，直接说要点，不要寒暄、不要分段。`
-  );
-  btn.classList.remove('loading');
-  if (!r){ toast('Transform 暂时没响应，请稍后再试'); return; }
-  const text = r.trim().slice(0, 300);
-  aiHelps.push({ cap, text, at: new Date().toISOString() });
+function renderCaps(){
   const box = $('qAiResult');
-  // 累积式呈现：理清/质疑/查证是一条递进的思考链，后一次不能覆盖前一次
-  box.innerHTML = aiHelps.map(h =>
-    '<div class="q-ai-item"><span class="ai-tag">Transform · ' + escapeHtml(h.cap) + '</span><br>' +
-    escapeHtml(h.text).replace(/\n/g, '<br>') + '</div>'
-  ).join('');
-  box.classList.add('show');
-  // 出现后可立即修订
-  $('revToggle').style.display = 'inline-flex';
+  const parts = [];
+  CAPS.forEach(c => {
+    const item = caps[c]; if (!item) return;
+    const open = capOpen === c && !item.at;
+    parts.push(`
+      <div class="cap-card" data-cap="${c}">
+        <span class="ai-tag">Transform · ${c}${item.at ? ' · 已叠加 ✓' : ''}</span>
+        <div class="cap-q">${escapeHtml(item.q).replace(/\n/g, '<br>')}</div>
+        ${item.at
+          ? `<div class="cap-ans">${escapeHtml(item.a)}</div>`
+          : (open ? `
+            <textarea class="cap-input" id="capInput" placeholder="按照上面的问题写下你的思考——这里只回答这一条，不会带上你之前的内容…"></textarea>
+            <div class="cap-actions">
+              <button class="btn btn-primary" onclick="saveCap('${c}')">保存修订</button>
+              <button class="btn btn-ghost" onclick="cancelCap()">取消</button>
+            </div>` : '')}
+      </div>`);
+  });
+  box.innerHTML = parts.join('');
+  box.classList.toggle('show', parts.length > 0);
+}
+
+function saveCap(cap){
+  const item = caps[cap]; if (!item) return;
+  const ta = $('capInput');
+  const v = ((ta && ta.value) || '').trim();
+  if (!v){ toast('先回答上面的问题再保存'); return; }
+  item.a = v; item.at = new Date().toISOString();
+  // 直接叠加到最初的输入答案中（带类别前缀；整合时也按类别单独考虑）
+  const cur = rounds[rounds.length - 1];
+  cur.a = (cur.a.trim() ? cur.a.replace(/\s+$/, '') + '\n\n' : '') + '【' + cap + '】' + v;
+  const mainTa = $('qa' + (rounds.length - 1));
+  if (mainTa) mainTa.value = cur.a;
+  capOpen = '';
+  renderCaps();
+  refreshCapBtns();
+  toast('已叠加到你的回答，并归入「' + cap + '」✓');
+}
+function cancelCap(){ capOpen = ''; renderCaps(); }
+function refreshCapBtns(){
+  document.querySelectorAll('.q-ai-row .ai-btn-cap').forEach(b => {
+    const c = b.textContent.replace(' ✓', '').trim();
+    const done = !!(caps[c] && caps[c].at);
+    b.classList.toggle('done', done);
+    b.textContent = c + (done ? ' ✓' : '');
+  });
+}
+
+/* —— 多轮追问：AI 基于所有已有问答接着出题，直到用户按「整合出洞察」—— */
+async function nextQuestion(){
+  if (integrating) return;
+  const cur = rounds[rounds.length - 1];
+  if (!cur.a.trim()){ toast('先回答当前这题，Transform 才能接着追问'); return; }
+  const btn = $('nextQBtn');
+  btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform 正在想下一题…';
+  const ctx = rounds.map((r, i) => `问题${i + 1}：${r.q}\n用户回答${i + 1}：${r.a}`).join('\n');
+  let q = null;
+  for (let attempt = 0; attempt < 3 && !q; attempt++){
+    const r = await aiCall(
+      `主题：「${topic}」\n\n目前的问答：\n${ctx}\n\n任务：基于用户最新的回答，抛出下一个启发式问题，帮他把这件事想得更深一层。\n严格要求：\n1. 简短（10-25 字）、单一（一次只问一件事）、精确\n2. 直接问要害，不绕弯\n3. 不要重复之前问过的角度\n4. 严格按 JSON 输出：\n{"q":"问题"}`
+    );
+    const d = parseJSON(r);
+    if (d && d.q && d.q.trim()) q = d.q.trim().slice(0, 60);
+  }
+  btn.classList.remove('loading'); btn.disabled = false; btn.textContent = '追问下一题 →';
+  if (!q){ toast('Transform 暂时没接上，请稍后再试'); return; }
+  rounds.push({ q, a: '' });
+  renderQuestionStage();
+  const ta = $('qa' + (rounds.length - 1)); if (ta) ta.focus();
 }
 
 /* ===================== 阶段 3：整合出洞察 ===================== */
 async function finishThink(){
   if (integrating) return;
-  const a = answer.trim();
-  if (!a) { toast('先写下你的回答'); return; }
+  if (!rounds.some(r => r.a.trim())) { toast('先写下你的回答'); return; }
   integrating = true;
   const btn = $('integrateBtn');
   btn.classList.add('loading'); btn.disabled = true; btn.textContent = 'Transform 正在整合…';
+  // 同等考虑所有输入：每一轮主问答 + 三类深化对话的问答
   const qaPairs =
-    `问题：${question}\n用户最终回答：${a}` +
-    (aiHelps.length ? `\nTransform 协助过程：${aiHelps.map(h => '[' + h.cap + '] ' + h.text).join('；')}` : '') +
-    (revisions.length ? `\n（该题经Transform 启发后由用户主动修订 ${revisions.length} 次）` : '');
+    rounds.map((r, i) => `问题${i + 1}：${r.q}\n用户回答${i + 1}：${r.a.trim() || '（未填）'}`).join('\n\n') +
+    (CAPS.some(c => caps[c] && caps[c].at) ? '\n\n三类深化对话（Transform 问 → 用户答）：\n' +
+      CAPS.filter(c => caps[c] && caps[c].at).map(c => `[${c}] ${caps[c].q}\n→ ${caps[c].a}`).join('\n') : '');
 
   let essence = null;
   for (let attempt = 0; attempt < 3 && !essence; attempt++){
     const r = await aiCall(
-      `主题：「${topic}」\n\n用户在问题下的思考：\n${qaPairs}\n\n任务：综合以上所有输入，整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
+      `主题：「${topic}」\n\n用户在多轮问答中的全部输入：\n${qaPairs}\n\n任务：同等考虑以上所有输入——每一轮问答的回答，以及理清/质疑/查证三类对话的回答——整合出两个产出（严格按 JSON）：\n- nature（现象本质）：这些现象背后的本质是……（一句话，15-40字）\n- newInsight（新洞察）：我们对这个问题的新洞察和认知是……（一句话，15-40字）\n\n格式：\n{"nature":"...","newInsight":"..."}`
     );
     const d = parseJSON(r);
     if (d && (d.nature || d.newInsight)){
@@ -614,15 +671,17 @@ async function finishThink(){
     toast('Transform 整合失败，请稍后再试');
     return;
   }
-  // 存入「成长资产 · 洞察」（与 app.html complete() 的条目格式一致）
+  const capEntries = CAPS.filter(c => caps[c] && caps[c].at)
+    .map(c => ({ cap: c, text: caps[c].q, answer: caps[c].a, at: caps[c].at }));
+  // 存入「成长资产 · 洞察」（与 app.html complete() 的条目格式一致；多轮问答即多题数组）
   const session = {
     id: 's_' + Date.now(),
     createdAt: new Date().toISOString(),
     scenario: topic,
     notes: [],
     groups: [],
-    insightQuestions: [question],
-    insightAnswers: [answer],
+    insightQuestions: rounds.map(r => r.q),
+    insightAnswers: rounds.map(r => r.a),
     insightPersonalView: '',
     essence,
     confirmed: false,
@@ -638,8 +697,8 @@ async function finishThink(){
     nearResourcesPlan: null,
     farResourcesPlan: null,
     identity: '',
-    insightAiHelps: [aiHelps],
-    insightRevisions: [revisions],
+    insightAiHelps: [capEntries],
+    insightRevisions: [capEntries.map(e => ({ text: e.answer, at: e.at }))],
     tags: [],
     completedAt: new Date().toISOString(),
     source: 'think'
@@ -716,8 +775,7 @@ async function startThinkWithTopic(t){
     return;
   }
   qTopic = topic;
-  question = q;
-  answer = ''; aiHelps = []; revisions = [];
+  rounds = [{ q, a: '' }]; caps = {}; capOpen = '';
   renderQuestionStage();
 }
 </script>
