@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z 世代代际翻译器 · v0.2</title>
+<title>Z 世代代际翻译器 · v0.4</title>
 <style>
   :root{
     --green:#0E6B50; --green-d:#0a513c; --ink:#1c1c1e; --mut:#6b6b70;
@@ -54,6 +54,17 @@
   .edit{width:100%;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font:inherit;margin-top:6px;background:#fff}
   .edit:focus{outline:2px solid var(--green)}
   .msg{font-size:13px;color:var(--warn);margin-top:8px}
+  .plan{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fcfcfd}
+  .plan-row{border-bottom:1px solid var(--line);padding:12px}
+  .plan-row:last-child{border-bottom:none}
+  .plan-h{font-weight:700;color:var(--green-d);font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .plan-no{flex:0 0 20px;height:20px;width:20px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .plan-h + .edit{margin-top:0;margin-bottom:8px}
+  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pf{display:flex;flex-direction:column;gap:3px}
+  .pf .pl{font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.5px}
+  .pf .edit{margin-top:0}
+  @media(max-width:560px){.plan-grid{grid-template-columns:1fr}}
   .empty{color:var(--mut);font-size:14px;padding:30px;text-align:center}
   .setrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .setrow select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);font:inherit}
@@ -132,7 +143,7 @@
   </div>
 </div>
 
-<footer>v0.2 · 框架 + 本地降级 + 预留 AI 口 · 功能优先，美观后续</footer>
+<footer>v0.4 · 框架 + 本地降级 + 预留 AI 口 · 自助早餐锚定 + 执行计划（任务/产出/时间点/责任人/资源）</footer>
 
 <script>
 const LS_AI='zt_ai', LS_DRAFT='zt_draft';
@@ -201,6 +212,57 @@ function detectDomain(text){
   return 'generic';
 }
 
+// 执行计划：把翻译落成任务 / 产出 / 时间点 / 责任人 / 资源（可落地，无占位符）
+function genPlan(domain, c){
+  if(domain==='hospitality'){
+    return [
+      {
+        task:`把现有百种自助早餐重组为「晨间精选」3 套轮转主题分区（粤式清润 / 中原暖胃 / 西式利落），并划出商务客独立安静角`,
+        deliverable:'三套晨食菜单 + 安静角布局与动线图 + 取餐分区标识方案',
+        timeline:'第 1–4 周',
+        owner:'餐饮总监 + 行政总厨',
+        resource:'菜单研发工时；安静角软装预算约 ¥3–5 万；动线改造'
+      },
+      {
+        task:`保留自助形态，把"自助餐"改名为「城市晨味」画廊式分区，粤/豫/意早餐配手绘故事卡，精华不再被埋`,
+        deliverable:'命名方案 + 12 张地域早餐故事卡设计 + 分区陈列物料',
+        timeline:'第 3–6 周',
+        owner:'品牌 / 市场经理 + 设计外包',
+        resource:'插画设计外包预算约 ¥2–3 万；印刷与陈列物料'
+      },
+      {
+        task:`黑话过滤（停用"丰盛/匠心传承"），提炼主文案"三套晨味，选一套就取"，采集真实商务客评语建文案库`,
+        deliverable:'文案手册（主/副文案各 3 条）+ 旅客评语库（来自 OTA 评论挖掘）',
+        timeline:'第 2–3 周',
+        owner:'市场经理',
+        resource:'文案工时；OTA 评论采集工具/人工'
+      },
+      {
+        task:`booking 漏斗加"入住即选清晨仪式"；小红书/抖音以商务客视角种草安静角与本地早餐`,
+        deliverable:'预订页改造方案 + 12 篇种草内容排期与素材',
+        timeline:'第 4–8 周',
+        owner:'数字营销 + 社媒运营',
+        resource:'投放预算约 ¥5–8 万/月；内容制作工时'
+      },
+      {
+        task:`建常旅客「晨味研究所」圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系`,
+        deliverable:'社群运营 SOP + 体验官机制 + 首月共创活动方案',
+        timeline:'第 6–10 周',
+        owner:'会员 / 社群运营',
+        resource:'运营工时；体验官权益（免费房晚/早餐券）'
+      }
+    ];
+  }
+  const val=c.value||'核心价值', aud=c.audience||'目标年轻人', prod=c.product||'产品';
+  return [
+    {task:`把"${val}"翻译成 3 个${aud}的真实使用场景，并据此重组${prod}的呈现`,deliverable:'场景清单（3 个）+ 重组方案',timeline:'第 1–3 周',owner:'产品 + 市场负责人',resource:'内部工时；用户访谈'},
+    {task:`保留经典识别，推年轻向特别版（联名/季节/插画），小批量试水`,deliverable:'特别版方案 + 社媒测试计划',timeline:'第 2–5 周',owner:'品牌经理',resource:'设计外包预算'},
+    {task:`黑话过滤，把"${val}"提炼成一句${aud}听得懂的人话文案`,deliverable:'文案手册（主/副各 3 条）',timeline:'第 2–3 周',owner:'市场经理',resource:'文案工时'},
+    {task:`选 1 个年轻人聚集渠道做翻译试验田，定制渠道语言`,deliverable:'渠道内容排期 + 触点改造',timeline:'第 4–8 周',owner:'数字营销',resource:'投放预算；内容制作'},
+    {task:`建答疑日 + 体验官机制，由年轻一线员工运营社群`,deliverable:'社群 SOP + 体验官机制',timeline:'第 6–10 周',owner:'社群运营',resource:'运营工时；体验官权益'}
+  ];
+}
+
 function reasonLocal(c){
   const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
   const signals=detectSignals(c.current+' '+c.pain);
@@ -228,7 +290,7 @@ function reasonLocal(c){
   const reframe={
     problem:`${c.product}当前最大的适配阻力，来自${used.length?used.map(s=>s.label).join('、'):'表达与接收的频率错位'}。`,
     reframed:reframed.trim(),
-    why:'重构的目的，是把"企业视角的痛点"翻成"用户视角的机会"——先看清卡在哪根支柱，再动手翻译。'
+    why:'重构的目的，是把"企业视角的痛点"转为"用户视角的机会"——先看清卡在哪根支柱，再动手翻译。'
   };
 
   const pillarMap={
@@ -352,11 +414,11 @@ function reasonLocal(c){
 
   const forYouMap = (domain==='hospitality')?hospForYou:null;
   const principles={
-    '产品翻译':'把「功能」翻成「场景」：立项先定义使用场景，再倒推功能。',
-    '包装翻译':'把「经典」翻成「潮」：双轨保留经典，推年轻向特别版。',
-    '沟通翻译':'把「品牌说」翻成「用户说」：黑话过滤，用原话。',
-    '渠道翻译':'从「大卖场」翻到「新货架」：选年轻人聚集渠道做试验田。',
-    '社群翻译':'从「广播」翻成「对话」：答疑日 + 体验官 + 年轻运营。'
+    '产品翻译':'从"功能罗列"转向"场景定义"：立项先定义使用场景，再倒推功能。',
+    '包装翻译':'让"经典"长出"潮"感：双轨保留经典，推年轻向特别版。',
+    '沟通翻译':'从"品牌独白"切换到"用户对话"：黑话过滤，用原话。',
+    '渠道翻译':'从"大卖场"迁移到"新货架"：选年轻人聚集渠道做试验田。',
+    '社群翻译':'从"广播"转为"对话"：答疑日 + 体验官 + 年轻运营。'
   };
   const steps=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
   const translate=steps.map(step=>({
@@ -370,25 +432,21 @@ function reasonLocal(c){
   let output;
   if(domain==='hospitality'){
     output={
-      positioning:`${c.product} = 为${c.audience}策展的「城市晨味」仪式：三套精选，十分钟安顿，一城风味。`,
-      scene:`工作日上午 7–9 点的酒店餐厅，${c.audience}用「晨间精选」三套方案替代百种自助，在独立安静区十分钟吃完有本地风味的一餐，解决选择过载与混杂喧闹。`,
-      copy:'主文案："挑一套就走，今天这城归你"；副文案："工作日清晨，三套精选不纠结"。',
-      packaging:'把自助餐改名为「城市晨味」，粤式/中原/西式分区陈列，每道地域早餐配手绘故事卡。',
-      channel:'booking 漏斗设「入住即选清晨仪式」；商务客视角在小红书/抖音种草安静角与本地早餐；B站深评"一家酒店如何把河南早餐做成体验"。',
-      community:'建「晨味研究所」常旅客圈，月度城市早餐地图由旅客共创，招募晨间体验官测新套系，年轻餐饮员工运营。'
+      positioning:`${c.product} = 为${c.audience}策展的「城市晨味」自助仪式：三套主题分区取用，十分钟安顿，一城风味。`,
+      scene:`工作日上午 7–9 点的酒店自助餐厅，${c.audience}在「晨间精选」三套主题分区（粤式清润 / 中原暖胃 / 西式利落）自主取用，于独立安静角十分钟吃完有本地风味的一餐，解决选择过载与休闲客混杂喧闹。`
     };
   } else {
     const val=c.value||'核心价值', aud=c.audience||'目标年轻人', prod=c.product||'产品';
     output={
       positioning:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
       scene:`在${aud}最在意的时刻，用精选替代堆砌，解决其最痛的适配问题，让"这为我而生"被立刻感知。`,
-      copy:`主文案说人话：把"${val}"翻成一句${aud}听得懂的话，例如"挑一套就走"。`,
+      copy:`主文案说人话：把"${val}"提炼成一句${aud}听得懂的话，例如"挑一套就走"。`,
       packaging:'把被埋没的资产策展成主角，配故事卡，用克制传达高级感。',
       channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
       community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'
     };
   }
-  return {understand,reframe,opportunity:opp,translate,output};
+  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c)};
 }
 
 async function callLLM(messages){
@@ -419,9 +477,10 @@ function buildPrompt(c){
  "opportunity":{"control":["掌控感机遇1","机遇2"],"deserved":["配得感机遇1"],"gratification":["满足感机遇1"]},
  "translate":[{"step":"产品翻译","principle":"通用原则","methods":["实操方法1","方法2","方法3"],"forYou":["链接该用户案例的做法1","做法2","做法3"]},
               {"step":"包装翻译",...},{"step":"沟通翻译",...},{"step":"渠道翻译",...},{"step":"社群翻译",...}],
- 注意：每个类别必须给出宝洁实操三法（methods，3 条固定方法）以及与用户案例逐条链接的具体做法（forYou，3 条，分别对应三法，禁止出现【】占位符或"从X翻成Y"这类元指令）。
- "output":{"positioning":"一句话定位","scene":"场景定义","copy":"用户语言文案方向","packaging":"包装/呈现方向","channel":"渠道方向","community":"社群方向"}
-}`;
+ 注意：每个类别必须给出宝洁实操三法（methods，3 条固定方法）以及与用户案例逐条链接的具体做法（forYou，3 条，分别对应三法，禁止出现【】占位符或"把X改成Y"这类元指令）。
+ "output":{"positioning":"一句话定位","scene":"场景定义"},
+ "plan":[{"task":"具体执行任务（扎根案例，可落地）","deliverable":"该任务交付物","timeline":"时间点（如 第1-4周）","owner":"责任人（岗位）","resource":"所需资源（预算/人力/工具）"}]
+} 注意：plan 必须包含 5 条执行项，每条含 task/deliverable/timeline/owner/resource 五项，全部具体可执行，禁止【】占位符与空泛表述。`;
 }
 async function reasonAI(c){
   try{
@@ -430,6 +489,8 @@ async function reasonAI(c){
     const txt=await callLLM([sys,usr]);
     const data=JSON.parse(txt);
     if(!data.translate||!data.output)throw new Error('schema 缺字段');
+    const dom=detectDomain([c.product,c.audience,c.value,c.current,c.pain].join(' '));
+    if(!data.plan||!data.plan.length)data.plan=genPlan(dom,c);
     return data;
   }catch(e){console.warn('AI 推理失败，回落本地：',e.message);return null;}
 }
@@ -457,7 +518,7 @@ function render(d){
 
   const r=d.reframe;
   document.getElementById('out-reframe').innerHTML=`
-    <div class="stage"><div class="tag">2 · 重构问题</div><h3>把企业痛点翻成用户机会</h3>
+    <div class="stage"><div class="tag">2 · 重构问题</div><h3>把企业痛点转为用户机会</h3>
     <p><b>当前阻力：</b>${esc(r.problem||'')}</p>
     <p><b>重构后：</b>${esc(r.reframed||'')}</p>
     <p class="hint">${esc(r.why||'')}</p></div>`;
@@ -482,15 +543,26 @@ function render(d){
       </div>`).join('')}
     </div>`;
 
-  const o2=d.output;
+  const o2=d.output||{};
+  const pl=d.plan||[];
+  const pf=(k,label,val,rows)=>`<div class="pf"><span class="pl">${label}</span><textarea class="edit" data-k="${k}" rows="${rows||1}">${esc(val||'')}</textarea></div>`;
   document.getElementById('out-output').innerHTML=`
-    <div class="stage"><div class="tag">5 · 转型专案（产出）</div><h3>可交付、可编辑</h3>
-    <div class="step"><div class="name">一句话定位</div><textarea class="edit" data-k="output.positioning" rows="2">${esc(o2.positioning||'')}</textarea></div>
-    <div class="step"><div class="name">场景定义</div><textarea class="edit" data-k="output.scene" rows="2">${esc(o2.scene||'')}</textarea></div>
-    <div class="step"><div class="name">用户语言文案</div><textarea class="edit" data-k="output.copy" rows="2">${esc(o2.copy||'')}</textarea></div>
-    <div class="step"><div class="name">包装 / 呈现</div><textarea class="edit" data-k="output.packaging" rows="2">${esc(o2.packaging||'')}</textarea></div>
-    <div class="step"><div class="name">渠道</div><textarea class="edit" data-k="output.channel" rows="2">${esc(o2.channel||'')}</textarea></div>
-    <div class="step"><div class="name">社群</div><textarea class="edit" data-k="output.community" rows="2">${esc(o2.community||'')}</textarea></div>
+    <div class="stage"><div class="tag">5 · 转型专案（执行计划）</div><h3>从策略到落地：任务 / 产出 / 时间点 / 责任人 / 资源</h3>
+      <div class="step"><div class="name">一句话定位</div><textarea class="edit" data-k="output.positioning" rows="2">${esc(o2.positioning||'')}</textarea></div>
+      <div class="step"><div class="name">场景定义</div><textarea class="edit" data-k="output.scene" rows="2">${esc(o2.scene||'')}</textarea></div>
+      <div class="plan">
+        ${pl.map((it,i)=>`
+          <div class="plan-row">
+            <div class="plan-h"><span class="plan-no">${i+1}</span> 任务</div>
+            <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
+            <div class="plan-grid">
+              <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
+              <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
+              <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
+              <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
+            </div>
+          </div>`).join('')}
+      </div>
     </div>`;
 }
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -499,20 +571,33 @@ let lastData=null;
 const _render=render;
 render=function(d){lastData=d;_render(d);};
 
+function setByPath(obj, path, val){
+  const parts=path.split('.'); let o=obj;
+  for(let i=0;i<parts.length-1;i++){
+    if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};
+    o=o[parts[i]];
+  }
+  o[parts[parts.length-1]]=val;
+}
 function copyPlan(){
   const c={product:v('i-product'),audience:v('i-audience'),value:v('i-value'),current:v('i-current'),pain:v('i-pain')};
   const d=lastData; if(!d){return;}
+  const data=JSON.parse(JSON.stringify(d));
+  document.querySelectorAll('[data-k]').forEach(el=>{ setByPath(data, el.dataset.k, el.value); });
   let t=`【Z 世代代际翻译 · 转型专案】\n产品：${c.product}\n受众：${c.audience}\n价值：${c.value}\n现状：${c.current}\n适配问题：${c.pain}\n\n`;
-  t+=`一、理解\n${d.understand.summary}\n`;
-  t+=`\n二、重构问题\n阻力：${d.reframe.problem}\n重构：${d.reframe.reframed}\n`;
-  t+=`\n三、机遇空间\n掌控感：${(d.opportunity.control||[]).join('；')}\n配得感：${(d.opportunity.deserved||[]).join('；')}\n满足感：${(d.opportunity.gratification||[]).join('；')}\n`;
+  t+=`一、理解\n${data.understand.summary}\n`;
+  t+=`\n二、重构问题\n阻力：${data.reframe.problem}\n重构：${data.reframe.reframed}\n`;
+  t+=`\n三、机遇空间\n掌控感：${(data.opportunity.control||[]).join('；')}\n配得感：${(data.opportunity.deserved||[]).join('；')}\n满足感：${(data.opportunity.gratification||[]).join('；')}\n`;
   t+=`\n四、五步翻译（实操三法 + 链接你的案例）\n`;
-  d.translate.forEach(s=>{
+  (data.translate||[]).forEach(s=>{
     t+=`· ${s.step}（${s.principle}）\n`;
     (s.methods||[]).forEach((m,j)=>{t+=`   实操三法${j+1}：${m}\n`;});
     (s.forYou||[]).forEach((f,j)=>{t+=`   链接案例${j+1}：${f}\n`;});
   });
-  t+=`\n五、转型专案\n定位：${d.output.positioning}\n场景：${d.output.scene}\n文案：${d.output.copy}\n包装：${d.output.packaging}\n渠道：${d.output.channel}\n社群：${d.output.community}\n`;
+  t+=`\n五、转型专案（执行计划）\n定位：${data.output.positioning}\n场景：${data.output.scene}\n`;
+  (data.plan||[]).forEach((it,i)=>{
+    t+=`\n行动 ${i+1} · 任务：${it.task}\n   产出：${it.deliverable}\n   时间点：${it.timeline}\n   责任人：${it.owner}\n   资源：${it.resource}\n`;
+  });
   navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
 }
 function toast(m){let t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:99';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
