@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z 世代代际翻译器 · v0.2</title>
+<style>
+  :root{
+    --green:#0E6B50; --green-d:#0a513c; --ink:#1c1c1e; --mut:#6b6b70;
+    --line:#e6e6e8; --bg:#f6f7f8; --card:#fff; --warn:#b9530a; --chip:#eef4f1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
+  header{padding:18px 22px;border-bottom:1px solid var(--line);background:var(--card);
+         display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.5px}
+  header .sub{font-size:12px;color:var(--mut)}
+  .ai-flag{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--green);font-weight:600}
+  .ai-flag.off{background:#f0f0f0;color:var(--mut)}
+  main{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  label{display:block;font-weight:600;margin:14px 0 6px;font-size:14px}
+  label:first-child{margin-top:0}
+  .hint{font-size:12px;color:var(--mut);font-weight:400;margin-left:6px}
+  textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+         font:inherit;resize:vertical;background:#fcfcfd}
+  textarea:focus,input:focus{outline:2px solid var(--green);outline-offset:0}
+  .ops{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  button{cursor:pointer;font:inherit;font-weight:600;border:none;border-radius:10px;padding:11px 18px}
+  .btn-primary{background:var(--green);color:#fff;width:100%;font-size:15px;margin-top:14px}
+  .btn-primary:hover{background:var(--green-d)}
+  .btn-ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
+  .btn-link{background:none;color:var(--mut);text-decoration:underline;padding:6px 4px}
+  .stage{border-left:3px solid var(--green);padding:4px 0 4px 14px;margin:18px 0}
+  .stage h3{margin:0 0 8px;font-size:15px}
+  .stage .tag{font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+  .sig{display:inline-block;background:var(--chip);color:var(--green-d);font-size:12px;
+       padding:2px 9px;border-radius:999px;margin:2px 4px 2px 0}
+  .q{color:var(--green-d);font-style:italic}
+  .pillar{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+  .pillar b{color:var(--green-d)}
+  .step{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
+  .step .name{font-weight:700;color:var(--green-d)}
+  .step .pr{font-size:12px;color:var(--mut);margin:4px 0}
+  .edit{width:100%;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font:inherit;margin-top:6px;background:#fff}
+  .edit:focus{outline:2px solid var(--green)}
+  .msg{font-size:13px;color:var(--warn);margin-top:8px}
+  .empty{color:var(--mut);font-size:14px;padding:30px;text-align:center}
+  .setrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .setrow select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);font:inherit}
+  .setrow input{flex:1;min-width:220px}
+  .hidden{display:none}
+  footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Z 世代代际翻译器</h1>
+    <div class="sub">把品牌/产品/服务，用设计思维翻译成 Z 世代想要的样子 · 三支柱 × 宝洁五步法</div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="aiFlag" class="ai-flag off">本地模式（无 AI）</span>
+    <button class="btn-link" onclick="openSettings()">设置</button>
+  </div>
+</header>
+
+<main>
+  <div class="panel">
+    <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">输入 · 品牌现状</div>
+    <label>1 · 你的产品 / 服务是什么？<span class="hint">越具体越好</span></label>
+    <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务"></textarea>
+
+    <label>2 · 目标受众是谁？<span class="hint">希望触达的年轻人</span></label>
+    <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主"></textarea>
+
+    <label>3 · 你最想传达的核心功能 / 价值<span class="hint">翻译的"原料"</span></label>
+    <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选"></textarea>
+
+    <label>4 · 你目前在做什么，但年轻人不买账？<span class="hint">越具体越准</span></label>
+    <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐精华"></textarea>
+
+    <label>5 · 最想解决的适配问题<span class="hint">选填</span></label>
+    <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差"></textarea>
+
+    <button class="btn-primary" onclick="generate()">生成转型专案</button>
+    <div class="ops">
+      <button class="btn-link" onclick="clearAll()">清空</button>
+      <span id="saveTip" class="hint"></span>
+    </div>
+  </div>
+
+  <div id="result" class="panel hidden">
+    <div class="ops" style="justify-content:space-between">
+      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">转型专案 · 全部可编辑</div>
+      <button class="btn-ghost" onclick="copyPlan()">复制整份</button>
+    </div>
+    <div id="out-understand"></div>
+    <div id="out-reframe"></div>
+    <div id="out-opportunity"></div>
+    <div id="out-translate"></div>
+    <div id="out-output"></div>
+  </div>
+
+  <div id="emptyHint" class="empty">填写左侧五项，点「生成转型专案」。所有产出基于你写的内容，可随时改。</div>
+</main>
+
+<div id="settings" class="panel hidden" style="position:fixed;inset:40px 16px auto;max-width:520px;margin:0 auto;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.18)">
+  <div class="tag" style="font-size:11px;color:var(--mut)">设置 · AI 推理</div>
+  <p class="hint" style="margin:6px 0 12px">填入 Key 后，翻译器会用设计思维真推理你的案例（推荐 DeepSeek）。不填则用本地结构化降级，能跑但不具备真推理能力。Key 仅存本机浏览器。</p>
+  <div class="setrow">
+    <select id="cfgBrand">
+      <option value="DeepSeek">DeepSeek</option>
+      <option value="OpenAI">OpenAI</option>
+      <option value="Gemini">Gemini</option>
+    </select>
+    <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
+  </div>
+  <div class="ops" style="margin-top:12px">
+    <button class="btn-primary" style="width:auto;margin:0" onclick="saveSettings()">保存</button>
+    <button class="btn-link" onclick="closeSettings()">取消</button>
+    <span id="cfgMsg" class="hint"></span>
+  </div>
+</div>
+
+<footer>v0.2 · 框架 + 本地降级 + 预留 AI 口 · 功能优先，美观后续</footer>
+
+<script>
+const LS_AI='zt_ai', LS_DRAFT='zt_draft';
+const BRANDS={
+  DeepSeek:{baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
+  OpenAI:{baseUrl:'https://api.openai.com/v1',model:'gpt-4o-mini'},
+  Gemini:{baseUrl:'https://generativelanguage.googleapis.com/v1beta/openai/',model:'gemini-2.0-flash'}
+};
+function getAI(){try{return JSON.parse(localStorage.getItem(LS_AI)||'{}')}catch(e){return{}}}
+function setFlag(){
+  const a=getAI(); const el=document.getElementById('aiFlag');
+  if(a.apiKey){el.textContent='AI 推理已开启 · '+a.brand; el.className='ai-flag';}
+  else{el.textContent='本地模式（无 AI）'; el.className='ai-flag off';}
+}
+function saveSettings(){
+  const brand=document.getElementById('cfgBrand').value;
+  const key=document.getElementById('cfgApiKey').value.trim();
+  localStorage.setItem(LS_AI,JSON.stringify({brand,apiKey:key}));
+  document.getElementById('cfgMsg').textContent=key?'已保存':'已清除 Key';
+  setFlag(); setTimeout(closeSettings,500);
+}
+function openSettings(){const a=getAI();document.getElementById('cfgBrand').value=a.brand||'DeepSeek';
+  document.getElementById('cfgApiKey').value=a.apiKey||'';document.getElementById('settings').classList.remove('hidden');}
+function closeSettings(){document.getElementById('settings').classList.add('hidden');}
+
+function saveDraft(){
+  const d={p:v('i-product'),a:v('i-audience'),val:v('i-value'),c:v('i-current'),pn:v('i-pain')};
+  localStorage.setItem(LS_DRAFT,JSON.stringify(d));
+  document.getElementById('saveTip').textContent='已自动存草稿';
+  setTimeout(()=>document.getElementById('saveTip').textContent='',1500);
+}
+function restoreDraft(){
+  try{const d=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}');
+    if(d.p)document.getElementById('i-product').value=d.p;
+    if(d.a)document.getElementById('i-audience').value=d.a;
+    if(d.val)document.getElementById('i-value').value=d.val;
+    if(d.c)document.getElementById('i-current').value=d.c;
+    if(d.pn)document.getElementById('i-pain').value=d.pn;
+  }catch(e){}
+}
+function clearAll(){['i-product','i-audience','i-value','i-current','i-pain'].forEach(id=>document.getElementById(id).value='');
+  localStorage.removeItem(LS_DRAFT);document.getElementById('result').classList.add('hidden');
+  document.getElementById('emptyHint').classList.remove('hidden');}
+const v=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+
+function detectSignals(text){
+  const t=text||''; const S=[];
+  const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:m[0]});};
+  add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
+  add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
+  add('mixed','人群错配',/混杂|混合|各类.*客|不同.*人|休闲.*客/);
+  add('boring','缺乏情绪价值',/无聊|没意思|枯燥|平淡|无趣/);
+  add('noculture','缺乏文化叙事',/没文化|没有故事|无故事|缺乏叙事|没有特色|没有灵魂|没灵魂|同质化/);
+  add('stale','形态陈旧',/50\s*年|没变|老旧|过时|老套|传统.*没变|几十年/);
+  add('fakepremium','价值感知错位',/高档|精致|奢华|轻奢|但.*廉价|显得便宜|不值/);
+  add('narrative','无身份认同',/没有.*感|缺乏.*感|不.*我|不是.*我/);
+  return S;
+}
+function detectDomain(text){
+  const t=(text||'');
+  if(/酒店|早餐|餐饮|餐厅|咖啡|食物|食品|饭|料理|烘焙/.test(t))return 'hospitality';
+  if(/美妆|护肤|化妆|口红|面膜|香水/.test(t))return 'beauty';
+  if(/App|软件|应用|平台|小程序|网站|系统|工具/.test(t))return 'digital';
+  if(/服饰|衣服|鞋|包|穿搭|配饰/.test(t))return 'fashion';
+  if(/家电|电器|锅|家居|家具|数码/.test(t))return 'product';
+  return 'generic';
+}
+
+function reasonLocal(c){
+  const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
+  const signals=detectSignals(c.current+' '+c.pain);
+  const domain=detectDomain(allText);
+
+  const understand={
+    summary:`产品「${c.product}」面向${c.audience}；想传达「${c.value}」。现状：${c.current||'（未填）'}。适配痛点：${c.pain||'（未填）'}。`,
+    signals:signals.length?signals:[{tag:'none',label:'未发现明显偏科信号',quote:''}]
+  };
+
+  const reframes={
+    overload:'问题不是"不够多"，而是"太多导致失控"。年轻人要的是被策展好的有限选择，而非无限清单——你给的丰富，恰恰成了他的认知负担。',
+    chaos:'问题不是"服务不到位"，而是"环境剥夺了掌控感与安静"。需要把空间与节奏重新分配给目标人群，而不是给所有人同等待遇。',
+    mixed:'问题不是"客人多"，而是"错的人出现在同一个场景里"。同一空间塞进异质人群，会让目标用户觉得"这里不是为我准备的"。',
+    boring:'问题不是"内容少"，而是"没有情绪钩子"。年轻人不为功能买单，为"这一刻的感觉"买单——你缺的是可被记住的微小确幸。',
+    noculture:'你手握文化资产，却把它埋成同质化堆砌。问题不是没特色，是"特色未被策展成身份认同"，用户看见了却无感。',
+    stale:'形态陈旧本身不是病，病在"用旧语言对新时代说话"。要翻译，不是翻新——换一套年轻人听得懂的方言，根不必动。',
+    fakepremium:'你贴了"高档"的标，用户却感到廉价。问题在价值感知错位：高级感没通过细节与克制传达，反而显得用力过猛。',
+    narrative:'用户没在你的产品里看到"自己"。问题不是功能不对，是缺少"这说的就是我"的镜像——身份认同没被接住。'
+  };
+  let reframed='';
+  const used=signals.filter(s=>reframes[s.tag]).slice(0,2);
+  if(used.length){used.forEach(s=>reframed+=reframes[s.tag]+' ');}
+  else{reframed='核心矛盾不在功能强弱，而在"你表达的方式与目标用户的接收频率对不上"——需要一次代际翻译，而非功能叠加。';}
+  const reframe={
+    problem:`${c.product}当前最大的适配阻力，来自${used.length?used.map(s=>s.label).join('、'):'表达与接收的频率错位'}。`,
+    reframed:reframed.trim(),
+    why:'重构的目的，是把"企业视角的痛点"翻成"用户视角的机会"——先看清卡在哪根支柱，再动手翻译。'
+  };
+
+  const pillarMap={
+    control:['overload','chaos','mixed'],
+    deserved:['fakepremium','noculture','narrative'],
+    gratification:['boring','noculture']
+  };
+  const opp={control:[],deserved:[],gratification:[]};
+  const ctrlLines={
+    overload:`用"策展替代堆砌"：给有限但精选的选项，把决策成本降到一次选择。`,
+    chaos:`重排空间/节奏，把${c.audience}从喧闹中隔离出来，恢复掌控感。`,
+    mixed:`物理或时段上区隔目标人群，让${c.audience}感到"这里为我而设"。`
+  };
+  const desLines={
+    fakepremium:`用克制与细节传达"高档"，删掉用力过猛的符号，让价值被感知而非被宣称。`,
+    noculture:`把你提到的本地/文化资产策展成主角，变成用户可炫耀的身份标签。`,
+    narrative:`在体验里放一面"镜子"，让${c.audience}看到"这说的就是我"。`
+  };
+  const graLines={
+    boring:`设计一个可被记住的微小确幸时刻（一道招牌、一个安静角落、一次惊喜）。`,
+    noculture:`让用户"发现"而非"被告知"——文化以彩蛋形式出现，制造惊喜。`
+  };
+  signals.forEach(s=>{
+    if(pillarMap.control.includes(s.tag)&&ctrlLines[s.tag])opp.control.push(ctrlLines[s.tag]);
+    if(pillarMap.deserved.includes(s.tag)&&desLines[s.tag])opp.deserved.push(desLines[s.tag]);
+    if(pillarMap.gratification.includes(s.tag)&&graLines[s.tag])opp.gratification.push(graLines[s.tag]);
+  });
+  if(!opp.control.length)opp.control.push('梳理用户与产品的每一次接触点，找出剥夺掌控感的环节并收拢。');
+  if(!opp.deserved.length)opp.deserved.push('确认品牌主张与目标用户的身份是否对齐，补上"为我而生"的证据。');
+  if(!opp.gratification.length)opp.gratification.push('在关键路径上增设即时正向反馈，让进展被立刻看见。');
+
+  const trans={
+    hospitality:{
+      product:`推出"晨间/时段精选"——3 套轮转主题（如本地风味/轻盈健康/高效西式），5 秒选 1 套，终结选择瘫痪；设独立安静区隔离休闲客喧闹。`,
+      packaging:`把"自助餐"重命名为"城市晨味"策展式本地早餐画廊；每道地域早餐配手绘故事卡，让分类精华当主角而非被埋没。`,
+      communication:`砍掉"丰盛/匠心"腔，改说"三套精选挑一套就走""本地人从小吃到大的早餐，今天归你"，用真实旅客短评当文案。`,
+      channel:`早餐的渠道是预订旅程+入住触点+社媒背书：在 booking 漏斗让旅客"入住即选清晨仪式"，用商务客视角在小红书/抖音种草安静角落与本地早餐。`,
+      community:`建常旅客"晨味研究所"圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系，由年轻员工而非总部运营。`
+    },
+    beauty:{
+      product:`把"全功效堆叠"翻成"场景护肤"：通勤/熬夜/约会各一方案，降低选择焦虑，让用户 10 秒知道自己该用哪支。`,
+      packaging:`保留经典瓶身识别，推艺术家/季节联名限定，先在社媒小批量测，再决定是否全铺。`,
+      communication:`停用"逆龄/奢宠"腔，改说人话："熬夜救急，一支压住"；用真实用户短评做主文案。`,
+      channel:`从货架翻到小红书/B站/抖音测评生态，线下设打卡试用点，BA 话术从"欢迎光临"改成"今天皮肤想解决什么"。`,
+      community:`设"肤质答疑日"不卖货只回答；招募产品体验官参与配方共创；由年轻运营而非老板发声。`
+    },
+    digital:{
+      product:`把"功能列表"翻成"一句话能做完的事"：每个入口对应一个明确场景，砍掉用户用不到的复杂能力。`,
+      packaging:`界面用克制留白与清晰层级传达"懂我"，而非堆功能与弹窗。`,
+      communication:`文案从"赋能/闭环"翻成"3 步搞定""帮你省下 20 分钟"，用用户原话。`,
+      channel:`从应用商店硬广翻到 B站/小红书真实使用场景演示，建设"模板/玩法"内容货架而非单纯下载页。`,
+      community:`建用户共创群共建设置/模板，定期答疑日，让核心用户参与新功能投票。`
+    },
+    fashion:{
+      product:`把"全场款式"翻成"风格胶囊"：按场景（通勤/周末/约会）组合，降低搭配认知负荷。`,
+      packaging:`保留品牌符号，推联名/插画特别款，社媒小批量测水。`,
+      communication:`停用"奢华/高级感"空话，改说"上班也能舒服好看""小个子友好"，用真实买家秀。`,
+      channel:`从商场专柜翻到小红书穿搭/得物鉴定生态，线下设拍照打卡与一键试穿。`,
+      community:`建风格共创社群，招募穿搭体验官，由年轻买手而非总部定调。`
+    },
+    product:{
+      product:`把"参数堆叠"翻成"场景解法"：先定义用户何时用它，再倒推该保留的功能，砍掉用不上的复杂。`,
+      packaging:`保留核心识别，推联名/季节限定，社媒小批量测。`,
+      communication:`停用"匠心/颠覆"腔，改说"一口煎炒煮""搬家不心疼"，用用户原话。`,
+      channel:`从商超/电商翻到抖音/小红书/B站场景化内容，线下设体验打卡点，店员改问"你平时怎么用"。`,
+      community:`建用户研究所，答疑日不卖货，招募体验官测新品，年轻员工运营。`
+    },
+    generic:{
+      product:`先定义"用户在什么情况下需要它"，再倒推功能，把功能写成用户原话场景后精选。`,
+      packaging:`双轨：保留经典识别给老用户，推年轻向特别版小批量测。`,
+      communication:`黑话过滤器：停用"赋能/矩阵/闭环/匠心"，改说人话；用用户评论原话做文案。`,
+      channel:`优先选 1 个年轻人聚集渠道做"翻译试验田"6 个月，线下触点年轻化。`,
+      community:`设"答疑日"不卖货，招募体验官，让年轻员工而非老板运营社群。`
+    }
+  };
+  const T=trans[domain]||trans.generic;
+  const principles={
+    product:'把「功能」翻成「场景」：立项先定义使用场景，再倒推功能。',
+    packaging:'把「经典」翻成「潮」：双轨保留经典，推年轻向特别版。',
+    communication:'把「品牌说」翻成「用户说」：黑话过滤，用原话。',
+    channel:'从「大卖场」翻到「新货架」：选年轻人聚集渠道做试验田。',
+    community:'从「广播」翻成「对话」：答疑日 + 体验官 + 年轻运营。'
+  };
+  const translate=[
+    {step:'产品翻译',principle:principles.product,forYou:T.product},
+    {step:'包装翻译',principle:principles.packaging,forYou:T.packaging},
+    {step:'沟通翻译',principle:principles.communication,forYou:T.communication},
+    {step:'渠道翻译',principle:principles.channel,forYou:T.channel},
+    {step:'社群翻译',principle:principles.community,forYou:T.community}
+  ];
+
+  const output={
+    positioning:`${c.product} = 为${c.audience}策展好的、有本地身份感的、安静可控的体验：少而精，一击即中。`,
+    scene:`场景定义：在【目标用户最在意的时刻】，用【精选而非堆砌】解决【核心痛点】。`,
+    copy:`用户语言文案：从"${c.value}"翻成一句话人话，例如"挑一套就走，今天归你"。`,
+    packaging:`包装/呈现：把被埋没的资产（如本地特色）策展成主角，配故事卡。`,
+    channel:`渠道：从【当前触达】翻到【年轻人聚集渠道】，用真实用户视角种草。`,
+    community:`社群：建答疑日 + 体验官机制，让年轻员工运营，而非群发促销。`
+  };
+  return {understand,reframe,opportunity:opp,translate,output};
+}
+
+async function callLLM(messages){
+  const a=getAI(); if(!a.apiKey)throw new Error('no key');
+  const cfg=BRANDS[a.brand]||BRANDS.DeepSeek;
+  const url=cfg.baseUrl.replace(/\/$/,'')+'/chat/completions';
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+a.apiKey},
+    body:JSON.stringify({model:cfg.model,messages,temperature:0.7,response_format:{type:'json_object'}})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const j=await res.json(); return j.choices[0].message.content;
+}
+function buildPrompt(c){
+  return `你是 Z 世代代际翻译专家，用设计思维（理解→重构→机遇）把品牌翻译成年轻人想要的样子。
+基于三支柱（掌控感/配得感/满足感）与宝洁五步法（产品/包装/沟通/渠道/社群翻译）。
+严禁编造与输入无关的场景；所有建议必须扎根用户填写的内容，可引用其原话。
+
+输入：
+产品/服务：${c.product}
+目标受众：${c.audience}
+核心功能/价值：${c.value}
+目前在做什么但不买账：${c.current}
+最想解决的适配问题：${c.pain}
+
+严格只输出 JSON（不要解释），结构如下：
+{
+ "understand":{"summary":"一句话理解","signals":[{"label":"信号名","quote":"引用用户原话"}]},
+ "reframe":{"problem":"当前最大适配阻力","reframed":"重构后的问题陈述（2-3句，设计思维视角）","why":"为何这样重构"},
+ "opportunity":{"control":["掌控感机遇1","机遇2"],"deserved":["配得感机遇1"],"gratification":["满足感机遇1"]},
+ "translate":[{"step":"产品翻译","principle":"通用原则","forYou":"针对该品牌的具体做法"},
+              {"step":"包装翻译",...},{"step":"沟通翻译",...},{"step":"渠道翻译",...},{"step":"社群翻译",...}],
+ "output":{"positioning":"一句话定位","scene":"场景定义","copy":"用户语言文案方向","packaging":"包装/呈现方向","channel":"渠道方向","community":"社群方向"}
+}`;
+}
+async function reasonAI(c){
+  try{
+    const sys={role:'system',content:'你是严谨的代际翻译顾问，只输出符合 schema 的 JSON。'};
+    const usr={role:'user',content:buildPrompt(c)};
+    const txt=await callLLM([sys,usr]);
+    const data=JSON.parse(txt);
+    if(!data.translate||!data.output)throw new Error('schema 缺字段');
+    return data;
+  }catch(e){console.warn('AI 推理失败，回落本地：',e.message);return null;}
+}
+
+async function generate(){
+  const c={product:v('i-product'),audience:v('i-audience'),value:v('i-value'),current:v('i-current'),pain:v('i-pain')};
+  if(!c.product&&!c.audience&&!c.current){document.getElementById('emptyHint').textContent='请至少填写产品/受众/现状之一。';return;}
+  saveDraft();
+  const ai=getAI();
+  let data=null;
+  if(ai.apiKey){data=await reasonAI(c);}
+  if(!data)data=reasonLocal(c);
+  render(data);
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('emptyHint').classList.add('hidden');
+}
+
+function render(d){
+  const u=d.understand;
+  document.getElementById('out-understand').innerHTML=`
+    <div class="stage"><div class="tag">1 · 理解</div><h3>我读到的案例</h3>
+    <p>${esc(u.summary)}</p>
+    <div>${(u.signals||[]).map(s=>s.quote?`<span class="sig">${esc(s.label)}：<span class="q">${esc(s.quote)}</span></span>`:`<span class="sig">${esc(s.label)}</span>`).join('')}</div>
+    </div>`;
+
+  const r=d.reframe;
+  document.getElementById('out-reframe').innerHTML=`
+    <div class="stage"><div class="tag">2 · 重构问题</div><h3>把企业痛点翻成用户机会</h3>
+    <p><b>当前阻力：</b>${esc(r.problem||'')}</p>
+    <p><b>重构后：</b>${esc(r.reframed||'')}</p>
+    <p class="hint">${esc(r.why||'')}</p></div>`;
+
+  const o=d.opportunity;
+  document.getElementById('out-opportunity').innerHTML=`
+    <div class="stage"><div class="tag">3 · 机遇空间（三支柱）</div><h3>偏科在哪，机会就在哪</h3>
+    <div class="pillar"><b>掌控感</b>（降负荷、给秩序）：${(o.control||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
+    <div class="pillar"><b>配得感</b>（让我觉得"配得上我"）：${(o.deserved||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
+    <div class="pillar"><b>满足感</b>（即时、有梗、有参与）：${(o.gratification||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
+    </div>`;
+
+  const t=d.translate;
+  document.getElementById('out-translate').innerHTML=`
+    <div class="stage"><div class="tag">4 · 五步翻译（怎么翻）</div><h3>从逻辑到实操</h3>
+    ${t.map((s,i)=>`<div class="step"><div class="name">${esc(s.step)}</div>
+      <div class="pr">${esc(s.principle||'')}</div>
+      <div>针对你：</div>
+      <textarea class="edit" data-k="translate.${i}.forYou" rows="3">${esc(s.forYou||'')}</textarea></div>`).join('')}
+    </div>`;
+
+  const o2=d.output;
+  document.getElementById('out-output').innerHTML=`
+    <div class="stage"><div class="tag">5 · 转型专案（产出）</div><h3>可交付、可编辑</h3>
+    <div class="step"><div class="name">一句话定位</div><textarea class="edit" data-k="output.positioning" rows="2">${esc(o2.positioning||'')}</textarea></div>
+    <div class="step"><div class="name">场景定义</div><textarea class="edit" data-k="output.scene" rows="2">${esc(o2.scene||'')}</textarea></div>
+    <div class="step"><div class="name">用户语言文案</div><textarea class="edit" data-k="output.copy" rows="2">${esc(o2.copy||'')}</textarea></div>
+    <div class="step"><div class="name">包装 / 呈现</div><textarea class="edit" data-k="output.packaging" rows="2">${esc(o2.packaging||'')}</textarea></div>
+    <div class="step"><div class="name">渠道</div><textarea class="edit" data-k="output.channel" rows="2">${esc(o2.channel||'')}</textarea></div>
+    <div class="step"><div class="name">社群</div><textarea class="edit" data-k="output.community" rows="2">${esc(o2.community||'')}</textarea></div>
+    </div>`;
+}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+let lastData=null;
+const _render=render;
+render=function(d){lastData=d;_render(d);};
+
+function copyPlan(){
+  const c={product:v('i-product'),audience:v('i-audience'),value:v('i-value'),current:v('i-current'),pain:v('i-pain')};
+  const d=lastData; if(!d){return;}
+  let t=`【Z 世代代际翻译 · 转型专案】\n产品：${c.product}\n受众：${c.audience}\n价值：${c.value}\n现状：${c.current}\n适配问题：${c.pain}\n\n`;
+  t+=`一、理解\n${d.understand.summary}\n`;
+  t+=`\n二、重构问题\n阻力：${d.reframe.problem}\n重构：${d.reframe.reframed}\n`;
+  t+=`\n三、机遇空间\n掌控感：${(d.opportunity.control||[]).join('；')}\n配得感：${(d.opportunity.deserved||[]).join('；')}\n满足感：${(d.opportunity.gratification||[]).join('；')}\n`;
+  t+=`\n四、五步翻译\n`;
+  d.translate.forEach(s=>{t+=`· ${s.step}：原则=${s.principle}｜针对你=${s.forYou}\n`;});
+  t+=`\n五、转型专案\n定位：${d.output.positioning}\n场景：${d.output.scene}\n文案：${d.output.copy}\n包装：${d.output.packaging}\n渠道：${d.output.channel}\n社群：${d.output.community}\n`;
+  navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
+}
+function toast(m){let t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:99';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
+
+restoreDraft(); setFlag();
+</script>
+</body>
+</html>
