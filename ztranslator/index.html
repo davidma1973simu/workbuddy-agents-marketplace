@@ -43,6 +43,14 @@
   .step{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
   .step .name{font-weight:700;color:var(--green-d)}
   .step .pr{font-size:12px;color:var(--mut);margin:4px 0}
+  .block{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .blk{display:inline-block;font-size:11px;background:var(--green);color:#fff;padding:2px 8px;border-radius:6px;margin-bottom:6px;letter-spacing:.5px}
+  .fy-blk{background:#7a5230}
+  .m-item{display:flex;gap:8px;font-size:13px;margin:4px 0;line-height:1.5;align-items:flex-start}
+  .m-no{flex:0 0 18px;height:18px;width:18px;border-radius:50%;background:var(--chip);color:var(--green-d);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .fy-item{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .fy-no{flex:0 0 18px;height:18px;width:18px;border-radius:50%;background:#f3e9df;color:#7a5230;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:8px}
+  .fy-item .edit{margin-top:0;flex:1;font-size:13px}
   .edit{width:100%;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font:inherit;margin-top:6px;background:#fff}
   .edit:focus{outline:2px solid var(--green)}
   .msg{font-size:13px;color:var(--warn);margin-top:8px}
@@ -252,74 +260,134 @@ function reasonLocal(c){
   if(!opp.deserved.length)opp.deserved.push('确认品牌主张与目标用户的身份是否对齐，补上"为我而生"的证据。');
   if(!opp.gratification.length)opp.gratification.push('在关键路径上增设即时正向反馈，让进展被立刻看见。');
 
-  const trans={
-    hospitality:{
-      product:`推出"晨间/时段精选"——3 套轮转主题（如本地风味/轻盈健康/高效西式），5 秒选 1 套，终结选择瘫痪；设独立安静区隔离休闲客喧闹。`,
-      packaging:`把"自助餐"重命名为"城市晨味"策展式本地早餐画廊；每道地域早餐配手绘故事卡，让分类精华当主角而非被埋没。`,
-      communication:`砍掉"丰盛/匠心"腔，改说"三套精选挑一套就走""本地人从小吃到大的早餐，今天归你"，用真实旅客短评当文案。`,
-      channel:`早餐的渠道是预订旅程+入住触点+社媒背书：在 booking 漏斗让旅客"入住即选清晨仪式"，用商务客视角在小红书/抖音种草安静角落与本地早餐。`,
-      community:`建常旅客"晨味研究所"圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系，由年轻员工而非总部运营。`
-    },
-    beauty:{
-      product:`把"全功效堆叠"翻成"场景护肤"：通勤/熬夜/约会各一方案，降低选择焦虑，让用户 10 秒知道自己该用哪支。`,
-      packaging:`保留经典瓶身识别，推艺术家/季节联名限定，先在社媒小批量测，再决定是否全铺。`,
-      communication:`停用"逆龄/奢宠"腔，改说人话："熬夜救急，一支压住"；用真实用户短评做主文案。`,
-      channel:`从货架翻到小红书/B站/抖音测评生态，线下设打卡试用点，BA 话术从"欢迎光临"改成"今天皮肤想解决什么"。`,
-      community:`设"肤质答疑日"不卖货只回答；招募产品体验官参与配方共创；由年轻运营而非老板发声。`
-    },
-    digital:{
-      product:`把"功能列表"翻成"一句话能做完的事"：每个入口对应一个明确场景，砍掉用户用不到的复杂能力。`,
-      packaging:`界面用克制留白与清晰层级传达"懂我"，而非堆功能与弹窗。`,
-      communication:`文案从"赋能/闭环"翻成"3 步搞定""帮你省下 20 分钟"，用用户原话。`,
-      channel:`从应用商店硬广翻到 B站/小红书真实使用场景演示，建设"模板/玩法"内容货架而非单纯下载页。`,
-      community:`建用户共创群共建设置/模板，定期答疑日，让核心用户参与新功能投票。`
-    },
-    fashion:{
-      product:`把"全场款式"翻成"风格胶囊"：按场景（通勤/周末/约会）组合，降低搭配认知负荷。`,
-      packaging:`保留品牌符号，推联名/插画特别款，社媒小批量测水。`,
-      communication:`停用"奢华/高级感"空话，改说"上班也能舒服好看""小个子友好"，用真实买家秀。`,
-      channel:`从商场专柜翻到小红书穿搭/得物鉴定生态，线下设拍照打卡与一键试穿。`,
-      community:`建风格共创社群，招募穿搭体验官，由年轻买手而非总部定调。`
-    },
-    product:{
-      product:`把"参数堆叠"翻成"场景解法"：先定义用户何时用它，再倒推该保留的功能，砍掉用不上的复杂。`,
-      packaging:`保留核心识别，推联名/季节限定，社媒小批量测。`,
-      communication:`停用"匠心/颠覆"腔，改说"一口煎炒煮""搬家不心疼"，用用户原话。`,
-      channel:`从商超/电商翻到抖音/小红书/B站场景化内容，线下设体验打卡点，店员改问"你平时怎么用"。`,
-      community:`建用户研究所，答疑日不卖货，招募体验官测新品，年轻员工运营。`
-    },
-    generic:{
-      product:`先定义"用户在什么情况下需要它"，再倒推功能，把功能写成用户原话场景后精选。`,
-      packaging:`双轨：保留经典识别给老用户，推年轻向特别版小批量测。`,
-      communication:`黑话过滤器：停用"赋能/矩阵/闭环/匠心"，改说人话；用用户评论原话做文案。`,
-      channel:`优先选 1 个年轻人聚集渠道做"翻译试验田"6 个月，线下触点年轻化。`,
-      community:`设"答疑日"不卖货，招募体验官，让年轻员工而非老板运营社群。`
-    }
+  // 宝洁五步法 · 每个类别的实操三法（固定方法论）
+  const PnG_METHODS={
+    '产品翻译':[
+      '场景脑暴会：召集内部 95/00 后，把产品功能写成 20 句用户原话，票选最打动人的 3 个场景',
+      '场景画面化：给每个场景设计一个具体的使用画面，让团队对齐"用户到底在什么状态用"',
+      '立项顺序倒转：先定义"用户在什么情况下需要它"，再倒推功能，而非"我们还能加什么"'
+    ],
+    '包装翻译':[
+      '双轨制包装：保留经典视觉资产给老用户，推联名/季节/艺术家合作特别版给年轻人',
+      '小范围测试：新包装先在抖音/小红书小批量试水，看真实反馈再决定铺量',
+      '经典与新款并行 6–12 个月逐步过渡，不一次性砍掉老用户认的识别'
+    ],
+    '沟通翻译':[
+      '黑话过滤器：停用"赋能/矩阵/闭环/匠心/传承"，改说大白话',
+      '品牌故事剧集化：写成 3–5 分钟可追更的连续剧，而非一篇通稿',
+      '用户原话即文案：从评论/私信摘真实用户原话，直接用到官方表达'
+    ],
+    '渠道翻译':[
+      '翻译试验田：优先选 1 个年轻人聚集渠道（抖音/小红书/B站）做 6 个月规则学习',
+      '渠道语言定制化：抖音快节奏、小红书种草、B站深度测评，同一产品不同方言',
+      '线下触点年轻化：拍照打卡区、有趣标语、店员话术从"欢迎光临"改成"想解决什么问题"'
+    ],
+    '社群翻译':[
+      '用户答疑日：每周一次，不卖货只回答用户问题',
+      '品牌体验官计划：邀忠实年轻用户参与新品测试，而非只看数据',
+      '年轻员工运营社群：让一线年轻员工而非老板发声'
+    ]
   };
-  const T=trans[domain]||trans.generic;
-  const principles={
-    product:'把「功能」翻成「场景」：立项先定义使用场景，再倒推功能。',
-    packaging:'把「经典」翻成「潮」：双轨保留经典，推年轻向特别版。',
-    communication:'把「品牌说」翻成「用户说」：黑话过滤，用原话。',
-    channel:'从「大卖场」翻到「新货架」：选年轻人聚集渠道做试验田。',
-    community:'从「广播」翻成「对话」：答疑日 + 体验官 + 年轻运营。'
-  };
-  const translate=[
-    {step:'产品翻译',principle:principles.product,forYou:T.product},
-    {step:'包装翻译',principle:principles.packaging,forYou:T.packaging},
-    {step:'沟通翻译',principle:principles.communication,forYou:T.communication},
-    {step:'渠道翻译',principle:principles.channel,forYou:T.channel},
-    {step:'社群翻译',principle:principles.community,forYou:T.community}
-  ];
 
-  const output={
-    positioning:`${c.product} = 为${c.audience}策展好的、有本地身份感的、安静可控的体验：少而精，一击即中。`,
-    scene:`场景定义：在【目标用户最在意的时刻】，用【精选而非堆砌】解决【核心痛点】。`,
-    copy:`用户语言文案：从"${c.value}"翻成一句话人话，例如"挑一套就走，今天归你"。`,
-    packaging:`包装/呈现：把被埋没的资产（如本地特色）策展成主角，配故事卡。`,
-    channel:`渠道：从【当前触达】翻到【年轻人聚集渠道】，用真实用户视角种草。`,
-    community:`社群：建答疑日 + 体验官机制，让年轻员工运营，而非群发促销。`
+  // 酒店/餐饮类：把三法与用户案例逐条链接（高质量范例）
+  const hospForYou={
+    '产品翻译':[
+      `针对你①（场景脑暴）：召集酒店年轻员工，把"${c.value}"写成商务客原话，票选「工作日清晨快速安顿」「一人食不浪费」「本地风味尝鲜」3 个场景`,
+      '针对你②（画面化）：为「清晨安顿」画面化——独立安静角 + 一套精选餐盘，10 分钟吃完不排队不喧闹',
+      '针对你③（倒转立项）：先定"商务客工作日上午需 15 分钟恢复状态"，再倒推早餐只保留支撑该场景的品类，砍掉百种堆砌'
+    ],
+    '包装翻译':[
+      '针对你①（双轨）：保留现有自助给家庭休闲客，推「城市晨味」特别版给商务客——分区陈列、极简白 + 本地插画',
+      '针对你②（小测）：先在小红书投「商务客的安静早餐」图文测水，评论好再扩到门店',
+      '针对你③（并行）：经典自助与晨味专区并行 6 个月，不取消原有供给，让两类客各得其所'
+    ],
+    '沟通翻译':[
+      '针对你①（黑话过滤）：停用"丰盛/匠心传承"，改说"三套精选，挑一套就走"',
+      '针对你②（剧集化）：把"城市晨味"做成系列短视频——每集一道地域早餐的前世今生',
+      '针对你③（原话文案）：摘真实商务客评语"出差最怕早上乱哄哄"做主文案'
+    ],
+    '渠道翻译':[
+      '针对你①（试验田）：把小红书/抖音当翻译试验田，6 个月只发商务客视角的安静早餐内容',
+      '针对你②（定制化）：抖音快剪"5 分钟安顿"、小红书种草"安静角打卡"、B站深评"酒店如何把河南早餐做成体验"',
+      '针对你③（触点年轻化）：在 booking 漏斗让旅客"入住即选清晨仪式"，餐厅设拍照点，服务员改问"今天想怎么开始"'
+    ],
+    '社群翻译':[
+      '针对你①（答疑日）：设「晨味答疑日」，每周答疑不卖货，只聊出差早餐怎么吃舒服',
+      '针对你②（体验官）：招募常驻商务客当"晨间体验官"测新地域套系',
+      '针对你③（年轻运营）：由年轻餐饮员工而非总部运营社群，说人话'
+    ]
   };
+  // 通用类：用用户真实字段生成 3 条案例链接（保证无占位符、可落地）
+  function genForYou(step){
+    const val=c.value||'核心功能', aud=c.audience||'目标年轻人', prod=c.product||'产品';
+    const base={
+      '产品翻译':[
+        `针对你①（场景脑暴）：召集年轻团队把"${val}"写成${aud}原话，票选最打动人的 3 个场景`,
+        '针对你②（画面化）：为最关键场景设计具体使用画面，让团队对齐用户真实状态',
+        `针对你③（倒转立项）：先定义"${aud}在什么情况下需要${prod}"，再倒推功能而非堆加`
+      ],
+      '包装翻译':[
+        '针对你①（双轨）：保留经典识别给老用户，推年轻向特别版（联名/季节/插画）',
+        '针对你②（小测）：先在社媒小批量测新包装，看真实反馈再铺量',
+        '针对你③（并行）：经典与新款并行过渡，不一次砍掉原有识别'
+      ],
+      '沟通翻译':[
+        `针对你①（黑话过滤）：停用"赋能/匠心/传承"腔，改说大白话，从"${val}"提炼一句人话`,
+        '针对你②（剧集化）：把品牌故事写成可追更的系列，而非一篇通稿',
+        `针对你③（原话文案）：摘${aud}的真实评论原话做主文案`
+      ],
+      '渠道翻译':[
+        '针对你①（试验田）：选 1 个年轻人聚集渠道做 6 个月翻译试验田',
+        '针对你②（定制化）：抖音快节奏/小红书种草/B站深评，同一产品不同方言',
+        '针对你③（触点年轻化）：线下触点年轻化，店员话术从"欢迎光临"改成"想解决什么问题"'
+      ],
+      '社群翻译':[
+        `针对你①（答疑日）：设答疑日，不卖货只回答${aud}的问题`,
+        '针对你②（体验官）：招募忠实年轻用户当体验官参与测试',
+        '针对你③（年轻运营）：让年轻一线员工而非老板运营社群'
+      ]
+    };
+    return base[step];
+  }
+
+  const forYouMap = (domain==='hospitality')?hospForYou:null;
+  const principles={
+    '产品翻译':'把「功能」翻成「场景」：立项先定义使用场景，再倒推功能。',
+    '包装翻译':'把「经典」翻成「潮」：双轨保留经典，推年轻向特别版。',
+    '沟通翻译':'把「品牌说」翻成「用户说」：黑话过滤，用原话。',
+    '渠道翻译':'从「大卖场」翻到「新货架」：选年轻人聚集渠道做试验田。',
+    '社群翻译':'从「广播」翻成「对话」：答疑日 + 体验官 + 年轻运营。'
+  };
+  const steps=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
+  const translate=steps.map(step=>({
+    step,
+    principle:principles[step],
+    methods:PnG_METHODS[step],
+    forYou:forYouMap?forYouMap[step]:genForYou(step)
+  }));
+
+  // 产出：必须具体、可交付、无占位符
+  let output;
+  if(domain==='hospitality'){
+    output={
+      positioning:`${c.product} = 为${c.audience}策展的「城市晨味」仪式：三套精选，十分钟安顿，一城风味。`,
+      scene:`工作日上午 7–9 点的酒店餐厅，${c.audience}用「晨间精选」三套方案替代百种自助，在独立安静区十分钟吃完有本地风味的一餐，解决选择过载与混杂喧闹。`,
+      copy:'主文案："挑一套就走，今天这城归你"；副文案："工作日清晨，三套精选不纠结"。',
+      packaging:'把自助餐改名为「城市晨味」，粤式/中原/西式分区陈列，每道地域早餐配手绘故事卡。',
+      channel:'booking 漏斗设「入住即选清晨仪式」；商务客视角在小红书/抖音种草安静角与本地早餐；B站深评"一家酒店如何把河南早餐做成体验"。',
+      community:'建「晨味研究所」常旅客圈，月度城市早餐地图由旅客共创，招募晨间体验官测新套系，年轻餐饮员工运营。'
+    };
+  } else {
+    const val=c.value||'核心价值', aud=c.audience||'目标年轻人', prod=c.product||'产品';
+    output={
+      positioning:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
+      scene:`在${aud}最在意的时刻，用精选替代堆砌，解决其最痛的适配问题，让"这为我而生"被立刻感知。`,
+      copy:`主文案说人话：把"${val}"翻成一句${aud}听得懂的话，例如"挑一套就走"。`,
+      packaging:'把被埋没的资产策展成主角，配故事卡，用克制传达高级感。',
+      channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
+      community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'
+    };
+  }
   return {understand,reframe,opportunity:opp,translate,output};
 }
 
@@ -349,8 +417,9 @@ function buildPrompt(c){
  "understand":{"summary":"一句话理解","signals":[{"label":"信号名","quote":"引用用户原话"}]},
  "reframe":{"problem":"当前最大适配阻力","reframed":"重构后的问题陈述（2-3句，设计思维视角）","why":"为何这样重构"},
  "opportunity":{"control":["掌控感机遇1","机遇2"],"deserved":["配得感机遇1"],"gratification":["满足感机遇1"]},
- "translate":[{"step":"产品翻译","principle":"通用原则","forYou":"针对该品牌的具体做法"},
+ "translate":[{"step":"产品翻译","principle":"通用原则","methods":["实操方法1","方法2","方法3"],"forYou":["链接该用户案例的做法1","做法2","做法3"]},
               {"step":"包装翻译",...},{"step":"沟通翻译",...},{"step":"渠道翻译",...},{"step":"社群翻译",...}],
+ 注意：每个类别必须给出宝洁实操三法（methods，3 条固定方法）以及与用户案例逐条链接的具体做法（forYou，3 条，分别对应三法，禁止出现【】占位符或"从X翻成Y"这类元指令）。
  "output":{"positioning":"一句话定位","scene":"场景定义","copy":"用户语言文案方向","packaging":"包装/呈现方向","channel":"渠道方向","community":"社群方向"}
 }`;
 }
@@ -403,11 +472,14 @@ function render(d){
 
   const t=d.translate;
   document.getElementById('out-translate').innerHTML=`
-    <div class="stage"><div class="tag">4 · 五步翻译（怎么翻）</div><h3>从逻辑到实操</h3>
-    ${t.map((s,i)=>`<div class="step"><div class="name">${esc(s.step)}</div>
-      <div class="pr">${esc(s.principle||'')}</div>
-      <div>针对你：</div>
-      <textarea class="edit" data-k="translate.${i}.forYou" rows="3">${esc(s.forYou||'')}</textarea></div>`).join('')}
+    <div class="stage"><div class="tag">4 · 五步翻译（怎么翻）</div><h3>每个类别的实操三法 + 链接你的案例</h3>
+    ${t.map((s,i)=>`
+      <div class="step">
+        <div class="name">${esc(s.step)}</div>
+        <div class="pr">${esc(s.principle||'')}</div>
+        <div class="block"><b class="blk">实操三法</b>${(s.methods||[]).map((m,j)=>`<div class="m-item"><span class="m-no">${j+1}</span><span>${esc(m)}</span></div>`).join('')}</div>
+        <div class="block fy"><b class="blk fy-blk">链接你的案例</b>${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}</div>
+      </div>`).join('')}
     </div>`;
 
   const o2=d.output;
@@ -434,8 +506,12 @@ function copyPlan(){
   t+=`一、理解\n${d.understand.summary}\n`;
   t+=`\n二、重构问题\n阻力：${d.reframe.problem}\n重构：${d.reframe.reframed}\n`;
   t+=`\n三、机遇空间\n掌控感：${(d.opportunity.control||[]).join('；')}\n配得感：${(d.opportunity.deserved||[]).join('；')}\n满足感：${(d.opportunity.gratification||[]).join('；')}\n`;
-  t+=`\n四、五步翻译\n`;
-  d.translate.forEach(s=>{t+=`· ${s.step}：原则=${s.principle}｜针对你=${s.forYou}\n`;});
+  t+=`\n四、五步翻译（实操三法 + 链接你的案例）\n`;
+  d.translate.forEach(s=>{
+    t+=`· ${s.step}（${s.principle}）\n`;
+    (s.methods||[]).forEach((m,j)=>{t+=`   实操三法${j+1}：${m}\n`;});
+    (s.forYou||[]).forEach((f,j)=>{t+=`   链接案例${j+1}：${f}\n`;});
+  });
   t+=`\n五、转型专案\n定位：${d.output.positioning}\n场景：${d.output.scene}\n文案：${d.output.copy}\n包装：${d.output.packaging}\n渠道：${d.output.channel}\n社群：${d.output.community}\n`;
   navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
 }
