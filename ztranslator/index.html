@@ -939,13 +939,13 @@ function init(){
       const id=['i-product','i-audience','i-value','i-current','i-pain'][i];
       if(f[k]){const e=document.getElementById(id);if(e)e.value=f[k];}
     });}catch(e){}
-  // 首次进入且没已有课题：默认对话，预置第一问（在 renderScreen 之前，确保气泡随屏直出）
-  if(!state.data && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];}
-  renderHeader();renderProgress();renderScreen();renderNavbar();
-  if(state.data){ // 已有草稿：主页展示课题，便于回顾/修订
-    state.reached=Math.max(state.reached,1);
-    state.mode='form';
+  // 默认对话引导：预置第一问（renderScreen 前，确保气泡随屏直出；无论是否有旧草稿都生效）
+  if(state.mode==='chat' && !state.chatStarted){
+    state.chatStarted=true;state.chatIdx=0;
+    state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];
   }
+  if(state.data)state.reached=Math.max(state.reached,1); // 已有草稿：允许从「最近的课题」回顾/修订
+  renderHeader();renderProgress();renderScreen();renderNavbar();
   if(state.mode==='chat'){bindChatEnter();renderChat();}
 }
 document.addEventListener('DOMContentLoaded',init);
