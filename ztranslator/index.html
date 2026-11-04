@@ -54,6 +54,18 @@
   .edit{width:100%;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font:inherit;margin-top:6px;background:#fff}
   .edit:focus{outline:2px solid var(--green)}
   .msg{font-size:13px;color:var(--warn);margin-top:8px}
+  .mode-toggle{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .mt{background:#f0f0f0;color:var(--mut);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+  .mt.active{background:var(--chip);color:var(--green)}
+  .chat-msgs{max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 2px 4px}
+  .bub{max-width:84%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+  .bub-bot{background:var(--chip);color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px}
+  .bub-user{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .bub-sum{background:#fff;border:1px dashed var(--line);align-self:flex-start;font-size:13px;color:var(--mut)}
+  .chat-input{display:flex;gap:8px;margin-top:6px;align-items:flex-end}
+  .chat-input textarea{flex:1;min-height:42px}
+  .chat-input button{background:var(--green);color:#fff;padding:10px 18px;flex:0 0 auto}
+  .chat-actions{margin-top:10px}
   .plan{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fcfcfd}
   .plan-row{border-bottom:1px solid var(--line);padding:12px}
   .plan-row:last-child{border-bottom:none}
@@ -87,26 +99,48 @@
 
 <main>
   <div class="panel">
-    <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">输入 · 品牌现状</div>
-    <label>1 · 你的产品 / 服务是什么？<span class="hint">越具体越好</span></label>
-    <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务"></textarea>
+    <div class="mode-toggle">
+      <button id="modeForm" class="mt active" onclick="setMode('form')">表单填写</button>
+      <button id="modeChat" class="mt" onclick="setMode('chat')">对话引导</button>
+      <span class="hint" style="margin-left:auto">不知道怎么填？点「对话引导」一步步聊，聊完自动生成</span>
+    </div>
 
-    <label>2 · 目标受众是谁？<span class="hint">希望触达的年轻人</span></label>
-    <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主"></textarea>
+    <div id="formPanel">
+      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">输入 · 品牌现状</div>
+      <label>1 · 你的产品 / 服务是什么？<span class="hint">越具体越好</span></label>
+      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务"></textarea>
 
-    <label>3 · 你最想传达的核心功能 / 价值<span class="hint">翻译的"原料"</span></label>
-    <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选"></textarea>
+      <label>2 · 目标受众是谁？<span class="hint">希望触达的年轻人</span></label>
+      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主"></textarea>
 
-    <label>4 · 你目前在做什么，但年轻人不买账？<span class="hint">越具体越准</span></label>
-    <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐精华"></textarea>
+      <label>3 · 你最想传达的核心功能 / 价值<span class="hint">翻译的"原料"</span></label>
+      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选"></textarea>
 
-    <label>5 · 最想解决的适配问题<span class="hint">选填</span></label>
-    <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差"></textarea>
+      <label>4 · 你目前在做什么，但年轻人不买账？<span class="hint">越具体越准</span></label>
+      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐精华"></textarea>
 
-    <button class="btn-primary" onclick="generate()">生成转型专案</button>
-    <div class="ops">
-      <button class="btn-link" onclick="clearAll()">清空</button>
-      <span id="saveTip" class="hint"></span>
+      <label>5 · 最想解决的适配问题<span class="hint">选填</span></label>
+      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差"></textarea>
+
+      <button class="btn-primary" onclick="generate()">生成转型专案</button>
+      <div class="ops">
+        <button class="btn-link" onclick="loadSample()">看范例</button>
+        <button class="btn-link" onclick="clearAll()">清空</button>
+        <span id="saveTip" class="hint"></span>
+      </div>
+    </div>
+
+    <div id="chatPanel" class="hidden">
+      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">对话引导 · 5 个问题</div>
+      <div id="chatMsgs" class="chat-msgs"></div>
+      <div class="chat-input">
+        <textarea id="chatInput" rows="1" placeholder="输入你的回答，回车发送…"></textarea>
+        <button onclick="chatSend()">发送</button>
+      </div>
+      <div class="ops">
+        <button class="btn-link" onclick="chatSkip()">跳过此问</button>
+        <button class="btn-link" onclick="setMode('form')">改用表单</button>
+      </div>
     </div>
   </div>
 
@@ -143,7 +177,7 @@
   </div>
 </div>
 
-<footer>v0.4 · 框架 + 本地降级 + 预留 AI 口 · 自助早餐锚定 + 执行计划（任务/产出/时间点/责任人/资源）</footer>
+<footer>v0.5 · 对话引导输入 + 看范例 + 执行计划 · 框架 + 本地降级 + 预留 AI 口</footer>
 
 <script>
 const LS_AI='zt_ai', LS_DRAFT='zt_draft';
@@ -189,17 +223,33 @@ function clearAll(){['i-product','i-audience','i-value','i-current','i-pain'].fo
   document.getElementById('emptyHint').classList.remove('hidden');}
 const v=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
 
+const SAMPLE={
+  product:'假日酒店的早餐服务',
+  audience:'25-35 岁之间的商务旅行人士，工作日为主',
+  value:'健康，简洁，高档，本地特色，朴实，精选',
+  current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',
+  pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'
+};
+function loadSample(){
+  document.getElementById('i-product').value=SAMPLE.product;
+  document.getElementById('i-audience').value=SAMPLE.audience;
+  document.getElementById('i-value').value=SAMPLE.value;
+  document.getElementById('i-current').value=SAMPLE.current;
+  document.getElementById('i-pain').value=SAMPLE.pain;
+  generate();
+}
+
 function detectSignals(text){
   const t=text||''; const S=[];
   const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:m[0]});};
   add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
   add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
-  add('mixed','人群错配',/混杂|混合|各类.*客|不同.*人|休闲.*客/);
+  add('mixed','人群错配',/混杂|混合|各类.*?客|不同.*?人|休闲.*?客/);
   add('boring','缺乏情绪价值',/无聊|没意思|枯燥|平淡|无趣/);
   add('noculture','缺乏文化叙事',/没文化|没有故事|无故事|缺乏叙事|没有特色|没有灵魂|没灵魂|同质化/);
   add('stale','形态陈旧',/50\s*年|没变|老旧|过时|老套|传统.*没变|几十年/);
-  add('fakepremium','价值感知错位',/高档|精致|奢华|轻奢|但.*廉价|显得便宜|不值/);
-  add('narrative','无身份认同',/没有.*感|缺乏.*感|不.*我|不是.*我/);
+  add('fakepremium','价值感知错位',/高档|精致|奢华|轻奢|但.*?廉价|显得便宜|不值/);
+  add('narrative','无身份认同',/没有.*?感|缺乏.*?感|不.*?我|不是.*?我/);
   return S;
 }
 function detectDomain(text){
@@ -602,7 +652,56 @@ function copyPlan(){
 }
 function toast(m){let t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:99';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
 
+// ---- 对话气泡引导输入 ----
+const CHAT_Q=[
+  {k:'product', q:'先聊聊 👋 你要翻译的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
+  {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行/使用场景。'},
+  {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是翻译的原料，比如：健康、本地特色、精选）'},
+  {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
+  {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可跳过）'}
+];
+let chatIdx=0, chatAns={}, chatStarted=false;
+function setMode(m){
+  document.getElementById('modeForm').classList.toggle('active',m==='form');
+  document.getElementById('modeChat').classList.toggle('active',m==='chat');
+  document.getElementById('formPanel').classList.toggle('hidden',m!=='form');
+  document.getElementById('chatPanel').classList.toggle('hidden',m!=='chat');
+  if(m==='chat' && !chatStarted){ chatStarted=true; chatIdx=0; chatAns={}; document.getElementById('chatMsgs').innerHTML=''; botSay(CHAT_Q[0].q); }
+}
+function botSay(t){const d=document.getElementById('chatMsgs');const e=document.createElement('div');e.className='bub bub-bot';e.textContent=t;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function userSay(t){const d=document.getElementById('chatMsgs');const e=document.createElement('div');e.className='bub bub-user';e.textContent=t;d.appendChild(e);d.scrollTop=d.scrollHeight;}
+function chatSend(){
+  const ta=document.getElementById('chatInput'); const txt=ta.value.trim();
+  if(!txt)return;
+  const cur=CHAT_Q[chatIdx];
+  chatAns[cur.k]=txt; userSay(txt); ta.value='';
+  chatIdx++;
+  if(chatIdx<CHAT_Q.length){ setTimeout(()=>botSay(CHAT_Q[chatIdx].q),300); }
+  else chatDone();
+}
+function chatSkip(){
+  const cur=CHAT_Q[chatIdx]; if(cur.k!=='pain')return;
+  userSay('（跳过）'); chatIdx++;
+  if(chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[chatIdx].q),300); else chatDone();
+}
+function chatDone(){
+  document.getElementById('i-product').value=chatAns.product||'';
+  document.getElementById('i-audience').value=chatAns.audience||'';
+  document.getElementById('i-value').value=chatAns.value||'';
+  document.getElementById('i-current').value=chatAns.current||'';
+  document.getElementById('i-pain').value=chatAns.pain||'';
+  const d=document.getElementById('chatMsgs');
+  const s=document.createElement('div');s.className='bub bub-sum';
+  s.textContent='已收集 5 项，下面生成你的转型专案 👇';
+  d.appendChild(s);
+  const wrap=document.createElement('div');wrap.className='chat-actions';
+  const btn=document.createElement('button');btn.className='btn-primary';btn.textContent='生成转型专案';
+  btn.onclick=()=>{generate(); document.getElementById('result').scrollIntoView({behavior:'smooth'});};
+  wrap.appendChild(btn); d.appendChild(wrap); d.scrollTop=d.scrollHeight;
+}
+
 restoreDraft(); setFlag();
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();}});
 </script>
 </body>
 </html>
