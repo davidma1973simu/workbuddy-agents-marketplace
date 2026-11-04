@@ -84,10 +84,11 @@
   .edit:focus{outline:none;border-color:var(--accent);border-style:solid;box-shadow:0 0 0 4px var(--accent-soft)}
 
   /* ---------- Chat ---------- */
-  .chat{display:flex;flex-direction:column;gap:10px;min-height:240px;padding:6px 2px 4px}
-  .bub{max-width:84%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.55;animation:pop .28s var(--ease);word-break:break-word}
+  .chat{display:flex;flex-direction:column;gap:14px;min-height:240px;padding:16px 10px;background:var(--bg-2);border-radius:18px;margin-bottom:4px}
+  .bub{max-width:82%;padding:13px 16px;border-radius:18px;font-size:15px;line-height:1.55;animation:pop .28s var(--ease);word-break:break-word}
   @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
-  .bub-bot{background:var(--card);box-shadow:var(--sh-sm);border:1px solid var(--line);border-bottom-left-radius:6px;align-self:flex-start}
+  .bub-bot{background:#fff;color:#18181B;border:1px solid var(--line);box-shadow:var(--sh-sm);border-bottom-left-radius:6px;align-self:flex-start}
+  .bub-bot.q{font-size:19px;font-weight:800;line-height:1.5;letter-spacing:.2px}
   .bub-user{background:var(--accent);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
   .bub-sum{background:var(--accent-soft);color:var(--accent-d);font-size:13px;align-self:flex-start;border-radius:14px;padding:10px 14px}
   .chat-input{display:flex;gap:8px;margin-top:12px;align-items:flex-end}
@@ -586,7 +587,7 @@ function screenInput(){
       <button class="${state.mode==='form'?'on':''}" onclick="setMode('form')">表单填写</button>
     </div>
     <div id="chatWrap" class="${state.mode==='chat'?'':'hidden'}">
-      <div class="chat" id="chatMsgs"></div>
+      <div class="chat" id="chatMsgs">${state.chatLog.map(chatBub).join('')}</div>
       <div class="chat-input">
         <textarea id="chatInput" rows="1" placeholder="输入你的回答，回车发送…"></textarea>
         <button class="btn btn-primary" onclick="chatSend()">发送</button>
@@ -715,16 +716,21 @@ function screenExport(){
 /* ===================== 输入交互 ===================== */
 function setMode(m){
   state.mode=m;
-  if(m==='chat' && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
+  if(m==='chat' && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];}
   renderScreen();
-  if(m==='chat')bindChatEnter();
+  if(m==='chat'){bindChatEnter();renderChat();}
+}
+function chatBub(m){
+  if(m.role==='user')return `<div class="bub bub-user">${esc(m.text)}</div>`;
+  if(m.q)return `<div class="bub bub-bot q">“${esc(m.text)}”</div>`;
+  return `<div class="bub bub-bot">${esc(m.text)}</div>`;
 }
 function renderChat(){
   const d=document.getElementById('chatMsgs');if(!d)return;
-  d.innerHTML=state.chatLog.map(m=>`<div class="bub bub-${m.role}">${esc(m.text)}</div>`).join('');
+  d.innerHTML=state.chatLog.map(chatBub).join('');
   d.scrollTop=d.scrollHeight;
 }
-function botSay(t){state.chatLog.push({role:'bot',text:t});renderChat();}
+function botSay(t,isQ){state.chatLog.push({role:'bot',text:t,q:!!isQ});renderChat();}
 function userSay(t){state.chatLog.push({role:'user',text:t});renderChat();}
 function chatSend(){
   const ta=document.getElementById('chatInput');if(!ta)return;
@@ -732,13 +738,13 @@ function chatSend(){
   const cur=CHAT_Q[state.chatIdx];
   state.chatAns[cur.k]=txt;userSay(txt);ta.value='';
   state.chatIdx++;
-  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q),300);
+  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q,true),300);
   else chatDone();
 }
 function chatSkip(){
   const cur=CHAT_Q[state.chatIdx];if(cur.k!=='pain')return;
   userSay('（跳过）');state.chatIdx++;
-  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q),300);else chatDone();
+  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q,true),300);else chatDone();
 }
 function chatDone(){
   document.getElementById('i-product')&&(document.getElementById('i-product').value=state.chatAns.product||'');
@@ -933,14 +939,14 @@ function init(){
       const id=['i-product','i-audience','i-value','i-current','i-pain'][i];
       if(f[k]){const e=document.getElementById(id);if(e)e.value=f[k];}
     });}catch(e){}
+  // 首次进入且没已有课题：默认对话，预置第一问（在 renderScreen 之前，确保气泡随屏直出）
+  if(!state.data && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];}
   renderHeader();renderProgress();renderScreen();renderNavbar();
   if(state.data){ // 已有草稿：主页展示课题，便于回顾/修订
     state.reached=Math.max(state.reached,1);
     state.mode='form';
   }
-  if(state.mode==='chat'){bindChatEnter();}
-  // 默认对话模式：首次进入自动发起第一问（仅当没有已有课题）
-  if(!state.chatStarted && !state.data){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
+  if(state.mode==='chat'){bindChatEnter();renderChat();}
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
