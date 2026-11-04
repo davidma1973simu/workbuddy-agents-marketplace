@@ -157,6 +157,32 @@
   .setrow select{padding:11px 12px;border-radius:12px;border:1px solid var(--line);font:inherit;background:var(--bg)}
   .setrow input{flex:1;min-width:180px}
   .empty{color:var(--mut);font-size:14px;padding:40px 10px;text-align:center;line-height:1.7}
+
+  /* ---------- 课题列表 / 评分 ---------- */
+  .proj-card{border:1px solid var(--line);border-radius:var(--r-md);padding:13px 14px;margin-bottom:10px;background:var(--card)}
+  .proj-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+  .proj-name{font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .proj-meta{font-size:11px;color:var(--mut);font-weight:600;white-space:nowrap;flex:0 0 auto}
+  .proj-acts{display:flex;gap:8px}
+  .proj-acts .btn{width:auto;flex:1}
+  .proj-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .proj-row:last-child{border-bottom:none}
+  .proj-row .proj-name{font-weight:700;font-size:14px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .proj-row .proj-meta{font-size:11px;color:var(--mut);flex:0 0 auto}
+  .proj-row .proj-acts{gap:6px}
+  .proj-row .proj-acts .btn{flex:0 0 auto;min-width:54px}
+
+  .score-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+  .score-head b{font-size:15px}
+  .score-head .c-control{color:var(--c-control)}
+  .score-head .c-deserved{color:var(--c-deserved)}
+  .score-head .c-grat{color:#E2642F}
+  .delta{font-size:12px;font-weight:800;color:var(--accent-d);background:var(--accent-soft);padding:2px 9px;border-radius:999px}
+  .score-bar{height:9px;border-radius:999px;background:var(--bg-2);overflow:hidden;margin:5px 0}
+  .score-bar>i{display:block;height:100%;border-radius:999px;transition:width .5s var(--ease)}
+  .score-bar.cur>i{background:#C9C9CF}
+  .score-bar.rev>i{background:linear-gradient(90deg,var(--accent),#34D399)}
+  .score-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);font-weight:600;margin-top:2px}
 </style>
 </head>
 <body>
@@ -166,6 +192,7 @@
     <div class="brand"><span class="dot"></span>Z 翻译器</div>
     <div style="display:flex;gap:10px;align-items:center">
       <span id="aiFlag" class="ai-flag off">本地模式</span>
+      <button class="btn-ghost btn-sm" onclick="openProjects()" style="width:auto">我的课题</button>
       <button class="btn-ghost btn-sm" onclick="openSettings()" style="width:auto">设置</button>
     </div>
   </div>
@@ -197,10 +224,21 @@
   </div>
 </div>
 
+<div id="projects" class="settings hidden">
+  <div class="box" style="max-width:480px" onclick="event.stopPropagation()">
+    <button class="x" onclick="closeProjects()" aria-label="关闭">×</button>
+    <div class="eyebrow">我的课题</div>
+    <h1 class="h-hero" style="font-size:22px;margin-bottom:4px">回顾与修订</h1>
+    <p class="hint" style="margin:0 0 12px">每次生成都会自动保存到这里。可回顾整份专案，或回去修订输入重新生成。</p>
+    <div id="projList"></div>
+    <button class="btn btn-primary" style="margin-top:14px" onclick="newProject()">+ 新建课题</button>
+  </div>
+</div>
+
 <script src="pptxgen.bundle.js" onerror="window.__pptxMissing=true"></script>
 <script>
 /* ===================== 引擎（沿用已验证逻辑） ===================== */
-const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data';
+const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data',LS_PROJECTS='zt_projects';
 const BRANDS={
   DeepSeek:{baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
   OpenAI:{baseUrl:'https://api.openai.com/v1',model:'gpt-4o-mini'},
@@ -223,6 +261,38 @@ function openSettings(){const a=getAI();document.getElementById('cfgBrand').valu
   document.getElementById('cfgApiKey').value=a.apiKey||'';document.getElementById('settings').classList.remove('hidden');}
 function closeSettings(){document.getElementById('settings').classList.add('hidden');}
 document.getElementById('settings').addEventListener('click',function(e){if(e.target===this)closeSettings();});
+
+/* ---------- 多课题存储（本地） ---------- */
+function loadProjects(){try{return JSON.parse(localStorage.getItem(LS_PROJECTS)||'[]')}catch(e){return[]}}
+function upsertProject(proj){
+  let list=loadProjects();const i=list.findIndex(p=>p.id===proj.id);
+  if(i>=0)list[i]=proj;else list.unshift(proj);
+  list=list.slice(0,50);localStorage.setItem(LS_PROJECTS,JSON.stringify(list));return list;
+}
+function deleteProjectById(id){const list=loadProjects().filter(p=>p.id!==id);localStorage.setItem(LS_PROJECTS,JSON.stringify(list));}
+function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function openProjects(){renderProjList();document.getElementById('projects').classList.remove('hidden');}
+function closeProjects(){document.getElementById('projects').classList.add('hidden');}
+document.getElementById('projects').addEventListener('click',function(e){if(e.target===this)closeProjects();});
+function renderProjList(){
+  const list=loadProjects();const box=document.getElementById('projList');
+  if(!list.length){box.innerHTML='<div class="empty">还没有课题。填写一个案例并生成，会自动保存到此处。</div>';return;}
+  box.innerHTML=list.map(p=>`<div class="proj-card">
+     <div class="proj-top"><div class="proj-name">${esc(p.name)}</div><div class="proj-meta">${fmtDate(p.updated)}</div></div>
+     <div class="proj-acts">
+       <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">回顾</button>
+       <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">修订</button>
+       <button class="btn btn-ghost btn-sm" onclick="delProject('${p.id}')">删除</button>
+     </div></div>`).join('');
+}
+function openProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
+  state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;lastData=p.data;saveDataDraft();closeProjects();goStep(STEPS.length-1);}
+function reviseProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
+  state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;closeProjects();state.mode='form';goStep(0);}
+function delProject(id){if(!confirm('确定删除这个课题？此操作不可恢复。'))return;deleteProjectById(id);renderProjList();}
+function newProject(){state.data=null;state.inputs={};state.projectId=null;state.mode='form';
+  state.chatStarted=true;state.chatIdx=0;state.chatLog=[];state.reached=0;
+  localStorage.removeItem(LS_DATA);closeProjects();goStep(0);}
 
 const SAMPLE={
   product:'假日酒店的早餐服务',
@@ -260,6 +330,25 @@ function detectDomain(text){
   if(/服饰|衣服|鞋|包|穿搭|配饰/.test(t))return 'fashion';
   if(/家电|电器|锅|家居|家具|数码/.test(t))return 'product';
   return 'generic';
+}
+function computeScores(signals,opp){
+  const pillarMap={control:['overload','chaos','mixed'],deserved:['fakepremium','noculture','narrative'],gratification:['boring','noculture']};
+  const cur={control:6.5,deserved:6.5,gratification:6.5};
+  (signals||[]).forEach(s=>{const t=s.tag;if(!t||t==='none')return;Object.keys(pillarMap).forEach(p=>{if(pillarMap[p].includes(t))cur[p]-=1.4;});});
+  ['control','deserved','gratification'].forEach(p=>{cur[p]=Math.max(2,Math.min(9,Math.round(cur[p]*10)/10));});
+  const rev={};
+  ['control','deserved','gratification'].forEach(p=>{
+    const cnt=(opp&&opp[p]||[]).length;
+    let v=cur[p]+3.0+cnt*0.6;
+    v=Math.max(cur[p]+0.5,Math.min(9.6,v));
+    rev[p]=Math.round(v*10)/10;
+  });
+  return {current:cur,revised:rev};
+}
+function getScores(){
+  if(state.data&&state.data.scores)return state.data.scores;
+  const c=(state.data&&state.data._inputs)||{};
+  return computeScores(detectSignals((c.current||'')+' '+(c.pain||'')),state.data?state.data.opportunity:{});
 }
 function genPlan(domain,c){
   if(domain==='hospitality'){
@@ -362,7 +451,7 @@ function reasonLocal(c){
       channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
       community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'};
   }
-  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),_inputs:c};
+  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),scores:computeScores(signals,opp),_inputs:c};
 }
 async function callLLM(messages){
   const a=getAI();if(!a.apiKey)throw new Error('no key');
@@ -406,6 +495,7 @@ async function reasonAI(c){
     const dom=detectDomain([c.product,c.audience,c.value,c.current,c.pain].join(' '));
     if(!data.plan||!data.plan.length)data.plan=genPlan(dom,c);
     data._inputs=c;
+    data.scores=computeScores(detectSignals(c.current+' '+c.pain),data.opportunity);
     return data;
   }catch(e){console.warn('AI 推理失败，回落本地：',e.message);return null;}
 }
@@ -415,7 +505,7 @@ const STEPS=[
   {key:'input',label:'输入'},{key:'understand',label:'理解'},{key:'reframe',label:'重构'},
   {key:'opportunity',label:'机遇'},{key:'translate',label:'翻译'},{key:'plan',label:'专案'},{key:'export',label:'导出'}
 ];
-const state={step:0,mode:'chat',data:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0};
+const state={step:0,mode:'chat',data:null,inputs:{},projectId:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0};
 let lastData=null;
 
 function setByPath(obj,path,val){const parts=path.split('.');let o=obj;for(let i=0;i<parts.length-1;i++){if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};o=o[parts[i]];}o[parts[parts.length-1]]=val;}
@@ -430,8 +520,10 @@ function val0(id){const e=document.getElementById(id);return e?e.value.trim():''
 function goStep(n){
   if(n>0 && !state.data){toast('请先在第 1 步生成转型专案');return;}
   state.step=n;
+  if(n===0 && state.data)state.mode='form';
   if(n>state.reached)state.reached=n;
   renderHeader();renderProgress();renderScreen();renderNavbar();
+  if(n===0 && state.mode==='chat'){renderChat();bindChatEnter();}
   document.getElementById('screen').scrollIntoView({behavior:'smooth',block:'start'});
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -468,11 +560,27 @@ function renderNavbar(){
   n.innerHTML=`${prev}<span class="nav-label">${STEPS[state.step].label} · ${state.step+1}/${STEPS.length}</span>${next}`;
 }
 
+const IV={'product':'i-product','audience':'i-audience','value':'i-value','current':'i-current','pain':'i-pain'};
+function iv(k){if(state.inputs&&state.inputs[k]!=null)return state.inputs[k];const e=document.getElementById(IV[k]);return e?e.value.trim():'';}
 function screenInput(){
+  const projs=loadProjects();
+  let recent='';
+  if(projs.length){
+    recent=`<div class="card"><div class="eyebrow" style="color:var(--mut)">最近的课题 · ${projs.length}</div>`+
+      projs.slice(0,3).map(p=>`<div class="proj-row">
+        <div class="proj-name">${esc(p.name)}</div>
+        <div class="proj-meta">${fmtDate(p.updated)}</div>
+        <div class="proj-acts">
+          <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">回顾</button>
+          <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">修订</button>
+        </div></div>`).join('')+
+      `<button class="btn btn-ghost btn-sm" style="margin-top:10px;width:auto" onclick="openProjects()">查看全部课题</button></div>`;
+  }
   const chatHTML=`
     <div class="eyebrow">输入 · 品牌现状</div>
     <h1 class="h-hero">聊聊你的产品</h1>
     <p class="lead">用对话的方式告诉我，我会把它翻译成 Z 世代想要的样子。也可以切到表单一次填完。</p>
+    ${recent}
     <div class="seg">
       <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">对话引导</button>
       <button class="${state.mode==='form'?'on':''}" onclick="setMode('form')">表单填写</button>
@@ -490,15 +598,15 @@ function screenInput(){
     </div>
     <div id="formWrap" class="${state.mode==='form'?'':'hidden'}">
       <label class="fld">1 · 你的产品 / 服务是什么？<span>越具体越好</span></label>
-      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务">${esc(val0('i-product'))}</textarea>
+      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务">${esc(iv('product'))}</textarea>
       <label class="fld">2 · 目标受众是谁？<span>希望触达的年轻人</span></label>
-      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主">${esc(val0('i-audience'))}</textarea>
+      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主">${esc(iv('audience'))}</textarea>
       <label class="fld">3 · 你最想传达的核心功能 / 价值<span>翻译的"原料"</span></label>
-      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选">${esc(val0('i-value'))}</textarea>
+      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选">${esc(iv('value'))}</textarea>
       <label class="fld">4 · 你目前在做什么，但年轻人不买账？<span>越具体越准</span></label>
-      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…">${esc(val0('i-current'))}</textarea>
+      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…">${esc(iv('current'))}</textarea>
       <label class="fld">5 · 最想解决的适配问题<span>选填</span></label>
-      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多认知负荷高">${esc(val0('i-pain'))}</textarea>
+      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多认知负荷高">${esc(iv('pain'))}</textarea>
       <button class="btn btn-primary" style="margin-top:16px" onclick="fromForm()">生成转型专案</button>
       <button class="btn btn-soft btn-sm" style="margin-top:10px;width:auto" onclick="loadSample()">载入示例</button>
     </div>`;
@@ -528,14 +636,24 @@ function screenReframe(){
 }
 function screenOpportunity(){
   const o=state.data.opportunity;
-  const pillar=(cls,title,items)=>`<div class="pillar ${cls}"><b>${title}</b><div class="pc">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div></div>`;
+  const sc=getScores();
+  const pillar=(cls,key,title,items)=>{
+    const cur=sc.current[key]||0,rev=sc.revised[key]||0,d=Math.max(0,Math.round((rev-cur)*10)/10);
+    return `<div class="card">
+      <div class="score-head"><b class="c-${cls}">${title}</b><span class="delta">▲ +${d.toFixed(1)}</span></div>
+      <div class="score-bar cur"><i style="width:${Math.round(cur*10)}%"></i></div>
+      <div class="score-bar rev"><i style="width:${Math.round(rev*10)}%"></i></div>
+      <div class="score-leg"><span>现状 ${cur.toFixed(1)}</span><span>修订后 ${rev.toFixed(1)}</span></div>
+      <div class="pc" style="margin-top:12px">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div>
+    </div>`;
+  };
   return `
     <div class="eyebrow">第 3 步 · 机遇空间</div>
     <h1 class="h-hero">偏科在哪，机会就在哪</h1>
-    <p class="lead">三支柱对应三类年轻人没被满足的需求。</p>
-    ${pillar('control','掌控感 · 降负荷、给秩序',o.control)}
-    ${pillar('deserved','配得感 · 让我觉得"配得上我"',o.deserved)}
-    ${pillar('grat','满足感 · 即时、有梗、有参与',o.gratification)}`;
+    <p class="lead">三支柱对应三类年轻人没被满足的需求。灰色是现状得分，绿色是翻译后的预期得分（满分 10），提升越明显，说明这里越该优先动手。</p>
+    ${pillar('control','control','掌控感 · 降负荷、给秩序',o.control)}
+    ${pillar('deserved','deserved','配得感 · 让我觉得"配得上我"',o.deserved)}
+    ${pillar('grat','grat','满足感 · 即时、有梗、有参与',o.gratification)}`;
 }
 function screenTranslate(){
   const t=state.data.translate;
@@ -591,7 +709,7 @@ function screenExport(){
     </div>
     <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
     <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制整份文本</button>
-    <p class="hint" style="margin-top:14px">PPT 含：封面 · 理解 · 重构 · 机遇 · 五步翻译（实操三法 + 案例）· 转型专案 · 执行计划。生成在本地完成，内容不外传。</p>`;
+    <p class="hint" style="margin-top:14px">PPT 含：封面 · 理解 · 重构 · 机遇 · 进步图示 · 五步翻译（实操三法 + 案例）· 转型专案 · 执行计划。生成在本地完成，内容不外传。</p>`;
 }
 
 /* ===================== 输入交互 ===================== */
@@ -643,11 +761,15 @@ function fromForm(){
   const c={product:val0('i-product'),audience:val0('i-audience'),value:val0('i-value'),current:val0('i-current'),pain:val0('i-pain')};
   if(!c.product&&!c.audience&&!c.current){toast('请至少填写产品 / 受众 / 现状之一');return;}
   saveInputDraft();
+  state.inputs=c;
   const ai=getAI();let run=async()=>{
     let data=null;
     if(ai.apiKey)data=await reasonAI(c);
     if(!data)data=reasonLocal(c);
     state.data=data;lastData=data;saveDataDraft();
+    const pid=state.projectId||('p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+    state.projectId=pid;
+    upsertProject({id:pid,name:(c.product||'未命名课题').slice(0,40),updated:new Date().toISOString(),data:state.data});
     goStep(1);
   };
   run();
@@ -740,6 +862,26 @@ function buildPpt(d){
     s.addText(p[0],{x:0.6,y:y,w:3,fontSize:16,bold:true,color:p[1],fontFace:FH});
     s.addText((p[2]||[]).map(x=>({text:'· '+x,options:{bullet:false,breakLine:true}})),{x:0.6,y:y+0.4,w:12,fontSize:13,color:'3F3F46',fontFace:FH});
   });
+  // 4b. 进步图示（现状 vs 修订后）
+  s=pptx.addSlide();
+  s.addText('03b · 进步图示',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('三支柱：现状 → 修订后',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  s.addText('分数越高，年轻人越被满足（满分 10）。灰柱 = 现状，绿柱 = 翻译后的预期得分。',{x:0.6,y:1.45,w:12,fontSize:12,color:'8A8A8F',fontFace:FH});
+  const sc=d.scores||{current:{},revised:{}};
+  const pdata=[['掌控感',C_CTRL,(sc.current.control||0),(sc.revised.control||0)],
+               ['配得感',C_DES,(sc.current.deserved||0),(sc.revised.deserved||0)],
+               ['满足感',C_GRA,(sc.current.gratification||0),(sc.revised.gratification||0)]];
+  const baseY=5.6,maxH=3.4,scMax=10;
+  pdata.forEach((b,i)=>{
+    const x=1.3+i*3.7, ch=b[2]/scMax*maxH, rh=b[3]/scMax*maxH;
+    s.addShape(pptx.ShapeType.rect,{x:x,y:baseY-ch,w:1.15,h:ch,fill:{color:'C9C9CF'}});
+    s.addText(b[2].toFixed(1),{x:x,y:baseY-ch-0.34,w:1.15,fontSize:12,bold:true,color:'3F3F46',align:'center',fontFace:FH});
+    s.addShape(pptx.ShapeType.rect,{x:x+1.35,y:baseY-rh,w:1.15,h:rh,fill:{color:ACC}});
+    s.addText(b[3].toFixed(1),{x:x+1.35,y:baseY-rh-0.34,w:1.15,fontSize:12,bold:true,color:ACCD,align:'center',fontFace:FH});
+    s.addText(b[0],{x:x,y:baseY+0.12,w:2.5,fontSize:13,bold:true,color:b[1],align:'center',fontFace:FH});
+  });
+  s.addShape(pptx.ShapeType.line,{x:1.3,y:baseY,w:11,h:0,line:{color:'ECEAE6',width:1}});
+  s.addText('▲ 柱顶数字为得分；柱越高越好。',{x:1.3,y:baseY+0.5,w:11,fontSize:11,color:'8A8A8F',fontFace:FH});
   // 5. 五步翻译 · 实操三法
   s=pptx.addSlide();
   s.addText('04 · 五步翻译 · 实操三法',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
@@ -784,6 +926,7 @@ function buildPpt(d){
 function init(){
   setFlag();
   restoreDataDraft();
+  if(state.data)state.inputs=state.data._inputs||{};
   // 恢复表单草稿
   try{const f=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}');
     ['product','audience','value','current','pain'].forEach((k,i)=>{
@@ -791,12 +934,13 @@ function init(){
       if(f[k]){const e=document.getElementById(id);if(e)e.value=f[k];}
     });}catch(e){}
   renderHeader();renderProgress();renderScreen();renderNavbar();
-  if(state.data){ // 已有草稿，跳到理解屏便于继续
+  if(state.data){ // 已有草稿：主页展示课题，便于回顾/修订
     state.reached=Math.max(state.reached,1);
+    state.mode='form';
   }
   if(state.mode==='chat'){bindChatEnter();}
-  // 默认对话模式：首次进入自动发起第一问
-  if(!state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
+  // 默认对话模式：首次进入自动发起第一问（仅当没有已有课题）
+  if(!state.chatStarted && !state.data){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
