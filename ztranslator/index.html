@@ -2,185 +2,201 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z 世代代际翻译器 · v0.4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Z 翻译器 · 代际翻译工作台</title>
 <style>
   :root{
-    --green:#0E6B50; --green-d:#0a513c; --ink:#1c1c1e; --mut:#6b6b70;
-    --line:#e6e6e8; --bg:#f6f7f8; --card:#fff; --warn:#b9530a; --chip:#eef4f1;
+    --bg:#F6F5F2; --bg-2:#EFEEEA; --card:#FFFFFF;
+    --ink:#18181B; --ink-2:#3F3F46; --mut:#8A8A8F; --line:#ECEAE6;
+    --accent:#0CA678; --accent-d:#09835E; --accent-soft:#E7F6EF;
+    --warm:#FF7A6B;
+    --c-control:#3B82F6; --c-control-soft:#EAF1FE;
+    --c-deserved:#7C5CFC; --c-deserved-soft:#F0ECFE;
+    --c-grat:#FF8A5B; --c-grat-soft:#FFEFE7;
+    --r-lg:24px; --r-md:16px; --r-sm:12px;
+    --sh:0 1px 2px rgba(20,20,20,.04),0 12px 32px rgba(20,20,20,.07);
+    --sh-sm:0 1px 2px rgba(20,20,20,.05);
+    --ease:cubic-bezier(.22,1,.36,1);
+    --maxw:480px;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-       background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px}
-  header{padding:18px 22px;border-bottom:1px solid var(--line);background:var(--card);
-         display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.5px}
-  header .sub{font-size:12px;color:var(--mut)}
-  .ai-flag{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--green);font-weight:600}
-  .ai-flag.off{background:#f0f0f0;color:var(--mut)}
-  main{max-width:920px;margin:0 auto;padding:20px 16px 80px}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
-  label{display:block;font-weight:600;margin:14px 0 6px;font-size:14px}
-  label:first-child{margin-top:0}
-  .hint{font-size:12px;color:var(--mut);font-weight:400;margin-left:6px}
-  textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
-         font:inherit;resize:vertical;background:#fcfcfd}
-  textarea:focus,input:focus{outline:2px solid var(--green);outline-offset:0}
-  .ops{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
-  button{cursor:pointer;font:inherit;font-weight:600;border:none;border-radius:10px;padding:11px 18px}
-  .btn-primary{background:var(--green);color:#fff;width:100%;font-size:15px;margin-top:14px}
-  .btn-primary:hover{background:var(--green-d)}
-  .btn-ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
-  .btn-link{background:none;color:var(--mut);text-decoration:underline;padding:6px 4px}
-  .stage{border-left:3px solid var(--green);padding:4px 0 4px 14px;margin:18px 0}
-  .stage h3{margin:0 0 8px;font-size:15px}
-  .stage .tag{font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-  .sig{display:inline-block;background:var(--chip);color:var(--green-d);font-size:12px;
-       padding:2px 9px;border-radius:999px;margin:2px 4px 2px 0}
-  .q{color:var(--green-d);font-style:italic}
-  .pillar{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
-  .pillar b{color:var(--green-d)}
-  .step{border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
-  .step .name{font-weight:700;color:var(--green-d)}
-  .step .pr{font-size:12px;color:var(--mut);margin:4px 0}
-  .block{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
-  .blk{display:inline-block;font-size:11px;background:var(--green);color:#fff;padding:2px 8px;border-radius:6px;margin-bottom:6px;letter-spacing:.5px}
-  .fy-blk{background:#7a5230}
-  .m-item{display:flex;gap:8px;font-size:13px;margin:4px 0;line-height:1.5;align-items:flex-start}
-  .m-no{flex:0 0 18px;height:18px;width:18px;border-radius:50%;background:var(--chip);color:var(--green-d);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
-  .fy-item{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
-  .fy-no{flex:0 0 18px;height:18px;width:18px;border-radius:50%;background:#f3e9df;color:#7a5230;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:8px}
-  .fy-item .edit{margin-top:0;flex:1;font-size:13px}
-  .edit{width:100%;border:1px dashed var(--line);border-radius:8px;padding:8px 10px;font:inherit;margin-top:6px;background:#fff}
-  .edit:focus{outline:2px solid var(--green)}
-  .msg{font-size:13px;color:var(--warn);margin-top:8px}
-  .mode-toggle{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-  .mt{background:#f0f0f0;color:var(--mut);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
-  .mt.active{background:var(--chip);color:var(--green)}
-  .chat-msgs{max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 2px 4px}
-  .bub{max-width:84%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.5;white-space:pre-wrap}
-  .bub-bot{background:var(--chip);color:var(--ink);align-self:flex-start;border-bottom-left-radius:4px}
-  .bub-user{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
-  .bub-sum{background:#fff;border:1px dashed var(--line);align-self:flex-start;font-size:13px;color:var(--mut)}
-  .chat-input{display:flex;gap:8px;margin-top:6px;align-items:flex-end}
-  .chat-input textarea{flex:1;min-height:42px}
-  .chat-input button{background:var(--green);color:#fff;padding:10px 18px;flex:0 0 auto}
-  .chat-actions{margin-top:10px}
-  .plan{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fcfcfd}
-  .plan-row{border-bottom:1px solid var(--line);padding:12px}
-  .plan-row:last-child{border-bottom:none}
-  .plan-h{font-weight:700;color:var(--green-d);font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-  .plan-no{flex:0 0 20px;height:20px;width:20px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .plan-h + .edit{margin-top:0;margin-bottom:8px}
-  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .pf{display:flex;flex-direction:column;gap:3px}
-  .pf .pl{font-size:11px;color:var(--mut);font-weight:600;letter-spacing:.5px}
-  .pf .edit{margin-top:0}
-  @media(max-width:560px){.plan-grid{grid-template-columns:1fr}}
-  .empty{color:var(--mut);font-size:14px;padding:30px;text-align:center}
-  .setrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .setrow select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);font:inherit}
-  .setrow input{flex:1;min-width:220px}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;
+       -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  ::selection{background:var(--accent-soft)}
+
+  /* ---------- Header ---------- */
+  .app-header{position:sticky;top:0;z-index:40;background:rgba(246,245,242,.82);
+    backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:1px solid var(--line);padding:14px 18px 0}
+  .brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.3px}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#34D399);box-shadow:0 0 0 4px var(--accent-soft)}
+  .ai-flag{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-d)}
+  .ai-flag.off{background:#ECEAE6;color:var(--mut)}
+  .step-meta{display:flex;align-items:baseline;gap:8px;margin:10px 0 12px}
+  .step-meta .num{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:1px}
+  .step-meta .name{font-size:15px;font-weight:700}
+
+  /* ---------- Progress ---------- */
+  .progress{display:flex;gap:6px;padding:0 0 12px}
+  .pg{flex:1;height:5px;border-radius:999px;background:var(--bg-2);overflow:hidden;cursor:pointer;transition:background .3s var(--ease)}
+  .pg.done{background:#BFE9D8}
+  .pg.active{background:var(--accent)}
+  .pg .fill{display:block;height:100%;width:0;background:var(--accent);transition:width .35s var(--ease)}
+  .pg.active .fill{width:100%}
+
+  /* ---------- Screen ---------- */
+  #screen{max-width:var(--maxw);margin:0 auto;padding:20px 18px 130px;animation:enter .4s var(--ease)}
+  @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--mut);text-transform:uppercase}
+  .h-hero{font-size:27px;font-weight:800;letter-spacing:-.6px;line-height:1.25;margin:8px 0 6px}
+  .lead{color:var(--ink-2);font-size:15px;margin:0 0 18px}
+  .card{background:var(--card);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh);margin-bottom:14px;border:1px solid rgba(0,0,0,.02)}
+  .card.tight{padding:14px}
+
+  /* ---------- Buttons ---------- */
+  .btn{height:52px;border-radius:15px;font-weight:700;font-size:15px;border:none;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    transition:transform .14s var(--ease),box-shadow .2s var(--ease),background .2s;padding:0 18px}
+  .btn:active{transform:scale(.975)}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 8px 20px rgba(12,166,120,.30)}
+  .btn-primary:hover{background:var(--accent-d)}
+  .btn-ghost{background:var(--card);color:var(--accent-d);border:1px solid var(--line);box-shadow:var(--sh-sm)}
+  .btn-soft{background:var(--accent-soft);color:var(--accent-d)}
+  .btn-sm{height:40px;width:auto;font-size:13px;border-radius:11px;padding:0 16px}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+
+  /* ---------- Input: segmented ---------- */
+  .seg{display:flex;background:var(--bg-2);border-radius:14px;padding:4px;gap:4px;margin-bottom:16px}
+  .seg button{flex:1;border:none;background:transparent;height:38px;border-radius:10px;font-weight:700;font-size:13px;color:var(--mut);cursor:pointer;transition:.2s var(--ease)}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--sh-sm)}
+
+  /* ---------- Form fields ---------- */
+  label.fld{display:block;font-weight:700;font-size:14px;margin:14px 0 7px}
+  label.fld span{color:var(--mut);font-weight:400;font-size:12px;margin-left:6px}
+  textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;
+    font:inherit;resize:vertical;background:var(--bg);color:var(--ink);transition:border .2s,background .2s}
+  textarea:focus,input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px var(--accent-soft)}
+  .edit{width:100%;border:1px dashed var(--line);border-radius:var(--r-sm);padding:10px 12px;font:inherit;background:#fff;color:var(--ink);transition:.2s}
+  .edit:focus{outline:none;border-color:var(--accent);border-style:solid;box-shadow:0 0 0 4px var(--accent-soft)}
+
+  /* ---------- Chat ---------- */
+  .chat{display:flex;flex-direction:column;gap:10px;min-height:240px;padding:6px 2px 4px}
+  .bub{max-width:84%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.55;animation:pop .28s var(--ease);word-break:break-word}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+  .bub-bot{background:var(--card);box-shadow:var(--sh-sm);border:1px solid var(--line);border-bottom-left-radius:6px;align-self:flex-start}
+  .bub-user{background:var(--accent);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+  .bub-sum{background:var(--accent-soft);color:var(--accent-d);font-size:13px;align-self:flex-start;border-radius:14px;padding:10px 14px}
+  .chat-input{display:flex;gap:8px;margin-top:12px;align-items:flex-end}
+  .chat-input textarea{flex:1;min-height:46px;max-height:120px}
+  .chat-input .btn{width:auto;height:46px;padding:0 18px;flex:0 0 auto}
+  .qcount{font-size:12px;color:var(--mut);font-weight:600}
+
+  /* ---------- Stage content ---------- */
+  .sig{display:inline-block;background:var(--accent-soft);color:var(--accent-d);font-size:12px;font-weight:600;
+    padding:4px 11px;border-radius:999px;margin:3px 5px 3px 0}
+  .pillar{border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px;border:1px solid transparent}
+  .pillar b{font-size:15px}
+  .pillar .pc{font-size:13px;color:var(--ink-2);margin-top:6px}
+  .pillar.control{background:var(--c-control-soft)}
+  .pillar.control b{color:var(--c-control)}
+  .pillar.deserved{background:var(--c-deserved-soft)}
+  .pillar.deserved b{color:var(--c-deserved)}
+  .pillar.grat{background:var(--c-grat-soft)}
+  .pillar.grat b{color:#E2642F}
+
+  .step-card{border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;background:var(--card);box-shadow:var(--sh-sm)}
+  .step-card .sname{font-weight:800;font-size:16px;display:flex;align-items:center;gap:9px}
+  .step-card .sidx{width:24px;height:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent-d);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .step-card .pr{font-size:13px;color:var(--mut);margin:8px 0 12px}
+  .blk-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:7px;margin-bottom:8px}
+  .blk-badge.m{background:var(--accent-soft);color:var(--accent-d)}
+  .blk-badge.f{background:var(--c-deserved-soft);color:var(--c-deserved)}
+  .m-item{display:flex;gap:9px;font-size:13.5px;margin:7px 0;line-height:1.5;align-items:flex-start}
+  .m-no{flex:0 0 20px;height:20px;width:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent-d);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .fy-item{display:flex;gap:9px;align-items:flex-start;margin:8px 0}
+  .fy-no{flex:0 0 20px;height:20px;width:20px;border-radius:50%;background:var(--c-deserved-soft);color:var(--c-deserved);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:9px}
+  .fy-item .edit{margin-top:0;flex:1;font-size:13.5px}
+
+  /* ---------- Plan ---------- */
+  .plan-row{border:1px solid var(--line);border-radius:var(--r-md);padding:14px;margin-bottom:12px;background:var(--card);box-shadow:var(--sh-sm)}
+  .plan-h{font-weight:800;font-size:14px;display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .plan-no{flex:0 0 22px;height:22px;width:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pf{display:flex;flex-direction:column;gap:4px}
+  .pf .pl{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.5px}
+  .pf .edit{margin-top:0;font-size:13px}
+  @media(max-width:420px){.plan-grid{grid-template-columns:1fr}}
+
+  /* ---------- Navbar ---------- */
+  #navbar{position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--line);padding:10px 18px calc(10px + env(safe-area-inset-bottom));
+    display:flex;align-items:center;gap:12px;justify-content:space-between}
+  #navbar .nav-inner{max-width:var(--maxw);width:100%;margin:0 auto;display:flex;align-items:center;gap:12px;justify-content:space-between}
+  .nav-btn{height:46px;border-radius:13px;font-weight:700;font-size:14px;border:none;cursor:pointer;padding:0 18px;display:inline-flex;align-items:center;gap:6px;transition:transform .14s var(--ease),background .2s}
+  .nav-btn:active{transform:scale(.97)}
+  .nav-btn.prev{background:var(--bg-2);color:var(--ink-2)}
+  .nav-btn.next{background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(12,166,120,.28)}
+  .nav-btn[disabled]{opacity:0;pointer-events:none}
+  .nav-label{font-size:12px;color:var(--mut);font-weight:600}
+
   .hidden{display:none}
-  footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
+  .hint{color:var(--mut);font-size:13px}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+    padding:11px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:99;animation:pop .25s var(--ease);box-shadow:var(--sh)}
+  .settings{position:fixed;inset:0;z-index:80;background:rgba(20,20,20,.4);display:flex;align-items:center;justify-content:center;padding:20px}
+  .settings .box{background:var(--card);border-radius:var(--r-lg);padding:22px;max-width:440px;width:100%;box-shadow:var(--sh)}
+  .setrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .setrow select{padding:11px 12px;border-radius:12px;border:1px solid var(--line);font:inherit;background:var(--bg)}
+  .setrow input{flex:1;min-width:180px}
+  .empty{color:var(--mut);font-size:14px;padding:40px 10px;text-align:center;line-height:1.7}
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Z 世代代际翻译器</h1>
-    <div class="sub">把品牌/产品/服务，用设计思维翻译成 Z 世代想要的样子 · 三支柱 × 宝洁五步法</div>
+
+<header class="app-header">
+  <div class="brand-row">
+    <div class="brand"><span class="dot"></span>Z 翻译器</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span id="aiFlag" class="ai-flag off">本地模式</span>
+      <button class="btn-ghost btn-sm" onclick="openSettings()" style="width:auto">设置</button>
+    </div>
   </div>
-  <div style="display:flex;gap:10px;align-items:center">
-    <span id="aiFlag" class="ai-flag off">本地模式（无 AI）</span>
-    <button class="btn-link" onclick="openSettings()">设置</button>
+  <div class="step-meta">
+    <span class="num" id="stepNum">01 / 07</span>
+    <span class="name" id="stepName">输入</span>
   </div>
+  <div class="progress" id="progress"></div>
 </header>
 
-<main>
-  <div class="panel">
-    <div class="mode-toggle">
-      <button id="modeForm" class="mt active" onclick="setMode('form')">表单填写</button>
-      <button id="modeChat" class="mt" onclick="setMode('chat')">对话引导</button>
-      <span class="hint" style="margin-left:auto">不知道怎么填？点「对话引导」一步步聊，聊完自动生成</span>
+<main id="screen"></main>
+
+<div id="navbar"><div class="nav-inner" id="navInner"></div></div>
+
+<div id="settings" class="settings hidden">
+  <div class="box">
+    <div class="eyebrow">设置 · AI 推理</div>
+    <p class="hint" style="margin:8px 0 14px">填入 Key 后，翻译器会用设计思维真推理你的案例（推荐 DeepSeek）。不填则用本地结构化降级，能跑但不具备真推理能力。Key 仅存本机浏览器。</p>
+    <div class="setrow">
+      <select id="cfgBrand"><option value="DeepSeek">DeepSeek</option><option value="OpenAI">OpenAI</option><option value="Gemini">Gemini</option></select>
+      <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
     </div>
-
-    <div id="formPanel">
-      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">输入 · 品牌现状</div>
-      <label>1 · 你的产品 / 服务是什么？<span class="hint">越具体越好</span></label>
-      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务"></textarea>
-
-      <label>2 · 目标受众是谁？<span class="hint">希望触达的年轻人</span></label>
-      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主"></textarea>
-
-      <label>3 · 你最想传达的核心功能 / 价值<span class="hint">翻译的"原料"</span></label>
-      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选"></textarea>
-
-      <label>4 · 你目前在做什么，但年轻人不买账？<span class="hint">越具体越准</span></label>
-      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐精华"></textarea>
-
-      <label>5 · 最想解决的适配问题<span class="hint">选填</span></label>
-      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差"></textarea>
-
-      <button class="btn-primary" onclick="generate()">生成转型专案</button>
-      <div class="ops">
-        <button class="btn-link" onclick="loadSample()">看范例</button>
-        <button class="btn-link" onclick="clearAll()">清空</button>
-        <span id="saveTip" class="hint"></span>
-      </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-primary" style="height:46px" onclick="saveSettings()">保存</button>
+      <button class="btn btn-ghost" style="height:46px" onclick="closeSettings()">取消</button>
     </div>
-
-    <div id="chatPanel" class="hidden">
-      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">对话引导 · 5 个问题</div>
-      <div id="chatMsgs" class="chat-msgs"></div>
-      <div class="chat-input">
-        <textarea id="chatInput" rows="1" placeholder="输入你的回答，回车发送…"></textarea>
-        <button onclick="chatSend()">发送</button>
-      </div>
-      <div class="ops">
-        <button class="btn-link" onclick="chatSkip()">跳过此问</button>
-        <button class="btn-link" onclick="setMode('form')">改用表单</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="result" class="panel hidden">
-    <div class="ops" style="justify-content:space-between">
-      <div class="tag" style="font-size:11px;color:var(--mut);letter-spacing:.5px">转型专案 · 全部可编辑</div>
-      <button class="btn-ghost" onclick="copyPlan()">复制整份</button>
-    </div>
-    <div id="out-understand"></div>
-    <div id="out-reframe"></div>
-    <div id="out-opportunity"></div>
-    <div id="out-translate"></div>
-    <div id="out-output"></div>
-  </div>
-
-  <div id="emptyHint" class="empty">填写左侧五项，点「生成转型专案」。所有产出基于你写的内容，可随时改。</div>
-</main>
-
-<div id="settings" class="panel hidden" style="position:fixed;inset:40px 16px auto;max-width:520px;margin:0 auto;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.18)">
-  <div class="tag" style="font-size:11px;color:var(--mut)">设置 · AI 推理</div>
-  <p class="hint" style="margin:6px 0 12px">填入 Key 后，翻译器会用设计思维真推理你的案例（推荐 DeepSeek）。不填则用本地结构化降级，能跑但不具备真推理能力。Key 仅存本机浏览器。</p>
-  <div class="setrow">
-    <select id="cfgBrand">
-      <option value="DeepSeek">DeepSeek</option>
-      <option value="OpenAI">OpenAI</option>
-      <option value="Gemini">Gemini</option>
-    </select>
-    <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
-  </div>
-  <div class="ops" style="margin-top:12px">
-    <button class="btn-primary" style="width:auto;margin:0" onclick="saveSettings()">保存</button>
-    <button class="btn-link" onclick="closeSettings()">取消</button>
-    <span id="cfgMsg" class="hint"></span>
+    <div id="cfgMsg" class="hint" style="margin-top:10px"></div>
   </div>
 </div>
 
-<footer>v0.5 · 对话引导输入 + 看范例 + 执行计划 · 框架 + 本地降级 + 预留 AI 口</footer>
-
+<script src="pptxgen.bundle.js" onerror="window.__pptxMissing=true"></script>
 <script>
-const LS_AI='zt_ai', LS_DRAFT='zt_draft';
+/* ===================== 引擎（沿用已验证逻辑） ===================== */
+const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data';
 const BRANDS={
   DeepSeek:{baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
   OpenAI:{baseUrl:'https://api.openai.com/v1',model:'gpt-4o-mini'},
@@ -188,40 +204,20 @@ const BRANDS={
 };
 function getAI(){try{return JSON.parse(localStorage.getItem(LS_AI)||'{}')}catch(e){return{}}}
 function setFlag(){
-  const a=getAI(); const el=document.getElementById('aiFlag');
-  if(a.apiKey){el.textContent='AI 推理已开启 · '+a.brand; el.className='ai-flag';}
-  else{el.textContent='本地模式（无 AI）'; el.className='ai-flag off';}
+  const a=getAI();const el=document.getElementById('aiFlag');
+  if(a.apiKey){el.textContent='AI 推理 · '+a.brand;el.className='ai-flag';}
+  else{el.textContent='本地模式';el.className='ai-flag off';}
 }
 function saveSettings(){
   const brand=document.getElementById('cfgBrand').value;
   const key=document.getElementById('cfgApiKey').value.trim();
   localStorage.setItem(LS_AI,JSON.stringify({brand,apiKey:key}));
   document.getElementById('cfgMsg').textContent=key?'已保存':'已清除 Key';
-  setFlag(); setTimeout(closeSettings,500);
+  setFlag();setTimeout(closeSettings,500);
 }
 function openSettings(){const a=getAI();document.getElementById('cfgBrand').value=a.brand||'DeepSeek';
   document.getElementById('cfgApiKey').value=a.apiKey||'';document.getElementById('settings').classList.remove('hidden');}
 function closeSettings(){document.getElementById('settings').classList.add('hidden');}
-
-function saveDraft(){
-  const d={p:v('i-product'),a:v('i-audience'),val:v('i-value'),c:v('i-current'),pn:v('i-pain')};
-  localStorage.setItem(LS_DRAFT,JSON.stringify(d));
-  document.getElementById('saveTip').textContent='已自动存草稿';
-  setTimeout(()=>document.getElementById('saveTip').textContent='',1500);
-}
-function restoreDraft(){
-  try{const d=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}');
-    if(d.p)document.getElementById('i-product').value=d.p;
-    if(d.a)document.getElementById('i-audience').value=d.a;
-    if(d.val)document.getElementById('i-value').value=d.val;
-    if(d.c)document.getElementById('i-current').value=d.c;
-    if(d.pn)document.getElementById('i-pain').value=d.pn;
-  }catch(e){}
-}
-function clearAll(){['i-product','i-audience','i-value','i-current','i-pain'].forEach(id=>document.getElementById(id).value='');
-  localStorage.removeItem(LS_DRAFT);document.getElementById('result').classList.add('hidden');
-  document.getElementById('emptyHint').classList.remove('hidden');}
-const v=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
 
 const SAMPLE={
   product:'假日酒店的早餐服务',
@@ -230,17 +226,16 @@ const SAMPLE={
   current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',
   pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'
 };
-function loadSample(){
-  document.getElementById('i-product').value=SAMPLE.product;
-  document.getElementById('i-audience').value=SAMPLE.audience;
-  document.getElementById('i-value').value=SAMPLE.value;
-  document.getElementById('i-current').value=SAMPLE.current;
-  document.getElementById('i-pain').value=SAMPLE.pain;
-  generate();
-}
+const CHAT_Q=[
+  {k:'product', q:'先聊聊——你要翻译的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
+  {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行或使用场景。'},
+  {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是翻译的原料，比如：健康、本地特色、精选）'},
+  {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
+  {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可以跳过）'}
+];
 
 function detectSignals(text){
-  const t=text||''; const S=[];
+  const t=text||'';const S=[];
   const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:m[0]});};
   add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
   add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
@@ -261,49 +256,22 @@ function detectDomain(text){
   if(/家电|电器|锅|家居|家具|数码/.test(t))return 'product';
   return 'generic';
 }
-
-// 执行计划：把翻译落成任务 / 产出 / 时间点 / 责任人 / 资源（可落地，无占位符）
-function genPlan(domain, c){
+function genPlan(domain,c){
   if(domain==='hospitality'){
     return [
-      {
-        task:`把现有百种自助早餐重组为「晨间精选」3 套轮转主题分区（粤式清润 / 中原暖胃 / 西式利落），并划出商务客独立安静角`,
-        deliverable:'三套晨食菜单 + 安静角布局与动线图 + 取餐分区标识方案',
-        timeline:'第 1–4 周',
-        owner:'餐饮总监 + 行政总厨',
-        resource:'菜单研发工时；安静角软装预算约 ¥3–5 万；动线改造'
-      },
-      {
-        task:`保留自助形态，把"自助餐"改名为「城市晨味」画廊式分区，粤/豫/意早餐配手绘故事卡，精华不再被埋`,
-        deliverable:'命名方案 + 12 张地域早餐故事卡设计 + 分区陈列物料',
-        timeline:'第 3–6 周',
-        owner:'品牌 / 市场经理 + 设计外包',
-        resource:'插画设计外包预算约 ¥2–3 万；印刷与陈列物料'
-      },
-      {
-        task:`黑话过滤（停用"丰盛/匠心传承"），提炼主文案"三套晨味，选一套就取"，采集真实商务客评语建文案库`,
-        deliverable:'文案手册（主/副文案各 3 条）+ 旅客评语库（来自 OTA 评论挖掘）',
-        timeline:'第 2–3 周',
-        owner:'市场经理',
-        resource:'文案工时；OTA 评论采集工具/人工'
-      },
-      {
-        task:`booking 漏斗加"入住即选清晨仪式"；小红书/抖音以商务客视角种草安静角与本地早餐`,
-        deliverable:'预订页改造方案 + 12 篇种草内容排期与素材',
-        timeline:'第 4–8 周',
-        owner:'数字营销 + 社媒运营',
-        resource:'投放预算约 ¥5–8 万/月；内容制作工时'
-      },
-      {
-        task:`建常旅客「晨味研究所」圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系`,
-        deliverable:'社群运营 SOP + 体验官机制 + 首月共创活动方案',
-        timeline:'第 6–10 周',
-        owner:'会员 / 社群运营',
-        resource:'运营工时；体验官权益（免费房晚/早餐券）'
-      }
+      {task:`把现有百种自助早餐重组为「晨间精选」3 套轮转主题分区（粤式清润 / 中原暖胃 / 西式利落），并划出商务客独立安静角`,
+       deliverable:'三套晨食菜单 + 安静角布局与动线图 + 取餐分区标识方案',timeline:'第 1–4 周',owner:'餐饮总监 + 行政总厨',resource:'菜单研发工时；安静角软装预算约 ¥3–5 万；动线改造'},
+      {task:`保留自助形态，把"自助餐"改名为「城市晨味」画廊式分区，粤/豫/意早餐配手绘故事卡，精华不再被埋`,
+       deliverable:'命名方案 + 12 张地域早餐故事卡设计 + 分区陈列物料',timeline:'第 3–6 周',owner:'品牌 / 市场经理 + 设计外包',resource:'插画设计外包预算约 ¥2–3 万；印刷与陈列物料'},
+      {task:`黑话过滤（停用"丰盛/匠心传承"），提炼主文案"三套晨味，选一套就取"，采集真实商务客评语建文案库`,
+       deliverable:'文案手册（主/副文案各 3 条）+ 旅客评语库（来自 OTA 评论挖掘）',timeline:'第 2–3 周',owner:'市场经理',resource:'文案工时；OTA 评论采集工具/人工'},
+      {task:`booking 漏斗加"入住即选清晨仪式"；小红书/抖音以商务客视角种草安静角与本地早餐`,
+       deliverable:'预订页改造方案 + 12 篇种草内容排期与素材',timeline:'第 4–8 周',owner:'数字营销 + 社媒运营',resource:'投放预算约 ¥5–8 万/月；内容制作工时'},
+      {task:`建常旅客「晨味研究所」圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系`,
+       deliverable:'社群运营 SOP + 体验官机制 + 首月共创活动方案',timeline:'第 6–10 周',owner:'会员 / 社群运营',resource:'运营工时；体验官权益（免费房晚/早餐券）'}
     ];
   }
-  const val=c.value||'核心价值', aud=c.audience||'目标年轻人', prod=c.product||'产品';
+  const val=c.value||'核心价值',aud=c.audience||'目标年轻人',prod=c.product||'产品';
   return [
     {task:`把"${val}"翻译成 3 个${aud}的真实使用场景，并据此重组${prod}的呈现`,deliverable:'场景清单（3 个）+ 重组方案',timeline:'第 1–3 周',owner:'产品 + 市场负责人',resource:'内部工时；用户访谈'},
     {task:`保留经典识别，推年轻向特别版（联名/季节/插画），小批量试水`,deliverable:'特别版方案 + 社媒测试计划',timeline:'第 2–5 周',owner:'品牌经理',resource:'设计外包预算'},
@@ -312,17 +280,12 @@ function genPlan(domain, c){
     {task:`建答疑日 + 体验官机制，由年轻一线员工运营社群`,deliverable:'社群 SOP + 体验官机制',timeline:'第 6–10 周',owner:'社群运营',resource:'运营工时；体验官权益'}
   ];
 }
-
 function reasonLocal(c){
   const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
   const signals=detectSignals(c.current+' '+c.pain);
   const domain=detectDomain(allText);
-
-  const understand={
-    summary:`产品「${c.product}」面向${c.audience}；想传达「${c.value}」。现状：${c.current||'（未填）'}。适配痛点：${c.pain||'（未填）'}。`,
-    signals:signals.length?signals:[{tag:'none',label:'未发现明显偏科信号',quote:''}]
-  };
-
+  const understand={summary:`产品「${c.product}」面向${c.audience}；想传达「${c.value}」。现状：${c.current||'（未填）'}。适配痛点：${c.pain||'（未填）'}。`,
+    signals:signals.length?signals:[{tag:'none',label:'未发现明显偏科信号',quote:''}]};
   const reframes={
     overload:'问题不是"不够多"，而是"太多导致失控"。年轻人要的是被策展好的有限选择，而非无限清单——你给的丰富，恰恰成了他的认知负担。',
     chaos:'问题不是"服务不到位"，而是"环境剥夺了掌控感与安静"。需要把空间与节奏重新分配给目标人群，而不是给所有人同等待遇。',
@@ -337,32 +300,13 @@ function reasonLocal(c){
   const used=signals.filter(s=>reframes[s.tag]).slice(0,2);
   if(used.length){used.forEach(s=>reframed+=reframes[s.tag]+' ');}
   else{reframed='核心矛盾不在功能强弱，而在"你表达的方式与目标用户的接收频率对不上"——需要一次代际翻译，而非功能叠加。';}
-  const reframe={
-    problem:`${c.product}当前最大的适配阻力，来自${used.length?used.map(s=>s.label).join('、'):'表达与接收的频率错位'}。`,
-    reframed:reframed.trim(),
-    why:'重构的目的，是把"企业视角的痛点"转为"用户视角的机会"——先看清卡在哪根支柱，再动手翻译。'
-  };
-
-  const pillarMap={
-    control:['overload','chaos','mixed'],
-    deserved:['fakepremium','noculture','narrative'],
-    gratification:['boring','noculture']
-  };
+  const reframe={problem:`${c.product}当前最大的适配阻力，来自${used.length?used.map(s=>s.label).join('、'):'表达与接收的频率错位'}。`,
+    reframed:reframed.trim(),why:'重构的目的，是把"企业视角的痛点"转为"用户视角的机会"——先看清卡在哪根支柱，再动手翻译。'};
+  const pillarMap={control:['overload','chaos','mixed'],deserved:['fakepremium','noculture','narrative'],gratification:['boring','noculture']};
   const opp={control:[],deserved:[],gratification:[]};
-  const ctrlLines={
-    overload:`用"策展替代堆砌"：给有限但精选的选项，把决策成本降到一次选择。`,
-    chaos:`重排空间/节奏，把${c.audience}从喧闹中隔离出来，恢复掌控感。`,
-    mixed:`物理或时段上区隔目标人群，让${c.audience}感到"这里为我而设"。`
-  };
-  const desLines={
-    fakepremium:`用克制与细节传达"高档"，删掉用力过猛的符号，让价值被感知而非被宣称。`,
-    noculture:`把你提到的本地/文化资产策展成主角，变成用户可炫耀的身份标签。`,
-    narrative:`在体验里放一面"镜子"，让${c.audience}看到"这说的就是我"。`
-  };
-  const graLines={
-    boring:`设计一个可被记住的微小确幸时刻（一道招牌、一个安静角落、一次惊喜）。`,
-    noculture:`让用户"发现"而非"被告知"——文化以彩蛋形式出现，制造惊喜。`
-  };
+  const ctrlLines={overload:`用"策展替代堆砌"：给有限但精选的选项，把决策成本降到一次选择。`,chaos:`重排空间/节奏，把${c.audience}从喧闹中隔离出来，恢复掌控感。`,mixed:`物理或时段上区隔目标人群，让${c.audience}感到"这里为我而设"。`};
+  const desLines={fakepremium:`用克制与细节传达"高档"，删掉用力过猛的符号，让价值被感知而非被宣称。`,noculture:`把你提到的本地/文化资产策展成主角，变成用户可炫耀的身份标签。`,narrative:`在体验里放一面"镜子"，让${c.audience}看到"这说的就是我"。`};
+  const graLines={boring:`设计一个可被记住的微小确幸时刻（一道招牌、一个安静角落、一次惊喜）。`,noculture:`让用户"发现"而非"被告知"——文化以彩蛋形式出现，制造惊喜。`};
   signals.forEach(s=>{
     if(pillarMap.control.includes(s.tag)&&ctrlLines[s.tag])opp.control.push(ctrlLines[s.tag]);
     if(pillarMap.deserved.includes(s.tag)&&desLines[s.tag])opp.deserved.push(desLines[s.tag]);
@@ -371,142 +315,58 @@ function reasonLocal(c){
   if(!opp.control.length)opp.control.push('梳理用户与产品的每一次接触点，找出剥夺掌控感的环节并收拢。');
   if(!opp.deserved.length)opp.deserved.push('确认品牌主张与目标用户的身份是否对齐，补上"为我而生"的证据。');
   if(!opp.gratification.length)opp.gratification.push('在关键路径上增设即时正向反馈，让进展被立刻看见。');
-
-  // 宝洁五步法 · 每个类别的实操三法（固定方法论）
   const PnG_METHODS={
-    '产品翻译':[
-      '场景脑暴会：召集内部 95/00 后，把产品功能写成 20 句用户原话，票选最打动人的 3 个场景',
-      '场景画面化：给每个场景设计一个具体的使用画面，让团队对齐"用户到底在什么状态用"',
-      '立项顺序倒转：先定义"用户在什么情况下需要它"，再倒推功能，而非"我们还能加什么"'
-    ],
-    '包装翻译':[
-      '双轨制包装：保留经典视觉资产给老用户，推联名/季节/艺术家合作特别版给年轻人',
-      '小范围测试：新包装先在抖音/小红书小批量试水，看真实反馈再决定铺量',
-      '经典与新款并行 6–12 个月逐步过渡，不一次性砍掉老用户认的识别'
-    ],
-    '沟通翻译':[
-      '黑话过滤器：停用"赋能/矩阵/闭环/匠心/传承"，改说大白话',
-      '品牌故事剧集化：写成 3–5 分钟可追更的连续剧，而非一篇通稿',
-      '用户原话即文案：从评论/私信摘真实用户原话，直接用到官方表达'
-    ],
-    '渠道翻译':[
-      '翻译试验田：优先选 1 个年轻人聚集渠道（抖音/小红书/B站）做 6 个月规则学习',
-      '渠道语言定制化：抖音快节奏、小红书种草、B站深度测评，同一产品不同方言',
-      '线下触点年轻化：拍照打卡区、有趣标语、店员话术从"欢迎光临"改成"想解决什么问题"'
-    ],
-    '社群翻译':[
-      '用户答疑日：每周一次，不卖货只回答用户问题',
-      '品牌体验官计划：邀忠实年轻用户参与新品测试，而非只看数据',
-      '年轻员工运营社群：让一线年轻员工而非老板发声'
-    ]
+    '产品翻译':['场景脑暴会：召集内部 95/00 后，把产品功能写成 20 句用户原话，票选最打动人的 3 个场景','场景画面化：给每个场景设计一个具体的使用画面，让团队对齐"用户到底在什么状态用"','立项顺序倒转：先定义"用户在什么情况下需要它"，再倒推功能，而非"我们还能加什么"'],
+    '包装翻译':['双轨制包装：保留经典视觉资产给老用户，推联名/季节/艺术家合作特别版给年轻人','小范围测试：新包装先在抖音/小红书小批量试水，看真实反馈再决定铺量','经典与新款并行 6–12 个月逐步过渡，不一次性砍掉老用户认的识别'],
+    '沟通翻译':['黑话过滤器：停用"赋能/矩阵/闭环/匠心/传承"，改说大白话','品牌故事剧集化：写成 3–5 分钟可追更的连续剧，而非一篇通稿','用户原话即文案：从评论/私信摘真实用户原话，直接用到官方表达'],
+    '渠道翻译':['翻译试验田：优先选 1 个年轻人聚集渠道（抖音/小红书/B站）做 6 个月规则学习','渠道语言定制化：抖音快节奏、小红书种草、B站深度测评，同一产品不同方言','线下触点年轻化：拍照打卡区、有趣标语、店员话术从"欢迎光临"改成"想解决什么问题"'],
+    '社群翻译':['用户答疑日：每周一次，不卖货只回答用户问题','品牌体验官计划：邀忠实年轻用户参与新品测试，而非只看数据','年轻员工运营社群：让一线年轻员工而非老板发声']
   };
-
-  // 酒店/餐饮类：把三法与用户案例逐条链接（高质量范例）
   const hospForYou={
-    '产品翻译':[
-      `针对你①（场景脑暴）：召集酒店年轻员工，把"${c.value}"写成商务客原话，票选「工作日清晨快速安顿」「一人食不浪费」「本地风味尝鲜」3 个场景`,
-      '针对你②（画面化）：为「清晨安顿」画面化——独立安静角 + 一套精选餐盘，10 分钟吃完不排队不喧闹',
-      '针对你③（倒转立项）：先定"商务客工作日上午需 15 分钟恢复状态"，再倒推早餐只保留支撑该场景的品类，砍掉百种堆砌'
-    ],
-    '包装翻译':[
-      '针对你①（双轨）：保留现有自助给家庭休闲客，推「城市晨味」特别版给商务客——分区陈列、极简白 + 本地插画',
-      '针对你②（小测）：先在小红书投「商务客的安静早餐」图文测水，评论好再扩到门店',
-      '针对你③（并行）：经典自助与晨味专区并行 6 个月，不取消原有供给，让两类客各得其所'
-    ],
-    '沟通翻译':[
-      '针对你①（黑话过滤）：停用"丰盛/匠心传承"，改说"三套精选，挑一套就走"',
-      '针对你②（剧集化）：把"城市晨味"做成系列短视频——每集一道地域早餐的前世今生',
-      '针对你③（原话文案）：摘真实商务客评语"出差最怕早上乱哄哄"做主文案'
-    ],
-    '渠道翻译':[
-      '针对你①（试验田）：把小红书/抖音当翻译试验田，6 个月只发商务客视角的安静早餐内容',
-      '针对你②（定制化）：抖音快剪"5 分钟安顿"、小红书种草"安静角打卡"、B站深评"酒店如何把河南早餐做成体验"',
-      '针对你③（触点年轻化）：在 booking 漏斗让旅客"入住即选清晨仪式"，餐厅设拍照点，服务员改问"今天想怎么开始"'
-    ],
-    '社群翻译':[
-      '针对你①（答疑日）：设「晨味答疑日」，每周答疑不卖货，只聊出差早餐怎么吃舒服',
-      '针对你②（体验官）：招募常驻商务客当"晨间体验官"测新地域套系',
-      '针对你③（年轻运营）：由年轻餐饮员工而非总部运营社群，说人话'
-    ]
+    '产品翻译':[`针对你①（场景脑暴）：召集酒店年轻员工，把"${c.value}"写成商务客原话，票选「工作日清晨快速安顿」「一人食不浪费」「本地风味尝鲜」3 个场景`,'针对你②（画面化）：为「清晨安顿」画面化——独立安静角 + 一套精选餐盘，10 分钟吃完不排队不喧闹','针对你③（倒转立项）：先定"商务客工作日上午需 15 分钟恢复状态"，再倒推早餐只保留支撑该场景的品类，砍掉百种堆砌'],
+    '包装翻译':['针对你①（双轨）：保留现有自助给家庭休闲客，推「城市晨味」特别版给商务客——分区陈列、极简白 + 本地插画','针对你②（小测）：先在小红书投「商务客的安静早餐」图文测水，评论好再扩到门店','针对你③（并行）：经典自助与晨味专区并行 6 个月，不取消原有供给，让两类客各得其所'],
+    '沟通翻译':['针对你①（黑话过滤）：停用"丰盛/匠心传承"，改说"三套精选，挑一套就走"','针对你②（剧集化）：把"城市晨味"做成系列短视频——每集一道地域早餐的前世今生','针对你③（原话文案）：摘真实商务客评语"出差最怕早上乱哄哄"做主文案'],
+    '渠道翻译':['针对你①（试验田）：把小红书/抖音当翻译试验田，6 个月只发商务客视角的安静早餐内容','针对你②（定制化）：抖音快剪"5 分钟安顿"、小红书种草"安静角打卡"、B站深评"酒店如何把河南早餐做成体验"','针对你③（触点年轻化）：在 booking 漏斗让旅客"入住即选清晨仪式"，餐厅设拍照点，服务员改问"今天想怎么开始"'],
+    '社群翻译':['针对你①（答疑日）：设「晨味答疑日」，每周答疑不卖货，只聊出差早餐怎么吃舒服','针对你②（体验官）：招募常驻商务客当"晨间体验官"测新地域套系','针对你③（年轻运营）：由年轻餐饮员工而非总部运营社群，说人话']
   };
-  // 通用类：用用户真实字段生成 3 条案例链接（保证无占位符、可落地）
   function genForYou(step){
-    const val=c.value||'核心功能', aud=c.audience||'目标年轻人', prod=c.product||'产品';
+    const val=c.value||'核心功能',aud=c.audience||'目标年轻人',prod=c.product||'产品';
     const base={
-      '产品翻译':[
-        `针对你①（场景脑暴）：召集年轻团队把"${val}"写成${aud}原话，票选最打动人的 3 个场景`,
-        '针对你②（画面化）：为最关键场景设计具体使用画面，让团队对齐用户真实状态',
-        `针对你③（倒转立项）：先定义"${aud}在什么情况下需要${prod}"，再倒推功能而非堆加`
-      ],
-      '包装翻译':[
-        '针对你①（双轨）：保留经典识别给老用户，推年轻向特别版（联名/季节/插画）',
-        '针对你②（小测）：先在社媒小批量测新包装，看真实反馈再铺量',
-        '针对你③（并行）：经典与新款并行过渡，不一次砍掉原有识别'
-      ],
-      '沟通翻译':[
-        `针对你①（黑话过滤）：停用"赋能/匠心/传承"腔，改说大白话，从"${val}"提炼一句人话`,
-        '针对你②（剧集化）：把品牌故事写成可追更的系列，而非一篇通稿',
-        `针对你③（原话文案）：摘${aud}的真实评论原话做主文案`
-      ],
-      '渠道翻译':[
-        '针对你①（试验田）：选 1 个年轻人聚集渠道做 6 个月翻译试验田',
-        '针对你②（定制化）：抖音快节奏/小红书种草/B站深评，同一产品不同方言',
-        '针对你③（触点年轻化）：线下触点年轻化，店员话术从"欢迎光临"改成"想解决什么问题"'
-      ],
-      '社群翻译':[
-        `针对你①（答疑日）：设答疑日，不卖货只回答${aud}的问题`,
-        '针对你②（体验官）：招募忠实年轻用户当体验官参与测试',
-        '针对你③（年轻运营）：让年轻一线员工而非老板运营社群'
-      ]
+      '产品翻译':[`针对你①（场景脑暴）：召集年轻团队把"${val}"写成${aud}原话，票选最打动人的 3 个场景`,'针对你②（画面化）：为最关键场景设计具体使用画面，让团队对齐用户真实状态',`针对你③（倒转立项）：先定义"${aud}在什么情况下需要${prod}"，再倒推功能而非堆加`],
+      '包装翻译':['针对你①（双轨）：保留经典识别给老用户，推年轻向特别版（联名/季节/插画）','针对你②（小测）：先在社媒小批量测新包装，看真实反馈再铺量','针对你③（并行）：经典与新款并行过渡，不一次砍掉原有识别'],
+      '沟通翻译':[`针对你①（黑话过滤）：停用"赋能/匠心/传承"腔，改说大白话，从"${val}"提炼一句人话`,'针对你②（剧集化）：把品牌故事写成可追更的系列，而非一篇通稿',`针对你③（原话文案）：摘${aud}的真实评论原话做主文案`],
+      '渠道翻译':['针对你①（试验田）：选 1 个年轻人聚集渠道做 6 个月翻译试验田','针对你②（定制化）：抖音快节奏/小红书种草/B站深评，同一产品不同方言','针对你③（触点年轻化）：线下触点年轻化，店员话术从"欢迎光临"改成"想解决什么问题"'],
+      '社群翻译':[`针对你①（答疑日）：设答疑日，不卖货只回答${aud}的问题`,'针对你②（体验官）：招募忠实年轻用户当体验官参与测试','针对你③（年轻运营）：让年轻一线员工而非老板运营社群']
     };
     return base[step];
   }
-
-  const forYouMap = (domain==='hospitality')?hospForYou:null;
-  const principles={
-    '产品翻译':'从"功能罗列"转向"场景定义"：立项先定义使用场景，再倒推功能。',
-    '包装翻译':'让"经典"长出"潮"感：双轨保留经典，推年轻向特别版。',
-    '沟通翻译':'从"品牌独白"切换到"用户对话"：黑话过滤，用原话。',
-    '渠道翻译':'从"大卖场"迁移到"新货架"：选年轻人聚集渠道做试验田。',
-    '社群翻译':'从"广播"转为"对话"：答疑日 + 体验官 + 年轻运营。'
-  };
+  const forYouMap=(domain==='hospitality')?hospForYou:null;
+  const principles={'产品翻译':'从"功能罗列"转向"场景定义"：立项先定义使用场景，再倒推功能。','包装翻译':'让"经典"长出"潮"感：双轨保留经典，推年轻向特别版。','沟通翻译':'从"品牌独白"切换到"用户对话"：黑话过滤，用原话。','渠道翻译':'从"大卖场"迁移到"新货架"：选年轻人聚集渠道做试验田。','社群翻译':'从"广播"转为"对话"：答疑日 + 体验官 + 年轻运营。'};
   const steps=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
-  const translate=steps.map(step=>({
-    step,
-    principle:principles[step],
-    methods:PnG_METHODS[step],
-    forYou:forYouMap?forYouMap[step]:genForYou(step)
-  }));
-
-  // 产出：必须具体、可交付、无占位符
+  const translate=steps.map(step=>({step,principle:principles[step],methods:PnG_METHODS[step],forYou:forYouMap?forYouMap[step]:genForYou(step)}));
   let output;
   if(domain==='hospitality'){
-    output={
-      positioning:`${c.product} = 为${c.audience}策展的「城市晨味」自助仪式：三套主题分区取用，十分钟安顿，一城风味。`,
-      scene:`工作日上午 7–9 点的酒店自助餐厅，${c.audience}在「晨间精选」三套主题分区（粤式清润 / 中原暖胃 / 西式利落）自主取用，于独立安静角十分钟吃完有本地风味的一餐，解决选择过载与休闲客混杂喧闹。`
-    };
-  } else {
-    const val=c.value||'核心价值', aud=c.audience||'目标年轻人', prod=c.product||'产品';
-    output={
-      positioning:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
+    output={positioning:`${c.product} = 为${c.audience}策展的「城市晨味」自助仪式：三套主题分区取用，十分钟安顿，一城风味。`,
+      scene:`工作日上午 7–9 点的酒店自助餐厅，${c.audience}在「晨间精选」三套主题分区（粤式清润 / 中原暖胃 / 西式利落）自主取用，于独立安静角十分钟吃完有本地风味的一餐，解决选择过载与休闲客混杂喧闹。`};
+  }else{
+    const val=c.value||'核心价值',aud=c.audience||'目标年轻人',prod=c.product||'产品';
+    output={positioning:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
       scene:`在${aud}最在意的时刻，用精选替代堆砌，解决其最痛的适配问题，让"这为我而生"被立刻感知。`,
       copy:`主文案说人话：把"${val}"提炼成一句${aud}听得懂的话，例如"挑一套就走"。`,
       packaging:'把被埋没的资产策展成主角，配故事卡，用克制传达高级感。',
       channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
-      community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'
-    };
+      community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'};
   }
-  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c)};
+  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),_inputs:c};
 }
-
 async function callLLM(messages){
-  const a=getAI(); if(!a.apiKey)throw new Error('no key');
+  const a=getAI();if(!a.apiKey)throw new Error('no key');
   const cfg=BRANDS[a.brand]||BRANDS.DeepSeek;
   const url=cfg.baseUrl.replace(/\/$/,'')+'/chat/completions';
   const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+a.apiKey},
     body:JSON.stringify({model:cfg.model,messages,temperature:0.7,response_format:{type:'json_object'}})});
   if(!res.ok)throw new Error('HTTP '+res.status);
-  const j=await res.json(); return j.choices[0].message.content;
+  const j=await res.json();return j.choices[0].message.content;
 }
 function buildPrompt(c){
   return `你是 Z 世代代际翻译专家，用设计思维（理解→重构→机遇）把品牌翻译成年轻人想要的样子。
@@ -527,10 +387,9 @@ function buildPrompt(c){
  "opportunity":{"control":["掌控感机遇1","机遇2"],"deserved":["配得感机遇1"],"gratification":["满足感机遇1"]},
  "translate":[{"step":"产品翻译","principle":"通用原则","methods":["实操方法1","方法2","方法3"],"forYou":["链接该用户案例的做法1","做法2","做法3"]},
               {"step":"包装翻译",...},{"step":"沟通翻译",...},{"step":"渠道翻译",...},{"step":"社群翻译",...}],
- 注意：每个类别必须给出宝洁实操三法（methods，3 条固定方法）以及与用户案例逐条链接的具体做法（forYou，3 条，分别对应三法，禁止出现【】占位符或"把X改成Y"这类元指令）。
  "output":{"positioning":"一句话定位","scene":"场景定义"},
  "plan":[{"task":"具体执行任务（扎根案例，可落地）","deliverable":"该任务交付物","timeline":"时间点（如 第1-4周）","owner":"责任人（岗位）","resource":"所需资源（预算/人力/工具）"}]
-} 注意：plan 必须包含 5 条执行项，每条含 task/deliverable/timeline/owner/resource 五项，全部具体可执行，禁止【】占位符与空泛表述。`;
+} 注意：plan 必须包含 5 条执行项，每条含 task/deliverable/timeline/owner/resource 五项，全部具体可执行，禁止占位符与空泛表述。`;
 }
 async function reasonAI(c){
   try{
@@ -541,167 +400,400 @@ async function reasonAI(c){
     if(!data.translate||!data.output)throw new Error('schema 缺字段');
     const dom=detectDomain([c.product,c.audience,c.value,c.current,c.pain].join(' '));
     if(!data.plan||!data.plan.length)data.plan=genPlan(dom,c);
+    data._inputs=c;
     return data;
   }catch(e){console.warn('AI 推理失败，回落本地：',e.message);return null;}
 }
 
-async function generate(){
-  const c={product:v('i-product'),audience:v('i-audience'),value:v('i-value'),current:v('i-current'),pain:v('i-pain')};
-  if(!c.product&&!c.audience&&!c.current){document.getElementById('emptyHint').textContent='请至少填写产品/受众/现状之一。';return;}
-  saveDraft();
-  const ai=getAI();
-  let data=null;
-  if(ai.apiKey){data=await reasonAI(c);}
-  if(!data)data=reasonLocal(c);
-  render(data);
-  document.getElementById('result').classList.remove('hidden');
-  document.getElementById('emptyHint').classList.add('hidden');
-}
-
-function render(d){
-  const u=d.understand;
-  document.getElementById('out-understand').innerHTML=`
-    <div class="stage"><div class="tag">1 · 理解</div><h3>我读到的案例</h3>
-    <p>${esc(u.summary)}</p>
-    <div>${(u.signals||[]).map(s=>s.quote?`<span class="sig">${esc(s.label)}：<span class="q">${esc(s.quote)}</span></span>`:`<span class="sig">${esc(s.label)}</span>`).join('')}</div>
-    </div>`;
-
-  const r=d.reframe;
-  document.getElementById('out-reframe').innerHTML=`
-    <div class="stage"><div class="tag">2 · 重构问题</div><h3>把企业痛点转为用户机会</h3>
-    <p><b>当前阻力：</b>${esc(r.problem||'')}</p>
-    <p><b>重构后：</b>${esc(r.reframed||'')}</p>
-    <p class="hint">${esc(r.why||'')}</p></div>`;
-
-  const o=d.opportunity;
-  document.getElementById('out-opportunity').innerHTML=`
-    <div class="stage"><div class="tag">3 · 机遇空间（三支柱）</div><h3>偏科在哪，机会就在哪</h3>
-    <div class="pillar"><b>掌控感</b>（降负荷、给秩序）：${(o.control||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
-    <div class="pillar"><b>配得感</b>（让我觉得"配得上我"）：${(o.deserved||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
-    <div class="pillar"><b>满足感</b>（即时、有梗、有参与）：${(o.gratification||[]).map(x=>'<div>· '+esc(x)+'</div>').join('')}</div>
-    </div>`;
-
-  const t=d.translate;
-  document.getElementById('out-translate').innerHTML=`
-    <div class="stage"><div class="tag">4 · 五步翻译（怎么翻）</div><h3>每个类别的实操三法 + 链接你的案例</h3>
-    ${t.map((s,i)=>`
-      <div class="step">
-        <div class="name">${esc(s.step)}</div>
-        <div class="pr">${esc(s.principle||'')}</div>
-        <div class="block"><b class="blk">实操三法</b>${(s.methods||[]).map((m,j)=>`<div class="m-item"><span class="m-no">${j+1}</span><span>${esc(m)}</span></div>`).join('')}</div>
-        <div class="block fy"><b class="blk fy-blk">链接你的案例</b>${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}</div>
-      </div>`).join('')}
-    </div>`;
-
-  const o2=d.output||{};
-  const pl=d.plan||[];
-  const pf=(k,label,val,rows)=>`<div class="pf"><span class="pl">${label}</span><textarea class="edit" data-k="${k}" rows="${rows||1}">${esc(val||'')}</textarea></div>`;
-  document.getElementById('out-output').innerHTML=`
-    <div class="stage"><div class="tag">5 · 转型专案（执行计划）</div><h3>从策略到落地：任务 / 产出 / 时间点 / 责任人 / 资源</h3>
-      <div class="step"><div class="name">一句话定位</div><textarea class="edit" data-k="output.positioning" rows="2">${esc(o2.positioning||'')}</textarea></div>
-      <div class="step"><div class="name">场景定义</div><textarea class="edit" data-k="output.scene" rows="2">${esc(o2.scene||'')}</textarea></div>
-      <div class="plan">
-        ${pl.map((it,i)=>`
-          <div class="plan-row">
-            <div class="plan-h"><span class="plan-no">${i+1}</span> 任务</div>
-            <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
-            <div class="plan-grid">
-              <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
-              <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
-              <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
-              <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
-}
-function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
+/* ===================== 状态与导航 ===================== */
+const STEPS=[
+  {key:'input',label:'输入'},{key:'understand',label:'理解'},{key:'reframe',label:'重构'},
+  {key:'opportunity',label:'机遇'},{key:'translate',label:'翻译'},{key:'plan',label:'专案'},{key:'export',label:'导出'}
+];
+const state={step:0,mode:'chat',data:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0};
 let lastData=null;
-const _render=render;
-render=function(d){lastData=d;_render(d);};
 
-function setByPath(obj, path, val){
-  const parts=path.split('.'); let o=obj;
-  for(let i=0;i<parts.length-1;i++){
-    if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};
-    o=o[parts[i]];
-  }
-  o[parts[parts.length-1]]=val;
+function setByPath(obj,path,val){const parts=path.split('.');let o=obj;for(let i=0;i<parts.length-1;i++){if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};o=o[parts[i]];}o[parts[parts.length-1]]=val;}
+function gv(path){const parts=path.split('.');let o=state.data;for(const p of parts){if(o==null)return '';o=o[p];}return o==null?'':o;}
+
+function saveDataDraft(){if(state.data)localStorage.setItem(LS_DATA,JSON.stringify(state.data));}
+function restoreDataDraft(){try{const d=JSON.parse(localStorage.getItem(LS_DATA)||'null');if(d)state.data=d;}catch(e){}}
+function saveInputDraft(){const f={p:val0('i-product'),a:val0('i-audience'),v:val0('i-value'),c:val0('i-current'),pn:val0('i-pain')};
+  const any=Object.values(f).some(x=>x);if(any)localStorage.setItem(LS_DRAFT,JSON.stringify(f));}
+function val0(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+
+function goStep(n){
+  if(n>0 && !state.data){toast('请先在第 1 步生成转型专案');return;}
+  state.step=n;
+  if(n>state.reached)state.reached=n;
+  renderHeader();renderProgress();renderScreen();renderNavbar();
+  document.getElementById('screen').scrollIntoView({behavior:'smooth',block:'start'});
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function renderHeader(){
+  document.getElementById('stepNum').textContent=String(state.step+1).padStart(2,'0')+' / '+String(STEPS.length).padStart(2,'0');
+  document.getElementById('stepName').textContent=STEPS[state.step].label;
+}
+function renderProgress(){
+  const p=document.getElementById('progress');
+  p.innerHTML=STEPS.map((s,i)=>{
+    const cls=i<state.step?'pg done':(i===state.step?'pg active':'pg');
+    const reachable=(i===0)||state.data;
+    return `<div class="${cls}" data-go="${i}" title="${s.label}"><span class="fill"></span></div>`;
+  }).join('');
+  p.querySelectorAll('[data-go]').forEach(el=>{
+    el.onclick=()=>goStep(parseInt(el.dataset.go,10));
+  });
+}
+
+/* ===================== 屏幕渲染 ===================== */
+function renderScreen(){
+  const s=document.getElementById('screen');
+  const map=[screenInput,screenUnderstand,screenReframe,screenOpportunity,screenTranslate,screenPlan,screenExport];
+  s.innerHTML=map[state.step]();
+}
+function renderNavbar(){
+  const n=document.getElementById('navInner');
+  if(state.step===0){n.innerHTML='<span class="nav-label">先填写 / 对话，生成你的转型专案</span>';return;}
+  const prev=state.step>0?`<button class="nav-btn prev" onclick="goStep(${state.step-1})">← 上一步</button>`:`<button class="nav-btn prev" disabled>← 上一步</button>`;
+  let next='';
+  if(state.step<STEPS.length-1)next=`<button class="nav-btn next" onclick="goStep(${state.step+1})">下一步 →</button>`;
+  else next=`<button class="nav-btn next" onclick="toast('已到最后一屏，点下方下载 PPT')">导出完成</button>`;
+  n.innerHTML=`${prev}<span class="nav-label">${STEPS[state.step].label} · ${state.step+1}/${STEPS.length}</span>${next}`;
+}
+
+function screenInput(){
+  const chatHTML=`
+    <div class="eyebrow">输入 · 品牌现状</div>
+    <h1 class="h-hero">聊聊你的产品</h1>
+    <p class="lead">用对话的方式告诉我，我会把它翻译成 Z 世代想要的样子。也可以切到表单一次填完。</p>
+    <div class="seg">
+      <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">对话引导</button>
+      <button class="${state.mode==='form'?'on':''}" onclick="setMode('form')">表单填写</button>
+    </div>
+    <div id="chatWrap" class="${state.mode==='chat'?'':'hidden'}">
+      <div class="chat" id="chatMsgs"></div>
+      <div class="chat-input">
+        <textarea id="chatInput" rows="1" placeholder="输入你的回答，回车发送…"></textarea>
+        <button class="btn btn-primary" onclick="chatSend()">发送</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn btn-ghost btn-sm" onclick="chatSkip()">跳过此问</button>
+        <button class="btn btn-soft btn-sm" onclick="loadSample()">载入示例</button>
+      </div>
+    </div>
+    <div id="formWrap" class="${state.mode==='form'?'':'hidden'}">
+      <label class="fld">1 · 你的产品 / 服务是什么？<span>越具体越好</span></label>
+      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务">${esc(val0('i-product'))}</textarea>
+      <label class="fld">2 · 目标受众是谁？<span>希望触达的年轻人</span></label>
+      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主">${esc(val0('i-audience'))}</textarea>
+      <label class="fld">3 · 你最想传达的核心功能 / 价值<span>翻译的"原料"</span></label>
+      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选">${esc(val0('i-value'))}</textarea>
+      <label class="fld">4 · 你目前在做什么，但年轻人不买账？<span>越具体越准</span></label>
+      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…">${esc(val0('i-current'))}</textarea>
+      <label class="fld">5 · 最想解决的适配问题<span>选填</span></label>
+      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多认知负荷高">${esc(val0('i-pain'))}</textarea>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="fromForm()">生成转型专案</button>
+      <button class="btn btn-soft btn-sm" style="margin-top:10px;width:auto" onclick="loadSample()">载入示例</button>
+    </div>`;
+  return chatHTML;
+}
+
+function screenUnderstand(){
+  const u=state.data.understand;
+  const sigs=(u.signals||[]).map(s=>s.quote?`<span class="sig">${esc(s.label)} · ${esc(s.quote)}</span>`:`<span class="sig">${esc(s.label)}</span>`).join('');
+  return `
+    <div class="eyebrow">第 1 步 · 理解</div>
+    <h1 class="h-hero">我读到的案例</h1>
+    <p class="lead">先确认我读懂了你的现状，有偏差可以在下一步前回到输入修订。</p>
+    <div class="card"><p style="margin:0;font-size:15px">${esc(u.summary)}</p>
+      <div style="margin-top:12px">${sigs}</div></div>
+    <p class="hint">这些信号来自你写的内容，是后面翻译的"原料"。觉得不准？点底部「上一步」回去改。</p>`;
+}
+function screenReframe(){
+  const r=state.data.reframe;
+  return `
+    <div class="eyebrow">第 2 步 · 重构问题</div>
+    <h1 class="h-hero">从痛点，到机会</h1>
+    <p class="lead">不是再叠加功能，而是换一套年轻人听得懂的方言。</p>
+    <div class="card"><div class="eyebrow" style="color:var(--mut)">当前阻力</div><p style="font-weight:700;margin:6px 0 0">${esc(r.problem||'')}</p></div>
+    <div class="card"><div class="eyebrow" style="color:var(--accent)">重构后</div><p style="margin:6px 0 0;font-size:15px">${esc(r.reframed||'')}</p>
+      <p class="hint" style="margin-top:10px">${esc(r.why||'')}</p></div>`;
+}
+function screenOpportunity(){
+  const o=state.data.opportunity;
+  const pillar=(cls,title,items)=>`<div class="pillar ${cls}"><b>${title}</b><div class="pc">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div></div>`;
+  return `
+    <div class="eyebrow">第 3 步 · 机遇空间</div>
+    <h1 class="h-hero">偏科在哪，机会就在哪</h1>
+    <p class="lead">三支柱对应三类年轻人没被满足的需求。</p>
+    ${pillar('control','掌控感 · 降负荷、给秩序',o.control)}
+    ${pillar('deserved','配得感 · 让我觉得"配得上我"',o.deserved)}
+    ${pillar('grat','满足感 · 即时、有梗、有参与',o.gratification)}`;
+}
+function screenTranslate(){
+  const t=state.data.translate;
+  return `
+    <div class="eyebrow">第 4 步 · 五步翻译</div>
+    <h1 class="h-hero">怎么翻：实操三法 + 你的案例</h1>
+    <p class="lead">每类都给宝洁的实操三法，并链接到你的案例（可修改）。</p>
+    ${t.map((s,i)=>`
+      <div class="step-card">
+        <div class="sname"><span class="sidx">${i+1}</span>${esc(s.step)}</div>
+        <div class="pr">${esc(s.principle||'')}</div>
+        <span class="blk-badge m">实操三法</span>
+        ${(s.methods||[]).map((m,j)=>`<div class="m-item"><span class="m-no">${j+1}</span><span>${esc(m)}</span></div>`).join('')}
+        <span class="blk-badge f" style="margin-top:12px">链接你的案例</span>
+        ${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}
+      </div>`).join('')}`;
+}
+function screenPlan(){
+  const o2=state.data.output||{};
+  const pl=state.data.plan||[];
+  const pf=(k,label,val,rows)=>`<div class="pf"><span class="pl">${label}</span><textarea class="edit" data-k="${k}" rows="${rows||1}">${esc(val||'')}</textarea></div>`;
+  return `
+    <div class="eyebrow">第 5 步 · 转型专案</div>
+    <h1 class="h-hero">从策略到落地</h1>
+    <p class="lead">一句话定位与场景，加 5 条可执行行动（任务 / 产出 / 时间点 / 责任人 / 资源）。</p>
+    <div class="card"><div class="eyebrow" style="color:var(--accent)">一句话定位</div>
+      <textarea class="edit" data-k="output.positioning" rows="2" style="margin-top:8px">${esc(o2.positioning||'')}</textarea></div>
+    <div class="card"><div class="eyebrow" style="color:var(--accent)">场景定义</div>
+      <textarea class="edit" data-k="output.scene" rows="2" style="margin-top:8px">${esc(o2.scene||'')}</textarea></div>
+    ${pl.map((it,i)=>`
+      <div class="plan-row">
+        <div class="plan-h"><span class="plan-no">${i+1}</span> 任务</div>
+        <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
+        <div class="plan-grid" style="margin-top:10px">
+          <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
+          <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
+          <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
+          <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
+        </div>
+      </div>`).join('')}`;
+}
+function screenExport(){
+  const c=state.data._inputs||{};
+  return `
+    <div class="eyebrow">第 6 步 · 导出</div>
+    <h1 class="h-hero">你的转型专案已就绪</h1>
+    <p class="lead">把前面 5 个部分整合成一份 PPT，一键下载带走，或直接复制文本。</p>
+    <div class="card">
+      <div class="eyebrow" style="color:var(--accent)">专案概要</div>
+      <p style="margin:8px 0 0;font-weight:700">${esc(c.product||'')}</p>
+      <p class="hint" style="margin:2px 0 0">面向 ${esc(c.audience||'')}</p>
+      <p style="margin:10px 0 0;font-size:14px">${esc(state.data.output.positioning||'')}</p>
+    </div>
+    <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
+    <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制整份文本</button>
+    <p class="hint" style="margin-top:14px">PPT 含：封面 · 理解 · 重构 · 机遇 · 五步翻译（实操三法 + 案例）· 转型专案 · 执行计划。生成在本地完成，内容不外传。</p>`;
+}
+
+/* ===================== 输入交互 ===================== */
+function setMode(m){
+  state.mode=m;
+  if(m==='chat' && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
+  renderScreen();
+  if(m==='chat')bindChatEnter();
+}
+function renderChat(){
+  const d=document.getElementById('chatMsgs');if(!d)return;
+  d.innerHTML=state.chatLog.map(m=>`<div class="bub bub-${m.role}">${esc(m.text)}</div>`).join('');
+  d.scrollTop=d.scrollHeight;
+}
+function botSay(t){state.chatLog.push({role:'bot',text:t});renderChat();}
+function userSay(t){state.chatLog.push({role:'user',text:t});renderChat();}
+function chatSend(){
+  const ta=document.getElementById('chatInput');if(!ta)return;
+  const txt=ta.value.trim();if(!txt)return;
+  const cur=CHAT_Q[state.chatIdx];
+  state.chatAns[cur.k]=txt;userSay(txt);ta.value='';
+  state.chatIdx++;
+  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q),300);
+  else chatDone();
+}
+function chatSkip(){
+  const cur=CHAT_Q[state.chatIdx];if(cur.k!=='pain')return;
+  userSay('（跳过）');state.chatIdx++;
+  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q),300);else chatDone();
+}
+function chatDone(){
+  document.getElementById('i-product')&&(document.getElementById('i-product').value=state.chatAns.product||'');
+  document.getElementById('i-audience')&&(document.getElementById('i-audience').value=state.chatAns.audience||'');
+  document.getElementById('i-value')&&(document.getElementById('i-value').value=state.chatAns.value||'');
+  document.getElementById('i-current')&&(document.getElementById('i-current').value=state.chatAns.current||'');
+  document.getElementById('i-pain')&&(document.getElementById('i-pain').value=state.chatAns.pain||'');
+  botSay('已收集完 5 项，下面生成你的转型专案 👇');
+  const d=document.getElementById('chatMsgs');
+  const wrap=document.createElement('div');wrap.style.marginTop='12px';
+  const btn=document.createElement('button');btn.className='btn btn-primary';btn.textContent='生成转型专案';
+  btn.onclick=()=>fromForm();
+  wrap.appendChild(btn);d.appendChild(wrap);
+}
+function bindChatEnter(){
+  const ta=document.getElementById('chatInput');if(!ta)return;
+  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();}};
+}
+function fromForm(){
+  const c={product:val0('i-product'),audience:val0('i-audience'),value:val0('i-value'),current:val0('i-current'),pain:val0('i-pain')};
+  if(!c.product&&!c.audience&&!c.current){toast('请至少填写产品 / 受众 / 现状之一');return;}
+  saveInputDraft();
+  const ai=getAI();let run=async()=>{
+    let data=null;
+    if(ai.apiKey)data=await reasonAI(c);
+    if(!data)data=reasonLocal(c);
+    state.data=data;lastData=data;saveDataDraft();
+    goStep(1);
+  };
+  run();
+}
+function loadSample(){
+  ['i-product','i-audience','i-value','i-current','i-pain'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  state.mode='form';state.chatStarted=false;state.chatLog=[];
+  renderScreen();
+  document.getElementById('i-product').value=SAMPLE.product;
+  document.getElementById('i-audience').value=SAMPLE.audience;
+  document.getElementById('i-value').value=SAMPLE.value;
+  document.getElementById('i-current').value=SAMPLE.current;
+  document.getElementById('i-pain').value=SAMPLE.pain;
+  fromForm();
+}
+
+/* ===================== 编辑绑定 ===================== */
+document.getElementById('screen').addEventListener('input',e=>{
+  const k=e.target.dataset&&e.target.dataset.k;if(!k||!state.data)return;
+  setByPath(state.data,k,e.target.value);saveDataDraft();
+});
+
+/* ===================== 复制 ===================== */
 function copyPlan(){
-  const c={product:v('i-product'),audience:v('i-audience'),value:v('i-value'),current:v('i-current'),pain:v('i-pain')};
-  const d=lastData; if(!d){return;}
+  const c=state.data._inputs||{};
+  const d=state.data;if(!d)return;
   const data=JSON.parse(JSON.stringify(d));
-  document.querySelectorAll('[data-k]').forEach(el=>{ setByPath(data, el.dataset.k, el.value); });
-  let t=`【Z 世代代际翻译 · 转型专案】\n产品：${c.product}\n受众：${c.audience}\n价值：${c.value}\n现状：${c.current}\n适配问题：${c.pain}\n\n`;
+  document.querySelectorAll('[data-k]').forEach(el=>{setByPath(data,el.dataset.k,el.value);});
+  let t=`【Z 世代代际翻译 · 转型专案】\n产品：${c.product||''}\n受众：${c.audience||''}\n价值：${c.value||''}\n现状：${c.current||''}\n适配问题：${c.pain||''}\n\n`;
   t+=`一、理解\n${data.understand.summary}\n`;
   t+=`\n二、重构问题\n阻力：${data.reframe.problem}\n重构：${data.reframe.reframed}\n`;
   t+=`\n三、机遇空间\n掌控感：${(data.opportunity.control||[]).join('；')}\n配得感：${(data.opportunity.deserved||[]).join('；')}\n满足感：${(data.opportunity.gratification||[]).join('；')}\n`;
   t+=`\n四、五步翻译（实操三法 + 链接你的案例）\n`;
-  (data.translate||[]).forEach(s=>{
-    t+=`· ${s.step}（${s.principle}）\n`;
-    (s.methods||[]).forEach((m,j)=>{t+=`   实操三法${j+1}：${m}\n`;});
-    (s.forYou||[]).forEach((f,j)=>{t+=`   链接案例${j+1}：${f}\n`;});
-  });
+  (data.translate||[]).forEach(s=>{t+=`· ${s.step}（${s.principle}）\n`;(s.methods||[]).forEach((m,j)=>{t+=`   实操三法${j+1}：${m}\n`;});(s.forYou||[]).forEach((f,j)=>{t+=`   链接案例${j+1}：${f}\n`;});});
   t+=`\n五、转型专案（执行计划）\n定位：${data.output.positioning}\n场景：${data.output.scene}\n`;
-  (data.plan||[]).forEach((it,i)=>{
-    t+=`\n行动 ${i+1} · 任务：${it.task}\n   产出：${it.deliverable}\n   时间点：${it.timeline}\n   责任人：${it.owner}\n   资源：${it.resource}\n`;
-  });
+  (data.plan||[]).forEach((it,i)=>{t+=`\n行动 ${i+1} · 任务：${it.task}\n   产出：${it.deliverable}\n   时间点：${it.timeline}\n   责任人：${it.owner}\n   资源：${it.resource}\n`;});
   navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
 }
-function toast(m){let t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1c1c1e;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:99';document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
 
-// ---- 对话气泡引导输入 ----
-const CHAT_Q=[
-  {k:'product', q:'先聊聊 👋 你要翻译的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
-  {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行/使用场景。'},
-  {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是翻译的原料，比如：健康、本地特色、精选）'},
-  {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
-  {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可跳过）'}
-];
-let chatIdx=0, chatAns={}, chatStarted=false;
-function setMode(m){
-  document.getElementById('modeForm').classList.toggle('active',m==='form');
-  document.getElementById('modeChat').classList.toggle('active',m==='chat');
-  document.getElementById('formPanel').classList.toggle('hidden',m!=='form');
-  document.getElementById('chatPanel').classList.toggle('hidden',m!=='chat');
-  if(m==='chat' && !chatStarted){ chatStarted=true; chatIdx=0; chatAns={}; document.getElementById('chatMsgs').innerHTML=''; botSay(CHAT_Q[0].q); }
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(m){let t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1900);}
+
+/* ===================== PPT 导出 ===================== */
+function loadPptx(cb){
+  if(window.PptxGenJS)return cb();
+  if(window.__pptxMissing){toast('PPT 引擎文件缺失');return;}
+  const s=document.createElement('script');s.src='pptxgen.bundle.js';
+  s.onload=()=>cb();s.onerror=()=>{window.__pptxMissing=true;toast('PPT 引擎加载失败');};
+  document.head.appendChild(s);
 }
-function botSay(t){const d=document.getElementById('chatMsgs');const e=document.createElement('div');e.className='bub bub-bot';e.textContent=t;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function userSay(t){const d=document.getElementById('chatMsgs');const e=document.createElement('div');e.className='bub bub-user';e.textContent=t;d.appendChild(e);d.scrollTop=d.scrollHeight;}
-function chatSend(){
-  const ta=document.getElementById('chatInput'); const txt=ta.value.trim();
-  if(!txt)return;
-  const cur=CHAT_Q[chatIdx];
-  chatAns[cur.k]=txt; userSay(txt); ta.value='';
-  chatIdx++;
-  if(chatIdx<CHAT_Q.length){ setTimeout(()=>botSay(CHAT_Q[chatIdx].q),300); }
-  else chatDone();
+function exportPpt(){
+  if(!state.data){toast('请先生成专案');return;}
+  toast('正在生成 PPT…');
+  loadPptx(()=>{try{buildPpt(state.data);}catch(e){console.error(e);toast('生成失败：'+e.message);}});
 }
-function chatSkip(){
-  const cur=CHAT_Q[chatIdx]; if(cur.k!=='pain')return;
-  userSay('（跳过）'); chatIdx++;
-  if(chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[chatIdx].q),300); else chatDone();
-}
-function chatDone(){
-  document.getElementById('i-product').value=chatAns.product||'';
-  document.getElementById('i-audience').value=chatAns.audience||'';
-  document.getElementById('i-value').value=chatAns.value||'';
-  document.getElementById('i-current').value=chatAns.current||'';
-  document.getElementById('i-pain').value=chatAns.pain||'';
-  const d=document.getElementById('chatMsgs');
-  const s=document.createElement('div');s.className='bub bub-sum';
-  s.textContent='已收集 5 项，下面生成你的转型专案 👇';
-  d.appendChild(s);
-  const wrap=document.createElement('div');wrap.className='chat-actions';
-  const btn=document.createElement('button');btn.className='btn-primary';btn.textContent='生成转型专案';
-  btn.onclick=()=>{generate(); document.getElementById('result').scrollIntoView({behavior:'smooth'});};
-  wrap.appendChild(btn); d.appendChild(wrap); d.scrollTop=d.scrollHeight;
+function buildPpt(d){
+  const pptx=new PptxGenJS();
+  pptx.layout='LAYOUT_WIDE';
+  pptx.author='Z 翻译器';pptx.title='Z 世代代际翻译 · 转型专案';
+  const FH='Microsoft YaHei', INK='18181B', MUT='8A8A8F', ACC='0CA678', ACCD='09835E';
+  const C_CTRL='3B82F6',C_DES='7C5CFC',C_GRA='E2642F';
+  const c=d._inputs||{};
+  // 1. 封面
+  let s=pptx.addSlide();s.background={color:'0F0F0F'};
+  s.addText('Z 世代代际翻译',{x:0.7,y:2.3,w:12,fontSize:40,bold:true,color:'FFFFFF',fontFace:FH});
+  s.addText('转型专案 · 三支柱 × 宝洁五步法',{x:0.7,y:3.2,w:12,fontSize:17,color:'A1A1AA',fontFace:FH});
+  s.addText([{text:'产品  ',options:{color:'71717A'}},{text:c.product||'',options:{color:'FFFFFF',bold:true}}],{x:0.7,y:4.6,w:12,fontSize:14,fontFace:FH});
+  s.addText([{text:'受众  ',options:{color:'71717A'}},{text:c.audience||'',options:{color:'FFFFFF'}}],{x:0.7,y:5.1,w:12,fontSize:14,fontFace:FH});
+  s.addText('由 Z 翻译器生成',{x:0.7,y:6.6,w:12,fontSize:11,color:'52525B',fontFace:FH});
+  // 2. 理解
+  s=pptx.addSlide();
+  s.addText('01 · 理解',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('我读到的案例',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  s.addText(d.understand.summary,{x:0.6,y:1.7,w:12,fontSize:15,color:INK,fontFace:FH});
+  const sigs=(d.understand.signals||[]).filter(x=>x.quote).map(x=>x.label+'：'+x.quote);
+  if(sigs.length)s.addText(sigs.map(x=>({text:'●  '+x,options:{bullet:false,breakLine:true}})),{x:0.6,y:3.1,w:12,fontSize:13,color:'3F3F46',fontFace:FH});
+  // 3. 重构
+  s=pptx.addSlide();
+  s.addText('02 · 重构问题',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('从痛点，到机会',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  s.addText([{text:'当前阻力  ',options:{bold:true,color:C_GRA}},{text:d.reframe.problem||'',options:{color:INK}}],{x:0.6,y:1.8,w:12,fontSize:15,fontFace:FH});
+  s.addText([{text:'重构后  ',options:{bold:true,color:ACCD}},{text:d.reframe.reframed||'',options:{color:INK}}],{x:0.6,y:2.9,w:12,fontSize:15,fontFace:FH});
+  // 4. 机遇
+  s=pptx.addSlide();
+  s.addText('03 · 机遇空间',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('偏科在哪，机会就在哪',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  const pillars=[['掌控感',C_CTRL,d.opportunity.control],['配得感',C_DES,d.opportunity.deserved],['满足感',C_GRA,d.opportunity.gratification]];
+  pillars.forEach((p,i)=>{
+    const y=1.8+i*1.55;
+    s.addText(p[0],{x:0.6,y:y,w:3,fontSize:16,bold:true,color:p[1],fontFace:FH});
+    s.addText((p[2]||[]).map(x=>({text:'· '+x,options:{bullet:false,breakLine:true}})),{x:0.6,y:y+0.4,w:12,fontSize:13,color:'3F3F46',fontFace:FH});
+  });
+  // 5. 五步翻译 · 实操三法
+  s=pptx.addSlide();
+  s.addText('04 · 五步翻译 · 实操三法',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('宝洁五步法的固定方法论',{x:0.6,y:0.8,w:12,fontSize:24,bold:true,color:INK,fontFace:FH});
+  (d.translate||[]).forEach((st,i)=>{
+    const y=1.7+i*0.92;
+    s.addText((i+1)+' · '+st.step,{x:0.6,y:y,w:3.2,fontSize:13,bold:true,color:ACCD,fontFace:FH});
+    s.addText((st.methods||[]).map(m=>({text:'· '+m,options:{bullet:false,breakLine:true}})),{x:3.9,y:y,w:9,fontSize:11.5,color:'3F3F46',fontFace:FH});
+  });
+  // 6. 五步翻译 · 链接案例
+  s=pptx.addSlide();
+  s.addText('05 · 五步翻译 · 链接你的案例',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('针对你的品牌具体做法',{x:0.6,y:0.8,w:12,fontSize:24,bold:true,color:INK,fontFace:FH});
+  (d.translate||[]).forEach((st,i)=>{
+    const y=1.7+i*0.92;
+    s.addText((i+1)+' · '+st.step,{x:0.6,y:y,w:3.2,fontSize:13,bold:true,color:C_DES,fontFace:FH});
+    s.addText((st.forYou||[]).map(f=>({text:'· '+f,options:{bullet:false,breakLine:true}})),{x:3.9,y:y,w:9,fontSize:11.5,color:'3F3F46',fontFace:FH});
+  });
+  // 7. 转型专案
+  s=pptx.addSlide();
+  s.addText('06 · 转型专案',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('一句话定位与场景',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  s.addText([{text:'定位  ',options:{bold:true,color:ACCD}},{text:d.output.positioning||'',options:{color:INK}}],{x:0.6,y:1.8,w:12,fontSize:15,fontFace:FH});
+  s.addText([{text:'场景  ',options:{bold:true,color:ACCD}},{text:d.output.scene||'',options:{color:INK}}],{x:0.6,y:2.9,w:12,fontSize:15,fontFace:FH});
+  // 8. 执行计划
+  s=pptx.addSlide();
+  s.addText('07 · 执行计划',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
+  s.addText('从策略到落地的 5 条行动',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
+  const head=['#','任务','产出','时间点','责任人','资源'];
+  const rows=[head.map(h=>({text:h,options:{bold:true,color:'FFFFFF',fill:{color:ACCD},align:'left'}}))];
+  (d.plan||[]).forEach((it,i)=>{
+    rows.push([
+      {text:String(i+1),options:{align:'center',bold:true}},
+      {text:it.task||''},{text:it.deliverable||''},{text:it.timeline||''},{text:it.owner||''},{text:it.resource||''}
+    ].map((c2,ci)=>({text:c2.text,options:Object.assign({fontSize:9.5,color:'3F3F46',valign:'top',fill:{color: i%2? 'F6F5F2':'FFFFFF'}},c2.options||{})})));
+  });
+  s.addTable(rows,{x:0.5,y:1.7,w:12.3,colW:[0.5,3.6,2.5,1.4,2.0,2.3],fontFace:FH,border:{type:'solid',color:'ECEAE6',pt:0.5}});
+  pptx.writeFile({fileName:(c.product||'Z转型专案')+'·代际翻译专案.pptx'}).then(()=>toast('PPT 已下载')).catch(e=>toast('下载失败'));
 }
 
-restoreDraft(); setFlag();
-document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();}});
+/* ===================== 启动 ===================== */
+function init(){
+  setFlag();
+  restoreDataDraft();
+  // 恢复表单草稿
+  try{const f=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}');
+    ['product','audience','value','current','pain'].forEach((k,i)=>{
+      const id=['i-product','i-audience','i-value','i-current','i-pain'][i];
+      if(f[k]){const e=document.getElementById(id);if(e)e.value=f[k];}
+    });}catch(e){}
+  renderHeader();renderProgress();renderScreen();renderNavbar();
+  if(state.data){ // 已有草稿，跳到理解屏便于继续
+    state.reached=Math.max(state.reached,1);
+  }
+  if(state.mode==='chat'){bindChatEnter();}
+  // 默认对话模式：首次进入自动发起第一问
+  if(!state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[];botSay(CHAT_Q[0].q);}
+}
+document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
