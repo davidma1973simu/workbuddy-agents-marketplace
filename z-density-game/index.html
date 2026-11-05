@@ -22,7 +22,7 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+    background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   .app{max-width:var(--maxw);margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
   header.hd{position:sticky;top:0;z-index:30;background:rgba(246,245,242,.85);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:10px}
@@ -72,6 +72,9 @@
   .chatinput input:focus{border-color:var(--accent)}
   .chatinput button{border:none;background:var(--accent);color:#fff;font-weight:700;border-radius:99px;padding:0 18px;cursor:pointer}
 
+  .chatwrap{display:flex;flex-direction:column;min-height:calc(100vh - 178px)}
+  .chatwrap .chat{flex:1;max-height:none}
+  .chatwrap .chatinput{margin-top:auto;padding-top:12px}
   .gauge{display:flex;flex-direction:column;align-items:center;margin:6px 0 10px}
   .ring{position:relative;width:148px;height:148px}
   .ring svg{transform:rotate(-90deg)}
@@ -101,6 +104,49 @@
   .hidden{display:none}
   footer{text-align:center;color:var(--mut);font-size:11px;padding:18px}
   a.link{color:var(--accent-d);font-weight:700;text-decoration:none}
+
+  /* ================= 首页：大量留白 · 文字克制 · 大字号 ================= */
+  .app{background:radial-gradient(520px 260px at 50% -70px,rgba(12,166,120,.13),rgba(12,166,120,0) 72%)}
+  .home{padding:16px 0 0;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 172px)}
+  .kick{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:.16em;
+    color:#0B7A5B;background:#E9F7F0;padding:7px 12px;border-radius:99px}
+  .kick i{width:5px;height:5px;border-radius:50%;background:#0CA678;display:block}
+  .big{margin:22px 0 0;font-size:clamp(42px,13.2vw,58px);line-height:1.01;letter-spacing:-2.6px;font-weight:900;color:#111}
+  .big em{font-style:normal;background:linear-gradient(transparent 60%,#CDF3E2 60%,#CDF3E2 92%,transparent 92%)}
+  .lede{margin:20px 0 0;color:#5B5B61;font-size:14.5px;line-height:1.8;letter-spacing:.2px}
+  .lede b{color:#111;font-weight:800}
+  .stackwrap{position:relative;margin:36px 0 48px}
+  .stackcard{position:absolute;left:14px;right:14px;top:14px;bottom:-14px;border-radius:22px;background:#E7E5DF}
+  .stackcard.b2{transform:rotate(-3.4deg) translateY(20px);background:#D3EDE0;left:18px;right:18px}
+  .stackcard.b1{transform:rotate(2deg) translateY(9px);background:#ECE9E1;left:16px;right:16px}
+  .shot{position:relative;margin:0;border-radius:22px;overflow:hidden;background:#DCDAD4;
+    box-shadow:0 22px 44px rgba(20,20,20,.17)}
+  .shot img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+  .veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.74),rgba(0,0,0,.14) 46%,rgba(0,0,0,0) 64%)}
+  .cap{position:absolute;left:16px;right:16px;bottom:15px;color:#fff;font-size:14.5px;font-weight:800;
+    line-height:1.45;letter-spacing:-.2px}
+  .badge{position:absolute;top:12px;right:12px;background:#fff;border-radius:15px;padding:8px 13px;text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.18)}
+  .badge b{display:block;font-size:23px;line-height:1;font-weight:900;color:#0CA678;letter-spacing:-.5px}
+  .badge span{font-size:9px;font-weight:800;letter-spacing:.1em;color:#9A9AA0}
+  .cta-main{width:100%;border:none;background:#111;color:#fff;font-size:16.5px;font-weight:800;
+    padding:18px;border-radius:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+    box-shadow:0 12px 26px rgba(17,17,17,.2);transition:transform .16s var(--ease)}
+  .cta-main:active{transform:scale(.985)}
+  .cta-main svg{width:19px;height:19px;flex:none}
+  .cta-row{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:16px}
+  .linkbtn{background:none;border:none;color:#5B5B61;font-size:13px;font-weight:700;padding:6px 0;cursor:pointer}
+  .linkbtn u{text-decoration:none;border-bottom:1.5px solid #D3D1CB;padding-bottom:2px}
+  .fine{text-align:center;font-size:10.5px;color:#A6A6AC;margin:26px 0 0;letter-spacing:.04em}
+
+  /* 演示：电脑自动填写 */
+  .filled{border:1px solid #E3E1DB;background:#fff;border-radius:16px;padding:14px 15px;font-size:14.5px;line-height:1.7;
+    color:#26262B;min-height:80px;box-shadow:0 6px 18px rgba(20,20,20,.04)}
+  .caret{display:inline-block;width:2px;height:15px;background:#0CA678;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .demoNote{display:flex;align-items:center;gap:8px;font-size:12px;color:#8A8A8F;margin-top:12px;font-weight:600}
+  .demoNote i{width:6px;height:6px;border-radius:50%;background:#0CA678;animation:bl 1s infinite}
+  .skip{margin-top:18px;width:100%;background:none;border:none;color:#A6A6AC;font-size:12px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -135,7 +181,7 @@ const CFG={endpoint:'https://z-density-game.app.workbuddy.host',
   publishableKey:'wbpk_7q0Q607vbX0jTn57w49Nym_24IiiIDCzuSSAz7mFXU8zFcU6kEeGQjH'};
 
 /* ============ 状态 ============ */
-const S={photo:null,photoData:null,photoName:'',desc:'',qi:0,answers:[],scores:null,
+const S={photo:null,photoData:null,photoName:'',desc:'',qi:0,answers:[],questions:[],demo:false,scores:null,
   control_why:'',deserved_why:'',grat_why:'',verdict:'',headline:'',quickwin:'',step:'',ai:false};
 const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
 const APP_URL='https://z-density-game.app.workbuddy.host';
@@ -143,9 +189,12 @@ const APP_URL='https://z-density-game.app.workbuddy.host';
 /* ============ 工具 ============ */
 const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function setSteps(n){document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
-function resetAll(){S.photo=null;S.photoData=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.scores=null;
+function setSteps(n){const w=document.querySelector('.steps');if(w)w.classList.remove('hidden');document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
+function resetAll(){S.photo=null;S.photoData=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.questions=[];S.demo=false;S.scores=null;
   S.control_why='';S.deserved_why='';S.grat_why='';S.verdict='';S.headline='';S.quickwin='';S.step='';S.ai=false;}
+/* 分享链接网关：静态资源必须带同一 sharecode，否则 403 */
+function asset(p){ return p+(location.search||''); }
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 /* ============ 本地启发式引擎（免费、无 Key、永远可用，作云端降级） ============ */
 const KW={
@@ -204,29 +253,82 @@ function pickHeadline(sc,desc){
   return `这${noun}全程没给年轻人一点爽点。`;
 }
 
-/* ============ 对话提纲（3–4 轮，围绕 Z 世代需求） ============ */
-const QUESTIONS=[
-  {pillar:'control',   q:'Z世代最烦被安排。用的时候，是TA自己说了算，还是被流程推着走？'},
-  {pillar:'deserved',  q:'TA会愿意为它"站队"吗？它让人觉得"我值得拥有"，还是"将就一下"？'},
-  {pillar:'grat',      q:'体验里有没有"当下就开心"的瞬间？是即时满足，还是熬完才值？'},
-  {pillar:'social',    q:'补一刀：如果发朋友圈，TA会怎么夸它、还是吐槽它？'}
-];
+/* ============ 对话问题：按产品主题动态生成（本地分类题库作降级） ============ */
+const QLIB={
+  food:['这家店，年轻人在里面是自己拿主意，还是被动线和人流推着走？',
+        '它看起来"值得专程来一趟"，还是"随便吃点算了"？',
+        '坐下吃的那几十分钟，有没有让TA当下就开心的点？',
+        '吃完出门，TA会拍照发朋友圈，还是只想赶紧走？'],
+  digital:['打开它，年轻人是自己在探索，还是被引导页和弹窗推着走？',
+           '它的界面让人觉得"这是我的品味"，还是"凑合用"？',
+           '第一次用就有爽点，还是要熬过新手期？',
+           'TA会把使用截图发出去，还是默默卸载？'],
+  retail:['拿到手的第一下，是TA自己挑的，还是被爆款榜和导购安排的？',
+          '它让人想"拍下来收藏"，还是"能用就行"？',
+          '从看中到拿到，爽点有多快？',
+          'TA会拿它当社交货币，还是不想让人看见？'],
+  beauty:['上手时TA能自己玩出花样，还是只能照说明书来？',
+          '它让TA觉得"这就是我"，还是"别人的风格"？',
+          '第一次用就有"变好看了"的即时反馈吗？',
+          'TA会晒开箱试色，还是怕被说土？'],
+  service:['整个流程里，TA是自己掌控节奏，还是被客服和规矩牵着走？',
+           '这个价格，TA觉得"我值得"，还是"将就一下"？',
+           '过程中有没有让人当下就开心的细节？',
+           '结束后TA会安利给朋友，还是当没发生过？'],
+  generic:['用的时候，是TA自己说了算，还是被流程推着走？',
+           '它让人觉得"我值得拥有"，还是"将就一下"？',
+           '体验里有没有"当下就开心"的瞬间？',
+           '如果发朋友圈，TA会夸它，还是吐槽它？']
+};
+function catOf(t){
+  t=(t||'').toLowerCase();
+  if(/餐|食|吃|咖啡|奶茶|饮品|烘焙|面|饭|店|小馆|早餐|火锅|酒/.test(t))return'food';
+  if(/app|软件|小程序|平台|系统|工具|网站|游戏|课程|会员|订阅/.test(t))return'digital';
+  if(/服|护理|健身|美容|理发|酒店|旅行|课程|培训|咨询|医疗/.test(t))return'service';
+  if(/妆|护肤|香|衣|鞋|包|饰|发|美甲|穿搭/.test(t))return'beauty';
+  if(/礼盒|产品|包装|零食|饮料|数码|耳机|手机|家居|品牌/.test(t))return'retail';
+  return'generic';
+}
+function localQuestions(desc){ return QLIB[catOf(desc)].slice(0,4); }
+
+/* ============ 示例 Demo（固定脚本，电脑自动填、自动答，用户只看） ============ */
+const DEMO={
+  desc:'一家开了 50 年的本地自助早餐，上百种食物，和休闲客混在一起。地方大、菜品多，但吵、杂、餐具老派。',
+  questions:[
+    '这家店，年轻人在里面是自己拿主意，还是被动线和人流推着走？',
+    '一百多种食物摆出来，TA会觉得"值得专程来一趟"，还是"随便吃点算了"？',
+    '坐下来吃的那 40 分钟，有没有让 TA 当下就开心的点？',
+    '吃完出门，TA会拍照发朋友圈，还是只想赶紧走？'
+  ],
+  answers:[
+    '基本跟着人流走。取餐台绕一圈，服务员一直催着往前，没人问你想先吃哪样。',
+    '菜品多但摆得老派，木托盘、塑料价签，拍出来显土，年轻人不太会专程来。',
+    '好吃是好吃，但没有惊喜。全程埋头吃，吃完也没什么印象。',
+    '不会发。灯光偏黄，背景全是聊天的中年客人，拍出来像公司食堂。'
+  ],
+  reactions:[
+    '跟着人流走，等于被安排得明明白白。',
+    '摆得老派，拍照先输一半。',
+    '好吃但没记忆点，等于白吃。',
+    '发不出去的一餐，等于没发生。'
+  ]
+};
 function reactSafe(qi){
   return ['收到，记下了。','懂了，继续。','好，我懂你的意思。','记下了，往下走。'][qi%4];
 }
-async function reactAsync(qi,q,a){
+async function reactAsync(qi,q,a,maxMs,fallback){
   try{
     const cloud=await ensureCloud();
     if(cloud){
       const hist=S.answers.slice(0,-1).map(x=>`问：${x.q}\n答：${x.a}`).join('\n')||'（对话刚开始）';
       const sys='你是毒舌又懂Z世代的产品顾问。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字犀利、有趣、带点调侃地回应这个回答——必须正确理解用户意思、绝不能反向理解、不许假客气。只回一句话，不要引号，不要解释。';
       const user=`问题：${q}\n用户回答：${a}\n前文：\n${hist}`;
-      let ans=await withTimeout(streamText(cloud,sys,user),7000);
+      let ans=await withTimeout(streamText(cloud,sys,user),maxMs||7000);
       ans=(ans||'').trim().replace(/^["'「『]|["'」』]$/g,'');
       if(ans)return ans;
     }
   }catch(e){}
-  return reactSafe(qi);
+  return fallback||reactSafe(qi);
 }
 
 /* ============ 云端免密钥 LLM（我们免费提供 AI，用户无需任何 Key） ============ */
@@ -253,12 +355,33 @@ async function streamText(cloud,sys,user,model){
   return ans;
 }
 function withTimeout(p,ms){ return Promise.race([p,new Promise(r=>setTimeout(()=>r(''),ms))]); }
+/* 让 AI 按这个产品的主题，现场长出 4 个问题（而不是每次问同样的话） */
+async function genQuestions(){
+  const cloud=await ensureCloud();
+  if(cloud){
+    try{
+      const sys='你是懂Z世代的产品顾问，正在做一对一诊断。'+
+        '根据用户给的产品/服务（可能含图片），写出 4 个诊断问题，逐轮追问。'+
+        '依次覆盖：掌控感（TA能不能自己说了算）、配得感（愿不愿站队/发圈）、满足感（当下是否有爽点）、传播（会夸还是会吐槽）。'+
+        '要求：每个问题≤32个汉字；必须具体到这个产品的细节和真实场景，像真人顾问现场发问；'+
+        '不要编号、不要解释、不要模板腔、4 个问题不要同一个句式。'+
+        '只输出JSON：{"q":["问题1","问题2","问题3","问题4"]}';
+      const parts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n请针对它输出 4 个问题。`}];
+      if(S.photoData) parts.unshift({type:'image_url',image_url:{url:S.photoData}});
+      const ans=await withTimeout(streamText(cloud,sys,parts),9000);
+      const o=parseJSON(ans);
+      if(o&&Array.isArray(o.q)){
+        const qs=o.q.filter(x=>typeof x==='string'&&x.trim().length>=6)
+                   .map(x=>x.trim().replace(/^\d+[.、]\s*/,'').slice(0,40));
+        if(qs.length>=3){ while(qs.length<4)qs.push(QLIB.generic[qs.length]); return qs.slice(0,4); }
+      }
+    }catch(e){}
+  }
+  return localQuestions(S.desc);
+}
 async function diagnoseCloud(){
   const cloud=await ensureCloud(); if(!cloud)return null;
   try{
-    const models=await cloud.llm.models.list();
-    let model=models.find(m=>m.disabled!==true && m.supportsImages===true) || models.find(m=>m.disabled!==true);
-    if(!model)return null;
     const transcript=S.answers.map(a=>`问：${a.q}\n答：${a.a}`).join('\n');
     const sys='你是代际翻译顾问，专看产品对Z世代（1995–2009出生）的吸引力。'+
       '按三支柱(掌控感/配得感/满足感)各打0-10分。'+
@@ -269,8 +392,8 @@ async function diagnoseCloud(){
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
     const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
-    if(S.photoData && model.supportsImages===true) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
-    let ans=await streamText(cloud,sys,userParts,model.id);
+    if(S.photoData) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
+    let ans=await streamText(cloud,sys,userParts);
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
     const clamp=v=>Math.max(2.2,Math.min(9.3,+v||5));
     return {control:clamp(o.control),deserved:clamp(o.deserved),gratification:clamp(o.gratification),
@@ -284,19 +407,33 @@ async function diagnoseCloud(){
 /* ============ 屏幕 ============ */
 function renderHome(){
   resetAll(); setSteps(1);
+  const _w=document.querySelector('.steps'); if(_w)_w.classList.add('hidden');
   $('#screen').innerHTML=`
-  <div class="screen">
-    <h1 class="hero">拍一张，<br>测测它的 Z 含量</h1>
-    <p class="sub">上传任意产品 / 服务 / 品牌，AI 免费帮你看「Z 含量」三柱仪表 + 犀利点评 + 可分享卡。无需任何 Key。</p>
-    <div class="card">
-      <button class="bigbtn" onclick="pickCam()">
-        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
-        拍照测一测
-      </button>
-      <button class="bigbtn ghost" onclick="pickLib()">从相册选择</button>
-      <button class="bigbtn ghost" onclick="demo()">看个演示（不用拍照）</button>
-      <p class="sm">AI 由我们免费提供 · 不填 Key 也能跑（无网络时自动用本地趣味读数）</p>
+  <div class="screen home">
+    <span class="kick"><i></i>Z-DENSITY SCAN</span>
+    <h1 class="big">它配得上<br><em>年轻人</em>吗？</h1>
+    <p class="lede">上传一张图，<b>一分钟</b>看完它的 Z 含量。<br>三根柱子，一句狠话，一张能发的卡。</p>
+
+    <div class="stackwrap">
+      <div class="stackcard b2"></div>
+      <div class="stackcard b1"></div>
+      <figure class="shot">
+        <img src="${asset('demo-photo.jpg')}" alt="示例：本地自助早餐">
+        <div class="veil"></div>
+        <div class="badge"><b>6.4</b><span>Z 含量</span></div>
+        <figcaption class="cap">「这早餐，年轻人不会多停留一秒。」</figcaption>
+      </figure>
     </div>
+
+    <button class="cta-main" onclick="pickCam()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.3-1.8h6.8L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg>
+      拍一张 / 上传
+    </button>
+    <div class="cta-row">
+      <button class="linkbtn" onclick="pickLib()"><u>从相册选</u></button>
+      <button class="linkbtn" onclick="runDemo()"><u>看示例</u> →</button>
+    </div>
+    <p class="fine">AI 我们出钱 · 不用填任何 Key</p>
   </div>`;
 }
 function pickCam(){$('#fileCam').click();}
@@ -306,36 +443,113 @@ function onFile(f){
   const rd=new FileReader();rd.onload=e=>S.photoData=e.target.result;rd.readAsDataURL(f);
   renderDescribe();
 }
-function demo(){S.photo=null;S.photoData=null;S.photoName='';S.desc='一家开了50年的本地自助早餐，上百种食物，和休闲客混在一起，吵且杂。';renderDescribe(true);}
 
-function renderDescribe(isDemo){
+/* ============ 示例 Demo：电脑自动填、自动问、自动答，用户只看 ============ */
+async function loadDemoPhoto(){
+  if(S.photoData)return;
+  try{
+    const r=await fetch(asset('demo-photo.jpg'));
+    const b=await r.blob();
+    S.photoData=await new Promise(res=>{const fr=new FileReader();fr.onload=e=>res(e.target.result);fr.readAsDataURL(b);});
+    S.photo=URL.createObjectURL(b);
+  }catch(e){ S.photo=asset('demo-photo.jpg'); }
+}
+function typeText(el,text,speed){
+  return new Promise(res=>{ let i=0; const id=setInterval(()=>{
+    if(!document.body.contains(el)||i>=text.length){clearInterval(id);res();return;}
+    el.textContent=text.slice(0,++i);
+  },speed); });
+}
+async function runDemo(){
+  resetAll(); setSteps(2); S.demo=true; window.__demoAbort=false;
+  $('#screen').innerHTML=`
+  <div class="screen">
+    <span class="flag">示例 · 自动演示</span>
+    <figure class="shot" style="margin-bottom:20px">
+      <img src="${asset('demo-photo.jpg')}" alt="示例：本地自助早餐">
+    </figure>
+    <label class="lbl">一句话描述它</label>
+    <div class="filled"><span id="typed"></span><span class="caret"></span></div>
+    <div class="demoNote" id="demoNote"><i></i>AI 正在读这张图…</div>
+    <button class="skip" onclick="skipDemo()">跳过动画，直接看结果</button>
+  </div>`;
+  loadDemoPhoto();
+  await typeText($('#typed'),DEMO.desc,24);
+  await wait(650);
+  if(window.__demoAbort)return;
+  const n=$('#demoNote'); if(n)n.innerHTML='<i></i>已自动填好 · 正在按这个主题生成 4 个问题…';
+  await wait(600);
+  startDemoChat();
+}
+async function skipDemo(){
+  window.__demoAbort=true;
+  S.desc=DEMO.desc; S.questions=DEMO.questions.slice();
+  S.answers=DEMO.questions.map((q,i)=>({q,a:DEMO.answers[i]}));
+  await loadDemoPhoto();
+  computeAndShow();
+}
+async function startDemoChat(){
+  if(window.__demoAbort)return;
+  S.desc=DEMO.desc; S.questions=DEMO.questions.slice(); S.answers=[]; S.qi=0;
+  setSteps(3);
+  $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
+    <div class="chatinput"><input id="ans" placeholder="示例自动播放中…" disabled>
+      <button disabled style="opacity:.4">发送</button></div>
+    <p class="fine" style="margin-top:12px">示例由 AI 实时点评 · 自己测时，回答由你来说</p></div>`;
+  playDemoStep();
+}
+async function playDemoStep(){
+  if(window.__demoAbort)return;
+  const qi=S.qi;
+  pushBot(S.questions[qi]);
+  await wait(820);
+  if(window.__demoAbort)return;
+  pushMe(DEMO.answers[qi]);
+  S.answers.push({q:S.questions[qi],a:DEMO.answers[qi]});
+  botTyping();
+  const r=await reactAsync(qi,S.questions[qi],DEMO.answers[qi],4200,DEMO.reactions[qi]);
+  if(window.__demoAbort)return;
+  const t=document.querySelector('.typing'); if(t)t.remove();
+  pushBot(r);
+  S.qi++;
+  if(S.qi<S.questions.length){ await wait(680); playDemoStep(); }
+  else { await wait(500); computeAndShow(); }
+}
+
+function renderDescribe(){
   setSteps(2);
   $('#screen').innerHTML=`
   <div class="screen">
     <span class="flag">AI 免费诊断 · 4 轮对话</span>
-    ${S.photo?`<img class="prev" src="${S.photo}">`:`<div class="card" style="text-align:center;color:var(--mut);font-size:13px;margin-bottom:14px">演示模式 · 无照片也能测</div>`}
-    <label class="lbl">一句话描述它（给 AI 更多语境，分数更准）</label>
+    ${S.photo?`<figure class="shot" style="margin-bottom:18px"><img src="${S.photo}" alt=""></figure>`:''}
+    <label class="lbl">一句话描述它（让 AI 问得更准）</label>
     <textarea id="desc" placeholder="例：传统自助餐，上百种食物，和休闲客混在一起，吵且杂">${esc(S.desc)}</textarea>
     <button class="next" onclick="goChat()">开始诊断 →</button>
-    ${isDemo?'<p class="sm">已填入示例文案，直接点「开始诊断」</p>':''}
+    <p class="sm">接下来 AI 会按这个产品，现场生成 4 个问题</p>
   </div>`;
 }
-function goChat(){
+async function goChat(){
   S.desc=$('#desc').value.trim()||S.desc||'';
-  S.qi=0;S.answers=[];
+  S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;
   setSteps(3);
-  $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat"></div>
+  $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat">
+      <div class="bub bot typing"><i></i><i></i><i></i></div></div>
+      <p class="fine" style="margin-top:16px">AI 正在读图，为你定制问题…</p></div>`;
+  const qs=await genQuestions();
+  S.questions=qs;
+  $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
     <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
-  pushBot(QUESTIONS[0].q);
+  pushBot(S.questions[0]);
 }
 async function sendAns(){
   const v=$('#ans').value.trim(); if(!v)return;
-  pushMe(v); S.answers.push({q:QUESTIONS[S.qi].q,a:v}); $('#ans').value='';
+  const q=S.questions[S.qi]||'';
+  pushMe(v); S.answers.push({q,a:v}); $('#ans').value='';
   botTyping();
-  const reaction=await reactAsync(S.qi,QUESTIONS[S.qi].q,v);
+  const reaction=await reactAsync(S.qi,q,v);
   const t=document.querySelector('.typing'); if(t)t.remove();
   pushBot(reaction);
-  if(S.qi<QUESTIONS.length-1){ S.qi++; setTimeout(()=>pushBot(QUESTIONS[S.qi].q),450); }
+  if(S.qi<S.questions.length-1){ S.qi++; setTimeout(()=>pushBot(S.questions[S.qi]),450); }
   else { setTimeout(computeAndShow,650); }
 }
 function pushBot(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
@@ -368,7 +582,7 @@ function computeAndShow(){
 function renderResult(){
   setSteps(4);
   const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
-  const C=251.2, circ=C*Math.PI;
+  const circ=2*Math.PI*64;
   const pils=[
     ['掌控感','control','var(--c-control)',sc.control,S.control_why],
     ['配得感','deserved','var(--c-deserved)',sc.deserved,S.deserved_why],
@@ -411,6 +625,13 @@ function wrapLines(ctx,text,maxW){
   return res;
 }
 function makeQR(url){ try{ const qr=qrcode(0,'M'); qr.addData(url); qr.make(); return qr.createDataURL(6,4); }catch(e){ return null; } }
+/* 等比裁切铺满，避免照片被拉变形 */
+function drawCover(x,img,X,Y,w,h){
+  const ir=img.width/img.height, r=w/h; let sw,sh,sx,sy;
+  if(ir>r){ sh=img.height; sw=sh*r; sx=(img.width-sw)/2; sy=0; }
+  else { sw=img.width; sh=sw/r; sx=0; sy=(img.height-sh)/2; }
+  x.drawImage(img,sx,sy,sw,sh,X,Y,w,h);
+}
 function drawCard(){
   const sc=S.scores; const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
   const W=1080,H=1560,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
@@ -430,9 +651,9 @@ function drawCard(){
 
   function paint(){
     // photo
-    if(imgs.photo){ x.save(); pathRound(x,px,py,pw,ph,pr); x.clip(); x.drawImage(imgs.photo,px,py,pw,ph); x.restore(); }
+    if(imgs.photo){ x.save(); pathRound(x,px,py,pw,ph,pr); x.clip(); drawCover(x,imgs.photo,px,py,pw,ph); x.restore(); }
     // scrim for headline legibility
-    const sg=x.createLinearGradient(0,py+ph*0.40,0,py+ph); sg.addColorStop(0,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,0,0,0.62)');
+    const sg=x.createLinearGradient(0,py+ph*0.30,0,py+ph); sg.addColorStop(0,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,0,0,0.78)');
     x.save(); pathRound(x,px,py,pw,ph,pr); x.clip(); x.fillStyle=sg; x.fillRect(px,py,pw,ph); x.restore();
     // tag pill
     x.fillStyle='rgba(255,255,255,0.94)'; pathRound(x,px+28,py+28,268,54,27); x.fill();
@@ -447,13 +668,11 @@ function drawCard(){
     // score big + three pillar chips
     x.textAlign='left'; x.fillStyle='#0CA678'; x.font='800 96px -apple-system,sans-serif'; x.fillText(avg,px,y+72);
     x.fillStyle='#8A8A8F'; x.font='600 24px -apple-system,"PingFang SC",sans-serif'; x.fillText('Z 含量 / 10',px+ ((''+avg).length>3?262:206),y+34);
-    const chips=[['掌控感',sc.control,'#3B82F6'],['配得感',sc.deserved,'#7C5CFC'],['满足感',sc.gratification,'#FF8A5B']];
-    let cy=y-18;
-    chips.forEach(([n,v,c])=>{
-      x.textAlign='right'; x.fillStyle=c; x.font='800 32px -apple-system,sans-serif'; x.fillText(v.toFixed(1),W-px,cy+18);
-      x.fillStyle='#18181B'; x.font='600 25px -apple-system,"PingFang SC",sans-serif'; x.fillText(n,W-px-78,cy+18);
-      cy+=46;
-    });
+    // 右侧只放「最弱的一项」，不再重复三柱明细
+    const _weak=[['掌控感',sc.control],['配得感',sc.deserved],['满足感',sc.gratification]].sort((a,b)=>a[1]-b[1])[0];
+    x.textAlign='right'; x.fillStyle='#8A8A8F'; x.font='600 24px -apple-system,"PingFang SC",sans-serif';
+    x.fillText('最弱 · '+_weak[0],W-px-96,y+28);
+    x.fillStyle='#18181B'; x.font='800 44px -apple-system,sans-serif'; x.fillText(_weak[1].toFixed(1),W-px,y+34);
     // pillars detailed
     let py2=y+150;
     const rows=[['掌控感',sc.control,'#3B82F6',S.control_why],['配得感',sc.deserved,'#7C5CFC',S.deserved_why],['满足感',sc.gratification,'#FF8A5B',S.grat_why]];
@@ -497,6 +716,8 @@ function drawCard(){
 $('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
 $('#fileLib').addEventListener('change',e=>onFile(e.target.files[0]));
 renderHome();
+/* 直接看演示：链接加 ?demo=1（方便分享与验收） */
+if(/[?&]demo=1/.test(location.search)) setTimeout(runDemo,260);
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{try{navigator.serviceWorker.register(window.__SW_PATH||'./sw.js').catch(()=>{});}catch(e){}});}
 </script>
