@@ -424,11 +424,18 @@ function drawCard(){
 }
 
 /* ============ 绑定 & 启动 ============ */
+// 适配分享链接网关：静态资源需带上同一 sharecode 查询参数，否则 403
+(function(){
+  const q=location.search||'';
+  const m=document.querySelector('link[rel="manifest"]'); if(m)m.href='manifest.webmanifest'+q;
+  const lg=document.querySelector('.logo'); if(lg)lg.src='app-icon.png'+q;
+  window.__SW_PATH='./sw.js'+q;
+})();
 $('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
 $('#fileLib').addEventListener('change',e=>onFile(e.target.files[0]));
 renderHome();
 
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{try{navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(e){}});}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{try{navigator.serviceWorker.register(window.__SW_PATH||'./sw.js').catch(()=>{});}catch(e){}});}
 </script>
 </body>
 </html>
