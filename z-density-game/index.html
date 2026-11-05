@@ -47,7 +47,7 @@
   .bigbtn.ghost{background:#fff;color:var(--accent-d);border:1px solid var(--accent);box-shadow:none;margin-top:10px}
   .bigbtn .ic{width:22px;height:22px;flex:none}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .sm{font-size:12px;color:var(--mut);text-align:center;margin-top:14px}
+  .sm{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
 
   .prev{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line);background:#eee;margin-bottom:14px}
   textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-md);padding:13px 14px;font:inherit;resize:vertical;
@@ -58,7 +58,7 @@
     padding:15px;border-radius:var(--r-md);cursor:pointer;box-shadow:0 8px 20px rgba(12,166,120,.25)}
   .next:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 
-  .chat{display:flex;flex-direction:column;gap:10px;margin:6px 0 14px}
+  .chat{display:flex;flex-direction:column;gap:10px;margin:6px 0 14px;max-height:52vh;overflow:auto}
   .bub{max-width:84%;padding:11px 14px;border-radius:16px;font-size:14.5px;animation:pop .3s var(--ease)}
   .bub.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:5px}
   .bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
@@ -67,7 +67,7 @@
   .typing i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:bl 1s infinite}
   .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
   @keyframes bl{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
-  .chatinput{display:flex;gap:8px}
+  .chatinput{display:flex;gap:8px;position:sticky;bottom:0;background:var(--bg);padding-top:6px}
   .chatinput input{flex:1;border:1px solid var(--line);border-radius:99px;padding:11px 15px;font:inherit;outline:none;background:#fff}
   .chatinput input:focus{border-color:var(--accent)}
   .chatinput button{border:none;background:var(--accent);color:#fff;font-weight:700;border-radius:99px;padding:0 18px;cursor:pointer}
@@ -78,19 +78,22 @@
   .ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
   .ring .num b{font-size:42px;font-weight:800;letter-spacing:-1px;line-height:1}
   .ring .num span{font-size:12px;color:var(--mut);margin-top:2px}
-  .pillars{display:flex;flex-direction:column;gap:14px;margin:4px 0 16px}
+  .pillars{display:flex;flex-direction:column;gap:16px;margin:4px 0 4px}
   .pil .top{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
   .pil .top .v{font-variant-numeric:tabular-nums}
   .bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden}
   .bar i{display:block;height:100%;border-radius:99px;width:0;transition:width 1s var(--ease)}
-  .verdict{background:var(--accent-soft);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;color:var(--accent-d);font-weight:600;margin-bottom:14px}
+  .why{font-size:12.5px;color:var(--mut);margin-top:8px;font-weight:700}
+  .verdict{background:var(--accent-soft);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;color:var(--accent-d);font-weight:600;margin:14px 0}
   .qw{border:1px dashed var(--accent);border-radius:var(--r-md);padding:14px 16px;margin-bottom:14px}
-  .qw .k{font-size:11px;font-weight:800;color:var(--accent-d);letter-spacing:.5px;margin-bottom:6px}
-  .qw .b{font-size:14.5px}
+  .qw .step{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--accent);padding:3px 10px;border-radius:99px;margin-bottom:9px}
+  .qw .b{font-size:14.5px;line-height:1.55}
   .cta{display:block;text-align:center;text-decoration:none;background:var(--ink);color:#fff;font-weight:700;
     padding:15px;border-radius:var(--r-md);margin:6px 0 12px}
   .sharebtn{width:100%;border:1px solid var(--accent);background:#fff;color:var(--accent-d);font-weight:700;
-    padding:13px;border-radius:var(--r-md);cursor:pointer;margin-bottom:8px}
+    padding:13px;border-radius:var(--r-md);cursor:pointer;margin-bottom:10px}
+  .homebtn{width:100%;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-weight:700;
+    padding:13px;border-radius:var(--r-md);cursor:pointer;margin-bottom:10px}
   .retest{width:100%;background:none;border:none;color:var(--mut);font-weight:600;padding:10px;cursor:pointer;font-size:13px}
   .flag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent-d);display:inline-block;margin-bottom:10px}
   .flag.off{background:#ECEAE6;color:var(--mut)}
@@ -121,19 +124,26 @@
 <input id="fileCam" type="file" accept="image/*" capture="environment" class="hidden">
 <input id="fileLib" type="file" accept="image/*" class="hidden">
 
+<script src="https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js"></script>
 <script>
+/* ============ 云端免密钥 LLM 配置（我们免费提供 AI 支持，用户无需任何 Key） ============ */
+const CFG={endpoint:'https://z-density-game.app.workbuddy.host',
+  publishableKey:'wbpk_7q0Q607vbX0jTn57w49Nym_24IiiIDCzuSSAz7mFXU8zFcU6kEeGQjH'};
+
 /* ============ 状态 ============ */
-const S={photo:null,photoData:null,photoName:'',desc:'',chat:[],scores:null,verdict:'',quickwin:'',ai:false};
-const LS_AI='zt_ai';
+const S={photo:null,photoData:null,photoName:'',desc:'',qi:0,answers:[],scores:null,
+  control_why:'',deserved_why:'',grat_why:'',verdict:'',quickwin:'',step:'',ai:false};
 const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
+const APP_URL='https://z-density-game.app.workbuddy.host';
 
 /* ============ 工具 ============ */
 const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function setSteps(n){document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
-function getAI(){try{return JSON.parse(localStorage.getItem(LS_AI)||'{}')}catch(e){return{}}}
+function resetAll(){S.photo=null;S.photoData=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.scores=null;
+  S.control_why='';S.deserved_why='';S.grat_why='';S.verdict='';S.quickwin='';S.step='';S.ai=false;}
 
-/* ============ 本地启发式引擎 ============ */
+/* ============ 本地启发式引擎（免费、无 Key、永远可用，作云端降级） ============ */
 const KW={
   control:[['自由','自主','选择','简单','清晰','安静','自定义','diy','掌控','不催','自助','灵活','轻松','一目了然','自己来'],
            ['推销','轰炸','复杂','强制','排队','套路','说教','催促','打扰','混乱','被迫','冗长']],
@@ -152,8 +162,12 @@ function scorePillar(name,text){
   return Math.max(2.2,Math.min(9.3,+s.toFixed(1)));
 }
 function localScores(text){
-  const c=scorePillar('control',text),d=scorePillar('deserved',text),g=scorePillar('grat',text);
-  return {control:c,deserved:d,gratification:g};
+  return {control:scorePillar('control',text),deserved:scorePillar('deserved',text),gratification:scorePillar('grat',text)};
+}
+function pillarWhy(name,sc){
+  if(name==='control'){ if(sc>=7.5)return'自主权基本到位'; if(sc>=6)return'选择有但不够爽'; if(sc>=5)return'半推半就的自主'; return'被流程牵着走'; }
+  if(name==='deserved'){ if(sc>=7.5)return'站队无压力'; if(sc>=6)return'面子差一口气'; if(sc>=5)return'配得感将就了'; return'不值得发圈'; }
+  return (sc>=7.5)?'当下就开心':(sc>=6)?'爽点偏靠后':(sc>=5)?'惊喜不够密':'熬完才有点值';
 }
 function pickVerdict(sc,text){
   const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
@@ -166,41 +180,87 @@ function pickVerdict(sc,text){
   let tail = avg>=7.5?'Z含量在线，年轻人会买账。':avg>=5.5?'有底子，但偏科明显，修订后空间很大。':'离 Z 世代还差一口气，先补最弱的支柱。';
   return head+tail;
 }
-function pickQuickwin(sc){
-  const arr=[['control','把首页第一个动作改成"用户自己选"，删掉所有默认勾选与催促文案。'],
-             ['deserved','加一个"为什么值得"的视觉锚点（材质 / 工艺 / 起源故事），让它可被炫耀。'],
-             ['gratification','在关键节点放一个即时小反馈（进度 / 彩蛋 / 打卡梗），让过程本身就好玩。']];
+function getNoun(t){ if(!t)return'产品'; const keys=['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','盲盒','手办','周边','社群','服务','品牌','活动'];
+  for(const k of keys){ if(t.includes(k)) return k; } return'产品'; }
+function pickQuickwin(sc,desc){
+  const arr=[['control','产品翻译','把首页第一个动作从"默认推荐"改成"你来挑场景"。用3个年轻人原话场景做入口，删掉所有默认勾选与催促文案，让TA自己决定先点哪。'],
+             ['deserved','包装翻译','把"经典"翻成"潮"：出一款特别版视觉（更亮色、更年轻字体、联名/限定），经典款不动，新款先在小渠道试水，让TA愿意"站队"。'],
+             ['gratification','社群翻译','把"广播"翻成"对话"：在关键节点放一个即时小反馈（进度/彩蛋/打卡梗/晒单互动），让过程本身就好玩、能被分享。']];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
-  return arr[0][1];
+  const [pillar,step,advice]=arr[0];
+  const noun=getNoun(desc);
+  const weakName=pillar==='control'?'掌控感':pillar==='deserved'?'配得感':'满足感';
+  return {step,text:`${advice}（针对你的${noun}，先补最弱的「${weakName}」）`};
 }
 
-/* ============ AI 路径（可选，有 Key 才用，失败回落本地） ============ */
-async function diagnoseAI(){
-  const a=getAI();if(!a.apiKey)return null;
-  const brand=(a.brand==='OpenAI'||a.brand==='Gemini')?a.brand:'DeepSeek';
-  const map={DeepSeek:{u:'https://api.deepseek.com/v1/chat/completions',m:'deepseek-chat'},
-             OpenAI:{u:'https://api.openai.com/v1/chat/completions',m:'gpt-4o-mini'},
-             Gemini:{u:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',m:'gemini-2.0-flash'}};
-  const cfg=map[brand]||map.DeepSeek;
-  const content=[{type:'text',text:'按Z世代三支柱(掌控感/配得感/满足感)评估这张产品图与描述。只返回JSON：{control:0-10,deserved:0-10,gratification:0-10,verdict:一句话,quickwin:一句话}'}];
-  if(S.photoData)content.push({type:'image_url',image_url:{url:S.photoData}});
-  content.push({type:'text',text:'描述：'+(S.desc||'（无文字描述）')});
+/* ============ 对话提纲（3–4 轮，围绕 Z 世代需求） ============ */
+const QUESTIONS=[
+  {pillar:'control',   q:'Z世代最烦被安排。用的时候，是TA自己说了算，还是被流程推着走？'},
+  {pillar:'deserved',  q:'TA会愿意为它"站队"吗？它让人觉得"我值得拥有"，还是"将就一下"？'},
+  {pillar:'grat',      q:'体验里有没有"当下就开心"的瞬间？是即时满足，还是熬完才值？'},
+  {pillar:'social',    q:'补一刀：如果发朋友圈，TA会怎么夸它、还是吐槽它？'}
+];
+function react(qi,ans){
+  const a=ans||'';
+  if(qi===0){ if(/不能|必须|强制|默认|推送|自动|安排|被推|只能|被迫/.test(a))return'听起来被安排得明明白白。';
+    if(/自己|自由|选择|自定义|随便|我说了算|自主|灵活/.test(a))return'给了TA选择权，加分。'; return'记下了，继续。'; }
+  if(qi===1){ if(/便宜|将就|土|低端|low|廉价|凑合|没面子|山寨/.test(a))return'将就感拉满，配得感堪忧。';
+    if(/设计|质感|高级|身份|限量|喜欢|种草|颜值|格调|审美/.test(a))return'有站队的冲动，不错。'; return'记下了，继续。'; }
+  if(qi===2){ if(/无聊|慢|等|失望|没劲|枯燥|干巴|漫长/.test(a))return'过程太干，爽点靠后。';
+    if(/惊喜|好玩|立刻|赠|彩蛋|开心|互动|治愈|小确幸/.test(a))return'即时爽感到位。'; return'记下了，继续。'; }
+  if(/吐槽|尴尬|丢人|社死|不会发|嫌弃/.test(a))return'这吐槽比夸更真实。';
+  if(/安利|种草|晒|夸|发圈|朋友圈|分享|骄傲/.test(a))return'能晒出门面，传播力在线。';
+  return'记下了。';
+}
+
+/* ============ 云端免密钥 LLM 诊断（失败自动回落本地） ============ */
+let _cloudClient=null;
+function cloudClient(){ if(_cloudClient)return _cloudClient;
+  if(typeof WorkBuddyCloud==='undefined')return null;
+  _cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey});
+  return _cloudClient; }
+function parseJSON(t){ try{return JSON.parse(t);}catch(e){ const m=t.match(/\{[\s\S]*\}/); if(m){try{return JSON.parse(m[0]);}catch(_){}} return null; } }
+const PBG_STEPS=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
+function normalizeStep(s){ if(!s)return'产品翻译'; for(const k of PBG_STEPS){ if(s.includes(k))return k; } return'产品翻译'; }
+async function diagnoseCloud(){
+  const cloud=cloudClient(); if(!cloud)return null;
   try{
-    const r=await fetch(cfg.u,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+a.apiKey},
-      body:JSON.stringify({model:cfg.m,messages:[{role:'user',content:content}],temperature:.6,response_format:{type:'json_object'}})});
-    if(!r.ok)throw 0;const j=await r.json();const txt=j.choices?.[0]?.message?.content||'';
-    const o=JSON.parse(txt);return {control:+o.control,deserved:+o.deserved,gratification:+o.gratification,
-      verdict:o.verdict||'',quickwin:o.quickwin||''};
-  }catch(e){return null;}
+    const models=await cloud.llm.models.list();
+    let model=models.find(m=>m.disabled!==true && m.supportsImages===true) || models.find(m=>m.disabled!==true);
+    if(!model)return null;
+    const transcript=S.answers.map(a=>`问：${a.q}\n答：${a.a}`).join('\n');
+    const sys='你是代际翻译顾问，专看产品对Z世代（1995–2009出生）的吸引力。'+
+      '按三支柱(掌控感/配得感/满足感)各打0-10分。'+
+      'control_why/deserved_why/grat_why 为「为什么打这分」，必须犀利、挑剔、≤15个汉字、直接点出与Z世代的适配问题。'+
+      'verdict 为≤40字一句话判词。'+
+      'quickwin 为极具体、针对该产品的一条速赢建议（含可落地的动作）。'+
+      'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
+      '只输出JSON，不要解释，不要 markdown 代码块。';
+    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,verdict,quickwin,step}`}];
+    if(S.photoData && model.supportsImages===true) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
+    let ans='';
+    for await(const ch of cloud.llm.chat.completions.create({
+      model:model.id,
+      messages:[{role:'system',content:sys},{role:'user',content:userParts}],
+      stream:true
+    })){ const d=ch.choices?.[0]?.delta?.content; if(d)ans+=d; }
+    const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
+    const clamp=v=>Math.max(2.2,Math.min(9.3,+v||5));
+    return {control:clamp(o.control),deserved:clamp(o.deserved),gratification:clamp(o.gratification),
+      control_why:o.control_why||pillarWhy('control',clamp(o.control)),
+      deserved_why:o.deserved_why||pillarWhy('deserved',clamp(o.deserved)),
+      grat_why:o.grat_why||pillarWhy('gratification',clamp(o.gratification)),
+      verdict:o.verdict||'',quickwin:o.quickwin||'',step:normalizeStep(o.step),ai:true};
+  }catch(e){ return null; }
 }
 
 /* ============ 屏幕 ============ */
 function renderHome(){
-  setSteps(1);
+  resetAll(); setSteps(1);
   $('#screen').innerHTML=`
   <div class="screen">
     <h1 class="hero">拍一张，<br>测测它的 Z 含量</h1>
-    <p class="sub">上传任意产品 / 服务 / 品牌，2 步出「Z 含量」三柱仪表 + 一句话判词 + 可分享卡。</p>
+    <p class="sub">上传任意产品 / 服务 / 品牌，AI 免费帮你看「Z 含量」三柱仪表 + 犀利点评 + 可分享卡。无需任何 Key。</p>
     <div class="card">
       <button class="bigbtn" onclick="pickCam()">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
@@ -208,7 +268,7 @@ function renderHome(){
       </button>
       <button class="bigbtn ghost" onclick="pickLib()">从相册选择</button>
       <button class="bigbtn ghost" onclick="demo()">看个演示（不用拍照）</button>
-      <p class="sm">无 Key 也能跑：本地引擎即时出分 · 填了 ZTranslator 的 Key 会自动升级为真推理</p>
+      <p class="sm">AI 由我们免费提供 · 不填 Key 也能跑（无网络时自动用本地趣味读数）</p>
     </div>
   </div>`;
 }
@@ -225,7 +285,7 @@ function renderDescribe(isDemo){
   setSteps(2);
   $('#screen').innerHTML=`
   <div class="screen">
-    <span class="flag ${getAI().apiKey?'':'off'}">${getAI().apiKey?'AI 推理已接入':'本地模式'}</span>
+    <span class="flag">AI 免费诊断 · 4 轮对话</span>
     ${S.photo?`<img class="prev" src="${S.photo}">`:`<div class="card" style="text-align:center;color:var(--mut);font-size:13px;margin-bottom:14px">演示模式 · 无照片也能测</div>`}
     <label class="lbl">一句话描述它（给 AI 更多语境，分数更准）</label>
     <textarea id="desc" placeholder="例：传统自助餐，上百种食物，和休闲客混在一起，吵且杂">${esc(S.desc)}</textarea>
@@ -235,54 +295,63 @@ function renderDescribe(isDemo){
 }
 function goChat(){
   S.desc=$('#desc').value.trim()||S.desc||'';
+  S.qi=0;S.answers=[];
   setSteps(3);
   $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat"></div>
     <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
-  // 决策：有 Key 直接 AI 出分；否则本地 1 轮澄清
-  if(getAI().apiKey){
-    botTyping();
-    diagnoseAI().then(res=>{
-      if(res&&res.control){S.scores={control:res.control,deserved:res.deserved,gratification:res.gratification};
-        S.verdict=res.verdict||pickVerdict(S.scores,S.desc);S.quickwin=res.quickwin||pickQuickwin(S.scores);S.ai=true;renderResult();}
-      else{localFlow();}
-    });
-  } else localFlow();
-}
-function localFlow(){
-  const sc=localScores(S.desc||'产品');
-  const weak=['control','deserved','gratification'].sort((a,b)=>sc[a]-sc[b])[0];
-  const q=weak==='control'?'用户在用它时，是"被安排"还是"自己说了算"？'
-         :weak==='deserved'?'它让人觉得"我值得拥有"，还是"将就一下"？'
-         :'体验里有没有让人"当下就开心"的瞬间？';
-  pushBot(q);
+  pushBot(QUESTIONS[0].q);
 }
 function sendAns(){
-  const v=$('#ans').value.trim();if(!v)return;pushMe(v);$('#ans').value='';
+  const v=$('#ans').value.trim(); if(!v)return;
+  pushMe(v); S.answers.push({q:QUESTIONS[S.qi].q,a:v}); $('#ans').value='';
   botTyping();
   setTimeout(()=>{
-    S.scores=localScores(S.desc||'产品');
-    S.verdict=pickVerdict(S.scores,S.desc);S.quickwin=pickQuickwin(S.scores);S.ai=false;
-    renderResult();
-  },700);
+    const t=document.querySelector('.typing'); if(t)t.remove();
+    pushBot(react(S.qi,v));
+    if(S.qi<QUESTIONS.length-1){ S.qi++; setTimeout(()=>pushBot(QUESTIONS[S.qi].q),450); }
+    else { setTimeout(computeAndShow,650); }
+  },650);
 }
-function pushBot(t){S.chat.push({r:'bot',t});$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
-function pushMe(t){S.chat.push({r:'me',t});$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
+function pushBot(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
+function pushMe(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
 function botTyping(){const c=$('#chat');if(!c)return;c.insertAdjacentHTML('beforeend',`<div class="bub bot typing"><i></i><i></i><i></i></div>`);scrollC();}
 function scrollC(){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;}
+
+function computeAndShow(){
+  botTyping();
+  const combined=[S.desc,...S.answers.map(a=>a.a)].filter(Boolean).join(' ');
+  diagnoseCloud().then(res=>{
+    if(res&&res.control){
+      S.scores={control:res.control,deserved:res.deserved,gratification:res.gratification};
+      S.control_why=res.control_why;S.deserved_why=res.deserved_why;S.grat_why=res.grat_why;
+      S.verdict=res.verdict||pickVerdict(S.scores,combined);S.quickwin=res.quickwin||pickQuickwin(S.scores,S.desc).text;
+      S.step=res.step||'产品翻译';S.ai=true;
+    }else{
+      const sc=localScores(combined);
+      S.scores=sc;
+      S.control_why=pillarWhy('control',sc.control);S.deserved_why=pillarWhy('deserved',sc.deserved);S.grat_why=pillarWhy('gratification',sc.gratification);
+      S.verdict=pickVerdict(sc,combined);const qw=pickQuickwin(sc,S.desc);S.step=qw.step;S.quickwin=qw.text;S.ai=false;
+    }
+    const t=document.querySelector('.typing');if(t)t.remove();
+    renderResult();
+  });
+}
 
 function renderResult(){
   setSteps(4);
   const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
-  const C=251.2, circ=C*Math.PI, off=circ*(1-avg/10);
+  const C=251.2, circ=C*Math.PI;
   const pils=[
-    ['掌控感','control','var(--c-control)',sc.control],
-    ['配得感','deserved','var(--c-deserved)',sc.deserved],
-    ['满足感','gratification','var(--c-grat)',sc.gratification]
-  ].map(([n,k,c,v])=>`<div class="pil"><div class="top"><span>${n}</span><span class="v">${v.toFixed(1)}</span></div>
-    <div class="bar"><i style="background:${c}" data-w="${(v/10*100).toFixed(0)}"></i></div></div>`).join('');
+    ['掌控感','control','var(--c-control)',sc.control,S.control_why],
+    ['配得感','deserved','var(--c-deserved)',sc.deserved,S.deserved_why],
+    ['满足感','gratification','var(--c-grat)',sc.gratification,S.grat_why]
+  ].map(([n,k,c,v,why])=>`<div class="pil"><div class="top"><span>${n}</span><span class="v">${v.toFixed(1)}</span></div>
+    <div class="bar"><i style="background:${c}" data-w="${(v/10*100).toFixed(0)}"></i></div>
+    <div class="why">↳ ${esc(why)}</div></div>`).join('');
   $('#screen').innerHTML=`
   <div class="screen">
-    <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 推理':'本地模式 · 趣味读数'}</span>
+    <button class="homebtn" onclick="renderHome()">← 回到首页，重新测一张</button>
+    <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'本地趣味读数'}</span>
     <div class="gauge">
       <div class="ring">
         <svg width="148" height="148"><circle cx="74" cy="74" r="64" fill="none" stroke="var(--line)" stroke-width="12"/>
@@ -293,56 +362,66 @@ function renderResult(){
     </div>
     <div class="card"><div class="pillars">${pils}</div></div>
     <div class="verdict">${esc(S.verdict)}</div>
-    <div class="qw"><div class="k">速赢 · 立刻能做的一件小事</div><div class="b">${esc(S.quickwin)}</div></div>
+    <div class="qw"><span class="step">宝洁五步法 · ${esc(S.step)}</span><div class="b">${esc(S.quickwin)}</div></div>
     <button class="sharebtn" onclick="drawCard()">生成分享卡 ↓</button>
     <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">解锁完整转型专案 →</a>
-    <button class="retest" onclick="renderDescribe()">改一条建议，复测 ↺</button>
+    <button class="retest" onclick="renderDescribe()">改一条描述，复测 ↺</button>
   </div>`;
-  // 动画
   requestAnimationFrame(()=>{const r=$('#ring');if(r)r.style.strokeDashoffset=circ*(1-avg/10);});
   animateNum($('#avg'),+avg);
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%'),80);
 }
 function animateNum(el,to){let t=0;const id=setInterval(()=>{t+=0.2;if(t>=to){t=to;clearInterval(id);}el.textContent=t.toFixed(1);},20);}
 
-/* ============ 分享卡（canvas → PNG） ============ */
+/* ============ 分享卡（canvas → PNG，含缩略图/原因/速赢/双链接） ============ */
+function pathRound(ctx,X,Y,w,h,r){ctx.beginPath();ctx.moveTo(X+r,Y);ctx.arcTo(X+w,Y,X+w,Y+h,r);ctx.arcTo(X+w,Y+h,X,Y+h,r);ctx.arcTo(X,Y+h,X,Y,r);ctx.arcTo(X,Y,X+w,Y,r);ctx.closePath();}
+function wrap(ctx,text,X,Y,maxW,lh){const chars=text.split('');let line='',yy=Y;for(const ch of chars){if(ctx.measureText(line+ch).width>maxW){ctx.fillText(line,X,yy);line=ch;yy+=lh;}else line+=ch;}if(line)ctx.fillText(line,X,yy);}
 function drawCard(){
   const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
-  const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
-  // 背景
+  const W=1080,H=1420,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0CA678');g.addColorStop(1,'#09835E');x.fillStyle=g;x.fillRect(0,0,W,H);
-  // 白卡
-  x.fillStyle='#fff';roundRect(x,60,90,W-120,H-180,36);x.fill();
-  // logo 圆
-  x.fillStyle='#0CA678';roundRect(x,96,126,84,84,20);x.fill();
-  x.strokeStyle='#fff';x.lineWidth=12;x.lineCap='round';
-  x.beginPath();x.moveTo(118,160);x.lineTo(158,160);x.moveTo(158,160);x.lineTo(118,200);x.moveTo(118,200);x.lineTo(158,200);x.stroke();
-  x.fillStyle='#0E6B50';x.font='800 38px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量诊断',200,168);
-  x.fillStyle='#8A8A8F';x.font='500 24px -apple-system,"PingFang SC",sans-serif';x.fillText('代际翻译 · 三支柱仪表',200,206);
-  // 大数字
-  x.fillStyle='#0CA678';x.font='800 150px -apple-system,sans-serif';x.textAlign='center';x.fillText(avg, W/2, 430);
-  x.fillStyle='#8A8A8F';x.font='600 28px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量 / 10', W/2, 478);
-  // 三柱
-  const rows=[['掌控感',sc.control,'#3B82F6'],['配得感',sc.deserved,'#7C5CFC'],['满足感',sc.gratification,'#FF8A5B']];
-  let y=560;rows.forEach(([n,v,c])=>{
+  x.fillStyle='#fff';pathRound(x,60,96,W-120,H-180,36);x.fill();
+  // header
+  x.fillStyle='#0CA678';pathRound(x,96,132,72,72,18);x.fill();
+  x.strokeStyle='#fff';x.lineWidth=11;x.lineCap='round';
+  x.beginPath();x.moveTo(116,162);x.lineTo(148,162);x.moveTo(148,162);x.lineTo(116,192);x.moveTo(116,192);x.lineTo(148,192);x.stroke();
+  x.fillStyle='#0E6B50';x.font='800 38px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量诊断',192,170);
+  x.fillStyle='#8A8A8F';x.font='500 23px -apple-system,"PingFang SC",sans-serif';x.fillText('代际翻译 · 三支柱仪表',192,206);
+  // ring
+  const cx=W/2,cy=380,r=82;
+  x.lineWidth=15;x.lineCap='round';x.strokeStyle='#ECEAE6';x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();
+  x.strokeStyle='#0CA678';x.beginPath();x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*(avg/10));x.stroke();
+  x.textAlign='center';x.fillStyle='#0CA678';x.font='800 132px -apple-system,sans-serif';x.fillText(avg,cx,cy+44);
+  x.fillStyle='#8A8A8F';x.font='600 26px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量 / 10',cx,cy+92);
+  x.textAlign='left';
+  // pillars
+  const rows=[['掌控感',sc.control,'#3B82F6',S.control_why],['配得感',sc.deserved,'#7C5CFC',S.deserved_why],['满足感',sc.gratification,'#FF8A5B',S.grat_why]];
+  let y=560;
+  rows.forEach(([n,v,c,why])=>{
     x.textAlign='left';x.fillStyle='#18181B';x.font='700 32px -apple-system,"PingFang SC",sans-serif';x.fillText(n,110,y);
     x.textAlign='right';x.fillStyle=c;x.font='800 34px -apple-system,sans-serif';x.fillText(v.toFixed(1),W-110,y);
-    x.fillStyle='#ECEAE6';roundRect(x,110,y+18,W-220,18,9);x.fill();
-    x.fillStyle=c;roundRect(x,110,y+18,(W-220)*(v/10),18,9);x.fill();
-    y+=92;
+    x.fillStyle='#ECEAE6';pathRound(x,110,y+16,W-220,16,8);x.fill();
+    x.fillStyle=c;pathRound(x,110,y+16,(W-220)*(v/10),16,8);x.fill();
+    x.textAlign='left';x.fillStyle='#8A8A8F';x.font='600 23px -apple-system,"PingFang SC",sans-serif';x.fillText('↳ '+why,110,y+54);
+    y+=112;
   });
-  // 判词
-  x.textAlign='left';x.fillStyle='#09835E';x.font='600 27px -apple-system,"PingFang SC",sans-serif';
-  wrap(x,S.verdict,110,y+20,W-220,38);
-  // 底部
-  x.fillStyle='#8A8A8F';x.font='600 24px -apple-system,"PingFang SC",sans-serif';
-  x.fillText('ZTranslator · 代际翻译工作台',110,H-110);
-  const d=new Date().toISOString().slice(0,10);x.textAlign='right';x.fillText(d,W-110,H-110);
-  // 下载
-  const a=document.createElement('a');a.download='Z含量-'+d+'.png';a.href=cv.toDataURL('image/png');a.click();
+  // quickwin
+  x.fillStyle='#0CA678';pathRound(x,110,930,330,40,12);x.fill();
+  x.fillStyle='#fff';x.font='800 23px -apple-system,"PingFang SC",sans-serif';x.textAlign='left';x.fillText('宝洁五步法 · '+S.step,124,958);
+  x.fillStyle='#18181B';x.font='600 25px -apple-system,"PingFang SC",sans-serif';
+  wrap(x,S.quickwin,110,1000,W-220,36);
+  // footer links
+  x.fillStyle='#8A8A8F';x.font='600 22px -apple-system,"PingFang SC",sans-serif';x.textAlign='left';
+  x.fillText('测一测：'+APP_URL,110,H-96);
+  x.fillText('完整版 Pro：'+PRO_URL,110,H-58);
+  // photo thumbnail (async)
+  const finish=()=>{const a=document.createElement('a');a.download='Z含量-'+new Date().toISOString().slice(0,10)+'.png';a.href=cv.toDataURL('image/png');a.click();};
+  if(S.photoData){
+    const img=new Image();
+    img.onload=()=>{const tx=W-60-150,ty=120,ts=150;x.save();pathRound(x,tx,ty,ts,ts,18);x.clip();x.drawImage(img,tx,ty,ts,ts);x.restore();x.strokeStyle='#fff';x.lineWidth=5;pathRound(x,tx,ty,ts,ts,18);x.stroke();finish();};
+    img.onerror=finish;img.src=S.photoData;
+  }else finish();
 }
-function roundRect(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
-function wrap(x,text,X,Y,maxW,lh){const chars=text.split('');let line='',yy=Y;for(const ch of chars){if(x.measureText(line+ch).width>maxW){x.fillText(line,X,yy);line=ch;yy+=lh;}else line+=ch;}if(line)x.fillText(line,X,yy);}
 
 /* ============ 绑定 & 启动 ============ */
 $('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
