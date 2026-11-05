@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Z含量 · 拍照测一测</title>
+<meta name="theme-color" content="#0CA678">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Z含量">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="app-icon.png">
+<style>
+  :root{
+    --bg:#F6F5F2; --card:#FFFFFF; --ink:#18181B; --ink-2:#3F3F46; --mut:#8A8A8F; --line:#ECEAE6;
+    --accent:#0CA678; --accent-d:#09835E; --accent-soft:#E7F6EF;
+    --c-control:#3B82F6; --c-deserved:#7C5CFC; --c-grat:#FF8A5B;
+    --r-lg:24px; --r-md:16px; --r-sm:12px;
+    --sh:0 1px 2px rgba(20,20,20,.05),0 12px 32px rgba(20,20,20,.07);
+    --ease:cubic-bezier(.22,1,.36,1); --maxw:480px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  .app{max-width:var(--maxw);margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+  header.hd{position:sticky;top:0;z-index:30;background:rgba(246,245,242,.85);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:10px}
+  .logo{width:28px;height:28px;border-radius:7px;box-shadow:var(--sh)}
+  .hd .t{font-weight:800;font-size:16px;letter-spacing:-.3px}
+  .hd .pro{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent-d);background:var(--accent-soft);
+    padding:5px 11px;border-radius:999px;text-decoration:none}
+  main{flex:1;padding:18px 18px 40px}
+  .steps{display:flex;gap:6px;margin-bottom:16px}
+  .step{flex:1;height:4px;border-radius:99px;background:var(--line);transition:background .4s var(--ease)}
+  .step.on{background:var(--accent)}
+  .screen{animation:fade .35s var(--ease)}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  h1.hero{font-size:27px;line-height:1.2;letter-spacing:-.6px;margin:14px 0 6px}
+  .sub{color:var(--mut);font-size:14px;margin:0 0 22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh)}
+  .bigbtn{display:flex;align-items:center;gap:12px;width:100%;border:none;background:var(--accent);color:#fff;
+    font-size:16px;font-weight:700;padding:16px 18px;border-radius:var(--r-md);cursor:pointer;
+    box-shadow:0 8px 20px rgba(12,166,120,.28);transition:transform .15s var(--ease)}
+  .bigbtn:active{transform:scale(.98)}
+  .bigbtn.ghost{background:#fff;color:var(--accent-d);border:1px solid var(--accent);box-shadow:none;margin-top:10px}
+  .bigbtn .ic{width:22px;height:22px;flex:none}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .sm{font-size:12px;color:var(--mut);text-align:center;margin-top:14px}
+
+  .prev{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-md);border:1px solid var(--line);background:#eee;margin-bottom:14px}
+  textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-md);padding:13px 14px;font:inherit;resize:vertical;
+    background:#fff;color:var(--ink);outline:none;min-height:84px}
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .lbl{font-size:13px;font-weight:700;color:var(--ink-2);margin:0 0 8px;display:block}
+  .next{margin-top:16px;width:100%;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:16px;
+    padding:15px;border-radius:var(--r-md);cursor:pointer;box-shadow:0 8px 20px rgba(12,166,120,.25)}
+  .next:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+
+  .chat{display:flex;flex-direction:column;gap:10px;margin:6px 0 14px}
+  .bub{max-width:84%;padding:11px 14px;border-radius:16px;font-size:14.5px;animation:pop .3s var(--ease)}
+  .bub.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:5px}
+  .bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  .typing{display:inline-flex;gap:4px;padding:12px 14px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:bl 1s infinite}
+  .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes bl{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+  .chatinput{display:flex;gap:8px}
+  .chatinput input{flex:1;border:1px solid var(--line);border-radius:99px;padding:11px 15px;font:inherit;outline:none;background:#fff}
+  .chatinput input:focus{border-color:var(--accent)}
+  .chatinput button{border:none;background:var(--accent);color:#fff;font-weight:700;border-radius:99px;padding:0 18px;cursor:pointer}
+
+  .gauge{display:flex;flex-direction:column;align-items:center;margin:6px 0 18px}
+  .ring{position:relative;width:148px;height:148px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .num b{font-size:42px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .ring .num span{font-size:12px;color:var(--mut);margin-top:2px}
+  .pillars{display:flex;flex-direction:column;gap:14px;margin:4px 0 16px}
+  .pil .top{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
+  .pil .top .v{font-variant-numeric:tabular-nums}
+  .bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px;width:0;transition:width 1s var(--ease)}
+  .verdict{background:var(--accent-soft);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;color:var(--accent-d);font-weight:600;margin-bottom:14px}
+  .qw{border:1px dashed var(--accent);border-radius:var(--r-md);padding:14px 16px;margin-bottom:14px}
+  .qw .k{font-size:11px;font-weight:800;color:var(--accent-d);letter-spacing:.5px;margin-bottom:6px}
+  .qw .b{font-size:14.5px}
+  .cta{display:block;text-align:center;text-decoration:none;background:var(--ink);color:#fff;font-weight:700;
+    padding:15px;border-radius:var(--r-md);margin:6px 0 12px}
+  .sharebtn{width:100%;border:1px solid var(--accent);background:#fff;color:var(--accent-d);font-weight:700;
+    padding:13px;border-radius:var(--r-md);cursor:pointer;margin-bottom:8px}
+  .retest{width:100%;background:none;border:none;color:var(--mut);font-weight:600;padding:10px;cursor:pointer;font-size:13px}
+  .flag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent-d);display:inline-block;margin-bottom:10px}
+  .flag.off{background:#ECEAE6;color:var(--mut)}
+  .hidden{display:none}
+  footer{text-align:center;color:var(--mut);font-size:11px;padding:18px}
+  a.link{color:var(--accent-d);font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <img src="app-icon.png" alt="Z含量" class="logo">
+    <div class="t">Z含量 · 拍照测</div>
+    <a class="pro" href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/" target="_blank" rel="noopener">完整版 Pro →</a>
+  </header>
+
+  <main>
+    <div class="steps">
+      <div class="step" data-s="1"></div><div class="step" data-s="2"></div>
+      <div class="step" data-s="3"></div><div class="step" data-s="4"></div>
+    </div>
+    <div id="screen"></div>
+  </main>
+
+  <footer>Z含量是趣味读数 · 专业诊断请看完整版 Pro</footer>
+</div>
+
+<input id="fileCam" type="file" accept="image/*" capture="environment" class="hidden">
+<input id="fileLib" type="file" accept="image/*" class="hidden">
+
+<script>
+/* ============ 状态 ============ */
+const S={photo:null,photoData:null,photoName:'',desc:'',chat:[],scores:null,verdict:'',quickwin:'',ai:false};
+const LS_AI='zt_ai';
+const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
+
+/* ============ 工具 ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setSteps(n){document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
+function getAI(){try{return JSON.parse(localStorage.getItem(LS_AI)||'{}')}catch(e){return{}}}
+
+/* ============ 本地启发式引擎 ============ */
+const KW={
+  control:[['自由','自主','选择','简单','清晰','安静','自定义','diy','掌控','不催','自助','灵活','轻松','一目了然','自己来'],
+           ['推销','轰炸','复杂','强制','排队','套路','说教','催促','打扰','混乱','被迫','冗长']],
+  deserved:[['高端','质感','设计','精选','身份','限量','仪式','心意','独特','高级','匠心','格调','小众','审美','高级感'],
+            ['廉价','便宜','将就','随便','山寨','土','低端','廉价感']],
+  grat:[['即时','惊喜','赠','打卡','盲盒','彩蛋','快乐','治愈','小确幸','反馈','互动','好玩','趣味','暖'],
+        ['等待','无聊','失望','漫长','冷漠','无趣']]
+};
+function hash(str){let h=0;for(let i=0;i<str.length;i++){h=(h<<5)-h+str.charCodeAt(i);h|=0;}return Math.abs(h);}
+function scorePillar(name,text){
+  const [pos,neg]=KW[name];let s=5.4;
+  pos.forEach(w=>{if(text.includes(w))s+=0.7;});
+  neg.forEach(w=>{if(text.includes(w))s-=0.8;});
+  const jitter=((hash(text+name)%100)/100-0.5)*1.1;
+  s+=jitter;
+  return Math.max(2.2,Math.min(9.3,+s.toFixed(1)));
+}
+function localScores(text){
+  const c=scorePillar('control',text),d=scorePillar('deserved',text),g=scorePillar('grat',text);
+  return {control:c,deserved:d,gratification:g};
+}
+function pickVerdict(sc,text){
+  const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
+  arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
+  const weak=arr[0];const avg=(sc.control+sc.deserved+sc.gratification)/3;
+  let head='';
+  if(weak[0]==='control')head='它把选择权还给了年轻人吗？掌控感偏弱——少一点"为你安排"，多一点"你来决定"。';
+  else if(weak[0]==='deserved')head='面子与里子没对齐。配得感偏弱——让它成为年轻人"愿意站队"的身份标签。';
+  else head='少了点"此刻就开心"的瞬间。满足感偏弱——给一个低门槛的惊喜或反馈。';
+  let tail = avg>=7.5?'Z含量在线，年轻人会买账。':avg>=5.5?'有底子，但偏科明显，修订后空间很大。':'离 Z 世代还差一口气，先补最弱的支柱。';
+  return head+tail;
+}
+function pickQuickwin(sc){
+  const arr=[['control','把首页第一个动作改成"用户自己选"，删掉所有默认勾选与催促文案。'],
+             ['deserved','加一个"为什么值得"的视觉锚点（材质 / 工艺 / 起源故事），让它可被炫耀。'],
+             ['gratification','在关键节点放一个即时小反馈（进度 / 彩蛋 / 打卡梗），让过程本身就好玩。']];
+  arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
+  return arr[0][1];
+}
+
+/* ============ AI 路径（可选，有 Key 才用，失败回落本地） ============ */
+async function diagnoseAI(){
+  const a=getAI();if(!a.apiKey)return null;
+  const brand=(a.brand==='OpenAI'||a.brand==='Gemini')?a.brand:'DeepSeek';
+  const map={DeepSeek:{u:'https://api.deepseek.com/v1/chat/completions',m:'deepseek-chat'},
+             OpenAI:{u:'https://api.openai.com/v1/chat/completions',m:'gpt-4o-mini'},
+             Gemini:{u:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',m:'gemini-2.0-flash'}};
+  const cfg=map[brand]||map.DeepSeek;
+  const content=[{type:'text',text:'按Z世代三支柱(掌控感/配得感/满足感)评估这张产品图与描述。只返回JSON：{control:0-10,deserved:0-10,gratification:0-10,verdict:一句话,quickwin:一句话}'}];
+  if(S.photoData)content.push({type:'image_url',image_url:{url:S.photoData}});
+  content.push({type:'text',text:'描述：'+(S.desc||'（无文字描述）')});
+  try{
+    const r=await fetch(cfg.u,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+a.apiKey},
+      body:JSON.stringify({model:cfg.m,messages:[{role:'user',content:content}],temperature:.6,response_format:{type:'json_object'}})});
+    if(!r.ok)throw 0;const j=await r.json();const txt=j.choices?.[0]?.message?.content||'';
+    const o=JSON.parse(txt);return {control:+o.control,deserved:+o.deserved,gratification:+o.gratification,
+      verdict:o.verdict||'',quickwin:o.quickwin||''};
+  }catch(e){return null;}
+}
+
+/* ============ 屏幕 ============ */
+function renderHome(){
+  setSteps(1);
+  $('#screen').innerHTML=`
+  <div class="screen">
+    <h1 class="hero">拍一张，<br>测测它的 Z 含量</h1>
+    <p class="sub">上传任意产品 / 服务 / 品牌，2 步出「Z 含量」三柱仪表 + 一句话判词 + 可分享卡。</p>
+    <div class="card">
+      <button class="bigbtn" onclick="pickCam()">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        拍照测一测
+      </button>
+      <button class="bigbtn ghost" onclick="pickLib()">从相册选择</button>
+      <button class="bigbtn ghost" onclick="demo()">看个演示（不用拍照）</button>
+      <p class="sm">无 Key 也能跑：本地引擎即时出分 · 填了 ZTranslator 的 Key 会自动升级为真推理</p>
+    </div>
+  </div>`;
+}
+function pickCam(){$('#fileCam').click();}
+function pickLib(){$('#fileLib').click();}
+function onFile(f){
+  if(!f)return;S.photoName=f.name||'photo';S.photo=URL.createObjectURL(f);
+  const rd=new FileReader();rd.onload=e=>S.photoData=e.target.result;rd.readAsDataURL(f);
+  renderDescribe();
+}
+function demo(){S.photo=null;S.photoData=null;S.photoName='';S.desc='一家开了50年的本地自助早餐，上百种食物，和休闲客混在一起，吵且杂。';renderDescribe(true);}
+
+function renderDescribe(isDemo){
+  setSteps(2);
+  $('#screen').innerHTML=`
+  <div class="screen">
+    <span class="flag ${getAI().apiKey?'':'off'}">${getAI().apiKey?'AI 推理已接入':'本地模式'}</span>
+    ${S.photo?`<img class="prev" src="${S.photo}">`:`<div class="card" style="text-align:center;color:var(--mut);font-size:13px;margin-bottom:14px">演示模式 · 无照片也能测</div>`}
+    <label class="lbl">一句话描述它（给 AI 更多语境，分数更准）</label>
+    <textarea id="desc" placeholder="例：传统自助餐，上百种食物，和休闲客混在一起，吵且杂">${esc(S.desc)}</textarea>
+    <button class="next" onclick="goChat()">开始诊断 →</button>
+    ${isDemo?'<p class="sm">已填入示例文案，直接点「开始诊断」</p>':''}
+  </div>`;
+}
+function goChat(){
+  S.desc=$('#desc').value.trim()||S.desc||'';
+  setSteps(3);
+  $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat"></div>
+    <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
+  // 决策：有 Key 直接 AI 出分；否则本地 1 轮澄清
+  if(getAI().apiKey){
+    botTyping();
+    diagnoseAI().then(res=>{
+      if(res&&res.control){S.scores={control:res.control,deserved:res.deserved,gratification:res.gratification};
+        S.verdict=res.verdict||pickVerdict(S.scores,S.desc);S.quickwin=res.quickwin||pickQuickwin(S.scores);S.ai=true;renderResult();}
+      else{localFlow();}
+    });
+  } else localFlow();
+}
+function localFlow(){
+  const sc=localScores(S.desc||'产品');
+  const weak=['control','deserved','gratification'].sort((a,b)=>sc[a]-sc[b])[0];
+  const q=weak==='control'?'用户在用它时，是"被安排"还是"自己说了算"？'
+         :weak==='deserved'?'它让人觉得"我值得拥有"，还是"将就一下"？'
+         :'体验里有没有让人"当下就开心"的瞬间？';
+  pushBot(q);
+}
+function sendAns(){
+  const v=$('#ans').value.trim();if(!v)return;pushMe(v);$('#ans').value='';
+  botTyping();
+  setTimeout(()=>{
+    S.scores=localScores(S.desc||'产品');
+    S.verdict=pickVerdict(S.scores,S.desc);S.quickwin=pickQuickwin(S.scores);S.ai=false;
+    renderResult();
+  },700);
+}
+function pushBot(t){S.chat.push({r:'bot',t});$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
+function pushMe(t){S.chat.push({r:'me',t});$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
+function botTyping(){const c=$('#chat');if(!c)return;c.insertAdjacentHTML('beforeend',`<div class="bub bot typing"><i></i><i></i><i></i></div>`);scrollC();}
+function scrollC(){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;}
+
+function renderResult(){
+  setSteps(4);
+  const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
+  const C=251.2, circ=C*Math.PI, off=circ*(1-avg/10);
+  const pils=[
+    ['掌控感','control','var(--c-control)',sc.control],
+    ['配得感','deserved','var(--c-deserved)',sc.deserved],
+    ['满足感','gratification','var(--c-grat)',sc.gratification]
+  ].map(([n,k,c,v])=>`<div class="pil"><div class="top"><span>${n}</span><span class="v">${v.toFixed(1)}</span></div>
+    <div class="bar"><i style="background:${c}" data-w="${(v/10*100).toFixed(0)}"></i></div></div>`).join('');
+  $('#screen').innerHTML=`
+  <div class="screen">
+    <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 推理':'本地模式 · 趣味读数'}</span>
+    <div class="gauge">
+      <div class="ring">
+        <svg width="148" height="148"><circle cx="74" cy="74" r="64" fill="none" stroke="var(--line)" stroke-width="12"/>
+          <circle cx="74" cy="74" r="64" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="ring"/></svg>
+        <div class="num"><b id="avg">0.0</b><span>Z 含量 / 10</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="pillars">${pils}</div></div>
+    <div class="verdict">${esc(S.verdict)}</div>
+    <div class="qw"><div class="k">速赢 · 立刻能做的一件小事</div><div class="b">${esc(S.quickwin)}</div></div>
+    <button class="sharebtn" onclick="drawCard()">生成分享卡 ↓</button>
+    <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">解锁完整转型专案 →</a>
+    <button class="retest" onclick="renderDescribe()">改一条建议，复测 ↺</button>
+  </div>`;
+  // 动画
+  requestAnimationFrame(()=>{const r=$('#ring');if(r)r.style.strokeDashoffset=circ*(1-avg/10);});
+  animateNum($('#avg'),+avg);
+  setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%'),80);
+}
+function animateNum(el,to){let t=0;const id=setInterval(()=>{t+=0.2;if(t>=to){t=to;clearInterval(id);}el.textContent=t.toFixed(1);},20);}
+
+/* ============ 分享卡（canvas → PNG） ============ */
+function drawCard(){
+  const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
+  const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  // 背景
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0CA678');g.addColorStop(1,'#09835E');x.fillStyle=g;x.fillRect(0,0,W,H);
+  // 白卡
+  x.fillStyle='#fff';roundRect(x,60,90,W-120,H-180,36);x.fill();
+  // logo 圆
+  x.fillStyle='#0CA678';roundRect(x,96,126,84,84,20);x.fill();
+  x.strokeStyle='#fff';x.lineWidth=12;x.lineCap='round';
+  x.beginPath();x.moveTo(118,160);x.lineTo(158,160);x.moveTo(158,160);x.lineTo(118,200);x.moveTo(118,200);x.lineTo(158,200);x.stroke();
+  x.fillStyle='#0E6B50';x.font='800 38px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量诊断',200,168);
+  x.fillStyle='#8A8A8F';x.font='500 24px -apple-system,"PingFang SC",sans-serif';x.fillText('代际翻译 · 三支柱仪表',200,206);
+  // 大数字
+  x.fillStyle='#0CA678';x.font='800 150px -apple-system,sans-serif';x.textAlign='center';x.fillText(avg, W/2, 430);
+  x.fillStyle='#8A8A8F';x.font='600 28px -apple-system,"PingFang SC",sans-serif';x.fillText('Z 含量 / 10', W/2, 478);
+  // 三柱
+  const rows=[['掌控感',sc.control,'#3B82F6'],['配得感',sc.deserved,'#7C5CFC'],['满足感',sc.gratification,'#FF8A5B']];
+  let y=560;rows.forEach(([n,v,c])=>{
+    x.textAlign='left';x.fillStyle='#18181B';x.font='700 32px -apple-system,"PingFang SC",sans-serif';x.fillText(n,110,y);
+    x.textAlign='right';x.fillStyle=c;x.font='800 34px -apple-system,sans-serif';x.fillText(v.toFixed(1),W-110,y);
+    x.fillStyle='#ECEAE6';roundRect(x,110,y+18,W-220,18,9);x.fill();
+    x.fillStyle=c;roundRect(x,110,y+18,(W-220)*(v/10),18,9);x.fill();
+    y+=92;
+  });
+  // 判词
+  x.textAlign='left';x.fillStyle='#09835E';x.font='600 27px -apple-system,"PingFang SC",sans-serif';
+  wrap(x,S.verdict,110,y+20,W-220,38);
+  // 底部
+  x.fillStyle='#8A8A8F';x.font='600 24px -apple-system,"PingFang SC",sans-serif';
+  x.fillText('ZTranslator · 代际翻译工作台',110,H-110);
+  const d=new Date().toISOString().slice(0,10);x.textAlign='right';x.fillText(d,W-110,H-110);
+  // 下载
+  const a=document.createElement('a');a.download='Z含量-'+d+'.png';a.href=cv.toDataURL('image/png');a.click();
+}
+function roundRect(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
+function wrap(x,text,X,Y,maxW,lh){const chars=text.split('');let line='',yy=Y;for(const ch of chars){if(x.measureText(line+ch).width>maxW){x.fillText(line,X,yy);line=ch;yy+=lh;}else line+=ch;}if(line)x.fillText(line,X,yy);}
+
+/* ============ 绑定 & 启动 ============ */
+$('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
+$('#fileLib').addEventListener('change',e=>onFile(e.target.files[0]));
+renderHome();
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{try{navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(e){}});}
+</script>
+</body>
+</html>

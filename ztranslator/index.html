@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Z 翻译器 · 代际翻译工作台</title>
+<meta name="theme-color" content="#0CA678">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Z 翻译器">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="app-icon.png">
 <style>
   :root{
     --bg:#F6F5F2; --bg-2:#EFEEEA; --card:#FFFFFF;
@@ -32,7 +39,7 @@
     border-bottom:1px solid var(--line);padding:14px 18px 0}
   .brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.3px}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#34D399);box-shadow:0 0 0 4px var(--accent-soft)}
+  .brand-logo{width:26px;height:26px;border-radius:7px;display:block;box-shadow:var(--sh-sm)}
   .ai-flag{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent-d)}
   .ai-flag.off{background:#ECEAE6;color:var(--mut)}
   .step-meta{display:flex;align-items:baseline;gap:8px;margin:10px 0 12px}
@@ -273,7 +280,7 @@
 
 <header class="app-header">
   <div class="brand-row">
-    <div class="brand"><span class="dot"></span>Z 翻译器</div>
+    <div class="brand"><img src="app-icon.png" alt="Z 翻译器" class="brand-logo"><span>Z 翻译器</span></div>
     <div style="display:flex;gap:10px;align-items:center">
       <span id="aiFlag" class="ai-flag off">本地模式</span>
       <button class="btn-ghost btn-sm" onclick="openAbout()" style="width:auto">关于</button>
@@ -1146,6 +1153,13 @@ function init(){
   if(state.mode==='chat'){bindChatEnter();renderChat();}
 }
 document.addEventListener('DOMContentLoaded',init);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    try{ navigator.serviceWorker.register('./sw.js').catch(function(e){}); }catch(e){}
+  });
+}
 </script>
 </body>
 </html>
