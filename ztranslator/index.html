@@ -185,48 +185,74 @@
   .score-bar.rev>i{background:linear-gradient(90deg,var(--accent),#34D399)}
   .score-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);font-weight:600;margin-top:2px}
 
-  /* ---------- About / 落地页 ---------- */
+  /* ---------- About / 落地页（视觉优先，少字） ---------- */
   .about{position:fixed;inset:0;z-index:80;background:rgba(20,20,20,.4);display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto}
   .about.hidden{display:none}
-  .about .sheet{background:var(--card);border-radius:var(--r-lg);max-width:520px;width:100%;box-shadow:var(--sh);
-    position:relative;display:flex;flex-direction:column;max-height:88vh;overflow:hidden;animation:pop .28s var(--ease)}
-  .about .sheet .abody{overflow-y:auto;padding:30px 26px 14px;-webkit-overflow-scrolling:touch}
+  .about .sheet{background:var(--card);border-radius:var(--r-lg);max-width:500px;width:100%;box-shadow:var(--sh);
+    position:relative;display:flex;flex-direction:column;max-height:90vh;overflow:hidden;animation:pop .28s var(--ease)}
+  .about .sheet .abody{overflow-y:auto;padding:30px 26px 18px;-webkit-overflow-scrolling:touch}
   .about .sheet .x{position:absolute;top:14px;right:14px;width:34px;height:34px;border:none;background:transparent;
     color:var(--mut);font-size:26px;line-height:1;cursor:pointer;border-radius:50%;z-index:2}
   .about .sheet .x:hover{background:var(--bg-2);color:var(--ink)}
   .about .foot{display:flex;gap:10px;padding:14px 26px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card)}
   .about .foot .btn{margin:0}
-  .ahero{margin-bottom:4px}
-  .ahero .h-hero{font-size:25px;margin-bottom:4px}
-  .asec{padding:22px 0;border-top:1px solid var(--line)}
-  .asec:first-of-type{border-top:none;padding-top:8px}
-  .asec-h{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;margin-bottom:10px}
-  .ano{flex:0 0 24px;height:24px;width:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent-d);
-    font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
-  .atext{font-size:14px;color:var(--ink-2);margin:0 0 12px;line-height:1.65}
-  .achip{display:inline-block;background:var(--bg-2);color:var(--ink-2);font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;margin:4px 6px 4px 0}
-  .acall{background:var(--accent-soft);color:var(--accent-d);border-radius:14px;padding:12px 15px;font-size:13.5px;font-weight:600;line-height:1.55;margin-top:4px}
-  .apillars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
-  .ap{background:var(--bg-2);border-radius:14px;padding:12px 10px;text-align:center}
-  .ap b{display:block;font-size:13px;margin-bottom:3px}
-  .ap.control b{color:var(--c-control)} .ap.deserved b{color:var(--c-deserved)} .ap.grat b{color:#E2642F}
-  .ap span{font-size:11px;color:var(--mut);line-height:1.4}
-  .asteps{counter-reset:s;list-style:none;padding:0;margin:0}
-  .asteps li{position:relative;padding:10px 0 10px 38px;font-size:13.5px;color:var(--ink-2);line-height:1.5;border-bottom:1px dashed var(--line)}
-  .asteps li:last-child{border-bottom:none}
-  .asteps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:50%;
-    background:var(--accent);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
-  .aval{list-style:none;padding:0;margin:0}
-  .aval li{display:flex;gap:10px;font-size:13.5px;color:var(--ink-2);line-height:1.55;margin:9px 0;align-items:flex-start}
-  .aval li::before{content:"";flex:0 0 7px;height:7px;border-radius:50%;background:var(--accent);margin-top:7px}
-  .acase{border:1px solid var(--line);border-radius:var(--r-md);padding:14px 15px;margin-bottom:12px;background:var(--bg)}
-  .acase .ct{font-weight:800;font-size:14px;margin-bottom:2px}
-  .acase .cmeta{font-size:11px;color:var(--mut);font-weight:600;margin-bottom:8px}
-  .acase p{font-size:13px;color:var(--ink-2);margin:6px 0;line-height:1.55}
-  .ascore{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
-  .ascore span{font-size:11.5px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
-  .ascore .c-control{color:var(--c-control)} .ascore .c-deserved{color:var(--c-deserved)} .ascore .c-grat{color:#E2642F}
-  @media(max-width:420px){.apillars{grid-template-columns:1fr}.ap{display:flex;gap:8px;align-items:center;text-align:left}.ap b{margin-bottom:0}}
+
+  .a-h{font-size:26px;font-weight:800;letter-spacing:-.6px;line-height:1.22;margin:7px 0 0}
+  .a-sub{color:var(--ink-2);font-size:14px;margin:10px 0 0;line-height:1.5}
+  .a-label{font-size:11px;font-weight:800;letter-spacing:1.6px;color:var(--mut);text-transform:uppercase;margin:0 0 13px}
+  .a-block{padding:24px 0;border-top:1px solid var(--line)}
+  .a-block:first-of-type{border-top:none;padding-top:6px}
+
+  /* 核心概念图：你的产品 → 三支柱翻译 → Z世代用户 */
+  .a-flow{display:flex;align-items:stretch;gap:0}
+  .a-node{flex:1;border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:center}
+  .a-node .nt{font-size:11px;font-weight:700;color:var(--mut)}
+  .a-node .nv{font-size:14px;font-weight:800;line-height:1.25}
+  .a-node.src{background:var(--bg-2)}
+  .a-node.dst{background:var(--accent-soft)}
+  .a-node.dst .nv{color:var(--accent-d)}
+  .a-mid{flex:1.25;background:var(--ink);border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+  .a-mid .mt{font-size:10.5px;font-weight:700;color:#fff;opacity:.65;letter-spacing:.5px}
+  .a-pills{display:flex;flex-direction:column;gap:4px}
+  .a-pills span{font-size:11px;font-weight:800;padding:3px 8px;border-radius:7px;color:#fff}
+  .a-pills .control{background:var(--c-control)} .a-pills .deserved{background:var(--c-deserved)} .a-pills .grat{background:var(--c-grat)}
+  .a-arrow{flex:0 0 20px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:18px;font-weight:800}
+
+  /* 受众 chips */
+  .a-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+  .a-chips span{background:var(--bg-2);color:var(--ink-2);font-size:12px;font-weight:600;padding:6px 13px;border-radius:999px}
+
+  /* 怎么做 4步 */
+  .a-steps{display:flex;gap:7px}
+  .a-step{flex:1;background:var(--bg-2);border-radius:13px;padding:13px 6px;text-align:center}
+  .a-step .sn{font-size:12px;font-weight:800;color:var(--accent);display:block;margin-bottom:5px}
+  .a-step .st{font-size:12px;font-weight:700;line-height:1.3;color:var(--ink)}
+
+  /* 产出 3项（图标引导） */
+  .a-get{display:flex;flex-direction:column;gap:13px}
+  .a-get .gi{display:flex;gap:12px;align-items:flex-start}
+  .a-ic{flex:0 0 36px;height:36px;width:36px;border-radius:11px;background:var(--accent-soft);color:var(--accent-d);
+    display:flex;align-items:center;justify-content:center}
+  .a-ic svg{width:19px;height:19px}
+  .a-get .gt{font-size:13.5px;font-weight:800;line-height:1.35}
+  .a-get .gd{font-size:12px;color:var(--mut);line-height:1.45;margin-top:1px}
+
+  /* 案例：复用 score-bar 视觉 */
+  .a-case{border:1px solid var(--line);border-radius:var(--r-md);padding:15px;margin-bottom:12px;background:var(--bg)}
+  .a-case .cn{font-weight:800;font-size:14.5px}
+  .a-case .cm{font-size:11px;color:var(--mut);font-weight:600;margin:2px 0 13px}
+  .a-score{margin-bottom:11px}
+  .a-shift{display:flex;align-items:center;gap:9px;background:var(--bg-2);border-radius:12px;padding:11px 13px;margin:2px 0 6px}
+  .a-shift .from{font-size:13px;font-weight:800;color:var(--mut)}
+  .a-shift .to{font-size:13px;font-weight:800;color:var(--c-deserved)}
+  .a-case .cr{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:6px}
+  .a-case .cr b{color:var(--accent-d)}
+
+  @media(max-width:420px){
+    .a-flow{flex-direction:column;gap:6px}
+    .a-arrow{transform:rotate(90deg);flex-basis:auto;height:18px}
+    .a-steps{flex-wrap:wrap}.a-step{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px)}
+  }
 </style>
 </head>
 <body>
@@ -284,77 +310,92 @@
   <div class="sheet" onclick="event.stopPropagation()">
     <button class="x" onclick="closeAbout()" aria-label="关闭">×</button>
     <div class="abody">
-      <div class="ahero">
-        <div class="eyebrow">ABOUT · 为什么需要它</div>
-        <h1 class="h-hero">把你的产品，<br>翻译成 Z 世代想要的样子</h1>
-        <p class="lead" style="margin-bottom:4px">不是改几句文案，而是换一套年轻人听得懂、愿意信、想分享的语言。</p>
+
+      <div class="a-block" style="padding-top:4px">
+        <div class="eyebrow">ABOUT</div>
+        <div class="a-h">把你的产品，<br>翻译成 Z 世代想要的样子</div>
+        <div class="a-sub">好产品 ≠ 年轻人买账。我们补上断掉的那一环。</div>
       </div>
 
-      <div class="asec">
-        <div class="asec-h"><span class="ano">01</span> 为什么 · 谁会遇到这个问题</div>
-        <p class="atext">你做过一款好产品，但 95 后、00 后不买账。功能没变，<b>心智变了</b>——这是所有成熟品牌都在面对的代际错位。</p>
-        <div>
-          <span class="achip">品牌方</span><span class="achip">产品经理</span><span class="achip">营销人</span>
-          <span class="achip">创业者</span><span class="achip">内容创作者</span>
-        </div>
-        <div class="acall" style="margin-top:12px">代际错位 = 价值传递断链：你以为在讲卖点，他们听成了噪音。</div>
-      </div>
-
-      <div class="asec">
-        <div class="asec-h"><span class="ano">02</span> 能做什么</div>
-        <p class="atext">用「三支柱」这把尺，量出你的产品在哪根偏科，再给出能落地的年轻化方案。三支柱是年轻人没被满足的三类需求：</p>
-        <div class="apillars">
-          <div class="ap control"><b>掌控感</b><span>降负荷<br>给秩序</span></div>
-          <div class="ap deserved"><b>配得感</b><span>让我觉得<br>"配得上我"</span></div>
-          <div class="ap grat"><b>满足感</b><span>即时 · 有梗<br>有参与</span></div>
-        </div>
-      </div>
-
-      <div class="asec">
-        <div class="asec-h"><span class="ano">03</span> 怎么做</div>
-        <ol class="asteps">
-          <li>对话收集现状——像朋友聊天，5 个问题聊清你的产品</li>
-          <li>五阶段引擎理解 → 重构 → 机遇 → 五步翻译（产品/包装/沟通/渠道/社群）</li>
-          <li>逐屏修订每部分输出，直到你满意</li>
-          <li>一键导出 PPT，直接拿去汇报或提案</li>
-        </ol>
-      </div>
-
-      <div class="asec">
-        <div class="asec-h"><span class="ano">04</span> 做完得到什么 · 价值</div>
-        <ul class="aval">
-          <li>一份 Z 世代转型专案：理解 / 重构 / 机遇 / 五步翻译 / 执行计划</li>
-          <li>三支柱「现状 vs 修订后」双柱评分，一眼看见进步幅度</li>
-          <li>可下载 PPT，直接对齐团队、拿来提案</li>
-          <li>少走弯路、降低试错成本，让好产品被年轻人真正接住</li>
-        </ul>
-      </div>
-
-      <div class="asec">
-        <div class="asec-h"><span class="ano">05</span> 两个真实例子</div>
-        <div class="acase">
-          <div class="ct">假日酒店 · 自助早餐</div>
-          <div class="cmeta">成熟服务 × 年轻商旅人群</div>
-          <p><b>旧：</b>传统自助餐 50 年没变，上百种食物、和休闲客混杂，年轻人觉得"无聊、选择太多"。</p>
-          <p><b>翻译为「可控的精选策展」</b>，把决策权还给用户：</p>
-          <div class="ascore">
-            <span class="c-control">掌控感 2.3 → 7.1</span>
-            <span class="c-deserved">配得感 6.5 → 9.6</span>
-            <span class="c-grat">满足感 5.1 → 8.7</span>
+      <div class="a-block">
+        <div class="a-label">它做什么</div>
+        <div class="a-flow">
+          <div class="a-node src"><span class="nt">输入</span><span class="nv">你的产品</span></div>
+          <div class="a-arrow">→</div>
+          <div class="a-mid">
+            <span class="mt">三支柱翻译</span>
+            <div class="a-pills"><span class="control">掌控感</span><span class="deserved">配得感</span><span class="grat">满足感</span></div>
           </div>
-          <p>产出重做取餐动线 + "今日主厨精选"打卡梗，年轻入住意愿明显提升。</p>
-        </div>
-        <div class="acase">
-          <div class="ct">老牌铁锅 · 炊爷</div>
-          <div class="cmeta">功能型老货 × 独居年轻人</div>
-          <p><b>旧：</b>父辈"一口传三代"的功能叙事，年轻人感知为"妈妈的锅"，与自己无关。</p>
-          <p><b>翻译为「我值得为自己好好吃饭」</b>的配得感故事 + 开箱仪式感：</p>
-          <div class="ascore">
-            <span class="c-deserved">从"烹饪工具"移入"情感账户"</span>
-          </div>
-          <p>客单价与自发分享同步上升，产品从"该省省"变成"该花花"。</p>
+          <div class="a-arrow">→</div>
+          <div class="a-node dst"><span class="nt">输出</span><span class="nv">Z 世代用户</span></div>
         </div>
       </div>
+
+      <div class="a-block">
+        <div class="a-label">为什么 · 谁会用</div>
+        <div class="a-sub" style="margin-top:0">功能没变，心智变了。代际错位，让好价值传不到年轻人心里。</div>
+        <div class="a-chips">
+          <span>品牌方</span><span>产品经理</span><span>营销人</span><span>创业者</span><span>内容创作者</span>
+        </div>
+      </div>
+
+      <div class="a-block">
+        <div class="a-label">怎么做</div>
+        <div class="a-steps">
+          <div class="a-step"><span class="sn">1</span><span class="st">对话收集</span></div>
+          <div class="a-step"><span class="sn">2</span><span class="st">五阶段引擎</span></div>
+          <div class="a-step"><span class="sn">3</span><span class="st">逐屏修订</span></div>
+          <div class="a-step"><span class="sn">4</span><span class="st">导出 PPT</span></div>
+        </div>
+      </div>
+
+      <div class="a-block">
+        <div class="a-label">做完得到什么</div>
+        <div class="a-get">
+          <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg></div>
+            <div><div class="gt">一份转型专案</div><div class="gd">理解 · 重构 · 机遇 · 五步翻译 · 执行计划</div></div></div>
+          <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg></div>
+            <div><div class="gt">进步看得见</div><div class="gd">三支柱 现状 vs 修订后 双柱评分</div></div></div>
+          <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></div>
+            <div><div class="gt">直接能交付</div><div class="gd">一键导出 PPT，拿去汇报提案</div></div></div>
+        </div>
+      </div>
+
+      <div class="a-block">
+        <div class="a-label">两个真实例子</div>
+
+        <div class="a-case">
+          <div class="cn">假日酒店 · 自助早餐</div>
+          <div class="cm">成熟服务 × 年轻商旅</div>
+          <div class="a-score">
+            <div class="score-head"><b class="c-control">掌控感</b><span class="delta">+4.8</span></div>
+            <div class="score-bar cur"><i style="width:23%"></i></div>
+            <div class="score-bar rev"><i style="width:71%"></i></div>
+            <div class="score-leg"><span>现状 2.3</span><span>修订后 7.1</span></div>
+          </div>
+          <div class="a-score">
+            <div class="score-head"><b class="c-deserved">配得感</b><span class="delta">+3.1</span></div>
+            <div class="score-bar cur"><i style="width:65%"></i></div>
+            <div class="score-bar rev"><i style="width:96%"></i></div>
+            <div class="score-leg"><span>现状 6.5</span><span>修订后 9.6</span></div>
+          </div>
+          <div class="a-score">
+            <div class="score-head"><b class="c-grat">满足感</b><span class="delta">+3.6</span></div>
+            <div class="score-bar cur"><i style="width:51%"></i></div>
+            <div class="score-bar rev"><i style="width:87%"></i></div>
+            <div class="score-leg"><span>现状 5.1</span><span>修订后 8.7</span></div>
+          </div>
+          <div class="cr"><b>结果：</b>重做取餐动线 + 打卡梗，年轻入住意愿明显提升。</div>
+        </div>
+
+        <div class="a-case">
+          <div class="cn">老牌铁锅 · 炊爷</div>
+          <div class="cm">功能老货 × 独居青年</div>
+          <div class="a-shift"><span class="from">烹饪工具</span><span class="a-arrow">→</span><span class="to">情感账户</span></div>
+          <div class="cr"><b>结果：</b>「我值得为自己好好吃饭」，客单价与自发分享同步上升。</div>
+        </div>
+      </div>
+
     </div>
     <div class="foot">
       <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 18px" onclick="closeAbout()">关闭</button>
