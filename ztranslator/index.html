@@ -99,6 +99,17 @@
   /* ---------- Stage content ---------- */
   .sig{display:inline-block;background:var(--accent-soft);color:var(--accent-d);font-size:12px;font-weight:600;
     padding:4px 11px;border-radius:999px;margin:3px 5px 3px 0}
+  /* ---------- 可坍缩卡片（所有结果屏统一） ---------- */
+  .ccard{border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh-sm)}
+  .ccard-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;background:transparent;border:none;cursor:pointer;text-align:left;font:inherit;-webkit-tap-highlight-color:transparent}
+  .ccard-h:hover{background:var(--bg)}
+  .ccard-t{font-weight:800;font-size:14.5px;color:var(--ink);line-height:1.3}
+  .ccard-right{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+  .ccard-badge{font-size:11px;font-weight:800;color:var(--accent-d);background:var(--accent-soft);padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .ccard-caret{font-size:16px;color:var(--mut);transition:transform .25s var(--ease);line-height:1;transform:rotate(0)}
+  .ccard[data-collapsed="true"] .ccard-caret{transform:rotate(-90deg)}
+  .ccard-b{padding:2px 16px 16px;animation:pop .25s var(--ease)}
+  .ccard[data-collapsed="true"] .ccard-b{display:none}
   .pillar{border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px;border:1px solid transparent}
   .pillar b{font-size:15px}
   .pillar .pc{font-size:13px;color:var(--ink-2);margin-top:6px}
@@ -784,47 +795,64 @@ function screenInput(){
   return chatHTML;
 }
 
+function cCard(title, body, badge){
+  return `<div class="ccard">
+    <button type="button" class="ccard-h" onclick="toggleCard(this)">
+      <span class="ccard-t">${title}</span>
+      <span class="ccard-right">${badge?`<span class="ccard-badge">${badge}</span>`:''}<span class="ccard-caret">⌄</span></span>
+    </button>
+    <div class="ccard-b">${body}</div>
+  </div>`;
+}
+function toggleCard(btn){
+  const c=btn.closest('.ccard');if(!c)return;
+  const collapsed=c.getAttribute('data-collapsed')==='true';
+  c.setAttribute('data-collapsed', collapsed?'false':'true');
+}
 function screenUnderstand(){
   const u=state.data.understand;
   const sigs=(u.signals||[]).map(s=>s.quote?`<span class="sig">${esc(s.label)} · ${esc(s.quote)}</span>`:`<span class="sig">${esc(s.label)}</span>`).join('');
+  const body=`<p style="margin:0;font-size:15px;line-height:1.65">${esc(u.summary)}</p>
+    <div style="margin-top:12px">${sigs}</div>`;
   return `
     <div class="eyebrow">第 1 步 · 理解</div>
     <h1 class="h-hero">我读到的案例</h1>
-    <p class="lead">先确认我读懂了你的现状，有偏差可以在下一步前回到输入修订。</p>
-    <div class="card"><p style="margin:0;font-size:15px">${esc(u.summary)}</p>
-      <div style="margin-top:12px">${sigs}</div></div>
+    <p class="lead">先确认我读懂了你的现状，有偏差可以回到输入修订。</p>
+    ${cCard('理解摘要 · 我把你写的读成了这样', body)}
     <p class="hint">这些信号来自你写的内容，是后面翻译的"原料"。觉得不准？点底部「上一步」回去改。</p>`;
 }
 function screenReframe(){
   const r=state.data.reframe;
+  const b1=`<p style="font-weight:700;margin:0;line-height:1.65">${esc(r.problem||'')}</p>`;
+  const b2=`<p style="margin:0;font-size:15px;line-height:1.65">${esc(r.reframed||'')}</p>
+    <p class="hint" style="margin-top:10px">${esc(r.why||'')}</p>`;
   return `
     <div class="eyebrow">第 2 步 · 重构问题</div>
     <h1 class="h-hero">从痛点，到机会</h1>
     <p class="lead">不是再叠加功能，而是换一套年轻人听得懂的方言。</p>
-    <div class="card"><div class="eyebrow" style="color:var(--mut)">当前阻力</div><p style="font-weight:700;margin:6px 0 0">${esc(r.problem||'')}</p></div>
-    <div class="card"><div class="eyebrow" style="color:var(--accent)">重构后</div><p style="margin:6px 0 0;font-size:15px">${esc(r.reframed||'')}</p>
-      <p class="hint" style="margin-top:10px">${esc(r.why||'')}</p></div>`;
+    ${cCard('当前阻力 · 你正卡在哪', b1)}
+    ${cCard('重构后 · 年轻人会怎么理解', b2)}`;
 }
 function screenOpportunity(){
   const o=state.data.opportunity;
   const sc=getScores();
   const pillar=(cls,key,title,items)=>{
     const cur=sc.current[key]||0,rev=sc.revised[key]||0,d=Math.max(0,Math.round((rev-cur)*10)/10);
-    return `<div class="card">
-      <div class="score-head"><b class="c-${cls}">${title}</b><span class="delta">▲ +${d.toFixed(1)}</span></div>
+    const badge=d>0?`▲ +${d.toFixed(1)}`:'持平';
+    const body=`
       <div class="score-bar cur"><i style="width:${Math.round(cur*10)}%"></i></div>
       <div class="score-bar rev"><i style="width:${Math.round(rev*10)}%"></i></div>
       <div class="score-leg"><span>现状 ${cur.toFixed(1)}</span><span>修订后 ${rev.toFixed(1)}</span></div>
-      <div class="pc" style="margin-top:12px">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div>
-    </div>`;
+      <div class="pc" style="margin-top:12px">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div>`;
+    return cCard(title, body, badge);
   };
   return `
     <div class="eyebrow">第 3 步 · 机遇空间</div>
     <h1 class="h-hero">偏科在哪，机会就在哪</h1>
-    <p class="lead">三支柱对应三类年轻人没被满足的需求。灰色是现状得分，绿色是翻译后的预期得分（满分 10），提升越明显，说明这里越该优先动手。</p>
+    <p class="lead">三支柱对应三类年轻人没被满足的需求。灰是现状、绿是翻译后预期（满分 10），提升越明显越该优先动手。</p>
     ${pillar('control','control','掌控感 · 降负荷、给秩序',o.control)}
     ${pillar('deserved','deserved','配得感 · 让我觉得"配得上我"',o.deserved)}
-    ${pillar('grat','grat','满足感 · 即时、有梗、有参与',o.gratification)}`;
+    ${pillar('grat','gratification','满足感 · 即时、有梗、有参与',o.gratification)}`;
 }
 function screenTranslate(){
   const t=state.data.translate;
@@ -832,52 +860,51 @@ function screenTranslate(){
     <div class="eyebrow">第 4 步 · 五步翻译</div>
     <h1 class="h-hero">怎么翻：实操三法 + 你的案例</h1>
     <p class="lead">每类都给宝洁的实操三法，并链接到你的案例（可修改）。</p>
-    ${t.map((s,i)=>`
-      <div class="step-card">
-        <div class="sname"><span class="sidx">${i+1}</span>${esc(s.step)}</div>
+    ${t.map((s,i)=>{
+      const body=`
         <div class="pr">${esc(s.principle||'')}</div>
         <span class="blk-badge m">实操三法</span>
         ${(s.methods||[]).map((m,j)=>`<div class="m-item"><span class="m-no">${j+1}</span><span>${esc(m)}</span></div>`).join('')}
         <span class="blk-badge f" style="margin-top:12px">链接你的案例</span>
-        ${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}
-      </div>`).join('')}`;
+        ${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}`;
+      return cCard(`<span class="sidx" style="margin-right:9px">${i+1}</span>${esc(s.step)}`, body);
+    }).join('')}`;
 }
 function screenPlan(){
   const o2=state.data.output||{};
   const pl=state.data.plan||[];
   const pf=(k,label,val,rows)=>`<div class="pf"><span class="pl">${label}</span><textarea class="edit" data-k="${k}" rows="${rows||1}">${esc(val||'')}</textarea></div>`;
+  let cards='';
+  cards+=cCard('一句话定位', `<textarea class="edit" data-k="output.positioning" rows="2" style="margin-top:2px">${esc(o2.positioning||'')}</textarea>`);
+  cards+=cCard('场景定义', `<textarea class="edit" data-k="output.scene" rows="2" style="margin-top:2px">${esc(o2.scene||'')}</textarea>`);
+  cards+=pl.map((it,i)=>{
+    const body=`
+      <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
+      <div class="plan-grid" style="margin-top:10px">
+        <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
+        <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
+        <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
+        <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
+      </div>`;
+    return cCard(`行动 ${i+1} · 任务`, body);
+  }).join('');
   return `
     <div class="eyebrow">第 5 步 · 转型专案</div>
     <h1 class="h-hero">从策略到落地</h1>
     <p class="lead">一句话定位与场景，加 5 条可执行行动（任务 / 产出 / 时间点 / 责任人 / 资源）。</p>
-    <div class="card"><div class="eyebrow" style="color:var(--accent)">一句话定位</div>
-      <textarea class="edit" data-k="output.positioning" rows="2" style="margin-top:8px">${esc(o2.positioning||'')}</textarea></div>
-    <div class="card"><div class="eyebrow" style="color:var(--accent)">场景定义</div>
-      <textarea class="edit" data-k="output.scene" rows="2" style="margin-top:8px">${esc(o2.scene||'')}</textarea></div>
-    ${pl.map((it,i)=>`
-      <div class="plan-row">
-        <div class="plan-h"><span class="plan-no">${i+1}</span> 任务</div>
-        <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
-        <div class="plan-grid" style="margin-top:10px">
-          <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
-          <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
-          <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
-          <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
-        </div>
-      </div>`).join('')}`;
+    ${cards}`;
 }
 function screenExport(){
   const c=state.data._inputs||{};
+  const body=`
+    <p style="margin:0;font-weight:700;font-size:15px">${esc(c.product||'')}</p>
+    <p class="hint" style="margin:2px 0 0">面向 ${esc(c.audience||'')}</p>
+    <p style="margin:10px 0 0;font-size:14px;line-height:1.65">${esc(state.data.output.positioning||'')}</p>`;
   return `
     <div class="eyebrow">第 6 步 · 导出</div>
     <h1 class="h-hero">你的转型专案已就绪</h1>
     <p class="lead">把前面 5 个部分整合成一份 PPT，一键下载带走，或直接复制文本。</p>
-    <div class="card">
-      <div class="eyebrow" style="color:var(--accent)">专案概要</div>
-      <p style="margin:8px 0 0;font-weight:700">${esc(c.product||'')}</p>
-      <p class="hint" style="margin:2px 0 0">面向 ${esc(c.audience||'')}</p>
-      <p style="margin:10px 0 0;font-size:14px">${esc(state.data.output.positioning||'')}</p>
-    </div>
+    ${cCard('专案概要', body)}
     <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
     <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制整份文本</button>
     <p class="hint" style="margin-top:14px">PPT 含：封面 · 理解 · 重构 · 机遇 · 进步图示 · 五步翻译（实操三法 + 案例）· 转型专案 · 执行计划。生成在本地完成，内容不外传。</p>`;
