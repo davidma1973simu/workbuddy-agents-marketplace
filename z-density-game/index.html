@@ -27,6 +27,9 @@
   header.hd{position:sticky;top:0;z-index:30;background:rgba(246,245,242,.85);backdrop-filter:blur(12px);
     border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:10px}
   .logo{width:28px;height:28px;border-radius:7px;box-shadow:var(--sh)}
+  .brand{display:flex;align-items:center;gap:10px;background:none;border:none;padding:0;margin:0;
+    cursor:pointer;color:inherit;font:inherit;-webkit-tap-highlight-color:transparent;transition:opacity .15s var(--ease)}
+  .brand:active{opacity:.55}
   .hd .t{font-weight:800;font-size:16px;letter-spacing:-.3px}
   .hd .pro{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent-d);background:var(--accent-soft);
     padding:5px 11px;border-radius:999px;text-decoration:none}
@@ -90,7 +93,7 @@
   .why{font-size:12.5px;color:var(--mut);margin-top:8px;font-weight:700}
   .verdict{background:var(--accent-soft);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;color:var(--accent-d);font-weight:600;margin:14px 0}
   .qw{background:linear-gradient(135deg,#0CA678,#09835E);border-radius:var(--r-md);padding:15px 16px;margin-bottom:14px;box-shadow:0 8px 18px rgba(12,166,120,.22)}
-  .qw .tag{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:rgba(255,255,255,.22);padding:3px 11px;border-radius:99px;margin-bottom:9px;letter-spacing:.5px}
+  .qw .tag{display:inline-block;font-size:11px;font-weight:800;color:#0B7A5B;background:#fff;padding:3px 11px;border-radius:99px;margin-bottom:9px;letter-spacing:.5px}
   .qw .b{font-size:14.5px;line-height:1.6;font-weight:600;color:#fff}
   .cta{display:block;text-align:center;text-decoration:none;background:var(--ink);color:#fff;font-weight:700;
     padding:15px;border-radius:var(--r-md);margin:6px 0 12px}
@@ -125,6 +128,11 @@
   .veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.74),rgba(0,0,0,.14) 46%,rgba(0,0,0,0) 64%)}
   .cap{position:absolute;left:16px;right:16px;bottom:15px;color:#fff;font-size:14.5px;font-weight:800;
     line-height:1.45;letter-spacing:-.2px}
+  /* 结果页首卡：与首页示例卡同一套视觉（大图 + 白徽标 + 图上判词） */
+  .shot.hero{margin:2px 0 0;animation:fade .4s var(--ease)}
+  .shot.hero .cap{left:18px;right:18px;bottom:16px;font-size:16.5px;line-height:1.4}
+  .heroMeta{display:flex;align-items:center;justify-content:space-between;margin:14px 2px 15px}
+  .of10{font-size:11px;color:#A6A6AC;font-weight:600;letter-spacing:.02em}
   .badge{position:absolute;top:12px;right:12px;background:#fff;border-radius:15px;padding:8px 13px;text-align:center;
     box-shadow:0 8px 20px rgba(0,0,0,.18)}
   .badge b{display:block;font-size:23px;line-height:1;font-weight:900;color:#0CA678;letter-spacing:-.5px}
@@ -152,8 +160,10 @@
 <body>
 <div class="app">
   <header class="hd">
-    <img src="app-icon.png" alt="Z含量" class="logo">
-    <div class="t">Z含量 · 拍照测</div>
+    <button class="brand" onclick="goHome()" aria-label="回到首页">
+      <img src="app-icon.png" alt="" class="logo">
+      <span class="t">Z含量 · 拍照测</span>
+    </button>
     <a class="pro" href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/" target="_blank" rel="noopener">完整版 Pro →</a>
   </header>
 
@@ -247,10 +257,10 @@ function pickHeadline(sc,desc){
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
   const w=arr[0][1]; const noun=getNoun(desc);
   const avg=(sc.control+sc.deserved+sc.gratification)/3;
-  if(avg<4) return `这${noun}，年轻人不会多停留一秒。`;
-  if(w==='掌控感') return `这${noun}把年轻人当小孩一样安排。`;
-  if(w==='配得感') return `这${noun}让年轻人觉得不配发朋友圈。`;
-  return `这${noun}全程没给年轻人一点爽点。`;
+  if(avg<4) return `这${noun}，和五十年前好像没什么变化。`;
+  if(w==='掌控感') return `这${noun}，每一步都替 TA 想好了。`;
+  if(w==='配得感') return `这${noun}，还停在"够用就好"。`;
+  return `这${noun}，好是好，就是记不住。`;
 }
 
 /* ============ 对话问题：按产品主题动态生成（本地分类题库作降级） ============ */
@@ -328,7 +338,7 @@ async function reactAsync(qi,q,a,maxMs,fallback){
     const cloud=await ensureCloud();
     if(cloud){
       const hist=S.answers.slice(0,-1).map(x=>`问：${x.q}\n答：${x.a}`).join('\n')||'（对话刚开始）';
-      const sys='你是毒舌又懂Z世代的产品顾问。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字犀利、有趣、带点调侃地回应这个回答——必须正确理解用户意思、绝不能反向理解、不许假客气。只回一句话，不要引号，不要解释。';
+      const sys='你是懂Z世代的产品顾问，说话冷静、有判断、不客套。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字回应这个回答——必须正确理解用户意思、绝不能反向理解；可以犀利，但不刻薄、不嘲讽、不用网络烂梗。只回一句话，不要引号，不要解释。';
       const user=`问题：${q}\n用户回答：${a}\n前文：\n${hist}`;
       let ans=await withTimeout(streamText(cloud,sys,user),maxMs||9000);
       ans=(ans||'').trim().replace(/^["'「『]|["'」』]$/g,'');
@@ -340,14 +350,15 @@ async function reactAsync(qi,q,a,maxMs,fallback){
 
 /* ============ 云端免密钥 LLM（我们免费提供 AI，用户无需任何 Key） ============ */
 let _cloudClient=null,_cloudLoading=null;
+window.__cloudErr='';
 function ensureCloud(){
   if(_cloudClient)return Promise.resolve(_cloudClient);
   if(_cloudLoading)return _cloudLoading;
   if(typeof WorkBuddyCloud!=='undefined'){ try{_cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey});return Promise.resolve(_cloudClient);}catch(e){} }
   _cloudLoading=new Promise(resolve=>{
     const s=document.createElement('script'); s.src='cloud-sdk.js'+(location.search||'');
-    s.onload=()=>{ try{ if(typeof WorkBuddyCloud!=='undefined')_cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey}); }catch(e){} resolve(_cloudClient); };
-    s.onerror=()=>resolve(null);
+    s.onload=()=>{ try{ if(typeof WorkBuddyCloud!=='undefined')_cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey}); else window.__cloudErr='sdk_no_global'; }catch(e){ window.__cloudErr='sdk_create:'+e.message; } resolve(_cloudClient); };
+    s.onerror=()=>{ window.__cloudErr='sdk_load_error'; resolve(null); };
     document.head.appendChild(s);
   });
   return _cloudLoading;
@@ -392,9 +403,10 @@ async function diagnoseCloud(){
     const transcript=S.answers.map(a=>`问：${a.q}\n答：${a.a}`).join('\n');
     const sys='你是代际翻译顾问，专看产品对Z世代（1995–2009出生）的吸引力。'+
       '按三支柱(掌控感/配得感/满足感)各打0-10分。'+
-      'control_why/deserved_why/grat_why 为「为什么打这分」，必须犀利、挑剔、≤15个汉字、直接点出与Z世代的适配问题。'+
-      'headline 为≤18个汉字一句话，极度直接、像朋友吐槽一样描述这个产品的Z含量（可犀利）。'+
-      'verdict 为≤40字一句话判词。'+
+      'control_why/deserved_why/grat_why 为「为什么打这分」，≤15个汉字，准确具体、像一句冷静的判词，不刻薄、不嘲讽。'+
+      'headline 为≤20个汉字的一句话：冷静、具体、点到为止，像一句旁白式观察，点出它与年轻人的距离。'+
+      '正例：「这早餐，和五十年前好像没什么变化。」反例（禁止）：嘲讽、贬低、网络烂梗、骂人。'+
+      'verdict 为≤40字一句话判词，就事论事。'+
       'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
@@ -408,7 +420,7 @@ async function diagnoseCloud(){
       deserved_why:o.deserved_why||pillarWhy('deserved',clamp(o.deserved)),
       grat_why:o.grat_why||pillarWhy('gratification',clamp(o.gratification)),
       headline:o.headline||'',verdict:o.verdict||'',quickwin:o.quickwin||'',step:normalizeStep(o.step),ai:true};
-  }catch(e){ return null; }
+  }catch(e){ window.__cloudErr='diag:'+(e&&(e.error&&e.error.code||e.message)); return null; }
 }
 
 /* ============ 屏幕 ============ */
@@ -419,7 +431,7 @@ function renderHome(){
   <div class="screen home">
     <span class="kick"><i></i>Z-DENSITY SCAN</span>
     <h1 class="big">它配得上<br><em>年轻人</em>吗？</h1>
-    <p class="lede">上传一张图，<b>一分钟</b>看完它的 Z 含量。<br>三根柱子，一句狠话，一张能发的卡。</p>
+    <p class="lede">上传一张图，<b>一分钟</b>看完它的 Z 含量。<br>三根柱子，一句话，一张能发的卡。</p>
 
     <div class="stackwrap">
       <div class="stackcard b2"></div>
@@ -428,7 +440,7 @@ function renderHome(){
         <img src="${asset('demo-photo.jpg')}" alt="示例：本地自助早餐">
         <div class="veil"></div>
         <div class="badge"><b>6.4</b><span>Z 含量</span></div>
-        <figcaption class="cap">「这早餐，年轻人不会多停留一秒。」</figcaption>
+        <figcaption class="cap">「这早餐，和 50 年前好像没什么变化。」</figcaption>
       </figure>
     </div>
 
@@ -442,6 +454,13 @@ function renderHome(){
     </div>
     <p class="fine">AI 我们出钱 · 不用填任何 Key</p>
   </div>`;
+}
+/* 顶部 LOGO/标题 与「回到首页」共用：中止在跑的演示/对话，干净回到首页 */
+let NAV=0;
+function goHome(){
+  NAV++; window.__demoAbort=true;
+  renderHome();
+  try{ window.scrollTo(0,0); }catch(e){}
 }
 function pickCam(){$('#fileCam').click();}
 function pickLib(){$('#fileLib').click();}
@@ -536,6 +555,7 @@ function renderDescribe(){
   </div>`;
 }
 async function goChat(){
+  const nav=NAV;
   S.desc=$('#desc').value.trim()||S.desc||'';
   S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;
   setSteps(3);
@@ -543,6 +563,7 @@ async function goChat(){
       <div class="bub bot typing"><i></i><i></i><i></i></div></div>
       <p class="fine" style="margin-top:16px">AI 正在读图，为你定制问题…</p></div>`;
   const qs=await genQuestions();
+  if(nav!==NAV)return;
   S.questions=qs;
   $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
     <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
@@ -566,8 +587,10 @@ function scrollC(){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;}
 
 function computeAndShow(){
   botTyping();
+  const nav=NAV;
   const combined=[S.desc,...S.answers.map(a=>a.a)].filter(Boolean).join(' ');
   withTimeout(diagnoseCloud(),25000).then(res=>{
+    if(nav!==NAV)return;
     if(res&&res.control){
       S.scores={control:res.control,deserved:res.deserved,gratification:res.gratification};
       S.control_why=res.control_why;S.deserved_why=res.deserved_why;S.grat_why=res.grat_why;
@@ -589,7 +612,7 @@ function computeAndShow(){
 function renderResult(){
   setSteps(4);
   const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
-  const circ=2*Math.PI*64;
+  const photo=S.photo||asset('demo-photo.jpg');
   const pils=[
     ['掌控感','control','var(--c-control)',sc.control,S.control_why],
     ['配得感','deserved','var(--c-deserved)',sc.deserved,S.deserved_why],
@@ -599,16 +622,16 @@ function renderResult(){
     <div class="why">↳ ${esc(why)}</div></div>`).join('');
   $('#screen').innerHTML=`
   <div class="screen">
-    <button class="homebtn" onclick="renderHome()">← 回到首页，重新测一张</button>
-    <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'本地趣味读数'}</span>
-    <div class="gauge">
-      <div class="ring">
-        <svg width="148" height="148"><circle cx="74" cy="74" r="64" fill="none" stroke="var(--line)" stroke-width="12"/>
-          <circle cx="74" cy="74" r="64" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round"
-            stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="ring"/></svg>
-        <div class="num"><b id="avg">0.0</b><span>Z 含量 / 10</span></div>
-      </div>
-      <div class="headline">${esc(S.headline)}</div>
+    <button class="homebtn" onclick="goHome()">← 回到首页，重新测一张</button>
+    <figure class="shot hero">
+      <img src="${photo}" alt="">
+      <div class="veil"></div>
+      <div class="badge"><b id="avg">0.0</b><span>Z 含量</span></div>
+      <figcaption class="cap">「${esc(S.headline)}」</figcaption>
+    </figure>
+    <div class="heroMeta">
+      <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'本地趣味读数'}</span>
+      <span class="of10">三柱平均 · 满分 10</span>
     </div>
     <div class="card"><div class="pillars">${pils}</div></div>
     <div class="verdict">${esc(S.verdict)}</div>
@@ -617,7 +640,6 @@ function renderResult(){
     <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">解锁完整转型专案 →</a>
     <button class="retest" onclick="renderDescribe()">改一条描述，复测 ↺</button>
   </div>`;
-  requestAnimationFrame(()=>{const r=$('#ring');if(r)r.style.strokeDashoffset=circ*(1-avg/10);});
   animateNum($('#avg'),+avg);
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%'),80);
 }
@@ -723,6 +745,14 @@ function drawCard(){
 $('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
 $('#fileLib').addEventListener('change',e=>onFile(e.target.files[0]));
 renderHome();
+/* 隐藏诊断：?diag=1 检查免密钥 LLM 是否连得上 */
+if(/[?&]diag=1/.test(location.search)){ setTimeout(async()=>{
+  const out=[]; const c=await ensureCloud();
+  out.push('cloud='+(c?'yes':'null')+' err='+(window.__cloudErr||'-'));
+  if(c){ try{ const t=await withTimeout(streamText(c,'只回一个字：好','连通测试'),15000); out.push('text="'+(t||'').slice(0,40)+'"'); }catch(e){ out.push('call_err:'+(e&&(e.error&&e.error.code||e.message))); } }
+  out.push('origin='+location.origin);
+  $('#screen').innerHTML='<pre style="white-space:pre-wrap;font:12px/1.6 monospace;background:#fff;padding:14px;border-radius:12px">'+out.join('\n')+'</pre>';
+},600); }
 /* 直接看演示：链接加 ?demo=1（方便分享与验收） */
 if(/[?&]demo=1/.test(location.search)) setTimeout(runDemo,260);
 
