@@ -237,16 +237,19 @@
   .a-get .gt{font-size:13.5px;font-weight:800;line-height:1.35}
   .a-get .gd{font-size:12px;color:var(--mut);line-height:1.45;margin-top:1px}
 
-  /* 案例：复用 score-bar 视觉 */
+  /* 案例：问题 / 实践 / 结果 三段论（统一格式，数据紧凑不放大图） */
   .a-case{border:1px solid var(--line);border-radius:var(--r-md);padding:15px;margin-bottom:12px;background:var(--bg)}
   .a-case .cn{font-weight:800;font-size:14.5px}
-  .a-case .cm{font-size:11px;color:var(--mut);font-weight:600;margin:2px 0 13px}
-  .a-score{margin-bottom:11px}
-  .a-shift{display:flex;align-items:center;gap:9px;background:var(--bg-2);border-radius:12px;padding:11px 13px;margin:2px 0 6px}
-  .a-shift .from{font-size:13px;font-weight:800;color:var(--mut)}
-  .a-shift .to{font-size:13px;font-weight:800;color:var(--c-deserved)}
-  .a-case .cr{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-top:6px}
-  .a-case .cr b{color:var(--accent-d)}
+  .a-case .cm{font-size:11px;color:var(--mut);font-weight:600;margin:2px 0 12px}
+  .a-row{display:flex;gap:11px;padding:9px 0;border-top:1px dashed var(--line)}
+  .a-row:first-of-type{border-top:none}
+  .a-rl{flex:0 0 34px;font-size:10.5px;font-weight:800;color:var(--accent-d);background:var(--accent-soft);
+    border-radius:7px;height:19px;display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:1px}
+  .a-rc{flex:1;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+  .a-rc b{color:var(--ink)}
+  .a-stat{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .a-stat span{font-size:11px;font-weight:800;background:var(--bg-2);border-radius:999px;padding:3px 10px;color:var(--ink-2)}
+  .a-stat .up{color:var(--accent-d)}
 
   @media(max-width:420px){
     .a-flow{flex-direction:column;gap:6px}
@@ -366,33 +369,28 @@
 
         <div class="a-case">
           <div class="cn">假日酒店 · 自助早餐</div>
-          <div class="cm">成熟服务 × 年轻商旅</div>
-          <div class="a-score">
-            <div class="score-head"><b class="c-control">掌控感</b><span class="delta">+4.8</span></div>
-            <div class="score-bar cur"><i style="width:23%"></i></div>
-            <div class="score-bar rev"><i style="width:71%"></i></div>
-            <div class="score-leg"><span>现状 2.3</span><span>修订后 7.1</span></div>
+          <div class="cm">成熟服务 × 年轻商旅人群</div>
+          <div class="a-row"><span class="a-rl">问题</span><div class="a-rc">传统自助餐 50 年没变——上百种食物、与休闲客混杂。年轻人觉得<b>选择过多、认知负荷高、无聊</b>，入住体验与品牌升级完全脱节。</div></div>
+          <div class="a-row"><span class="a-rl">实践</span><div class="a-rc">以<b>掌控感</b>为支点重构：①产品上把"全自助"改为"可控的精选策展"（今日主厨精选 + 分区少而精）；②沟通上讲"我的早餐我决定"打卡梗；③社群上鼓励住客晒自己的搭配。</div></div>
+          <div class="a-row"><span class="a-rl">结果</span><div class="a-rc">三支柱评分全面跃升，年轻客群入住意愿与好评率明显提升。</div></div>
+          <div class="a-stat">
+            <span class="up">掌控感 2.3 → 7.1</span>
+            <span class="up">配得感 6.5 → 9.6</span>
+            <span class="up">满足感 5.1 → 8.7</span>
           </div>
-          <div class="a-score">
-            <div class="score-head"><b class="c-deserved">配得感</b><span class="delta">+3.1</span></div>
-            <div class="score-bar cur"><i style="width:65%"></i></div>
-            <div class="score-bar rev"><i style="width:96%"></i></div>
-            <div class="score-leg"><span>现状 6.5</span><span>修订后 9.6</span></div>
-          </div>
-          <div class="a-score">
-            <div class="score-head"><b class="c-grat">满足感</b><span class="delta">+3.6</span></div>
-            <div class="score-bar cur"><i style="width:51%"></i></div>
-            <div class="score-bar rev"><i style="width:87%"></i></div>
-            <div class="score-leg"><span>现状 5.1</span><span>修订后 8.7</span></div>
-          </div>
-          <div class="cr"><b>结果：</b>重做取餐动线 + 打卡梗，年轻入住意愿明显提升。</div>
         </div>
 
         <div class="a-case">
           <div class="cn">老牌铁锅 · 炊爷</div>
-          <div class="cm">功能老货 × 独居青年</div>
-          <div class="a-shift"><span class="from">烹饪工具</span><span class="a-arrow">→</span><span class="to">情感账户</span></div>
-          <div class="cr"><b>结果：</b>「我值得为自己好好吃饭」，客单价与自发分享同步上升。</div>
+          <div class="cm">功能型老货 × 独居年轻人</div>
+          <div class="a-row"><span class="a-rl">问题</span><div class="a-rc">父辈"一口传三代"的功能叙事，年轻人感知为<b>"妈妈的锅"</b>，与自己独居生活无关；产品停留在"该省省"的功能账户，难有溢价与分享。</div></div>
+          <div class="a-row"><span class="a-rl">实践</span><div class="a-rc">把锅从「烹饪工具」移入「情感账户」：①配得感上讲"我值得为自己好好吃饭"的故事；②包装上做开箱仪式感；③沟通上用真实独居青年的下厨瞬间替代参数表。</div></div>
+          <div class="a-row"><span class="a-rl">结果</span><div class="a-rc">从"该省省"变成"该花花"，被年轻人当成"对自己好一点"的载体，分享意愿明显上升。</div></div>
+          <div class="a-stat">
+            <span class="up">客单价 ↑</span>
+            <span class="up">自发分享 ↑</span>
+            <span>工具 → 情感账户</span>
+          </div>
         </div>
       </div>
 
