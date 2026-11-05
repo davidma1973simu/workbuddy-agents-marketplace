@@ -187,14 +187,11 @@ function pickVerdict(sc,text){
 function getNoun(t){ if(!t)return'产品'; const keys=['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','盲盒','手办','周边','社群','服务','品牌','活动'];
   for(const k of keys){ if(t.includes(k)) return k; } return'产品'; }
 function pickQuickwin(sc,desc){
-  const arr=[['control','产品翻译','把首页第一个动作从"默认推荐"改成"你来挑场景"。用3个年轻人原话场景做入口，删掉所有默认勾选与催促文案，让TA自己决定先点哪。'],
-             ['deserved','包装翻译','把"经典"翻成"潮"：出一款特别版视觉（更亮色、更年轻字体、联名/限定），经典款不动，新款先在小渠道试水，让TA愿意"站队"。'],
-             ['gratification','社群翻译','把"广播"翻成"对话"：在关键节点放一个即时小反馈（进度/彩蛋/打卡梗/晒单互动），让过程本身就好玩、能被分享。']];
+  const arr=[['control','产品翻译','把"默认推荐"改成"你来决定"，删掉默认勾选与催促文案。'],
+             ['deserved','包装翻译','出一款年轻化特别版视觉，让TA愿意为它"站队"。'],
+             ['gratification','社群翻译','加一个即时小反馈或彩蛋，让过程本身就好玩、能晒。']];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
-  const [pillar,step,advice]=arr[0];
-  const noun=getNoun(desc);
-  const weakName=pillar==='control'?'掌控感':pillar==='deserved'?'配得感':'满足感';
-  return {step,text:`${advice}（针对你的${noun}，先补最弱的「${weakName}」）`};
+  return {step:arr[0][1],text:arr[0][2]};
 }
 function pickHeadline(sc,desc){
   const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
@@ -214,30 +211,50 @@ const QUESTIONS=[
   {pillar:'grat',      q:'体验里有没有"当下就开心"的瞬间？是即时满足，还是熬完才值？'},
   {pillar:'social',    q:'补一刀：如果发朋友圈，TA会怎么夸它、还是吐槽它？'}
 ];
-function react(qi,ans){
-  const a=ans||'';
-  if(qi===0){ if(/不能|必须|强制|默认|推送|自动|安排|被推|只能|被迫/.test(a))return'听起来被安排得明明白白。';
-    if(/自己|自由|选择|自定义|随便|我说了算|自主|灵活/.test(a))return'给了TA选择权，加分。'; return'记下了，继续。'; }
-  if(qi===1){ if(/便宜|将就|土|低端|low|廉价|凑合|没面子|山寨/.test(a))return'将就感拉满，配得感堪忧。';
-    if(/设计|质感|高级|身份|限量|喜欢|种草|颜值|格调|审美/.test(a))return'有站队的冲动，不错。'; return'记下了，继续。'; }
-  if(qi===2){ if(/无聊|慢|等|失望|没劲|枯燥|干巴|漫长/.test(a))return'过程太干，爽点靠后。';
-    if(/惊喜|好玩|立刻|赠|彩蛋|开心|互动|治愈|小确幸/.test(a))return'即时爽感到位。'; return'记下了，继续。'; }
-  if(/吐槽|尴尬|丢人|社死|不会发|嫌弃/.test(a))return'这吐槽比夸更真实。';
-  if(/安利|种草|晒|夸|发圈|朋友圈|分享|骄傲/.test(a))return'能晒出门面，传播力在线。';
-  return'记下了。';
+function reactSafe(qi){
+  return ['收到，记下了。','懂了，继续。','好，我懂你的意思。','记下了，往下走。'][qi%4];
+}
+async function reactAsync(qi,q,a){
+  try{
+    const cloud=await ensureCloud();
+    if(cloud){
+      const hist=S.answers.slice(0,-1).map(x=>`问：${x.q}\n答：${x.a}`).join('\n')||'（对话刚开始）';
+      const sys='你是毒舌又懂Z世代的产品顾问。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字犀利、有趣、带点调侃地回应这个回答——必须正确理解用户意思、绝不能反向理解、不许假客气。只回一句话，不要引号，不要解释。';
+      const user=`问题：${q}\n用户回答：${a}\n前文：\n${hist}`;
+      let ans=await withTimeout(streamText(cloud,sys,user),7000);
+      ans=(ans||'').trim().replace(/^["'「『]|["'」』]$/g,'');
+      if(ans)return ans;
+    }
+  }catch(e){}
+  return reactSafe(qi);
 }
 
-/* ============ 云端免密钥 LLM 诊断（失败自动回落本地） ============ */
-let _cloudClient=null;
-function cloudClient(){ if(_cloudClient)return _cloudClient;
-  if(typeof WorkBuddyCloud==='undefined')return null;
-  _cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey});
-  return _cloudClient; }
+/* ============ 云端免密钥 LLM（我们免费提供 AI，用户无需任何 Key） ============ */
+let _cloudClient=null,_cloudLoading=null;
+function ensureCloud(){
+  if(_cloudClient)return Promise.resolve(_cloudClient);
+  if(_cloudLoading)return _cloudLoading;
+  if(typeof WorkBuddyCloud!=='undefined'){ try{_cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey});return Promise.resolve(_cloudClient);}catch(e){} }
+  _cloudLoading=new Promise(resolve=>{
+    const s=document.createElement('script'); s.src='cloud-sdk.js'+(location.search||'');
+    s.onload=()=>{ try{ if(typeof WorkBuddyCloud!=='undefined')_cloudClient=WorkBuddyCloud.createWorkBuddyCloud({endpoint:CFG.endpoint,publishableKey:CFG.publishableKey}); }catch(e){} resolve(_cloudClient); };
+    s.onerror=()=>resolve(null);
+    document.head.appendChild(s);
+  });
+  return _cloudLoading;
+}
 function parseJSON(t){ try{return JSON.parse(t);}catch(e){ const m=t.match(/\{[\s\S]*\}/); if(m){try{return JSON.parse(m[0]);}catch(_){}} return null; } }
 const PBG_STEPS=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
 function normalizeStep(s){ if(!s)return'产品翻译'; for(const k of PBG_STEPS){ if(s.includes(k))return k; } return'产品翻译'; }
+async function streamText(cloud,sys,user,model){
+  let ans='';
+  const body={model:model||'auto',messages:[{role:'system',content:sys},{role:'user',content:user}],stream:true};
+  for await(const ch of cloud.llm.chat.completions.create(body)){ const d=ch.choices?.[0]?.delta?.content; if(d)ans+=d; }
+  return ans;
+}
+function withTimeout(p,ms){ return Promise.race([p,new Promise(r=>setTimeout(()=>r(''),ms))]); }
 async function diagnoseCloud(){
-  const cloud=cloudClient(); if(!cloud)return null;
+  const cloud=await ensureCloud(); if(!cloud)return null;
   try{
     const models=await cloud.llm.models.list();
     let model=models.find(m=>m.disabled!==true && m.supportsImages===true) || models.find(m=>m.disabled!==true);
@@ -248,17 +265,12 @@ async function diagnoseCloud(){
       'control_why/deserved_why/grat_why 为「为什么打这分」，必须犀利、挑剔、≤15个汉字、直接点出与Z世代的适配问题。'+
       'headline 为≤18个汉字一句话，极度直接、像朋友吐槽一样描述这个产品的Z含量（可犀利）。'+
       'verdict 为≤40字一句话判词。'+
-      'quickwin 为极具体、针对该产品的一条速赢建议（含可落地的动作）。'+
+      'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
     const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
     if(S.photoData && model.supportsImages===true) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
-    let ans='';
-    for await(const ch of cloud.llm.chat.completions.create({
-      model:model.id,
-      messages:[{role:'system',content:sys},{role:'user',content:userParts}],
-      stream:true
-    })){ const d=ch.choices?.[0]?.delta?.content; if(d)ans+=d; }
+    let ans=await streamText(cloud,sys,userParts,model.id);
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
     const clamp=v=>Math.max(2.2,Math.min(9.3,+v||5));
     return {control:clamp(o.control),deserved:clamp(o.deserved),gratification:clamp(o.gratification),
@@ -316,16 +328,15 @@ function goChat(){
     <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
   pushBot(QUESTIONS[0].q);
 }
-function sendAns(){
+async function sendAns(){
   const v=$('#ans').value.trim(); if(!v)return;
   pushMe(v); S.answers.push({q:QUESTIONS[S.qi].q,a:v}); $('#ans').value='';
   botTyping();
-  setTimeout(()=>{
-    const t=document.querySelector('.typing'); if(t)t.remove();
-    pushBot(react(S.qi,v));
-    if(S.qi<QUESTIONS.length-1){ S.qi++; setTimeout(()=>pushBot(QUESTIONS[S.qi].q),450); }
-    else { setTimeout(computeAndShow,650); }
-  },650);
+  const reaction=await reactAsync(S.qi,QUESTIONS[S.qi].q,v);
+  const t=document.querySelector('.typing'); if(t)t.remove();
+  pushBot(reaction);
+  if(S.qi<QUESTIONS.length-1){ S.qi++; setTimeout(()=>pushBot(QUESTIONS[S.qi].q),450); }
+  else { setTimeout(computeAndShow,650); }
 }
 function pushBot(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
 function pushMe(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
@@ -461,14 +472,14 @@ function drawCard(){
     x.fillStyle='#E7F6EF'; pathRound(x,px,qy,W-2*px,156,24); x.fill();
     x.textAlign='left'; x.fillStyle='#0CA678'; x.font='800 27px -apple-system,"PingFang SC",sans-serif'; x.fillText('速赢攻略',px+28,qy+48);
     x.fillStyle='#18181B'; x.font='600 25px -apple-system,"PingFang SC",sans-serif';
-    wrapLines(x,S.quickwin,W-2*px-56).slice(0,3).forEach((ln,i)=>x.fillText(ln,px+28,qy+92+i*34));
+    wrapLines(x,S.quickwin,W-2*px-56).slice(0,2).forEach((ln,i)=>x.fillText(ln,px+28,qy+92+i*34));
     // QR row
     const qrY=qy+156+22, qrS=150;
     const drawQR=(key,qx,cap)=>{ if(imgs[key]){ x.fillStyle='#FFFFFF'; pathRound(x,qx,qrY,qrS,qrS,16); x.fill(); x.drawImage(imgs[key],qx,qrY,qrS,qrS); }
       else { x.fillStyle='#F2F2F2'; pathRound(x,qx,qrY,qrS,qrS,16); x.fill(); }
       x.fillStyle='#18181B'; x.font='700 23px -apple-system,"PingFang SC",sans-serif'; x.textAlign='center'; x.fillText(cap,qx+qrS/2,qrY+qrS+34); };
-    drawQR('qrApp',px,'扫我 · 测你的一张');
-    drawQR('qrPro',W-px-qrS,'扫我 · 看完整转型专案');
+    drawQR('qrApp',px,'测你的一张');
+    drawQR('qrPro',W-px-qrS,'看完整转型专案');
     x.textAlign='left';
     // download
     const a=document.createElement('a');a.download='Z含量-'+new Date().toISOString().slice(0,10)+'.png';a.href=cv.toDataURL('image/png');a.click();
