@@ -128,6 +128,9 @@
   .veil{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.74),rgba(0,0,0,.14) 46%,rgba(0,0,0,0) 64%)}
   .cap{position:absolute;left:16px;right:16px;bottom:15px;color:#fff;font-size:14.5px;font-weight:800;
     line-height:1.45;letter-spacing:-.2px}
+  /* 判词署名：一句旁白之后，淡淡落一个名字 */
+  .cap .sign{display:block;margin-top:7px;text-align:right;font-size:11.5px;font-weight:800;
+    letter-spacing:.08em;color:rgba(255,255,255,.82)}
   /* 结果页首卡：与首页示例卡同一套视觉（大图 + 白徽标 + 图上判词） */
   .shot.hero{margin:2px 0 0;animation:fade .4s var(--ease)}
   .shot.hero .cap{left:18px;right:18px;bottom:16px;font-size:16.5px;line-height:1.4}
@@ -303,7 +306,7 @@ function localQuestions(desc){ return QLIB[catOf(desc)].slice(0,4); }
 
 /* ============ 示例 Demo（固定脚本，电脑自动填、自动答，用户只看） ============ */
 const DEMO={
-  desc:'一家开了 50 年的本地自助早餐，上百种食物，和休闲客混在一起。地方大、菜品多，但吵、杂、餐具老派。',
+  desc:'一家开了 50 年的老酒店自助早餐，上百种食物，和休闲客混在一起。地方大、菜品多，但吵、杂、餐具老派。',
   questions:[
     '这家店，年轻人在里面是自己拿主意，还是被动线和人流推着走？',
     '一百多种食物摆出来，TA会觉得"值得专程来一趟"，还是"随便吃点算了"？',
@@ -437,10 +440,10 @@ function renderHome(){
       <div class="stackcard b2"></div>
       <div class="stackcard b1"></div>
       <figure class="shot">
-        <img src="${asset('demo-photo.jpg')}" alt="示例：本地自助早餐">
+        <img src="${asset('demo-photo.jpg')}" alt="示例：酒店自助早餐">
         <div class="veil"></div>
         <div class="badge"><b>6.4</b><span>Z 含量</span></div>
-        <figcaption class="cap">「这早餐，和 50 年前好像没什么变化。」</figcaption>
+        <figcaption class="cap">「这酒店自助早餐，和 50 年前好像没什么变化。」<span class="sign">— 小Z</span></figcaption>
       </figure>
     </div>
 
@@ -492,7 +495,7 @@ async function runDemo(){
   <div class="screen">
     <span class="flag">示例 · 自动演示</span>
     <figure class="shot" style="margin-bottom:20px">
-      <img src="${asset('demo-photo.jpg')}" alt="示例：本地自助早餐">
+      <img src="${asset('demo-photo.jpg')}" alt="示例：酒店自助早餐">
     </figure>
     <label class="lbl">一句话描述它</label>
     <div class="filled"><span id="typed"></span><span class="caret"></span></div>
@@ -627,7 +630,7 @@ function renderResult(){
       <img src="${photo}" alt="">
       <div class="veil"></div>
       <div class="badge"><b id="avg">0.0</b><span>Z 含量</span></div>
-      <figcaption class="cap">「${esc(S.headline)}」</figcaption>
+      <figcaption class="cap">「${esc(S.headline)}」<span class="sign">— 小Z</span></figcaption>
     </figure>
     <div class="heroMeta">
       <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'本地趣味读数'}</span>
