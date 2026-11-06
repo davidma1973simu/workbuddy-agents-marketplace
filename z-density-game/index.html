@@ -598,9 +598,16 @@ async function goChat(){
   if(nav!==NAV)return;
   S.look=g.look||''; S.questions=g.qs;
   $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
-    <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
+    <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off" onkeydown="onAnsKey(event)"><button onclick="sendAns()">发送</button></div></div>`;
   if(S.look) pushLook(S.look);
   pushBot(S.questions[0]);
+}
+/* 回车即发送；中文输入法正在选词时的回车不算（否则会把"确认候选词"当成发送） */
+function onAnsKey(e){
+  if(e.key!=='Enter')return;
+  if(e.isComposing||e.keyCode===229)return;
+  e.preventDefault();
+  sendAns();
 }
 async function sendAns(){
   const v=$('#ans').value.trim(); if(!v)return;
