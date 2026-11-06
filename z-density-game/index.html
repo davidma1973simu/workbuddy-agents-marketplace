@@ -231,15 +231,15 @@ function scorePillar(name,text){
   neg.forEach(w=>{if(text.includes(w))s-=0.8;});
   const jitter=((hash(text+name)%100)/100-0.5)*1.1;
   s+=jitter;
-  return Math.max(2.2,Math.min(9.3,+s.toFixed(1)));
+  return Math.max(1,Math.min(10,+s.toFixed(1)));
 }
 function localScores(text){
   return {control:scorePillar('control',text),deserved:scorePillar('deserved',text),gratification:scorePillar('grat',text)};
 }
 function pillarWhy(name,sc){
-  if(name==='control'){ if(sc>=7.5)return'自主权基本到位'; if(sc>=6)return'选择有但不够爽'; if(sc>=5)return'半推半就的自主'; return'被流程牵着走'; }
-  if(name==='deserved'){ if(sc>=7.5)return'站队无压力'; if(sc>=6)return'面子差一口气'; if(sc>=5)return'配得感将就了'; return'不值得发圈'; }
-  return (sc>=7.5)?'当下就开心':(sc>=6)?'爽点偏靠后':(sc>=5)?'惊喜不够密':'熬完才有点值';
+  if(name==='control'){ if(sc>=7.5)return'自主权基本到位'; if(sc>=6)return'选择有但不够爽'; if(sc>=5)return'半推半就的自主'; if(sc>=3)return'被流程牵着走'; return'全程别人替你安排'; }
+  if(name==='deserved'){ if(sc>=7.5)return'站队无压力'; if(sc>=6)return'面子差一口气'; if(sc>=5)return'配得感将就了'; if(sc>=3)return'不值得发圈'; return'拿不出手，也不想被看见'; }
+  return (sc>=7.5)?'当下就开心':(sc>=6)?'爽点偏靠后':(sc>=5)?'惊喜不够密':(sc>=3)?'熬完才有点值':'一秒都没爽过';
 }
 function pickVerdict(sc,text){
   const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
@@ -430,11 +430,23 @@ async function diagnoseCloud(){
   const cloud=await ensureCloud(); if(!cloud)return null;
   try{
     const transcript=S.answers.map(a=>`问：${a.q}\n答：${a.a}`).join('\n');
-    const sys='你是代际翻译顾问，专看产品对Z世代（1995–2009出生）的吸引力。'+
-      '按三支柱(掌控感/配得感/满足感)各打0-10分。'+
-      'control_why/deserved_why/grat_why 为「为什么打这分」，≤15个汉字，准确具体、像一句冷静的判词，不刻薄、不嘲讽。'+
-      'headline 为≤20个汉字的一句话：冷静、具体、点到为止，像一句旁白式观察，点出它与年轻人的距离。'+
-      '正例：「这早餐，和五十年前好像没什么变化。」反例（禁止）：嘲讽、贬低、网络烂梗、骂人。'+
+    const sys='你是替品牌看「这东西年轻人会不会真用」的评估者。说话直接、不留情面，但只针对产品本身，不嘲讽人不使用网络烂梗。'+
+      '只评三个 Z 支柱，功能好坏、划不划算不在评分范围内：'+
+      '掌控感＝TA能不能自己说了算、按自己的节奏来，还是被安排、被推着走；'+
+      '配得感＝它能不能成为TA愿意站队、愿意让人看见的身份表达（不是贵不贵）；'+
+      '满足感＝用它的过程里有没有当下就成立的情绪价值（不是好不好吃/好不好用）。'+
+      '10分制，最低1分，必须是整数。锚点：'+
+      '1分＝这一维几乎没有，方向还是反的——用户答问里是明确负面，且找不到任何补偿点，这种时候不要犹豫，直接给1分；'+
+      '3分＝明显缺失，只有形式上的努力；'+
+      '5分＝还可以，能感觉到它在掌控和身份标签上有努力，也有部分情绪价值，但都停在"有一点"，留不下印象；'+
+      '7分＝明确成立，能指出具体动作或具体瞬间；9分＝很强，可以当样本；10分＝几乎无可挑剔，极少给。'+
+      '宁可低一分，不要为了客气抬分。'+
+      '打分前先在why里说证据：引用用户原话里的具体词，≤18个汉字，像一句判词；没有证据不许给高分。'+
+      '用户在4轮里对某一维度明确否定（如"不会""没有""只能这样"），该维度不得高于3分。'+
+      '三个维度独立判断，不许因为总体印象好就一起抬、也不许一起压。'+
+      '三柱都低时，verdict 与 headline 必须直说问题，不许替它找台阶；批评可以尖锐，但要有据。'+
+      'control_why/deserved_why/grat_why 为「为什么打这分」，≤18个汉字。'+
+      'headline 为≤20个汉字的一句旁白式观察，点出它与年轻人的距离。'+
       'verdict 为≤40字一句话判词，就事论事。'+
       'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
@@ -443,7 +455,7 @@ async function diagnoseCloud(){
     if(S.photoData) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
     let ans=await streamText(cloud,sys,userParts);
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
-    const clamp=v=>Math.max(2.2,Math.min(9.3,+v||5));
+    const clamp=v=>Math.max(1,Math.min(10,Math.round(+v||5)));
     return {control:clamp(o.control),deserved:clamp(o.deserved),gratification:clamp(o.gratification),
       control_why:o.control_why||pillarWhy('control',clamp(o.control)),
       deserved_why:o.deserved_why||pillarWhy('deserved',clamp(o.deserved)),
