@@ -200,7 +200,7 @@ const CFG={endpoint:'https://z-density-game.app.workbuddy.host',
   publishableKey:'wbpk_7q0Q607vbX0jTn57w49Nym_24IiiIDCzuSSAz7mFXU8zFcU6kEeGQjH'};
 
 /* ============ 状态 ============ */
-const S={photo:null,photoData:null,photoName:'',desc:'',look:'',qi:0,answers:[],questions:[],demo:false,scores:null,
+const S={photo:null,photoData:null,photoReady:null,photoName:'',desc:'',look:'',qi:0,answers:[],questions:[],demo:false,scores:null,
   control_why:'',deserved_why:'',grat_why:'',verdict:'',headline:'',quickwin:'',step:'',ai:false};
 const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
 const APP_URL='https://z-density-game.app.workbuddy.host';
@@ -209,7 +209,7 @@ const APP_URL='https://z-density-game.app.workbuddy.host';
 const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function setSteps(n){const w=document.querySelector('.steps');if(w)w.classList.remove('hidden');document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
-function resetAll(){S.photo=null;S.photoData=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.questions=[];S.demo=false;S.scores=null;
+function resetAll(){S.photo=null;S.photoData=null;S.photoReady=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.questions=[];S.demo=false;S.scores=null;
   S.control_why='';S.deserved_why='';S.grat_why='';S.verdict='';S.headline='';S.quickwin='';S.step='';S.ai=false;S.look='';}
 /* 分享链接网关：静态资源必须带同一 sharecode，否则 403 */
 function asset(p){ return p+(location.search||''); }
@@ -226,7 +226,7 @@ const KW={
 };
 function hash(str){let h=0;for(let i=0;i<str.length;i++){h=(h<<5)-h+str.charCodeAt(i);h|=0;}return Math.abs(h);}
 function scorePillar(name,text){
-  const [pos,neg]=KW[name];let s=5.4;
+  const [pos,neg]=KW[name];let s=4.6;
   pos.forEach(w=>{if(text.includes(w))s+=0.7;});
   neg.forEach(w=>{if(text.includes(w))s-=0.8;});
   const jitter=((hash(text+name)%100)/100-0.5)*1.1;
@@ -244,20 +244,21 @@ function pillarWhy(name,sc){
 function pickVerdict(sc,text){
   const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
-  const weak=arr[0];const avg=(sc.control+sc.deserved+sc.gratification)/3;
-  let head='';
-  if(weak[0]==='control')head='它把选择权还给了年轻人吗？掌控感偏弱——少一点"为你安排"，多一点"你来决定"。';
-  else if(weak[0]==='deserved')head='面子与里子没对齐。配得感偏弱——让它成为年轻人"愿意站队"的身份标签。';
-  else head='少了点"此刻就开心"的瞬间。满足感偏弱——给一个低门槛的惊喜或反馈。';
-  let tail = avg>=7.5?'Z含量在线，年轻人会买账。':avg>=5.5?'有底子，但偏科明显，修订后空间很大。':'离 Z 世代还差一口气，先补最弱的支柱。';
+  const weak=arr[0],noun=getNoun(text);
+  const head = weak[0]==='control' ? `最弱是掌控：${noun}里每一步都被人替你安排好了。`
+             : weak[0]==='deserved' ? `最弱是配得：${noun}拿在手上，说不出一句"这是我的"。`
+             : `最弱是满足：${noun}用完了，没有一个当下就成立的瞬间。`;
+  const avg=(sc.control+sc.deserved+sc.gratification)/3;
+  const tail = avg>=7.5?'三柱都在线，可以往上加码。':avg>=5?'中间地带，只改最弱的那一柱就够。':'先只改最弱的那一柱，别同时动三处。';
   return head+tail;
 }
-function getNoun(t){ if(!t)return'产品'; const keys=['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','盲盒','手办','周边','社群','服务','品牌','活动'];
+function getNoun(t){ if(!t)return'产品'; const keys=['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','手表','腕表','盲盒','手办','周边','社群','服务','品牌','活动','杯'];
   for(const k of keys){ if(t.includes(k)) return k; } return'产品'; }
 function pickQuickwin(sc,desc){
-  const arr=[['control','产品翻译','把"默认推荐"改成"你来决定"，删掉默认勾选与催促文案。'],
-             ['deserved','包装翻译','出一款年轻化特别版视觉，让TA愿意为它"站队"。'],
-             ['gratification','社群翻译','加一个即时小反馈或彩蛋，让过程本身就好玩、能晒。']];
+  const noun=getNoun(desc);
+  const arr=[['control','产品翻译',`把${noun}的默认勾选和推荐话术删掉，改成让人先自己选一次，选完再给建议。`],
+             ['deserved','包装翻译',`给${noun}换一套能拍的外观：单色哑光底＋一个可露出的标识，去掉满屏促销字。`],
+             ['gratification','社群翻译',`在${noun}的过程里加一个 30 秒内就有反馈的小动作，让人当场想拍一张。`]];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
   return {step:arr[0][1],text:arr[0][2]};
 }
@@ -447,11 +448,11 @@ async function diagnoseCloud(){
       '7档＝明确成立，能指出具体动作或具体瞬间；9档＝很强，可以当样本；10档＝几乎无可挑剔，极少给。'+
       '宁可低一分，不要为了客气抬分。'+
       '定档必须照下面的条件判，不靠整体感觉：'+
-      '【掌控感】用户举不出一处"是我自己定的" → 1档；能举出一处但只是形式（默认值、只能二选一、被人催着走）→ 3档；能选但选项少、要专门争取 → 5档；举出一处自己定的具体动作、过程不费劲 → 7档；关键环节全是自己定、用户还主动说"全按我的来、想怎么改就怎么改" → 9档。'+
-      '【配得感】用户说不会让人看见、不好意思、藏着 → 1档；说普通、没人会看、懒得拍 → 3档；只有"还行、能用"这种中性话 → 5档；会说、会晒、会主动介绍 → 7档；用户说"这就是我的风格"，且有被认出、被问起、被模仿的具体经历 → 9档。'+
+      '【掌控感】举不出一处"是我自己定的" → 1档；只能选预设、被默认值/套餐/人流推着走 → 3档；只是从货架上挑一个 SKU（正常消费，没定制、没被安排）→ 也是 3档，别当自主权；只能调偏好（甜度、冰量、尺寸、颜色这类一次性选择）→ 5档；能改结构（换配件、改配置、自己装、反复重设）→ 7档；关键环节全是自己定、用户还主动说"全按我的来、想怎么改就怎么改" → 9档。'+
+      '【配得感】用户说不会让人看见、不好意思、藏着 → 1档；说普通、没人会看、懒得拍 → 3档；别人看见了但只夸一句、没人追问，或用户自己说"还行、能用" → 5档；用户主动展示，且有被认出、被问起、被借去用的具体经历 → 7档；别人主动来问在哪买、求推荐、跟着学 → 9档。'+
       '配得感的 1 档只留给用户明确说出羞耻、遮掩、怕被看见；只说"不想发、懒得拍、就普通"的一律停在 3 档，不许判 1 档。'+
       '配得感的 9 档只留给用户明确说别人主动来找过他（问起、求推荐、跟着学）；只是他自己发帖、评论区有人回，停在 7 档。'+
-      '【满足感】用户说没有、难受、麻烦、腻 → 1档；有设计上的好意但当场没成立 → 3档；只有笼统好评（挺好、还行、不错）→ 5档；说出一个具体的、当场成立的爽点 → 7档；这个爽点反复出现、用户主动复述细节甚至录下来分享 → 9档。'+
+      '【满足感】用户说没有、难受、麻烦、腻 → 1档；有设计上的好意但当场没成立 → 3档；有一个当场成立的爽点，但用户说"两天就没感觉""就那样" → 5档；爽点稳定、每次用都在 → 7档；爽点反复出现且用户主动复述细节、录音、分享 → 9档。'+
       '同一条回答只落到一个档，判档时先找那句话，再对号入座；找不到对应句子就按更低的那一档。'+
       '一句话里出现多种描述时，按其中"最具体的行为"判档，不按最狠的词判档。'+
       '档位定了再微调：理由里多一个额外加分的具体细节 +0.1~+0.4，多一处减分细节 -0.1~-0.4；没有额外细节就给档位本身那个数。'+
@@ -461,10 +462,15 @@ async function diagnoseCloud(){
       '三个维度独立判断，不许因为总体印象好就一起抬、也不许一起压。'+
       '档位只看证据：同一件东西反复评估，档位必须稳定，同一维度两次给分相差不超过0.9。'+
       '三柱都低时，verdict 与 headline 必须直说问题，不许替它找台阶；批评可以尖锐，但要有据。'+
-      'control_why/deserved_why/grat_why 为「为什么打这分」，≤18个汉字。'+
-      'headline 为≤20个汉字的一句旁白式观察，点出它与年轻人的距离。'+
+      'control_why/deserved_why/grat_why 为「为什么打这分」，≤22个汉字。'+
+      'headline 为≤20个汉字的一句旁白式观察，点出它与年轻人的距离；直说缺什么，不许用夸张比喻（变透明、消失、隐身、被判死刑之类）。'+
+      '具体性硬规则（违反即重写）：'+
+      'A 三个 why 必须点名这件东西上的具体部件或具体场景（如表盘刻度、磨砂钢带、封口膜、不锈钢餐台、首页弹窗、取餐动线），并写进用户的一个原话词；不许只写"身份标签""情绪价值""性价比""缺乏设计感"这类抽象话。'+
+      'B verdict 必须指出一个具体缺陷，说清它发生在哪一步；禁止这些套话：「面子与里子没对齐」「还差一口气」「先补最弱的支柱」「成为年轻人愿意站队的身份标签」「缺乏情绪价值」。'+
+      'C quickwin 必须写成「改哪个部件 → 怎么改 → 改成什么样子」，让设计师明天就能动手；≤40字；禁止「出一款年轻化特别版」「做一次品牌年轻化」「加强情绪价值」「优化视觉」这类空话。'+
+      '正例：「把塑料托盘换成深灰哑光，价签改成手写木牌，撤掉三张"请勿"提示。」'+
       'verdict 为≤40字一句话判词，就事论事。'+
-      'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
+      'quickwin 为极具体、针对该产品的一条速赢建议，≤40个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
     const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
@@ -493,14 +499,21 @@ async function diagnoseCloud(){
     const shameWords=/不好意思|丢人|藏着|不敢|怕被看见|羞耻|遮一下|掩饰|难为情|拿不出手/.test(ansText);
     const negControl=/跟着人流|被人流|催着|被安排|没人问|没问我|没得选|别人定|公司发|送的|只能这样/.test(ansText);
     const selfWords=/自己|我定|我挑|我选|我勾/.test(ansText);
-    const negGrat=/没有惊喜|没印象|没什么印象|没感觉|全程埋头|一点都不/.test(ansText);
+    const negGrat=/没有惊喜|没印象|没什么印象|完全没有|一点都不|全程埋头|很难受|太麻烦/.test(ansText);
     const askWords=/问我在哪买|求推荐|跟着买|跟着换|问我怎么|要我帮|被问|来问我|学我/.test(ansText);
     const strongGrat=/专门录|录了音|录下来|反复用|反复看|反复玩|反复听|反复敲|每次用|每次喝|每次穿|每次玩|分享给|发给朋友|安利/.test(ansText);
+    const modWords=/可换|能换|自己换|换了三套|自己改|改配置|换轴|键帽|自己装|可拆|可重配|自定义/.test(ansText);
+    const choiceWords=/甜度|冰量|三分糖|去冰|口味|尺寸|规格|配色|自己选|自选|自己勾/.test(ansText);
+    const shopWords=/货架|专柜|柜台|店里|买了|下单|挑了一块|挑的/.test(ansText);
+    const fadeWords=/两天就没|就没感觉|久了就没|第二次就没|没什么特别|就那样|一般般/.test(ansText);
     /* 区间锁定：9 档要么有明确证据、要么不给；同一句证据永远落同一个区间 */
     const guard=(s,kind)=>{
       if(kind==='control'){
         if(negControl&&!selfWords) return Math.min(s,1.4);
         if(strongAutonomy) return Math.max(8.6,Math.min(9.4,s));
+        if(modWords) return Math.max(6.6,Math.min(7.4,s));
+        if(choiceWords) return Math.max(4.6,Math.min(5.4,s));
+        if(shopWords) return Math.min(s,3.9);
         return Math.min(s,7.4);
       }
       if(kind==='deserved'){
@@ -510,6 +523,7 @@ async function diagnoseCloud(){
       }
       if(negGrat) return Math.min(s,1.4);
       if(strongGrat) return Math.max(8.6,Math.min(9.4,s));
+      if(fadeWords) return Math.max(4.6,Math.min(5.4,s));
       return Math.min(s,7.9);
     };
     const c1=guard(banded(o.control,'control_band'),'control');
@@ -564,9 +578,32 @@ function goHome(){
 }
 function pickCam(){$('#fileCam').click();}
 function pickLib(){$('#fileLib').click();}
+/* 上传即压缩：手机原图 3~5MB 直接送模型会拖到 20 秒以上并超时降级，压到 1280px 后约 150~250KB */
+function normImage(file){
+  return new Promise(res=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const raw=fr.result, img=new Image();
+      img.onload=()=>{
+        try{
+          const max=1280, s=Math.min(1,max/Math.max(img.width,img.height));
+          const w=Math.max(1,Math.round(img.width*s)), h=Math.max(1,Math.round(img.height*s));
+          const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+          cv.getContext('2d').drawImage(img,0,0,w,h);
+          const out=cv.toDataURL('image/jpeg',0.85);
+          res(out.length<raw.length?out:raw);
+        }catch(e){ res(raw); }
+      };
+      img.onerror=()=>res(raw);
+      img.src=raw;
+    };
+    fr.readAsDataURL(file);
+  });
+}
 function onFile(f){
   if(!f)return;S.photoName=f.name||'photo';S.photo=URL.createObjectURL(f);
-  const rd=new FileReader();rd.onload=e=>S.photoData=e.target.result;rd.readAsDataURL(f);
+  S.photoData=null;
+  S.photoReady=normImage(f).then(d=>{S.photoData=d;return d;}).catch(()=>null);
   renderDescribe();
 }
 
@@ -658,6 +695,7 @@ function renderDescribe(){
 async function goChat(){
   const nav=NAV;
   S.desc=$('#desc').value.trim()||S.desc||'';
+  if(S.photoReady){ await S.photoReady; }
   S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;S.look='';
   setSteps(3);
   $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat">
@@ -701,7 +739,8 @@ function computeAndShow(){
   botTyping();
   const nav=NAV;
   const combined=[S.desc,...S.answers.map(a=>a.a)].filter(Boolean).join(' ');
-  withTimeout(diagnoseCloud(),25000).then(res=>{
+  const prep=(S.photoReady||Promise.resolve()).then(()=>diagnoseCloud());
+  withTimeout(prep,45000).then(res=>{
     if(nav!==NAV)return;
     if(res&&res.control){
       S.scores={control:res.control,deserved:res.deserved,gratification:res.gratification};
@@ -711,8 +750,11 @@ function computeAndShow(){
       S.step=res.step||'产品翻译';S.ai=true;
     }else{
       const sc=localScores(combined);
+      const q=i=>{const t=(S.answers[i]&&S.answers[i].a)||'';return t.replace(/\s+/g,'').slice(0,12);};
       S.scores=sc;
-      S.control_why=pillarWhy('control',sc.control);S.deserved_why=pillarWhy('deserved',sc.deserved);S.grat_why=pillarWhy('gratification',sc.gratification);
+      S.control_why=(q(0)?q(0):pillarWhy('control',sc.control));
+      S.deserved_why=(q(1)?q(1):pillarWhy('deserved',sc.deserved));
+      S.grat_why=(q(2)?q(2):pillarWhy('gratification',sc.gratification));
       S.headline=pickHeadline(sc,S.desc);
       S.verdict=pickVerdict(sc,combined);const qw=pickQuickwin(sc,S.desc);S.step=qw.step;S.quickwin=qw.text;S.ai=false;
     }
@@ -742,7 +784,7 @@ function renderResult(){
       <figcaption class="cap">「${esc(S.headline)}」<span class="sign">— 小Z</span></figcaption>
     </figure>
     <div class="heroMeta">
-      <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'本地趣味读数'}</span>
+      <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'AI 未连上 · 本地粗读'}</span>
       <span class="of10">三柱平均 · 满分 10</span>
     </div>
     <div class="card"><div class="pillars">${pils}</div></div>
@@ -751,6 +793,7 @@ function renderResult(){
     <button class="sharebtn" onclick="drawCard()">生成分享卡 ↓</button>
     <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">解锁完整转型专案 →</a>
     <button class="retest" onclick="renderDescribe()">改一条描述，复测 ↺</button>
+    ${S.ai?'':'<button class="retest" onclick="computeAndShow()">AI 没连上，重试一次 ↺</button>'}
   </div>`;
   animateNum($('#avg'),+avg);
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%'),80);
