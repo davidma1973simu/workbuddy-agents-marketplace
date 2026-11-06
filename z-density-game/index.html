@@ -376,9 +376,10 @@ function ensureCloud(){
 function parseJSON(t){ try{return JSON.parse(t);}catch(e){ const m=t.match(/\{[\s\S]*\}/); if(m){try{return JSON.parse(m[0]);}catch(_){}} return null; } }
 const PBG_STEPS=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
 function normalizeStep(s){ if(!s)return'产品翻译'; for(const k of PBG_STEPS){ if(s.includes(k))return k; } return'产品翻译'; }
-async function streamText(cloud,sys,user,model){
+async function streamText(cloud,sys,user,model,opts){
   let ans='';
   const body={model:model||'auto',messages:[{role:'system',content:sys},{role:'user',content:user}],stream:true};
+  if(opts&&typeof opts.temperature==='number') body.temperature=opts.temperature;
   for await(const ch of cloud.llm.chat.completions.create(body)){ const d=ch.choices?.[0]?.delta?.content; if(d)ans+=d; }
   return ans;
 }
@@ -435,15 +436,30 @@ async function diagnoseCloud(){
       '掌控感＝TA能不能自己说了算、按自己的节奏来，还是被安排、被推着走；'+
       '配得感＝它能不能成为TA愿意站队、愿意让人看见的身份表达（不是贵不贵）；'+
       '满足感＝用它的过程里有没有当下就成立的情绪价值（不是好不好吃/好不好用）。'+
-      '10分制，最低1分，必须是整数。锚点：'+
-      '1分＝这一维几乎没有，方向还是反的——用户答问里是明确负面，且找不到任何补偿点，这种时候不要犹豫，直接给1分；'+
-      '3分＝明显缺失，只有形式上的努力；'+
-      '5分＝还可以，能感觉到它在掌控和身份标签上有努力，也有部分情绪价值，但都停在"有一点"，留不下印象；'+
-      '7分＝明确成立，能指出具体动作或具体瞬间；9分＝很强，可以当样本；10分＝几乎无可挑剔，极少给。'+
+      '10分制，最低1.0分，最高10.0分，只输出一位小数（例如 4.3、6.8），不要整数、不要两位小数。'+
+      '给分方法：先在整数档位里定档，档位只能是 1 / 3 / 5 / 7 / 9 / 10；分数＝档位±微调，微调幅度不超过0.4。'+
+      '小数只用来表达同一档内的强弱，向上不超过 +0.4（3档最强＝3.4），向下不超过 -0.4（5档最弱＝4.6）；'+
+      '同一档内强一点就加、弱一点就减，但档位判断必须站得住；不许为了显得精确而随手给小数。'+
+      '锚点：'+
+      '1档＝这一维几乎没有，方向还是反的——用户答问里是明确负面，且找不到任何补偿点，这种时候不要犹豫，直接给1.0；'+
+      '3档＝明显缺失，只有形式上的努力；'+
+      '5档＝还可以，能感觉到它在掌控和身份标签上有努力，也有部分情绪价值，但都停在"有一点"，留不下印象；'+
+      '7档＝明确成立，能指出具体动作或具体瞬间；9档＝很强，可以当样本；10档＝几乎无可挑剔，极少给。'+
       '宁可低一分，不要为了客气抬分。'+
+      '定档必须照下面的条件判，不靠整体感觉：'+
+      '【掌控感】用户举不出一处"是我自己定的" → 1档；能举出一处但只是形式（默认值、只能二选一、被人催着走）→ 3档；能选但选项少、要专门争取 → 5档；举出一处自己定的具体动作、过程不费劲 → 7档；关键环节全是自己定、用户还主动说"全按我的来、想怎么改就怎么改" → 9档。'+
+      '【配得感】用户说不会让人看见、不好意思、藏着 → 1档；说普通、没人会看、懒得拍 → 3档；只有"还行、能用"这种中性话 → 5档；会说、会晒、会主动介绍 → 7档；用户说"这就是我的风格"，且有被认出、被问起、被模仿的具体经历 → 9档。'+
+      '配得感的 1 档只留给用户明确说出羞耻、遮掩、怕被看见；只说"不想发、懒得拍、就普通"的一律停在 3 档，不许判 1 档。'+
+      '配得感的 9 档只留给用户明确说别人主动来找过他（问起、求推荐、跟着学）；只是他自己发帖、评论区有人回，停在 7 档。'+
+      '【满足感】用户说没有、难受、麻烦、腻 → 1档；有设计上的好意但当场没成立 → 3档；只有笼统好评（挺好、还行、不错）→ 5档；说出一个具体的、当场成立的爽点 → 7档；这个爽点反复出现、用户主动复述细节甚至录下来分享 → 9档。'+
+      '同一条回答只落到一个档，判档时先找那句话，再对号入座；找不到对应句子就按更低的那一档。'+
+      '一句话里出现多种描述时，按其中"最具体的行为"判档，不按最狠的词判档。'+
+      '档位定了再微调：理由里多一个额外加分的具体细节 +0.1~+0.4，多一处减分细节 -0.1~-0.4；没有额外细节就给档位本身那个数。'+
+      'JSON 里同时输出档位：control_band / deserved_band / gratification_band，取值只能是 1 / 3 / 5 / 7 / 9 / 10；分数必须落在「档位±0.4」之内，超出即是错的。'+
       '打分前先在why里说证据：引用用户原话里的具体词，≤18个汉字，像一句判词；没有证据不许给高分。'+
       '用户在4轮里对某一维度明确否定（如"不会""没有""只能这样"），该维度不得高于3分。'+
       '三个维度独立判断，不许因为总体印象好就一起抬、也不许一起压。'+
+      '档位只看证据：同一件东西反复评估，档位必须稳定，同一维度两次给分相差不超过0.9。'+
       '三柱都低时，verdict 与 headline 必须直说问题，不许替它找台阶；批评可以尖锐，但要有据。'+
       'control_why/deserved_why/grat_why 为「为什么打这分」，≤18个汉字。'+
       'headline 为≤20个汉字的一句旁白式观察，点出它与年轻人的距离。'+
@@ -451,15 +467,58 @@ async function diagnoseCloud(){
       'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
-    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
+    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
     if(S.photoData) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
-    let ans=await streamText(cloud,sys,userParts);
+    let ans=await streamText(cloud,sys,userParts,'auto',{temperature:0});
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
-    const clamp=v=>Math.max(1,Math.min(10,Math.round(+v||5)));
-    return {control:clamp(o.control),deserved:clamp(o.deserved),gratification:clamp(o.gratification),
-      control_why:o.control_why||pillarWhy('control',clamp(o.control)),
-      deserved_why:o.deserved_why||pillarWhy('deserved',clamp(o.deserved)),
-      grat_why:o.grat_why||pillarWhy('gratification',clamp(o.gratification)),
+    /* 分数＝档位＋微调（±0.4）：同一档内两次打分最多差 0.8，稳定落在 0.9 之内 */
+    const BANDS=[1,3,5,7,9,10];
+    const nearestBand=v=>{
+      const n=parseFloat(String(v).replace(/[^\d.]/g,''));
+      if(isNaN(n))return null;
+      return BANDS.reduce((a,b)=>Math.abs(b-n)<Math.abs(a-n)?b:a);
+    };
+    const banded=(score,bandKey)=>{
+      const n=parseFloat(String(score).replace(/[^\d.]/g,''));
+      let s=isNaN(n)?5:n;
+      let b=nearestBand(o[bandKey]);
+      if(b===null) b=BANDS.reduce((a,c)=>Math.abs(c-s)<Math.abs(a-s)?c:a);
+      s=Math.max(b-0.4,Math.min(b+0.4,s));
+      s=Math.max(1,Math.min(10,Math.round(s*10)/10));
+      return s;
+    };
+    /* 两道硬护栏：压掉「同一句话被读成两档」的跳档，同一输入不会一次 7 一次 9、一次 1 一次 3 */
+    const ansText=S.answers.map(a=>a.a||'').join(' ');
+    const strongAutonomy=/全按我的来|想怎么改|随便改|没人规定|我说了算|自己全定|全都自己|想换就换|我自己定/.test(ansText);
+    const shameWords=/不好意思|丢人|藏着|不敢|怕被看见|羞耻|遮一下|掩饰|难为情|拿不出手/.test(ansText);
+    const negControl=/跟着人流|被人流|催着|被安排|没人问|没问我|没得选|别人定|公司发|送的|只能这样/.test(ansText);
+    const selfWords=/自己|我定|我挑|我选|我勾/.test(ansText);
+    const negGrat=/没有惊喜|没印象|没什么印象|没感觉|全程埋头|一点都不/.test(ansText);
+    const askWords=/问我在哪买|求推荐|跟着买|跟着换|问我怎么|要我帮|被问|来问我|学我/.test(ansText);
+    const strongGrat=/专门录|录了音|录下来|反复用|反复看|反复玩|反复听|反复敲|每次用|每次喝|每次穿|每次玩|分享给|发给朋友|安利/.test(ansText);
+    /* 区间锁定：9 档要么有明确证据、要么不给；同一句证据永远落同一个区间 */
+    const guard=(s,kind)=>{
+      if(kind==='control'){
+        if(negControl&&!selfWords) return Math.min(s,1.4);
+        if(strongAutonomy) return Math.max(8.6,Math.min(9.4,s));
+        return Math.min(s,7.4);
+      }
+      if(kind==='deserved'){
+        if(shameWords) return Math.min(s,1.4);
+        if(askWords) return Math.max(8.6,Math.min(9.4,s));
+        return Math.max(3,Math.min(7.9,s));
+      }
+      if(negGrat) return Math.min(s,1.4);
+      if(strongGrat) return Math.max(8.6,Math.min(9.4,s));
+      return Math.min(s,7.9);
+    };
+    const c1=guard(banded(o.control,'control_band'),'control');
+    const d1=guard(banded(o.deserved,'deserved_band'),'deserved');
+    const g1=guard(banded(o.gratification,'gratification_band'),'grat');
+    return {control:c1,deserved:d1,gratification:g1,
+      control_why:o.control_why||pillarWhy('control',c1),
+      deserved_why:o.deserved_why||pillarWhy('deserved',d1),
+      grat_why:o.grat_why||pillarWhy('gratification',g1),
       headline:o.headline||'',verdict:o.verdict||'',quickwin:o.quickwin||'',step:normalizeStep(o.step),ai:true};
   }catch(e){ window.__cloudErr='diag:'+(e&&(e.error&&e.error.code||e.message)); return null; }
 }
