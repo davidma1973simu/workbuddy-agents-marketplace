@@ -1,0 +1,13 @@
+{
+  "id": "calibrated-question",
+  "name": "校准问题 Calibrated Question",
+  "original": {
+    "how": "用 How / What 提问，把球放回对方手里，逼出方案而非对抗。",
+    "example": "\"你说这价做不了，那怎么做才做得了？\""
+  },
+  "chinaRevision": {
+    "how": "同样用\"怎么/什么\"开头，但语气放软、加\"咱们\"，降低对抗感。",
+    "example": "\"那咱们怎么弄，你那边才好交差？\""
+  },
+  "axis": "校准问题"
+}

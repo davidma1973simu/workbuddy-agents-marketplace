@@ -1,0 +1,36 @@
+{
+  "id": "C02",
+  "worldId": "C",
+  "personaId": "hemin",
+  "title": "家人冲突（育儿 / 家务 / 养老）",
+  "domainName": "个人生活",
+  "briefing": "你和何敏为了家务分工或老人赡养吵起来。她不跟你争输赢，她要的是\"你上心了\"。",
+  "knownInfo": [
+    "导火索是这周谁接孩子、谁做饭，根子是你觉得她没看见你也累。",
+    "她最近在赶一个大项目，连续两周加班到很晚。",
+    "你妈下个月要来住一个月，这件事你们还没谈过。",
+    "她不要解决方案，她要你先承认她也不容易。"
+  ],
+  "openingLine": "（何敏）\"我不是要你认错，我是觉得你根本没当回事。这日子过得我跟单亲似的。\"",
+  "recommendedTechniques": [
+    "tactical-empathy",
+    "labeling",
+    "accusation-audit",
+    "calibrated-question"
+  ],
+  "pitfalls": [
+    "讲大道理——她更累",
+    "分对错——关系裂",
+    "\"我忙你又不是不知道\"——踩雷"
+  ],
+  "customTemplate": {
+    "prompt": "你和家人卡住的事是：",
+    "placeholder": "例如：谁管孩子作业 / 赡养费怎么摊"
+  },
+  "masteryTest": {
+    "id": "C02-T",
+    "title": "对方说\"你不上心\"",
+    "twist": "何敏情绪上来，你需先接住再提方案",
+    "brief": "何敏：\"每次都说改，哪次真改了？\""
+  }
+}

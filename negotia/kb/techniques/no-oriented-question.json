@@ -1,0 +1,13 @@
+{
+  "id": "no-oriented-question",
+  "name": "邀 No 的问题 No-oriented Question",
+  "original": {
+    "how": "问一个对方容易说 No 的问题，让他有控制感，反而更接近 Yes。",
+    "example": "\"你现在是不方便谈这个，对吗？\""
+  },
+  "chinaRevision": {
+    "how": "中国人难直接说 No，改用\"是不是还在犹豫/还有顾虑\"来识别含蓄拒绝。",
+    "example": "\"是不是还哪儿不踏实？你直说。\""
+  },
+  "axis": "读含蓄No"
+}

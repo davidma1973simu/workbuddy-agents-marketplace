@@ -1,0 +1,36 @@
+{
+  "id": "C01",
+  "worldId": "C",
+  "personaId": "laozhou",
+  "title": "租房 / 买房谈判",
+  "domainName": "个人生活",
+  "briefing": "租房到期，老周暗示要涨租或动押金。你想稳住价格、保住押金，又不想闹僵。",
+  "knownInfo": [
+    "你在这套房子住了三年，从没拖欠过房租。",
+    "同小区同户型，今年挂牌价普遍涨了 400 左右。",
+    "押金两个月，合同里写了\"自然损耗不扣押金\"。",
+    "老周刚换了房，手上现金流正紧。"
+  ],
+  "openingLine": "（老周）\"小X啊，这地段行情你也知道，今年都涨了，咱们续约得随行就市嘛。\"",
+  "recommendedTechniques": [
+    "mirroring",
+    "labeling",
+    "calibrated-question",
+    "loss-aversion"
+  ],
+  "pitfalls": [
+    "情绪化嚷嚷——他更硬",
+    "只说\"太贵了\"没依据——他无视",
+    "没亮出\"好租客\"人设——他不怕你走"
+  ],
+  "customTemplate": {
+    "prompt": "你正谈的居住问题是：",
+    "placeholder": "例如：续租涨租 200 / 退押金被扣"
+  },
+  "masteryTest": {
+    "id": "C01-T",
+    "title": "房东要涨租",
+    "twist": "老周咬死涨租，你需用稳定+对比接",
+    "brief": "老周：\"别的租客都加价了，就你这价我真亏。\""
+  }
+}

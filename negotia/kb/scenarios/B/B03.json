@@ -1,0 +1,36 @@
+{
+  "id": "B03",
+  "worldId": "B",
+  "personaId": "zhaolei",
+  "title": "商务合作分成",
+  "domainName": "业务间（对外）",
+  "briefing": "你和赵磊谈一个合作的分成比例。他想多拿、留余地，你也得保住自己的底线。",
+  "knownInfo": [
+    "这个项目你出方案和交付，他出客户资源。",
+    "他开口要 6:4（他六），你心里的线是 5:5。",
+    "合同里\"获客成本\"怎么算还没定，这是真正的变量。",
+    "你们以后还要长期合作，不能一次谈死。"
+  ],
+  "openingLine": "（赵磊）\"合作是好事，不过分成上，得让我这边舒服点吧？毕竟资源是我出的。\"",
+  "recommendedTechniques": [
+    "calibrated-question",
+    "labeling",
+    "mirroring",
+    "accusation-audit"
+  ],
+  "pitfalls": [
+    "先报数——被动",
+    "没算清自己底线就谈",
+    "被\"资源我出\"带节奏——忘了你的价值"
+  ],
+  "customTemplate": {
+    "prompt": "你要谈的合作分成场景是：",
+    "placeholder": "例如：联合带货分成 / 渠道返点"
+  },
+  "masteryTest": {
+    "id": "B03-T",
+    "title": "对方先要\"多拿\"",
+    "twist": "赵磊要求 7:3 偏向他，你需用贡献重锚定",
+    "brief": "赵磊：\"我看就你们三我七，差不多了吧？\""
+  }
+}

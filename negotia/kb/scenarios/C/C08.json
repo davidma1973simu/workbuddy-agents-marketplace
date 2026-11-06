@@ -1,0 +1,36 @@
+{
+  "id": "C08",
+  "worldId": "C",
+  "personaId": "lilaoshi",
+  "title": "家长–老师沟通",
+  "domainName": "个人生活",
+  "briefing": "孩子在学校出了状况，你找李老师。她怕挑刺家长，你要的是\"她配合\"，不是\"你教她做事\"。",
+  "knownInfo": [
+    "孩子这学期第二次被叫家长，这次是和同学起了冲突。",
+    "李老师带 45 个学生，最怕\"挑刺的家长\"。",
+    "孩子说\"是对方先动手\"，但没有证据。",
+    "你要的是老师多留意，不是让她当众认错。"
+  ],
+  "openingLine": "（李老师）\"这个孩子其实挺聪明，就是最近有点飘，家长得配合管管。\"",
+  "recommendedTechniques": [
+    "labeling",
+    "tactical-empathy",
+    "calibrated-question",
+    "mirroring"
+  ],
+  "pitfalls": [
+    "当众质疑老师——她 defensive",
+    "只护孩子——她不配合",
+    "没给\"我在家怎么配合\"的承诺"
+  ],
+  "customTemplate": {
+    "prompt": "你想和老师沟通的是：",
+    "placeholder": "例如：孩子被欺负 / 成绩下滑"
+  },
+  "masteryTest": {
+    "id": "C08-T",
+    "title": "老师暗示\"你家孩子问题\"",
+    "twist": "李老师点名孩子短板，你需同盟而非对立",
+    "brief": "李老师：\"说句实话，这孩子习惯得下狠心纠，不然耽误了。\""
+  }
+}

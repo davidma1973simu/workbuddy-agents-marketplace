@@ -1,0 +1,36 @@
+{
+  "id": "C07",
+  "worldId": "C",
+  "personaId": "hemin",
+  "title": "亲密关系沟通",
+  "domainName": "个人生活",
+  "briefing": "你想跟何敏聊一个敏感话题（钱、未来、委屈）。她要的是\"你懂我\"，不是辩论赛。",
+  "knownInfo": [
+    "你想聊的是\"钱怎么花\"和\"以后要不要换城市\"。",
+    "上次聊这个话题，你们吵到冷战三天。",
+    "她最近压力大、睡眠不好，情绪一点就着。",
+    "她要的是被理解，不是被说服。"
+  ],
+  "openingLine": "（何敏）\"你最近好像离我挺远的，问你啥你都“嗯”。怎么，有话不能说？\"",
+  "recommendedTechniques": [
+    "tactical-empathy",
+    "labeling",
+    "accusation-audit",
+    "calibrated-question"
+  ],
+  "pitfalls": [
+    "防御性解释——她更封闭",
+    "翻旧账——战争升级",
+    "\"你想多了\"——灭灯"
+  ],
+  "customTemplate": {
+    "prompt": "你想跟伴侣聊开的是：",
+    "placeholder": "例如：对未来的不安 / 一笔花销"
+  },
+  "masteryTest": {
+    "id": "C07-T",
+    "title": "对方关上心门",
+    "twist": "何敏说\"算了别说了\"，你需把门重新打开",
+    "brief": "何敏：\"算了，说这些干嘛，你也不会懂。\""
+  }
+}

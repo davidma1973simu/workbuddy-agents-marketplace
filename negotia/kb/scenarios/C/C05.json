@@ -1,0 +1,36 @@
+{
+  "id": "C05",
+  "worldId": "C",
+  "personaId": "dawei",
+  "title": "朋友间边界 / 借钱",
+  "domainName": "个人生活",
+  "briefing": "大伟开口借钱/找你兜底。你想帮，又怕变成无底洞、伤感情。",
+  "knownInfo": [
+    "大伟是你十年朋友，这次开口借 5 万，说三个月还。",
+    "他上次借的 8000 一直没还，你也一直没提。",
+    "你自己有房贷，手上能动的钱不多。",
+    "你想帮，但不想变成无底洞，也不想伤感情。"
+  ],
+  "openingLine": "（大伟）\"哥们，最近手头有点转不开……就短期，下月准还。\"",
+  "recommendedTechniques": [
+    "no-oriented-question",
+    "labeling",
+    "calibrated-question",
+    "tactical-empathy"
+  ],
+  "pitfalls": [
+    "不好意思拒——后来更疼",
+    "直接甩\"不借\"——伤自尊",
+    "没说清\"能帮到哪、怎么还\""
+  ],
+  "customTemplate": {
+    "prompt": "朋友找你的是：",
+    "placeholder": "例如：借 2 万周转 / 免费帮忙搬家"
+  },
+  "masteryTest": {
+    "id": "C05-T",
+    "title": "对方一直拖着还",
+    "twist": "大伟又来\"再宽几天\"，你需设边界不伤情",
+    "brief": "大伟：\"再宽我几天，这月真到坎儿上了。\""
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "code": "B",
+  "name": "业务间（对外）",
+  "tagline": "对外博弈，守住底线也能把单谈下来",
+  "background": {
+    "company": "你代表自家公司，或作为自由职业者接活。",
+    "people": "对面是客户、供应商、合作方——都在压价、控风险、保自己。",
+    "key": "这里没有上级压你，但对方更冷更算计。先锚定，再校准，别让不好意思变成贱卖。"
+  },
+  "structure": {
+    "type": "network",
+    "tree": [
+      {
+        "name": "你",
+        "role": "代表公司 / 自由职业"
+      },
+      {
+        "name": "赵磊",
+        "role": "客户老板（压价老手）"
+      },
+      {
+        "name": "王琳",
+        "role": "招聘方 HR（求职关口）"
+      },
+      {
+        "name": "孙颖",
+        "role": "供应商销售（价格卡死）"
+      },
+      {
+        "name": "钱叔",
+        "role": "发包方（挑剔、拖款）"
+      },
+      {
+        "name": "李响",
+        "role": "愤怒客户（危机客诉）"
+      },
+      {
+        "name": "吴桐",
+        "role": "合作方（竞合博弈）"
+      }
+    ],
+    "relationships": [
+      "赵磊 想用\"别家更便宜\"压你，但他也怕换供应商的成本。",
+      "王琳 管offer，但薪资区间卡死，她能帮你的是\"包装必要性\"。",
+      "孙颖 想签单，但底价被锁，她的活儿是探你的底线。",
+      "钱叔 拖款是常态，合同里没写清的他一概\"忘了\"。",
+      "李响 在气头上，先泄洪再谈，否则他说什么都不听。",
+      "吴桐 既是伙伴又是对手，分蛋糕时寸土必争。"
+    ]
+  },
+  "personas": [
+    {
+      "id": "zhaolei",
+      "name": "赵磊",
+      "avatar": "assets/avatars/zhaolei.svg",
+      "age": 40,
+      "role": "客户老板",
+      "relation": "你的买方，压价老手",
+      "personality": "老练、爱比价、话里带刺。他不怕冷场，就怕你松口太快。他用\"别家更便宜\"不是为了真相，是为了让你先慌。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "他其实认可你，只是必须把价压到老板面前好交差",
+        "他怕换了你之后服务掉链子",
+        "他想要\"赢的感觉\"和\"留尾款筹码\""
+      ],
+      "speakingStyle": "\"说实话，别家给的比你低两成\"\"你这价我真没法跟老板交代\"。",
+      "color": "#3A8F6B"
+    },
+    {
+      "id": "wanglin",
+      "name": "王琳",
+      "avatar": "assets/avatars/wanglin.svg",
+      "age": 34,
+      "role": "招聘 HR",
+      "relation": "求职关口的守门人",
+      "personality": "职业、温和但区间卡死。她帮你进面试，但薪资带宽她改不了。她能做的，是把你\"包装成不得不给\"的人。",
+      "powerDistance": "mid",
+      "hiddenGoals": [
+        "她的底线是不破薪资带宽",
+        "她怕你狮子大开口让她难做",
+        "她欣赏\"有底气但不傲慢\"的候选人"
+      ],
+      "speakingStyle": "\"我们很看好你，但预算这块……你期望大概多少？\"",
+      "color": "#B5652E"
+    },
+    {
+      "id": "sunying",
+      "name": "孙颖",
+      "avatar": "assets/avatars/sunying.svg",
+      "age": 33,
+      "role": "供应商销售",
+      "relation": "想签单但底价被锁",
+      "personality": "热情、主动、探底线。她急着成单，但公司给的底价卡死。她的任务是让你先亮底牌。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "她想签单拿提成，但价格让不动",
+        "她怕你去找别家",
+        "她能送的可能是账期或服务，不是价格"
+      ],
+      "speakingStyle": "\"哥/姐，这价真到底了，你再看看服务嘛\"",
+      "color": "#4B6FC8"
+    },
+    {
+      "id": "qianshu",
+      "name": "钱叔",
+      "avatar": "assets/avatars/qianshu.svg",
+      "age": 50,
+      "role": "发包方（自由职业甲方）",
+      "relation": "挑剔、习惯性拖款",
+      "personality": "老江湖、话少、爱挑刺、能拖就拖。合同里没写死的他一概\"记不太清\"。跟他谈，白纸黑字比情分管用。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "他拖款是为了保自己现金流",
+        "他怕你活交了就催得紧",
+        "他敬\"有合同、有边界\"的人"
+      ],
+      "speakingStyle": "\"不急不急，这月手头紧，下月一定\"\"你这细节还得改改啊\"",
+      "color": "#A8893C"
+    },
+    {
+      "id": "lixiang",
+      "name": "李响",
+      "avatar": "assets/avatars/lixiang.svg",
+      "age": 38,
+      "role": "愤怒客户",
+      "relation": "危机客诉对象",
+      "personality": "情绪上头、觉得被坑、要个说法。此刻他不要方案，要\"你承认这事儿赖你\"。先泄洪，再谈补救。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "他要的是被尊重、被当回事",
+        "他怕你敷衍推诿",
+        "他其实想要补偿+保证不再犯"
+      ],
+      "speakingStyle": "\"你们这算什么服务？！我要投诉！\"",
+      "color": "#C84B6E"
+    },
+    {
+      "id": "wutong",
+      "name": "吴桐",
+      "avatar": "assets/avatars/wutong.svg",
+      "age": 36,
+      "role": "合作方",
+      "relation": "竞合博弈对象",
+      "personality": "聪明、客气、寸土必争。合作时像盟友，分蛋糕时像对手。和她谈，先把\"各自输赢\"摆上桌。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "她要最大分成且不留隐患",
+        "她怕你吃掉她资源",
+        "她欣赏\"明算账\"的 partner"
+      ],
+      "speakingStyle": "\"咱们合作是好事，不过分法上得公平对吧？\"",
+      "color": "#5CA88F"
+    }
+  ]
+}

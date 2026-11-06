@@ -1,0 +1,36 @@
+{
+  "id": "B07",
+  "worldId": "B",
+  "personaId": "lixiang",
+  "title": "危机客诉 / 公关",
+  "domainName": "业务间（对外）",
+  "briefing": "李响因为一次失误怒气冲冲找上门/打电话。此刻他不要方案，要\"你认这事儿赖你\"。",
+  "knownInfo": [
+    "这次失误确实在你们这边：交付晚了两天，导致他那边上线延期。",
+    "他刚被他的老板骂过，现在需要有人认这个责任。",
+    "你有权限给一次免费补救，但赔偿要走流程审批。",
+    "他要的不是方案，是\"你认这事儿赖你\"。"
+  ],
+  "openingLine": "（李响）\"你们这算什么服务？！我要投诉到你们总部！\"",
+  "recommendedTechniques": [
+    "tactical-empathy",
+    "labeling",
+    "accusation-audit",
+    "mirroring"
+  ],
+  "pitfalls": [
+    "立刻辩解——火上浇油",
+    "甩流程话术——他觉得敷衍",
+    "没先泄洪就给方案——他不听"
+  ],
+  "customTemplate": {
+    "prompt": "你面对的客诉是：",
+    "placeholder": "例如：发错货 / 服务超时"
+  },
+  "masteryTest": {
+    "id": "B07-T",
+    "title": "对方要\"投诉你\"",
+    "twist": "李响威胁曝光，你需先认责再给补救台阶",
+    "brief": "李响：\"我现在就发朋友圈，让大家都看看！\""
+  }
+}

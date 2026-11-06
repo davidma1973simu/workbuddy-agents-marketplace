@@ -1,0 +1,36 @@
+{
+  "id": "B06",
+  "worldId": "B",
+  "personaId": "qianshu",
+  "title": "催款 / 处理拖款",
+  "domainName": "业务间（对外）",
+  "briefing": "钱叔的尾款拖了三个月。你催吧，怕伤关系；不催，现金流要断。",
+  "knownInfo": [
+    "尾款 12 万，合同写的是验收后 30 天，现在已经拖了 90 天。",
+    "他每次都说\"在走流程\"，他们财务那边你联系不上。",
+    "你这边下个月要发两个人的工资，现金流撑不住。",
+    "你不想撕破脸，因为他后面还可能介绍新项目。"
+  ],
+  "openingLine": "（钱叔）\"不急不急，这月手头紧，下月一定，你再宽裕宽裕。\"",
+  "recommendedTechniques": [
+    "mirroring",
+    "labeling",
+    "calibrated-question",
+    "accusation-audit"
+  ],
+  "pitfalls": [
+    "一直客气——他当你好欺负",
+    "发火——关系崩、钱更慢",
+    "没提\"下一步动作\"——被无限拖"
+  ],
+  "customTemplate": {
+    "prompt": "你被拖的款项是：",
+    "placeholder": "例如：尾款 3 万 / 已逾期 90 天"
+  },
+  "masteryTest": {
+    "id": "B06-T",
+    "title": "对方又画饼",
+    "twist": "钱叔再许\"下月一定\"，你需设明确节点与后果",
+    "brief": "钱叔：\"兄弟，再信我一次，下月中旬准到。\""
+  }
+}

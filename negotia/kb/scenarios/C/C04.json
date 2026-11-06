@@ -1,0 +1,36 @@
+{
+  "id": "C04",
+  "worldId": "C",
+  "personaId": "linju",
+  "title": "邻里纠纷",
+  "domainName": "个人生活",
+  "briefing": "楼上漏水/噪音，你找邻居阿姨理论。她小事较真，但怕闹大丢面子。",
+  "knownInfo": [
+    "楼上漏水，把你家卫生间的吊顶泡了，这已经是第二次。",
+    "阿姨人不错，但怕被说成\"你家有问题\"，觉得丢面子。",
+    "物业说两家自己协商，走公账要走报修单。",
+    "你的底线：修好，并且保证不再漏；赔偿可以少要。"
+  ],
+  "openingLine": "（邻居阿姨）\"小伙子/姑娘，不是我计较，这事儿确实得说道说道。\"",
+  "recommendedTechniques": [
+    "labeling",
+    "tactical-empathy",
+    "calibrated-question",
+    "loss-aversion"
+  ],
+  "pitfalls": [
+    "上来就凶——她立刻对立",
+    "找物业压她——她记仇",
+    "不给她面子——小事变大"
+  ],
+  "customTemplate": {
+    "prompt": "你和邻居的摩擦是：",
+    "placeholder": "例如：半夜噪音 / 公共区堆放"
+  },
+  "masteryTest": {
+    "id": "C04-T",
+    "title": "对方先告状",
+    "twist": "阿姨反说你事儿多，你需先共情再划界",
+    "brief": "阿姨：\"你先说说，上次你家那声儿，我可都没吭声。\""
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "code": "C",
+  "name": "个人生活",
+  "tagline": "在生活里，把\"讲不拢\"谈成\"过得去\"",
+  "background": {
+    "company": "这是林家与你的生活圈。",
+    "people": "配偶何敏、父亲林国栋、邻居、医生、老师、朋友都在其中。",
+    "key": "生活谈判没有赢家通吃，输的是关系。先接住情绪，再一起找路。"
+  },
+  "structure": {
+    "type": "family",
+    "tree": [
+      {
+        "name": "你",
+        "role": "家庭一员"
+      },
+      {
+        "name": "林国栋",
+        "role": "父亲（62，传统权威）",
+        "relation": "你的父亲"
+      },
+      {
+        "name": "何敏",
+        "role": "配偶（33，平等但累）",
+        "relation": "你的妻子/丈夫"
+      },
+      {
+        "name": "老周",
+        "role": "房东（55，精明）",
+        "relation": "租房对手"
+      },
+      {
+        "name": "张医生",
+        "role": "主治医师（42）",
+        "relation": "医患"
+      },
+      {
+        "name": "邻居阿姨",
+        "role": "邻里",
+        "relation": "楼上楼下"
+      },
+      {
+        "name": "大伟",
+        "role": "朋友（34）",
+        "relation": "借钱边界"
+      },
+      {
+        "name": "李老师",
+        "role": "班主任（45）",
+        "relation": "家长–老师"
+      },
+      {
+        "name": "客服小杨",
+        "role": "商家客服",
+        "relation": "维权对象"
+      }
+    ],
+    "relationships": [
+      "林国栋 要的是\"儿子/女儿听我的\"和面子，道理其次。",
+      "何敏 要的是\"你看见我的累\"，不是谁对谁错。",
+      "老周 把房子当资产，租金能涨一寸是一寸，合同是他的盾。",
+      "张医生 忙、权威、怕被质疑，但怕你\"不听医嘱出事\"。",
+      "邻居阿姨 小事上较真，但怕闹大丢面子。",
+      "大伟 开口难、怕被拒，也怕欠人情。",
+      "李老师 要的是\"家长配合\"，不是\"家长挑刺\"。",
+      "客服小杨 权限有限，但怕你升级投诉。"
+    ]
+  },
+  "personas": [
+    {
+      "id": "hemin",
+      "name": "何敏",
+      "avatar": "assets/avatars/hemin.svg",
+      "age": 33,
+      "role": "配偶",
+      "relation": "你的妻子/丈夫",
+      "personality": "通透、要强、长期扛得多。她不跟你争输赢，她要的是\"你上心了、你看见了\"。你一讲道理她就更累，你一接住情绪她就软。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "她要的是被分担，不是被教育",
+        "她怕你\"道理都对、人不在\"",
+        "她其实想一起把日子过顺"
+      ],
+      "speakingStyle": "\"我不是要你认错，我是觉得你根本没当回事。\"",
+      "color": "#C84B6E"
+    },
+    {
+      "id": "linguodong",
+      "name": "林国栋",
+      "avatar": "assets/avatars/linguodong.svg",
+      "age": 62,
+      "role": "父亲",
+      "relation": "你的父亲",
+      "personality": "传统、要面子、认定\"我吃过的盐比你吃的米多\"。直接反驳=不孝=丢面子。想让他听你的，得先让他觉得\"是你请我拿主意\"。",
+      "powerDistance": "high",
+      "hiddenGoals": [
+        "他要的是被尊重、被需要",
+        "他怕在儿媳/邻居面前掉价",
+        "他其实愿意让步，只要台阶给足"
+      ],
+      "speakingStyle": "\"你懂什么，我过的桥……\"\"我不管，反正我是为你好。\"",
+      "color": "#B5652E"
+    },
+    {
+      "id": "laozhou",
+      "name": "老周",
+      "avatar": "assets/avatars/laozhou.svg",
+      "age": 55,
+      "role": "房东",
+      "relation": "租房对手",
+      "personality": "精明、和气但算得清。涨租、扣押金他都有\"理由\"，合同是他的盾。跟他谈，情绪没用，条款和\"长期好租客\"的人设有用。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "他想稳住租金收益、少空窗",
+        "他怕你搬走或折腾房子",
+        "他敬\"守约、好说话\"的租客"
+      ],
+      "speakingStyle": "\"小X啊，这地段行情你也知道，今年都涨了。\"",
+      "color": "#3A8F6B"
+    },
+    {
+      "id": "zhangyi",
+      "name": "张医生",
+      "avatar": "assets/avatars/zhangyi.svg",
+      "age": 42,
+      "role": "主治医师",
+      "relation": "医患",
+      "personality": "忙、权威、被无数病人围着。她不怕你问，怕你质疑她的专业、怕你\"不听话出事\"。想沟通好，先认她专业，再问\"我该怎么做\"。",
+      "powerDistance": "high",
+      "hiddenGoals": [
+        "她要你配合治疗、别添乱",
+        "她怕医患纠纷",
+        "她其实愿意多讲，只要你尊重她的节奏"
+      ],
+      "speakingStyle": "\"这个方案是最稳妥的，先按这个来。\"",
+      "color": "#1D7FA8"
+    },
+    {
+      "id": "linju",
+      "name": "邻居阿姨",
+      "avatar": "assets/avatars/linju.svg",
+      "age": 50,
+      "role": "邻里",
+      "relation": "楼上楼下",
+      "personality": "热心但小事较真，爱讲\"远亲不如近邻\"。真闹起来她最怕丢面子、怕传闲话。给她台阶、给面子，事就好办。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "她要的是\"你尊重我这个老邻居\"",
+        "她怕事情闹大被人看笑话",
+        "她其实愿意各退一步"
+      ],
+      "speakingStyle": "\"小伙子/姑娘，不是我计较，这事儿确实……\"",
+      "color": "#C8762A"
+    },
+    {
+      "id": "dawei",
+      "name": "大伟",
+      "avatar": "assets/avatars/dawei.svg",
+      "age": 34,
+      "role": "朋友",
+      "relation": "借钱边界对象",
+      "personality": "仗义但最近紧巴，开口难、被拒也难。他既想要帮助，又怕欠太多人情。你帮他，得让他\"还得起、还得舒服\"。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "他要的是救急不伤自尊",
+        "他怕被可怜、怕被催",
+        "他记得人情，但节奏慢"
+      ],
+      "speakingStyle": "\"哥们，最近手头有点转不开……就短期。\"",
+      "color": "#8A5CC8"
+    },
+    {
+      "id": "lilaoshi",
+      "name": "李老师",
+      "avatar": "assets/avatars/lilaoshi.svg",
+      "age": 45,
+      "role": "班主任",
+      "relation": "家长–老师",
+      "personality": "负责任、带班压力大、见多了\"挑刺家长\"。她要的是\"你配合\"，不是\"你教她做事\"。先肯定，再提具体诉求，她才听得进。",
+      "powerDistance": "mid",
+      "hiddenGoals": [
+        "她要家长成为盟友不是对手",
+        "她怕你当众质疑她",
+        "她其实愿意多关照配合的孩子"
+      ],
+      "speakingStyle": "\"这个孩子其实挺聪明，就是……家长得配合。\"",
+      "color": "#4B6FC8"
+    },
+    {
+      "id": "kefu",
+      "name": "客服小杨",
+      "avatar": "assets/avatars/kefu.svg",
+      "age": 26,
+      "role": "商家客服",
+      "relation": "维权对象",
+      "personality": "权限有限、话术熟练、怕你升级投诉。她能给的往往是\"补偿券/流程\"，真解决得靠你\"说清诉求+亮出底线+不怕升级\"。",
+      "powerDistance": "low",
+      "hiddenGoals": [
+        "她想快结案、不被扣分",
+        "她怕你投诉到监管/媒体",
+        "她能在权限内给点甜头"
+      ],
+      "speakingStyle": "\"非常抱歉给您带来不便，这边帮您记录一下。\"",
+      "color": "#5CA88F"
+    }
+  ]
+}

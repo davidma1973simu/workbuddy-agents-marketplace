@@ -1,0 +1,37 @@
+{
+  "id": "A01",
+  "worldId": "A",
+  "personaId": "linyan",
+  "title": "与上级谈加薪 / 晋升",
+  "domainName": "职业组织内部",
+  "briefing": "年底了，你觉得自己干得不错，想跟林岩提加薪或晋升。但今年公司冻薪，林岩自己也被卡着。你怕提了得罪人，不提又憋屈。",
+  "knownInfo": [
+    "你入职两年，去年绩效 A，手上带着 3 个人的小组，今年多扛了两个人份的活。",
+    "公司今年冻薪，调薪池被总部砍掉；林岩自己这一年也没涨。",
+    "林岩上面是事业部总监陈帆，他们部门今年被压了 15% 的人力成本。",
+    "你手上能拿出来的：两个项目的量化结果、客户续约记录；拿不出来的：外部 offer。"
+  ],
+  "openingLine": "（林岩放下手机）\"说吧，约我啥事？我也正想找你聊聊你今年的表现。\"",
+  "recommendedTechniques": [
+    "tactical-empathy",
+    "labeling",
+    "calibrated-question",
+    "accusation-audit",
+    "no-oriented-question"
+  ],
+  "pitfalls": [
+    "张嘴就甩\"市场价都涨了\"——林岩觉得你拿外面压他，丢面子",
+    "当众提=自杀，必须私下",
+    "用原版\"How am I supposed to do that?\"=越界冒犯上级"
+  ],
+  "customTemplate": {
+    "prompt": "你正想跟上级谈的是：",
+    "placeholder": "例如：争取升到组长 / 加薪 15%"
+  },
+  "masteryTest": {
+    "id": "A01-T",
+    "title": "换种难度的加薪谈",
+    "twist": "这次林岩直接说\"今年真没预算\"，你得改用\"下一步怎么创造条件\"的谈法",
+    "brief": "林岩：\"不是我不帮你，今年总部砍了所有人头的调薪池，我手里一分钱没有。\""
+  }
+}

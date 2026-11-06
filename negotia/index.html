@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>谈伴 Negotia · 谈判陪练</title>
+  <meta name="description" content="开口谈之前，先有人陪你练一遍。基于 Chris Voss 谈判体系、适配中国高语境场景的 AI 陪练。" />
+  <meta name="theme-color" content="#F7F4EE" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="谈伴" />
+  <link rel="stylesheet" href="assets/styles.css?v=20261105z5" />
+  <style>.hint-drawer.hidden{display:none !important}</style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- ========== 首页：纯排版 · 移动竖屏 · 大留白 ========== -->
+    <section class="screen" id="screen-home">
+      <div class="home-scroll">
+        <header class="home-top">
+          <div class="brand">
+            <svg class="brand-mark" viewBox="0 0 96 96" aria-hidden="true" focusable="false">
+              <circle cx="48" cy="48" r="22" fill="none" stroke="#0E6B50" stroke-width="10" />
+              <rect x="24" y="7" width="19" height="16" rx="6" fill="#158A68" />
+              <rect x="53" y="73" width="19" height="16" rx="6" fill="#158A68" />
+            </svg>
+            <span class="brand-name">谈伴 <i>Negotia</i></span>
+          </div>
+          <div class="home-id">
+            <button class="home-count" id="btn-progress">已练 <b id="home-count">0</b></button>
+            <button class="home-count ai-mini" id="btn-ai-settings"><i class="ai-dot"></i><span id="ai-mini-text">AI 未连接</span></button>
+            <button class="me-chip" id="btn-me" title="我的人设与成长"><span id="me-chip-mono">我</span></button>
+          </div>
+        </header>
+
+        <section class="lede">
+          <span class="lede-kicker">AI 替代 · 经济收缩 · 谈判力是护城河</span>
+          <h1 class="lede-title">谈不拢的那一刻，<br><span class="hl">有人陪你练。</span></h1>
+          <p class="lede-sub">经济在收缩，AI 在替代。能保住你价值的，是开口谈的能力——而我们从小没被教过怎么谈。</p>
+          <button class="primary-btn" id="btn-start">开始第一次陪练</button>
+          <button class="text-link" id="btn-how">3 分钟看懂怎么练 ›</button>
+        </section>
+
+        <!-- 你的闯关进度（有记录才显示） -->
+        <section class="journey hidden" id="journey">
+          <div class="journey-top">
+            <span class="j-kicker">你的闯关</span>
+            <span class="j-total">已通关 <b id="j-passed">0</b><span id="j-total-text"> / 24 关</span></span>
+          </div>
+          <div class="j-rings" id="j-bars"></div>
+          <div class="j-recent" id="j-recent"></div>
+        </section>
+
+        <p class="enter-head">选一个场域，开始第一场</p>
+        <div id="domain-list"><!-- 三大入口由 JS 注入 --></div>
+
+        <p class="trust">24 真实场景　·　3 大场域　·　数据不出本机</p>
+
+        <section class="creed creed-bottom">
+          <ul class="creed-cols">
+            <li><b>敢去练</b><span>说错也没关系</span></li>
+            <li><b>用得上</b><span>按中国人改过</span></li>
+            <li><b>看得见</b><span>进步看得见</span></li>
+          </ul>
+        </section>
+        <p class="home-foot">回报在回看，不在当天。你正安静地变强。</p>
+        <p class="home-credit">本产品所使用的全部谈判知识与技能方法，版权归属 Chris Voss（前美国联邦调查局首席国际人质与绑架谈判专家）及其公司 The Black Swan Group。</p>
+      </div>
+    </section>
+
+    <!-- ========== 世界页：背景 + 组织结构图 + 场景清单 ========== -->
+    <section class="screen hidden" id="screen-category">
+      <header class="topbar">
+        <button class="icon-btn ghost" id="btn-back-home">‹ 返回</button>
+        <div class="brand small" id="cat-name">场域</div>
+        <button class="icon-btn" id="btn-progress2">成长</button>
+      </header>
+      <div class="cat-scroll">
+        <div class="cat-left">
+          <div class="world-banner" id="world-banner"><!-- 背景：公司 / 人员 / 核心 --></div>
+          <div class="section-head">
+            <span>组织结构</span>
+            <span class="muted">点人看完整人物卡</span>
+          </div>
+          <div class="org-chart" id="org-chart"><!-- 组织结构图（含你） --></div>
+        </div>
+        <div class="cat-right">
+          <div class="section-head">
+            <span>挑一个场景练</span>
+            <button class="swap-btn" id="btn-swap">换一批 ⟳</button>
+          </div>
+          <div id="scenario-list"><!-- 每次 3 个 --></div>
+
+          <div class="custom-card" id="custom-card">
+            <div class="cc-title">＋ 练我自己的主题</div>
+            <div class="cc-sub" id="custom-sub">按系统模板，填你真实要面对的难题</div>
+            <div class="cc-row">
+              <select id="custom-persona" class="cc-select"></select>
+            </div>
+            <textarea id="custom-topic" class="cc-input" rows="2" placeholder="例如：想让主管把周报改成双周，又不想显得偷懒"></textarea>
+            <button class="primary-btn ghost-green" id="btn-custom-go">生成我的专属场景</button>
+          </div>
+
+          <div class="prep-card" id="prep-card">
+            <div class="pc-icon">战</div>
+            <div class="pc-body">
+              <div class="pc-title">战前准备室</div>
+              <div class="pc-sub">把真实难关丢进来，同盟者先帮你梳理策略、话术与雷区，再决定是否演练。</div>
+            </div>
+            <button class="primary-btn" id="btn-prep">进入</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 角色卡片 / 简报（沉浸入口） ========== -->
+    <section class="screen hidden" id="screen-brief">
+      <header class="topbar">
+        <button class="icon-btn ghost" id="btn-back-cat">‹ 返回</button>
+        <div class="brand small">情境简报</div>
+        <button class="icon-btn ghost" id="btn-view-roster">人设</button>
+      </header>
+      <div class="brief-scroll" id="brief-scroll"><!-- 角色卡 + 情境 + 坑 + 目标 --></div>
+      <div class="brief-foot">
+        <button class="primary-btn" id="btn-enter-chat">进入对话</button>
+      </div>
+    </section>
+
+    <!-- ========== 对话：AVG 舞台 ========== -->
+    <section class="screen hidden" id="screen-chat">
+      <header class="topbar chat-bar">
+        <button class="icon-btn ghost" id="btn-back-brief">‹</button>
+        <div class="chat-title" id="chat-title">场景</div>
+        <button class="end-btn" id="btn-end">结束 · 复盘</button>
+      </header>
+      <div class="ai-chip hidden" id="ai-chip"><span class="dot"></span><span id="ai-chip-text"></span></div>
+      <div class="stage" id="stage">
+        <img class="stage-portrait" id="stage-portrait" src="" alt="对手" onerror="this.style.display='none'" />
+        <div class="stage-name" id="stage-name">对手</div>
+        <div class="stage-rel" id="stage-rel"></div>
+        <div class="stage-mood" id="stage-mood">防御中</div>
+      </div>
+      <div class="dialogue" id="dialogue"><!-- AVG 对话流 --></div>
+      <button class="exit-chat" id="btn-exit-chat">退出演练 · 回首页</button>
+      <div class="hint-drawer hidden" id="hint-drawer"><!-- 提示卡 --></div>
+      <div class="composer">
+        <button class="hint-toggle" id="btn-hint">提示卡</button>
+        <input id="chat-input" type="text" placeholder="输入你的回应…" autocomplete="off" />
+        <button class="send-btn" id="btn-send">发送</button>
+      </div>
+    </section>
+
+    <!-- ========== 复盘：强反馈 ========== -->
+    <section class="screen hidden" id="screen-debrief">
+      <header class="topbar solo">
+        <button class="icon-btn ghost" id="btn-back-home4">‹</button>
+        <div class="brand small">同盟者复盘</div>
+      </header>
+      <div class="debrief-scroll" id="debrief-scroll"><!-- AI 复盘报告 --></div>
+      <div class="debrief-foot">
+        <button class="primary-btn ghost-green" id="btn-mastery">挑战相似案例 · 测掌握</button>
+        <button class="primary-btn" id="btn-save-debrief">保存并回看成长</button>
+      </div>
+    </section>
+
+    <!-- ========== 成长 ========== -->
+    <section class="screen hidden" id="screen-progress">
+      <header class="topbar">
+        <button class="icon-btn ghost" id="btn-back-home5">‹</button>
+        <div class="brand small">我的成长</div>
+        <button class="icon-btn" id="btn-settings2">设置</button>
+      </header>
+      <div class="progress-scroll">
+        <div class="stat-row">
+          <div class="stat"><div class="stat-num" id="stat-sessions">0</div><div class="stat-lbl">陪练次数</div></div>
+          <div class="stat"><div class="stat-num" id="stat-tech">0</div><div class="stat-lbl">用过的招</div></div>
+          <div class="stat"><div class="stat-num" id="stat-master">0</div><div class="stat-lbl">通过测试</div></div>
+        </div>
+        <div class="radar-box">
+          <svg id="radar-progress" viewBox="0 0 260 260" width="260" height="260"></svg>
+        </div>
+        <div class="section-head"><span>最近练习</span><span class="muted">悄悄记录</span></div>
+        <div id="session-log" class="session-log"></div>
+      </div>
+    </section>
+
+    <!-- ========== 建立 / 编辑我的人设 ========== -->
+    <section class="screen hidden" id="screen-persona">
+      <header class="topbar">
+        <button class="icon-btn ghost" id="btn-persona-back">‹</button>
+        <div class="brand small" id="persona-title">建立我的人设</div>
+        <span class="step-dots" id="persona-dots"><i class="on"></i><i></i></span>
+      </header>
+      <div class="persona-scroll">
+        <div id="pstep-1">
+          <p class="p-lead">先让我认识你。不用认真，随便选，之后随时能改。</p>
+          <div class="p-block">
+            <div class="p-label">怎么称呼你</div>
+            <input id="p-name" class="p-input" maxlength="12" placeholder="你的名字或昵称" />
+          </div>
+          <div class="p-block">
+            <div class="p-label">你的身份 <span class="p-opt">可选</span></div>
+            <input id="p-role" class="p-input" maxlength="20" placeholder="例如：产品经理 / 自由设计师" />
+          </div>
+          <div class="p-block">
+            <div class="p-label">别人会怎么形容你谈事的样子</div>
+            <div class="chip-wrap" id="chip-traits"></div>
+          </div>
+          <div class="p-block">
+            <div class="p-label">你最看重什么</div>
+            <div class="chip-wrap" id="chip-values"></div>
+          </div>
+          <div class="p-block">
+            <div class="p-label">你习惯怎么开口</div>
+            <div class="chip-wrap" id="chip-pref"></div>
+          </div>
+        </div>
+
+        <div id="pstep-2" class="hidden">
+          <p class="p-lead">给自己打个分。1 = 还很生，5 = 已经顺手。这不是考试，是雷达的起点——之后每通关一关，相关维度会长一点。</p>
+          <div id="selfeval-list"></div>
+        </div>
+      </div>
+      <div class="persona-foot">
+        <button class="primary-btn" id="btn-persona-next">下一步</button>
+      </div>
+    </section>
+
+    <!-- ========== 我：人设卡 + 六维雷达 ========== -->
+    <section class="screen hidden" id="screen-me">
+      <header class="topbar">
+        <button class="icon-btn ghost" id="btn-me-back">‹</button>
+        <div class="brand small">我</div>
+        <button class="icon-btn" id="btn-me-edit">编辑人设</button>
+      </header>
+      <div class="me-scroll" id="me-scroll"><!-- 人设卡 + 雷达 + 维度 --></div>
+    </section>
+
+    <!-- ========== 设置（AI Key） ========== -->
+    <section class="screen hidden" id="screen-settings">
+      <header class="topbar solo">
+        <button class="icon-btn ghost" id="btn-back-progress2">‹</button>
+        <div class="brand small">设置</div>
+      </header>
+      <div class="settings-scroll">
+        <div class="card">
+          <div class="card-label">装到手机桌面</div>
+          <p class="hint-text">装成 App 后全屏打开、没有地址栏，断网也能进来看自己的场景和进度。</p>
+          <button class="ghost-line-btn" id="btn-install">安装到桌面</button>
+          <div class="set-test hidden" id="install-hint"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">AI 全程陪练（可选）</div>
+          <p class="hint-text">默认走本地陪练，无需联网。填入兼容 OpenAI 的 Key 与地址后：对手会按角色卡真实扮演、复盘会有强弱点评、战前准备会有策略简报。</p>
+          <label class="field">接口地址
+            <input id="set-endpoint" type="text" placeholder="https://api.deepseek.com/v1/chat/completions" />
+          </label>
+          <label class="field">API Key
+            <input id="set-key" type="password" placeholder="sk-…（仅存本机）" />
+          </label>
+          <label class="field">模型名
+            <input id="set-model" type="text" placeholder="deepseek-chat" />
+          </label>
+          <button class="primary-btn" id="btn-save-settings">保存</button>
+          <button class="ghost-line-btn" id="btn-test-ai">测试连接（看真实报错）</button>
+          <div class="set-test hidden" id="set-test"></div>
+          <p class="hint-text warn">Key 仅保存在本机浏览器，不上传任何服务器。Key 是「按网址」存的：换域名或换浏览器都要重填。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 人物卡 Sheet（弹层） ========== -->
+    <div class="sheet-mask hidden" id="sheet-mask">
+      <div class="sheet" id="sheet"><!-- 完整人物卡 --></div>
+    </div>
+
+    <!-- ========== 三入口选择弹窗 ========== -->
+    <div class="sheet-mask hidden" id="picker-mask">
+      <div class="picker">
+        <div class="picker-title">选一个场域开始</div>
+        <div id="picker-list"><!-- 三类由 JS 注入 --></div>
+        <button class="text-link center" id="picker-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- ========== 引流版容器（?mode=lite） ========== -->
+    <div id="lite" class="hidden"></div>
+
+    <div id="toast" class="toast hidden"></div>
+  </div>
+  <script src="assets/app.js?v=20261105z5"></script>
+  <script src="assets/wb-cloud.js"></script>
+  <script src="assets/invite.js?v=20261105z5"></script>
+  <script src="assets/lite.js?v=20261105z5"></script>
+</body>
+</html>

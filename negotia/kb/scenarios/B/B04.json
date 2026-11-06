@@ -1,0 +1,36 @@
+{
+  "id": "B04",
+  "worldId": "B",
+  "personaId": "wanglin",
+  "title": "求职谈 offer",
+  "domainName": "业务间（对外）",
+  "briefing": "你拿到一家公司的意向，和王琳谈薪资与职级。她区间卡死，但能帮你\"包装成不得不给\"。",
+  "knownInfo": [
+    "你过了三轮面试，团队很想要你，HC 已经批了。",
+    "王琳给的区间按职级卡死，但她有办法\"包装成特批\"。",
+    "你现在的工作还没辞，还有两个月缓冲期。",
+    "你手上：另一家的口头 offer（薪资低 10%，但更稳定）。"
+  ],
+  "openingLine": "（王琳）\"我们很看好你～不过预算这块，你期望大概是多少呀？\"",
+  "recommendedTechniques": [
+    "calibrated-question",
+    "labeling",
+    "no-oriented-question",
+    "tactical-empathy"
+  ],
+  "pitfalls": [
+    "先报低数——被锚死",
+    "说\"随便\"——显得没底气",
+    "没问清职级与弹性福利"
+  ],
+  "customTemplate": {
+    "prompt": "你正在谈的 offer 是：",
+    "placeholder": "例如：XX 公司产品经理 / 总包 35w"
+  },
+  "masteryTest": {
+    "id": "B04-T",
+    "title": "被问期望薪资",
+    "twist": "王琳让你先开价，你需反向让她亮区间",
+    "brief": "王琳：\"你先说个数，我看看能不能争取。\""
+  }
+}

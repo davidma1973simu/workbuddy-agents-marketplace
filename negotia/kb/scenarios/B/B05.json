@@ -1,0 +1,36 @@
+{
+  "id": "B05",
+  "worldId": "B",
+  "personaId": "qianshu",
+  "title": "自由职业 / 乙方谈合同",
+  "domainName": "业务间（对外）",
+  "briefing": "钱叔找你做项目，口头挺好，合同却含糊。你得像生意人一样把边界写清，又不显得不信任。",
+  "knownInfo": [
+    "钱叔是老客户介绍的，一开口就说\"就按上次那样\"。",
+    "上次的合同没写验收标准和变更条款，你吃过一次亏。",
+    "这次项目范围比他嘴上说的大，交付周期只有 6 周。",
+    "你要的是把边界写清，又不想显得不信任他。"
+  ],
+  "openingLine": "（钱叔）\"咱俩谁跟谁，合同就是走个形式，先把活儿干起来嘛。\"",
+  "recommendedTechniques": [
+    "calibrated-question",
+    "labeling",
+    "no-oriented-question",
+    "loss-aversion"
+  ],
+  "pitfalls": [
+    "被\"走形式\"忽悠——事后扯皮",
+    "不敢提改稿次数/尾款——被白嫖",
+    "显得不信任——伤和气"
+  ],
+  "customTemplate": {
+    "prompt": "你接的这个活儿是：",
+    "placeholder": "例如：官网改版 / 短视频代运营"
+  },
+  "masteryTest": {
+    "id": "B05-T",
+    "title": "对方要\"先干后签\"",
+    "twist": "钱叔催你开工不签合同，你需把节点绑死",
+    "brief": "钱叔：\"别磨叽了，先动起来，合同后补一样的。\""
+  }
+}

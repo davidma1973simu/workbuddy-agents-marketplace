@@ -1,0 +1,13 @@
+{
+  "id": "deadline-pace",
+  "name": "期限节奏 Deadline Pace",
+  "original": {
+    "how": "利用期限制造紧迫，但别造假期限。",
+    "example": "\"周五前定能多送一个月。\""
+  },
+  "chinaRevision": {
+    "how": "中国商场\"再想想\"是常态，用\"上面这周要拍板\"等比硬 deadline 自然。",
+    "example": "\"这事儿上面本周得有个说法，咱们先拢拢？\""
+  },
+  "axis": "执行确认"
+}

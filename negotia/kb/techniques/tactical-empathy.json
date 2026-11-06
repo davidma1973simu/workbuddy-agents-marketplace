@@ -1,0 +1,13 @@
+{
+  "id": "tactical-empathy",
+  "name": "战术同理心 Tactical Empathy",
+  "original": {
+    "how": "先确认对方的感受，让对方觉得\"你懂我\"，从而降低防御。",
+    "example": "\"听起来你对这个进度很不满。\""
+  },
+  "chinaRevision": {
+    "how": "在中国，先接住情绪再谈事，但别用过于西式的大段共情，短、准、不肉麻。",
+    "example": "\"你这边压力确实大，我懂。\""
+  },
+  "axis": "战术同理"
+}

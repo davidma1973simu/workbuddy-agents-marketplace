@@ -1,0 +1,36 @@
+{
+  "id": "C03",
+  "worldId": "C",
+  "personaId": "zhangyi",
+  "title": "医患沟通",
+  "domainName": "个人生活",
+  "briefing": "你或家人生病，张医生给出方案但你没听懂、有顾虑。硬质疑她专业会吃闭门羹。",
+  "knownInfo": [
+    "家人的检查结果有几个指标偏高，医生建议进一步检查。",
+    "你在网上查到两种说法，互相矛盾，越看越慌。",
+    "张医生上午还挂着十几个号，说话很快。",
+    "你要的是\"听得懂 + 有得选\"，不是质疑她的专业。"
+  ],
+  "openingLine": "（张医生）\"这个方案是最稳妥的，先按这个来，有问题再说。\"",
+  "recommendedTechniques": [
+    "calibrated-question",
+    "labeling",
+    "mirroring",
+    "tactical-empathy"
+  ],
+  "pitfalls": [
+    "当众质疑\"你行不行\"——她 defensive",
+    "一堆百度来的术语——她烦",
+    "不问\"我具体怎么做\"——白来"
+  ],
+  "customTemplate": {
+    "prompt": "你想跟医生确认的是：",
+    "placeholder": "例如：手术的替代方案 / 药副作用"
+  },
+  "masteryTest": {
+    "id": "C03-T",
+    "title": "医生说得快你没懂",
+    "twist": "张医生赶时间，你需用校准问题留住她",
+    "brief": "张医生：\"后面还有好多号，你简单说，重点是什么？\""
+  }
+}

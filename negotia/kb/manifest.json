@@ -1,0 +1,194 @@
+{
+  "version": "2.0",
+  "builtAt": "2026-11-02",
+  "description": "谈伴 Negotia 知识库：世界/人设/场景/技术卡/中国模块。所有 JSON 可编辑。",
+  "domains": {
+    "A": {
+      "name": "职业组织内部",
+      "world": "A",
+      "items": [
+        {
+          "id": "A01",
+          "title": "与上级谈加薪 / 晋升"
+        },
+        {
+          "id": "A02",
+          "title": "争取资源 / 人头"
+        },
+        {
+          "id": "A03",
+          "title": "跨部门推项目争取支持"
+        },
+        {
+          "id": "A04",
+          "title": "绩效面谈（被评 / 评人）"
+        },
+        {
+          "id": "A05",
+          "title": "团队冲突化解"
+        },
+        {
+          "id": "A06",
+          "title": "向上管理（让老板接受你的方案）"
+        },
+        {
+          "id": "A07",
+          "title": "拒绝不合理需求（加班 / 背锅 / 甩锅）"
+        },
+        {
+          "id": "A08",
+          "title": "争取培训 / 转岗"
+        }
+      ]
+    },
+    "B": {
+      "name": "业务间（对外）",
+      "world": "B",
+      "items": [
+        {
+          "id": "B01",
+          "title": "供应商压价 / 谈账期"
+        },
+        {
+          "id": "B02",
+          "title": "客户谈单 / 续约"
+        },
+        {
+          "id": "B03",
+          "title": "商务合作分成"
+        },
+        {
+          "id": "B04",
+          "title": "求职谈 offer"
+        },
+        {
+          "id": "B05",
+          "title": "自由职业 / 乙方谈合同"
+        },
+        {
+          "id": "B06",
+          "title": "催款 / 处理拖款"
+        },
+        {
+          "id": "B07",
+          "title": "危机客诉 / 公关"
+        },
+        {
+          "id": "B08",
+          "title": "竞品 / 合作伙伴博弈"
+        }
+      ]
+    },
+    "C": {
+      "name": "个人生活",
+      "world": "C",
+      "items": [
+        {
+          "id": "C01",
+          "title": "租房 / 买房谈判"
+        },
+        {
+          "id": "C02",
+          "title": "家人冲突（育儿 / 家务 / 养老）"
+        },
+        {
+          "id": "C03",
+          "title": "医患沟通"
+        },
+        {
+          "id": "C04",
+          "title": "邻里纠纷"
+        },
+        {
+          "id": "C05",
+          "title": "朋友间边界 / 借钱"
+        },
+        {
+          "id": "C06",
+          "title": "消费维权"
+        },
+        {
+          "id": "C07",
+          "title": "亲密关系沟通"
+        },
+        {
+          "id": "C08",
+          "title": "家长–老师沟通"
+        }
+      ]
+    }
+  },
+  "techniques": [
+    {
+      "id": "tactical-empathy",
+      "name": "战术同理心 Tactical Empathy"
+    },
+    {
+      "id": "mirroring",
+      "name": "镜像 Mirroring"
+    },
+    {
+      "id": "labeling",
+      "name": "标注 Labeling"
+    },
+    {
+      "id": "calibrated-question",
+      "name": "校准问题 Calibrated Question"
+    },
+    {
+      "id": "no-oriented-question",
+      "name": "邀 No 的问题 No-oriented Question"
+    },
+    {
+      "id": "accusation-audit",
+      "name": "指控审查 Accusation Audit"
+    },
+    {
+      "id": "black-swan",
+      "name": "黑天鹅 Black Swan"
+    },
+    {
+      "id": "loss-aversion",
+      "name": "损失厌恶 Loss Aversion"
+    },
+    {
+      "id": "that-s-right",
+      "name": "That's Right"
+    },
+    {
+      "id": "ackerman",
+      "name": "阿克曼模型 Ackerman"
+    },
+    {
+      "id": "deadline-pace",
+      "name": "期限节奏 Deadline Pace"
+    },
+    {
+      "id": "second-story",
+      "name": "二楼大脑 Second Story"
+    }
+  ],
+  "chinaModules": [
+    {
+      "id": "face",
+      "name": "面子工程 Face"
+    },
+    {
+      "id": "guanxi",
+      "name": "关系前置 Guanxi"
+    },
+    {
+      "id": "implicit-no",
+      "name": "含蓄拒绝识别 Implicit No"
+    },
+    {
+      "id": "middleman",
+      "name": "中间人杠杆 Middleman"
+    }
+  ],
+  "worlds": [
+    "A",
+    "B",
+    "C"
+  ]
+}
