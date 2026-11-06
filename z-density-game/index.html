@@ -65,6 +65,12 @@
   .bub{max-width:84%;padding:11px 14px;border-radius:16px;font-size:14.5px;animation:pop .3s var(--ease)}
   .bub.bot{background:#fff;border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:5px}
   .bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+  /* 小Z 先说自己看到了什么，再提问——让用户看见"它真的看了" */
+  .bub.look{max-width:92%;background:#F3F8F4;border:1px solid #DFECE3;border-radius:16px;
+    border-bottom-left-radius:5px;align-self:flex-start;padding:12px 15px}
+  .bub.look em{display:block;font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.14em;
+    color:var(--accent-d);margin-bottom:5px}
+  .bub.look span{font-size:13.5px;line-height:1.55;color:#3B3B41}
   @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
   .typing{display:inline-flex;gap:4px;padding:12px 14px}
   .typing i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:bl 1s infinite}
@@ -194,7 +200,7 @@ const CFG={endpoint:'https://z-density-game.app.workbuddy.host',
   publishableKey:'wbpk_7q0Q607vbX0jTn57w49Nym_24IiiIDCzuSSAz7mFXU8zFcU6kEeGQjH'};
 
 /* ============ 状态 ============ */
-const S={photo:null,photoData:null,photoName:'',desc:'',qi:0,answers:[],questions:[],demo:false,scores:null,
+const S={photo:null,photoData:null,photoName:'',desc:'',look:'',qi:0,answers:[],questions:[],demo:false,scores:null,
   control_why:'',deserved_why:'',grat_why:'',verdict:'',headline:'',quickwin:'',step:'',ai:false};
 const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
 const APP_URL='https://z-density-game.app.workbuddy.host';
@@ -204,7 +210,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function setSteps(n){const w=document.querySelector('.steps');if(w)w.classList.remove('hidden');document.querySelectorAll('.step').forEach(e=>e.classList.toggle('on',+e.dataset.s<=n));}
 function resetAll(){S.photo=null;S.photoData=null;S.photoName='';S.desc='';S.qi=0;S.answers=[];S.questions=[];S.demo=false;S.scores=null;
-  S.control_why='';S.deserved_why='';S.grat_why='';S.verdict='';S.headline='';S.quickwin='';S.step='';S.ai=false;}
+  S.control_why='';S.deserved_why='';S.grat_why='';S.verdict='';S.headline='';S.quickwin='';S.step='';S.ai=false;S.look='';}
 /* 分享链接网关：静态资源必须带同一 sharecode，否则 403 */
 function asset(p){ return p+(location.search||''); }
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -267,63 +273,64 @@ function pickHeadline(sc,desc){
 }
 
 /* ============ 对话问题：按产品主题动态生成（本地分类题库作降级） ============ */
-const QLIB={
-  food:['这家店，年轻人在里面是自己拿主意，还是被动线和人流推着走？',
-        '它看起来"值得专程来一趟"，还是"随便吃点算了"？',
-        '坐下吃的那几十分钟，有没有让TA当下就开心的点？',
-        '吃完出门，TA会拍照发朋友圈，还是只想赶紧走？'],
-  digital:['打开它，年轻人是自己在探索，还是被引导页和弹窗推着走？',
-           '它的界面让人觉得"这是我的品味"，还是"凑合用"？',
-           '第一次用就有爽点，还是要熬过新手期？',
-           'TA会把使用截图发出去，还是默默卸载？'],
-  retail:['拿到手的第一下，是TA自己挑的，还是被爆款榜和导购安排的？',
-          '它让人想"拍下来收藏"，还是"能用就行"？',
-          '从看中到拿到，爽点有多快？',
-          'TA会拿它当社交货币，还是不想让人看见？'],
-  beauty:['上手时TA能自己玩出花样，还是只能照说明书来？',
-          '它让TA觉得"这就是我"，还是"别人的风格"？',
-          '第一次用就有"变好看了"的即时反馈吗？',
-          'TA会晒开箱试色，还是怕被说土？'],
-  service:['整个流程里，TA是自己掌控节奏，还是被客服和规矩牵着走？',
-           '这个价格，TA觉得"我值得"，还是"将就一下"？',
-           '过程中有没有让人当下就开心的细节？',
-           '结束后TA会安利给朋友，还是当没发生过？'],
-  generic:['用的时候，是TA自己说了算，还是被流程推着走？',
-           '它让人觉得"我值得拥有"，还是"将就一下"？',
-           '体验里有没有"当下就开心"的瞬间？',
-           '如果发朋友圈，TA会夸它，还是吐槽它？']
-};
-function catOf(t){
-  t=(t||'').toLowerCase();
-  if(/餐|食|吃|咖啡|奶茶|饮品|烘焙|面|饭|店|小馆|早餐|火锅|酒/.test(t))return'food';
-  if(/app|软件|小程序|平台|系统|工具|网站|游戏|课程|会员|订阅/.test(t))return'digital';
-  if(/服|护理|健身|美容|理发|酒店|旅行|课程|培训|咨询|医疗/.test(t))return'service';
-  if(/妆|护肤|香|衣|鞋|包|饰|发|美甲|穿搭/.test(t))return'beauty';
-  if(/礼盒|产品|包装|零食|饮料|数码|耳机|手机|家居|品牌/.test(t))return'retail';
-  return'generic';
+/* Z 需求卡：每张卡是一条真实的 Z 需求 + 该从哪个角度去问（只给角度，问题里不许出现卡片名） */
+const NEEDS=[
+  {kw:/自己|挑|选|送|随手|拿|决定|安排|推荐|默认|排队|人流|点单|套餐|规则|流程/, angle:'这件事里到底是谁在替 TA 拿主意：自己挑，还是被人流、默认值、导购推着走'},
+  {kw:/垢|渍|脏|旧|老|破|土|廉价|杂牌|痕迹|褪色|划痕|掉漆|油|锈|发黄|灰/, angle:'它有没有哪一面，TA 其实不想让别人看见（会藏、会遮、会换）'},
+  {kw:/好看|颜值|色|设计|包装|拍照|出片|摆|桌|窗|logo|联名|版/, angle:'TA 会不会想把它拍下来发出去，还是只想自己用'},
+  {kw:/贵|便宜|价|块|元|性价比|套餐|会员|打折|赠|预算/, angle:'这个价钱，TA 觉得"我配得上"，还是"先将就一下"'},
+  {kw:/快|即时|第一|马上|立刻|惊喜|彩蛋|反馈|爽|手感/, angle:'拿到手的第一秒，有没有一个让 TA 立刻开心的点'},
+  {kw:/大|小|尺寸|颜色|定制|刻|贴|改|拼|装|选配|换/, angle:'TA 能不能把它改成"我自己的那一只"'},
+  {kw:/每天|早上|上班|加班|家|宿舍|办公|晚上|习惯|一直用|用了|通勤/, angle:'它在 TA 一天里的哪一刻出现，那一刻 TA 真正想要的是什么'},
+  {kw:/圈|同好|朋友|社群|话题|梗|小众|手工|复古|古着|咖啡|茶|酒/, angle:'懂的人能不能一眼认出这是"自己人的东西"'}
+];
+function pickNeeds(text){ const hit=NEEDS.filter(n=>n.kw.test(text)); return hit.concat(NEEDS.filter(n=>hit.indexOf(n)<0)).slice(0,5); }
+
+/* 从描述里捞出"这东西"和"最扎眼的细节"：本地降级也要说人话 */
+function objOf(desc){
+  const d=desc||'';
+  const keys=['保温杯','马克杯','杯子','杯','碗','盘','托盘','餐具','咖啡','茶','酒','瓶','盒','袋','衣','鞋','包','耳机','手机','电脑','键盘','椅子','桌','灯','花','书','票','菜单','包装','礼盒','海报','玩偶','手办','香','口红','面霜','门店','柜台','小程序','App'];
+  for(const k of keys) if(d.indexOf(k)>=0) return k;
+  return '东西';
 }
-function localQuestions(desc){ return QLIB[catOf(desc)].slice(0,4); }
+function detailOf(desc){
+  const d=desc||'';
+  const m=/([一-龥]{0,3}(?:垢|渍|划痕|掉漆|褪色|裂|缺角|油光|指纹))/.exec(d)||/(比[^，,。；;]{1,8})/.exec(d);
+  return m?m[1]:'';
+}
+/* 本地兜底：只问这件东西本身，不问品类套话（AI 掉线时不至于问出"这家店……"） */
+function localQs(desc){
+  const d=(desc||'').trim(), o=objOf(d), det=detailOf(d);
+  return {look:d?d.replace(/[。.；;]\s*$/,''):'这张图里的东西',
+    qs:[
+      `这个${o}，是你自己挑的，还是别人给的？`,
+      det?`${det}那一面，你愿意让别人看到吗？`:'它身上有没有哪一面，你不太想让别人看到？',
+      `为它多花一半的钱，你觉得值，还是冤？`,
+      `哪一刻，你会想拍它一张？`
+    ]};
+}
 
 /* ============ 示例 Demo（固定脚本，电脑自动填、自动答，用户只看） ============ */
 const DEMO={
   desc:'一家开了 50 年的老酒店自助早餐，上百种食物，和休闲客混在一起。地方大、菜品多，但吵、杂、餐具老派。',
+  look:'一眼看过去：上百种菜摆成长台，白瓷盘、木托盘、塑料价签，灯光偏黄。',
   questions:[
-    '这家店，年轻人在里面是自己拿主意，还是被动线和人流推着走？',
-    '一百多种食物摆出来，TA会觉得"值得专程来一趟"，还是"随便吃点算了"？',
-    '坐下来吃的那 40 分钟，有没有让 TA 当下就开心的点？',
-    '吃完出门，TA会拍照发朋友圈，还是只想赶紧走？'
+    '这一长台菜，你是顺着人流从头拿到尾吗？',
+    '端上桌那一刻，你会先拍一张再吃吗？',
+    '吃到第三样，还有让你抬头的东西吗？',
+    '吃完出门，你会跟朋友提一句吗？'
   ],
   answers:[
     '基本跟着人流走。取餐台绕一圈，服务员一直催着往前，没人问你想先吃哪样。',
-    '菜品多但摆得老派，木托盘、塑料价签，拍出来显土，年轻人不太会专程来。',
+    '不会拍。木托盘配塑料价签，拍出来像公司食堂，发出去有点丢人。',
     '好吃是好吃，但没有惊喜。全程埋头吃，吃完也没什么印象。',
-    '不会发。灯光偏黄，背景全是聊天的中年客人，拍出来像公司食堂。'
+    '不会提。灯光偏黄，背景全是聊天的中年客人，说出去也不像值得推荐的店。'
   ],
   reactions:[
     '跟着人流走，等于被安排得明明白白。',
-    '摆得老派，拍照先输一半。',
+    '拍不出来的东西，传不出去。',
     '好吃但没记忆点，等于白吃。',
-    '发不出去的一餐，等于没发生。'
+    '没人提，等于没发生。'
   ]
 };
 function reactSafe(qi,a){
@@ -376,29 +383,48 @@ async function streamText(cloud,sys,user,model){
   return ans;
 }
 function withTimeout(p,ms){ return Promise.race([p,new Promise(r=>setTimeout(()=>r(''),ms))]); }
-/* 让 AI 按这个产品的主题，现场长出 4 个问题（而不是每次问同样的话） */
+/* 让 AI 先看清这件东西，再从 Z 的真实需求里长出 4 个针对性问题 */
+function badQs(qs){
+  const banned=/掌控感|配得感|满足感|Z世代|TA|用户|这家店|这个产品/;
+  return qs.some(q=>banned.test(q)) || qs.some(q=>/^(是否|会不会|能不能)/.test(q)) || qs.some(q=>/[a-zA-Z]{2,}/.test(q));
+}
 async function genQuestions(){
+  const text=[S.desc||'',S.photoName||''].join(' ');
+  const needList=pickNeeds(text).map((n,i)=>(i+1)+'. '+n.angle).join('\n');
   const cloud=await ensureCloud();
   if(cloud){
-    try{
-      const sys='你是懂Z世代的产品顾问，正在做一对一诊断。'+
-        '根据用户给的产品/服务（可能含图片），写出 4 个诊断问题，逐轮追问。'+
-        '依次覆盖：掌控感（TA能不能自己说了算）、配得感（愿不愿站队/发圈）、满足感（当下是否有爽点）、传播（会夸还是会吐槽）。'+
-        '要求：每个问题≤32个汉字；必须具体到这个产品的细节和真实场景，像真人顾问现场发问；'+
-        '不要编号、不要解释、不要模板腔、4 个问题不要同一个句式。'+
-        '只输出JSON：{"q":["问题1","问题2","问题3","问题4"]}';
-      const parts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n请针对它输出 4 个问题。`}];
-      if(S.photoData) parts.unshift({type:'image_url',image_url:{url:S.photoData}});
-      const ans=await withTimeout(streamText(cloud,sys,parts),9000);
-      const o=parseJSON(ans);
-      if(o&&Array.isArray(o.q)){
-        const qs=o.q.filter(x=>typeof x==='string'&&x.trim().length>=6)
-                   .map(x=>x.trim().replace(/^\d+[.、]\s*/,'').slice(0,40));
-        if(qs.length>=3){ while(qs.length<4)qs.push(QLIB.generic[qs.length]); return qs.slice(0,4); }
-      }
-    }catch(e){}
+    for(let attempt=0;attempt<2;attempt++){
+      try{
+        const sys=[
+          '你是小Z，24岁，替品牌看"这东西年轻人会不会真用"。说话直，但不刻薄。',
+          '第一步：写下你真的看到了什么——只写图里和描述里存在的具体东西（材质、颜色、状态、场景）。不加评价，不复述用户的判断。',
+          '第二步：从下面这份 Z 真实需求清单里，挑 4 条和这件东西最贴的，每条写 1 个问题。',
+          needList,
+          '硬规则：',
+          'A 每问必须落到第一步写到的某个具体细节上，把那个细节的词说进问题里；不许用"这家店/这个产品/它"顶替。',
+          'B 不许出现「掌控感/配得感/满足感/TA/Z世代/用户」这类词。',
+          'C 不许写成"是否…""会不会…"这种逼人二选一的问法，要问具体的场景、动作、时刻。',
+          'D 每问 ≤26 个字，口语，像当面聊天；4 问不许同一个句式，也不许都用"你"开头。',
+          attempt?'E 上一版太笼统。这次问得更小：某一只手、某一次使用、某一个瞬间。':'',
+          '只输出 JSON：{"look":"我看到的一句话（≤40字，必须含具体细节）","q":["问1","问2","问3","问4"]}'
+        ].filter(Boolean).join('\n');
+        const parts=[{type:'text',text:`我拍的/写的是：\n${S.desc||'（没有文字，只有图）'}\n\n先看清它，再问 4 个问题。`}];
+        if(S.photoData) parts.unshift({type:'image_url',image_url:{url:S.photoData}});
+        const ans=await withTimeout(streamText(cloud,sys,parts),25000);
+        const o=parseJSON(ans);
+        if(o&&Array.isArray(o.q)){
+          const qs=o.q.map(x=>String(x||'').trim().replace(/^\d+[.、)]\s*/,'').replace(/^["'「]|["'」]$/g,''))
+                       .filter(x=>x.length>=6&&x.length<=34);
+          if(qs.length>=3&&!badQs(qs)){
+            const fill=localQs(S.desc).qs;
+            while(qs.length<4) qs.push(fill[qs.length]);
+            return {look:String(o.look||'').trim().slice(0,60), qs:qs.slice(0,4)};
+          }
+        }
+      }catch(e){ window.__cloudErr='gen:'+(e&&(e.error&&e.error.code||e.message)); }
+    }
   }
-  return localQuestions(S.desc);
+  return localQs(S.desc);
 }
 async function diagnoseCloud(){
   const cloud=await ensureCloud(); if(!cloud)return null;
@@ -413,7 +439,7 @@ async function diagnoseCloud(){
       'quickwin 为极具体、针对该产品的一条速赢建议，≤30个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
-    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
+    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,deserved,gratification,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
     if(S.photoData) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
     let ans=await streamText(cloud,sys,userParts);
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
@@ -530,6 +556,7 @@ async function startDemoChat(){
 async function playDemoStep(){
   if(window.__demoAbort)return;
   const qi=S.qi;
+  if(qi===0&&DEMO.look){ S.look=DEMO.look; pushLook(DEMO.look); await wait(950); if(window.__demoAbort)return; }
   pushBot(S.questions[qi]);
   await wait(820);
   if(window.__demoAbort)return;
@@ -560,16 +587,19 @@ function renderDescribe(){
 async function goChat(){
   const nav=NAV;
   S.desc=$('#desc').value.trim()||S.desc||'';
-  S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;
+  S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;S.look='';
   setSteps(3);
   $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat">
       <div class="bub bot typing"><i></i><i></i><i></i></div></div>
-      <p class="fine" style="margin-top:16px">AI 正在读图，为你定制问题…</p></div>`;
-  const qs=await genQuestions();
+      <p class="fine" id="gentip" style="margin-top:16px">小Z 正在看这张图…</p></div>`;
+  const tipT=setTimeout(()=>{const t=$('#gentip'); if(t)t.textContent='看完了，正在挑最关键的四件事…';},5500);
+  const g=await genQuestions();
+  clearTimeout(tipT);
   if(nav!==NAV)return;
-  S.questions=qs;
+  S.look=g.look||''; S.questions=g.qs;
   $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
     <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off"><button onclick="sendAns()">发送</button></div></div>`;
+  if(S.look) pushLook(S.look);
   pushBot(S.questions[0]);
 }
 async function sendAns(){
@@ -584,6 +614,7 @@ async function sendAns(){
   else { setTimeout(computeAndShow,650); }
 }
 function pushBot(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
+function pushLook(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub look"><em>小Z 看到的</em><span>${esc(t)}</span></div>`);scrollC();}
 function pushMe(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
 function botTyping(){const c=$('#chat');if(!c)return;c.insertAdjacentHTML('beforeend',`<div class="bub bot typing"><i></i><i></i><i></i></div>`);scrollC();}
 function scrollC(){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;}
