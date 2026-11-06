@@ -1428,11 +1428,23 @@ async function callLLM(sys, history){
   return String(c).trim();
 }
 
+/* 从完整版首页点 LOGO / 产品名 → 回到引流版（保留 sharecode） */
+function goLite(){
+  const q = new URLSearchParams(location.search);
+  q.set('mode','lite');
+  location.href = location.pathname + '?' + q.toString() + location.hash;
+}
+
 /* ===== 16. 事件绑定 + 启动 ===== */
 function bind(){
   $('#btn-progress').onclick=()=>show('progress');
   $('#btn-ai-settings').onclick=openSettings;
   $('#btn-start').onclick=openDomainPicker;
+  const bh = $('#brand-home');
+  if(bh){
+    bh.onclick = goLite;
+    bh.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); goLite(); } });
+  }
   $('#btn-how').onclick=()=>toast('选一个战场 → 看对手是谁 → 开练。第一次约 5 分钟，输了也没关系。');
   $('#btn-progress2').onclick=()=>show('progress');
   $('#btn-back-home').onclick=()=>show('home');
