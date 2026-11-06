@@ -1503,6 +1503,15 @@ window.addEventListener('DOMContentLoaded', async()=>{
   if(!State._screen) show('home');
   refreshInstallUI();
   if('serviceWorker' in navigator && location.protocol!=='file:'){
-    window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+      // 新版本部署后，SW 接管即自动刷新一次，避免用户长期看旧缓存
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+        if(reloaded) return;
+        reloaded = true;
+        location.reload();
+      });
+    });
   }
 });
