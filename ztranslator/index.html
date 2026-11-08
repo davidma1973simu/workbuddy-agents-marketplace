@@ -56,6 +56,17 @@
     padding:6px 7px;border-radius:8px;cursor:pointer;white-space:nowrap;
     transition:color .15s var(--ease),background .15s var(--ease)}
   .hlink:hover{color:var(--ink);background:rgba(0,0,0,.035)}
+  /* 中英跷跷板：与 Z含量 首页同一套（白滑块左右落座） */
+  .lang{position:relative;display:inline-flex;background:#EAE8E3;border-radius:999px;padding:3px;border:none;
+    cursor:pointer;font:inherit;margin-left:5px;box-shadow:inset 0 1px 2px rgba(0,0,0,.05);
+    transition:opacity .15s var(--ease);--lw:30px}
+  .lang:active{opacity:.75}
+  .lang b{position:relative;z-index:1;width:var(--lw);text-align:center;font-size:11px;font-weight:800;
+    letter-spacing:.02em;color:#9A9AA0;padding:4px 0;line-height:1.35;transition:color .25s var(--ease)}
+  .lang b.on{color:#0B7A5B}
+  .lang .thumb{position:absolute;top:3px;left:3px;width:var(--lw);height:calc(100% - 6px);background:#fff;border-radius:999px;
+    box-shadow:0 1px 2px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.07);transition:transform .34s var(--ease)}
+  .lang[data-on="en"] .thumb{transform:translateX(var(--lw))}
   .flowbar{max-width:var(--maxw);margin:0 auto;padding:15px 18px 12px}
   .step-meta{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
   .step-meta .num{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:1px}
@@ -63,6 +74,11 @@
   @media(max-width:400px){
     .brand .bsub{display:none}
     .hlink{padding:6px 5px}
+  }
+  @media(max-width:380px){
+    .ai-flag{padding:5px 8px;font-size:11px;margin-right:2px}
+    .hlink{padding:6px 4px;font-size:12.5px}
+    .lang{--lw:27px;margin-left:2px}
   }
 
   /* ---------- Progress ---------- */
@@ -307,7 +323,9 @@
       <button id="aiFlag" class="ai-flag" onclick="openSettings()"><i></i>本地推演</button>
       <button class="hlink" onclick="openProjects()">课题</button>
       <button class="hlink" onclick="openAbout()">关于</button>
-      <button class="hlink" onclick="openSettings()">设置</button>
+      <button class="lang" id="langSw" data-on="zh" onclick="switchLang()" aria-label="Switch language / 切换语言">
+        <span class="thumb"></span><b data-l="zh" class="on">中</b><b data-l="en">EN</b>
+      </button>
     </div>
   </div>
 </header>
@@ -753,6 +771,10 @@ function goStep(n){
 function brandHome(){
   if(state.step===0){window.scrollTo({top:0,behavior:'smooth'});return;}
   goStep(0);
+}
+/* 中英跷跷板：先只做界面，英文版内容稍后接 */
+function switchLang(){
+  toast('English 版正在做，先用中文');
 }
 
 function renderHeader(){
