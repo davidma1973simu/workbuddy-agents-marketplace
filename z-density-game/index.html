@@ -31,8 +31,18 @@
     cursor:pointer;color:inherit;font:inherit;-webkit-tap-highlight-color:transparent;transition:opacity .15s var(--ease)}
   .brand:active{opacity:.55}
   .hd .t{font-weight:800;font-size:16px;letter-spacing:-.3px}
-  .hd .pro{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent-d);background:var(--accent-soft);
-    padding:5px 11px;border-radius:999px;text-decoration:none}
+  .hdright{margin-left:auto;display:flex;align-items:center;gap:9px;flex:none}
+  .hd .pro{font-size:11.5px;font-weight:700;color:var(--accent-d);background:var(--accent-soft);
+    padding:5px 10px;border-radius:999px;text-decoration:none;white-space:nowrap}
+  /* 中英跷跷板：两格等宽，白色滑块左右落座 */
+  .lang{position:relative;display:inline-flex;background:#EAE8E3;border-radius:999px;padding:3px;border:none;
+    cursor:pointer;font:inherit;box-shadow:inset 0 1px 2px rgba(0,0,0,.05);-webkit-tap-highlight-color:transparent}
+  .lang b{position:relative;z-index:1;width:30px;text-align:center;font-size:11px;font-weight:800;
+    letter-spacing:.02em;color:#9A9AA0;padding:4px 0;line-height:1.35;transition:color .25s var(--ease)}
+  .lang b.on{color:#0B7A5B}
+  .lang .thumb{position:absolute;top:3px;left:3px;width:30px;height:calc(100% - 6px);background:#fff;border-radius:999px;
+    box-shadow:0 1px 2px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.07);transition:transform .34s var(--ease)}
+  .lang[data-on="en"] .thumb{transform:translateX(30px)}
   main{flex:1;padding:18px 18px 40px}
   .steps{display:flex;gap:6px;margin-bottom:16px}
   .step{flex:1;height:4px;border-radius:99px;background:var(--line);transition:background .4s var(--ease)}
@@ -156,6 +166,17 @@
   .linkbtn u{text-decoration:none;border-bottom:1.5px solid #D3D1CB;padding-bottom:2px}
   .fine{text-align:center;font-size:10.5px;color:#A6A6AC;margin:26px 0 0;letter-spacing:.04em}
 
+  /* 英文版排版：拉丁字母更宽，字号与字距单独收一档，避免与中文同一套尺寸 */
+  .app[data-lang="en"] .big{font-size:clamp(33px,10.2vw,45px);letter-spacing:-1.6px;line-height:1.06}
+  .app[data-lang="en"] .lede{font-size:14px;line-height:1.72}
+  .app[data-lang="en"] .cap{font-size:13.5px;letter-spacing:0;line-height:1.42}
+  .app[data-lang="en"] .shot.hero .cap{font-size:15px}
+  .app[data-lang="en"] .hd .t{font-size:15px;letter-spacing:-.2px}
+  .app[data-lang="en"] .bub{font-size:14px}
+  .app[data-lang="en"] .bub.look span{font-size:13px}
+  .app[data-lang="en"] .pil .top{font-size:13.5px}
+  .app[data-lang="en"] .why{font-size:12px;line-height:1.45}
+
   /* 演示：电脑自动填写 */
   .filled{border:1px solid #E3E1DB;background:#fff;border-radius:16px;padding:14px 15px;font-size:14.5px;line-height:1.7;
     color:#26262B;min-height:80px;box-shadow:0 6px 18px rgba(20,20,20,.04)}
@@ -167,13 +188,18 @@
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app" data-lang="zh">
   <header class="hd">
     <button class="brand" onclick="goHome()" aria-label="回到首页">
       <img src="app-icon.png" alt="" class="logo">
-      <span class="t">Z含量 · 拍照测</span>
+      <span class="t" id="hTitle">Z含量 · 拍照测</span>
     </button>
-    <a class="pro" href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/" target="_blank" rel="noopener">完整版 Pro →</a>
+    <div class="hdright">
+      <button class="lang" id="langSw" data-on="zh" onclick="toggleLang()" aria-label="Switch language / 切换语言">
+        <span class="thumb"></span><b data-l="zh" class="on">中</b><b data-l="en">EN</b>
+      </button>
+      <a class="pro" id="hPro" href="https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/" target="_blank" rel="noopener">完整版 Pro →</a>
+    </div>
   </header>
 
   <main>
@@ -184,7 +210,7 @@
     <div id="screen"></div>
   </main>
 
-  <footer>Z含量是趣味读数 · 专业诊断请看完整版 Pro</footer>
+  <footer id="foot">Z含量是趣味读数 · 专业诊断请看完整版 Pro</footer>
 </div>
 
 <input id="fileCam" type="file" accept="image/*" capture="environment" class="hidden">
@@ -205,6 +231,101 @@ const S={photo:null,photoData:null,photoReady:null,photoName:'',desc:'',look:'',
 const PRO_URL='https://davidma1973simu.github.io/workbuddy-agents-marketplace/ztranslator/';
 const APP_URL='https://z-density-game.app.workbuddy.host';
 
+/* ============ 中英双语（顶部跷跷板开关） ============ */
+/* 语言优先级：URL ?lang= > 上次选择 > 中文。不做 UA 猜测——用户自己按过一次就永远记住 */
+let LANG=(function(){
+  try{
+    const p=new URLSearchParams(location.search).get('lang');
+    if(p==='en'||p==='zh')return p;
+    const s=localStorage.getItem('zd_lang');
+    if(s==='en'||s==='zh')return s;
+  }catch(e){}
+  return 'zh';
+})();
+let EN=LANG==='en';
+let VIEW='home';
+const UI={
+  zh:{
+    title:'Z含量 · 拍照测一测', brand:'Z含量 · 拍照测', pro:'完整版 Pro →',
+    foot:'Z含量是趣味读数 · 专业诊断请看完整版 Pro',
+    kick:'Z-DENSITY SCAN',
+    big:'它配得上<br><em>年轻人</em>吗？',
+    lede:'上传一张图，<b>一分钟</b>看完它的 Z 含量。<br>三根柱子，一句话，一张能发的卡。',
+    badge:'Z 含量', cap:'「这酒店自助早餐，和 50 年前好像没什么变化。」', sign:'— 小Z',
+    altDemo:'示例：酒店自助早餐',
+    cta:'拍一张 / 上传', lib:'从相册选', demo:'看示例', fine:'AI 我们出钱 · 不用填任何 Key',
+    flagScan:'AI 免费诊断 · 4 轮对话',
+    lblDesc:'一句话描述它（让 AI 问得更准）',
+    phDesc:'例：传统自助餐，上百种食物，和休闲客混在一起，吵且杂',
+    btnStart:'开始诊断 →', smDesc:'接下来 AI 会按这个产品，现场生成 4 个问题',
+    tip1:'小Z 正在看这张图…', tip2:'看完了，正在挑最关键的四件事…', tip3:'马上好——正在把问题削到最短…',
+    ansPh:'随便说两句…', send:'发送', lookLbl:'小Z 看到的',
+    demoFlag:'示例 · 自动演示', lblDemo:'一句话描述它',
+    noteRead:'AI 正在读这张图…', noteFilled:'已自动填好 · 正在按这个主题生成 4 个问题…',
+    skip:'跳过动画，直接看结果', demoPh:'示例自动播放中…',
+    demoTip:'示例由 AI 实时点评 · 自己测时，回答由你来说',
+    backHome:'← 回到首页，重新测一张',
+    aiOn:'AI 诊断 · 免费', aiOff:'AI 未连上 · 本地粗读', of10:'三柱平均 · 满分 10',
+    p1:'掌控感', p2:'配得感', p3:'满足感',
+    quickTag:'速赢攻略', makeCard:'生成分享卡 ↓', ctaPro:'解锁完整转型专案 →',
+    editDesc:'改一条描述，复测 ↺', retryAI:'AI 没连上，重试一次 ↺',
+    cardTag:'Z 含量诊断', cardScore:'Z 含量 / 10', cardWeak:'最弱 · ',
+    cardWin:'速赢攻略', qrApp:'测你的一张', qrPro:'看完整转型专案', fileName:'Z含量-'
+  },
+  en:{
+    title:'Z Density · Scan it', brand:'Z Density', pro:'Full Pro →',
+    foot:'A playful read, not a full diagnosis · see Pro for that',
+    kick:'Z-DENSITY SCAN',
+    big:'Does it<br><em>deserve</em><br>Gen Z?',
+    lede:'Upload one photo. <b>One minute.</b><br>Three pillars, one verdict, one card worth posting.',
+    badge:'Z SCORE', cap:'“Fifty years on, this hotel breakfast hasn’t changed a bit.”', sign:'— Z',
+    altDemo:'Demo: hotel breakfast buffet',
+    cta:'Take a photo / Upload', lib:'Choose from library', demo:'See the demo',
+    fine:'The AI is on us · no API key needed',
+    flagScan:'Free AI scan · 4 questions',
+    lblDesc:'One line about it — it makes the AI ask better',
+    phDesc:'e.g. An old hotel breakfast buffet: a hundred dishes, holiday guests, noisy, dated trays.',
+    btnStart:'Start the scan →', smDesc:'Next, the AI writes four questions about this exact thing',
+    tip1:'Z is looking at your photo…', tip2:'Got it — picking the four things that matter…', tip3:'Almost there — trimming the questions down…',
+    ansPh:'Just say it…', send:'Send', lookLbl:'WHAT Z SAW',
+    demoFlag:'DEMO · auto-play', lblDemo:'One line about it',
+    noteRead:'The AI is reading the photo…', noteFilled:'Filled in · writing four questions for it…',
+    skip:'Skip ahead to the result', demoPh:'Demo playing…',
+    demoTip:'Live AI commentary · when you scan, you answer',
+    backHome:'← Back home · scan another',
+    aiOn:'AI scan · free', aiOff:'AI offline · rough local read', of10:'Pillar average · out of 10',
+    p1:'Control', p2:'Identity', p3:'Delight',
+    quickTag:'QUICK WIN', makeCard:'Make the share card ↓', ctaPro:'Unlock the full plan →',
+    editDesc:'Edit the description, re-scan ↺', retryAI:'AI didn’t connect — retry ↺',
+    cardTag:'Z-DENSITY SCAN', cardScore:'Z score / 10', cardWeak:'Weakest · ',
+    cardWin:'QUICK WIN', qrApp:'Scan yours', qrPro:'See the full plan', fileName:'z-density-'
+  }
+};
+function t(k){ const d=UI[EN?'en':'zh']; const v=d[k]; return v===undefined?UI.zh[k]:v; }
+function toggleLang(){ setLang(EN?'zh':'en'); }
+function setLang(l){
+  if(l!==LANG){ LANG=l; EN=(l==='en'); }
+  try{ localStorage.setItem('zd_lang',l); }catch(e){}
+  document.documentElement.lang=EN?'en':'zh-CN';
+  document.title=t('title');
+  const app=document.querySelector('.app'); if(app)app.setAttribute('data-lang',l);
+  const sw=document.querySelector('#langSw'); if(sw)sw.setAttribute('data-on',l);
+  document.querySelectorAll('.lang b').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+  const ht=document.querySelector('#hTitle'); if(ht)ht.textContent=t('brand');
+  const hp=document.querySelector('#hPro'); if(hp)hp.textContent=t('pro');
+  const ft=document.querySelector('#foot'); if(ft)ft.textContent=t('foot');
+  /* 就地重渲染当前页，不把人踢回首页 */
+  if(VIEW==='result'&&S.scores) renderResult();
+  else if(VIEW==='describe') renderDescribe();
+  else if(VIEW==='home') renderHome();
+  else if(VIEW==='demo'){ window.__demoAbort=true; runDemo(); }
+  else if(VIEW==='chat'){
+    const i=document.querySelector('#ans'); if(i)i.placeholder=t('ansPh');
+    const sb=document.querySelector('.chatinput button'); if(sb)sb.textContent=t('send');
+    document.querySelectorAll('.bub.look em').forEach(e=>e.textContent=t('lookLbl'));
+  }
+}
+
 /* ============ 工具 ============ */
 const $=s=>document.querySelector(s);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -224,11 +345,20 @@ const KW={
   grat:[['即时','惊喜','赠','打卡','盲盒','彩蛋','快乐','治愈','小确幸','反馈','互动','好玩','趣味','暖'],
         ['等待','无聊','失望','漫长','冷漠','无趣']]
 };
+const KW_EN={
+  control:[['choose','chose','my own','myself','custom','simple','quiet','free','flexible','at my pace','easy'],
+           ['pushy','forced','queue','default','script','crowd','confusing','slow','upsell']],
+  deserved:[['premium','quality','design','limited','ritual','unique','craft','taste','niche','beautiful'],
+            ['cheap','flimsy','generic','tacky','knockoff','plain']],
+  grat:[['instant','surprise','gift','reward','fun','joy','delight','feedback','playful','warm'],
+        ['wait','boring','disappoint','slow','cold','dull']]
+};
 function hash(str){let h=0;for(let i=0;i<str.length;i++){h=(h<<5)-h+str.charCodeAt(i);h|=0;}return Math.abs(h);}
 function scorePillar(name,text){
-  const [pos,neg]=KW[name];let s=4.6;
-  pos.forEach(w=>{if(text.includes(w))s+=0.7;});
-  neg.forEach(w=>{if(text.includes(w))s-=0.8;});
+  const [pos,neg]=(EN?KW_EN:KW)[name];let s=4.6;
+  const hay=EN?String(text||'').toLowerCase():String(text||'');
+  pos.forEach(w=>{if(hay.includes(w))s+=0.7;});
+  neg.forEach(w=>{if(hay.includes(w))s-=0.8;});
   const jitter=((hash(text+name)%100)/100-0.5)*1.1;
   s+=jitter;
   return Math.max(1,Math.min(10,+s.toFixed(1)));
@@ -237,71 +367,146 @@ function localScores(text){
   return {control:scorePillar('control',text),deserved:scorePillar('deserved',text),gratification:scorePillar('grat',text)};
 }
 function pillarWhy(name,sc){
+  if(EN){
+    if(name==='control'){ if(sc>=7.5)return'They call every shot'; if(sc>=6)return'Choice, but not enough'; if(sc>=5)return'Half-pushed autonomy'; if(sc>=3)return'Someone else decides'; return'Fully arranged for them'; }
+    if(name==='deserved'){ if(sc>=7.5)return'No pressure to stand behind it'; if(sc>=6)return'One notch short of proud'; if(sc>=5)return'They settle for it'; if(sc>=3)return'Nothing to post'; return'Wouldn\'t want it seen'; }
+    return (sc>=7.5)?'Good right there':(sc>=6)?'Payoff comes late':(sc>=5)?'Not enough small wins':(sc>=3)?'Only worth it later':'Not one good second';
+  }
   if(name==='control'){ if(sc>=7.5)return'自主权基本到位'; if(sc>=6)return'选择有但不够爽'; if(sc>=5)return'半推半就的自主'; if(sc>=3)return'被流程牵着走'; return'全程别人替你安排'; }
   if(name==='deserved'){ if(sc>=7.5)return'站队无压力'; if(sc>=6)return'面子差一口气'; if(sc>=5)return'配得感将就了'; if(sc>=3)return'不值得发圈'; return'拿不出手，也不想被看见'; }
   return (sc>=7.5)?'当下就开心':(sc>=6)?'爽点偏靠后':(sc>=5)?'惊喜不够密':(sc>=3)?'熬完才有点值':'一秒都没爽过';
 }
 function pickVerdict(sc,text){
-  const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
+  const noun=getNoun(text);
+  const arr=[['control',EN?'control':'掌控感'],['deserved',EN?'identity':'配得感'],['gratification',EN?'delight':'满足感']];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
-  const weak=arr[0],noun=getNoun(text);
+  const weak=arr[0];
+  const avg=(sc.control+sc.deserved+sc.gratification)/3;
+  if(EN){
+    const head = weak[0]==='control' ? `Weakest is control: every step of this ${noun} was decided for them.`
+               : weak[0]==='deserved' ? `Weakest is identity: hold this ${noun} and you can't say "this is mine".`
+               : `Weakest is delight: this ${noun} ends without one moment that lands.`;
+    const tail = avg>=7.5?'All three hold — push further.':avg>=5?'Middle ground: fix the weakest pillar only.':'Fix the weakest pillar first, not all three.';
+    return head+tail;
+  }
   const head = weak[0]==='control' ? `最弱是掌控：${noun}里每一步都被人替你安排好了。`
              : weak[0]==='deserved' ? `最弱是配得：${noun}拿在手上，说不出一句"这是我的"。`
              : `最弱是满足：${noun}用完了，没有一个当下就成立的瞬间。`;
-  const avg=(sc.control+sc.deserved+sc.gratification)/3;
   const tail = avg>=7.5?'三柱都在线，可以往上加码。':avg>=5?'中间地带，只改最弱的那一柱就够。':'先只改最弱的那一柱，别同时动三处。';
   return head+tail;
 }
-function getNoun(t){ if(!t)return'产品'; const keys=['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','手表','腕表','盲盒','手办','周边','社群','服务','品牌','活动','杯'];
-  for(const k of keys){ if(t.includes(k)) return k; } return'产品'; }
+function getNoun(t){
+  if(!t)return EN?'product':'产品';
+  const keys=EN?['cup','mug','watch','keyboard','headphone','phone','bottle','bowl','shirt','shoe','bag','burger','coffee','tea','breakfast','buffet','hotel','course','app','chair','lamp','box']
+               :['早餐','自助餐','餐厅','奶茶','咖啡','店','APP','小程序','课程','会员','礼盒','耳机','手机','游戏','护肤品','口红','球鞋','手表','腕表','盲盒','手办','周边','社群','服务','品牌','活动','杯'];
+  const hay=EN?String(t).toLowerCase():t;
+  for(const k of keys){ if(hay.indexOf(k)>=0) return k; }
+  return EN?'thing':'产品';
+}
 function pickQuickwin(sc,desc){
   const noun=getNoun(desc);
-  const arr=[['control','产品翻译',`把${noun}的默认勾选和推荐话术删掉，改成让人先自己选一次，选完再给建议。`],
-             ['deserved','包装翻译',`给${noun}换一套能拍的外观：单色哑光底＋一个可露出的标识，去掉满屏促销字。`],
-             ['gratification','社群翻译',`在${noun}的过程里加一个 30 秒内就有反馈的小动作，让人当场想拍一张。`]];
+  const arr=EN
+    ? [['control','Product',`Delete the pre-ticked defaults and the upsell line on the ${noun}: let people choose once, then suggest.`],
+       ['deserved','Packaging',`Re-skin the ${noun} in one matte colour with a single mark that can be shown; drop the promo stickers.`],
+       ['gratification','Community',`Add one 30-second beat inside the ${noun} that gives feedback on the spot, so people want to photograph it.`]]
+    : [['control','产品翻译',`把${noun}的默认勾选和推荐话术删掉，改成让人先自己选一次，选完再给建议。`],
+       ['deserved','包装翻译',`给${noun}换一套能拍的外观：单色哑光底＋一个可露出的标识，去掉满屏促销字。`],
+       ['gratification','社群翻译',`在${noun}的过程里加一个 30 秒内就有反馈的小动作，让人当场想拍一张。`]];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
   return {step:arr[0][1],text:arr[0][2]};
 }
 function pickHeadline(sc,desc){
-  const arr=[['control','掌控感'],['deserved','配得感'],['gratification','满足感']];
+  const arr=[['control',0],['deserved',1],['gratification',2]];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
-  const w=arr[0][1]; const noun=getNoun(desc);
+  const w=arr[0][0]; const noun=getNoun(desc);
   const avg=(sc.control+sc.deserved+sc.gratification)/3;
+  if(EN){
+    if(avg<4) return `Fifty years on, this ${noun} hasn't changed.`;
+    if(w==='control') return `Every step of this ${noun} is decided for you.`;
+    if(w==='deserved') return `This ${noun} stops at "good enough".`;
+    return `Good, but you won't remember it.`;
+  }
   if(avg<4) return `这${noun}，和五十年前好像没什么变化。`;
-  if(w==='掌控感') return `这${noun}，每一步都替 TA 想好了。`;
-  if(w==='配得感') return `这${noun}，还停在"够用就好"。`;
+  if(w==='control') return `这${noun}，每一步都替 TA 想好了。`;
+  if(w==='deserved') return `这${noun}，还停在"够用就好"。`;
   return `这${noun}，好是好，就是记不住。`;
 }
 
 /* ============ 对话问题：按产品主题动态生成（本地分类题库作降级） ============ */
 /* Z 需求卡：每张卡是一条真实的 Z 需求 + 该从哪个角度去问（只给角度，问题里不许出现卡片名） */
 const NEEDS=[
-  {kw:/自己|挑|选|送|随手|拿|决定|安排|推荐|默认|排队|人流|点单|套餐|规则|流程/, angle:'这件事里到底是谁在替 TA 拿主意：自己挑，还是被人流、默认值、导购推着走'},
-  {kw:/垢|渍|脏|旧|老|破|土|廉价|杂牌|痕迹|褪色|划痕|掉漆|油|锈|发黄|灰/, angle:'它有没有哪一面，TA 其实不想让别人看见（会藏、会遮、会换）'},
-  {kw:/好看|颜值|色|设计|包装|拍照|出片|摆|桌|窗|logo|联名|版/, angle:'TA 会不会想把它拍下来发出去，还是只想自己用'},
-  {kw:/贵|便宜|价|块|元|性价比|套餐|会员|打折|赠|预算/, angle:'这个价钱，TA 觉得"我配得上"，还是"先将就一下"'},
-  {kw:/快|即时|第一|马上|立刻|惊喜|彩蛋|反馈|爽|手感/, angle:'拿到手的第一秒，有没有一个让 TA 立刻开心的点'},
-  {kw:/大|小|尺寸|颜色|定制|刻|贴|改|拼|装|选配|换/, angle:'TA 能不能把它改成"我自己的那一只"'},
-  {kw:/每天|早上|上班|加班|家|宿舍|办公|晚上|习惯|一直用|用了|通勤/, angle:'它在 TA 一天里的哪一刻出现，那一刻 TA 真正想要的是什么'},
-  {kw:/圈|同好|朋友|社群|话题|梗|小众|手工|复古|古着|咖啡|茶|酒/, angle:'懂的人能不能一眼认出这是"自己人的东西"'}
+  {kw:/自己|挑|选|送|随手|拿|决定|安排|推荐|默认|排队|人流|点单|套餐|规则|流程/,
+   kwEn:/pick|chose|choose|decide|decided|default|recommend|queue|crowd|order|menu|rule|flow|handed|was given|sort out/i,
+   angle:'这件事里到底是谁在替 TA 拿主意：自己挑，还是被人流、默认值、导购推着走',
+   angleEn:'who is actually deciding here — them, or the crowd, the default, the salesperson'},
+  {kw:/垢|渍|脏|旧|老|破|土|廉价|杂牌|痕迹|褪色|划痕|掉漆|油|锈|发黄|灰/,
+   kwEn:/stain|crack|scratch|scuff|old|worn|dirty|faded|chipped|cheap|off-?brand|mark|yellow/i,
+   angle:'它有没有哪一面，TA 其实不想让别人看见（会藏、会遮、会换）',
+   angleEn:'is there a side of it they would rather nobody saw (hide it, cover it, swap it)'},
+  {kw:/好看|颜值|色|设计|包装|拍照|出片|摆|桌|窗|logo|联名|版/,
+   kwEn:/look|design|colour|color|packag|photo|post|logo|collab|print|finish/i,
+   angle:'TA 会不会想把它拍下来发出去，还是只想自己用',
+   angleEn:'would they want to photograph it and post it, or only use it alone'},
+  {kw:/贵|便宜|价|块|元|性价比|套餐|会员|打折|赠|预算/,
+   kwEn:/price|cheap|expensive|cost|value|deal|member|sale|bundle|budget|£|\$|¥/i,
+   angle:'这个价钱，TA 觉得"我配得上"，还是"先将就一下"',
+   angleEn:'at that price, does it feel "I deserve this" or "I will make do"'},
+  {kw:/快|即时|第一|马上|立刻|惊喜|彩蛋|反馈|爽|手感/,
+   kwEn:/instant|first|immediately|surprise|feedback|feel|texture|satisfying|click|fast/i,
+   angle:'拿到手的第一秒，有没有一个让 TA 立刻开心的点',
+   angleEn:'in the first second of holding it, is there one thing that lands'},
+  {kw:/大|小|尺寸|颜色|定制|刻|贴|改|拼|装|选配|换/,
+   kwEn:/size|colour|color|custom|engrav|sticker|swap|modular|assemble|change|tune|set ?up/i,
+   angle:'TA 能不能把它改成"我自己的那一只"',
+   angleEn:'can they turn it into "mine" — change it, adjust it, add to it'},
+  {kw:/每天|早上|上班|加班|家|宿舍|办公|晚上|习惯|一直用|用了|通勤/,
+   kwEn:/morning|commute|office|desk|home|night|habit|daily|every day|everyday|used it/i,
+   angle:'它在 TA 一天里的哪一刻出现，那一刻 TA 真正想要的是什么',
+   angleEn:'which moment of their day is it in — and what do they actually want right then'},
+  {kw:/圈|同好|朋友|社群|话题|梗|小众|手工|复古|古着|咖啡|茶|酒/,
+   kwEn:/friend|community|niche|vintage|craft|coffee|tea|wine|music|subculture|club|scene/i,
+   angle:'懂的人能不能一眼认出这是"自己人的东西"',
+   angleEn:'would the right people recognise it on sight as one of their own'}
 ];
-function pickNeeds(text){ const hit=NEEDS.filter(n=>n.kw.test(text)); return hit.concat(NEEDS.filter(n=>hit.indexOf(n)<0)).slice(0,5); }
+function pickNeeds(text){
+  const hit=NEEDS.filter(n=>(EN?n.kwEn:n.kw).test(text||''));
+  return hit.concat(NEEDS.filter(n=>hit.indexOf(n)<0)).slice(0,5);
+}
 
 /* 从描述里捞出"这东西"和"最扎眼的细节"：本地降级也要说人话 */
 function objOf(desc){
   const d=desc||'';
+  if(EN){
+    const ek=['mug','cup','bottle','tumbler','bowl','plate','tray','watch','keyboard','headphone','phone','laptop','chair','desk','lamp','shoe','bag','jacket','shirt','burger','coffee','tea','cake','box','package','app','store','counter','menu'];
+    const h=d.toLowerCase();
+    for(const k of ek) if(h.indexOf(k)>=0) return k;
+    return 'thing';
+  }
   const keys=['保温杯','马克杯','杯子','杯','碗','盘','托盘','餐具','咖啡','茶','酒','瓶','盒','袋','衣','鞋','包','耳机','手机','电脑','键盘','椅子','桌','灯','花','书','票','菜单','包装','礼盒','海报','玩偶','手办','香','口红','面霜','门店','柜台','小程序','App'];
   for(const k of keys) if(d.indexOf(k)>=0) return k;
   return '东西';
 }
 function detailOf(desc){
   const d=desc||'';
+  if(EN){
+    const m=/\b(stain\w*|scratch\w*|crack\w*|chip\w*|faded|scuff\w*|greasy|dirty)\b/i.exec(d);
+    return m?m[1]:'';
+  }
   const m=/([一-龥]{0,3}(?:垢|渍|划痕|掉漆|褪色|裂|缺角|油光|指纹))/.exec(d)||/(比[^，,。；;]{1,8})/.exec(d);
   return m?m[1]:'';
 }
 /* 本地兜底：只问这件东西本身，不问品类套话（AI 掉线时不至于问出"这家店……"） */
 function localQs(desc){
   const d=(desc||'').trim(), o=objOf(d), det=detailOf(d);
+  if(EN){
+    return {look:d?d.replace(/[。.；;]\s*$/,''):'Whatever is in this photo',
+      qs:[
+        `Was this ${o} yours to pick, or was it handed to you?`,
+        'Is there a side of it you would rather people did not see?',
+        `If it cost twice as much, would that feel fair or a rip-off?`,
+        `What would have to happen for you to photograph it?`
+      ]};
+  }
   return {look:d?d.replace(/[。.；;]\s*$/,''):'这张图里的东西',
     qs:[
       `这个${o}，是你自己挑的，还是别人给的？`,
@@ -334,23 +539,59 @@ const DEMO={
     '没人提，等于没发生。'
   ]
 };
+const DEMO_EN={
+  desc:'A 50-year-old hotel breakfast buffet. A hundred dishes on one long counter, mixed in with holiday guests. Big room, lots of food, but loud, messy, dated trays.',
+  look:'A long run of stainless trays, heaped full. White china, wooden trays, plastic price cards, warm yellow light.',
+  questions:[
+    'Do you just follow the line from one end to the other?',
+    'The moment it lands on the table — do you take a photo first?',
+    'By the third thing you eat, is anything still making you look up?',
+    'Walking out, would you mention it to a friend?'
+  ],
+  answers:[
+    'Pretty much follow the crowd. You loop the counter, staff keep waving you forward, nobody asks what you want first.',
+    'No photo. Wooden tray, plastic price cards — it looks like the staff canteen. Posting it would be embarrassing.',
+    'It is good, but there is no surprise. Head down, eat, leave. Nothing sticks.',
+    'I would not. Yellow light, middle-aged guests chatting in the background — it does not sound worth recommending.'
+  ],
+  reactions:[
+    'Following the crowd means someone else planned the route.',
+    'If you cannot photograph it, it does not travel.',
+    'Good but forgettable is the same as not eating there.',
+    'Nobody mentions it, so it never happened.'
+  ]
+};
+function demoData(){ return EN?DEMO_EN:DEMO; }
 function reactSafe(qi,a){
+  const i=Math.max(0,Math.min(3,qi));
+  if(EN){
+    const neg=/no[t]?|can'?t|wouldn'?t|boring|ugly|cheap|loud|slow|wait|never|nobody|awkward|embarrass|just okay|ordinary|old|dated|rude|packed/i.test(a||'');
+    const pos=[
+      ['The choice stays with them. That counts.','Someone else planned the whole route.'],
+      ['There is a reason to stand behind it.','Half the photo is already lost.'],
+      ['The payoff lands. It holds people.','Good, but nothing to remember.'],
+      ['If it photographs, it travels.','Nothing goes out, nothing happened.']
+    ][i];
+    return neg?pos[1]:pos[0];
+  }
   const neg=/没|不|无|差|土|乱|吵|催|贵|慢|等|失望|不会|懒得|一般|普通|将就|旧|老|挤/.test(a||'');
   const pos=[
     ['选择权没被拿走，这点能打。','被安排得明明白白。'],
     ['有让人想站队的理由。','拍照先输一半。'],
     ['爽点接得住，能留人。','好吃但没记忆点。'],
     ['能晒，就有传播。','发不出去，等于没发生。']
-  ][Math.max(0,Math.min(3,qi))];
+  ][i];
   return neg?pos[1]:pos[0];
 }
 async function reactAsync(qi,q,a,maxMs,fallback){
   try{
     const cloud=await ensureCloud();
     if(cloud){
-      const hist=S.answers.slice(0,-1).map(x=>`问：${x.q}\n答：${x.a}`).join('\n')||'（对话刚开始）';
-      const sys='你是懂Z世代的产品顾问，说话冷静、有判断、不客套。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字回应这个回答——必须正确理解用户意思、绝不能反向理解；可以犀利，但不刻薄、不嘲讽、不用网络烂梗。只回一句话，不要引号，不要解释。';
-      const user=`问题：${q}\n用户回答：${a}\n前文：\n${hist}`;
+      const hist=S.answers.slice(0,-1).map(x=>EN?`Q: ${x.q}\nA: ${x.a}`:`问：${x.q}\n答：${x.a}`).join('\n')||(EN?'(the conversation just started)':'（对话刚开始）');
+      const sys=EN
+        ? "You are a product consultant who understands Gen Z. Calm, opinionated, no small talk. The user just answered one question about how appealing a product is to people in their 20s. Reply in ONE line, max 14 words, in English. You must read their answer correctly — never flip the meaning. You can be sharp, but never mean, never sarcastic, no internet slang. No quotes, no explanation."
+        : '你是懂Z世代的产品顾问，说话冷静、有判断、不客套。用户刚回答了一个关于"产品对年轻人吸引力"的问题。请用≤18个汉字回应这个回答——必须正确理解用户意思、绝不能反向理解；可以犀利，但不刻薄、不嘲讽、不用网络烂梗。只回一句话，不要引号，不要解释。';
+      const user=EN?`Question: ${q}\nTheir answer: ${a}\nEarlier:\n${hist}`:`问题：${q}\n用户回答：${a}\n前文：\n${hist}`;
       let ans=await withTimeout(streamText(cloud,sys,user),maxMs||9000);
       ans=(ans||'').trim().replace(/^["'「『]|["'」』]$/g,'');
       if(ans)return ans;
@@ -376,7 +617,13 @@ function ensureCloud(){
 }
 function parseJSON(t){ try{return JSON.parse(t);}catch(e){ const m=t.match(/\{[\s\S]*\}/); if(m){try{return JSON.parse(m[0]);}catch(_){}} return null; } }
 const PBG_STEPS=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
-function normalizeStep(s){ if(!s)return'产品翻译'; for(const k of PBG_STEPS){ if(s.includes(k))return k; } return'产品翻译'; }
+function normalizeStep(s){
+  const list=EN?['Product','Packaging','Messaging','Channel','Community']:PBG_STEPS;
+  if(!s)return list[0];
+  const v=String(s).toLowerCase();
+  for(const k of list){ if(v.includes(k.toLowerCase()))return k; }
+  return list[0];
+}
 async function streamText(cloud,sys,user,model,opts){
   let ans='';
   const body={model:model||'auto',messages:[{role:'system',content:sys},{role:'user',content:user}],stream:true};
@@ -386,18 +633,43 @@ async function streamText(cloud,sys,user,model,opts){
 }
 function withTimeout(p,ms){ return Promise.race([p,new Promise(r=>setTimeout(()=>r(''),ms))]); }
 /* 让 AI 先看清这件东西，再从 Z 的真实需求里长出 4 个针对性问题 */
-function badQs(qs){
+function badQ(q){
+  if(EN){
+    if(/\b(control|identity|delight|gen ?z|users?|target audience)\b/i.test(q)) return true;
+    /* 只拦真正的二选一：开头像是非题、且句中没有「or」这种给出另一条路的 */
+    if(/^(do|does|did|would|will|are|is|can|could|have|has)\b/i.test(q) && !/\bor\b/i.test(q)) return true;
+    return false;
+  }
   const banned=/掌控感|配得感|满足感|Z世代|TA|用户|这家店|这个产品/;
-  return qs.some(q=>banned.test(q)) || qs.some(q=>/^(是否|会不会|能不能)/.test(q)) || qs.some(q=>/[a-zA-Z]{2,}/.test(q));
+  if(banned.test(q)) return true;
+  if(/^(是否|会不会|能不能)/.test(q)) return true;
+  if(/[a-zA-Z]{2,}/.test(q)) return true;
+  return false;
+}
+function badQs(qs){ return qs.some(badQ); }
+function qsSysEN(needList,attempt){
+  return [
+    'You are Z, 24, looking at something for a brand and asking "would people my age actually use this?" Direct, never mean.',
+    'Step 1: write down what you literally see — only what exists in the photo and the description (material, colour, condition, setting). No judging, do not repeat the user\'s opinion.',
+    'Step 2: from the list of real Gen Z needs below, pick the 4 closest and write one question for each.',
+    needList,
+    'Hard rules:',
+    'A Every question must land on one specific detail from step 1 and name that detail. Never substitute "this product / it / the place".',
+    'B Never use the words control / identity / delight / Gen Z / users / audience.',
+    'C Never write closed "Do you… / Would you…" questions. Ask about a specific scene, action or moment.',
+    'D Max 13 words each, spoken English, like talking to someone in person; vary the sentence shapes, do not start all four with "You".',
+    attempt?'E Last version was too generic. Go smaller: one hand, one use, one moment.':'',
+    'Output JSON only: {"look":"one sentence of what you saw (max 22 words, must contain a concrete detail)","q":["q1","q2","q3","q4"]}'
+  ].filter(Boolean).join('\n');
 }
 async function genQuestions(){
   const text=[S.desc||'',S.photoName||''].join(' ');
-  const needList=pickNeeds(text).map((n,i)=>(i+1)+'. '+n.angle).join('\n');
+  const needList=pickNeeds(text).map((n,i)=>(i+1)+'. '+(EN?n.angleEn:n.angle)).join('\n');
   const cloud=await ensureCloud();
   if(cloud){
     for(let attempt=0;attempt<2;attempt++){
       try{
-        const sys=[
+        const sys=EN?qsSysEN(needList,attempt):[
           '你是小Z，24岁，替品牌看"这东西年轻人会不会真用"。说话直，但不刻薄。',
           '第一步：写下你真的看到了什么——只写图里和描述里存在的具体东西（材质、颜色、状态、场景）。不加评价，不复述用户的判断。',
           '第二步：从下面这份 Z 真实需求清单里，挑 4 条和这件东西最贴的，每条写 1 个问题。',
@@ -410,17 +682,21 @@ async function genQuestions(){
           attempt?'E 上一版太笼统。这次问得更小：某一只手、某一次使用、某一个瞬间。':'',
           '只输出 JSON：{"look":"我看到的一句话（≤40字，必须含具体细节）","q":["问1","问2","问3","问4"]}'
         ].filter(Boolean).join('\n');
-        const parts=[{type:'text',text:`我拍的/写的是：\n${S.desc||'（没有文字，只有图）'}\n\n先看清它，再问 4 个问题。`}];
+        const parts=[{type:'text',text:EN
+          ?`What I photographed / wrote:\n${S.desc||'(no text, photo only)'}\n\nLook first, then ask 4 questions.`
+          :`我拍的/写的是：\n${S.desc||'（没有文字，只有图）'}\n\n先看清它，再问 4 个问题。`}];
         if(S.photoData) parts.unshift({type:'image_url',image_url:{url:S.photoData}});
-        const ans=await withTimeout(streamText(cloud,sys,parts),25000);
+        const ans=await withTimeout(streamText(cloud,sys,parts),30000);
         const o=parseJSON(ans);
         if(o&&Array.isArray(o.q)){
-          const qs=o.q.map(x=>String(x||'').trim().replace(/^\d+[.、)]\s*/,'').replace(/^["'「]|["'」]$/g,''))
-                       .filter(x=>x.length>=6&&x.length<=34);
-          if(qs.length>=3&&!badQs(qs)){
+          /* 逐条筛：一条不合格只丢这一条，不整批作废 */
+          const raw=o.q.map(x=>String(x||'').trim().replace(/^\d+[.、)]\s*/,'').replace(/^["'「]|["'」]$/g,''))
+                       .filter(x=>EN?(x.length>=10&&x.length<=70):(x.length>=6&&x.length<=34));
+          const qs=raw.filter(q=>!badQ(q));
+          if(qs.length>=3){
             const fill=localQs(S.desc).qs;
             while(qs.length<4) qs.push(fill[qs.length]);
-            return {look:String(o.look||'').trim().slice(0,60), qs:qs.slice(0,4)};
+            return {look:String(o.look||'').trim().slice(0,EN?130:60), qs:qs.slice(0,4)};
           }
         }
       }catch(e){ window.__cloudErr='gen:'+(e&&(e.error&&e.error.code||e.message)); }
@@ -428,11 +704,54 @@ async function genQuestions(){
   }
   return localQs(S.desc);
 }
+function diagSysEN(){
+  return 'You assess whether people in their 20s would actually use this thing. Direct, no mercy, but only about the product — never mock the person, no internet slang.'+
+    'Score only three Gen Z pillars. Function and price are out of scope:'+
+    'Control = can they decide for themselves and move at their own pace, or are they arranged, defaulted, herded?'+
+    'Identity = can it become something they would stand behind and let people see (not "is it expensive");'+
+    'Delight = is there emotional payoff that lands right there in the moment (not "does it work well").'+
+    '10-point scale, minimum 1.0, maximum 10.0, exactly one decimal (e.g. 4.3, 6.8). No integers, no two decimals.'+
+    'How to score: pick an integer band first — bands are only 1 / 3 / 5 / 7 / 9 / 10; score = band ± up to 0.4.'+
+    'The decimal only expresses strength inside one band: at most +0.4 (top of band 3 = 3.4), at most -0.4 (bottom of band 5 = 4.6);'+
+    'never hand out decimals just to look precise.'+
+    'Anchors: '+
+    '1 = that pillar is absent, or points the wrong way — their answers are plainly negative with nothing compensating. Do not hesitate, give 1.0;'+
+    '3 = clearly missing, only a token effort;'+
+    '5 = decent: you can feel an effort at control or identity, and some emotional value, but it all stops at "a bit" and leaves no impression;'+
+    '7 = clearly there, you can point at a specific action or moment; 9 = strong, could be a reference; 10 = almost flawless, very rare.'+
+    'Never round up to be polite.'+
+    'Band rules — judge by conditions, not by overall vibe:'+
+    '[Control] not one thing they decided themselves -> band 1; only presets, defaults, bundles, queues, being herded -> band 3; just picking a SKU off a shelf (ordinary purchase, no customisation, nobody arranging them) -> also band 3, that is not autonomy; only adjusting preferences once (sugar, ice, size, colour) -> band 5; they can change the structure (swap parts, reconfigure, assemble, reset repeatedly) -> band 7; every key step is their call and they say "I set it all up, I change whatever I want" -> band 9.'+
+    '[Identity] they would not let anyone see it, embarrassed, hiding it -> band 1; it is plain, nobody would look, no point photographing it -> band 3; people see it but only say "nice" and nobody asks, or they say "it is fine, it works" -> band 5; they show it and someone recognised it, asked about it, borrowed it -> band 7; people come to them asking where to buy it, asking for tips, copying them -> band 9.'+
+    'Identity band 1 is reserved for explicit shame or hiding. "I would not post it / cannot be bothered / it is plain" stops at band 3, never band 1.'+
+    'Identity band 9 is reserved for someone actively coming to them. Posting it yourself with a few replies stays at band 7.'+
+    '[Delight] they say there is none, it is unpleasant, a hassle, sickly -> band 1; there is design intent but it does not land in the moment -> band 3; one payoff lands but they say "lost it after two days / it is just okay" -> band 5; the payoff holds, every time they use it -> band 7; the payoff repeats and they retell the detail, record it, share it -> band 9.'+
+    'One answer maps to one band. Find the sentence first, then match it; if nothing matches, take the lower band.'+
+    'When one answer contains several descriptions, judge by the most concrete behaviour, not by the harshest word.'+
+    'After the band, adjust: one extra concrete plus detail +0.1~+0.4, one extra minus detail -0.1~-0.4; no extra detail means give the band itself.'+
+    'Also output the bands: control_band / deserved_band / gratification_band, values only 1 / 3 / 5 / 7 / 9 / 10. The score must sit inside band ±0.4 — outside is wrong.'+
+    'Before scoring, put the evidence in why: quote a concrete word from their answers, max 14 words, like a verdict line. No evidence, no high score.'+
+    'If in the four rounds they clearly rejected a pillar ("no", "none", "that was the only option"), that pillar cannot go above 3.'+
+    'Judge the three independently — do not lift or crush them together on overall impression.'+
+    'Bands follow evidence only: the same thing scored twice must stay in the same band; one pillar may not move more than 0.9.'+
+    'When all three are low, verdict and headline must say the problem outright, no excuses for it; the criticism can be sharp but must be grounded.'+
+    'control_why/deserved_why/grat_why = why that score, max 16 words, in English.'+
+    'Never write the word "band" or a band number in why/verdict/headline/quickwin — that is internal language.'+
+    'headline: max 12 words, one observed line that names the distance between it and young people; say what is missing, no exaggerated metaphors (turns invisible, disappears, doomed).'+
+    'Specificity rules (violating these means rewrite):'+
+    'A The three whys must name a concrete part or scene of this thing (dial markings, brushed steel bracelet, sealing film, stainless counter, homepage popup, queue route) and include one word the user actually used. Never settle for "identity", "emotional value", "value for money", "lacks design".'+
+    'B verdict must name one concrete flaw and where it happens. Banned phrases: "the inside and outside do not match", "one notch short", "fix the weakest pillar", "a badge young people would stand behind", "lacks emotional value".'+
+    'C quickwin must read as "which part -> change it how -> into what", so a designer can start tomorrow; max 32 words; banned: "a younger limited edition", "a brand refresh", "add emotional value", "improve the visuals".'+
+    'Good example: "Swap the plastic tray for matte dark grey, hand-write the prices on wood, remove the three no-entry signs."'+
+    'verdict: max 26 words, one line, to the point.'+
+    'step must be exactly one of: Product / Packaging / Messaging / Channel / Community.'+
+    'Output JSON only, no explanation, no markdown code block.';
+}
 async function diagnoseCloud(){
   const cloud=await ensureCloud(); if(!cloud)return null;
   try{
-    const transcript=S.answers.map(a=>`问：${a.q}\n答：${a.a}`).join('\n');
-    const sys='你是替品牌看「这东西年轻人会不会真用」的评估者。说话直接、不留情面，但只针对产品本身，不嘲讽人不使用网络烂梗。'+
+    const transcript=S.answers.map(a=>EN?`Q: ${a.q}\nA: ${a.a}`:`问：${a.q}\n答：${a.a}`).join('\n');
+    const sys=EN?diagSysEN():'你是替品牌看「这东西年轻人会不会真用」的评估者。说话直接、不留情面，但只针对产品本身，不嘲讽人不使用网络烂梗。'+
       '只评三个 Z 支柱，功能好坏、划不划算不在评分范围内：'+
       '掌控感＝TA能不能自己说了算、按自己的节奏来，还是被安排、被推着走；'+
       '配得感＝它能不能成为TA愿意站队、愿意让人看见的身份表达（不是贵不贵）；'+
@@ -463,6 +782,7 @@ async function diagnoseCloud(){
       '档位只看证据：同一件东西反复评估，档位必须稳定，同一维度两次给分相差不超过0.9。'+
       '三柱都低时，verdict 与 headline 必须直说问题，不许替它找台阶；批评可以尖锐，但要有据。'+
       'control_why/deserved_why/grat_why 为「为什么打这分」，≤22个汉字。'+
+      '三个 why、verdict、headline、quickwin 里都不许出现"档位""band""3档"这类内部用语，用户看不懂。'+
       'headline 为≤20个汉字的一句旁白式观察，点出它与年轻人的距离；直说缺什么，不许用夸张比喻（变透明、消失、隐身、被判死刑之类）。'+
       '具体性硬规则（违反即重写）：'+
       'A 三个 why 必须点名这件东西上的具体部件或具体场景（如表盘刻度、磨砂钢带、封口膜、不锈钢餐台、首页弹窗、取餐动线），并写进用户的一个原话词；不许只写"身份标签""情绪价值""性价比""缺乏设计感"这类抽象话。'+
@@ -473,7 +793,9 @@ async function diagnoseCloud(){
       'quickwin 为极具体、针对该产品的一条速赢建议，≤40个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
       'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
-    const userParts=[{type:'text',text:`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
+    const userParts=[{type:'text',text:EN
+      ?`Product / service: ${S.desc||'(no text description)'}\nWhat Z saw: ${S.look||'(none)'}\n\nConversation:\n${transcript}\n\nOutput JSON: {control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`
+      :`产品/服务描述：${S.desc||'（无文字描述）'}\n小Z看到的：${S.look||'（无）'}\n\n对话记录：\n${transcript}\n\n请输出JSON：{control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`}];
     if(S.photoData) userParts.unshift({type:'image_url',image_url:{url:S.photoData}});
     let ans=await streamText(cloud,sys,userParts,'auto',{temperature:0});
     const o=parseJSON(ans); if(!o||typeof o.control==='undefined')return null;
@@ -495,17 +817,43 @@ async function diagnoseCloud(){
     };
     /* 两道硬护栏：压掉「同一句话被读成两档」的跳档，同一输入不会一次 7 一次 9、一次 1 一次 3 */
     const ansText=S.answers.map(a=>a.a||'').join(' ');
-    const strongAutonomy=/全按我的来|想怎么改|随便改|没人规定|我说了算|自己全定|全都自己|想换就换|我自己定/.test(ansText);
-    const shameWords=/不好意思|丢人|藏着|不敢|怕被看见|羞耻|遮一下|掩饰|难为情|拿不出手/.test(ansText);
-    const negControl=/跟着人流|被人流|催着|被安排|没人问|没问我|没得选|别人定|公司发|送的|只能这样/.test(ansText);
-    const selfWords=/自己|我定|我挑|我选|我勾/.test(ansText);
-    const negGrat=/没有惊喜|没印象|没什么印象|完全没有|一点都不|全程埋头|很难受|太麻烦/.test(ansText);
-    const askWords=/问我在哪买|求推荐|跟着买|跟着换|问我怎么|要我帮|被问|来问我|学我/.test(ansText);
-    const strongGrat=/专门录|录了音|录下来|反复用|反复看|反复玩|反复听|反复敲|每次用|每次喝|每次穿|每次玩|分享给|发给朋友|安利/.test(ansText);
-    const modWords=/可换|能换|自己换|换了三套|自己改|改配置|换轴|键帽|自己装|可拆|可重配|自定义/.test(ansText);
-    const choiceWords=/甜度|冰量|三分糖|去冰|口味|尺寸|规格|配色|自己选|自选|自己勾/.test(ansText);
-    const shopWords=/货架|专柜|柜台|店里|买了|下单|挑了一块|挑的/.test(ansText);
-    const fadeWords=/两天就没|就没感觉|久了就没|第二次就没|没什么特别|就那样|一般般/.test(ansText);
+    /* 中英两套证据词表：区间锁的逻辑不动，只换触发词 */
+    const RX = EN ? {
+      strongAutonomy:/my call|i decide|i set|all mine|fully mine|change whatever|no one tells|everything myself|reconfigur|built it myself/i,
+      shameWords:/embarrass|ashamed|hide|hiding|wouldn'?t want anyone|too ugly|cover it|tuck it|awkward to show/i,
+      negControl:/follow(ed|ing)? the crowd|herded|ushered|pushed through|no one asked|no choice|handed to me|company gave|forced|only option|had to take|just took what/i,
+      selfWords:/i chose|i picked|i decided|myself|my own/i,
+      negGrat:/no surprise|forgettable|nothing memorable|no impression|just ate|unpleasant|too much hassle/i,
+      askWords:/asked where|where did you get|recommend|how do i|followed my|copy me|asked me|wanted one/i,
+      strongGrat:/recorded|replayed|again and again|every time i|shared it with|recommended it|told my friends/i,
+      modWords:/swap|replac|switch|modul|keycap|customi[sz]|rebuild|reconfigur|assemble/i,
+      choiceWords:/sugar|ice|sweetness|size|flavou?r|colou?r|pick my|choose my/i,
+      shopWords:/shelf|store|shop|counter|bought|ordered|picked one|off the rack/i,
+      fadeWords:/two days|lost it|wore off|faded|nothing special|just okay|wears off|got bored/i
+    } : {
+      strongAutonomy:/全按我的来|想怎么改|随便改|没人规定|我说了算|自己全定|全都自己|想换就换|我自己定/,
+      shameWords:/不好意思|丢人|藏着|不敢|怕被看见|羞耻|遮一下|掩饰|难为情|拿不出手/,
+      negControl:/跟着人流|被人流|催着|被安排|没人问|没问我|没得选|别人定|公司发|送的|只能这样/,
+      selfWords:/自己|我定|我挑|我选|我勾/,
+      negGrat:/没有惊喜|没印象|没什么印象|完全没有|一点都不|全程埋头|很难受|太麻烦/,
+      askWords:/问我在哪买|求推荐|跟着买|跟着换|问我怎么|要我帮|被问|来问我|学我/,
+      strongGrat:/专门录|录了音|录下来|反复用|反复看|反复玩|反复听|反复敲|每次用|每次喝|每次穿|每次玩|分享给|发给朋友|安利/,
+      modWords:/可换|能换|自己换|换了三套|自己改|改配置|换轴|键帽|自己装|可拆|可重配|自定义/,
+      choiceWords:/甜度|冰量|三分糖|去冰|口味|尺寸|规格|配色|自己选|自选|自己勾/,
+      shopWords:/货架|专柜|柜台|店里|买了|下单|挑了一块|挑的/,
+      fadeWords:/两天就没|就没感觉|久了就没|第二次就没|没什么特别|就那样|一般般/
+    };
+    const strongAutonomy=RX.strongAutonomy.test(ansText);
+    const shameWords=RX.shameWords.test(ansText);
+    const negControl=RX.negControl.test(ansText);
+    const selfWords=RX.selfWords.test(ansText);
+    const negGrat=RX.negGrat.test(ansText);
+    const askWords=RX.askWords.test(ansText);
+    const strongGrat=RX.strongGrat.test(ansText);
+    const modWords=RX.modWords.test(ansText);
+    const choiceWords=RX.choiceWords.test(ansText);
+    const shopWords=RX.shopWords.test(ansText);
+    const fadeWords=RX.fadeWords.test(ansText);
     /* 区间锁定：9 档要么有明确证据、要么不给；同一句证据永远落同一个区间 */
     const guard=(s,kind)=>{
       if(kind==='control'){
@@ -539,34 +887,35 @@ async function diagnoseCloud(){
 
 /* ============ 屏幕 ============ */
 function renderHome(){
+  VIEW='home';
   resetAll(); setSteps(1);
   const _w=document.querySelector('.steps'); if(_w)_w.classList.add('hidden');
   $('#screen').innerHTML=`
   <div class="screen home">
-    <span class="kick"><i></i>Z-DENSITY SCAN</span>
-    <h1 class="big">它配得上<br><em>年轻人</em>吗？</h1>
-    <p class="lede">上传一张图，<b>一分钟</b>看完它的 Z 含量。<br>三根柱子，一句话，一张能发的卡。</p>
+    <span class="kick"><i></i>${t('kick')}</span>
+    <h1 class="big">${t('big')}</h1>
+    <p class="lede">${t('lede')}</p>
 
     <div class="stackwrap">
       <div class="stackcard b2"></div>
       <div class="stackcard b1"></div>
       <figure class="shot">
-        <img src="${asset('demo-photo.jpg')}" alt="示例：酒店自助早餐">
+        <img src="${asset('demo-photo.jpg')}" alt="${t('altDemo')}">
         <div class="veil"></div>
-        <div class="badge"><b>6.4</b><span>Z 含量</span></div>
-        <figcaption class="cap">「这酒店自助早餐，和 50 年前好像没什么变化。」<span class="sign">— 小Z</span></figcaption>
+        <div class="badge"><b>6.4</b><span>${t('badge')}</span></div>
+        <figcaption class="cap">${t('cap')}<span class="sign">${t('sign')}</span></figcaption>
       </figure>
     </div>
 
     <button class="cta-main" onclick="pickCam()">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.3-1.8h6.8L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v8A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg>
-      拍一张 / 上传
+      ${t('cta')}
     </button>
     <div class="cta-row">
-      <button class="linkbtn" onclick="pickLib()"><u>从相册选</u></button>
-      <button class="linkbtn" onclick="runDemo()"><u>看示例</u> →</button>
+      <button class="linkbtn" onclick="pickLib()"><u>${t('lib')}</u></button>
+      <button class="linkbtn" onclick="runDemo()"><u>${t('demo')}</u> →</button>
     </div>
-    <p class="fine">AI 我们出钱 · 不用填任何 Key</p>
+    <p class="fine">${t('fine')}</p>
   </div>`;
 }
 /* 顶部 LOGO/标题 与「回到首页」共用：中止在跑的演示/对话，干净回到首页 */
@@ -624,56 +973,60 @@ function typeText(el,text,speed){
   },speed); });
 }
 async function runDemo(){
+  VIEW='demo';
   resetAll(); setSteps(2); S.demo=true; window.__demoAbort=false;
   $('#screen').innerHTML=`
   <div class="screen">
-    <span class="flag">示例 · 自动演示</span>
+    <span class="flag">${t('demoFlag')}</span>
     <figure class="shot" style="margin-bottom:20px">
-      <img src="${asset('demo-photo.jpg')}" alt="示例：酒店自助早餐">
+      <img src="${asset('demo-photo.jpg')}" alt="${t('altDemo')}">
     </figure>
-    <label class="lbl">一句话描述它</label>
+    <label class="lbl">${t('lblDemo')}</label>
     <div class="filled"><span id="typed"></span><span class="caret"></span></div>
-    <div class="demoNote" id="demoNote"><i></i>AI 正在读这张图…</div>
-    <button class="skip" onclick="skipDemo()">跳过动画，直接看结果</button>
+    <div class="demoNote" id="demoNote"><i></i>${t('noteRead')}</div>
+    <button class="skip" onclick="skipDemo()">${t('skip')}</button>
   </div>`;
   loadDemoPhoto();
-  await typeText($('#typed'),DEMO.desc,24);
+  await typeText($('#typed'),demoData().desc,24);
   await wait(650);
   if(window.__demoAbort)return;
-  const n=$('#demoNote'); if(n)n.innerHTML='<i></i>已自动填好 · 正在按这个主题生成 4 个问题…';
+  const n=$('#demoNote'); if(n)n.innerHTML='<i></i>'+t('noteFilled');
   await wait(600);
   startDemoChat();
 }
 async function skipDemo(){
+  const D=demoData();
   window.__demoAbort=true;
-  S.desc=DEMO.desc; S.questions=DEMO.questions.slice();
-  S.answers=DEMO.questions.map((q,i)=>({q,a:DEMO.answers[i]}));
+  S.desc=D.desc; S.questions=D.questions.slice();
+  S.answers=D.questions.map((q,i)=>({q,a:D.answers[i]}));
   await loadDemoPhoto();
   computeAndShow();
 }
 async function startDemoChat(){
   if(window.__demoAbort)return;
-  S.desc=DEMO.desc; S.questions=DEMO.questions.slice(); S.answers=[]; S.qi=0;
+  const D=demoData();
+  VIEW='chat';
+  S.desc=D.desc; S.questions=D.questions.slice(); S.answers=[]; S.qi=0;
   setSteps(3);
   $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
-    <div class="chatinput"><input id="ans" placeholder="示例自动播放中…" disabled>
-      <button disabled style="opacity:.4">发送</button></div>
-    <p class="fine" style="margin-top:12px">示例由 AI 实时点评 · 自己测时，回答由你来说</p></div>`;
+    <div class="chatinput"><input id="ans" placeholder="${t('demoPh')}" disabled>
+      <button disabled style="opacity:.4">${t('send')}</button></div>
+    <p class="fine" style="margin-top:12px">${t('demoTip')}</p></div>`;
   playDemoStep();
 }
 async function playDemoStep(){
   if(window.__demoAbort)return;
-  const qi=S.qi;
-  if(qi===0&&DEMO.look){ S.look=DEMO.look; pushLook(DEMO.look); await wait(950); if(window.__demoAbort)return; }
+  const D=demoData(), qi=S.qi;
+  if(qi===0&&D.look){ S.look=D.look; pushLook(D.look); await wait(950); if(window.__demoAbort)return; }
   pushBot(S.questions[qi]);
   await wait(820);
   if(window.__demoAbort)return;
-  pushMe(DEMO.answers[qi]);
-  S.answers.push({q:S.questions[qi],a:DEMO.answers[qi]});
+  pushMe(D.answers[qi]);
+  S.answers.push({q:S.questions[qi],a:D.answers[qi]});
   botTyping();
-  const r=await reactAsync(qi,S.questions[qi],DEMO.answers[qi],4500,DEMO.reactions[qi]);
+  const r=await reactAsync(qi,S.questions[qi],D.answers[qi],4500,D.reactions[qi]);
   if(window.__demoAbort)return;
-  const t=document.querySelector('.typing'); if(t)t.remove();
+  const tt=document.querySelector('.typing'); if(tt)tt.remove();
   pushBot(r);
   S.qi++;
   if(S.qi<S.questions.length){ await wait(680); playDemoStep(); }
@@ -681,15 +1034,16 @@ async function playDemoStep(){
 }
 
 function renderDescribe(){
+  VIEW='describe';
   setSteps(2);
   $('#screen').innerHTML=`
   <div class="screen">
-    <span class="flag">AI 免费诊断 · 4 轮对话</span>
+    <span class="flag">${t('flagScan')}</span>
     ${S.photo?`<figure class="shot" style="margin-bottom:18px"><img src="${S.photo}" alt=""></figure>`:''}
-    <label class="lbl">一句话描述它（让 AI 问得更准）</label>
-    <textarea id="desc" placeholder="例：传统自助餐，上百种食物，和休闲客混在一起，吵且杂">${esc(S.desc)}</textarea>
-    <button class="next" onclick="goChat()">开始诊断 →</button>
-    <p class="sm">接下来 AI 会按这个产品，现场生成 4 个问题</p>
+    <label class="lbl">${t('lblDesc')}</label>
+    <textarea id="desc" placeholder="${t('phDesc')}">${esc(S.desc)}</textarea>
+    <button class="next" onclick="goChat()">${t('btnStart')}</button>
+    <p class="sm">${t('smDesc')}</p>
   </div>`;
 }
 async function goChat(){
@@ -697,17 +1051,19 @@ async function goChat(){
   S.desc=$('#desc').value.trim()||S.desc||'';
   if(S.photoReady){ await S.photoReady; }
   S.qi=0;S.answers=[];S.demo=false;window.__demoAbort=false;S.look='';
+  VIEW='chat';
   setSteps(3);
   $('#screen').innerHTML=`<div class="screen"><div class="chat" id="chat">
       <div class="bub bot typing"><i></i><i></i><i></i></div></div>
-      <p class="fine" id="gentip" style="margin-top:16px">小Z 正在看这张图…</p></div>`;
-  const tipT=setTimeout(()=>{const t=$('#gentip'); if(t)t.textContent='看完了，正在挑最关键的四件事…';},5500);
+      <p class="fine" id="gentip" style="margin-top:16px">${t('tip1')}</p></div>`;
+  const tipT=setTimeout(()=>{const e=$('#gentip'); if(e)e.textContent=t('tip2');},5500);
+  const tipT2=setTimeout(()=>{const e=$('#gentip'); if(e)e.textContent=t('tip3');},14000);
   const g=await genQuestions();
-  clearTimeout(tipT);
+  clearTimeout(tipT);clearTimeout(tipT2);
   if(nav!==NAV)return;
   S.look=g.look||''; S.questions=g.qs;
   $('#screen').innerHTML=`<div class="screen chatwrap"><div class="chat" id="chat"></div>
-    <div class="chatinput"><input id="ans" placeholder="随便说两句…" autocomplete="off" onkeydown="onAnsKey(event)"><button onclick="sendAns()">发送</button></div></div>`;
+    <div class="chatinput"><input id="ans" placeholder="${t('ansPh')}" autocomplete="off" onkeydown="onAnsKey(event)"><button onclick="sendAns()">${t('send')}</button></div></div>`;
   if(S.look) pushLook(S.look);
   pushBot(S.questions[0]);
 }
@@ -729,9 +1085,9 @@ async function sendAns(){
   if(S.qi<S.questions.length-1){ S.qi++; setTimeout(()=>pushBot(S.questions[S.qi]),450); }
   else { setTimeout(computeAndShow,650); }
 }
-function pushBot(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(t)}</div>`);scrollC();}
-function pushLook(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub look"><em>小Z 看到的</em><span>${esc(t)}</span></div>`);scrollC();}
-function pushMe(t){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(t)}</div>`);scrollC();}
+function pushBot(x){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub bot">${esc(x)}</div>`);scrollC();}
+function pushLook(x){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub look"><em>${t('lookLbl')}</em><span>${esc(x)}</span></div>`);scrollC();}
+function pushMe(x){$('#chat').insertAdjacentHTML('beforeend',`<div class="bub me">${esc(x)}</div>`);scrollC();}
 function botTyping(){const c=$('#chat');if(!c)return;c.insertAdjacentHTML('beforeend',`<div class="bub bot typing"><i></i><i></i><i></i></div>`);scrollC();}
 function scrollC(){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;}
 
@@ -750,7 +1106,7 @@ function computeAndShow(){
       S.step=res.step||'产品翻译';S.ai=true;
     }else{
       const sc=localScores(combined);
-      const q=i=>{const t=(S.answers[i]&&S.answers[i].a)||'';return t.replace(/\s+/g,'').slice(0,12);};
+      const q=i=>{const raw=(S.answers[i]&&S.answers[i].a)||'';return raw.replace(/\s+/g,' ').trim().slice(0,EN?46:12);};
       S.scores=sc;
       S.control_why=(q(0)?q(0):pillarWhy('control',sc.control));
       S.deserved_why=(q(1)?q(1):pillarWhy('deserved',sc.deserved));
@@ -758,52 +1114,64 @@ function computeAndShow(){
       S.headline=pickHeadline(sc,S.desc);
       S.verdict=pickVerdict(sc,combined);const qw=pickQuickwin(sc,S.desc);S.step=qw.step;S.quickwin=qw.text;S.ai=false;
     }
-    const t=document.querySelector('.typing');if(t)t.remove();
+    const ty=document.querySelector('.typing');if(ty)ty.remove();
     renderResult();
   });
 }
 
 function renderResult(){
+  VIEW='result';
   setSteps(4);
   const sc=S.scores;const avg=((sc.control+sc.deserved+sc.gratification)/3).toFixed(1);
   const photo=S.photo||asset('demo-photo.jpg');
   const pils=[
-    ['掌控感','control','var(--c-control)',sc.control,S.control_why],
-    ['配得感','deserved','var(--c-deserved)',sc.deserved,S.deserved_why],
-    ['满足感','gratification','var(--c-grat)',sc.gratification,S.grat_why]
+    [t('p1'),'control','var(--c-control)',sc.control,S.control_why],
+    [t('p2'),'deserved','var(--c-deserved)',sc.deserved,S.deserved_why],
+    [t('p3'),'gratification','var(--c-grat)',sc.gratification,S.grat_why]
   ].map(([n,k,c,v,why])=>`<div class="pil"><div class="top"><span>${n}</span><span class="v">${v.toFixed(1)}</span></div>
     <div class="bar"><i style="background:${c}" data-w="${(v/10*100).toFixed(0)}"></i></div>
     <div class="why">↳ ${esc(why)}</div></div>`).join('');
   $('#screen').innerHTML=`
   <div class="screen">
-    <button class="homebtn" onclick="goHome()">← 回到首页，重新测一张</button>
+    <button class="homebtn" onclick="goHome()">${t('backHome')}</button>
     <figure class="shot hero">
       <img src="${photo}" alt="">
       <div class="veil"></div>
-      <div class="badge"><b id="avg">0.0</b><span>Z 含量</span></div>
-      <figcaption class="cap">「${esc(S.headline)}」<span class="sign">— 小Z</span></figcaption>
+      <div class="badge"><b id="avg">0.0</b><span>${t('badge')}</span></div>
+      <figcaption class="cap">${EN?'“'+esc(S.headline)+'”':'「'+esc(S.headline)+'」'}<span class="sign">${t('sign')}</span></figcaption>
     </figure>
     <div class="heroMeta">
-      <span class="flag ${S.ai?'':'off'}">${S.ai?'AI 诊断 · 免费':'AI 未连上 · 本地粗读'}</span>
-      <span class="of10">三柱平均 · 满分 10</span>
+      <span class="flag ${S.ai?'':'off'}">${S.ai?t('aiOn'):t('aiOff')}</span>
+      <span class="of10">${t('of10')}</span>
     </div>
     <div class="card"><div class="pillars">${pils}</div></div>
     <div class="verdict">${esc(S.verdict)}</div>
-    <div class="qw"><span class="tag">速赢攻略</span><div class="b">${esc(S.quickwin)}</div></div>
-    <button class="sharebtn" onclick="drawCard()">生成分享卡 ↓</button>
-    <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">解锁完整转型专案 →</a>
-    <button class="retest" onclick="renderDescribe()">改一条描述，复测 ↺</button>
-    ${S.ai?'':'<button class="retest" onclick="computeAndShow()">AI 没连上，重试一次 ↺</button>'}
+    <div class="qw"><span class="tag">${t('quickTag')}</span><div class="b">${esc(S.quickwin)}</div></div>
+    <button class="sharebtn" onclick="drawCard()">${t('makeCard')}</button>
+    <a class="cta" href="${PRO_URL}" target="_blank" rel="noopener">${t('ctaPro')}</a>
+    <button class="retest" onclick="renderDescribe()">${t('editDesc')}</button>
+    ${S.ai?'':'<button class="retest" onclick="computeAndShow()">'+t('retryAI')+'</button>'}
   </div>`;
   animateNum($('#avg'),+avg);
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(b=>b.style.width=b.dataset.w+'%'),80);
 }
-function animateNum(el,to){let t=0;const id=setInterval(()=>{t+=0.2;if(t>=to){t=to;clearInterval(id);}el.textContent=t.toFixed(1);},20);}
+function animateNum(el,to){let v=0;const id=setInterval(()=>{v+=0.2;if(v>=to){v=to;clearInterval(id);}el.textContent=v.toFixed(1);},20);}
 
 /* ============ 分享卡（INS 风格 canvas → PNG，含大图/直接判词/速赢攻略/双二维码） ============ */
 function pathRound(ctx,X,Y,w,h,r){ctx.beginPath();ctx.moveTo(X+r,Y);ctx.arcTo(X+w,Y,X+w,Y+h,r);ctx.arcTo(X+w,Y+h,X,Y+h,r);ctx.arcTo(X,Y+h,X,Y,r);ctx.arcTo(X,Y,X+w,Y,r);ctx.closePath();}
 function wrapLines(ctx,text,maxW){
-  const chars=[...String(text)]; let line='',res=[];
+  const s=String(text||'');
+  /* 中文按字断行；有空格的语言按词断行，否则英文会被切开 */
+  if(/\s/.test(s)){
+    const words=s.split(/\s+/), res=[]; let line='';
+    for(const w of words){
+      const test=line?line+' '+w:w;
+      if(line && ctx.measureText(test).width>maxW){ res.push(line); line=w; } else line=test;
+    }
+    if(line)res.push(line);
+    return res;
+  }
+  const chars=[...s]; let line='',res=[];
   for(const ch of chars){ if(line && ctx.measureText(line+ch).width>maxW){ res.push(line); line=ch; } else line+=ch; }
   if(line)res.push(line);
   return res;
@@ -839,27 +1207,32 @@ function drawCard(){
     // scrim for headline legibility
     const sg=x.createLinearGradient(0,py+ph*0.30,0,py+ph); sg.addColorStop(0,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,0,0,0.78)');
     x.save(); pathRound(x,px,py,pw,ph,pr); x.clip(); x.fillStyle=sg; x.fillRect(px,py,pw,ph); x.restore();
-    // tag pill
-    x.fillStyle='rgba(255,255,255,0.94)'; pathRound(x,px+28,py+28,268,54,27); x.fill();
-    x.fillStyle='#0CA678'; x.font='800 27px -apple-system,"PingFang SC",sans-serif'; x.textAlign='left'; x.fillText('Z 含量诊断',px+48,py+64);
+    // tag pill（宽度跟着文案走，中英都贴边）
+    const tagTxt=t('cardTag');
+    x.font='800 27px -apple-system,"PingFang SC",sans-serif';
+    const tagW=x.measureText(tagTxt).width;
+    x.fillStyle='rgba(255,255,255,0.94)'; pathRound(x,px+28,py+28,tagW+44,54,27); x.fill();
+    x.fillStyle='#0CA678'; x.textAlign='left'; x.fillText(tagTxt,px+50,py+64);
     // headline over photo (the direct one-liner)
-    x.fillStyle='#FFFFFF'; x.font='800 46px -apple-system,"PingFang SC",sans-serif'; x.textAlign='left';
-    const hlines=wrapLines(x,S.headline||S.verdict||'',pw-56,58).slice(0,2);
-    const hY=py+ph-44-(hlines.length-1)*58;
-    hlines.forEach((ln,i)=>x.fillText(ln,px+28,hY+i*58));
+    const hFont=EN?44:46, hLH=EN?52:58, hMax=EN?3:2;
+    x.fillStyle='#FFFFFF'; x.font='800 '+hFont+'px -apple-system,"PingFang SC",sans-serif'; x.textAlign='left';
+    const hlines=wrapLines(x,S.headline||S.verdict||'',pw-56).slice(0,hMax);
+    const hY=py+ph-44-(hlines.length-1)*hLH;
+    hlines.forEach((ln,i)=>x.fillText(ln,px+28,hY+i*hLH));
     // ---- content below photo ----
     let y=py+ph+66; // ~662
-    // score big + three pillar chips
+    // score big + label
     x.textAlign='left'; x.fillStyle='#0CA678'; x.font='800 96px -apple-system,sans-serif'; x.fillText(avg,px,y+72);
-    x.fillStyle='#8A8A8F'; x.font='600 24px -apple-system,"PingFang SC",sans-serif'; x.fillText('Z 含量 / 10',px+ ((''+avg).length>3?262:206),y+34);
+    const sw=x.measureText(avg).width;
+    x.fillStyle='#8A8A8F'; x.font='600 24px -apple-system,"PingFang SC",sans-serif'; x.fillText(t('cardScore'),px+sw+22,y+34);
     // 右侧只放「最弱的一项」，不再重复三柱明细
-    const _weak=[['掌控感',sc.control],['配得感',sc.deserved],['满足感',sc.gratification]].sort((a,b)=>a[1]-b[1])[0];
+    const _weak=[[t('p1'),sc.control],[t('p2'),sc.deserved],[t('p3'),sc.gratification]].sort((a,b)=>a[1]-b[1])[0];
     x.textAlign='right'; x.fillStyle='#8A8A8F'; x.font='600 24px -apple-system,"PingFang SC",sans-serif';
-    x.fillText('最弱 · '+_weak[0],W-px-96,y+28);
+    x.fillText(t('cardWeak')+_weak[0],W-px-96,y+28);
     x.fillStyle='#18181B'; x.font='800 44px -apple-system,sans-serif'; x.fillText(_weak[1].toFixed(1),W-px,y+34);
     // pillars detailed
     let py2=y+150;
-    const rows=[['掌控感',sc.control,'#3B82F6',S.control_why],['配得感',sc.deserved,'#7C5CFC',S.deserved_why],['满足感',sc.gratification,'#FF8A5B',S.grat_why]];
+    const rows=[[t('p1'),sc.control,'#3B82F6',S.control_why],[t('p2'),sc.deserved,'#7C5CFC',S.deserved_why],[t('p3'),sc.gratification,'#FF8A5B',S.grat_why]];
     rows.forEach(([n,v,c,why])=>{
       x.textAlign='left'; x.fillStyle='#18181B'; x.font='700 28px -apple-system,"PingFang SC",sans-serif'; x.fillText(n,px,py2);
       x.textAlign='right'; x.fillStyle=c; x.font='800 30px -apple-system,sans-serif'; x.fillText(v.toFixed(1),W-px,py2);
@@ -873,7 +1246,7 @@ function drawCard(){
     // 速赢攻略 block
     const qy=py2+24;
     x.fillStyle='#E7F6EF'; pathRound(x,px,qy,W-2*px,156,24); x.fill();
-    x.textAlign='left'; x.fillStyle='#0CA678'; x.font='800 27px -apple-system,"PingFang SC",sans-serif'; x.fillText('速赢攻略',px+28,qy+48);
+    x.textAlign='left'; x.fillStyle='#0CA678'; x.font='800 27px -apple-system,"PingFang SC",sans-serif'; x.fillText(t('cardWin'),px+28,qy+48);
     x.fillStyle='#18181B'; x.font='600 25px -apple-system,"PingFang SC",sans-serif';
     wrapLines(x,S.quickwin,W-2*px-56).slice(0,2).forEach((ln,i)=>x.fillText(ln,px+28,qy+92+i*34));
     // QR row
@@ -881,11 +1254,11 @@ function drawCard(){
     const drawQR=(key,qx,cap)=>{ if(imgs[key]){ x.fillStyle='#FFFFFF'; pathRound(x,qx,qrY,qrS,qrS,16); x.fill(); x.drawImage(imgs[key],qx,qrY,qrS,qrS); }
       else { x.fillStyle='#F2F2F2'; pathRound(x,qx,qrY,qrS,qrS,16); x.fill(); }
       x.fillStyle='#18181B'; x.font='700 23px -apple-system,"PingFang SC",sans-serif'; x.textAlign='center'; x.fillText(cap,qx+qrS/2,qrY+qrS+34); };
-    drawQR('qrApp',px,'测你的一张');
-    drawQR('qrPro',W-px-qrS,'看完整转型专案');
+    drawQR('qrApp',px,t('qrApp'));
+    drawQR('qrPro',W-px-qrS,t('qrPro'));
     x.textAlign='left';
     // download
-    const a=document.createElement('a');a.download='Z含量-'+new Date().toISOString().slice(0,10)+'.png';a.href=cv.toDataURL('image/png');a.click();
+    const a=document.createElement('a');a.download=t('fileName')+new Date().toISOString().slice(0,10)+'.png';a.href=cv.toDataURL('image/png');a.click();
   }
 }
 
@@ -899,6 +1272,7 @@ function drawCard(){
 })();
 $('#fileCam').addEventListener('change',e=>onFile(e.target.files[0]));
 $('#fileLib').addEventListener('change',e=>onFile(e.target.files[0]));
+setLang(LANG);          /* 应用语言（含链接上的 ?lang=en），再渲染首屏 */
 renderHome();
 /* 隐藏诊断：?diag=1 检查免密钥 LLM 是否连得上 */
 if(/[?&]diag=1/.test(location.search)){ setTimeout(async()=>{
