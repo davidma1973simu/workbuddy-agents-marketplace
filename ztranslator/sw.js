@@ -1,4 +1,4 @@
-/* Z 翻译器 · Service Worker
+/* Z转变 · Service Worker
    缓存应用壳层；导航请求走 network-first（保证更新可见，无需硬刷新），
    静态资源走 cache-first。版本号变更即清旧缓存。 */
 const CACHE = 'zt-v1';
