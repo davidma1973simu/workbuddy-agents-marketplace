@@ -409,9 +409,9 @@ function pickQuickwin(sc,desc){
     ? [['control','Product',`Delete the pre-ticked defaults and the upsell line on the ${noun}: let people choose once, then suggest.`],
        ['deserved','Packaging',`Re-skin the ${noun} in one matte colour with a single mark that can be shown; drop the promo stickers.`],
        ['gratification','Community',`Add one 30-second beat inside the ${noun} that gives feedback on the spot, so people want to photograph it.`]]
-    : [['control','产品翻译',`把${noun}的默认勾选和推荐话术删掉，改成让人先自己选一次，选完再给建议。`],
-       ['deserved','包装翻译',`给${noun}换一套能拍的外观：单色哑光底＋一个可露出的标识，去掉满屏促销字。`],
-       ['gratification','社群翻译',`在${noun}的过程里加一个 30 秒内就有反馈的小动作，让人当场想拍一张。`]];
+    : [['control','产品转变',`把${noun}的默认勾选和推荐话术删掉，改成让人先自己选一次，选完再给建议。`],
+       ['deserved','包装转变',`给${noun}换一套能拍的外观：单色哑光底＋一个可露出的标识，去掉满屏促销字。`],
+       ['gratification','社群转变',`在${noun}的过程里加一个 30 秒内就有反馈的小动作，让人当场想拍一张。`]];
   arr.sort((a,b)=>sc[a[0]]-sc[b[0]]);
   return {step:arr[0][1],text:arr[0][2]};
 }
@@ -616,7 +616,7 @@ function ensureCloud(){
   return _cloudLoading;
 }
 function parseJSON(t){ try{return JSON.parse(t);}catch(e){ const m=t.match(/\{[\s\S]*\}/); if(m){try{return JSON.parse(m[0]);}catch(_){}} return null; } }
-const PBG_STEPS=['产品翻译','包装翻译','沟通翻译','渠道翻译','社群翻译'];
+const PBG_STEPS=['产品转变','包装转变','沟通转变','渠道转变','社群转变'];
 function normalizeStep(s){
   const list=EN?['Product','Packaging','Messaging','Channel','Community']:PBG_STEPS;
   if(!s)return list[0];
@@ -791,7 +791,7 @@ async function diagnoseCloud(){
       '正例：「把塑料托盘换成深灰哑光，价签改成手写木牌，撤掉三张"请勿"提示。」'+
       'verdict 为≤40字一句话判词，就事论事。'+
       'quickwin 为极具体、针对该产品的一条速赢建议，≤40个汉字，直接给动作，不要解释、不要括号补充、不要"针对…"套话。'+
-      'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品翻译 / 包装翻译 / 沟通翻译 / 渠道翻译 / 社群翻译。'+
+      'step 必须且只能是以下五个之一（不要改写、不要加前缀）：产品转变 / 包装转变 / 沟通转变 / 渠道转变 / 社群转变。'+
       '只输出JSON，不要解释，不要 markdown 代码块。';
     const userParts=[{type:'text',text:EN
       ?`Product / service: ${S.desc||'(no text description)'}\nWhat Z saw: ${S.look||'(none)'}\n\nConversation:\n${transcript}\n\nOutput JSON: {control,control_band,deserved,deserved_band,gratification,gratification_band,control_why,deserved_why,grat_why,headline,verdict,quickwin,step}`
@@ -1103,7 +1103,7 @@ function computeAndShow(){
       S.control_why=res.control_why;S.deserved_why=res.deserved_why;S.grat_why=res.grat_why;
       S.headline=res.headline||pickHeadline(S.scores,S.desc);
       S.verdict=res.verdict||pickVerdict(S.scores,combined);S.quickwin=res.quickwin||pickQuickwin(S.scores,S.desc).text;
-      S.step=res.step||'产品翻译';S.ai=true;
+      S.step=res.step||'产品转变';S.ai=true;
     }else{
       const sc=localScores(combined);
       const q=i=>{const raw=(S.answers[i]&&S.answers[i].a)||'';return raw.replace(/\s+/g,' ').trim().slice(0,EN?46:12);};
