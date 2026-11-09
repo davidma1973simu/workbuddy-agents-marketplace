@@ -99,6 +99,12 @@
 
   /* ---------- Screen ---------- */
   #screen{max-width:var(--maxw);margin:0 auto;padding:6px 18px 130px;scroll-margin-top:60px;animation:enter .4s var(--ease)}
+  /* 主屏底部：回引流版的一行轻链接，浅绿小字 + 下划线，不做卡片不做按钮 */
+  .lite-foot{margin:26px 0 0;text-align:center;padding:0 0 4px}
+  .lite-foot a{font-size:11.5px;font-weight:500;letter-spacing:.2px;color:#7CB99D;
+    text-decoration:underline;text-decoration-color:#B4DCC9;text-decoration-thickness:1px;
+    text-underline-offset:3px;transition:color .15s var(--ease)}
+  .lite-foot a:hover{color:var(--accent-d);text-decoration-color:var(--accent-d)}
   @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .eyebrow{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--mut);text-transform:uppercase}
   .h-hero{font-size:27px;font-weight:800;letter-spacing:-.6px;line-height:1.25;margin:8px 0 6px}
@@ -1282,7 +1288,13 @@ function renderProgress(){
 function renderScreen(){
   const s=document.getElementById('screen');
   const map=[screenInput,screenUnderstand,screenReframe,screenOpportunity,screenTranslate,screenPlan,screenExport];
-  const html=map[state.step]();
+  let html=map[state.step]();
+  /* 只在主屏（首页）底部放一个极轻的回引流版链接，不进页头、不重复出现在结果屏 */
+  if(state.step===0){
+    const href='https://z-density-game.app.workbuddy.host/?sharecode=DFPZX3LDV3'+(isEN()?'&amp;lang=en':'');
+    html+='<div class="lite-foot"><a href="'+href+'" target="_blank" rel="noopener">'
+      +t('测测你的Z含量','Check your Z Density')+'</a></div>';
+  }
   s.innerHTML=(state.step>0?'<div class="res">'+html+'</div>':html);
   s.querySelectorAll('.res textarea').forEach(autoGrow);
 }
