@@ -263,7 +263,7 @@
   .mrow{display:flex;gap:10px;margin:0 0 11px}
   .mrow .n{flex:0 0 13px;font-size:10.5px;font-weight:800;color:var(--accent-d);padding-top:3px}
   .mrow .t{flex:1;font-size:13.5px;line-height:1.7;color:var(--ink-2)}
-  .fy{display:flex;gap:10px;margin:0 0 6px;align-items:flex-start}
+  .fy{display:flex;gap:10px;margin:0 0 6px;align-items:flex-start;background:#FAF8F2;border-left:2px solid var(--c-deserved);padding:2px 8px 2px 9px}
   .fy .n{flex:0 0 13px;font-size:10.5px;font-weight:800;color:var(--c-deserved);padding-top:11px}
   .fy textarea{flex:1;border:none;border-bottom:1px dashed #E2DFD8;border-radius:0;background:transparent;
     padding:7px 0;font-size:13.5px;line-height:1.65;color:var(--ink);width:100%}
@@ -312,6 +312,8 @@
 
   .hidden{display:none}
   .hint{color:var(--mut);font-size:13px}
+  .gloss{font-size:12px;line-height:1.7;color:var(--mut);margin:8px 0 18px}
+  .sg-p{font-size:11.5px;color:var(--mut);line-height:1.5}
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
     padding:11px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:99;animation:pop .25s var(--ease);box-shadow:var(--sh)}
   .settings{position:fixed;inset:0;z-index:80;background:rgba(20,20,20,.4);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -677,7 +679,7 @@ function switchLang(){
 }
 
 /* ===================== 引擎（沿用已验证逻辑） ===================== */
-const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data',LS_PROJECTS='zt_projects';
+const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data',LS_PROJECTS='zt_projects',LS_VIEW='zt_view';
 const BRANDS={
   DeepSeek:{baseUrl:'https://api.deepseek.com/v1',model:'deepseek-chat'},
   OpenAI:{baseUrl:'https://api.openai.com/v1',model:'gpt-4o-mini'},
@@ -746,33 +748,32 @@ function newProject(){state.data=null;state.inputs={};state.projectId=null;state
   state.chatStarted=true;state.chatIdx=0;state.chatLog=[];state.reached=0;
   localStorage.removeItem(LS_DATA);closeProjects();goStep(0);}
 
-const SAMPLE={
-  zh:{
-    product:'假日酒店的早餐服务',
-    audience:'25-35 岁之间的商务旅行人士，工作日为主',
-    value:'健康，简洁，高档，本地特色，朴实，精选',
-    current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',
-    pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'
-  },
-  en:{
-    product:'Breakfast service at a Holiday Inn',
-    audience:'Business travellers aged 25–35, mostly on weekdays',
-    value:'Healthy, simple, premium, local, honest, curated',
-    current:'The buffet has not changed in 50 years: 100+ items, mixed in with leisure guests, loud and chaotic. It buries the best of the local breakfast (Cantonese / Henan / Italian).',
-    pain:'Younger guests find it boring; too much choice creates cognitive load; the mixed crowd ruins the stay'
-  }
+const SAMPLES={
+  zh:[
+    {name:'周末手冲咖啡课',product:'社区活动室的周末手冲咖啡体验课',audience:'22-30 岁刚工作、想找个轻松周末的年轻人',value:'慢慢来、亲手做、能带朋友一起',current:'两小时讲完器具与产地，中间只有一次试做，结束时大家拍照就走',pain:'学员说太累、记不住，下次不来；没什么值得带走的记忆点'},
+    {name:'便利店鲜食',product:'某连锁便利店自有品牌鲜食：即食饭团与沙拉系列',audience:'18-28 岁一线城市上班族',value:'新鲜、低负担、配料透明',current:'SKU 60+ 但包装视觉十年未变，货架信息密集',pain:'选择过载、认知负荷高、没有参与感'},
+    {name:'30 年清洁用品老品牌',product:'一个 30 年的区域性家庭清洁用品老品牌',audience:'未来 5 年的主力消费人群，现在的年轻家庭',value:'可靠、安全、性价比、几代人的信任',current:'渠道和配方都很稳，但年轻客群占比逐年下滑；董事会要求判断要不要彻底年轻化，预算未知，组织内部也没有共识',pain:'不确定是产品问题、品牌问题还是渠道问题；担心大改伤到老客；需要能拿去董事会讨论的判断依据'},
+    {name:'假日酒店早餐',product:'假日酒店的早餐服务',audience:'25-35 岁之间的商务旅行人士，工作日为主',value:'健康，简洁，高档，本地特色，朴实，精选',current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'}
+  ],
+  en:[
+    {name:'Weekend coffee class',product:'A weekend pour-over coffee class at a community space',audience:'22–30 year olds, early in their careers, looking for an easy weekend',value:'Slow down, make it yourself, bring a friend',current:'Two hours of equipment and origin talk, one short brewing attempt, then a group photo and everyone leaves',pain:'They say it is tiring, they remember nothing, and they do not come back'},
+    {name:'Convenience-store fresh food',product:'A convenience chain’s own-label fresh food: rice balls and salads',audience:'18–28 year old office workers in tier-one cities',value:'Fresh, light, transparent ingredients',current:'60+ SKUs, but the packaging has not changed in ten years and the shelf is dense with information',pain:'Choice overload, high cognitive load, no sense of participation'},
+    {name:'A 30-year-old home-care brand',product:'A 30-year-old regional home-cleaning brand',audience:'The next five years of mainstream buyers: today’s young households',value:'Reliable, safe, fair price, trusted for generations',current:'Channels and formulas are stable but the share of young buyers falls every year; the board wants a call on full rejuvenation, budget unknown, no internal consensus',pain:'Unsure whether this is a product, brand or channel problem; worried a big change hurts loyal buyers; needs something to take to the board'},
+    {name:'Holiday Inn breakfast',product:'Breakfast service at a Holiday Inn',audience:'Business travellers aged 25–35, mostly on weekdays',value:'Healthy, simple, premium, local, honest, curated',current:'The buffet has not changed in 50 years: 100+ items, mixed in with leisure guests, loud and chaotic. It buries the best of the local breakfast (Cantonese / Henan / Italian).',pain:'Younger guests find it boring; too much choice creates cognitive load; the mixed crowd ruins the stay'}
+  ]
 };
-function sample(){return isEN()?SAMPLE.en:SAMPLE.zh;}
+let sampleN=0;
+function sample(){const a=isEN()?SAMPLES.en:SAMPLES.zh;return a[sampleN++%a.length];}
 const CHAT_Q={
   zh:[
-    {k:'product', q:'先聊聊——你要转变的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
+    {k:'product', q:'先聊聊——你要转变的是什么产品 / 服务？（越具体越好，例如：社区活动室的周末手冲咖啡课）'},
     {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行或使用场景。'},
     {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是转变的原料，比如：健康、本地特色、精选）'},
     {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
     {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可以跳过）'}
   ],
   en:[
-    {k:'product', q:'Let’s start — what product or service are you shifting? (Be specific, e.g. the breakfast service at a Holiday Inn.)'},
+    {k:'product', q:'Let’s start — what product or service are you shifting? (Be specific, e.g. a weekend pour-over coffee class.)'},
     {k:'audience', q:'Who are the young people you want to reach? Age, identity, the occasion they show up in.'},
     {k:'value', q:'What is the core value you want to land? (This is the raw material — e.g. healthy, local, curated.)'},
     {k:'current', q:'What are you doing today that they simply do not buy? (The more specific, the sharper the read.)'},
@@ -781,97 +782,95 @@ const CHAT_Q={
 };
 function chatQ(){return isEN()?CHAT_Q.en:CHAT_Q.zh;}
 
+const SIGNAL_PLAIN={
+  zh:{overload:'选项多到挑不动',chaos:'场面吵、乱、不自在',mixed:'来的人不是同一群',boring:'没什么值得记住',noculture:'看不出你特别在哪',stale:'还是老一套',fakepremium:'说高级，但没感觉到',narrative:'跟我没关系，不像我'},
+  en:{overload:'Too much to choose from',chaos:'Loud, messy, out of control',mixed:'The wrong crowd in one place',boring:'Nothing worth remembering',noculture:'No character stands out',stale:'Same old format',fakepremium:'Claims premium, does not feel it',narrative:'Not for someone like me'}
+};
 function detectSignals(text){
   const src=text||'';const S=[];const E=isEN();
   const ctx=m=>{const i=src.indexOf(m);if(i<0)return m;
     const a=Math.max(0,i-(E?26:7)),b=Math.min(src.length,i+m.length+(E?34:9));
     return (a>0?'…':'')+src.slice(a,b)+(b<src.length?'…':'');};
-  const add=(tag,label,quote)=>{const m=src.match(quote);if(m)S.push({tag,label,quote:ctx(m[0])});};
+  const add=(tag,label,quote)=>{const m=src.match(quote);if(m)S.push({tag,label,plain:(E?SIGNAL_PLAIN.en:SIGNAL_PLAIN.zh)[tag]||'',quote:ctx(m[0])});};
   if(E){
-    add('overload','Choice overload',/too many|overload|cognitive load|100\+|hundreds|endless|dozens|spoilt for choice|overwhelm/i);
-    add('chaos','Environment out of order',/loud|noisy|chaos|messy|crowded|crowd|clutter/i);
-    add('mixed','Audience mismatch',/mixed|blended|families|leisure guests|different kinds of|everyone/i);
-    add('boring','No emotional payoff',/boring|dull|flat|uninspiring|forgettable|nothing special/i);
-    add('noculture','No cultural story',/no story|no culture|no soul|generic|sameness|nothing local|no character|lost the/i);
-    add('stale','Stale format',/50 years|unchanged|never changed|outdated|old[- ]fashioned|for decades/i);
-    add('fakepremium','Premium that reads cheap',/premium|luxury|high[- ]end|expensive|feels cheap|not worth/i);
-    add('narrative','No identity mirror',/not me|doesn['’]t feel like me|no identity|impersonal|nobody like me/i);
+    add('overload','Choice overload',/too many|overload|cognitive load|100\+|hundreds|endless|dozens|spoilt for choice|overwhelm|too much effort|hassle|exhausting|tired|can't remember|hard to choose|information overload/i);
+    add('chaos','Environment out of order',/loud|noisy|chaos|messy|crowded|crowd|clutter|queue|stressful/i);
+    add('mixed','Audience mismatch',/mixed|blended|families|leisure guests|different kinds of|everyone|not for me|wrong crowd/i);
+    add('boring','No emotional payoff',/boring|dull|flat|uninspiring|forgettable|nothing special|meh|never come back|won't return|no reason to return|nothing to remember|no memory of it/i);
+    add('noculture','No cultural story',/no story|no culture|no soul|generic|sameness|nothing local|no character|lost the|all look the same|nothing stands out/i);
+    add('stale','Stale format',/50 years|unchanged|never changed|outdated|old[- ]fashioned|for decades|for ten years|same as always|hasn't changed/i);
+    add('fakepremium','Premium that reads cheap',/premium|luxury|high[- ]end|expensive|feels cheap|not worth|overpriced|trying too hard|too expensive/i);
+    add('narrative','No identity mirror',/not me|doesn['’]t feel like me|no identity|impersonal|nobody like me|nothing to do with me|not for people like me|no connection/i);
     return S;
   }
-  add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
-  add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
-  add('mixed','人群错配',/混杂|混合|各类.*?客|不同.*?人|休闲.*?客/);
-  add('boring','缺乏情绪价值',/无聊|没意思|枯燥|平淡|无趣/);
-  add('noculture','缺乏文化叙事',/没文化|没有故事|无故事|缺乏叙事|没有特色|没有灵魂|没灵魂|同质化/);
-  add('stale','形态陈旧',/50\s*年|没变|老旧|过时|老套|传统.*没变|几十年/);
-  add('fakepremium','价值感知错位',/高档|精致|奢华|轻奢|但.*?廉价|显得便宜|不值/);
-  add('narrative','无身份认同',/没有.*?感|缺乏.*?感|不.*?我|不是.*?我/);
+  add('overload','选不过来',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目|挑花眼|看花眼|记不住|信息太多|太杂|复杂|麻烦|太累|累|费劲|心累/);
+  add('chaos','场面失控',/吵|杂|无序|混乱|乱|嘈杂|排队|拥挤|赶时间/);
+  add('mixed','人群错配',/混杂|混合|各类.*?客|不同.*?人|休闲.*?客|不对的人|不是给我的|跟我没关系/);
+  add('boring','没情绪钩子',/无聊|没意思|枯燥|平淡|无趣|没感觉|没记忆点|没什么特别|下次不来|不会再来|懒得来|不来第二次/);
+  add('noculture','没讲出故事',/没文化|没有故事|无故事|缺乏叙事|没有特色|没有灵魂|没灵魂|同质化|都一个样|看不出区别/);
+  add('stale','形态陈旧',/50\s*年|没变|老旧|过时|老套|传统.*没变|几十年|十年|一直这样/);
+  add('fakepremium','价值感知错位',/高档|精致|奢华|轻奢|但.*?廉价|显得便宜|不值|太贵|贵|用力过猛|装高级/);
+  add('narrative','没有身份认同',/没有身份|不属于我|不是我的|不像我|无归属|没有共鸣|跟我无关|不为我/);
   return S;
-}
-function detectDomain(text){
-  const t0=(text||'');
-  if(isEN()){
-    if(/hotel|breakfast|restaurant|cafe|coffee|food|menu|bakery|dining/i.test(t0))return 'hospitality';
-    if(/beauty|skincare|cosmetic|lipstick|perfume|serum|makeup/i.test(t0))return 'beauty';
-    if(/app|software|platform|website|system|tool|saas|product/i.test(t0))return 'digital';
-    if(/fashion|apparel|clothing|shoes|sneaker|bag|wear|accessor/i.test(t0))return 'fashion';
-    if(/appliance|homeware|furniture|kitchenware|gadget|device/i.test(t0))return 'product';
-    return 'generic';
-  }
-  if(/酒店|早餐|餐饮|餐厅|咖啡|食物|食品|饭|料理|烘焙/.test(t0))return 'hospitality';
-  if(/美妆|护肤|化妆|口红|面膜|香水/.test(t0))return 'beauty';
-  if(/App|软件|应用|平台|小程序|网站|系统|工具/.test(t0))return 'digital';
-  if(/服饰|衣服|鞋|包|穿搭|配饰/.test(t0))return 'fashion';
-  if(/家电|电器|锅|家居|家具|数码/.test(t0))return 'product';
-  return 'generic';
 }
 function computeScores(signals,opp){
   const pillarMap={control:['overload','chaos','mixed'],deserved:['fakepremium','noculture','narrative'],gratification:['boring','noculture']};
+  const sigs=(signals||[]).filter(x=>x&&x.tag&&x.tag!=='none');
   const cur={control:6.5,deserved:6.5,gratification:6.5};
-  (signals||[]).forEach(s=>{const t=s.tag;if(!t||t==='none')return;Object.keys(pillarMap).forEach(p=>{if(pillarMap[p].includes(t))cur[p]-=1.4;});});
+  sigs.forEach(x=>{Object.keys(pillarMap).forEach(p=>{if(pillarMap[p].includes(x.tag))cur[p]-=1.4;});});
   ['control','deserved','gratification'].forEach(p=>{cur[p]=Math.max(2,Math.min(9,Math.round(cur[p]*10)/10));});
   const rev={};
   ['control','deserved','gratification'].forEach(p=>{
     const cnt=(opp&&opp[p]||[]).length;
-    let v=cur[p]+3.0+cnt*0.6;
-    v=Math.max(cur[p]+0.5,Math.min(9.6,v));
-    rev[p]=Math.round(v*10)/10;
+    const hit=sigs.some(x=>pillarMap[p].includes(x.tag));
+    // 没有读到证据就不预测进步：这是按输入推算的示意值，不是实测数据
+    const gain=hit?Math.min(2.4,1.2+cnt*0.5):0;
+    rev[p]=Math.round(Math.min(9.4,cur[p]+gain)*10)/10;
   });
-  return {current:cur,revised:rev};
+  return {current:cur,revised:rev,evidence:sigs.length};
 }
 function getScores(){
   if(state.data&&state.data.scores)return state.data.scores;
   const c=(state.data&&state.data._inputs)||{};
   return computeScores(detectSignals((c.current||'')+' '+(c.pain||'')),state.data?state.data.opportunity:{});
 }
-function genPlanZH(domain,c){
-  if(domain==='hospitality'){
-    return [
-      {task:`把现有百种自助早餐重组为「晨间精选」3 套轮转主题分区（粤式清润 / 中原暖胃 / 西式利落），并划出商务客独立安静角`,
-       deliverable:'三套晨食菜单 + 安静角布局与动线图 + 取餐分区标识方案',timeline:'第 1–4 周',owner:'餐饮总监 + 行政总厨',resource:'菜单研发工时；安静角软装预算约 ¥3–5 万；动线改造'},
-      {task:`保留自助形态，把"自助餐"改名为「城市晨味」画廊式分区，粤/豫/意早餐配手绘故事卡，精华不再被埋`,
-       deliverable:'命名方案 + 12 张地域早餐故事卡设计 + 分区陈列物料',timeline:'第 3–6 周',owner:'品牌 / 市场经理 + 设计外包',resource:'插画设计外包预算约 ¥2–3 万；印刷与陈列物料'},
-      {task:`黑话过滤（停用"丰盛/匠心传承"），提炼主文案"三套晨味，选一套就取"，采集真实商务客评语建文案库`,
-       deliverable:'文案手册（主/副文案各 3 条）+ 旅客评语库（来自 OTA 评论挖掘）',timeline:'第 2–3 周',owner:'市场经理',resource:'文案工时；OTA 评论采集工具/人工'},
-      {task:`booking 漏斗加"入住即选清晨仪式"；小红书/抖音以商务客视角种草安静角与本地早餐`,
-       deliverable:'预订页改造方案 + 12 篇种草内容排期与素材',timeline:'第 4–8 周',owner:'数字营销 + 社媒运营',resource:'投放预算约 ¥5–8 万/月；内容制作工时'},
-      {task:`建常旅客「晨味研究所」圈，月度城市早餐地图由旅客共创，招募"晨间体验官"测新套系`,
-       deliverable:'社群运营 SOP + 体验官机制 + 首月共创活动方案',timeline:'第 6–10 周',owner:'会员 / 社群运营',resource:'运营工时；体验官权益（免费房晚/早餐券）'}
-    ];
+/* 只做内容适配：从「最想解决的问题」里读出这一轮该先谈什么。不改流程、不加屏幕。 */
+function focusOf(c){
+  const pain=c.pain||'',ctx=[c.pain,c.current,c.product].filter(Boolean).join(' ');
+  const E=isEN();
+  const decided=E?/confirmed|already clear|already decided|only change|only need|do not change the product/i.test(pain)
+                 :/已确认|已经确认|已经明确|已经决定|只要改|只改|不改产品|不动产品/.test(pain);
+  if(E){
+    if(!decided&&/not sure|whether|no consensus|board|budget|unclear|decide|decision|evidence|judgement/i.test(ctx))return 'clarity';
+    if(/channel|reach|search|can't find|cannot find|online|distribution|touchpoint|walk up to/i.test(ctx))return 'reach';
+    if(/loyal|existing customers|old customers|do not change|keep the product|hurt|repeat purchase/i.test(ctx))return 'legacy';
+  }else{
+    if(!decided&&/不确定|要不要|没共识|董事会|预算|判断|该不该|是否|决策|依据|想清楚/.test(ctx))return 'clarity';
+    if(/渠道|触达|搜不到|找不到|不会走到|铺货|触点|走不到|线上搜/.test(ctx))return 'reach';
+    if(/老客|存量|怕伤|复购稳定|保留原有|伤到/.test(ctx))return 'legacy';
   }
+  return 'general';
+}
+function planFirstZH(focus,val,aud,prod){
+  return {
+    general:{task:`把"${val}"转变成 3 个${aud}的真实使用场景，并据此重组${prod}的呈现`,deliverable:'场景清单（3 个）+ 重组方案',timeline:'第 1–3 周',owner:'产品 + 市场负责人',resource:'内部工时；用户访谈'},
+    clarity:{task:`先别急着改${prod}：把「要不要转、先转哪里、不转的代价」写成 3 个能用数据回答的问题，并列出各自要补的证据与决策门槛`,deliverable:'一页判断书（3 个问题 + 证据清单 + 决策门槛）',timeline:'第 1–2 周',owner:'战略 / 品牌负责人',resource:'内部数据盘点；6–8 位用户访谈；不启动设计与投放'},
+    reach:{task:`先验证${aud}到底在哪里、为什么走不到${prod}面前：盘一遍可见度与触点，做 10 次真实拦截访谈，产品先不动`,deliverable:'触点盘点表 + 10 份访谈纪要 + 一个最小触达试验方案',timeline:'第 1–3 周',owner:'渠道 + 用户研究',resource:'访谈工时；渠道数据；小规模测试预算'},
+    legacy:{task:`先划出不动的红线：${prod}被老客认得的识别与复购渠道保持原样，只在增量触点上做一版小样`,deliverable:'红线清单 + 增量触点小样方案 + 老客影响观测指标',timeline:'第 1–3 周',owner:'品牌负责人 + 渠道',resource:'小样制作；老客复购基线数据'}
+  }[focus];
+}
+function genPlanZH(c){
   const val=c.value||'核心价值',aud=c.audience||'目标年轻人',prod=c.product||'产品';
   return [
-    {task:`把"${val}"转变成 3 个${aud}的真实使用场景，并据此重组${prod}的呈现`,deliverable:'场景清单（3 个）+ 重组方案',timeline:'第 1–3 周',owner:'产品 + 市场负责人',resource:'内部工时；用户访谈'},
-    {task:`保留经典识别，推年轻向特别版（联名/季节/插画），小批量试水`,deliverable:'特别版方案 + 社媒测试计划',timeline:'第 2–5 周',owner:'品牌经理',resource:'设计外包预算'},
+    planFirstZH(focusOf(c),val,aud,prod),
+    {task:`保留${prod}的经典识别，推年轻向特别版（联名/季节/插画），小批量试水`,deliverable:'特别版方案 + 社媒测试计划',timeline:'第 2–5 周',owner:'品牌经理',resource:'设计外包预算'},
     {task:`黑话过滤，把"${val}"提炼成一句${aud}听得懂的人话文案`,deliverable:'文案手册（主/副各 3 条）',timeline:'第 2–3 周',owner:'市场经理',resource:'文案工时'},
-    {task:`选 1 个年轻人聚集渠道做转变试验田，定制渠道语言`,deliverable:'渠道内容排期 + 触点改造',timeline:'第 4–8 周',owner:'数字营销',resource:'投放预算；内容制作'},
-    {task:`建答疑日 + 体验官机制，由年轻一线员工运营社群`,deliverable:'社群 SOP + 体验官机制',timeline:'第 6–10 周',owner:'社群运营',resource:'运营工时；体验官权益'}
+    {task:`选 1 个${aud}聚集的渠道做${prod}的转变试验田，定制渠道语言`,deliverable:'渠道内容排期 + 触点改造',timeline:'第 4–8 周',owner:'数字营销',resource:'投放预算；内容制作'},
+    {task:`为${prod}建答疑日 + 体验官机制，由年轻一线员工运营社群`,deliverable:'社群 SOP + 体验官机制',timeline:'第 6–10 周',owner:'社群运营',resource:'运营工时；体验官权益'}
   ];
 }
 function reasonLocalZH(c){
-  const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
-  const signals=detectSignals(c.current+' '+c.pain);
-  const domain=detectDomain(allText);
+  const signals=detectSignals((c.current||'')+' '+(c.pain||''));
   const understand={summary:`产品「${c.product}」面向${c.audience}；想传达「${c.value}」。现状：${c.current||'（未填）'}。适配痛点：${c.pain||'（未填）'}。`,
     signals:signals.length?signals:[{tag:'none',label:'未发现明显偏科信号',quote:''}]};
   const reframes={
@@ -910,13 +909,6 @@ function reasonLocalZH(c){
     '渠道转变':['转变试验田：优先选 1 个年轻人聚集渠道（抖音/小红书/B站）做 6 个月规则学习','渠道语言定制化：抖音快节奏、小红书种草、B站深度测评，同一产品不同方言','线下触点年轻化：拍照打卡区、有趣标语、店员话术从"欢迎光临"改成"想解决什么问题"'],
     '社群转变':['用户答疑日：每周一次，不卖货只回答用户问题','品牌体验官计划：邀忠实年轻用户参与新品测试，而非只看数据','年轻员工运营社群：让一线年轻员工而非老板发声']
   };
-  const hospForYou={
-    '产品转变':[`针对你①（场景脑暴）：召集酒店年轻员工，把"${c.value}"写成商务客原话，票选「工作日清晨快速安顿」「一人食不浪费」「本地风味尝鲜」3 个场景`,'针对你②（画面化）：为「清晨安顿」画面化——独立安静角 + 一套精选餐盘，10 分钟吃完不排队不喧闹','针对你③（倒转立项）：先定"商务客工作日上午需 15 分钟恢复状态"，再倒推早餐只保留支撑该场景的品类，砍掉百种堆砌'],
-    '包装转变':['针对你①（双轨）：保留现有自助给家庭休闲客，推「城市晨味」特别版给商务客——分区陈列、极简白 + 本地插画','针对你②（小测）：先在小红书投「商务客的安静早餐」图文测水，评论好再扩到门店','针对你③（并行）：经典自助与晨味专区并行 6 个月，不取消原有供给，让两类客各得其所'],
-    '沟通转变':['针对你①（黑话过滤）：停用"丰盛/匠心传承"，改说"三套精选，挑一套就走"','针对你②（剧集化）：把"城市晨味"做成系列短视频——每集一道地域早餐的前世今生','针对你③（原话文案）：摘真实商务客评语"出差最怕早上乱哄哄"做主文案'],
-    '渠道转变':['针对你①（试验田）：把小红书/抖音当转变试验田，6 个月只发商务客视角的安静早餐内容','针对你②（定制化）：抖音快剪"5 分钟安顿"、小红书种草"安静角打卡"、B站深评"酒店如何把河南早餐做成体验"','针对你③（触点年轻化）：在 booking 漏斗让旅客"入住即选清晨仪式"，餐厅设拍照点，服务员改问"今天想怎么开始"'],
-    '社群转变':['针对你①（答疑日）：设「晨味答疑日」，每周答疑不卖货，只聊出差早餐怎么吃舒服','针对你②（体验官）：招募常驻商务客当"晨间体验官"测新地域套系','针对你③（年轻运营）：由年轻餐饮员工而非总部运营社群，说人话']
-  };
   function genForYou(step){
     const val=c.value||'核心功能',aud=c.audience||'目标年轻人',prod=c.product||'产品';
     const base={
@@ -928,53 +920,45 @@ function reasonLocalZH(c){
     };
     return base[step];
   }
-  const forYouMap=(domain==='hospitality')?hospForYou:null;
   const principles={'产品转变':'从"功能罗列"转向"场景定义"：立项先定义使用场景，再倒推功能。','包装转变':'让"经典"长出"潮"感：双轨保留经典，推年轻向特别版。','沟通转变':'从"品牌独白"切换到"用户对话"：黑话过滤，用原话。','渠道转变':'从"大卖场"迁移到"新货架"：选年轻人聚集渠道做试验田。','社群转变':'从"广播"转为"对话"：答疑日 + 体验官 + 年轻运营。'};
   const steps=['产品转变','包装转变','沟通转变','渠道转变','社群转变'];
-  const translate=steps.map(step=>({step,principle:principles[step],methods:PnG_METHODS[step],forYou:forYouMap?forYouMap[step]:genForYou(step)}));
-  let output;
-  if(domain==='hospitality'){
-    output={positioning:`${c.product} = 为${c.audience}策展的「城市晨味」自助仪式：三套主题分区取用，十分钟安顿，一城风味。`,
-      scene:`工作日上午 7–9 点的酒店自助餐厅，${c.audience}在「晨间精选」三套主题分区（粤式清润 / 中原暖胃 / 西式利落）自主取用，于独立安静角十分钟吃完有本地风味的一餐，解决选择过载与休闲客混杂喧闹。`};
-  }else{
-    const val=c.value||'核心价值',aud=c.audience||'目标年轻人',prod=c.product||'产品';
-    output={positioning:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
-      scene:`在${aud}最在意的时刻，用精选替代堆砌，解决其最痛的适配问题，让"这为我而生"被立刻感知。`,
-      copy:`主文案说人话：把"${val}"提炼成一句${aud}听得懂的话，例如"挑一套就走"。`,
-      packaging:'把被埋没的资产策展成主角，配故事卡，用克制传达高级感。',
-      channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
-      community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'};
-  }
-  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),scores:computeScores(signals,opp),_inputs:c,_lang:'zh'};
+  const translate=steps.map(step=>({step,principle:principles[step],methods:PnG_METHODS[step],forYou:genForYou(step)}));
+  const focus=focusOf(c);
+  const val=c.value||'核心价值',aud=c.audience||'目标年轻人',prod=c.product||'产品';
+  const position={
+    general:`${prod} = 为${aud}策展好的、有身份感的体验：少而精，一击即中。`,
+    clarity:`${prod} = 先不重写定位：用一页判断书确认要不要转、先转哪里，再决定对${aud}说什么。`,
+    reach:`${prod} = 先不改产品，把「${aud}找得到、买得到」补齐，再谈身份感。`,
+    legacy:`${prod} = 老客认得的那个，不动；在增量触点上，给${aud}一个试用理由。`
+  }[focus];
+  const output={positioning:position,
+    scene:`在${aud}最在意的时刻，用精选替代堆砌，解决其最痛的适配问题，让"这为我而生"被立刻感知。`,
+    copy:`主文案说人话：把"${val}"提炼成一句${aud}听得懂的话。`,
+    packaging:'把被埋没的资产策展成主角，配故事卡，用克制传达高级感。',
+    channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
+    community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'};
+  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(c),scores:computeScores(signals,opp),focus,_inputs:c,_lang:'zh'};
 }
-function genPlanEN(domain,c){
-  if(domain==='hospitality'){
-    return [
-      {task:'Regroup the 100-item buffet into three rotating "Morning Edit" zones (Cantonese light / Central comfort / Western sharp) and carve out a quiet corner for business guests.',
-       deliverable:'Three breakfast menus + quiet-corner layout and circulation plan + zone signage',timeline:'Weeks 1–4',owner:'F&B director + executive chef',resource:'Menu R&D hours; ~¥30–50k soft furnishing; circulation changes'},
-      {task:'Keep self-service, rename it "City Morning Edit" as a gallery walk, with hand-drawn story cards for the Cantonese / Henan / Italian breakfasts.',
-       deliverable:'Naming + 12 regional breakfast story cards + zone display kit',timeline:'Weeks 3–6',owner:'Brand / marketing manager + design studio',resource:'Illustration budget ~¥20–30k; print and display kit'},
-      {task:'Filter the jargon (retire "abundant / crafted heritage"), lead with "three morning edits, pick one", and build a copy bank from real business travellers.',
-       deliverable:'Copy kit (3 primary, 3 secondary) + traveller quote bank from OTA reviews',timeline:'Weeks 2–3',owner:'Marketing manager',resource:'Copywriting hours; review-mining tool or manual read'},
-      {task:'Add "choose your morning ritual" to the booking funnel; seed the quiet corner and local breakfast through business travellers on RED and Douyin.',
-       deliverable:'Booking-page redesign + 12-post content calendar',timeline:'Weeks 4–8',owner:'Digital marketing + social',resource:'Media budget ~¥50–80k/month; content production'},
-      {task:'Build a regular-guest "Morning Lab" where the monthly city breakfast map is co-created, and recruit morning experience officers to test new sets.',
-       deliverable:'Community SOP + experience-officer programme + first co-creation event',timeline:'Weeks 6–10',owner:'Membership / community',resource:'Ops hours; officer perks (free nights / breakfast)'}
-    ];
-  }
+function planFirstEN(focus,val,aud,prod){
+  return {
+    general:{task:`Turn "${val}" into three real usage scenes for ${aud}, then restructure how ${prod} is presented.`,deliverable:'Scene list (3) + restructure proposal',timeline:'Weeks 1–3',owner:'Product + marketing lead',resource:'Internal hours; 8 user interviews'},
+    clarity:{task:`Do not change ${prod} yet: write the three answerable questions — whether to shift, where to start, and the cost of not shifting — with the evidence and decision threshold for each.`,deliverable:'One-page decision memo (3 questions + evidence list + thresholds)',timeline:'Weeks 1–2',owner:'Strategy / brand lead',resource:'Internal data review; 6–8 interviews; no design or media spend yet'},
+    reach:{task:`Verify where ${aud} actually are and why they never reach ${prod}: audit visibility and touchpoints, run 10 intercept interviews, leave the product alone.`,deliverable:'Touchpoint audit + 10 interview notes + one minimal reach test',timeline:'Weeks 1–3',owner:'Channel + research',resource:'Interview hours; channel data; small test budget'},
+    legacy:{task:`Draw the do-not-touch line first: keep the identity and repeat-purchase channels loyal buyers recognise, and test one sample only on incremental touchpoints.`,deliverable:'Red-line list + incremental test plan + loyal-buyer impact metrics',timeline:'Weeks 1–3',owner:'Brand lead + channel',resource:'Sample production; loyal-buyer baseline data'}
+  }[focus];
+}
+function genPlanEN(c){
   const val=c.value||'core value',aud=c.audience||'young audience',prod=c.product||'the product';
   return [
-    {task:`Turn "${val}" into three real usage scenes for ${aud}, then restructure how ${prod} is presented.`,deliverable:'Scene list (3) + restructure proposal',timeline:'Weeks 1–3',owner:'Product + marketing lead',resource:'Internal hours; 8 user interviews'},
-    {task:'Keep the classic identity and ship a youth edition (collab / seasonal / illustration) in small batches.',deliverable:'Edition concept + social test plan',timeline:'Weeks 2–5',owner:'Brand manager',resource:'Design freelance budget'},
-    {task:`Filter the jargon and distil "${val}" into one sentence ${aud} would repeat.`,deliverable:'Copy kit (3 primary, 3 secondary)',timeline:'Weeks 2–3',owner:'Marketing manager',resource:'Copywriting hours'},
-    {task:'Pick one channel where they gather and run a six-week shift test with its own language.',deliverable:'Channel calendar + touchpoint redesign',timeline:'Weeks 4–8',owner:'Digital marketing',resource:'Media budget; content production'},
-    {task:'Run weekly office hours and an experience-officer crew, staffed by young frontline people.',deliverable:'Community SOP + officer programme',timeline:'Weeks 6–10',owner:'Community lead',resource:'Ops hours; officer perks'}
+    planFirstEN(focusOf(c),val,aud,prod),
+    {task:`Keep the classic identity of ${prod} and ship a youth edition (collab / seasonal / illustration) in small batches.`,deliverable:'Edition concept + social test plan',timeline:'Weeks 2–5',owner:'Brand manager',resource:'Design freelance budget'},
+    {task:`Filter the jargon and distil "${val}" into one sentence ${aud} would repeat about ${prod}.`,deliverable:'Copy kit (3 primary, 3 secondary)',timeline:'Weeks 2–3',owner:'Marketing manager',resource:'Copywriting hours'},
+    {task:`Pick one channel where ${aud} gather and run a six-week shift test for ${prod} with its own language.`,deliverable:'Channel calendar + touchpoint redesign',timeline:'Weeks 4–8',owner:'Digital marketing',resource:'Media budget; content production'},
+    {task:`Run weekly office hours and an experience-officer crew for ${prod}, staffed by young frontline people.`,deliverable:'Community SOP + officer programme',timeline:'Weeks 6–10',owner:'Community lead',resource:'Ops hours; officer perks'}
   ];
 }
 function reasonLocalEN(c){
-  const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
   const signals=detectSignals((c.current||'')+' '+(c.pain||''));
-  const domain=detectDomain(allText);
   const P=c.product||'your product',A=c.audience||'your young audience',V=c.value||'your core value';
   const understand={
     summary:`"${P}" serves ${A}; the promise is "${V}". Today: ${c.current||'(not filled in)'}. The friction: ${c.pain||'(not filled in)'}.`,
@@ -1045,22 +1029,21 @@ function reasonLocalEN(c){
      methods:['Office hours: once a week, answer questions and sell nothing.','Experience officers: invite loyal young users to test before launch instead of only reading dashboards.','Let young frontline staff run the community — not head office.'],
      forYou:[`Open weekly office hours where ${A} can ask anything and nothing is sold.`,'Recruit 20 experience officers from your most vocal young users.','Hand the account to the youngest person on the team for one quarter.']}
   ];
-  let output;
-  if(domain==='hospitality'){
-    output={
-      positioning:`${P} = a curated "City Morning Edit" ritual for ${A}: three zones, ten minutes to settle, one city’s flavour.`,
-      scene:`Weekday 7–9am in the hotel restaurant: ${A} move through three "Morning Edit" zones (Cantonese light / Central comfort / Western sharp), settle in a quiet corner, and finish a locally rooted breakfast in ten minutes — choice overload and the leisure crowd left at the door.`
-    };
-  }else{
-    output={
-      positioning:`${P} = a curated, identity-bearing experience for ${A}: fewer, sharper, right on the first try.`,
-      scene:`At the moment ${A} cares about most, replace abundance with a sharp edit — so "this was made for me" lands instantly instead of being claimed.`
-    };
-  }
-  return {understand,reframe,opportunity:opp,translate:steps,output,plan:genPlanEN(domain,c),scores:computeScores(signals,opp),_inputs:c,_lang:'en'};
+  const focus=focusOf(c);
+  const position={
+    general:`${P} = a curated, identity-bearing experience for ${A}: fewer, sharper, right on the first try.`,
+    clarity:`${P} = do not rewrite the positioning yet. Settle whether to shift, and where to start, before deciding what to say to ${A}.`,
+    reach:`${P} = leave the product alone until ${A} can actually find and buy it; identity comes after discoverability.`,
+    legacy:`${P} = the one loyal buyers recognise stays put; give ${A} one reason to try it on a new touchpoint.`
+  }[focus];
+  const output={
+    positioning:position,
+    scene:`At the moment ${A} cares about most, replace abundance with a sharp edit — so "this was made for me" lands instantly instead of being claimed.`
+  };
+  return {understand,reframe,opportunity:opp,translate:steps,output,plan:genPlanEN(c),scores:computeScores(signals,opp),focus,_inputs:c,_lang:'en'};
 }
 function reasonLocal(c){return isEN()?reasonLocalEN(c):reasonLocalZH(c);}
-function genPlan(domain,c){return isEN()?genPlanEN(domain,c):genPlanZH(domain,c);}
+function genPlan(c){return isEN()?genPlanEN(c):genPlanZH(c);}
 
 async function callLLM(messages){
   const a=getAI();if(!a.apiKey)throw new Error('no key');
@@ -1127,8 +1110,7 @@ async function reasonAI(c){
     const txt=await callLLM([sys,usr]);
     const data=JSON.parse(txt);
     if(!data.translate||!data.output)throw new Error('schema 缺字段');
-    const dom=detectDomain([c.product,c.audience,c.value,c.current,c.pain].join(' '));
-    if(!data.plan||!data.plan.length)data.plan=genPlan(dom,c);
+    if(!data.plan||!data.plan.length)data.plan=genPlan(c);
     data._inputs=c;
     data.scores=computeScores(detectSignals(c.current+' '+c.pain),data.opportunity);
     return data;
@@ -1153,6 +1135,9 @@ function saveInputDraft(){const f={p:val0('i-product'),a:val0('i-audience'),v:va
   const any=Object.values(f).some(x=>x);if(any)localStorage.setItem(LS_DRAFT,JSON.stringify(f));}
 function val0(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 
+function saveView(){
+  try{localStorage.setItem(LS_VIEW,JSON.stringify({step:state.step,done:!!state.done,doneAt:state.doneAt||'',reached:state.reached||0}));}catch(e){}
+}
 function goStep(n){
   if(n>0 && !state.data){toast(t('请先在第 1 步生成转型专案','Generate a case on step 1 first'));return;}
   state.step=n;
@@ -1162,6 +1147,7 @@ function goStep(n){
   if(n===0 && state.mode==='chat'){renderChat();bindChatEnter();}
   document.getElementById('screen').scrollIntoView({behavior:'smooth',block:'start'});
   window.scrollTo({top:0,behavior:'smooth'});
+  saveView();
 }
 
 function brandHome(){
@@ -1190,17 +1176,20 @@ function finishProject(){
   saveCurrentProject(true);
   renderHeader();renderProgress();renderScreen();renderNavbar();
   window.scrollTo({top:0,behavior:'smooth'});
+  saveView();
   toast(t('已收进课题 · 随时能回来改','Filed under Cases — come back and change it anytime'));
 }
 /* 回首页：当前专案先归档，再清空输入，从第一问重新开始 */
 function homeNew(){
   if(state.data)saveCurrentProject(true);
+  const Q=chatQ();if(!Q||!Q.length)return;
   state.data=null;state.projectId=null;state.done=false;state.doneAt='';state.reached=0;
   state.inputs={product:'',audience:'',value:'',current:'',pain:''};
-  state.mode='chat';state.chatStarted=true;state.chatIdx=0;
-  state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];
-  try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_DRAFT);}catch(e){}
+  state.mode='chat';state.chatStarted=true;state.chatIdx=0;state.chatAns={};
+  state.chatLog=[{role:'bot',text:Q[0].q,q:true}];
+  try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_DRAFT);localStorage.removeItem(LS_VIEW);}catch(e){}
   goStep(0);
+  saveView();
   toast(t('上一个课题已存进课题','The previous case is in Cases'));
 }
 /* 中英跷跷板：见文件顶部的 switchLang() */
@@ -1268,6 +1257,7 @@ function screenInput(){
     <div class="eyebrow">${t('输入 · 品牌现状','Brief · where the brand stands')}</div>
     <h1 class="h-hero">${t('聊聊你的产品','Tell me about your product')}</h1>
     <p class="lead">${t('用对话的方式告诉我，我会把它转变成 Z 世代想要的样子。也可以切到表单一次填完。','Talk it through with me and I will turn it into what Gen Z actually wants. Or switch to the form and fill it in one go.')}</p>
+    <p class="gloss">${t('这个工作台负责把现状落到动作；如果还在判断「要不要转」，第 1 条行动会先帮你把判断补齐。','This workspace turns a situation into moves. If you are still deciding whether to shift at all, action 01 starts by closing that decision.')}</p>
     ${recent}
     <div class="seg">
       <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">${t('对话引导','Conversation')}</button>
@@ -1286,15 +1276,15 @@ function screenInput(){
     </div>
     <div id="formWrap" class="${state.mode==='form'?'':'hidden'}">
       <label class="fld">${t('1 · 你的产品 / 服务是什么？','1 · What is your product or service?')}<span>${t('越具体越好','The more specific, the better')}</span></label>
-      <textarea id="i-product" rows="2" placeholder="${t('例：假日酒店的早餐服务','e.g. the breakfast service at a Holiday Inn')}">${esc(iv('product'))}</textarea>
+      <textarea id="i-product" rows="2" placeholder="${t('例：社区活动室的周末手冲咖啡体验课','e.g. a weekend pour-over coffee class')}">${esc(iv('product'))}</textarea>
       <label class="fld">${t('2 · 目标受众是谁？','2 · Who is the target audience?')}<span>${t('希望触达的年轻人','The young people you want to reach')}</span></label>
-      <textarea id="i-audience" rows="2" placeholder="${t('例：25-35 岁商务旅行人士，工作日为主','e.g. business travellers aged 25–35, mostly weekdays')}">${esc(iv('audience'))}</textarea>
+      <textarea id="i-audience" rows="2" placeholder="${t('例：22-30 岁刚工作的年轻人，想找个轻松周末','e.g. 22–30 year olds looking for an easy weekend')}">${esc(iv('audience'))}</textarea>
       <label class="fld">${t('3 · 你最想传达的核心功能 / 价值','3 · The core value you want to land')}<span>${t('转变的"原料"','The raw material')}</span></label>
-      <textarea id="i-value" rows="2" placeholder="${t('例：健康，简洁，高档，本地特色，朴实，精选','e.g. healthy, simple, premium, local, honest, curated')}">${esc(iv('value'))}</textarea>
+      <textarea id="i-value" rows="2" placeholder="${t('例：慢慢来、亲手做、能带朋友一起','e.g. slow down, make it yourself, bring a friend')}">${esc(iv('value'))}</textarea>
       <label class="fld">${t('4 · 你目前在做什么，但年轻人不买账？','4 · What do you do today that they don’t buy?')}<span>${t('越具体越准','Specifics sharpen the read')}</span></label>
-      <textarea id="i-current" rows="3" placeholder="${t('例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…','e.g. a buffet unchanged for 50 years: 100+ items, mixed in with leisure guests…')}">${esc(iv('current'))}</textarea>
+      <textarea id="i-current" rows="3" placeholder="${t('例：两小时都在讲器具与产地，只有一次试做…','e.g. two hours of talk, one short hands-on attempt…')}">${esc(iv('current'))}</textarea>
       <label class="fld">${t('5 · 最想解决的适配问题','5 · The fit problem you most want to solve')}<span>${t('选填','Optional')}</span></label>
-      <textarea id="i-pain" rows="2" placeholder="${t('例：年轻人觉得无聊；选择过多认知负荷高','e.g. they find it boring; too much choice, high cognitive load')}">${esc(iv('pain'))}</textarea>
+      <textarea id="i-pain" rows="2" placeholder="${t('例：太累、记不住，下次不来了','e.g. tiring, nothing sticks, they do not come back')}">${esc(iv('pain'))}</textarea>
       <button class="btn btn-primary" style="margin-top:16px" onclick="fromForm()">${t('生成转型专案','Generate the case')}</button>
       <button class="btn btn-soft btn-sm" style="margin-top:10px;width:auto" onclick="loadSample()">${t('载入示例','Load an example')}</button>
     </div>`;
@@ -1319,14 +1309,18 @@ function screenUnderstand(){
     ${sigs.length?`<div class="sec">
       <div class="slabel">${t('我抓到的 '+sigs.length+' 个信号 · 都来自你的原话',sigs.length+' signals, all in your own words')}</div>
       <div class="sig-grid">
-        ${sigs.slice(0,4).map((s,i)=>`<div class="sg"><span class="sg-no">0${i+1}</span><b>${esc(s.label)}</b>${s.quote&&s.quote.length<=14?`<span class="sg-q">${esc(s.quote)}</span>`:''}</div>`).join('')}
+        ${sigs.slice(0,4).map((s,i)=>`<div class="sg"><span class="sg-no">0${i+1}</span><b>${esc(s.label)}</b>${s.plain?`<span class="sg-p">${esc(s.plain)}</span>`:''}${s.quote?`<span class="sg-q">「${esc(String(s.quote).length>22?String(s.quote).slice(0,22)+'…':s.quote)}」</span>`:''}</div>`).join('')}
       </div>
       ${sigs.length>4?`<p class="hint" style="margin-top:14px">${t('另有 '+(sigs.length-4)+' 个信号未列出，已计入后面的诊断。',(sigs.length-4)+' more signals are folded into the diagnosis.')}</p>`:''}
-    </div>`:''}
+    </div>`:`<div class="sec">
+      <div class="slabel">${t('没读到明确信号','No clear signal yet')}</div>
+      <p class="dim">${t('你写的现状比较概括，我不会替你猜一根支柱。可以在上一步补两句具体场景（谁、什么时候、卡在哪），或者直接往下看通用推演。','What you wrote is fairly high-level, so I will not guess a pillar for you. Add a concrete scene — who, when, where it stalls — or carry on with the general read.')}</p>
+    </div>`}
 
     <div class="fn">
-      <span class="k">${t('读偏了怎么办','If I read you wrong')}</span>
-      <p>${t('点底部「上一步」，改你写的那几句——这一屏的内容会跟着变。后面所有判断都建在这一层上。','Hit Back, edit those few lines — this screen follows. Every later judgement is built on this layer.')}</p>
+      <span class="k">${t('我读到了这些，对吗？','Did I read you right?')}</span>
+      <p>${t('信号只来自你写的现状与痛点。读偏了就回去改那两句，后面几屏会跟着变——不用逐屏改文本框。','These signals come only from what you wrote about today and the friction. If I got it wrong, edit those two lines and every screen that follows will update.')}</p>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:auto" onclick="goStep(0)">${t('读偏了，回去改两句','Not quite — edit my input')}</button>
     </div>`;
 }
 function screenReframe(){
@@ -1373,6 +1367,7 @@ function screenOpportunity(){
     <div class="eyebrow">${t('机遇空间','Opportunity')}</div>
     <h1 class="h-hero">${t('偏科在哪，机会就在哪','Where the score is weak, the opportunity is')}</h1>
     <p class="lead">${t('三支柱对三类没被满足的需求。灰是现状、绿是转变后的预期（满分 10）。','Three pillars, three unmet needs. Grey is today, green is the expected shift (out of 10).')}</p>
+    <p class="gloss">${t('掌控感 = 少操心、能自己拿主意；配得感 = 觉得「我值得」；满足感 = 当下就有小确幸。分数按你写的现状推算，不是实测；没读到信号时不预测提升。','Control = less friction, more say. Worth it = “I deserve this”. Delight = a small lift right now. Scores are illustrative, derived from what you wrote — not measured. With no signal, no uplift is predicted.')}</p>
     <div class="sec first">
       ${row('control',t('掌控感','Control'),t('降负荷、给秩序','Less load, more order'),'control',o.control)}
       ${row('deserved',t('配得感','Worth it'),t('让我觉得「配得上我」','Makes me feel it is worthy of me'),'deserved',o.deserved)}
@@ -1381,10 +1376,13 @@ function screenOpportunity(){
 }
 function screenTranslate(){
   const list=state.data.translate||[];
+  const raw=String((state.data._inputs||{}).product||t('你的产品','your product'));
+  const prod=raw.length>16?raw.slice(0,16)+'…':raw;
   return `
     <div class="eyebrow">${t('五步转变','Five shifts')}</div>
     <h1 class="h-hero">${t('怎么转，五个动作','How to shift, in five moves')}</h1>
-    <p class="lead">${t('每条先给宝洁的通用三法，再套到你的案例上——案例那几行可以直接改。','Each gives P&G’s three methods, then applies them to your case — those lines are editable.')}</p>
+    <p class="lead">${t('把「'+prod+'」拆成五个动作：每条先给通用三法，再落到你写的案例上；下面几行可以直接改。','Five moves for “'+prod+'”: each gives three general methods, then applies them to your case. Those lines are editable.')}</p>
+    <p class="gloss">${t('五步转变 = 产品 / 包装 / 沟通 / 渠道 / 社群，各换一次说法。浅色行就是你的案例，改完自动保存。','Five shifts = product, packaging, messaging, channel, community — one change of language each. The tinted lines are your case; edits save as you type.')}</p>
     ${list.map((s,i)=>`
       <div class="stp">
         <div class="no">0${i+1}</div>
@@ -1401,11 +1399,19 @@ function screenTranslate(){
 function screenPlan(){
   const o2=state.data.output||{};
   const pl=state.data.plan||[];
+  const inp=state.data._inputs||{};
+  const raw=String(inp.product||t('你的产品','your product'));
+  const prod=raw.length>16?raw.slice(0,16)+'…':raw;
+  const focus=state.data.focus||focusOf(inp);
+  const extra=focus==='clarity'?t('第 1 条先补判断证据，后 4 条等结论确认再启动。','Action 01 closes the decision first; the other four start once that call is made.')
+    :focus==='reach'?t('第 1 条先查年轻人找不找得到你，产品暂不动。','Action 01 checks whether they can even find you; the product stays put.')
+    :focus==='legacy'?t('第 1 条先划出老客不动的红线，再谈增量。','Action 01 draws the line around loyal buyers before anything new.')
+    :'';
   const pf=(k,label,val)=>`<div class="pf"><span class="pl">${label}</span><textarea rows="1" data-k="${k}">${esc(val||'')}</textarea></div>`;
   return `
     <div class="eyebrow">${t('转型专案','The plan')}</div>
     <h1 class="h-hero">${t('从策略到落地','From strategy to work')}</h1>
-    <p class="lead">${t('一句话定位、一个场景，加 5 条能直接派活的行动。','One positioning line, one scene, five actions you can hand out.')}</p>
+    <p class="lead">${t('围绕「'+prod+'」，一句话定位、一个场景，加 5 条能直接派活的行动。','Around “'+prod+'”: one positioning line, one scene, five actions you can hand out.')}${extra}</p>
 
     <div class="sec first">
       <div class="slabel"><em>${t('定位','Positioning')}</em>${t('一句话说清你变成了什么','what you became, in one line')}</div>
@@ -1537,6 +1543,7 @@ function loadSample(){
   state.mode='form';state.chatStarted=false;state.chatLog=[];
   renderScreen();
   const SM=sample();
+  toast(t('已载入示例：'+SM.name,'Loaded example: '+SM.name));
   document.getElementById('i-product').value=SM.product;
   document.getElementById('i-audience').value=SM.audience;
   document.getElementById('i-value').value=SM.value;
@@ -1724,7 +1731,7 @@ function buildPpt(d){
 
   /* ---------- 04 三支柱：一列一支柱，大字分数 ---------- */
   s=pptx.addSlide();
-  head(s,'03',t('机遇空间','Opportunity'),t('偏科在哪，机会就在哪','Where the score is weak, the opportunity is'),t('灰是现状，绿是转变后的预期（满分 10）。差得越多，越该先动手。','Grey is today, green is the expected shift (out of 10). The wider the gap, the sooner to start.'));
+  head(s,'03',t('机遇空间','Opportunity'),t('偏科在哪，机会就在哪','Where the score is weak, the opportunity is'),t('灰是现状，绿是转变后的预期（满分 10）。按输入推算的示意值，非实测；无信号不预测提升。','Grey is today, green is the expected shift (out of 10). Illustrative, not measured; no signal, no predicted uplift.'));
   const sc=d.scores||{current:{},revised:{}};
   const cols=[[t('掌控感','Control'),t('降负荷、给秩序','Less load, more order'),'control',d.opportunity&&d.opportunity.control],
               [t('配得感','Worth it'),t('让我觉得「配得上我」','Worthy of me'),'deserved',d.opportunity&&d.opportunity.deserved],
@@ -1821,6 +1828,12 @@ function init(){
   applyI18n();applyLangSw();
   setFlag();
   restoreDataDraft();
+  try{const v=JSON.parse(localStorage.getItem(LS_VIEW)||'null');
+    if(v&&state.data&&Number.isFinite(v.step)&&v.step>0){
+      state.step=Math.max(0,Math.min(STEPS.length-1,v.step));
+      state.reached=Math.max(state.reached||0,v.reached||0,state.step);
+      state.done=!!v.done;state.doneAt=v.doneAt||'';state.mode='form';
+    }}catch(e){}
   if(state.data)state.inputs=state.data._inputs||{};
   // 恢复表单草稿
   try{const f=JSON.parse(localStorage.getItem(LS_DRAFT)||'{}');
