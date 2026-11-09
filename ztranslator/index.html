@@ -261,6 +261,17 @@
     padding:7px 0;font-size:13.5px;line-height:1.65;color:var(--ink);width:100%}
   .fy textarea:focus{outline:none;border-bottom-color:var(--c-deserved);box-shadow:none;background:transparent}
 
+  /* 完成态：一条细线确认，不做卡片 */
+  .done{display:flex;align-items:center;gap:9px;padding:13px 0;margin:22px 0 0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    font-size:12.5px;color:#5B5B60;line-height:1.55}
+  .done .dt{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+  .done span{flex:1;min-width:0}
+  .done b{font-weight:800;color:var(--ink)}
+  .done a{margin-left:auto;color:var(--accent-d);font-weight:700;text-decoration:none;
+    cursor:pointer;white-space:nowrap;flex:0 0 auto}
+  .done a:hover{text-decoration:underline;text-underline-offset:3px}
+
   /* 专案 */
   .pos{font-size:19px;font-weight:700;line-height:1.72;letter-spacing:-.3px;margin:0}
   .act{padding:22px 0 6px;border-top:1px solid var(--line)}
@@ -619,7 +630,9 @@ function renderProjList(){
      </div></div>`).join('');
 }
 function openProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
-  state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;lastData=p.data;saveDataDraft();closeProjects();goStep(STEPS.length-1);}
+  state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;
+  state.done=!!p.done;state.doneAt=p.doneAt||'';
+  lastData=p.data;saveDataDraft();closeProjects();goStep(STEPS.length-1);}
 function reviseProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
   state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;closeProjects();state.mode='form';goStep(0);}
 function delProject(id){if(!confirm('确定删除这个课题？此操作不可恢复。'))return;deleteProjectById(id);renderProjList();}
@@ -841,7 +854,7 @@ const STEPS=[
   {key:'input',label:'输入'},{key:'understand',label:'理解'},{key:'reframe',label:'重构'},
   {key:'opportunity',label:'机遇'},{key:'translate',label:'转变'},{key:'plan',label:'专案'},{key:'export',label:'导出'}
 ];
-const state={step:0,mode:'chat',data:null,inputs:{},projectId:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0};
+const state={step:0,mode:'chat',data:null,inputs:{},projectId:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0,done:false,doneAt:''};
 let lastData=null;
 
 function setByPath(obj,path,val){const parts=path.split('.');let o=obj;for(let i=0;i<parts.length-1;i++){if(typeof o[parts[i]]!=='object'||o[parts[i]]===null)o[parts[i]]={};o=o[parts[i]];}o[parts[parts.length-1]]=val;}
@@ -867,6 +880,41 @@ function goStep(n){
 function brandHome(){
   if(state.step===0){window.scrollTo({top:0,behavior:'smooth'});return;}
   goStep(0);
+}
+
+/* ---------- 收尾：完成 → 归档 → 回首页 ---------- */
+function saveCurrentProject(done){
+  if(!state.data)return;
+  const c=state.data._inputs||{};
+  const pid=state.projectId||('p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
+  state.projectId=pid;
+  upsertProject({id:pid,name:(c.product||'未命名课题').slice(0,40),
+    updated:new Date().toISOString(),data:state.data,done:!!(done||state.done),doneAt:state.doneAt||''});
+}
+function stampNow(){
+  const d=new Date();
+  const p=x=>String(x).padStart(2,'0');
+  return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+/* 点「完成」：把专案收进课题，并给出回首页的出口 */
+function finishProject(){
+  if(!state.data){toast('请先生成专案');return;}
+  state.done=true;state.doneAt=stampNow();
+  saveCurrentProject(true);
+  renderHeader();renderProgress();renderScreen();renderNavbar();
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('已收进课题 · 随时能回来改');
+}
+/* 回首页：当前专案先归档，再清空输入，从第一问重新开始 */
+function homeNew(){
+  if(state.data)saveCurrentProject(true);
+  state.data=null;state.projectId=null;state.done=false;state.doneAt='';state.reached=0;
+  state.inputs={product:'',audience:'',value:'',current:'',pain:''};
+  state.mode='chat';state.chatStarted=true;state.chatIdx=0;
+  state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];
+  try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_DRAFT);}catch(e){}
+  goStep(0);
+  toast('上一个课题已存进课题');
 }
 /* 中英跷跷板：先只做界面，英文版内容稍后接 */
 function switchLang(){
@@ -909,8 +957,10 @@ function renderNavbar(){
   const prev=state.step>0?`<button class="nav-btn prev" onclick="goStep(${state.step-1})">← 上一步</button>`:`<button class="nav-btn prev" disabled>← 上一步</button>`;
   let next='';
   if(state.step<STEPS.length-1)next=`<button class="nav-btn next" onclick="goStep(${state.step+1})">下一步 →</button>`;
-  else next=`<button class="nav-btn next" onclick="toast('已到最后一屏，点下方下载 PPT')">导出完成</button>`;
-  n.innerHTML=`${prev}<span class="nav-label">${STEPS[state.step].label} · ${state.step+1}/${STEPS.length}</span>${next}`;
+  else if(!state.done)next=`<button class="nav-btn next" onclick="finishProject()">完成</button>`;
+  else next=`<button class="nav-btn next" onclick="homeNew()">回到首页 →</button>`;
+  const last=state.step===STEPS.length-1&&state.done;
+  n.innerHTML=`${prev}<span class="nav-label">${last?'已完成':STEPS[state.step].label} · ${state.step+1}/${STEPS.length}</span>${next}`;
 }
 
 const IV={'product':'i-product','audience':'i-audience','value':'i-value','current':'i-current','pain':'i-pain'};
@@ -971,7 +1021,7 @@ function screenUnderstand(){
   const hp=heroSplit(u.summary);
   const sigs=(u.signals||[]).filter(s=>s&&s.label&&s.tag!=='none');
   return `
-    <div class="eyebrow">第 1 步 · 理解</div>
+    <div class="eyebrow">理解</div>
     <h1 class="h-hero">我读到的案例</h1>
     <p class="lead">这一屏只回答一件事：我有没有读懂你。</p>
 
@@ -998,7 +1048,7 @@ function screenReframe(){
   const r=state.data.reframe||{};
   const hp=heroSplit(r.reframed);
   return `
-    <div class="eyebrow">第 2 步 · 重构问题</div>
+    <div class="eyebrow">重构问题</div>
     <h1 class="h-hero">从痛点，到机会</h1>
     <p class="lead">不是再叠加功能，而是换一套年轻人听得懂的方言。</p>
 
@@ -1035,7 +1085,7 @@ function screenOpportunity(){
     </div>`;
   };
   return `
-    <div class="eyebrow">第 3 步 · 机遇空间</div>
+    <div class="eyebrow">机遇空间</div>
     <h1 class="h-hero">偏科在哪，机会就在哪</h1>
     <p class="lead">三支柱对三类没被满足的需求。灰是现状、绿是转变后的预期（满分 10）。</p>
     <div class="sec first">
@@ -1047,7 +1097,7 @@ function screenOpportunity(){
 function screenTranslate(){
   const t=state.data.translate||[];
   return `
-    <div class="eyebrow">第 4 步 · 五步转变</div>
+    <div class="eyebrow">五步转变</div>
     <h1 class="h-hero">怎么转，五个动作</h1>
     <p class="lead">每条先给宝洁的通用三法，再套到你的案例上——案例那几行可以直接改。</p>
     ${t.map((s,i)=>`
@@ -1068,7 +1118,7 @@ function screenPlan(){
   const pl=state.data.plan||[];
   const pf=(k,label,val)=>`<div class="pf"><span class="pl">${label}</span><textarea rows="1" data-k="${k}">${esc(val||'')}</textarea></div>`;
   return `
-    <div class="eyebrow">第 5 步 · 转型专案</div>
+    <div class="eyebrow">转型专案</div>
     <h1 class="h-hero">从策略到落地</h1>
     <p class="lead">一句话定位、一个场景，加 5 条能直接派活的行动。</p>
 
@@ -1098,10 +1148,13 @@ function screenPlan(){
 function screenExport(){
   const c=state.data._inputs||{};
   const d=state.data;
+  const done=!!state.done;
   return `
-    <div class="eyebrow">第 6 步 · 导出</div>
-    <h1 class="h-hero">专案已就绪</h1>
-    <p class="lead">5 个部分已整合成一份 PPT，拿走就能开会。</p>
+    <div class="eyebrow">${done?'已完成':'导出'}</div>
+    <h1 class="h-hero">${done?'专案收好了':'专案已就绪'}</h1>
+    <p class="lead">${done?'想改就回课题里打开，要交付就再下一份。':'5 个部分已整合成一份 PPT，拿走就能开会。'}</p>
+
+    ${done?`<div class="done"><i class="dt"></i><span>已存进课题 · <b>${esc(state.doneAt||'')}</b></span><a onclick="openProjects()">去课题里看 →</a></div>`:''}
 
     <div class="sec first">
       <div class="slabel">专案概要</div>
@@ -1120,10 +1173,10 @@ function screenExport(){
     </div>
 
     <div style="margin-top:26px">
-      <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
+      <button class="btn btn-primary" onclick="exportPpt()">${done?'再下载一次 PPT':'下载 PPT 文档'}</button>
       <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制全部文字</button>
     </div>
-    <p class="hint" style="margin-top:16px">生成在本地完成，内容不外传。</p>`;
+    <p class="hint" style="margin-top:16px">${done?'PPT 在本地生成，内容不外传。':'PPT 在本地生成，内容不外传。点底部「完成」，这份专案会收进课题。'}</p>`;
 }
 
 /* ===================== 输入交互 ===================== */
@@ -1186,9 +1239,8 @@ function fromForm(){
     if(ai.apiKey)data=await reasonAI(c);
     if(!data)data=reasonLocal(c);
     state.data=data;lastData=data;saveDataDraft();
-    const pid=state.projectId||('p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7));
-    state.projectId=pid;
-    upsertProject({id:pid,name:(c.product||'未命名课题').slice(0,40),updated:new Date().toISOString(),data:state.data});
+    state.done=false;state.doneAt='';
+    saveCurrentProject(false);
     goStep(1);
   };
   run();
@@ -1250,7 +1302,16 @@ function loadPptx(cb){
 function exportPpt(){
   if(!state.data){toast('请先生成专案');return;}
   toast('正在生成 PPT…');
-  loadPptx(()=>{try{buildPpt(state.data);}catch(e){console.error(e);toast('生成失败：'+e.message);}});
+  loadPptx(()=>{try{
+    buildPpt(state.data);
+    /* 导过就算完成：收进课题，底栏换成回首页 */
+    if(!state.done){
+      const y=window.scrollY;
+      state.done=true;state.doneAt=stampNow();saveCurrentProject(true);
+      renderProgress();renderScreen();renderNavbar();
+      window.scrollTo({top:y});
+    }
+  }catch(e){console.error(e);toast('生成失败：'+e.message);}});
 }
 function buildPpt(d){
   const pptx=new PptxGenJS();
