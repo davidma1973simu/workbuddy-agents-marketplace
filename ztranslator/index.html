@@ -105,6 +105,24 @@
   .lead{color:var(--ink-2);font-size:15px;margin:0 0 18px}
   .card{background:var(--card);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh);margin-bottom:14px;border:1px solid rgba(0,0,0,.02)}
   .card.tight{padding:14px}
+  .recent-mini{position:relative;margin:0 0 10px;z-index:5}
+  .recent-toggle{display:inline-flex;align-items:center;gap:9px;height:26px;padding:0 11px;
+    border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--mut);
+    font-size:11.5px;font-weight:700;letter-spacing:.2px;cursor:pointer;box-shadow:var(--sh-sm)}
+  .recent-toggle .chev{width:6px;height:6px;border-right:1.5px solid var(--mut);border-bottom:1.5px solid var(--mut);
+    transform:rotate(45deg) translate(-1px,-1px);transition:transform .2s var(--ease)}
+  .recent-mini.open .recent-toggle{border-color:var(--accent);color:var(--accent-d)}
+  .recent-mini.open .recent-toggle .chev{transform:rotate(-135deg) translate(-1px,-1px);border-color:var(--accent-d)}
+  .recent-pop{display:none;position:absolute;top:calc(100% + 8px);left:0;width:min(330px,100%);z-index:30;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.13);padding:6px 13px 10px}
+  .recent-mini.open .recent-pop{display:block}
+  .recent-pop .proj-row{display:block;padding:8px 0;border-bottom:1px solid var(--line)}
+  .recent-pop .proj-name{font-size:13.5px;font-weight:700}
+  .recent-pop .proj-meta{font-size:11px;margin-top:2px}
+  .recent-pop .proj-acts{margin-top:6px;gap:8px}
+  .recent-pop .proj-acts .btn{height:30px;font-size:12px;flex:1;min-width:0;padding:0 10px}
+  .recent-pop .recent-all{height:32px;font-size:12px;margin-top:10px;width:100%}
+  .chat-input textarea:disabled{opacity:.55}
 
   /* ---------- Buttons ---------- */
   .btn{height:52px;border-radius:15px;font-weight:700;font-size:15px;border:none;cursor:pointer;
@@ -1239,25 +1257,38 @@ function renderNavbar(){
 
 const IV={'product':'i-product','audience':'i-audience','value':'i-value','current':'i-current','pain':'i-pain'};
 function iv(k){if(state.inputs&&state.inputs[k]!=null)return state.inputs[k];const e=document.getElementById(IV[k]);return e?e.value.trim():'';}
+function toggleRecent(){
+  const m=document.getElementById('recentMini');if(!m)return;
+  m.classList.toggle('open');
+  m.querySelector('.recent-toggle').setAttribute('aria-expanded',m.classList.contains('open')?'true':'false');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('recentMini');
+  if(m&&m.classList.contains('open')&&!m.contains(e.target)){
+    m.classList.remove('open');m.querySelector('.recent-toggle').setAttribute('aria-expanded','false');
+  }
+});
 function screenInput(){
   const projs=loadProjects();
   let recent='';
   if(projs.length){
-    recent=`<div class="card"><div class="eyebrow" style="color:var(--mut)">${t('最近的课题','Recent cases')} · ${projs.length}</div>`+
-      projs.slice(0,3).map(p=>`<div class="proj-row">
+    recent=`<div class="recent-mini" id="recentMini">
+      <button class="recent-toggle" onclick="toggleRecent()" aria-expanded="false"><span>${t('最近的课题','Recent cases')} · ${projs.length}</span><i class="chev"></i></button>
+      <div class="recent-pop">
+      ${projs.slice(0,3).map(p=>`<div class="proj-row">
         <div class="proj-name">${esc(p.name)}</div>
         <div class="proj-meta">${fmtDate(p.updated)}</div>
         <div class="proj-acts">
           <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">${t('回顾','Review')}</button>
           <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">${t('修订','Revise')}</button>
-        </div></div>`).join('')+
-      `<button class="btn btn-ghost btn-sm" style="margin-top:10px;width:auto" onclick="openProjects()">${t('查看全部课题','See all cases')}</button></div>`;
+        </div></div>`).join('')}
+      <button class="btn btn-ghost btn-sm recent-all" onclick="openProjects()">${t('查看全部课题','See all cases')}</button>
+      </div></div>`;
   }
   const chatHTML=`
     <div class="eyebrow">${t('输入 · 品牌现状','Brief · where the brand stands')}</div>
     <h1 class="h-hero">${t('聊聊你的产品','Tell me about your product')}</h1>
     <p class="lead">${t('用对话的方式告诉我，我会把它转变成 Z 世代想要的样子。也可以切到表单一次填完。','Talk it through with me and I will turn it into what Gen Z actually wants. Or switch to the form and fill it in one go.')}</p>
-    <p class="gloss">${t('这个工作台负责把现状落到动作；如果还在判断「要不要转」，第 1 条行动会先帮你把判断补齐。','This workspace turns a situation into moves. If you are still deciding whether to shift at all, action 01 starts by closing that decision.')}</p>
     ${recent}
     <div class="seg">
       <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">${t('对话引导','Conversation')}</button>
@@ -1493,7 +1524,7 @@ function chatSend(){
   const ta=document.getElementById('chatInput');if(!ta)return;
   const txt=ta.value.trim();if(!txt)return;
   const Q=chatQ();
-  const cur=Q[state.chatIdx];
+  const cur=Q[state.chatIdx];if(!cur)return;
   state.chatAns[cur.k]=txt;userSay(txt);ta.value='';
   state.chatIdx++;
   if(state.chatIdx<Q.length)setTimeout(()=>botSay(Q[state.chatIdx].q,true),300);
@@ -1501,7 +1532,7 @@ function chatSend(){
 }
 function chatSkip(){
   const Q=chatQ();
-  const cur=Q[state.chatIdx];if(cur.k!=='pain')return;
+  const cur=Q[state.chatIdx];if(!cur||cur.k!=='pain')return;
   userSay(t('（跳过）','(skipped)'));state.chatIdx++;
   if(state.chatIdx<Q.length)setTimeout(()=>botSay(Q[state.chatIdx].q,true),300);else chatDone();
 }
@@ -1511,7 +1542,7 @@ function chatDone(){
   document.getElementById('i-value')&&(document.getElementById('i-value').value=state.chatAns.value||'');
   document.getElementById('i-current')&&(document.getElementById('i-current').value=state.chatAns.current||'');
   document.getElementById('i-pain')&&(document.getElementById('i-pain').value=state.chatAns.pain||'');
-  botSay(t('已收集完 5 项，下面生成你的转型专案 👇','All five answers are in. Generate your case below 👇'));
+  botSay(t('已收集完 5 项，下面生成你的转型专案','All five answers are in. Generate your case below'));
   const d=document.getElementById('chatMsgs');
   const wrap=document.createElement('div');wrap.style.marginTop='12px';
   const btn=document.createElement('button');btn.className='btn btn-primary';btn.textContent=t('生成转型专案','Generate the case');
@@ -1538,18 +1569,35 @@ function fromForm(){
   };
   run();
 }
+/* 载入示例：仍然走对话引导 —— 五问逐条演示，最后停在同一颗「生成转型专案」按钮上 */
+let samplePlaying=false;
 function loadSample(){
-  ['i-product','i-audience','i-value','i-current','i-pain'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  state.mode='form';state.chatStarted=false;state.chatLog=[];
-  renderScreen();
-  const SM=sample();
-  toast(t('已载入示例：'+SM.name,'Loaded example: '+SM.name));
-  document.getElementById('i-product').value=SM.product;
-  document.getElementById('i-audience').value=SM.audience;
-  document.getElementById('i-value').value=SM.value;
-  document.getElementById('i-current').value=SM.current;
-  document.getElementById('i-pain').value=SM.pain;
-  fromForm();
+  if(samplePlaying)return;
+  const SM=sample(),Q=chatQ();
+  state.inputs={product:SM.product,audience:SM.audience,value:SM.value,current:SM.current,pain:SM.pain};
+  state.mode='chat';state.chatStarted=true;state.chatIdx=0;state.chatAns={};
+  state.chatLog=[{role:'bot',text:Q[0].q,q:true}];
+  renderScreen();bindChatEnter();renderChat();
+  ['product','audience','value','current','pain'].forEach(k=>{const e=document.getElementById('i-'+k);if(e)e.value=SM[k]||'';});
+  const ci=document.getElementById('chatInput');if(ci)ci.disabled=true;
+  toast(t('示例 · '+SM.name,'Example · '+SM.name));
+  samplePlaying=true;
+  let i=0;
+  const step=()=>{
+    if(!samplePlaying)return;
+    if(state.step!==0||state.mode!=='chat'||!document.getElementById('chatMsgs')){samplePlaying=false;return;}
+    const cur=Q[i];
+    state.chatAns[cur.k]=SM[cur.k]||'';
+    userSay(SM[cur.k]||t('（跳过）','(skipped)'));
+    i++;
+    if(i<Q.length){botSay(Q[i].q,true);setTimeout(step,420);}
+    else{
+      state.chatIdx=Q.length;samplePlaying=false;
+      if(ci)ci.disabled=false;
+      chatDone();
+    }
+  };
+  setTimeout(step,420);
 }
 
 /* ===================== 编辑绑定 ===================== */
