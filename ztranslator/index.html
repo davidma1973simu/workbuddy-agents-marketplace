@@ -141,17 +141,7 @@
   /* ---------- Stage content ---------- */
   .sig{display:inline-block;background:var(--accent-soft);color:var(--accent-d);font-size:12px;font-weight:600;
     padding:4px 11px;border-radius:999px;margin:3px 5px 3px 0}
-  /* ---------- 可坍缩卡片（所有结果屏统一） ---------- */
-  .ccard{border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh-sm)}
-  .ccard-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;background:transparent;border:none;cursor:pointer;text-align:left;font:inherit;-webkit-tap-highlight-color:transparent}
-  .ccard-h:hover{background:var(--bg)}
-  .ccard-t{font-weight:800;font-size:14.5px;color:var(--ink);line-height:1.3}
-  .ccard-right{display:flex;align-items:center;gap:9px;flex:0 0 auto}
-  .ccard-badge{font-size:11px;font-weight:800;color:var(--accent-d);background:var(--accent-soft);padding:3px 9px;border-radius:999px;white-space:nowrap}
-  .ccard-caret{font-size:16px;color:var(--mut);transition:transform .25s var(--ease);line-height:1;transform:rotate(0)}
-  .ccard[data-collapsed="true"] .ccard-caret{transform:rotate(-90deg)}
-  .ccard-b{padding:2px 16px 16px;animation:pop .25s var(--ease)}
-  .ccard[data-collapsed="true"] .ccard-b{display:none}
+  /* ---------- 旧版结果卡样式已由「编辑式版式」替代 ---------- */
   .pillar{border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px;border:1px solid transparent}
   .pillar b{font-size:15px}
   .pillar .pc{font-size:13px;color:var(--ink-2);margin-top:6px}
@@ -184,6 +174,109 @@
   .pf .pl{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.5px}
   .pf .edit{margin-top:0;font-size:13px}
   @media(max-width:420px){.plan-grid{grid-template-columns:1fr}}
+
+  /* ---------- 结果屏 · 编辑式版式（无卡片，靠字阶 / 留白 / 一块深色板做反差） ---------- */
+  .res textarea{resize:none;overflow:hidden;width:100%;min-width:0;display:block}
+  .res .h-hero{font-size:28px;line-height:1.24;letter-spacing:-.9px;margin:9px 0 8px}
+  .res .lead{font-size:13.5px;color:var(--mut);margin:0;line-height:1.65}
+
+  .sec{padding:24px 0 2px;border-top:1px solid var(--line);margin-top:24px}
+  .sec.first{border-top:none;margin-top:10px;padding-top:2px}
+  .slabel{display:flex;align-items:center;gap:9px;font-size:10.5px;font-weight:800;letter-spacing:1.6px;
+    color:var(--mut);text-transform:uppercase;margin-bottom:15px}
+  .slabel:before{content:"";width:16px;height:1px;background:#C9C6C0;flex:0 0 auto}
+  .slabel em{font-style:normal;color:var(--accent-d);letter-spacing:1.2px}
+
+  /* 核心句：整屏只用一个「大字」块 */
+  .pull{font-size:20px;font-weight:700;line-height:1.78;letter-spacing:-.3px;margin:0;color:var(--ink)}
+  .dim{font-size:14.5px;color:#6E6E73;line-height:1.85;margin:0}
+
+  /* 现在 → 之后：一根竖线把两段分开 */
+  .hinge{display:flex;flex-direction:column;align-items:flex-start;padding:20px 0 16px}
+  .hinge i{display:block;width:1px;height:30px;background:linear-gradient(#D9D6D0,var(--accent))}
+  .hinge b{font-size:16px;font-weight:800;color:var(--accent);line-height:1;margin-left:-5.6px;margin-top:-1px}
+
+  /* 深色板：一屏只允许一块，只装最该被记住的那一句 */
+  .plate{background:#131518;color:#fff;border-radius:3px;padding:26px 22px 24px;position:relative;
+    box-shadow:0 22px 44px -30px rgba(19,21,24,.85)}
+  .plate:before{content:"";position:absolute;left:22px;top:0;width:34px;height:2px;background:#2FD3A2}
+  .plate .plabel{font-size:10px;font-weight:800;letter-spacing:1.6px;color:#54D8AE;margin-bottom:14px;text-transform:uppercase}
+  .plate .pt{font-size:19px;font-weight:700;line-height:1.72;letter-spacing:-.2px;margin:0;color:#F8F8F7}
+  .plate .psub{font-size:13px;color:#9A9A9F;margin:14px 0 0;line-height:1.7}
+
+  .exh{margin:0 0 14px}
+  .exh b{display:block;font-size:15px;font-weight:800;letter-spacing:-.2px}
+  .exh span{display:block;font-size:12px;color:var(--mut);margin-top:4px}
+  .more{font-size:13.5px;color:#71717A;line-height:1.9;margin:18px 0 0;
+    padding-left:12px;border-left:2px solid #E8E5DF}
+  .fn{margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+  .fn .k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--mut);display:block;margin-bottom:8px}
+  .fn p{margin:0;font-size:12.5px;color:var(--mut);line-height:1.8}
+
+  /* 证据行 */
+  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px}
+  .sg{display:flex;flex-direction:column;gap:5px;padding-top:10px;border-top:1px solid var(--line);min-width:0}
+  .sg-no{font-size:9.5px;font-weight:800;letter-spacing:1px;color:#C9C6C0}
+  .sg b{font-size:13px;font-weight:800;letter-spacing:-.2px}
+  .sg-q{font-size:11.5px;color:var(--mut);line-height:1.5;display:block;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ev{display:flex;gap:14px;padding:13px 0;border-top:1px solid var(--line)}
+  .ev:first-child{border-top:none;padding-top:2px}
+  .ev .k{flex:0 0 68px;font-size:11.5px;font-weight:800;color:var(--accent-d);letter-spacing:.3px;padding-top:3px}
+  .ev .v{flex:1;font-size:13.5px;color:var(--ink-2);line-height:1.65}
+
+  /* 三支柱：大字分数 + 细轨 */
+  .pl-row{padding:22px 0 4px;border-top:1px solid var(--line)}
+  .pl-row:first-child{border-top:none;padding-top:2px}
+  .pl-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .pl-name{font-size:14.5px;font-weight:800;letter-spacing:-.2px;padding-bottom:2px}
+  .pl-name span{display:block;font-size:11.5px;font-weight:600;color:var(--mut);margin-top:3px;letter-spacing:0}
+  .pl-num{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pl-num .c{font-size:13px;font-weight:700;color:#A6A4A0}
+  .pl-num .a{font-size:12px;color:#C9C6C0}
+  .pl-num .r{font-size:31px;font-weight:800;letter-spacing:-1.4px;line-height:1;color:var(--accent-d)}
+  .pl-num .d{font-size:10.5px;font-weight:800;color:var(--accent);margin-left:2px}
+  .trk{position:relative;height:4px;background:#E8E5DF;margin:15px 0 0}
+  .trk .c{position:absolute;left:0;top:0;bottom:0;background:#C6C3BD}
+  .trk .r{position:absolute;top:0;bottom:0;background:var(--accent)}
+  .opps{list-style:none;padding:0;margin:14px 0 0}
+  .opps li{font-size:13px;color:var(--ink-2);line-height:1.72;padding-left:15px;position:relative}
+  .opps li:before{content:"";position:absolute;left:0;top:.74em;width:6px;height:1px;background:#B4B1AB}
+
+  /* 五步转变 */
+  .stp{padding:26px 0 8px;border-top:1px solid var(--line);display:grid;grid-template-columns:28px 1fr;column-gap:8px}
+  .stp:first-of-type{border-top:none;padding-top:4px}
+  .stp .no{font-size:10.5px;font-weight:800;color:#C9C6C0;letter-spacing:.8px;padding-top:6px}
+  .stp h3{grid-column:2;margin:0;font-size:17.5px;font-weight:800;letter-spacing:-.4px}
+  .stp .pr{grid-column:2;margin:7px 0 0;font-size:12.5px;color:var(--mut);line-height:1.7}
+  .stp .body{grid-column:2}
+  .stp .sub{display:block;font-size:10px;font-weight:800;letter-spacing:1.4px;color:var(--mut);margin:18px 0 10px;text-transform:uppercase}
+  .stp .sub.b{color:var(--c-deserved)}
+  .mrow{display:flex;gap:10px;margin:0 0 11px}
+  .mrow .n{flex:0 0 13px;font-size:10.5px;font-weight:800;color:var(--accent-d);padding-top:3px}
+  .mrow .t{flex:1;font-size:13.5px;line-height:1.7;color:var(--ink-2)}
+  .fy{display:flex;gap:10px;margin:0 0 6px;align-items:flex-start}
+  .fy .n{flex:0 0 13px;font-size:10.5px;font-weight:800;color:var(--c-deserved);padding-top:11px}
+  .fy textarea{flex:1;border:none;border-bottom:1px dashed #E2DFD8;border-radius:0;background:transparent;
+    padding:7px 0;font-size:13.5px;line-height:1.65;color:var(--ink);width:100%}
+  .fy textarea:focus{outline:none;border-bottom-color:var(--c-deserved);box-shadow:none;background:transparent}
+
+  /* 专案 */
+  .pos{font-size:19px;font-weight:700;line-height:1.72;letter-spacing:-.3px;margin:0}
+  .act{padding:22px 0 6px;border-top:1px solid var(--line)}
+  .act:first-of-type{border-top:none;padding-top:2px}
+  .act-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .act-no{font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:var(--accent-d)}
+  .act-tl{font-size:11.5px;font-weight:700;color:var(--mut);white-space:nowrap}
+  .act textarea{border:none;background:transparent;padding:0;border-radius:0;resize:none;width:100%}
+  .act textarea:focus{outline:none;box-shadow:none;background:transparent}
+  .act .task{font-size:15px;font-weight:700;line-height:1.6;color:var(--ink);margin-bottom:11px}
+  .act .dl{display:flex;gap:8px;background:var(--accent-soft);padding:9px 11px;border-radius:3px;margin-bottom:11px}
+  .act .dl .k{font-size:9.5px;font-weight:800;color:var(--accent-d);letter-spacing:1px;padding-top:3px;flex:0 0 auto}
+  .act .dl textarea{flex:1;min-width:0;font-size:13px;font-weight:600;color:#0A6B4F;line-height:1.55}
+  .act .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  .act .meta .pf .pl{font-size:9.5px;font-weight:800;letter-spacing:.8px;color:#A6A4A0;display:block;margin-bottom:2px}
+  .act .meta textarea{font-size:12.5px;color:#52525B;line-height:1.55}
 
   /* ---------- Navbar ---------- */
   #navbar{position:fixed;left:0;right:0;bottom:0;z-index:40;
@@ -551,7 +644,10 @@ const CHAT_Q=[
 
 function detectSignals(text){
   const t=text||'';const S=[];
-  const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:m[0]});};
+  const ctx=m=>{const i=t.indexOf(m);if(i<0)return m;
+    const a=Math.max(0,i-7),b=Math.min(t.length,i+m.length+9);
+    return (a>0?'…':'')+t.slice(a,b)+(b<t.length?'…':'');};
+  const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:ctx(m[0])});};
   add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
   add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
   add('mixed','人群错配',/混杂|混合|各类.*?客|不同.*?人|休闲.*?客/);
@@ -797,7 +893,15 @@ function renderProgress(){
 function renderScreen(){
   const s=document.getElementById('screen');
   const map=[screenInput,screenUnderstand,screenReframe,screenOpportunity,screenTranslate,screenPlan,screenExport];
-  s.innerHTML=map[state.step]();
+  const html=map[state.step]();
+  s.innerHTML=(state.step>0?'<div class="res">'+html+'</div>':html);
+  s.querySelectorAll('.res textarea').forEach(autoGrow);
+}
+/* 无边框文本框随内容长高，长文不再被截断 */
+function autoGrow(el){
+  if(!el||el.tagName!=='TEXTAREA')return;
+  el.style.height='auto';
+  el.style.height=(el.scrollHeight+2)+'px';
 }
 function renderNavbar(){
   const n=document.getElementById('navInner');
@@ -862,119 +966,164 @@ function screenInput(){
   return chatHTML;
 }
 
-function cCard(title, body, badge){
-  return `<div class="ccard">
-    <button type="button" class="ccard-h" onclick="toggleCard(this)">
-      <span class="ccard-t">${title}</span>
-      <span class="ccard-right">${badge?`<span class="ccard-badge">${badge}</span>`:''}<span class="ccard-caret">⌄</span></span>
-    </button>
-    <div class="ccard-b">${body}</div>
-  </div>`;
-}
-function toggleCard(btn){
-  const c=btn.closest('.ccard');if(!c)return;
-  const collapsed=c.getAttribute('data-collapsed')==='true';
-  c.setAttribute('data-collapsed', collapsed?'false':'true');
-}
 function screenUnderstand(){
-  const u=state.data.understand;
-  const sigs=(u.signals||[]).map(s=>s.quote?`<span class="sig">${esc(s.label)} · ${esc(s.quote)}</span>`:`<span class="sig">${esc(s.label)}</span>`).join('');
-  const body=`<p style="margin:0;font-size:15px;line-height:1.65">${esc(u.summary)}</p>
-    <div style="margin-top:12px">${sigs}</div>`;
+  const u=state.data.understand||{};
+  const hp=heroSplit(u.summary);
+  const sigs=(u.signals||[]).filter(s=>s&&s.label&&s.tag!=='none');
   return `
     <div class="eyebrow">第 1 步 · 理解</div>
     <h1 class="h-hero">我读到的案例</h1>
-    <p class="lead">先确认我读懂了你的现状，有偏差可以回到输入修订。</p>
-    ${cCard('理解摘要 · 我把你写的读成了这样', body)}
-    <p class="hint">这些信号来自你写的内容，是后面转变的"原料"。觉得不准？点底部「上一步」回去改。</p>`;
+    <p class="lead">这一屏只回答一件事：我有没有读懂你。</p>
+
+    <div class="sec first">
+      <div class="slabel">我的读法</div>
+      <p class="pull">${esc(hp.core)}</p>
+      ${hp.rest?`<p class="more">${esc(hp.rest)}</p>`:''}
+    </div>
+
+    ${sigs.length?`<div class="sec">
+      <div class="slabel">我抓到的 ${sigs.length} 个信号 · 都来自你的原话</div>
+      <div class="sig-grid">
+        ${sigs.slice(0,4).map((s,i)=>`<div class="sg"><span class="sg-no">0${i+1}</span><b>${esc(s.label)}</b>${s.quote&&s.quote.length<=14?`<span class="sg-q">${esc(s.quote)}</span>`:''}</div>`).join('')}
+      </div>
+      ${sigs.length>4?`<p class="hint" style="margin-top:14px">另有 ${sigs.length-4} 个信号未列出，已计入后面的诊断。</p>`:''}
+    </div>`:''}
+
+    <div class="fn">
+      <span class="k">读偏了怎么办</span>
+      <p>点底部「上一步」，改你写的那几句——这一屏的内容会跟着变。后面所有判断都建在这一层上。</p>
+    </div>`;
 }
 function screenReframe(){
-  const r=state.data.reframe;
-  const b1=`<p style="font-weight:700;margin:0;line-height:1.65">${esc(r.problem||'')}</p>`;
-  const b2=`<p style="margin:0;font-size:15px;line-height:1.65">${esc(r.reframed||'')}</p>
-    <p class="hint" style="margin-top:10px">${esc(r.why||'')}</p>`;
+  const r=state.data.reframe||{};
+  const hp=heroSplit(r.reframed);
   return `
     <div class="eyebrow">第 2 步 · 重构问题</div>
     <h1 class="h-hero">从痛点，到机会</h1>
     <p class="lead">不是再叠加功能，而是换一套年轻人听得懂的方言。</p>
-    ${cCard('当前阻力 · 你正卡在哪', b1)}
-    ${cCard('重构后 · 年轻人会怎么理解', b2)}`;
+
+    <div class="sec first">
+      <div class="slabel">现在 · 你卡在哪</div>
+      <p class="dim">${esc(r.problem||'')}</p>
+    </div>
+
+    <div class="hinge"><i></i><b>↓</b></div>
+
+    <div class="plate">
+      <div class="plabel">之后 · 年轻人会怎么理解</div>
+      <p class="pt">${esc(hp.core)}</p>
+    </div>
+    ${hp.rest?`<p class="more">${esc(hp.rest)}</p>`:''}
+
+    <div class="fn">
+      <span class="k">为什么这样重构</span>
+      <p>${esc(r.why||'')}</p>
+    </div>`;
 }
 function screenOpportunity(){
-  const o=state.data.opportunity;
+  const o=state.data.opportunity||{};
   const sc=getScores();
-  const pillar=(cls,key,title,items)=>{
+  const row=(key,title,sub,cls,items)=>{
     const cur=sc.current[key]||0,rev=sc.revised[key]||0,d=Math.max(0,Math.round((rev-cur)*10)/10);
-    const badge=d>0?`▲ +${d.toFixed(1)}`:'持平';
-    const body=`
-      <div class="score-bar cur"><i style="width:${Math.round(cur*10)}%"></i></div>
-      <div class="score-bar rev"><i style="width:${Math.round(rev*10)}%"></i></div>
-      <div class="score-leg"><span>现状 ${cur.toFixed(1)}</span><span>修订后 ${rev.toFixed(1)}</span></div>
-      <div class="pc" style="margin-top:12px">${(items||[]).map(x=>'· '+esc(x)).join('<br>')}</div>`;
-    return cCard(title, body, badge);
+    return `<div class="pl-row">
+      <div class="pl-top">
+        <div class="pl-name">${title}<span>${sub}</span></div>
+        <div class="pl-num"><span class="c">${cur.toFixed(1)}</span><span class="a">→</span><span class="r">${rev.toFixed(1)}</span><span class="d">${d>0?'+'+d.toFixed(1):'持平'}</span></div>
+      </div>
+      <div class="trk"><span class="c" style="width:${cur*10}%"></span><span class="r" style="left:${cur*10}%;width:${Math.max(0,rev-cur)*10}%"></span></div>
+      <ul class="opps">${(items||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    </div>`;
   };
   return `
     <div class="eyebrow">第 3 步 · 机遇空间</div>
     <h1 class="h-hero">偏科在哪，机会就在哪</h1>
-    <p class="lead">三支柱对应三类年轻人没被满足的需求。灰是现状、绿是转变后预期（满分 10），提升越明显越该优先动手。</p>
-    ${pillar('control','control','掌控感 · 降负荷、给秩序',o.control)}
-    ${pillar('deserved','deserved','配得感 · 让我觉得"配得上我"',o.deserved)}
-    ${pillar('grat','gratification','满足感 · 即时、有梗、有参与',o.gratification)}`;
+    <p class="lead">三支柱对三类没被满足的需求。灰是现状、绿是转变后的预期（满分 10）。</p>
+    <div class="sec first">
+      ${row('control','掌控感','降负荷、给秩序','control',o.control)}
+      ${row('deserved','配得感','让我觉得「配得上我」','deserved',o.deserved)}
+      ${row('gratification','满足感','即时、有梗、有参与','grat',o.gratification)}
+    </div>`;
 }
 function screenTranslate(){
-  const t=state.data.translate;
+  const t=state.data.translate||[];
   return `
     <div class="eyebrow">第 4 步 · 五步转变</div>
-    <h1 class="h-hero">怎么转：实操三法 + 你的案例</h1>
-    <p class="lead">每类都给宝洁的实操三法，并链接到你的案例（可修改）。</p>
-    ${t.map((s,i)=>{
-      const body=`
-        <div class="pr">${esc(s.principle||'')}</div>
-        <span class="blk-badge m">实操三法</span>
-        ${(s.methods||[]).map((m,j)=>`<div class="m-item"><span class="m-no">${j+1}</span><span>${esc(m)}</span></div>`).join('')}
-        <span class="blk-badge f" style="margin-top:12px">链接你的案例</span>
-        ${(s.forYou||[]).map((f,j)=>`<div class="fy-item"><span class="fy-no">${j+1}</span><textarea class="edit" data-k="translate.${i}.forYou.${j}" rows="2">${esc(f||'')}</textarea></div>`).join('')}`;
-      return cCard(`<span class="sidx" style="margin-right:9px">${i+1}</span>${esc(s.step)}`, body);
-    }).join('')}`;
+    <h1 class="h-hero">怎么转，五个动作</h1>
+    <p class="lead">每条先给宝洁的通用三法，再套到你的案例上——案例那几行可以直接改。</p>
+    ${t.map((s,i)=>`
+      <div class="stp">
+        <div class="no">0${i+1}</div>
+        <h3>${esc(s.step||'')}</h3>
+        <p class="pr">${esc(s.principle||'')}</p>
+        <div class="body">
+          <span class="sub">实操三法</span>
+          ${(s.methods||[]).map((m,j)=>`<div class="mrow"><span class="n">${j+1}</span><span class="t">${esc(m)}</span></div>`).join('')}
+          <span class="sub b">套到你的案例</span>
+          ${(s.forYou||[]).map((f,j)=>`<div class="fy"><span class="n">${j+1}</span><textarea rows="1" data-k="translate.${i}.forYou.${j}">${esc(f||'')}</textarea></div>`).join('')}
+        </div>
+      </div>`).join('')}`;
 }
 function screenPlan(){
   const o2=state.data.output||{};
   const pl=state.data.plan||[];
-  const pf=(k,label,val,rows)=>`<div class="pf"><span class="pl">${label}</span><textarea class="edit" data-k="${k}" rows="${rows||1}">${esc(val||'')}</textarea></div>`;
-  let cards='';
-  cards+=cCard('一句话定位', `<textarea class="edit" data-k="output.positioning" rows="2" style="margin-top:2px">${esc(o2.positioning||'')}</textarea>`);
-  cards+=cCard('场景定义', `<textarea class="edit" data-k="output.scene" rows="2" style="margin-top:2px">${esc(o2.scene||'')}</textarea>`);
-  cards+=pl.map((it,i)=>{
-    const body=`
-      <textarea class="edit" data-k="plan.${i}.task" rows="2">${esc(it.task||'')}</textarea>
-      <div class="plan-grid" style="margin-top:10px">
-        <div>${pf(`plan.${i}.deliverable`,'产出',it.deliverable)}</div>
-        <div>${pf(`plan.${i}.timeline`,'时间点',it.timeline)}</div>
-        <div>${pf(`plan.${i}.owner`,'责任人',it.owner)}</div>
-        <div>${pf(`plan.${i}.resource`,'资源',it.resource)}</div>
-      </div>`;
-    return cCard(`行动 ${i+1} · 任务`, body);
-  }).join('');
+  const pf=(k,label,val)=>`<div class="pf"><span class="pl">${label}</span><textarea rows="1" data-k="${k}">${esc(val||'')}</textarea></div>`;
   return `
     <div class="eyebrow">第 5 步 · 转型专案</div>
     <h1 class="h-hero">从策略到落地</h1>
-    <p class="lead">一句话定位与场景，加 5 条可执行行动（任务 / 产出 / 时间点 / 责任人 / 资源）。</p>
-    ${cards}`;
+    <p class="lead">一句话定位、一个场景，加 5 条能直接派活的行动。</p>
+
+    <div class="sec first">
+      <div class="slabel"><em>定位</em>一句话说清你变成了什么</div>
+      <textarea class="pos" rows="2" data-k="output.positioning" style="border:none;background:transparent;padding:0;width:100%">${esc(o2.positioning||'')}</textarea>
+    </div>
+
+    <div class="sec">
+      <div class="slabel">场景 · 这句话发生在什么时候</div>
+      <textarea class="dim" rows="3" data-k="output.scene" style="border:none;background:transparent;padding:0;width:100%">${esc(o2.scene||'')}</textarea>
+    </div>
+
+    <div class="sec">
+      ${pl.map((it,i)=>`
+        <div class="act">
+          <div class="act-top"><span class="act-no">行动 0${i+1}</span><span class="act-tl">${esc(it.timeline||'')}</span></div>
+          <textarea class="task" rows="2" data-k="plan.${i}.task">${esc(it.task||'')}</textarea>
+          <div class="dl"><span class="k">产出</span><textarea rows="2" data-k="plan.${i}.deliverable">${esc(it.deliverable||'')}</textarea></div>
+          <div class="meta">
+            ${pf(`plan.${i}.owner`,'责任人',it.owner)}
+            ${pf(`plan.${i}.resource`,'资源',it.resource)}
+          </div>
+        </div>`).join('')}
+    </div>`;
 }
 function screenExport(){
   const c=state.data._inputs||{};
-  const body=`
-    <p style="margin:0;font-weight:700;font-size:15px">${esc(c.product||'')}</p>
-    <p class="hint" style="margin:2px 0 0">面向 ${esc(c.audience||'')}</p>
-    <p style="margin:10px 0 0;font-size:14px;line-height:1.65">${esc(state.data.output.positioning||'')}</p>`;
+  const d=state.data;
   return `
     <div class="eyebrow">第 6 步 · 导出</div>
-    <h1 class="h-hero">你的转型专案已就绪</h1>
-    <p class="lead">把前面 5 个部分整合成一份 PPT，一键下载带走，或直接复制文本。</p>
-    ${cCard('专案概要', body)}
-    <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
-    <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制整份文本</button>
-    <p class="hint" style="margin-top:14px">PPT 含：封面 · 理解 · 重构 · 机遇 · 进步图示 · 五步转变（实操三法 + 案例）· 转型专案 · 执行计划。生成在本地完成，内容不外传。</p>`;
+    <h1 class="h-hero">专案已就绪</h1>
+    <p class="lead">5 个部分已整合成一份 PPT，拿走就能开会。</p>
+
+    <div class="sec first">
+      <div class="slabel">专案概要</div>
+      <p class="exh"><b style="${(d.output&&String(d.output.positioning||'').indexOf(c.product||'@@')===0)?'display:none':''}">${esc(c.product||'')}</b><span>面向 ${esc(c.audience||'')}</span></p>
+      <p class="pos">${esc(d.output&&d.output.positioning||'')}</p>
+    </div>
+
+    <div class="sec">
+      <div class="slabel">这份 PPT 有 13 页</div>
+      <div class="evs">
+        <div class="ev"><span class="k">01</span><span class="v">封面</span></div>
+        <div class="ev"><span class="k">02–05</span><span class="v">我读到的案例 · 从痛点重构机会 · 三支柱偏科 · 进步图示</span></div>
+        <div class="ev"><span class="k">06–10</span><span class="v">五步转变：一步一页，左三法、右你的案例</span></div>
+        <div class="ev"><span class="k">11–13</span><span class="v">一句话定位 · 5 条行动与产出 · 收尾</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:26px">
+      <button class="btn btn-primary" onclick="exportPpt()">下载 PPT 文档</button>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制全部文字</button>
+    </div>
+    <p class="hint" style="margin-top:16px">生成在本地完成，内容不外传。</p>`;
 }
 
 /* ===================== 输入交互 ===================== */
@@ -1058,6 +1207,7 @@ function loadSample(){
 
 /* ===================== 编辑绑定 ===================== */
 document.getElementById('screen').addEventListener('input',e=>{
+  if(e.target.tagName==='TEXTAREA')autoGrow(e.target);
   const k=e.target.dataset&&e.target.dataset.k;if(!k||!state.data)return;
   setByPath(state.data,k,e.target.value);saveDataDraft();
 });
@@ -1079,6 +1229,13 @@ function copyPlan(){
   navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
 }
 
+function heroSplit(t){
+  const arr=(String(t||'').match(/[^。！？!?]+[。！？!?]?/g)||[]).map(x=>x.trim()).filter(Boolean);
+  if(!arr.length)return {core:'',rest:''};
+  let core=arr.shift();
+  while(core.length<20&&arr.length)core+=arr.shift();
+  return {core:core,rest:arr.join('')};
+}
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toast(m){let t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1900);}
 
@@ -1099,96 +1256,192 @@ function buildPpt(d){
   const pptx=new PptxGenJS();
   pptx.layout='LAYOUT_WIDE';
   pptx.author='Z转变';pptx.title='Z 世代代际转变 · 转型专案';
-  const FH='Microsoft YaHei', INK='18181B', MUT='8A8A8F', ACC='0CA678', ACCD='09835E';
-  const C_CTRL='3B82F6',C_DES='7C5CFC',C_GRA='E2642F';
+  const FH='Microsoft YaHei';
+  const INK='16181C',SUB='55555C',MUT='8F8D88',LINE='E6E3DC',ACC='0CA678',ACCD='0B7A5B',DARK='121417',WHITE='FFFFFF';
+  const C_CTRL='2F6BE0',C_DES='6A4BF0',C_GRA='D9622A';
+  const W=13.333,H=7.5,M=0.95,CW=W-2*M;
   const c=d._inputs||{};
-  // 1. 封面
-  let s=pptx.addSlide();s.background={color:'0F0F0F'};
-  s.addText('Z 世代代际转变',{x:0.7,y:2.3,w:12,fontSize:40,bold:true,color:'FFFFFF',fontFace:FH});
-  s.addText('转型专案 · 三支柱 × 宝洁五步法',{x:0.7,y:3.2,w:12,fontSize:17,color:'A1A1AA',fontFace:FH});
-  s.addText([{text:'产品  ',options:{color:'71717A'}},{text:c.product||'',options:{color:'FFFFFF',bold:true}}],{x:0.7,y:4.6,w:12,fontSize:14,fontFace:FH});
-  s.addText([{text:'受众  ',options:{color:'71717A'}},{text:c.audience||'',options:{color:'FFFFFF'}}],{x:0.7,y:5.1,w:12,fontSize:14,fontFace:FH});
-  s.addText('由 Z转变生成',{x:0.7,y:6.6,w:12,fontSize:11,color:'52525B',fontFace:FH});
-  // 2. 理解
+  const T=v=>(v==null?'':String(v));
+  const cut=(v,n)=>T(v).length>n?T(v).slice(0,n)+'…':T(v);
+
+  function foot(s,no,dark){
+    s.addShape(pptx.ShapeType.line,{x:M,y:6.92,w:CW,h:0,line:{color:dark?'2B2E34':LINE,width:1}});
+    s.addText('Z转变 · 代际转变专案',{x:M,y:6.99,w:5,h:0.22,fontSize:8.5,color:dark?'6E7278':MUT,fontFace:FH,valign:'top'});
+    s.addText(String(no).padStart(2,'0'),{x:W-M-0.7,y:6.99,w:0.7,h:0.22,fontSize:8.5,color:dark?'6E7278':MUT,fontFace:FH,align:'right',valign:'top'});
+  }
+  function head(s,no,label,title,sub){
+    s.addText(no,{x:M,y:0.6,w:0.55,h:0.3,fontSize:11,bold:true,color:ACC,fontFace:FH,charSpacing:1.5,valign:'middle'});
+    s.addText(label,{x:M+0.44,y:0.6,w:7,h:0.3,fontSize:11,color:MUT,fontFace:FH,charSpacing:1.6,valign:'middle'});
+    s.addText(title,{x:M,y:1.0,w:CW-0.1,h:0.72,fontSize:31,bold:true,color:INK,fontFace:FH,valign:'top',lineSpacingMultiple:1.02,fit:'shrink'});
+    if(sub)s.addText(sub,{x:M,y:1.8,w:CW-1.2,h:0.4,fontSize:13,color:SUB,fontFace:FH,lineSpacingMultiple:1.25,fit:'shrink'});
+  }
+
+  /* 按字数动态堆叠：先估行数，再决定间距；总高超出就整体缩字号 */
+  function estLines(txt,wIn,size){
+    const per=Math.max(8,Math.floor(wIn*72/size*0.98));
+    return Math.max(1,Math.ceil(T(txt).length/per));
+  }
+  function stack(s,items,x,w,y0,yMax,size,color,numColor,indent){
+    let sz=size,gap=0.34;
+    for(;sz>10;sz-=0.5){
+      const body=items.reduce((a,t)=>a+estLines(t,w-indent,sz)*sz*1.45/72,0);
+      const rest=yMax-y0-body;
+      if(rest>0){gap=Math.min(0.85,Math.max(0.3,rest/items.length));break;}
+    }
+    let y=y0;
+    items.forEach((t,j)=>{
+      const h=estLines(t,w-indent,sz)*sz*1.45/72+0.05;
+      s.addText(String(j+1),{x:x,y:y+0.03,w:0.3,h:0.24,fontSize:10,bold:true,color:numColor,fontFace:FH});
+      s.addText(T(t),{x:x+indent,y:y,w:w-indent,h:h,fontSize:sz,color:color,fontFace:FH,lineSpacingMultiple:1.45,valign:'top',fit:'shrink'});
+      y+=h+gap;
+    });
+  }
+
+  /* ---------- 01 封面 ---------- */
+  let s=pptx.addSlide();s.background={color:DARK};
+  s.addShape(pptx.ShapeType.rect,{x:M,y:1.9,w:0.52,h:0.035,fill:{color:'34D399'}});
+  s.addText('Z 世代 · 转型专案',{x:M,y:2.1,w:8,h:0.3,fontSize:11.5,color:'7CE0BC',fontFace:FH,charSpacing:2.4});
+  s.addText(T(c.product)||'你的产品 / 服务',{x:M,y:2.5,w:11.4,h:1.5,fontSize:44,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.06,valign:'top',fit:'shrink'});
+  s.addText('从痛点，到机会',{x:M,y:4.12,w:9,h:0.5,fontSize:21,color:'A9ABB0',fontFace:FH});
+  s.addText([{text:'受众　',options:{color:'6E7278'}},{text:T(c.audience),options:{color:'E9E9EB'}}],{x:M,y:5.5,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
+  s.addText([{text:'价值　',options:{color:'6E7278'}},{text:T(c.value),options:{color:'E9E9EB'}}],{x:M,y:5.88,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
+  foot(s,1,true);
+
+  /* ---------- 02 理解 ---------- */
   s=pptx.addSlide();
-  s.addText('01 · 理解',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('我读到的案例',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  s.addText(d.understand.summary,{x:0.6,y:1.7,w:12,fontSize:15,color:INK,fontFace:FH});
-  const sigs=(d.understand.signals||[]).filter(x=>x.quote).map(x=>x.label+'：'+x.quote);
-  if(sigs.length)s.addText(sigs.map(x=>({text:'●  '+x,options:{bullet:false,breakLine:true}})),{x:0.6,y:3.1,w:12,fontSize:13,color:'3F3F46',fontFace:FH});
-  // 3. 重构
-  s=pptx.addSlide();
-  s.addText('02 · 重构问题',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('从痛点，到机会',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  s.addText([{text:'当前阻力  ',options:{bold:true,color:C_GRA}},{text:d.reframe.problem||'',options:{color:INK}}],{x:0.6,y:1.8,w:12,fontSize:15,fontFace:FH});
-  s.addText([{text:'重构后  ',options:{bold:true,color:ACCD}},{text:d.reframe.reframed||'',options:{color:INK}}],{x:0.6,y:2.9,w:12,fontSize:15,fontFace:FH});
-  // 4. 机遇
-  s=pptx.addSlide();
-  s.addText('03 · 机遇空间',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('偏科在哪，机会就在哪',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  const pillars=[['掌控感',C_CTRL,d.opportunity.control],['配得感',C_DES,d.opportunity.deserved],['满足感',C_GRA,d.opportunity.gratification]];
-  pillars.forEach((p,i)=>{
-    const y=1.8+i*1.55;
-    s.addText(p[0],{x:0.6,y:y,w:3,fontSize:16,bold:true,color:p[1],fontFace:FH});
-    s.addText((p[2]||[]).map(x=>({text:'· '+x,options:{bullet:false,breakLine:true}})),{x:0.6,y:y+0.4,w:12,fontSize:13,color:'3F3F46',fontFace:FH});
+  head(s,'01','理解','我读到的案例','先确认我读懂了你的现状——后面所有判断都建在这一层上。');
+  const uh=heroSplit(d.understand&&d.understand.summary);
+  const coreH=estLines(uh.core,7.0,21)*21*1.55/72+0.08;
+  s.addText(T(uh.core),{x:M,y:2.4,w:7.0,h:coreH,fontSize:21,color:INK,fontFace:FH,lineSpacingMultiple:1.55,valign:'top',fit:'shrink'});
+  if(uh.rest)s.addText(T(uh.rest),{x:M,y:2.4+coreH+0.22,w:7.0,h:1.7,fontSize:12.5,color:'71717A',fontFace:FH,lineSpacingMultiple:1.65,valign:'top',fit:'shrink'});
+  s.addShape(pptx.ShapeType.line,{x:8.62,y:2.4,w:0,h:3.9,line:{color:LINE,width:1}});
+  s.addText('我抓到的信号',{x:9.02,y:2.36,w:3.3,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.8});
+  const sigs=(d.understand&&d.understand.signals||[]).filter(x=>x&&x.label&&x.tag!=='none').slice(0,4);
+  sigs.forEach((x,i)=>{
+    const y=2.72+i*0.74;
+    s.addShape(pptx.ShapeType.line,{x:9.02,y:y,w:3.3,h:0,line:{color:'DCD8D1',width:0.75}});
+    s.addText('0'+(i+1),{x:9.02,y:y+0.14,w:0.4,h:0.2,fontSize:8.5,color:'BBB8B2',fontFace:FH});
+    s.addText(T(x.label),{x:9.44,y:y+0.11,w:2.9,h:0.24,fontSize:11.5,bold:true,color:ACCD,fontFace:FH});
+    if(x.quote&&T(x.quote).length<=14)
+      s.addText('「'+T(x.quote)+'」',{x:9.44,y:y+0.38,w:2.9,h:0.24,fontSize:9.5,color:SUB,fontFace:FH});
   });
-  // 4b. 进步图示（现状 vs 修订后）
+  if(!sigs.length)s.addText('（暂无引用）',{x:9.02,y:2.76,w:3.3,h:0.3,fontSize:10.5,color:MUT,fontFace:FH});
+  s.addShape(pptx.ShapeType.line,{x:M,y:6.02,w:7.0,h:0,line:{color:LINE,width:1}});
+  s.addText('读偏了？回到第 1 步改你写的那几句，这一页会跟着变。',{x:M,y:6.14,w:7.0,h:0.26,fontSize:10,color:MUT,fontFace:FH});
+  foot(s,2);
+
+  /* ---------- 03 重构：整份文档唯一的深色板 ---------- */
   s=pptx.addSlide();
-  s.addText('03b · 进步图示',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('三支柱：现状 → 修订后',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  s.addText('分数越高，年轻人越被满足（满分 10）。灰柱 = 现状，绿柱 = 转变后的预期得分。',{x:0.6,y:1.45,w:12,fontSize:12,color:'8A8A8F',fontFace:FH});
+  head(s,'02','重构问题','从痛点，到机会','不是再叠加功能，而是换一套年轻人听得懂的方言。');
+  s.addText('现在 · 你卡在哪',{x:M,y:2.42,w:4.4,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
+  s.addShape(pptx.ShapeType.line,{x:M,y:5.05,w:4.4,h:0,line:{color:LINE,width:1}});
+  s.addText('为什么这样重构',{x:M,y:5.16,w:4.4,h:0.22,fontSize:8.5,color:MUT,fontFace:FH,charSpacing:1.4});
+  s.addText(T(d.reframe&&d.reframe.why),{x:M,y:5.42,w:4.4,h:1.0,fontSize:10.5,color:'8B8B90',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
+  s.addText(T(d.reframe&&d.reframe.problem),{x:M,y:2.76,w:4.5,h:3.3,fontSize:16,color:'71717A',fontFace:FH,lineSpacingMultiple:1.6,valign:'top',fit:'shrink'});
+  s.addText('→',{x:5.42,y:3.95,w:0.5,h:0.4,fontSize:20,color:'C9C6C0',align:'center',fontFace:FH});
+  s.addShape(pptx.ShapeType.rect,{x:6.0,y:2.28,w:6.38,h:3.95,fill:{color:DARK}});
+  s.addShape(pptx.ShapeType.rect,{x:6.0+0.56,y:2.28,w:0.44,h:0.04,fill:{color:'34D399'}});
+  const rh=heroSplit(d.reframe&&d.reframe.reframed);
+  const rcH=estLines(rh.core,5.3,22)*22*1.5/72+0.1;
+  const restH=rh.rest?estLines(rh.rest,5.3,11.5)*11.5*1.5/72+0.1:0;
+  const blkTotal=0.56+rcH+(rh.rest?0.3+restH:0);
+  const ty=2.28+Math.max(0.3,(3.95-blkTotal)/2);
+  s.addText('之后 · 年轻人会怎么理解',{x:6.56,y:ty,w:5.2,h:0.24,fontSize:9.5,color:'7CE0BC',fontFace:FH,charSpacing:1.6});
+  s.addText(T(rh.core),{x:6.56,y:ty+0.56,w:5.3,h:rcH,fontSize:22,color:'F8F8F7',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
+  if(rh.rest)s.addText(T(rh.rest),{x:6.56,y:ty+0.56+rcH+0.3,w:5.3,h:restH,fontSize:11.5,color:'9A9A9F',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
+  foot(s,3);
+
+  /* ---------- 04 三支柱：一列一支柱，大字分数 ---------- */
+  s=pptx.addSlide();
+  head(s,'03','机遇空间','偏科在哪，机会就在哪','灰是现状，绿是转变后的预期（满分 10）。差得越多，越该先动手。');
   const sc=d.scores||{current:{},revised:{}};
-  const pdata=[['掌控感',C_CTRL,(sc.current.control||0),(sc.revised.control||0)],
-               ['配得感',C_DES,(sc.current.deserved||0),(sc.revised.deserved||0)],
-               ['满足感',C_GRA,(sc.current.gratification||0),(sc.revised.gratification||0)]];
-  const baseY=5.6,maxH=3.4,scMax=10;
-  pdata.forEach((b,i)=>{
-    const x=1.3+i*3.7, ch=b[2]/scMax*maxH, rh=b[3]/scMax*maxH;
-    s.addShape(pptx.ShapeType.rect,{x:x,y:baseY-ch,w:1.15,h:ch,fill:{color:'C9C9CF'}});
-    s.addText(b[2].toFixed(1),{x:x,y:baseY-ch-0.34,w:1.15,fontSize:12,bold:true,color:'3F3F46',align:'center',fontFace:FH});
-    s.addShape(pptx.ShapeType.rect,{x:x+1.35,y:baseY-rh,w:1.15,h:rh,fill:{color:ACC}});
-    s.addText(b[3].toFixed(1),{x:x+1.35,y:baseY-rh-0.34,w:1.15,fontSize:12,bold:true,color:ACCD,align:'center',fontFace:FH});
-    s.addText(b[0],{x:x,y:baseY+0.12,w:2.5,fontSize:13,bold:true,color:b[1],align:'center',fontFace:FH});
+  const cols=[['掌控感','降负荷、给秩序','control',d.opportunity&&d.opportunity.control],
+              ['配得感','让我觉得「配得上我」','deserved',d.opportunity&&d.opportunity.deserved],
+              ['满足感','即时、有梗、有参与','gratification',d.opportunity&&d.opportunity.gratification]];
+  cols.forEach((p,i)=>{
+    const x=M+i*3.86, cur=sc.current[p[2]]||0, rev=sc.revised[p[2]]||0;
+    const delta=Math.max(0,Math.round((rev-cur)*10)/10);
+    if(i)s.addShape(pptx.ShapeType.line,{x:x-0.28,y:2.42,w:0,h:3.95,line:{color:LINE,width:1}});
+    s.addText('现状 '+cur.toFixed(1)+'  →',{x:x,y:2.42,w:3.2,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.2});
+    s.addText(rev.toFixed(1),{x:x,y:2.68,w:2.1,h:0.9,fontSize:52,bold:true,color:ACCD,fontFace:FH,valign:'top'});
+    if(delta>0)s.addText('+'+delta.toFixed(1),{x:x+1.42,y:2.98,w:1.4,h:0.32,fontSize:12,bold:true,color:ACC,fontFace:FH});
+    s.addText(p[0],{x:x,y:3.62,w:3.3,h:0.34,fontSize:16.5,bold:true,color:INK,fontFace:FH});
+    s.addText(p[1],{x:x,y:3.97,w:3.4,h:0.26,fontSize:10.5,color:MUT,fontFace:FH});
+    s.addShape(pptx.ShapeType.line,{x:x,y:4.32,w:3.3,h:0,line:{color:LINE,width:1}});
+    s.addText((p[3]||[]).slice(0,3).map(v=>({text:'· '+v,options:{breakLine:true,paraSpaceAfter:8}})),
+      {x:x,y:4.46,w:3.38,h:2.05,fontSize:13,color:SUB,fontFace:FH,lineSpacingMultiple:1.4,valign:'top',fit:'shrink'});
   });
-  s.addShape(pptx.ShapeType.line,{x:1.3,y:baseY,w:11,h:0,line:{color:'ECEAE6',width:1}});
-  s.addText('▲ 柱顶数字为得分；柱越高越好。',{x:1.3,y:baseY+0.5,w:11,fontSize:11,color:'8A8A8F',fontFace:FH});
-  // 5. 五步转变 · 实操三法
+  foot(s,4);
+
+  /* ---------- 05 进步图示 ---------- */
   s=pptx.addSlide();
-  s.addText('04 · 五步转变 · 实操三法',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('宝洁五步法的固定方法论',{x:0.6,y:0.8,w:12,fontSize:24,bold:true,color:INK,fontFace:FH});
+  head(s,'03b','进步图示','三条柱子，量出差距','灰柱 = 现状，绿柱 = 转变后的预期得分。柱越高，用户越被满足。');
+  const baseY=5.95,maxH=2.85;
+  const bars=cols.map((p,i)=>({name:p[0],color:p[2]==='control'?C_CTRL:(p[2]==='deserved'?C_DES:C_GRA),cur:sc.current[p[2]]||0,rev:sc.revised[p[2]]||0}));
+  bars.forEach((b,i)=>{
+    const gx=1.15+i*3.85;
+    const ch=b.cur/10*maxH, rh=b.rev/10*maxH;
+    s.addShape(pptx.ShapeType.rect,{x:gx,y:baseY-ch,w:0.82,h:Math.max(ch,0.02),fill:{color:'D5D2CC'}});
+    s.addText(b.cur.toFixed(1),{x:gx-0.1,y:baseY-ch-0.42,w:1.0,h:0.34,fontSize:17,bold:true,color:'8F8D88',align:'center',fontFace:FH});
+    s.addShape(pptx.ShapeType.rect,{x:gx+1.05,y:baseY-rh,w:0.82,h:Math.max(rh,0.02),fill:{color:ACC}});
+    s.addText(b.rev.toFixed(1),{x:gx+0.95,y:baseY-rh-0.44,w:1.0,h:0.36,fontSize:19,bold:true,color:ACCD,align:'center',fontFace:FH});
+    s.addText(b.name,{x:gx-0.5,y:baseY+0.16,w:2.85,h:0.32,fontSize:14,bold:true,color:INK,align:'center',fontFace:FH});
+  });
+  s.addShape(pptx.ShapeType.line,{x:0.95,y:baseY,w:11.4,h:0,line:{color:'D5D2CC',width:1}});
+  s.addText('满分 10',{x:9.6,y:1.86,w:2.8,h:0.24,fontSize:9,color:MUT,align:'right',fontFace:FH});
+  foot(s,5);
+
+  /* ---------- 06-10 五步转变：一步一页 ---------- */
   (d.translate||[]).forEach((st,i)=>{
-    const y=1.7+i*0.92;
-    s.addText((i+1)+' · '+st.step,{x:0.6,y:y,w:3.2,fontSize:13,bold:true,color:ACCD,fontFace:FH});
-    s.addText((st.methods||[]).map(m=>({text:'· '+m,options:{bullet:false,breakLine:true}})),{x:3.9,y:y,w:9,fontSize:11.5,color:'3F3F46',fontFace:FH});
+    s=pptx.addSlide();
+    head(s,'04','五步转变 · 0'+(i+1)+' / 05',T(st.step)||('第 '+(i+1)+' 步'),T(st.principle));
+    s.addText('实操三法',{x:M,y:2.4,w:4,h:0.24,fontSize:9.5,color:ACCD,fontFace:FH,charSpacing:1.8});
+    s.addText('套到你的案例',{x:7.12,y:2.4,w:4,h:0.24,fontSize:9.5,color:C_DES,fontFace:FH,charSpacing:1.8});
+    s.addShape(pptx.ShapeType.line,{x:6.72,y:2.38,w:0,h:4.0,line:{color:LINE,width:1}});
+    stack(s,(st.methods||[]).slice(0,3),M,4.95,2.72,6.45,16,INK,ACC,0.38);
+    stack(s,(st.forYou||[]).slice(0,3),7.12,5.15,2.72,6.45,15,SUB,C_DES,0.38);
+    foot(s,6+i);
   });
-  // 6. 五步转变 · 链接案例
+
+  /* ---------- 11 一句话定位 ---------- */
   s=pptx.addSlide();
-  s.addText('05 · 五步转变 · 链接你的案例',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('针对你的品牌具体做法',{x:0.6,y:0.8,w:12,fontSize:24,bold:true,color:INK,fontFace:FH});
-  (d.translate||[]).forEach((st,i)=>{
-    const y=1.7+i*0.92;
-    s.addText((i+1)+' · '+st.step,{x:0.6,y:y,w:3.2,fontSize:13,bold:true,color:C_DES,fontFace:FH});
-    s.addText((st.forYou||[]).map(f=>({text:'· '+f,options:{bullet:false,breakLine:true}})),{x:3.9,y:y,w:9,fontSize:11.5,color:'3F3F46',fontFace:FH});
+  head(s,'06','转型专案','一句话定位','对外能讲、对内能派活的那一句。');
+  s.addShape(pptx.ShapeType.rect,{x:M,y:2.4,w:CW,h:2.5,fill:{color:DARK}});
+  s.addShape(pptx.ShapeType.rect,{x:M+0.56,y:2.4,w:0.44,h:0.04,fill:{color:'34D399'}});
+  s.addText('定位 · POSITIONING',{x:M+0.56,y:2.7,w:6,h:0.24,fontSize:9,color:'7CE0BC',fontFace:FH,charSpacing:1.8});
+  s.addText(T(d.output&&d.output.positioning),{x:M+0.56,y:2.96,w:CW-1.2,h:1.72,fontSize:23,color:'F8F8F7',fontFace:FH,lineSpacingMultiple:1.5,valign:'middle',fit:'shrink'});
+  s.addText('场景 · 这句话发生在什么时候',{x:M,y:5.22,w:CW,h:0.26,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
+  s.addText(T(d.output&&d.output.scene),{x:M,y:5.58,w:CW-1.0,h:1.1,fontSize:15,color:SUB,fontFace:FH,lineSpacingMultiple:1.55,valign:'top',fit:'shrink'});
+  foot(s,11);
+
+  /* ---------- 12-13 执行计划（分两页，宁可多一页也不挤） ---------- */
+  const chunks=[(d.plan||[])];
+  chunks.forEach((chunk,ci)=>{
+    if(!chunk.length)return;
+    s=pptx.addSlide();
+    head(s,'07','执行计划','五条行动，各自有产出','任务 / 产出 / 时间点 / 责任人 / 资源——照这张表派活。');
+    const head6=['#','任务','产出','时间点','责任人','资源'];
+    const rows=[head6.map((h,k)=>({text:h,options:{bold:true,color:WHITE,fill:{color:'16181C'},fontSize:11,align:k===0?'center':'left',valign:'middle'}}))];
+    chunk.forEach((it,k)=>{
+      const idx=ci*3+k;
+      rows.push([
+        {text:String(idx+1),options:{align:'center',bold:true,color:ACCD,fontSize:13}},
+        {text:T(it.task)},{text:T(it.deliverable)},{text:T(it.timeline)},{text:T(it.owner)},{text:T(it.resource)}
+      ].map((cell,kk)=>({text:cell.text,options:Object.assign({fontSize:11,color:SUB,valign:'top',fill:{color:k%2?'F7F5F1':WHITE}},cell.options||{})})));
+    });
+    s.addTable(rows,{x:M,y:2.32,w:CW,colW:[0.42,3.3,2.6,1.28,1.45,2.38],fontFace:FH,
+      border:{type:'solid',color:'EAE7E0',pt:0.5},rowH:0.74,valign:'top',margin:5});
+    foot(s,12);
   });
-  // 7. 转型专案
-  s=pptx.addSlide();
-  s.addText('06 · 转型专案',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('一句话定位与场景',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  s.addText([{text:'定位  ',options:{bold:true,color:ACCD}},{text:d.output.positioning||'',options:{color:INK}}],{x:0.6,y:1.8,w:12,fontSize:15,fontFace:FH});
-  s.addText([{text:'场景  ',options:{bold:true,color:ACCD}},{text:d.output.scene||'',options:{color:INK}}],{x:0.6,y:2.9,w:12,fontSize:15,fontFace:FH});
-  // 8. 执行计划
-  s=pptx.addSlide();
-  s.addText('07 · 执行计划',{x:0.6,y:0.4,w:12,fontSize:14,bold:true,color:ACC,fontFace:FH});
-  s.addText('从策略到落地的 5 条行动',{x:0.6,y:0.8,w:12,fontSize:28,bold:true,color:INK,fontFace:FH});
-  const head=['#','任务','产出','时间点','责任人','资源'];
-  const rows=[head.map(h=>({text:h,options:{bold:true,color:'FFFFFF',fill:{color:ACCD},align:'left'}}))];
-  (d.plan||[]).forEach((it,i)=>{
-    rows.push([
-      {text:String(i+1),options:{align:'center',bold:true}},
-      {text:it.task||''},{text:it.deliverable||''},{text:it.timeline||''},{text:it.owner||''},{text:it.resource||''}
-    ].map((c2,ci)=>({text:c2.text,options:Object.assign({fontSize:9.5,color:'3F3F46',valign:'top',fill:{color: i%2? 'F6F5F2':'FFFFFF'}},c2.options||{})})));
-  });
-  s.addTable(rows,{x:0.5,y:1.7,w:12.3,colW:[0.5,3.6,2.5,1.4,2.0,2.3],fontFace:FH,border:{type:'solid',color:'ECEAE6',pt:0.5}});
+
+  /* ---------- 13 收尾 ---------- */
+  s=pptx.addSlide();s.background={color:DARK};
+  s.addShape(pptx.ShapeType.rect,{x:M,y:2.16,w:0.52,h:0.035,fill:{color:'34D399'}});
+  s.addText('带走这一句',{x:M,y:2.38,w:6,h:0.28,fontSize:10,color:'7CE0BC',fontFace:FH,charSpacing:2});
+  s.addText(T(d.output&&d.output.positioning)||'把痛点，重构成机会。',{x:M,y:2.8,w:11.2,h:2.2,fontSize:28,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.42,valign:'top',fit:'shrink'});
+  s.addText('专案可在 Z转变 里继续修订，改完重新导出即可。',{x:M,y:5.6,w:11,h:0.32,fontSize:11.5,color:'8B8E94',fontFace:FH});
+  foot(s,13,true);
+
   pptx.writeFile({fileName:(c.product||'Z转型专案')+'·代际转变专案.pptx'}).then(()=>toast('PPT 已下载')).catch(e=>toast('下载失败'));
 }
 
