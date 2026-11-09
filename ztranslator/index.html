@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Z转变 · 转型专案台</title>
+<title>Z转变器 · 跟上 Z 世代的脚步</title>
 <meta name="theme-color" content="#0CA678">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Z转变">
+<meta name="apple-mobile-web-app-title" content="Z转变器">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="app-icon.png">
 <style>
@@ -71,9 +71,17 @@
   .step-meta{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
   .step-meta .num{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:1px}
   .step-meta .name{font-size:14px;font-weight:700}
-  @media(max-width:400px){
+  @media(max-width:660px){
     .brand .bsub{display:none}
-    .hlink{padding:6px 5px}
+  }
+  @media(max-width:430px){
+    .hdr-in{padding:11px 14px;gap:6px}
+    .brand .bt{font-size:13.5px;letter-spacing:-.45px}
+    .ai-flag i{display:none}
+    .ai-flag{padding:5px 10px}
+    .hlink{padding:6px 4px;font-size:12.5px;letter-spacing:-.2px}
+    .ai-flag{padding:5px 9px;font-size:11px}
+    .lang{--lw:27px;margin-left:1px}
   }
   @media(max-width:380px){
     .ai-flag{padding:5px 8px;font-size:11px;margin-right:2px}
@@ -84,10 +92,10 @@
   /* ---------- Progress ---------- */
   .progress{display:flex;gap:5px}
   .pg{flex:1;height:5px;border-radius:999px;background:var(--bg-2);overflow:hidden;cursor:pointer;transition:background .3s var(--ease)}
-  .pg.done{background:#BFE9D8}
-  .pg.active{background:var(--accent)}
+  .pg.pg-done{background:#BFE9D8}
+  .pg.pg-active{background:var(--accent)}
   .pg .fill{display:block;height:100%;width:0;background:var(--accent);transition:width .35s var(--ease)}
-  .pg.active .fill{width:100%}
+  .pg.pg-active .fill{width:100%}
 
   /* ---------- Screen ---------- */
   #screen{max-width:var(--maxw);margin:0 auto;padding:6px 18px 130px;scroll-margin-top:60px;animation:enter .4s var(--ease)}
@@ -419,14 +427,14 @@
 
 <header class="app-header">
   <div class="hdr-in">
-    <button class="brand" onclick="brandHome()" aria-label="回到工作台">
+    <button class="brand" onclick="brandHome()" data-i18n-aria="brand.home" aria-label="回到工作台">
       <img src="app-icon.png" alt="" class="brand-logo">
-      <span class="bt">Z转变</span><span class="bsub">· 专案台</span>
+      <span class="bt" data-i18n="brand.name">Z转变器</span><span class="bsub" data-i18n="brand.sub">· 跟上 Z 世代的脚步</span>
     </button>
     <div class="hdr-right">
       <button id="aiFlag" class="ai-flag" onclick="openSettings()"><i></i>本地推演</button>
-      <button class="hlink" onclick="openProjects()">课题</button>
-      <button class="hlink" onclick="openAbout()">关于</button>
+      <button class="hlink" onclick="openProjects()" data-i18n="nav.cases">课题</button>
+      <button class="hlink" onclick="openAbout()" data-i18n="nav.about">关于</button>
       <button class="lang" id="langSw" data-on="zh" onclick="switchLang()" aria-label="Switch language / 切换语言">
         <span class="thumb"></span><b data-l="zh" class="on">中</b><b data-l="en">EN</b>
       </button>
@@ -448,17 +456,17 @@
 
 <div id="settings" class="settings hidden">
   <div class="box" onclick="event.stopPropagation()">
-    <button class="x" onclick="closeSettings()" aria-label="关闭">×</button>
-    <div class="eyebrow">设置 · 推理引擎</div>
-    <h1 class="h-hero" style="font-size:20px;margin:6px 0 8px">谁来推演你的专案</h1>
-    <p class="hint" style="margin:0 0 14px">默认是「本地推演」：用内置规则跑完七步，能出整份专案，但推理较浅。接上你自己的模型（推荐 DeepSeek）后，同一份输入会给出真推理的结论。Key 只存在本机浏览器。</p>
+    <button class="x" onclick="closeSettings()" data-i18n-aria="close" aria-label="关闭">×</button>
+    <div class="eyebrow" data-i18n="set.eyebrow">设置 · 推理引擎</div>
+    <h1 class="h-hero" style="font-size:20px;margin:6px 0 8px" data-i18n="set.title">谁来推演你的专案</h1>
+    <p class="hint" style="margin:0 0 14px" data-i18n="set.body">默认是「本地推演」：用内置规则跑完七步，能出整份专案，但推理较浅。接上你自己的模型（推荐 DeepSeek）后，同一份输入会给出真推理的结论。Key 只存在本机浏览器。</p>
     <div class="setrow">
       <select id="cfgBrand"><option value="DeepSeek">DeepSeek</option><option value="OpenAI">OpenAI</option><option value="Gemini">Gemini</option></select>
-      <input type="text" id="cfgApiKey" placeholder="粘贴你的 API Key">
+      <input type="text" id="cfgApiKey" data-i18n-ph="set.keyph" placeholder="粘贴你的 API Key">
     </div>
     <div class="row" style="margin-top:16px">
-      <button class="btn btn-primary" style="height:46px" onclick="saveSettings()">保存</button>
-      <button class="btn btn-ghost" style="height:46px" onclick="closeSettings()">取消</button>
+      <button class="btn btn-primary" style="height:46px" onclick="saveSettings()" data-i18n="set.save">保存</button>
+      <button class="btn btn-ghost" style="height:46px" onclick="closeSettings()" data-i18n="set.cancel">取消</button>
     </div>
     <div id="cfgMsg" class="hint" style="margin-top:10px"></div>
   </div>
@@ -466,110 +474,208 @@
 
 <div id="projects" class="settings hidden">
   <div class="box" style="max-width:480px" onclick="event.stopPropagation()">
-    <button class="x" onclick="closeProjects()" aria-label="关闭">×</button>
-    <div class="eyebrow">课题</div>
-    <h1 class="h-hero" style="font-size:22px;margin-bottom:4px">回顾与修订</h1>
-    <p class="hint" style="margin:0 0 12px">每次生成都会自动保存到这里。可回顾整份专案，或回去修订输入重新生成。</p>
+    <button class="x" onclick="closeProjects()" data-i18n-aria="close" aria-label="关闭">×</button>
+    <div class="eyebrow" data-i18n="nav.cases">课题</div>
+    <h1 class="h-hero" style="font-size:22px;margin-bottom:4px" data-i18n="proj.title">回顾与修订</h1>
+    <p class="hint" style="margin:0 0 12px" data-i18n="proj.body">每次生成都会自动保存到这里。可回顾整份专案，或回去修订输入重新生成。</p>
     <div id="projList"></div>
-    <button class="btn btn-primary" style="margin-top:14px" onclick="newProject()">+ 新建课题</button>
+    <button class="btn btn-primary" style="margin-top:14px" onclick="newProject()" data-i18n="proj.new">+ 新建课题</button>
   </div>
 </div>
 
-<div id="about" class="about hidden">
+    <div id="about" class="about hidden">
   <div class="sheet" onclick="event.stopPropagation()">
-    <button class="x" onclick="closeAbout()" aria-label="关闭">×</button>
+    <button class="x" onclick="closeAbout()" data-i18n-aria="close" aria-label="关闭">×</button>
     <div class="abody">
 
       <div class="a-block" style="padding-top:4px">
         <div class="eyebrow">ABOUT</div>
-        <div class="a-h">把你的产品，<br>转变成 Z 世代想要的样子</div>
-        <div class="a-sub">好产品 ≠ 年轻人买账。我们补上断掉的那一环。</div>
+        <div class="a-h" data-i18n="ab.h">把你的产品，<br>转变成 Z 世代想要的样子</div>
+        <div class="a-sub" data-i18n="ab.sub">好产品 ≠ 年轻人买账。我们补上断掉的那一环。</div>
       </div>
 
       <div class="a-block">
-        <div class="a-label">它做什么</div>
+        <div class="a-label" data-i18n="ab.l1">它做什么</div>
         <div class="a-flow">
-          <div class="a-node src"><span class="nt">输入</span><span class="nv">你的产品</span></div>
+          <div class="a-node src"><span class="nt" data-i18n="ab.in">输入</span><span class="nv" data-i18n="ab.inv">你的产品</span></div>
           <div class="a-arrow">→</div>
           <div class="a-mid">
-            <span class="mt">三支柱转变</span>
-            <div class="a-pills"><span class="control">掌控感</span><span class="deserved">配得感</span><span class="grat">满足感</span></div>
+            <span class="mt" data-i18n="ab.mid">三支柱转变</span>
+            <div class="a-pills"><span class="control" data-i18n="ab.p1">掌控感</span><span class="deserved" data-i18n="ab.p2">配得感</span><span class="grat" data-i18n="ab.p3">满足感</span></div>
           </div>
           <div class="a-arrow">→</div>
-          <div class="a-node dst"><span class="nt">输出</span><span class="nv">Z 世代用户</span></div>
+          <div class="a-node dst"><span class="nt" data-i18n="ab.out">输出</span><span class="nv" data-i18n="ab.outv">Z 世代用户</span></div>
         </div>
       </div>
 
       <div class="a-block">
-        <div class="a-label">为什么 · 谁会用</div>
-        <div class="a-sub" style="margin-top:0">功能没变，心智变了。代际错位，让好价值传不到年轻人心里。</div>
+        <div class="a-label" data-i18n="ab.l2">为什么 · 谁会用</div>
+        <div class="a-sub" style="margin-top:0" data-i18n="ab.why">功能没变，心智变了。代际错位，让好价值传不到年轻人心里。</div>
         <div class="a-chips">
-          <span>品牌方</span><span>产品经理</span><span>营销人</span><span>创业者</span><span>内容创作者</span>
+          <span data-i18n="ab.c1">品牌方</span><span data-i18n="ab.c2">产品经理</span><span data-i18n="ab.c3">营销人</span><span data-i18n="ab.c4">创业者</span><span data-i18n="ab.c5">内容创作者</span>
         </div>
       </div>
 
       <div class="a-block">
-        <div class="a-label">怎么做</div>
+        <div class="a-label" data-i18n="ab.l3">怎么做</div>
         <div class="a-steps">
-          <div class="a-step"><span class="sn">1</span><span class="st">对话收集</span></div>
-          <div class="a-step"><span class="sn">2</span><span class="st">五阶段引擎</span></div>
-          <div class="a-step"><span class="sn">3</span><span class="st">逐屏修订</span></div>
-          <div class="a-step"><span class="sn">4</span><span class="st">导出 PPT</span></div>
+          <div class="a-step"><span class="sn">1</span><span class="st" data-i18n="ab.s1">对话收集</span></div>
+          <div class="a-step"><span class="sn">2</span><span class="st" data-i18n="ab.s2">五阶段引擎</span></div>
+          <div class="a-step"><span class="sn">3</span><span class="st" data-i18n="ab.s3">逐屏修订</span></div>
+          <div class="a-step"><span class="sn">4</span><span class="st" data-i18n="ab.s4">导出 PPT</span></div>
         </div>
       </div>
 
       <div class="a-block">
-        <div class="a-label">做完得到什么</div>
+        <div class="a-label" data-i18n="ab.l4">做完得到什么</div>
         <div class="a-get">
           <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg></div>
-            <div><div class="gt">一份转型专案</div><div class="gd">理解 · 重构 · 机遇 · 五步转变 · 执行计划</div></div></div>
+            <div><div class="gt" data-i18n="ab.g1t">一份转型专案</div><div class="gd" data-i18n="ab.g1d">理解 · 重构 · 机遇 · 五步转变 · 执行计划</div></div></div>
           <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg></div>
-            <div><div class="gt">进步看得见</div><div class="gd">三支柱 现状 vs 修订后 双柱评分</div></div></div>
+            <div><div class="gt" data-i18n="ab.g2t">进步看得见</div><div class="gd" data-i18n="ab.g2d">三支柱 现状 vs 修订后 双柱评分</div></div></div>
           <div class="gi"><div class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg></div>
-            <div><div class="gt">直接能交付</div><div class="gd">一键导出 PPT，拿去汇报提案</div></div></div>
+            <div><div class="gt" data-i18n="ab.g3t">直接能交付</div><div class="gd" data-i18n="ab.g3d">一键导出 PPT，拿去汇报提案</div></div></div>
         </div>
       </div>
 
       <div class="a-block">
-        <div class="a-label">两个真实例子</div>
+        <div class="a-label" data-i18n="ab.l5">两个真实例子</div>
 
         <div class="a-case">
-          <div class="cn">假日酒店 · 自助早餐</div>
-          <div class="cm">成熟服务 × 年轻商旅人群</div>
-          <div class="a-row"><span class="a-rl">问题</span><div class="a-rc">传统自助餐 50 年没变——上百种食物、与休闲客混杂。年轻人觉得<b>选择过多、认知负荷高、无聊</b>，入住体验与品牌升级完全脱节。</div></div>
-          <div class="a-row"><span class="a-rl">实践</span><div class="a-rc">以<b>掌控感</b>为支点重构：①产品上把"全自助"改为"可控的精选策展"（今日主厨精选 + 分区少而精）；②沟通上讲"我的早餐我决定"打卡梗；③社群上鼓励住客晒自己的搭配。</div></div>
-          <div class="a-row"><span class="a-rl">结果</span><div class="a-rc">三支柱评分全面跃升，年轻客群入住意愿与好评率明显提升。</div></div>
+          <div class="cn" data-i18n="ab.c1n">假日酒店 · 自助早餐</div>
+          <div class="cm" data-i18n="ab.c1m">成熟服务 × 年轻商旅人群</div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.prob">问题</span><div class="a-rc" data-i18n="ab.c1p">传统自助餐 50 年没变——上百种食物、与休闲客混杂。年轻人觉得<b>选择过多、认知负荷高、无聊</b>，入住体验与品牌升级完全脱节。</div></div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.prac">实践</span><div class="a-rc" data-i18n="ab.c1a">以<b>掌控感</b>为支点重构：①产品上把"全自助"改为"可控的精选策展"（今日主厨精选 + 分区少而精）；②沟通上讲"我的早餐我决定"打卡梗；③社群上鼓励住客晒自己的搭配。</div></div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.res">结果</span><div class="a-rc" data-i18n="ab.c1r">三支柱评分全面跃升，年轻客群入住意愿与好评率明显提升。</div></div>
           <div class="a-stat">
-            <span class="up">掌控感 2.3 → 7.1</span>
-            <span class="up">配得感 6.5 → 9.6</span>
-            <span class="up">满足感 5.1 → 8.7</span>
+            <span class="up" data-i18n="ab.c1s1">掌控感 2.3 → 7.1</span>
+            <span class="up" data-i18n="ab.c1s2">配得感 6.5 → 9.6</span>
+            <span class="up" data-i18n="ab.c1s3">满足感 5.1 → 8.7</span>
           </div>
         </div>
 
         <div class="a-case">
-          <div class="cn">老牌铁锅 · 炊爷</div>
-          <div class="cm">功能型老货 × 独居年轻人</div>
-          <div class="a-row"><span class="a-rl">问题</span><div class="a-rc">父辈"一口传三代"的功能叙事，年轻人感知为<b>"妈妈的锅"</b>，与自己独居生活无关；产品停留在"该省省"的功能账户，难有溢价与分享。</div></div>
-          <div class="a-row"><span class="a-rl">实践</span><div class="a-rc">把锅从「烹饪工具」移入「情感账户」：①配得感上讲"我值得为自己好好吃饭"的故事；②包装上做开箱仪式感；③沟通上用真实独居青年的下厨瞬间替代参数表。</div></div>
-          <div class="a-row"><span class="a-rl">结果</span><div class="a-rc">从"该省省"变成"该花花"，被年轻人当成"对自己好一点"的载体，分享意愿明显上升。</div></div>
+          <div class="cn" data-i18n="ab.c2n">老牌铁锅 · 炊爷</div>
+          <div class="cm" data-i18n="ab.c2m">功能型老货 × 独居年轻人</div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.prob">问题</span><div class="a-rc" data-i18n="ab.c2p">父辈"一口传三代"的功能叙事，年轻人感知为<b>"妈妈的锅"</b>，与自己独居生活无关；产品停留在"该省省"的功能账户，难有溢价与分享。</div></div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.prac">实践</span><div class="a-rc" data-i18n="ab.c2a">把锅从「烹饪工具」移入「情感账户」：①配得感上讲"我值得为自己好好吃饭"的故事；②包装上做开箱仪式感；③沟通上用真实独居青年的下厨瞬间替代参数表。</div></div>
+          <div class="a-row"><span class="a-rl" data-i18n="ab.res">结果</span><div class="a-rc" data-i18n="ab.c2r">从"该省省"变成"该花花"，被年轻人当成"对自己好一点"的载体，分享意愿明显上升。</div></div>
           <div class="a-stat">
-            <span class="up">客单价 ↑</span>
-            <span class="up">自发分享 ↑</span>
-            <span>工具 → 情感账户</span>
+            <span class="up" data-i18n="ab.c2s1">客单价 ↑</span>
+            <span class="up" data-i18n="ab.c2s2">自发分享 ↑</span>
+            <span data-i18n="ab.c2s3">工具 → 情感账户</span>
           </div>
         </div>
       </div>
 
     </div>
     <div class="foot">
-      <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 18px" onclick="closeAbout()">关闭</button>
-      <button class="btn btn-primary" style="flex:1" onclick="closeAbout();goStep(0);window.scrollTo({top:0,behavior:'smooth'})">回到工作台开始 →</button>
+      <button class="btn btn-ghost" style="flex:0 0 auto;width:auto;padding:0 18px" onclick="closeAbout()" data-i18n="close">关闭</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeAbout();goStep(0);window.scrollTo({top:0,behavior:'smooth'})" data-i18n="ab.start">回到工作台开始 →</button>
     </div>
   </div>
 </div>
 
 <script src="pptxgen.bundle.js" onerror="window.__pptxMissing=true"></script>
 <script>
+/* ===================== 语言 / Language ===================== */
+const LSNG='zt_lang';
+let LANG=(function(){
+  try{const q=new URLSearchParams(location.search).get('lang');
+    if(q==='en'||q==='zh')return q;}catch(e){}
+  try{const v=localStorage.getItem(LSNG);if(v==='en'||v==='zh')return v;}catch(e){}
+  return 'zh';
+})();
+const isEN=()=>LANG==='en';
+/* 双语内联：t('中文','English')，翻译紧贴使用处，不会漏 key */
+function t(zh,en){return isEN()?en:zh;}
+
+const I18N_EN={
+  'brand.name':'Z Transformer',
+  'brand.sub':'· Keep up with Gen Z',
+  'brand.home':'Back to the workspace',
+  'nav.cases':'Cases','nav.about':'About','close':'Close',
+  'set.eyebrow':'Settings · Engine',
+  'set.title':'Who runs the thinking',
+  'set.body':'By default this is "local reasoning": built-in rules walk all seven steps and still produce a full case, but the thinking stays shallow. Connect your own model (DeepSeek recommended) and the same input gets real reasoning. The key stays in this browser.',
+  'set.keyph':'Paste your API key',
+  'set.save':'Save','set.cancel':'Cancel',
+  'proj.title':'Review and revise',
+  'proj.body':'Every generation is saved here automatically. Open the full case, or go back and revise the input.',
+  'proj.new':'+ New case',
+  'ab.h':'Turn your product into<br>what Gen Z actually wants',
+  'ab.sub':'A good product is not the same as one they buy. We rebuild the missing link.',
+  'ab.l1':'What it does',
+  'ab.in':'Input','ab.inv':'Your product','ab.mid':'Three-pillar shift',
+  'ab.p1':'Control','ab.p2':'Worth it','ab.p3':'Delight',
+  'ab.out':'Output','ab.outv':'Gen Z users',
+  'ab.l2':'Why · who it is for',
+  'ab.why':'The features did not change. The mindset did. The generational gap keeps good value from landing.',
+  'ab.c1':'Brand owners','ab.c2':'Product managers','ab.c3':'Marketers','ab.c4':'Founders','ab.c5':'Creators',
+  'ab.l3':'How it works',
+  'ab.s1':'Conversation','ab.s2':'Five-stage engine','ab.s3':'Revise per screen','ab.s4':'Export deck',
+  'ab.l4':'What you walk away with',
+  'ab.g1t':'A full transformation case','ab.g1d':'Understand · Reframe · Opportunity · Five shifts · Action plan',
+  'ab.g2t':'Progress you can see','ab.g2d':'Three pillars: current vs revised, side by side',
+  'ab.g3t':'Ready to deliver','ab.g3d':'One-click PPT for the review room',
+  'ab.l5':'Two real examples',
+  'ab.prob':'Problem','ab.prac':'Move','ab.res':'Result',
+  'ab.c1n':'Holiday Inn · Breakfast buffet','ab.c1m':'Mature service × young business travellers',
+  'ab.c1p':'A buffet unchanged for 50 years — 100+ items, mixed in with leisure guests. Younger guests read it as <b>too much choice, high cognitive load, boring</b>. The stay no longer matches the brand.',
+  'ab.c1a':'Reframed around <b>control</b>: ① product — swap "everything, always" for a curated edit (chef\'s picks, fewer, sharper zones); ② messaging — "my morning, my call"; ③ community — guests post their own plate.',
+  'ab.c1r':'All three pillar scores jump; intent to stay and review scores rise among younger guests.',
+  'ab.c1s1':'Control 2.3 → 7.1','ab.c1s2':'Worth it 6.5 → 9.6','ab.c1s3':'Delight 5.1 → 8.7',
+  'ab.c2n':'Cast-iron wok · Chuiye','ab.c2m':'Functional legacy × young people living alone',
+  'ab.c2p':'The parent generation\'s "one wok, three generations" story reads to young people as <b>"mom\'s wok"</b> — irrelevant to living alone. It stays in the value account: no premium, nothing to share.',
+  'ab.c2a':'Moved the wok from cooking tool to emotional account: ① an "I deserve a proper meal" story; ② an unboxing ritual in the pack; ③ real solo-cooking moments instead of spec sheets.',
+  'ab.c2r':'From "save it" to "spend on it" — young buyers treat it as "being good to myself", and sharing rises.',
+  'ab.c2s1':'Higher order value','ab.c2s2':'More organic shares','ab.c2s3':'Tool → emotional account',
+  'ab.start':'Start in the workspace →'
+};
+
+function applyI18n(){
+  document.documentElement.lang = isEN()?'en':'zh-CN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    if(el.dataset.zh==null)el.dataset.zh=el.innerHTML;
+    const v=isEN()?I18N_EN[el.dataset.i18n]:null;
+    el.innerHTML=(v==null?el.dataset.zh:v);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    if(el.dataset.zhPh==null)el.dataset.zhPh=el.getAttribute('placeholder')||'';
+    el.setAttribute('placeholder',(isEN()&&I18N_EN[el.dataset.i18nPh])||el.dataset.zhPh);
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{
+    if(el.dataset.zhAria==null)el.dataset.zhAria=el.getAttribute('aria-label')||'';
+    el.setAttribute('aria-label',(isEN()&&I18N_EN[el.dataset.i18nAria])||el.dataset.zhAria);
+  });
+  document.title=isEN()?'Z Transformer · Keep up with Gen Z':'Z转变器 · 跟上 Z 世代的脚步';
+  const md=document.querySelector('meta[name="description"]');
+  if(md)md.setAttribute('content',isEN()
+    ?'Z Transformer turns any product or service into something Gen Z wants: a three-pillar diagnosis plus five practical shifts, exported as a 13-slide deck.'
+    :'Z转变器：把任何产品 / 服务转变成 Z 世代想要的样子。三支柱诊断 + 五步转变 + 一键导出专案 PPT。');
+}
+function applyLangSw(){
+  const sw=document.getElementById('langSw');if(!sw)return;
+  sw.dataset.on=LANG;
+  sw.querySelectorAll('b').forEach(b=>b.classList.toggle('on',b.dataset.l===LANG));
+}
+function switchLang(){
+  LANG=isEN()?'zh':'en';
+  try{localStorage.setItem(LSNG,LANG);}catch(e){}
+  applyI18n();applyLangSw();setFlag();
+  if(state.step===0&&state.mode==='chat'&&state.chatIdx===0){
+    state.chatLog=[{role:'bot',text:chatQ()[0].q,q:true}];
+  }
+  renderHeader();renderProgress();renderScreen();renderNavbar();
+  if(state.data){
+    toast(isEN()
+      ?'Interface is English. Content stays in the language it was generated — go to step 1 and hit Generate for an English version.'
+      :'界面已切到中文。内容仍是生成时的语言——回第 1 步点「生成」可得中文版。');
+  }else{
+    toast(isEN()?'English interface on':'已切到中文');
+  }
+}
+
 /* ===================== 引擎（沿用已验证逻辑） ===================== */
 const LS_AI='zt_ai',LS_DRAFT='zt_draft',LS_DATA='zt_data',LS_PROJECTS='zt_projects';
 const BRANDS={
@@ -582,19 +688,19 @@ function setFlag(){
   const a=getAI();const el=document.getElementById('aiFlag');if(!el)return;
   if(a.apiKey){
     el.className='ai-flag on';
-    el.innerHTML='<i></i>AI · '+(a.brand||'已接入');
-    el.title='已接入 '+(a.brand||'AI')+'：推理由你的模型完成。点此修改';
+    el.innerHTML='<i></i>AI · '+(isEN()?(a.brand||'on'):(a.brand||'已接入'));
+    el.title=t('已接入 '+(a.brand||'AI')+'：推理由你的模型完成。点此修改','Connected to '+(a.brand||'AI')+': the reasoning runs on your model. Click to change.');
   }else{
     el.className='ai-flag';
-    el.innerHTML='<i></i>本地推演';
-    el.title='还没接 AI：用内置规则跑完七步，能出整份专案，但推理较浅。点此接入 AI';
+    el.innerHTML='<i></i>'+t('本地推演','Local');
+    el.title=t('还没接 AI：用内置规则跑完七步，能出整份专案，但推理较浅。点此接入 AI','No model connected: built-in rules walk all seven steps and still produce a full case, but the thinking stays shallow. Click to connect one.');
   }
 }
 function saveSettings(){
   const brand=document.getElementById('cfgBrand').value;
   const key=document.getElementById('cfgApiKey').value.trim();
   localStorage.setItem(LS_AI,JSON.stringify({brand,apiKey:key}));
-  document.getElementById('cfgMsg').textContent=key?'已保存':'已清除 Key';
+  document.getElementById('cfgMsg').textContent=key?t('已保存','Saved'):t('已清除 Key','Key cleared');
   setFlag();setTimeout(closeSettings,400);
 }
 function openSettings(){const a=getAI();document.getElementById('cfgBrand').value=a.brand||'DeepSeek';
@@ -614,19 +720,19 @@ function upsertProject(proj){
   list=list.slice(0,50);localStorage.setItem(LS_PROJECTS,JSON.stringify(list));return list;
 }
 function deleteProjectById(id){const list=loadProjects().filter(p=>p.id!==id);localStorage.setItem(LS_PROJECTS,JSON.stringify(list));}
-function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function fmtDate(iso){try{const d=new Date(iso);return d.toLocaleString(isEN()?'en-US':'zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
 function openProjects(){renderProjList();document.getElementById('projects').classList.remove('hidden');}
 function closeProjects(){document.getElementById('projects').classList.add('hidden');}
 document.getElementById('projects').addEventListener('click',function(e){if(e.target===this)closeProjects();});
 function renderProjList(){
   const list=loadProjects();const box=document.getElementById('projList');
-  if(!list.length){box.innerHTML='<div class="empty">还没有课题。填写一个案例并生成，会自动保存到此处。</div>';return;}
+  if(!list.length){box.innerHTML='<div class="empty">'+t('还没有课题。填写一个案例并生成，会自动保存到此处。','No cases yet. Generate one and it will be saved here automatically.')+'</div>';return;}
   box.innerHTML=list.map(p=>`<div class="proj-card">
      <div class="proj-top"><div class="proj-name">${esc(p.name)}</div><div class="proj-meta">${fmtDate(p.updated)}</div></div>
      <div class="proj-acts">
-       <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">回顾</button>
-       <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">修订</button>
-       <button class="btn btn-ghost btn-sm" onclick="delProject('${p.id}')">删除</button>
+       <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">${t('回顾','Review')}</button>
+       <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">${t('修订','Revise')}</button>
+       <button class="btn btn-ghost btn-sm" onclick="delProject('${p.id}')">${t('删除','Delete')}</button>
      </div></div>`).join('');
 }
 function openProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
@@ -635,32 +741,63 @@ function openProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
   lastData=p.data;saveDataDraft();closeProjects();goStep(STEPS.length-1);}
 function reviseProject(id){const p=loadProjects().find(x=>x.id===id);if(!p)return;
   state.data=p.data;state.inputs=p.data._inputs||{};state.projectId=p.id;closeProjects();state.mode='form';goStep(0);}
-function delProject(id){if(!confirm('确定删除这个课题？此操作不可恢复。'))return;deleteProjectById(id);renderProjList();}
+function delProject(id){if(!confirm(t('确定删除这个课题？此操作不可恢复。','Delete this case? It cannot be undone.')))return;deleteProjectById(id);renderProjList();}
 function newProject(){state.data=null;state.inputs={};state.projectId=null;state.mode='form';
   state.chatStarted=true;state.chatIdx=0;state.chatLog=[];state.reached=0;
   localStorage.removeItem(LS_DATA);closeProjects();goStep(0);}
 
 const SAMPLE={
-  product:'假日酒店的早餐服务',
-  audience:'25-35 岁之间的商务旅行人士，工作日为主',
-  value:'健康，简洁，高档，本地特色，朴实，精选',
-  current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',
-  pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'
+  zh:{
+    product:'假日酒店的早餐服务',
+    audience:'25-35 岁之间的商务旅行人士，工作日为主',
+    value:'健康，简洁，高档，本地特色，朴实，精选',
+    current:'传统自助餐 50 年没变，上百种食物，和休闲客混杂，吵杂无序，埋没了本地早餐（粤/豫/意）的精华',
+    pain:'年轻人觉得无聊；选择过多导致认知负荷高；客人混杂体验差'
+  },
+  en:{
+    product:'Breakfast service at a Holiday Inn',
+    audience:'Business travellers aged 25–35, mostly on weekdays',
+    value:'Healthy, simple, premium, local, honest, curated',
+    current:'The buffet has not changed in 50 years: 100+ items, mixed in with leisure guests, loud and chaotic. It buries the best of the local breakfast (Cantonese / Henan / Italian).',
+    pain:'Younger guests find it boring; too much choice creates cognitive load; the mixed crowd ruins the stay'
+  }
 };
-const CHAT_Q=[
-  {k:'product', q:'先聊聊——你要转变的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
-  {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行或使用场景。'},
-  {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是转变的原料，比如：健康、本地特色、精选）'},
-  {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
-  {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可以跳过）'}
-];
+function sample(){return isEN()?SAMPLE.en:SAMPLE.zh;}
+const CHAT_Q={
+  zh:[
+    {k:'product', q:'先聊聊——你要转变的是什么产品 / 服务？（越具体越好，例如：假日酒店的早餐服务）'},
+    {k:'audience', q:'想触达的年轻人是谁？比如年龄、身份、出行或使用场景。'},
+    {k:'value', q:'你最想传达的核心功能 / 价值是什么？（这是转变的原料，比如：健康、本地特色、精选）'},
+    {k:'current', q:'你目前在做什么，但年轻人不买账？（越具体越准，比如：50 年没变的自助餐、上百种食物）'},
+    {k:'pain', q:'最想解决的适配问题是什么？（选填，想不出可以跳过）'}
+  ],
+  en:[
+    {k:'product', q:'Let’s start — what product or service are you shifting? (Be specific, e.g. the breakfast service at a Holiday Inn.)'},
+    {k:'audience', q:'Who are the young people you want to reach? Age, identity, the occasion they show up in.'},
+    {k:'value', q:'What is the core value you want to land? (This is the raw material — e.g. healthy, local, curated.)'},
+    {k:'current', q:'What are you doing today that they simply do not buy? (The more specific, the sharper the read.)'},
+    {k:'pain', q:'What fit problem do you most want to solve? (Optional — skip it if you are not sure.)'}
+  ]
+};
+function chatQ(){return isEN()?CHAT_Q.en:CHAT_Q.zh;}
 
 function detectSignals(text){
-  const t=text||'';const S=[];
-  const ctx=m=>{const i=t.indexOf(m);if(i<0)return m;
-    const a=Math.max(0,i-7),b=Math.min(t.length,i+m.length+9);
-    return (a>0?'…':'')+t.slice(a,b)+(b<t.length?'…':'');};
-  const add=(tag,label,quote)=>{const m=t.match(quote);if(m)S.push({tag,label,quote:ctx(m[0])});};
+  const src=text||'';const S=[];const E=isEN();
+  const ctx=m=>{const i=src.indexOf(m);if(i<0)return m;
+    const a=Math.max(0,i-(E?26:7)),b=Math.min(src.length,i+m.length+(E?34:9));
+    return (a>0?'…':'')+src.slice(a,b)+(b<src.length?'…':'');};
+  const add=(tag,label,quote)=>{const m=src.match(quote);if(m)S.push({tag,label,quote:ctx(m[0])});};
+  if(E){
+    add('overload','Choice overload',/too many|overload|cognitive load|100\+|hundreds|endless|dozens|spoilt for choice|overwhelm/i);
+    add('chaos','Environment out of order',/loud|noisy|chaos|messy|crowded|crowd|clutter/i);
+    add('mixed','Audience mismatch',/mixed|blended|families|leisure guests|different kinds of|everyone/i);
+    add('boring','No emotional payoff',/boring|dull|flat|uninspiring|forgettable|nothing special/i);
+    add('noculture','No cultural story',/no story|no culture|no soul|generic|sameness|nothing local|no character|lost the/i);
+    add('stale','Stale format',/50 years|unchanged|never changed|outdated|old[- ]fashioned|for decades/i);
+    add('fakepremium','Premium that reads cheap',/premium|luxury|high[- ]end|expensive|feels cheap|not worth/i);
+    add('narrative','No identity mirror',/not me|doesn['’]t feel like me|no identity|impersonal|nobody like me/i);
+    return S;
+  }
   add('overload','选择过载',/选择过多|认知负荷|太多|上百|几十种|一堆|琳琅满目/);
   add('chaos','环境失序',/吵|杂|无序|混乱|乱|嘈杂/);
   add('mixed','人群错配',/混杂|混合|各类.*?客|不同.*?人|休闲.*?客/);
@@ -672,12 +809,20 @@ function detectSignals(text){
   return S;
 }
 function detectDomain(text){
-  const t=(text||'');
-  if(/酒店|早餐|餐饮|餐厅|咖啡|食物|食品|饭|料理|烘焙/.test(t))return 'hospitality';
-  if(/美妆|护肤|化妆|口红|面膜|香水/.test(t))return 'beauty';
-  if(/App|软件|应用|平台|小程序|网站|系统|工具/.test(t))return 'digital';
-  if(/服饰|衣服|鞋|包|穿搭|配饰/.test(t))return 'fashion';
-  if(/家电|电器|锅|家居|家具|数码/.test(t))return 'product';
+  const t0=(text||'');
+  if(isEN()){
+    if(/hotel|breakfast|restaurant|cafe|coffee|food|menu|bakery|dining/i.test(t0))return 'hospitality';
+    if(/beauty|skincare|cosmetic|lipstick|perfume|serum|makeup/i.test(t0))return 'beauty';
+    if(/app|software|platform|website|system|tool|saas|product/i.test(t0))return 'digital';
+    if(/fashion|apparel|clothing|shoes|sneaker|bag|wear|accessor/i.test(t0))return 'fashion';
+    if(/appliance|homeware|furniture|kitchenware|gadget|device/i.test(t0))return 'product';
+    return 'generic';
+  }
+  if(/酒店|早餐|餐饮|餐厅|咖啡|食物|食品|饭|料理|烘焙/.test(t0))return 'hospitality';
+  if(/美妆|护肤|化妆|口红|面膜|香水/.test(t0))return 'beauty';
+  if(/App|软件|应用|平台|小程序|网站|系统|工具/.test(t0))return 'digital';
+  if(/服饰|衣服|鞋|包|穿搭|配饰/.test(t0))return 'fashion';
+  if(/家电|电器|锅|家居|家具|数码/.test(t0))return 'product';
   return 'generic';
 }
 function computeScores(signals,opp){
@@ -699,7 +844,7 @@ function getScores(){
   const c=(state.data&&state.data._inputs)||{};
   return computeScores(detectSignals((c.current||'')+' '+(c.pain||'')),state.data?state.data.opportunity:{});
 }
-function genPlan(domain,c){
+function genPlanZH(domain,c){
   if(domain==='hospitality'){
     return [
       {task:`把现有百种自助早餐重组为「晨间精选」3 套轮转主题分区（粤式清润 / 中原暖胃 / 西式利落），并划出商务客独立安静角`,
@@ -723,7 +868,7 @@ function genPlan(domain,c){
     {task:`建答疑日 + 体验官机制，由年轻一线员工运营社群`,deliverable:'社群 SOP + 体验官机制',timeline:'第 6–10 周',owner:'社群运营',resource:'运营工时；体验官权益'}
   ];
 }
-function reasonLocal(c){
+function reasonLocalZH(c){
   const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
   const signals=detectSignals(c.current+' '+c.pain);
   const domain=detectDomain(allText);
@@ -800,8 +945,123 @@ function reasonLocal(c){
       channel:'从现有触达翻到年轻人聚集渠道，用真实用户视角种草，线下触点年轻化。',
       community:'建答疑日 + 体验官机制，让年轻一线员工运营，而非群发促销。'};
   }
-  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),scores:computeScores(signals,opp),_inputs:c};
+  return {understand,reframe,opportunity:opp,translate,output,plan:genPlan(domain,c),scores:computeScores(signals,opp),_inputs:c,_lang:'zh'};
 }
+function genPlanEN(domain,c){
+  if(domain==='hospitality'){
+    return [
+      {task:'Regroup the 100-item buffet into three rotating "Morning Edit" zones (Cantonese light / Central comfort / Western sharp) and carve out a quiet corner for business guests.',
+       deliverable:'Three breakfast menus + quiet-corner layout and circulation plan + zone signage',timeline:'Weeks 1–4',owner:'F&B director + executive chef',resource:'Menu R&D hours; ~¥30–50k soft furnishing; circulation changes'},
+      {task:'Keep self-service, rename it "City Morning Edit" as a gallery walk, with hand-drawn story cards for the Cantonese / Henan / Italian breakfasts.',
+       deliverable:'Naming + 12 regional breakfast story cards + zone display kit',timeline:'Weeks 3–6',owner:'Brand / marketing manager + design studio',resource:'Illustration budget ~¥20–30k; print and display kit'},
+      {task:'Filter the jargon (retire "abundant / crafted heritage"), lead with "three morning edits, pick one", and build a copy bank from real business travellers.',
+       deliverable:'Copy kit (3 primary, 3 secondary) + traveller quote bank from OTA reviews',timeline:'Weeks 2–3',owner:'Marketing manager',resource:'Copywriting hours; review-mining tool or manual read'},
+      {task:'Add "choose your morning ritual" to the booking funnel; seed the quiet corner and local breakfast through business travellers on RED and Douyin.',
+       deliverable:'Booking-page redesign + 12-post content calendar',timeline:'Weeks 4–8',owner:'Digital marketing + social',resource:'Media budget ~¥50–80k/month; content production'},
+      {task:'Build a regular-guest "Morning Lab" where the monthly city breakfast map is co-created, and recruit morning experience officers to test new sets.',
+       deliverable:'Community SOP + experience-officer programme + first co-creation event',timeline:'Weeks 6–10',owner:'Membership / community',resource:'Ops hours; officer perks (free nights / breakfast)'}
+    ];
+  }
+  const val=c.value||'core value',aud=c.audience||'young audience',prod=c.product||'the product';
+  return [
+    {task:`Turn "${val}" into three real usage scenes for ${aud}, then restructure how ${prod} is presented.`,deliverable:'Scene list (3) + restructure proposal',timeline:'Weeks 1–3',owner:'Product + marketing lead',resource:'Internal hours; 8 user interviews'},
+    {task:'Keep the classic identity and ship a youth edition (collab / seasonal / illustration) in small batches.',deliverable:'Edition concept + social test plan',timeline:'Weeks 2–5',owner:'Brand manager',resource:'Design freelance budget'},
+    {task:`Filter the jargon and distil "${val}" into one sentence ${aud} would repeat.`,deliverable:'Copy kit (3 primary, 3 secondary)',timeline:'Weeks 2–3',owner:'Marketing manager',resource:'Copywriting hours'},
+    {task:'Pick one channel where they gather and run a six-week shift test with its own language.',deliverable:'Channel calendar + touchpoint redesign',timeline:'Weeks 4–8',owner:'Digital marketing',resource:'Media budget; content production'},
+    {task:'Run weekly office hours and an experience-officer crew, staffed by young frontline people.',deliverable:'Community SOP + officer programme',timeline:'Weeks 6–10',owner:'Community lead',resource:'Ops hours; officer perks'}
+  ];
+}
+function reasonLocalEN(c){
+  const allText=[c.product,c.audience,c.value,c.current,c.pain].join(' ');
+  const signals=detectSignals((c.current||'')+' '+(c.pain||''));
+  const domain=detectDomain(allText);
+  const P=c.product||'your product',A=c.audience||'your young audience',V=c.value||'your core value';
+  const understand={
+    summary:`"${P}" serves ${A}; the promise is "${V}". Today: ${c.current||'(not filled in)'}. The friction: ${c.pain||'(not filled in)'}.`,
+    signals:signals.length?signals:[{tag:'none',label:'No clear imbalance found',quote:''}]
+  };
+  const reframes={
+    overload:'The problem is not "not enough" — it is "too much, so nothing feels chosen". They do not want an endless list; they want a curated few. Your abundance is their cognitive load.',
+    chaos:'The problem is not bad service — the room takes away control and quiet. Re-allocate space and pace for the people you actually want, instead of giving everyone the same treatment.',
+    mixed:'The problem is not "too many guests" — it is the wrong mix in one room. When a space serves everyone, your target reads "this is not for me".',
+    boring:'The problem is not "too little content" — there is no emotional hook. Young people do not pay for features, they pay for how a moment feels. What is missing is one small, memorable delight.',
+    noculture:'You own cultural assets and buried them in a pile of sameness. The issue is not a lack of character — the character was never curated into identity. They see it, and feel nothing.',
+    stale:'An old form is not the disease; speaking yesterday’s language to today’s audience is. This is a shift, not a facelift — same roots, new dialect.',
+    fakepremium:'You label it premium; it reads cheap. Value perception is misaligned — refinement never came through restraint and detail, so it looks like trying too hard.',
+    narrative:'They do not see themselves in your product. The features are not wrong — the mirror is missing. Identity was never picked up.'
+  };
+  const used=signals.filter(s=>reframes[s.tag]).slice(0,2);
+  const reframed=used.length
+    ?used.map(s=>reframes[s.tag]).join(' ')
+    :'The real gap is not feature strength — it is that the way you speak and the way they listen sit on different frequencies. This needs a generational shift, not another feature.';
+  const reframe={
+    problem:`The biggest friction for ${P} comes from ${used.length?used.map(s=>s.label.toLowerCase()).join(' and '):'a mismatch between how you speak and how they listen'}.`,
+    reframed:reframed,
+    why:'Reframing turns a company-side pain into a user-side opportunity: first see which pillar is weak, then make the shift.'
+  };
+  const pillarMap={control:['overload','chaos','mixed'],deserved:['fakepremium','noculture','narrative'],gratification:['boring','noculture']};
+  const opp={control:[],deserved:[],gratification:[]};
+  const ctrlLines={
+    overload:'Curate instead of piling up: a small, sharp set, so choosing costs one decision.',
+    chaos:`Re-sequence space and pace to give ${A} a quiet island instead of the crowd.`,
+    mixed:`Separate audiences by zone or by hour so ${A} feels "this was built for me".`
+  };
+  const desLines={
+    fakepremium:'Signal premium through restraint and detail; drop the loud symbols and let value be felt, not claimed.',
+    noculture:'Put the local and cultural assets you mentioned on centre stage — make them something users can show off.',
+    narrative:`Hold up a mirror inside the experience so ${A} sees "that is me".`
+  };
+  const graLines={
+    boring:'Design one small, memorable delight: a signature item, a quiet corner, a surprise.',
+    noculture:'Let them discover rather than be told — culture as an easter egg, not a label.'
+  };
+  signals.forEach(s=>{
+    if(pillarMap.control.includes(s.tag)&&ctrlLines[s.tag])opp.control.push(ctrlLines[s.tag]);
+    if(pillarMap.deserved.includes(s.tag)&&desLines[s.tag])opp.deserved.push(desLines[s.tag]);
+    if(pillarMap.gratification.includes(s.tag)&&graLines[s.tag])opp.gratification.push(graLines[s.tag]);
+  });
+  if(!opp.control.length)opp.control.push('Map every touchpoint and pull in the moments that strip away control.');
+  if(!opp.deserved.length)opp.deserved.push('Check the promise against who they want to be, and add proof this was made for them.');
+  if(!opp.gratification.length)opp.gratification.push('Add instant positive feedback on the critical path so progress is visible.');
+  const steps=[
+    {step:'Product shift',
+     principle:'From listing features to defining scenes: start with when it is used, then work back to what it does.',
+     methods:['Scene storm: put 20 lines of real user language on the wall and vote for the three scenes that land hardest.','Storyboard one concrete moment so the team agrees on the state the user is in.','Reverse the brief: define "when they need it" first, then cut features instead of adding them.'],
+     forYou:[`Run the scene storm on "${V}" with your youngest team, and vote for the three scenes that make ${A} lean in.`,'Storyboard the most important moment: what they see, hold and feel in the first 60 seconds.',`Write the brief backwards — "when does ${A} need ${P}?" — then cut everything that does not serve that scene.`]},
+    {step:'Packaging shift',
+     principle:'Let the classic grow a modern edge: keep the classic track, ship a youth edition.',
+     methods:['Two tracks: keep the classic assets for loyal users, and design collab, seasonal or artist editions for the young.','Small test: seed the new pack on one social channel, read real feedback, then scale.','Run classic and new in parallel for 6–12 months; never delete the code loyal users recognise.'],
+     forYou:['Keep the classic pack for loyal buyers and design one youth edition with a clear visual break.','Seed the new pack with 30 creators on one channel before printing at scale.','Run both packs for two quarters; retire the old one only when reorder data says so.']},
+    {step:'Messaging shift',
+     principle:'From brand monologue to user dialogue: filter the jargon, use their words.',
+     methods:['Jargon filter: retire "empower / matrix / closed loop / craftsmanship" and say it plainly.','Series, not a press release: tell the story in 3–5 minute episodes people actually follow.','Their words are the copy: lift quotes from comments and DMs into official language.'],
+     forYou:[`Turn "${V}" into one sentence ${A} would say out loud to a friend.`,'Strip the internal vocabulary off your homepage and replace claims with a scene.','Use their reviews verbatim — one real quote beats three polished lines.']},
+    {step:'Channel shift',
+     principle:'From the big aisle to the new shelf: pick one channel where young people gather and learn its rules.',
+     methods:['Test field: choose one channel where they gather and spend six months learning its rules.','Speak each channel’s language: fast cuts on Douyin, honest notes on RED, deep reviews on Bilibili.','Refresh the physical touchpoints: photo spots, plainer signage, and staff who ask "what are you trying to solve?".'],
+     forYou:[`Pick the one channel ${A} opens every day, and post there for six weeks before adding another.`,'Tell the same story three ways for three platforms: same truth, different tempo.','Change the first ten seconds offline: the greeting, the signage, the first question staff ask.']},
+    {step:'Community shift',
+     principle:'From broadcast to conversation: office hours, experience officers, run by young staff.',
+     methods:['Office hours: once a week, answer questions and sell nothing.','Experience officers: invite loyal young users to test before launch instead of only reading dashboards.','Let young frontline staff run the community — not head office.'],
+     forYou:[`Open weekly office hours where ${A} can ask anything and nothing is sold.`,'Recruit 20 experience officers from your most vocal young users.','Hand the account to the youngest person on the team for one quarter.']}
+  ];
+  let output;
+  if(domain==='hospitality'){
+    output={
+      positioning:`${P} = a curated "City Morning Edit" ritual for ${A}: three zones, ten minutes to settle, one city’s flavour.`,
+      scene:`Weekday 7–9am in the hotel restaurant: ${A} move through three "Morning Edit" zones (Cantonese light / Central comfort / Western sharp), settle in a quiet corner, and finish a locally rooted breakfast in ten minutes — choice overload and the leisure crowd left at the door.`
+    };
+  }else{
+    output={
+      positioning:`${P} = a curated, identity-bearing experience for ${A}: fewer, sharper, right on the first try.`,
+      scene:`At the moment ${A} cares about most, replace abundance with a sharp edit — so "this was made for me" lands instantly instead of being claimed.`
+    };
+  }
+  return {understand,reframe,opportunity:opp,translate:steps,output,plan:genPlanEN(domain,c),scores:computeScores(signals,opp),_inputs:c,_lang:'en'};
+}
+function reasonLocal(c){return isEN()?reasonLocalEN(c):reasonLocalZH(c);}
+function genPlan(domain,c){return isEN()?genPlanEN(domain,c):genPlanZH(domain,c);}
+
 async function callLLM(messages){
   const a=getAI();if(!a.apiKey)throw new Error('no key');
   const cfg=BRANDS[a.brand]||BRANDS.DeepSeek;
@@ -811,7 +1071,7 @@ async function callLLM(messages){
   if(!res.ok)throw new Error('HTTP '+res.status);
   const j=await res.json();return j.choices[0].message.content;
 }
-function buildPrompt(c){
+function buildPromptZH(c){
   return `你是 Z 世代代际转变专家，用设计思维（理解→重构→机遇）把品牌转变成年轻人想要的样子。
 基于三支柱（掌控感/配得感/满足感）与宝洁五步法（产品/包装/沟通/渠道/社群转变）。
 严禁编造与输入无关的场景；所有建议必须扎根用户填写的内容，可引用其原话。
@@ -834,9 +1094,35 @@ function buildPrompt(c){
  "plan":[{"task":"具体执行任务（扎根案例，可落地）","deliverable":"该任务交付物","timeline":"时间点（如 第1-4周）","owner":"责任人（岗位）","resource":"所需资源（预算/人力/工具）"}]
 } 注意：plan 必须包含 5 条执行项，每条含 task/deliverable/timeline/owner/resource 五项，全部具体可执行，禁止占位符与空泛表述。`;
 }
+function buildPromptEN(c){
+  return `You are a generational-shift strategist for Gen Z. Use design thinking (understand → reframe → opportunity) to turn a brand into what young people actually want.
+Ground every suggestion in the three pillars (control / worth-it / delight) and P&G's five shifts (product / packaging / messaging / channel / community).
+Never invent scenes that are not in the input; quote the user's own words where you can.
+Write plain, natural English — no corporate jargon, no filler.
+
+Input:
+Product / service: ${c.product}
+Target audience: ${c.audience}
+Core value: ${c.value}
+What you do today that they don't buy: ${c.current}
+Fit problem to solve: ${c.pain}
+
+Return JSON only (no prose), exactly this shape:
+{
+ "understand":{"summary":"one-sentence read","signals":[{"label":"signal name","quote":"quote from the user"}]},
+ "reframe":{"problem":"biggest fit friction","reframed":"reframed problem statement (2-3 sentences, design-thinking lens)","why":"why this reframe"},
+ "opportunity":{"control":["control opportunity","..."],"deserved":["worth-it opportunity"],"gratification":["delight opportunity"]},
+ "translate":[{"step":"Product shift","principle":"general principle","methods":["method 1","method 2","method 3"],"forYou":["move for this user 1","2","3"]},
+              {"step":"Packaging shift",...},{"step":"Messaging shift",...},{"step":"Channel shift",...},{"step":"Community shift",...}],
+ "output":{"positioning":"one-line positioning","scene":"scene definition"},
+ "plan":[{"task":"specific action grounded in the case","deliverable":"what it produces","timeline":"e.g. Weeks 1-4","owner":"role","resource":"budget / people / tools"}]
+}
+plan must contain exactly 5 items with task/deliverable/timeline/owner/resource — concrete and executable, no placeholders.`;
+}
+function buildPrompt(c){return isEN()?buildPromptEN(c):buildPromptZH(c);}
 async function reasonAI(c){
   try{
-    const sys={role:'system',content:'你是严谨的代际转变顾问，只输出符合 schema 的 JSON。'};
+    const sys={role:'system',content:isEN()?'You are a rigorous generational-shift consultant. Output only JSON that matches the schema.':'你是严谨的代际转变顾问，只输出符合 schema 的 JSON。'};
     const usr={role:'user',content:buildPrompt(c)};
     const txt=await callLLM([sys,usr]);
     const data=JSON.parse(txt);
@@ -851,9 +1137,10 @@ async function reasonAI(c){
 
 /* ===================== 状态与导航 ===================== */
 const STEPS=[
-  {key:'input',label:'输入'},{key:'understand',label:'理解'},{key:'reframe',label:'重构'},
-  {key:'opportunity',label:'机遇'},{key:'translate',label:'转变'},{key:'plan',label:'专案'},{key:'export',label:'导出'}
+  {key:'input',label:'输入',en:'Brief'},{key:'understand',label:'理解',en:'Understand'},{key:'reframe',label:'重构',en:'Reframe'},
+  {key:'opportunity',label:'机遇',en:'Opportunity'},{key:'translate',label:'转变',en:'Shifts'},{key:'plan',label:'专案',en:'Plan'},{key:'export',label:'导出',en:'Export'}
 ];
+function stepLabel(i){const s=STEPS[i]||STEPS[0];return isEN()?s.en:s.label;}
 const state={step:0,mode:'chat',data:null,inputs:{},projectId:null,chatLog:[],chatIdx:0,chatAns:{},chatStarted:false,reached:0,done:false,doneAt:''};
 let lastData=null;
 
@@ -867,7 +1154,7 @@ function saveInputDraft(){const f={p:val0('i-product'),a:val0('i-audience'),v:va
 function val0(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 
 function goStep(n){
-  if(n>0 && !state.data){toast('请先在第 1 步生成转型专案');return;}
+  if(n>0 && !state.data){toast(t('请先在第 1 步生成转型专案','Generate a case on step 1 first'));return;}
   state.step=n;
   if(n===0 && state.data)state.mode='form';
   if(n>state.reached)state.reached=n;
@@ -898,12 +1185,12 @@ function stampNow(){
 }
 /* 点「完成」：把专案收进课题，并给出回首页的出口 */
 function finishProject(){
-  if(!state.data){toast('请先生成专案');return;}
+  if(!state.data){toast(t('请先生成专案','Generate a case first'));return;}
   state.done=true;state.doneAt=stampNow();
   saveCurrentProject(true);
   renderHeader();renderProgress();renderScreen();renderNavbar();
   window.scrollTo({top:0,behavior:'smooth'});
-  toast('已收进课题 · 随时能回来改');
+  toast(t('已收进课题 · 随时能回来改','Filed under Cases — come back and change it anytime'));
 }
 /* 回首页：当前专案先归档，再清空输入，从第一问重新开始 */
 function homeNew(){
@@ -914,21 +1201,18 @@ function homeNew(){
   state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];
   try{localStorage.removeItem(LS_DATA);localStorage.removeItem(LS_DRAFT);}catch(e){}
   goStep(0);
-  toast('上一个课题已存进课题');
+  toast(t('上一个课题已存进课题','The previous case is in Cases'));
 }
-/* 中英跷跷板：先只做界面，英文版内容稍后接 */
-function switchLang(){
-  toast('English 版正在做，先用中文');
-}
+/* 中英跷跷板：见文件顶部的 switchLang() */
 
 function renderHeader(){
   document.getElementById('stepNum').textContent=String(state.step+1).padStart(2,'0')+' / '+String(STEPS.length).padStart(2,'0');
-  document.getElementById('stepName').textContent=STEPS[state.step].label;
+  document.getElementById('stepName').textContent=stepLabel(state.step);
 }
 function renderProgress(){
   const p=document.getElementById('progress');
   p.innerHTML=STEPS.map((s,i)=>{
-    const cls=i<state.step?'pg done':(i===state.step?'pg active':'pg');
+    const cls=i<state.step?'pg pg-done':(i===state.step?'pg pg-active':'pg');
     const reachable=(i===0)||state.data;
     return `<div class="${cls}" data-go="${i}" title="${s.label}"><span class="fill"></span></div>`;
   }).join('');
@@ -953,14 +1237,15 @@ function autoGrow(el){
 }
 function renderNavbar(){
   const n=document.getElementById('navInner');
-  if(state.step===0){n.innerHTML='<span class="nav-label">先填写 / 对话，生成你的转型专案</span>';return;}
-  const prev=state.step>0?`<button class="nav-btn prev" onclick="goStep(${state.step-1})">← 上一步</button>`:`<button class="nav-btn prev" disabled>← 上一步</button>`;
+  if(state.step===0){n.innerHTML='<span class="nav-label">'+t('先填写 / 对话，生成你的转型专案','Fill in the brief, or talk it through')+'</span>';return;}
+  const prevTxt=t('← 上一步','← Back');
+  const prev=state.step>0?`<button class="nav-btn prev" onclick="goStep(${state.step-1})">${prevTxt}</button>`:`<button class="nav-btn prev" disabled>${prevTxt}</button>`;
   let next='';
-  if(state.step<STEPS.length-1)next=`<button class="nav-btn next" onclick="goStep(${state.step+1})">下一步 →</button>`;
-  else if(!state.done)next=`<button class="nav-btn next" onclick="finishProject()">完成</button>`;
-  else next=`<button class="nav-btn next" onclick="homeNew()">回到首页 →</button>`;
+  if(state.step<STEPS.length-1)next=`<button class="nav-btn next" onclick="goStep(${state.step+1})">${t('下一步 →','Next →')}</button>`;
+  else if(!state.done)next=`<button class="nav-btn next" onclick="finishProject()">${t('完成','Done')}</button>`;
+  else next=`<button class="nav-btn next" onclick="homeNew()">${t('回到首页 →','Back to start →')}</button>`;
   const last=state.step===STEPS.length-1&&state.done;
-  n.innerHTML=`${prev}<span class="nav-label">${last?'已完成':STEPS[state.step].label} · ${state.step+1}/${STEPS.length}</span>${next}`;
+  n.innerHTML=`${prev}<span class="nav-label">${last?t('已完成','Completed'):stepLabel(state.step)} · ${state.step+1}/${STEPS.length}</span>${next}`;
 }
 
 const IV={'product':'i-product','audience':'i-audience','value':'i-value','current':'i-current','pain':'i-pain'};
@@ -969,49 +1254,49 @@ function screenInput(){
   const projs=loadProjects();
   let recent='';
   if(projs.length){
-    recent=`<div class="card"><div class="eyebrow" style="color:var(--mut)">最近的课题 · ${projs.length}</div>`+
+    recent=`<div class="card"><div class="eyebrow" style="color:var(--mut)">${t('最近的课题','Recent cases')} · ${projs.length}</div>`+
       projs.slice(0,3).map(p=>`<div class="proj-row">
         <div class="proj-name">${esc(p.name)}</div>
         <div class="proj-meta">${fmtDate(p.updated)}</div>
         <div class="proj-acts">
-          <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">回顾</button>
-          <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">修订</button>
+          <button class="btn btn-soft btn-sm" onclick="openProject('${p.id}')">${t('回顾','Review')}</button>
+          <button class="btn btn-ghost btn-sm" onclick="reviseProject('${p.id}')">${t('修订','Revise')}</button>
         </div></div>`).join('')+
-      `<button class="btn btn-ghost btn-sm" style="margin-top:10px;width:auto" onclick="openProjects()">查看全部课题</button></div>`;
+      `<button class="btn btn-ghost btn-sm" style="margin-top:10px;width:auto" onclick="openProjects()">${t('查看全部课题','See all cases')}</button></div>`;
   }
   const chatHTML=`
-    <div class="eyebrow">输入 · 品牌现状</div>
-    <h1 class="h-hero">聊聊你的产品</h1>
-    <p class="lead">用对话的方式告诉我，我会把它转变成 Z 世代想要的样子。也可以切到表单一次填完。</p>
+    <div class="eyebrow">${t('输入 · 品牌现状','Brief · where the brand stands')}</div>
+    <h1 class="h-hero">${t('聊聊你的产品','Tell me about your product')}</h1>
+    <p class="lead">${t('用对话的方式告诉我，我会把它转变成 Z 世代想要的样子。也可以切到表单一次填完。','Talk it through with me and I will turn it into what Gen Z actually wants. Or switch to the form and fill it in one go.')}</p>
     ${recent}
     <div class="seg">
-      <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">对话引导</button>
-      <button class="${state.mode==='form'?'on':''}" onclick="setMode('form')">表单填写</button>
+      <button class="${state.mode==='chat'?'on':''}" onclick="setMode('chat')">${t('对话引导','Conversation')}</button>
+      <button class="${state.mode==='form'?'on':''}" onclick="setMode('form')">${t('表单填写','Form')}</button>
     </div>
     <div id="chatWrap" class="${state.mode==='chat'?'':'hidden'}">
       <div class="chat" id="chatMsgs">${state.chatLog.map(chatBub).join('')}</div>
       <div class="chat-input">
-        <textarea id="chatInput" rows="1" placeholder="输入你的回答，回车发送…"></textarea>
-        <button class="btn btn-primary" onclick="chatSend()">发送</button>
+        <textarea id="chatInput" rows="1" placeholder="${t('输入你的回答，回车发送…','Type your answer, press Enter…')}"></textarea>
+        <button class="btn btn-primary" onclick="chatSend()">${t('发送','Send')}</button>
       </div>
       <div class="row" style="margin-top:10px">
-        <button class="btn btn-ghost btn-sm" onclick="chatSkip()">跳过此问</button>
-        <button class="btn btn-soft btn-sm" onclick="loadSample()">载入示例</button>
+        <button class="btn btn-ghost btn-sm" onclick="chatSkip()">${t('跳过此问','Skip this one')}</button>
+        <button class="btn btn-soft btn-sm" onclick="loadSample()">${t('载入示例','Load an example')}</button>
       </div>
     </div>
     <div id="formWrap" class="${state.mode==='form'?'':'hidden'}">
-      <label class="fld">1 · 你的产品 / 服务是什么？<span>越具体越好</span></label>
-      <textarea id="i-product" rows="2" placeholder="例：假日酒店的早餐服务">${esc(iv('product'))}</textarea>
-      <label class="fld">2 · 目标受众是谁？<span>希望触达的年轻人</span></label>
-      <textarea id="i-audience" rows="2" placeholder="例：25-35 岁商务旅行人士，工作日为主">${esc(iv('audience'))}</textarea>
-      <label class="fld">3 · 你最想传达的核心功能 / 价值<span>转变的"原料"</span></label>
-      <textarea id="i-value" rows="2" placeholder="例：健康，简洁，高档，本地特色，朴实，精选">${esc(iv('value'))}</textarea>
-      <label class="fld">4 · 你目前在做什么，但年轻人不买账？<span>越具体越准</span></label>
-      <textarea id="i-current" rows="3" placeholder="例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…">${esc(iv('current'))}</textarea>
-      <label class="fld">5 · 最想解决的适配问题<span>选填</span></label>
-      <textarea id="i-pain" rows="2" placeholder="例：年轻人觉得无聊；选择过多认知负荷高">${esc(iv('pain'))}</textarea>
-      <button class="btn btn-primary" style="margin-top:16px" onclick="fromForm()">生成转型专案</button>
-      <button class="btn btn-soft btn-sm" style="margin-top:10px;width:auto" onclick="loadSample()">载入示例</button>
+      <label class="fld">${t('1 · 你的产品 / 服务是什么？','1 · What is your product or service?')}<span>${t('越具体越好','The more specific, the better')}</span></label>
+      <textarea id="i-product" rows="2" placeholder="${t('例：假日酒店的早餐服务','e.g. the breakfast service at a Holiday Inn')}">${esc(iv('product'))}</textarea>
+      <label class="fld">${t('2 · 目标受众是谁？','2 · Who is the target audience?')}<span>${t('希望触达的年轻人','The young people you want to reach')}</span></label>
+      <textarea id="i-audience" rows="2" placeholder="${t('例：25-35 岁商务旅行人士，工作日为主','e.g. business travellers aged 25–35, mostly weekdays')}">${esc(iv('audience'))}</textarea>
+      <label class="fld">${t('3 · 你最想传达的核心功能 / 价值','3 · The core value you want to land')}<span>${t('转变的"原料"','The raw material')}</span></label>
+      <textarea id="i-value" rows="2" placeholder="${t('例：健康，简洁，高档，本地特色，朴实，精选','e.g. healthy, simple, premium, local, honest, curated')}">${esc(iv('value'))}</textarea>
+      <label class="fld">${t('4 · 你目前在做什么，但年轻人不买账？','4 · What do you do today that they don’t buy?')}<span>${t('越具体越准','Specifics sharpen the read')}</span></label>
+      <textarea id="i-current" rows="3" placeholder="${t('例：传统自助餐 50 年没变，上百种食物，和休闲客混杂…','e.g. a buffet unchanged for 50 years: 100+ items, mixed in with leisure guests…')}">${esc(iv('current'))}</textarea>
+      <label class="fld">${t('5 · 最想解决的适配问题','5 · The fit problem you most want to solve')}<span>${t('选填','Optional')}</span></label>
+      <textarea id="i-pain" rows="2" placeholder="${t('例：年轻人觉得无聊；选择过多认知负荷高','e.g. they find it boring; too much choice, high cognitive load')}">${esc(iv('pain'))}</textarea>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="fromForm()">${t('生成转型专案','Generate the case')}</button>
+      <button class="btn btn-soft btn-sm" style="margin-top:10px;width:auto" onclick="loadSample()">${t('载入示例','Load an example')}</button>
     </div>`;
   return chatHTML;
 }
@@ -1021,52 +1306,52 @@ function screenUnderstand(){
   const hp=heroSplit(u.summary);
   const sigs=(u.signals||[]).filter(s=>s&&s.label&&s.tag!=='none');
   return `
-    <div class="eyebrow">理解</div>
-    <h1 class="h-hero">我读到的案例</h1>
-    <p class="lead">这一屏只回答一件事：我有没有读懂你。</p>
+    <div class="eyebrow">${t('理解','Understand')}</div>
+    <h1 class="h-hero">${t('我读到的案例','What I read in your case')}</h1>
+    <p class="lead">${t('这一屏只回答一件事：我有没有读懂你。','This screen answers one question: did I read you right?')}</p>
 
     <div class="sec first">
-      <div class="slabel">我的读法</div>
+      <div class="slabel">${t('我的读法','My read')}</div>
       <p class="pull">${esc(hp.core)}</p>
       ${hp.rest?`<p class="more">${esc(hp.rest)}</p>`:''}
     </div>
 
     ${sigs.length?`<div class="sec">
-      <div class="slabel">我抓到的 ${sigs.length} 个信号 · 都来自你的原话</div>
+      <div class="slabel">${t('我抓到的 '+sigs.length+' 个信号 · 都来自你的原话',sigs.length+' signals, all in your own words')}</div>
       <div class="sig-grid">
         ${sigs.slice(0,4).map((s,i)=>`<div class="sg"><span class="sg-no">0${i+1}</span><b>${esc(s.label)}</b>${s.quote&&s.quote.length<=14?`<span class="sg-q">${esc(s.quote)}</span>`:''}</div>`).join('')}
       </div>
-      ${sigs.length>4?`<p class="hint" style="margin-top:14px">另有 ${sigs.length-4} 个信号未列出，已计入后面的诊断。</p>`:''}
+      ${sigs.length>4?`<p class="hint" style="margin-top:14px">${t('另有 '+(sigs.length-4)+' 个信号未列出，已计入后面的诊断。',(sigs.length-4)+' more signals are folded into the diagnosis.')}</p>`:''}
     </div>`:''}
 
     <div class="fn">
-      <span class="k">读偏了怎么办</span>
-      <p>点底部「上一步」，改你写的那几句——这一屏的内容会跟着变。后面所有判断都建在这一层上。</p>
+      <span class="k">${t('读偏了怎么办','If I read you wrong')}</span>
+      <p>${t('点底部「上一步」，改你写的那几句——这一屏的内容会跟着变。后面所有判断都建在这一层上。','Hit Back, edit those few lines — this screen follows. Every later judgement is built on this layer.')}</p>
     </div>`;
 }
 function screenReframe(){
   const r=state.data.reframe||{};
   const hp=heroSplit(r.reframed);
   return `
-    <div class="eyebrow">重构问题</div>
-    <h1 class="h-hero">从痛点，到机会</h1>
-    <p class="lead">不是再叠加功能，而是换一套年轻人听得懂的方言。</p>
+    <div class="eyebrow">${t('重构问题','Reframe')}</div>
+    <h1 class="h-hero">${t('从痛点，到机会','From pain to opportunity')}</h1>
+    <p class="lead">${t('不是再叠加功能，而是换一套年轻人听得懂的方言。','Not another feature — a different dialect.')}</p>
 
     <div class="sec first">
-      <div class="slabel">现在 · 你卡在哪</div>
+      <div class="slabel">${t('现在 · 你卡在哪','Now · where you are stuck')}</div>
       <p class="dim">${esc(r.problem||'')}</p>
     </div>
 
     <div class="hinge"><i></i><b>↓</b></div>
 
     <div class="plate">
-      <div class="plabel">之后 · 年轻人会怎么理解</div>
+      <div class="plabel">${t('之后 · 年轻人会怎么理解','After · how they will read it')}</div>
       <p class="pt">${esc(hp.core)}</p>
     </div>
     ${hp.rest?`<p class="more">${esc(hp.rest)}</p>`:''}
 
     <div class="fn">
-      <span class="k">为什么这样重构</span>
+      <span class="k">${t('为什么这样重构','Why this reframe')}</span>
       <p>${esc(r.why||'')}</p>
     </div>`;
 }
@@ -1078,37 +1363,37 @@ function screenOpportunity(){
     return `<div class="pl-row">
       <div class="pl-top">
         <div class="pl-name">${title}<span>${sub}</span></div>
-        <div class="pl-num"><span class="c">${cur.toFixed(1)}</span><span class="a">→</span><span class="r">${rev.toFixed(1)}</span><span class="d">${d>0?'+'+d.toFixed(1):'持平'}</span></div>
+        <div class="pl-num"><span class="c">${cur.toFixed(1)}</span><span class="a">→</span><span class="r">${rev.toFixed(1)}</span><span class="d">${d>0?'+'+d.toFixed(1):t('持平','flat')}</span></div>
       </div>
       <div class="trk"><span class="c" style="width:${cur*10}%"></span><span class="r" style="left:${cur*10}%;width:${Math.max(0,rev-cur)*10}%"></span></div>
       <ul class="opps">${(items||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
     </div>`;
   };
   return `
-    <div class="eyebrow">机遇空间</div>
-    <h1 class="h-hero">偏科在哪，机会就在哪</h1>
-    <p class="lead">三支柱对三类没被满足的需求。灰是现状、绿是转变后的预期（满分 10）。</p>
+    <div class="eyebrow">${t('机遇空间','Opportunity')}</div>
+    <h1 class="h-hero">${t('偏科在哪，机会就在哪','Where the score is weak, the opportunity is')}</h1>
+    <p class="lead">${t('三支柱对三类没被满足的需求。灰是现状、绿是转变后的预期（满分 10）。','Three pillars, three unmet needs. Grey is today, green is the expected shift (out of 10).')}</p>
     <div class="sec first">
-      ${row('control','掌控感','降负荷、给秩序','control',o.control)}
-      ${row('deserved','配得感','让我觉得「配得上我」','deserved',o.deserved)}
-      ${row('gratification','满足感','即时、有梗、有参与','grat',o.gratification)}
+      ${row('control',t('掌控感','Control'),t('降负荷、给秩序','Less load, more order'),'control',o.control)}
+      ${row('deserved',t('配得感','Worth it'),t('让我觉得「配得上我」','Makes me feel it is worthy of me'),'deserved',o.deserved)}
+      ${row('gratification',t('满足感','Delight'),t('即时、有梗、有参与','Instant, playful, shared'),'grat',o.gratification)}
     </div>`;
 }
 function screenTranslate(){
-  const t=state.data.translate||[];
+  const list=state.data.translate||[];
   return `
-    <div class="eyebrow">五步转变</div>
-    <h1 class="h-hero">怎么转，五个动作</h1>
-    <p class="lead">每条先给宝洁的通用三法，再套到你的案例上——案例那几行可以直接改。</p>
-    ${t.map((s,i)=>`
+    <div class="eyebrow">${t('五步转变','Five shifts')}</div>
+    <h1 class="h-hero">${t('怎么转，五个动作','How to shift, in five moves')}</h1>
+    <p class="lead">${t('每条先给宝洁的通用三法，再套到你的案例上——案例那几行可以直接改。','Each gives P&G’s three methods, then applies them to your case — those lines are editable.')}</p>
+    ${list.map((s,i)=>`
       <div class="stp">
         <div class="no">0${i+1}</div>
         <h3>${esc(s.step||'')}</h3>
         <p class="pr">${esc(s.principle||'')}</p>
         <div class="body">
-          <span class="sub">实操三法</span>
+          <span class="sub">${t('实操三法','Three methods')}</span>
           ${(s.methods||[]).map((m,j)=>`<div class="mrow"><span class="n">${j+1}</span><span class="t">${esc(m)}</span></div>`).join('')}
-          <span class="sub b">套到你的案例</span>
+          <span class="sub b">${t('套到你的案例','Applied to your case')}</span>
           ${(s.forYou||[]).map((f,j)=>`<div class="fy"><span class="n">${j+1}</span><textarea rows="1" data-k="translate.${i}.forYou.${j}">${esc(f||'')}</textarea></div>`).join('')}
         </div>
       </div>`).join('')}`;
@@ -1118,29 +1403,29 @@ function screenPlan(){
   const pl=state.data.plan||[];
   const pf=(k,label,val)=>`<div class="pf"><span class="pl">${label}</span><textarea rows="1" data-k="${k}">${esc(val||'')}</textarea></div>`;
   return `
-    <div class="eyebrow">转型专案</div>
-    <h1 class="h-hero">从策略到落地</h1>
-    <p class="lead">一句话定位、一个场景，加 5 条能直接派活的行动。</p>
+    <div class="eyebrow">${t('转型专案','The plan')}</div>
+    <h1 class="h-hero">${t('从策略到落地','From strategy to work')}</h1>
+    <p class="lead">${t('一句话定位、一个场景，加 5 条能直接派活的行动。','One positioning line, one scene, five actions you can hand out.')}</p>
 
     <div class="sec first">
-      <div class="slabel"><em>定位</em>一句话说清你变成了什么</div>
+      <div class="slabel"><em>${t('定位','Positioning')}</em>${t('一句话说清你变成了什么','what you became, in one line')}</div>
       <textarea class="pos" rows="2" data-k="output.positioning" style="border:none;background:transparent;padding:0;width:100%">${esc(o2.positioning||'')}</textarea>
     </div>
 
     <div class="sec">
-      <div class="slabel">场景 · 这句话发生在什么时候</div>
+      <div class="slabel">${t('场景 · 这句话发生在什么时候','Scene · when this happens')}</div>
       <textarea class="dim" rows="3" data-k="output.scene" style="border:none;background:transparent;padding:0;width:100%">${esc(o2.scene||'')}</textarea>
     </div>
 
     <div class="sec">
       ${pl.map((it,i)=>`
         <div class="act">
-          <div class="act-top"><span class="act-no">行动 0${i+1}</span><span class="act-tl">${esc(it.timeline||'')}</span></div>
+          <div class="act-top"><span class="act-no">${t('行动','Action')} 0${i+1}</span><span class="act-tl">${esc(it.timeline||'')}</span></div>
           <textarea class="task" rows="2" data-k="plan.${i}.task">${esc(it.task||'')}</textarea>
-          <div class="dl"><span class="k">产出</span><textarea rows="2" data-k="plan.${i}.deliverable">${esc(it.deliverable||'')}</textarea></div>
+          <div class="dl"><span class="k">${t('产出','Deliverable')}</span><textarea rows="2" data-k="plan.${i}.deliverable">${esc(it.deliverable||'')}</textarea></div>
           <div class="meta">
-            ${pf(`plan.${i}.owner`,'责任人',it.owner)}
-            ${pf(`plan.${i}.resource`,'资源',it.resource)}
+            ${pf(`plan.${i}.owner`,t('责任人','Owner'),it.owner)}
+            ${pf(`plan.${i}.resource`,t('资源','Resource'),it.resource)}
           </div>
         </div>`).join('')}
     </div>`;
@@ -1150,39 +1435,39 @@ function screenExport(){
   const d=state.data;
   const done=!!state.done;
   return `
-    <div class="eyebrow">${done?'已完成':'导出'}</div>
-    <h1 class="h-hero">${done?'专案收好了':'专案已就绪'}</h1>
-    <p class="lead">${done?'想改就回课题里打开，要交付就再下一份。':'5 个部分已整合成一份 PPT，拿走就能开会。'}</p>
+    <div class="eyebrow">${done?t('已完成','Completed'):t('导出','Export')}</div>
+    <h1 class="h-hero">${done?t('专案收好了','Case filed'):t('专案已就绪','Your case is ready')}</h1>
+    <p class="lead">${done?t('想改就回课题里打开，要交付就再下一份。','Open it from Cases when you want to change something; export again when you need to present.'):t('5 个部分已整合成一份 PPT，拿走就能开会。','Five sections, one deck. Take it into the room.')}</p>
 
-    ${done?`<div class="done"><i class="dt"></i><span>已存进课题 · <b>${esc(state.doneAt||'')}</b></span><a onclick="openProjects()">去课题里看 →</a></div>`:''}
+    ${done?`<div class="done"><i class="dt"></i><span>${t('已存进课题','Saved to cases')} · <b>${esc(state.doneAt||'')}</b></span><a onclick="openProjects()">${t('去课题里看 →','Open cases →')}</a></div>`:''}
 
     <div class="sec first">
-      <div class="slabel">专案概要</div>
-      <p class="exh"><b style="${(d.output&&String(d.output.positioning||'').indexOf(c.product||'@@')===0)?'display:none':''}">${esc(c.product||'')}</b><span>面向 ${esc(c.audience||'')}</span></p>
+      <div class="slabel">${t('专案概要','Case summary')}</div>
+      <p class="exh"><b style="${(d.output&&String(d.output.positioning||'').indexOf(c.product||'@@')===0)?'display:none':''}">${esc(c.product||'')}</b><span>${t('面向','For')} ${esc(c.audience||'')}</span></p>
       <p class="pos">${esc(d.output&&d.output.positioning||'')}</p>
     </div>
 
     <div class="sec">
-      <div class="slabel">这份 PPT 有 13 页</div>
+      <div class="slabel">${t('这份 PPT 有 13 页','13 slides')}</div>
       <div class="evs">
-        <div class="ev"><span class="k">01</span><span class="v">封面</span></div>
-        <div class="ev"><span class="k">02–05</span><span class="v">我读到的案例 · 从痛点重构机会 · 三支柱偏科 · 进步图示</span></div>
-        <div class="ev"><span class="k">06–10</span><span class="v">五步转变：一步一页，左三法、右你的案例</span></div>
-        <div class="ev"><span class="k">11–13</span><span class="v">一句话定位 · 5 条行动与产出 · 收尾</span></div>
+        <div class="ev"><span class="k">01</span><span class="v">${t('封面','Cover')}</span></div>
+        <div class="ev"><span class="k">02–05</span><span class="v">${t('我读到的案例 · 从痛点重构机会 · 三支柱偏科 · 进步图示','Your case · Reframe · Three pillars · Progress chart')}</span></div>
+        <div class="ev"><span class="k">06–10</span><span class="v">${t('五步转变：一步一页，左三法、右你的案例','Five shifts, one per slide: methods left, your case right')}</span></div>
+        <div class="ev"><span class="k">11–13</span><span class="v">${t('一句话定位 · 5 条行动与产出 · 收尾','Positioning · five actions and deliverables · close')}</span></div>
       </div>
     </div>
 
     <div style="margin-top:26px">
-      <button class="btn btn-primary" onclick="exportPpt()">${done?'再下载一次 PPT':'下载 PPT 文档'}</button>
-      <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">复制全部文字</button>
+      <button class="btn btn-primary" onclick="exportPpt()">${done?t('再下载一次 PPT','Download the deck again'):t('下载 PPT 文档','Download the deck')}</button>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="copyPlan()">${t('复制全部文字','Copy all text')}</button>
     </div>
-    <p class="hint" style="margin-top:16px">${done?'PPT 在本地生成，内容不外传。':'PPT 在本地生成，内容不外传。点底部「完成」，这份专案会收进课题。'}</p>`;
+    <p class="hint" style="margin-top:16px">${done?t('PPT 在本地生成，内容不外传。','The deck is built locally; nothing leaves your browser.'):t('PPT 在本地生成，内容不外传。点底部「完成」，这份专案会收进课题。','The deck is built locally; nothing leaves your browser. Hit Done below to file the case.')}</p>`;
 }
 
 /* ===================== 输入交互 ===================== */
 function setMode(m){
   state.mode=m;
-  if(m==='chat' && !state.chatStarted){state.chatStarted=true;state.chatIdx=0;state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];}
+  if(m==='chat' && !state.chatStarted){const Q=chatQ();state.chatStarted=true;state.chatIdx=0;state.chatLog=[{role:'bot',text:Q[0].q,q:true}];}
   renderScreen();
   if(m==='chat'){bindChatEnter();renderChat();}
 }
@@ -1201,16 +1486,18 @@ function userSay(t){state.chatLog.push({role:'user',text:t});renderChat();}
 function chatSend(){
   const ta=document.getElementById('chatInput');if(!ta)return;
   const txt=ta.value.trim();if(!txt)return;
-  const cur=CHAT_Q[state.chatIdx];
+  const Q=chatQ();
+  const cur=Q[state.chatIdx];
   state.chatAns[cur.k]=txt;userSay(txt);ta.value='';
   state.chatIdx++;
-  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q,true),300);
+  if(state.chatIdx<Q.length)setTimeout(()=>botSay(Q[state.chatIdx].q,true),300);
   else chatDone();
 }
 function chatSkip(){
-  const cur=CHAT_Q[state.chatIdx];if(cur.k!=='pain')return;
-  userSay('（跳过）');state.chatIdx++;
-  if(state.chatIdx<CHAT_Q.length)setTimeout(()=>botSay(CHAT_Q[state.chatIdx].q,true),300);else chatDone();
+  const Q=chatQ();
+  const cur=Q[state.chatIdx];if(cur.k!=='pain')return;
+  userSay(t('（跳过）','(skipped)'));state.chatIdx++;
+  if(state.chatIdx<Q.length)setTimeout(()=>botSay(Q[state.chatIdx].q,true),300);else chatDone();
 }
 function chatDone(){
   document.getElementById('i-product')&&(document.getElementById('i-product').value=state.chatAns.product||'');
@@ -1218,10 +1505,10 @@ function chatDone(){
   document.getElementById('i-value')&&(document.getElementById('i-value').value=state.chatAns.value||'');
   document.getElementById('i-current')&&(document.getElementById('i-current').value=state.chatAns.current||'');
   document.getElementById('i-pain')&&(document.getElementById('i-pain').value=state.chatAns.pain||'');
-  botSay('已收集完 5 项，下面生成你的转型专案 👇');
+  botSay(t('已收集完 5 项，下面生成你的转型专案 👇','All five answers are in. Generate your case below 👇'));
   const d=document.getElementById('chatMsgs');
   const wrap=document.createElement('div');wrap.style.marginTop='12px';
-  const btn=document.createElement('button');btn.className='btn btn-primary';btn.textContent='生成转型专案';
+  const btn=document.createElement('button');btn.className='btn btn-primary';btn.textContent=t('生成转型专案','Generate the case');
   btn.onclick=()=>fromForm();
   wrap.appendChild(btn);d.appendChild(wrap);
 }
@@ -1231,7 +1518,7 @@ function bindChatEnter(){
 }
 function fromForm(){
   const c={product:val0('i-product'),audience:val0('i-audience'),value:val0('i-value'),current:val0('i-current'),pain:val0('i-pain')};
-  if(!c.product&&!c.audience&&!c.current){toast('请至少填写产品 / 受众 / 现状之一');return;}
+  if(!c.product&&!c.audience&&!c.current){toast(t('请至少填写产品 / 受众 / 现状之一','Fill in at least the product, audience or current situation'));return;}
   saveInputDraft();
   state.inputs=c;
   const ai=getAI();let run=async()=>{
@@ -1249,11 +1536,12 @@ function loadSample(){
   ['i-product','i-audience','i-value','i-current','i-pain'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   state.mode='form';state.chatStarted=false;state.chatLog=[];
   renderScreen();
-  document.getElementById('i-product').value=SAMPLE.product;
-  document.getElementById('i-audience').value=SAMPLE.audience;
-  document.getElementById('i-value').value=SAMPLE.value;
-  document.getElementById('i-current').value=SAMPLE.current;
-  document.getElementById('i-pain').value=SAMPLE.pain;
+  const SM=sample();
+  document.getElementById('i-product').value=SM.product;
+  document.getElementById('i-audience').value=SM.audience;
+  document.getElementById('i-value').value=SM.value;
+  document.getElementById('i-current').value=SM.current;
+  document.getElementById('i-pain').value=SM.pain;
   fromForm();
 }
 
@@ -1270,21 +1558,42 @@ function copyPlan(){
   const d=state.data;if(!d)return;
   const data=JSON.parse(JSON.stringify(d));
   document.querySelectorAll('[data-k]').forEach(el=>{setByPath(data,el.dataset.k,el.value);});
-  let t=`【Z 世代代际转变 · 转型专案】\n产品：${c.product||''}\n受众：${c.audience||''}\n价值：${c.value||''}\n现状：${c.current||''}\n适配问题：${c.pain||''}\n\n`;
-  t+=`一、理解\n${data.understand.summary}\n`;
-  t+=`\n二、重构问题\n阻力：${data.reframe.problem}\n重构：${data.reframe.reframed}\n`;
-  t+=`\n三、机遇空间\n掌控感：${(data.opportunity.control||[]).join('；')}\n配得感：${(data.opportunity.deserved||[]).join('；')}\n满足感：${(data.opportunity.gratification||[]).join('；')}\n`;
-  t+=`\n四、五步转变（实操三法 + 链接你的案例）\n`;
-  (data.translate||[]).forEach(s=>{t+=`· ${s.step}（${s.principle}）\n`;(s.methods||[]).forEach((m,j)=>{t+=`   实操三法${j+1}：${m}\n`;});(s.forYou||[]).forEach((f,j)=>{t+=`   链接案例${j+1}：${f}\n`;});});
-  t+=`\n五、转型专案（执行计划）\n定位：${data.output.positioning}\n场景：${data.output.scene}\n`;
-  (data.plan||[]).forEach((it,i)=>{t+=`\n行动 ${i+1} · 任务：${it.task}\n   产出：${it.deliverable}\n   时间点：${it.timeline}\n   责任人：${it.owner}\n   资源：${it.resource}\n`;});
-  navigator.clipboard.writeText(t).then(()=>toast('已复制整份专案')).catch(()=>toast('复制失败，请手动选择'));
+  const E=isEN();
+  let out;
+  if(E){
+    out=`[Z Transformer · Generational shift case]\nProduct: ${c.product||''}\nAudience: ${c.audience||''}\nValue: ${c.value||''}\nToday: ${c.current||''}\nFit problem: ${c.pain||''}\n\n`;
+    out+=`1 · Understand\n${data.understand.summary}\n`;
+    out+=`\n2 · Reframe\nFriction: ${data.reframe.problem}\nReframed: ${data.reframe.reframed}\n`;
+    out+=`\n3 · Opportunity\nControl: ${(data.opportunity.control||[]).join('; ')}\nWorth it: ${(data.opportunity.deserved||[]).join('; ')}\nDelight: ${(data.opportunity.gratification||[]).join('; ')}\n`;
+    out+=`\n4 · Five shifts (three methods + your case)\n`;
+    (data.translate||[]).forEach(s=>{out+=`· ${s.step} (${s.principle})\n`;(s.methods||[]).forEach((m,j)=>{out+=`   Method ${j+1}: ${m}\n`;});(s.forYou||[]).forEach((f,j)=>{out+=`   Your case ${j+1}: ${f}\n`;});});
+    out+=`\n5 · The plan\nPositioning: ${data.output.positioning}\nScene: ${data.output.scene}\n`;
+    (data.plan||[]).forEach((it,i)=>{out+=`\nAction ${i+1} · ${it.task}\n   Deliverable: ${it.deliverable}\n   Timeline: ${it.timeline}\n   Owner: ${it.owner}\n   Resource: ${it.resource}\n`;});
+  }else{
+    out=`【Z 世代代际转变 · 转型专案】\n产品：${c.product||''}\n受众：${c.audience||''}\n价值：${c.value||''}\n现状：${c.current||''}\n适配问题：${c.pain||''}\n\n`;
+    out+=`一、理解\n${data.understand.summary}\n`;
+    out+=`\n二、重构问题\n阻力：${data.reframe.problem}\n重构：${data.reframe.reframed}\n`;
+    out+=`\n三、机遇空间\n掌控感：${(data.opportunity.control||[]).join('；')}\n配得感：${(data.opportunity.deserved||[]).join('；')}\n满足感：${(data.opportunity.gratification||[]).join('；')}\n`;
+    out+=`\n四、五步转变（实操三法 + 链接你的案例）\n`;
+    (data.translate||[]).forEach(s=>{out+=`· ${s.step}（${s.principle}）\n`;(s.methods||[]).forEach((m,j)=>{out+=`   实操三法${j+1}：${m}\n`;});(s.forYou||[]).forEach((f,j)=>{out+=`   链接案例${j+1}：${f}\n`;});});
+    out+=`\n五、转型专案（执行计划）\n定位：${data.output.positioning}\n场景：${data.output.scene}\n`;
+    (data.plan||[]).forEach((it,i)=>{out+=`\n行动 ${i+1} · 任务：${it.task}\n   产出：${it.deliverable}\n   时间点：${it.timeline}\n   责任人：${it.owner}\n   资源：${it.resource}\n`;});
+  }
+  navigator.clipboard.writeText(out).then(()=>toast(t('已复制整份专案','Whole case copied'))).catch(()=>toast(t('复制失败，请手动选择','Copy failed — select it manually')));
 }
 
-function heroSplit(t){
-  const arr=(String(t||'').match(/[^。！？!?]+[。！？!?]?/g)||[]).map(x=>x.trim()).filter(Boolean);
-  if(!arr.length)return {core:'',rest:''};
-  let core=arr.shift();
+function heroSplit(src){
+  const str=String(src||'').trim();
+  if(!str)return {core:'',rest:''};
+  if(isEN()){
+    const arr=(str.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[]).map(x=>x.trim()).filter(Boolean);
+    if(!arr.length)return {core:str,rest:''};
+    let core=arr.shift();
+    while(core.length<70&&arr.length)core+=' '+arr.shift();
+    return {core:core,rest:arr.join(' ')};
+  }
+  const arr=(str.match(/[^。！？!?]+[。！？!?]?/g)||[]).map(x=>x.trim()).filter(Boolean);
+  let core=arr.shift()||'';
   while(core.length<20&&arr.length)core+=arr.shift();
   return {core:core,rest:arr.join('')};
 }
@@ -1294,14 +1603,14 @@ function toast(m){let t=document.createElement('div');t.className='toast';t.text
 /* ===================== PPT 导出 ===================== */
 function loadPptx(cb){
   if(window.PptxGenJS)return cb();
-  if(window.__pptxMissing){toast('PPT 引擎文件缺失');return;}
+  if(window.__pptxMissing){toast(t('PPT 引擎文件缺失','Deck engine file is missing'));return;}
   const s=document.createElement('script');s.src='pptxgen.bundle.js';
   s.onload=()=>cb();s.onerror=()=>{window.__pptxMissing=true;toast('PPT 引擎加载失败');};
   document.head.appendChild(s);
 }
 function exportPpt(){
   if(!state.data){toast('请先生成专案');return;}
-  toast('正在生成 PPT…');
+  toast(t('正在生成 PPT…','Building the deck…'));
   loadPptx(()=>{try{
     buildPpt(state.data);
     /* 导过就算完成：收进课题，底栏换成回首页 */
@@ -1311,13 +1620,13 @@ function exportPpt(){
       renderProgress();renderScreen();renderNavbar();
       window.scrollTo({top:y});
     }
-  }catch(e){console.error(e);toast('生成失败：'+e.message);}});
+  }catch(e){console.error(e);toast(t('生成失败：','Generation failed: ')+e.message);}});
 }
 function buildPpt(d){
   const pptx=new PptxGenJS();
   pptx.layout='LAYOUT_WIDE';
-  pptx.author='Z转变';pptx.title='Z 世代代际转变 · 转型专案';
-  const FH='Microsoft YaHei';
+  pptx.author=t('Z转变器','Z Transformer');pptx.title=t('Z 世代代际转变 · 转型专案','Generational shift case · Z Transformer');
+  const FH=isEN()?'Arial':'Microsoft YaHei';
   const INK='16181C',SUB='55555C',MUT='8F8D88',LINE='E6E3DC',ACC='0CA678',ACCD='0B7A5B',DARK='121417',WHITE='FFFFFF';
   const C_CTRL='2F6BE0',C_DES='6A4BF0',C_GRA='D9622A';
   const W=13.333,H=7.5,M=0.95,CW=W-2*M;
@@ -1327,7 +1636,7 @@ function buildPpt(d){
 
   function foot(s,no,dark){
     s.addShape(pptx.ShapeType.line,{x:M,y:6.92,w:CW,h:0,line:{color:dark?'2B2E34':LINE,width:1}});
-    s.addText('Z转变 · 代际转变专案',{x:M,y:6.99,w:5,h:0.22,fontSize:8.5,color:dark?'6E7278':MUT,fontFace:FH,valign:'top'});
+    s.addText(t('Z转变器 · 代际转变专案','Z Transformer · Generational shift case'),{x:M,y:6.99,w:5,h:0.22,fontSize:8.5,color:dark?'6E7278':MUT,fontFace:FH,valign:'top'});
     s.addText(String(no).padStart(2,'0'),{x:W-M-0.7,y:6.99,w:0.7,h:0.22,fontSize:8.5,color:dark?'6E7278':MUT,fontFace:FH,align:'right',valign:'top'});
   }
   function head(s,no,label,title,sub){
@@ -1340,7 +1649,8 @@ function buildPpt(d){
   /* 按字数动态堆叠：先估行数，再决定间距；总高超出就整体缩字号 */
   function estLines(txt,wIn,size){
     const per=Math.max(8,Math.floor(wIn*72/size*0.98));
-    return Math.max(1,Math.ceil(T(txt).length/per));
+    let w=0;for(const ch of T(txt))w+=(ch.charCodeAt(0)>127?1:0.55);
+    return Math.max(1,Math.ceil(w/per));
   }
   function stack(s,items,x,w,y0,yMax,size,color,numColor,indent){
     let sz=size,gap=0.34;
@@ -1361,22 +1671,22 @@ function buildPpt(d){
   /* ---------- 01 封面 ---------- */
   let s=pptx.addSlide();s.background={color:DARK};
   s.addShape(pptx.ShapeType.rect,{x:M,y:1.9,w:0.52,h:0.035,fill:{color:'34D399'}});
-  s.addText('Z 世代 · 转型专案',{x:M,y:2.1,w:8,h:0.3,fontSize:11.5,color:'7CE0BC',fontFace:FH,charSpacing:2.4});
-  s.addText(T(c.product)||'你的产品 / 服务',{x:M,y:2.5,w:11.4,h:1.5,fontSize:44,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.06,valign:'top',fit:'shrink'});
-  s.addText('从痛点，到机会',{x:M,y:4.12,w:9,h:0.5,fontSize:21,color:'A9ABB0',fontFace:FH});
-  s.addText([{text:'受众　',options:{color:'6E7278'}},{text:T(c.audience),options:{color:'E9E9EB'}}],{x:M,y:5.5,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
-  s.addText([{text:'价值　',options:{color:'6E7278'}},{text:T(c.value),options:{color:'E9E9EB'}}],{x:M,y:5.88,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
+  s.addText(t('Z 世代 · 转型专案','GEN Z · SHIFT CASE'),{x:M,y:2.1,w:8,h:0.3,fontSize:11.5,color:'7CE0BC',fontFace:FH,charSpacing:2.4});
+  s.addText(T(c.product)||t('你的产品 / 服务','Your product or service'),{x:M,y:2.5,w:11.4,h:1.5,fontSize:44,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.06,valign:'top',fit:'shrink'});
+  s.addText(t('从痛点，到机会','From pain to opportunity'),{x:M,y:4.12,w:9,h:0.5,fontSize:21,color:'A9ABB0',fontFace:FH});
+  s.addText([{text:t('受众　','Audience  '),options:{color:'6E7278'}},{text:T(c.audience),options:{color:'E9E9EB'}}],{x:M,y:5.5,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
+  s.addText([{text:t('价值　','Value  '),options:{color:'6E7278'}},{text:T(c.value),options:{color:'E9E9EB'}}],{x:M,y:5.88,w:11.2,h:0.32,fontSize:12.5,fontFace:FH,fit:'shrink'});
   foot(s,1,true);
 
   /* ---------- 02 理解 ---------- */
   s=pptx.addSlide();
-  head(s,'01','理解','我读到的案例','先确认我读懂了你的现状——后面所有判断都建在这一层上。');
+  head(s,'01',t('理解','Understand'),t('我读到的案例','What I read in your case'),t('先确认我读懂了你的现状——后面所有判断都建在这一层上。','First, did I read you right? Every later judgement is built on this layer.'));
   const uh=heroSplit(d.understand&&d.understand.summary);
   const coreH=estLines(uh.core,7.0,21)*21*1.55/72+0.08;
   s.addText(T(uh.core),{x:M,y:2.4,w:7.0,h:coreH,fontSize:21,color:INK,fontFace:FH,lineSpacingMultiple:1.55,valign:'top',fit:'shrink'});
   if(uh.rest)s.addText(T(uh.rest),{x:M,y:2.4+coreH+0.22,w:7.0,h:1.7,fontSize:12.5,color:'71717A',fontFace:FH,lineSpacingMultiple:1.65,valign:'top',fit:'shrink'});
   s.addShape(pptx.ShapeType.line,{x:8.62,y:2.4,w:0,h:3.9,line:{color:LINE,width:1}});
-  s.addText('我抓到的信号',{x:9.02,y:2.36,w:3.3,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.8});
+  s.addText(t('我抓到的信号','Signals I caught'),{x:9.02,y:2.36,w:3.3,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.8});
   const sigs=(d.understand&&d.understand.signals||[]).filter(x=>x&&x.label&&x.tag!=='none').slice(0,4);
   sigs.forEach((x,i)=>{
     const y=2.72+i*0.74;
@@ -1386,17 +1696,17 @@ function buildPpt(d){
     if(x.quote&&T(x.quote).length<=14)
       s.addText('「'+T(x.quote)+'」',{x:9.44,y:y+0.38,w:2.9,h:0.24,fontSize:9.5,color:SUB,fontFace:FH});
   });
-  if(!sigs.length)s.addText('（暂无引用）',{x:9.02,y:2.76,w:3.3,h:0.3,fontSize:10.5,color:MUT,fontFace:FH});
+  if(!sigs.length)s.addText(t('（暂无引用）','(no quote)'),{x:9.02,y:2.76,w:3.3,h:0.3,fontSize:10.5,color:MUT,fontFace:FH});
   s.addShape(pptx.ShapeType.line,{x:M,y:6.02,w:7.0,h:0,line:{color:LINE,width:1}});
-  s.addText('读偏了？回到第 1 步改你写的那几句，这一页会跟着变。',{x:M,y:6.14,w:7.0,h:0.26,fontSize:10,color:MUT,fontFace:FH});
+  s.addText(t('读偏了？回到第 1 步改你写的那几句，这一页会跟着变。','Read wrong? Go back to step 1, edit those lines, and this page follows.'),{x:M,y:6.14,w:7.0,h:0.26,fontSize:10,color:MUT,fontFace:FH});
   foot(s,2);
 
   /* ---------- 03 重构：整份文档唯一的深色板 ---------- */
   s=pptx.addSlide();
-  head(s,'02','重构问题','从痛点，到机会','不是再叠加功能，而是换一套年轻人听得懂的方言。');
-  s.addText('现在 · 你卡在哪',{x:M,y:2.42,w:4.4,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
+  head(s,'02',t('重构问题','Reframe'),t('从痛点，到机会','From pain to opportunity'),t('不是再叠加功能，而是换一套年轻人听得懂的方言。','Not another feature — a different dialect.'));
+  s.addText(t('现在 · 你卡在哪','Now · where you are stuck'),{x:M,y:2.42,w:4.4,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
   s.addShape(pptx.ShapeType.line,{x:M,y:5.05,w:4.4,h:0,line:{color:LINE,width:1}});
-  s.addText('为什么这样重构',{x:M,y:5.16,w:4.4,h:0.22,fontSize:8.5,color:MUT,fontFace:FH,charSpacing:1.4});
+  s.addText(t('为什么这样重构','Why this reframe'),{x:M,y:5.16,w:4.4,h:0.22,fontSize:8.5,color:MUT,fontFace:FH,charSpacing:1.4});
   s.addText(T(d.reframe&&d.reframe.why),{x:M,y:5.42,w:4.4,h:1.0,fontSize:10.5,color:'8B8B90',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
   s.addText(T(d.reframe&&d.reframe.problem),{x:M,y:2.76,w:4.5,h:3.3,fontSize:16,color:'71717A',fontFace:FH,lineSpacingMultiple:1.6,valign:'top',fit:'shrink'});
   s.addText('→',{x:5.42,y:3.95,w:0.5,h:0.4,fontSize:20,color:'C9C6C0',align:'center',fontFace:FH});
@@ -1407,23 +1717,23 @@ function buildPpt(d){
   const restH=rh.rest?estLines(rh.rest,5.3,11.5)*11.5*1.5/72+0.1:0;
   const blkTotal=0.56+rcH+(rh.rest?0.3+restH:0);
   const ty=2.28+Math.max(0.3,(3.95-blkTotal)/2);
-  s.addText('之后 · 年轻人会怎么理解',{x:6.56,y:ty,w:5.2,h:0.24,fontSize:9.5,color:'7CE0BC',fontFace:FH,charSpacing:1.6});
+  s.addText(t('之后 · 年轻人会怎么理解','After · how they will read it'),{x:6.56,y:ty,w:5.2,h:0.24,fontSize:9.5,color:'7CE0BC',fontFace:FH,charSpacing:1.6});
   s.addText(T(rh.core),{x:6.56,y:ty+0.56,w:5.3,h:rcH,fontSize:22,color:'F8F8F7',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
   if(rh.rest)s.addText(T(rh.rest),{x:6.56,y:ty+0.56+rcH+0.3,w:5.3,h:restH,fontSize:11.5,color:'9A9A9F',fontFace:FH,lineSpacingMultiple:1.5,valign:'top',fit:'shrink'});
   foot(s,3);
 
   /* ---------- 04 三支柱：一列一支柱，大字分数 ---------- */
   s=pptx.addSlide();
-  head(s,'03','机遇空间','偏科在哪，机会就在哪','灰是现状，绿是转变后的预期（满分 10）。差得越多，越该先动手。');
+  head(s,'03',t('机遇空间','Opportunity'),t('偏科在哪，机会就在哪','Where the score is weak, the opportunity is'),t('灰是现状，绿是转变后的预期（满分 10）。差得越多，越该先动手。','Grey is today, green is the expected shift (out of 10). The wider the gap, the sooner to start.'));
   const sc=d.scores||{current:{},revised:{}};
-  const cols=[['掌控感','降负荷、给秩序','control',d.opportunity&&d.opportunity.control],
-              ['配得感','让我觉得「配得上我」','deserved',d.opportunity&&d.opportunity.deserved],
-              ['满足感','即时、有梗、有参与','gratification',d.opportunity&&d.opportunity.gratification]];
+  const cols=[[t('掌控感','Control'),t('降负荷、给秩序','Less load, more order'),'control',d.opportunity&&d.opportunity.control],
+              [t('配得感','Worth it'),t('让我觉得「配得上我」','Worthy of me'),'deserved',d.opportunity&&d.opportunity.deserved],
+              [t('满足感','Delight'),t('即时、有梗、有参与','Instant, playful, shared'),'gratification',d.opportunity&&d.opportunity.gratification]];
   cols.forEach((p,i)=>{
     const x=M+i*3.86, cur=sc.current[p[2]]||0, rev=sc.revised[p[2]]||0;
     const delta=Math.max(0,Math.round((rev-cur)*10)/10);
     if(i)s.addShape(pptx.ShapeType.line,{x:x-0.28,y:2.42,w:0,h:3.95,line:{color:LINE,width:1}});
-    s.addText('现状 '+cur.toFixed(1)+'  →',{x:x,y:2.42,w:3.2,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.2});
+    s.addText(t('现状 ','Today ')+cur.toFixed(1)+'  →',{x:x,y:2.42,w:3.2,h:0.24,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.2});
     s.addText(rev.toFixed(1),{x:x,y:2.68,w:2.1,h:0.9,fontSize:52,bold:true,color:ACCD,fontFace:FH,valign:'top'});
     if(delta>0)s.addText('+'+delta.toFixed(1),{x:x+1.42,y:2.98,w:1.4,h:0.32,fontSize:12,bold:true,color:ACC,fontFace:FH});
     s.addText(p[0],{x:x,y:3.62,w:3.3,h:0.34,fontSize:16.5,bold:true,color:INK,fontFace:FH});
@@ -1436,7 +1746,7 @@ function buildPpt(d){
 
   /* ---------- 05 进步图示 ---------- */
   s=pptx.addSlide();
-  head(s,'03b','进步图示','三条柱子，量出差距','灰柱 = 现状，绿柱 = 转变后的预期得分。柱越高，用户越被满足。');
+  head(s,'03b',t('进步图示','Progress'),t('三条柱子，量出差距','Three bars, one gap you can see'),t('灰柱 = 现状，绿柱 = 转变后的预期得分。柱越高，用户越被满足。','Grey bar = today, green bar = expected score after the shift. The taller the bar, the better served they are.'));
   const baseY=5.95,maxH=2.85;
   const bars=cols.map((p,i)=>({name:p[0],color:p[2]==='control'?C_CTRL:(p[2]==='deserved'?C_DES:C_GRA),cur:sc.current[p[2]]||0,rev:sc.revised[p[2]]||0}));
   bars.forEach((b,i)=>{
@@ -1449,15 +1759,15 @@ function buildPpt(d){
     s.addText(b.name,{x:gx-0.5,y:baseY+0.16,w:2.85,h:0.32,fontSize:14,bold:true,color:INK,align:'center',fontFace:FH});
   });
   s.addShape(pptx.ShapeType.line,{x:0.95,y:baseY,w:11.4,h:0,line:{color:'D5D2CC',width:1}});
-  s.addText('满分 10',{x:9.6,y:1.86,w:2.8,h:0.24,fontSize:9,color:MUT,align:'right',fontFace:FH});
+  s.addText(t('满分 10','out of 10'),{x:9.6,y:1.86,w:2.8,h:0.24,fontSize:9,color:MUT,align:'right',fontFace:FH});
   foot(s,5);
 
   /* ---------- 06-10 五步转变：一步一页 ---------- */
   (d.translate||[]).forEach((st,i)=>{
     s=pptx.addSlide();
-    head(s,'04','五步转变 · 0'+(i+1)+' / 05',T(st.step)||('第 '+(i+1)+' 步'),T(st.principle));
-    s.addText('实操三法',{x:M,y:2.4,w:4,h:0.24,fontSize:9.5,color:ACCD,fontFace:FH,charSpacing:1.8});
-    s.addText('套到你的案例',{x:7.12,y:2.4,w:4,h:0.24,fontSize:9.5,color:C_DES,fontFace:FH,charSpacing:1.8});
+    head(s,'04',t('五步转变','Five shifts')+' · 0'+(i+1)+' / 05',T(st.step)||t('第 '+(i+1)+' 步','Shift '+(i+1)),T(st.principle));
+    s.addText(t('实操三法','Three methods'),{x:M,y:2.4,w:4,h:0.24,fontSize:9.5,color:ACCD,fontFace:FH,charSpacing:1.8});
+    s.addText(t('套到你的案例','Applied to your case'),{x:7.12,y:2.4,w:4,h:0.24,fontSize:9.5,color:C_DES,fontFace:FH,charSpacing:1.8});
     s.addShape(pptx.ShapeType.line,{x:6.72,y:2.38,w:0,h:4.0,line:{color:LINE,width:1}});
     stack(s,(st.methods||[]).slice(0,3),M,4.95,2.72,6.45,16,INK,ACC,0.38);
     stack(s,(st.forYou||[]).slice(0,3),7.12,5.15,2.72,6.45,15,SUB,C_DES,0.38);
@@ -1466,12 +1776,12 @@ function buildPpt(d){
 
   /* ---------- 11 一句话定位 ---------- */
   s=pptx.addSlide();
-  head(s,'06','转型专案','一句话定位','对外能讲、对内能派活的那一句。');
+  head(s,'06',t('转型专案','The plan'),t('一句话定位','Positioning'),t('对外能讲、对内能派活的那一句。','One line you can say outside and hand out inside.'));
   s.addShape(pptx.ShapeType.rect,{x:M,y:2.4,w:CW,h:2.5,fill:{color:DARK}});
   s.addShape(pptx.ShapeType.rect,{x:M+0.56,y:2.4,w:0.44,h:0.04,fill:{color:'34D399'}});
-  s.addText('定位 · POSITIONING',{x:M+0.56,y:2.7,w:6,h:0.24,fontSize:9,color:'7CE0BC',fontFace:FH,charSpacing:1.8});
+  s.addText(t('定位 · POSITIONING','POSITIONING'),{x:M+0.56,y:2.7,w:6,h:0.24,fontSize:9,color:'7CE0BC',fontFace:FH,charSpacing:1.8});
   s.addText(T(d.output&&d.output.positioning),{x:M+0.56,y:2.96,w:CW-1.2,h:1.72,fontSize:23,color:'F8F8F7',fontFace:FH,lineSpacingMultiple:1.5,valign:'middle',fit:'shrink'});
-  s.addText('场景 · 这句话发生在什么时候',{x:M,y:5.22,w:CW,h:0.26,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
+  s.addText(t('场景 · 这句话发生在什么时候','SCENE · WHEN THIS HAPPENS'),{x:M,y:5.22,w:CW,h:0.26,fontSize:9.5,color:MUT,fontFace:FH,charSpacing:1.6});
   s.addText(T(d.output&&d.output.scene),{x:M,y:5.58,w:CW-1.0,h:1.1,fontSize:15,color:SUB,fontFace:FH,lineSpacingMultiple:1.55,valign:'top',fit:'shrink'});
   foot(s,11);
 
@@ -1480,8 +1790,8 @@ function buildPpt(d){
   chunks.forEach((chunk,ci)=>{
     if(!chunk.length)return;
     s=pptx.addSlide();
-    head(s,'07','执行计划','五条行动，各自有产出','任务 / 产出 / 时间点 / 责任人 / 资源——照这张表派活。');
-    const head6=['#','任务','产出','时间点','责任人','资源'];
+    head(s,'07',t('执行计划','Action plan'),t('五条行动，各自有产出','Five actions, each with a deliverable'),t('任务 / 产出 / 时间点 / 责任人 / 资源——照这张表派活。','Task / deliverable / timeline / owner / resource — assign straight from this table.'));
+    const head6=['#',t('任务','Task'),t('产出','Deliverable'),t('时间点','Timeline'),t('责任人','Owner'),t('资源','Resource')];
     const rows=[head6.map((h,k)=>({text:h,options:{bold:true,color:WHITE,fill:{color:'16181C'},fontSize:11,align:k===0?'center':'left',valign:'middle'}}))];
     chunk.forEach((it,k)=>{
       const idx=ci*3+k;
@@ -1498,16 +1808,17 @@ function buildPpt(d){
   /* ---------- 13 收尾 ---------- */
   s=pptx.addSlide();s.background={color:DARK};
   s.addShape(pptx.ShapeType.rect,{x:M,y:2.16,w:0.52,h:0.035,fill:{color:'34D399'}});
-  s.addText('带走这一句',{x:M,y:2.38,w:6,h:0.28,fontSize:10,color:'7CE0BC',fontFace:FH,charSpacing:2});
-  s.addText(T(d.output&&d.output.positioning)||'把痛点，重构成机会。',{x:M,y:2.8,w:11.2,h:2.2,fontSize:28,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.42,valign:'top',fit:'shrink'});
-  s.addText('专案可在 Z转变 里继续修订，改完重新导出即可。',{x:M,y:5.6,w:11,h:0.32,fontSize:11.5,color:'8B8E94',fontFace:FH});
+  s.addText(t('带走这一句','TAKE THIS LINE WITH YOU'),{x:M,y:2.38,w:6,h:0.28,fontSize:10,color:'7CE0BC',fontFace:FH,charSpacing:2});
+  s.addText(T(d.output&&d.output.positioning)||t('把痛点，重构成机会。','Reframe the pain into an opportunity.'),{x:M,y:2.8,w:11.2,h:2.2,fontSize:28,bold:true,color:WHITE,fontFace:FH,lineSpacingMultiple:1.42,valign:'top',fit:'shrink'});
+  s.addText(t('专案可在 Z转变器 里继续修订，改完重新导出即可。','Keep revising in Z Transformer; export again when it changes.'),{x:M,y:5.6,w:11,h:0.32,fontSize:11.5,color:'8B8E94',fontFace:FH});
   foot(s,13,true);
 
-  pptx.writeFile({fileName:(c.product||'Z转型专案')+'·代际转变专案.pptx'}).then(()=>toast('PPT 已下载')).catch(e=>toast('下载失败'));
+  pptx.writeFile({fileName:(c.product||t('Z转型专案','Z shift case'))+t('·代际转变专案.pptx',' · shift case.pptx')}).then(()=>toast(t('PPT 已下载','Deck downloaded'))).catch(e=>toast(t('下载失败','Download failed')));
 }
 
 /* ===================== 启动 ===================== */
 function init(){
+  applyI18n();applyLangSw();
   setFlag();
   restoreDataDraft();
   if(state.data)state.inputs=state.data._inputs||{};
@@ -1520,7 +1831,7 @@ function init(){
   // 默认对话引导：预置第一问（renderScreen 前，确保气泡随屏直出；无论是否有旧草稿都生效）
   if(state.mode==='chat' && !state.chatStarted){
     state.chatStarted=true;state.chatIdx=0;
-    state.chatLog=[{role:'bot',text:CHAT_Q[0].q,q:true}];
+    state.chatLog=[{role:'bot',text:chatQ()[0].q,q:true}];
   }
   if(state.data)state.reached=Math.max(state.reached,1); // 已有草稿：允许从「最近的课题」回顾/修订
   renderHeader();renderProgress();renderScreen();renderNavbar();
