@@ -19,6 +19,28 @@
 
 右上角中 / EN 跷跷板切换语言；也可用 `?lang=en`（Pages 版）或 `&lang=en`（分享链接）。
 
+## 界面与真实输出
+
+下面是在产品里跑完一遍「社区活动室的周末手冲咖啡课」的真实截图，不是效果图。
+
+<img src="screenshots/zh-home.png" width="520" alt="首页：五问对话输入">
+
+*首页 · 五问对话，不用填表；也可以一键切到表单*
+
+<img src="screenshots/zh-understand.png" width="520" alt="理解：抓到你原话里的信号">
+
+*理解 · 只回答一件事：我有没有读懂你。信号全部来自你写的原话*
+
+<img src="screenshots/zh-opportunity.png" width="520" alt="机遇：三支柱现状与转变后评分">
+
+*机遇 · 三支柱打分：现状 5.1 → 转变后 6.8，差距就是机会*
+
+<img src="screenshots/zh-plan-top.png" width="520" alt="专案：一句话定位、一个场景、五条行动">
+
+*专案 · 一句话定位 + 一个场景 + 5 条带责任人 / 交付物 / 周期的行动*
+
+英文界面截图见 [README.en.md](README.en.md)，全部原图在 [`screenshots/`](screenshots)。
+
 ## 它解决什么
 
 好价值落不了地，常常不是产品不行，而是没跟上这一代判断价值的方式。
@@ -69,6 +91,7 @@ python3 -m http.server 8000
 | `manifest.webmanifest` / `sw.js` / `app-icon.png` | PWA 安装与图标 |
 | `promo-zh.html` / `promo-en.html` | A4 一页宣传单源文件（二维码已内联，单文件可分发） |
 | `promo-zh.pdf` / `promo-en.pdf` | 同版式 A4 单页 PDF 成品 |
+| `screenshots/zh-*.png` / `screenshots/en-*.png` | 中英双语真实界面截图（首页 / 表单 / 理解 / 机遇 / 转变 / 专案） |
 | `README.md` / `README.en.md` | 本文档中 / 英 |
 
 宣传单导出：浏览器打开 → 打印 → 「另存为 PDF」→ 纸张 A4、边距「无」、勾选「背景图形」。
