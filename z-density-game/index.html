@@ -387,7 +387,7 @@ function pickVerdict(sc,text){
                : weak[0]==='deserved' ? `Weakest is identity: hold this ${noun} and you can't say "this is mine".`
                : `Weakest is delight: this ${noun} ends without one moment that lands.`;
     const tail = avg>=7.5?'All three hold — push further.':avg>=5?'Middle ground: fix the weakest pillar only.':'Fix the weakest pillar first, not all three.';
-    return head+tail;
+    return head+' '+tail;
   }
   const head = weak[0]==='control' ? `最弱是掌控：${noun}里每一步都被人替你安排好了。`
              : weak[0]==='deserved' ? `最弱是配得：${noun}拿在手上，说不出一句"这是我的"。`
